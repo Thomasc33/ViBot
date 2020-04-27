@@ -1,0 +1,42 @@
+{
+    "key": "NzAxMTk2NTI5NTE5Njg5Nzkw.XqYpVg.dushH84FX_2CkuzISRjRSVyR47w",
+    "prefix": ";",
+    "raidingChannels": "6",
+    "botID": "701196529519689790",
+    "voiceChannelCount": 15,
+    "vetVoiceChannelCount": 4,
+    "afkTimeLimit": 360,
+    "maxConcurrentRuns": 4,
+    "emote": {
+        "Warrior" : ":Warrior:701491230395072522",
+        "voidd" : ":Void:701491230210523247",
+        "TomeofPurification" : ":TomeofPurification:701491230172774442",
+        "LostHallsKey" : ":LostHallsKey:701491230260985877",
+        "Knight" : ":Knight:701491229925310575",
+        "MarbleSeal" : ":MarbleSeal:701491230306992219",
+        "shard" : ":nitro:701491230349066261",
+        "malus" : ":malus:701491230332157972",
+        "Paladin" : ":Paladin:701491230298734642",
+        "Vial" : ":Vial:701491230567039018",
+        "Plane" : ":Plane:701491229916921858",
+        "SkipBoi" : ":SkipBoi:701491230391140453",
+        "Brain" : ":Brain:701491229975773225",
+        "Mystic" : ":Mystic:702005463377641522"
+    },
+    "emoteIDs": {
+        "Warrior": "701491230395072522",
+        "voidd": "701491230210523247",
+        "TomeofPurification": "701491230172774442",
+        "LostHallsKey": "701491230260985877",
+        "Knight": "701491229925310575",
+        "MarbleSeal": "701491230306992219",
+        "shard": "701491230349066261",
+        "malus": "701491230332157972",
+        "Paladin": "701491230298734642",
+        "Vial": "701491230567039018",
+        "Plane": "702984235790893227",
+        "SkipBoi": "701491230391140453",
+        "brain": "701491229975773225",
+        "mystic": "702005463377641522"
+    }
+}
