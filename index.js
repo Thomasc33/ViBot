@@ -41,6 +41,8 @@ function aliasCheck(pcommand) {
             return 'unlock';
         case 'loc':
             return 'location';
+        case 'pm':
+            return 'parsemembers';
         default:
             return pcommand;
     }
