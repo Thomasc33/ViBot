@@ -13,9 +13,9 @@ module.exports = {
 
         //combines users into an array
         for (let i in args) {
-            let u = ''
+            let u = '';
             u = args[i];
-            let member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z]/gi, '').toLowerCase() === u.toLowerCase());
+            let member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(u.toLowerCase()));
 
             if (member == null) {
                 var embed = new Discord.MessageEmbed()
