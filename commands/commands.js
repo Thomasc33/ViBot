@@ -8,7 +8,7 @@ module.exports = {
             .setTitle('Commands')
             .setColor('#ff0000')
             .addFields(
-                { name: 'Raiding', value: '\`\`\`;afk ;resetchannel ;unlock ;clean\`\`\`' }
+                { name: 'Raiding', value: '\`\`\`;afk ;lock ;unlock ;clean ;location ;vetban ;allowrun\`\`\`' }
             )
         message.channel.send(commandPanel);
     },
