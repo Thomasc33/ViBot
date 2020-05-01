@@ -1,7 +1,6 @@
-
-//keyFilename: './ViBot-7ff3dbd920ee.json',
-//projectId: 'vibot-275815'
-
+const gCloud = require('@google-cloud/vision')
+//keyFilename: 'C:/Users/Carrt/OneDrive/Desktop/ViBot/ViBot-7ff3dbd920ee.json'
+const vision = new gCloud.ImageAnnotatorClient();
 
 module.exports = {
     name: 'parsemembers',
@@ -13,11 +12,10 @@ module.exports = {
             message.channel.send("Try again in dylanbot-commands or veteran-bot-commands");
             return;
         }
-        console.log(message.attachments.array.length);
-        if (message.attachments.array.length !== 1) {
+        if (message.attachments.size !== 1) {
             message.channel.send("Issue with attachment, make sure the image and command are on same message");
         }
-        var image = message.attachments.array[0];
-        message.channel.send(image);
+        var image = message.attachments.first().proxyURL;
+        message.channel.send('', image);
     }
 }

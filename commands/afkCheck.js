@@ -271,7 +271,7 @@ To end the AFK check as a leader, react to ❌`)
                     this.nitroCount++;
                     if (this.leaderEmbed.fields[3].value == `None yet!`) {
                         this.leaderEmbed.fields[3].value = `<@!${u.id}> `;
-                    } else leaderEmbed.fields[3].value += `, <@!${u.id}>`
+                    } else this.leaderEmbed.fields[3].value += `, <@!${u.id}>`
                     this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => console.log(er));
                     this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => console.log(er));
                     this.earlyLocation.push(u);
