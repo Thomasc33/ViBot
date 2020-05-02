@@ -10,10 +10,6 @@ module.exports = {
 
 async function handler(message, args) {
     var isVet = false;
-    var raidLeaderRole = message.guild.roles.cache.find(r => r.name === "Almost Raid Leader");
-    var aRaidLeaderRole = message.guild.roles.cache.find(r => r.name === "Raid Leader");
-    var modRole = message.guild.roles.cache.find(r => r.name === "Moderator");
-    var securityRole = message.guild.roles.cache.find(r => r.name === "Security");
     if (!(message.channel.name === 'dylanbot-commands' || message.channel.name === 'veteran-bot-commands')) {
         message.channel.send("Try again, but in dylanbot-commands or veteran-bot-commands");
         return;
@@ -34,7 +30,7 @@ async function handler(message, args) {
         let lounge = message.guild.channels.cache.find(c => c.name === "Veteran Lounge");
         let channel = message.guild.channels.cache.find(c => c.name == `Veteran Raiding ${args[0]}` || c.name == `Veteran Raiding ${args[0]} <--Join Now!`);
         await channel.members.each(u => {
-            if (!(u.roles.cache.has(raidLeaderRole.id) || u.roles.cache.has(aRaidLeaderRole.id) || u.roles.cache.has(securityRole.id) || u.roles.cache.has(modRole.id))) {
+            if (u.roles.highest.position < message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) {
                 u.edit({ channel: lounge });
             }
         })
@@ -42,7 +38,7 @@ async function handler(message, args) {
         let lounge = message.guild.channels.cache.find(c => c.name === "lounge");
         let channel = message.guild.channels.cache.find(c => c.name == `raiding-${args[0]}` || c.name == `raiding-${args[0]} <--Join Now!`);
         await channel.members.each(u => {
-            if (!(u.roles.cache.has(raidLeaderRole.id) || u.roles.cache.has(aRaidLeaderRole.id) || u.roles.cache.has(securityRole.id) || u.roles.cache.has(modRole.id))) {
+            if (u.roles.highest.position < message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) {
                 u.edit({ channel: lounge });
             }
         })

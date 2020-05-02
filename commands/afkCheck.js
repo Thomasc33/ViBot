@@ -15,8 +15,6 @@ module.exports = {
     execute(message, args, bott) {
         bot = bott
         var isVet = false;
-        var raidLeaderRole = message.guild.roles.cache.find(r => r.name === "Almost Raid Leader");
-        var aRaidLeaderRole = message.guild.roles.cache.find(r => r.name === "Raid Leader");
         if (message.channel.name === 'dylanbot-commands') {
             isVet = false;
             if (args[0] > botSettings.voiceChannelCount || args[0] == 0) {
@@ -33,7 +31,6 @@ module.exports = {
             message.channel.send("Try again, but in dylanbot-commands or veteran-bot-commands");
             return;
         }
-        if (!(message.member.roles.cache.has(raidLeaderRole.id) || message.member.roles.cache.has(aRaidLeaderRole.id))) return;
         if (!(message.channel.name === 'dylanbot-commands' || message.channel.name === 'veteran-bot-commands')) return;
         if (args.length < 2) {
             message.channel.send("Command entered incorrectly -> ;afk <channel #> <c/v/fsv> <location>");
@@ -124,8 +121,6 @@ class afk {
         this.dylanBotInfo = message.guild.channels.cache.find(c => c.name === "dylanbot-info");
         this.officialRusher = message.guild.roles.cache.find(r => r.name === 'Official Rusher');
         this.nitroBooster = message.guild.roles.cache.find(r => r.name === "Nitro Booster");
-        this.aRaidLeaderRole = message.guild.roles.cache.find(r => r.name === "Almost Raid Leader");
-        this.raidLeaderRole = message.guild.roles.cache.find(r => r.name === "Raid Leader");
         this.leaderOnLeave = message.guild.roles.cache.find(r => r.name === 'Leader on Leave');
         this.minutes;
         this.seconds;
@@ -259,7 +254,11 @@ To end the AFK check as a leader, react to ❌`)
             }
             //nitro
             if (r.emoji.id === botSettings.emoteIDs.shard) {
-                if (reactor.roles.cache.has(this.leaderOnLeave.id)) {
+                if (this.earlyLocation.includes(u)) {
+                    reactor.send(`The location for this run has been set to \`${this.location}\``);
+                    return;
+                }
+                if (reactor.roles.highest.position >= this.leaderOnLeave.position) {
                     reactor.send(`The location for this run has been set to \`${this.location}\``);
                     this.earlyLocation.push(u);
                     return;
@@ -278,7 +277,7 @@ To end the AFK check as a leader, react to ❌`)
                 }
             }
             if (r.emoji.name == '❌') {
-                if (!(reactor.roles.cache.has(this.raidLeaderRole.id) || reactor.roles.cache.has(this.aRaidLeaderRole.id))) return;
+                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
                 this.endedBy = u;
                 this.postAfk();
             }
@@ -292,7 +291,7 @@ To end the AFK check as a leader, react to ❌`)
             if (u.bot) return;
             let reactor = this.message.guild.members.cache.get(u.id);
             if (r.emoji.name === '❌') {
-                if (!(reactor.roles.cache.has(this.raidLeaderRole.id) || reactor.roles.cache.has(this.aRaidLeaderRole.id))) return;
+                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
                 this.endedBy = u;
                 this.abortAfk();
             }
@@ -363,7 +362,11 @@ To end the AFK check as a leader, react to ❌`)
             }
             //nitro
             if (r.emoji.id === botSettings.emoteIDs.shard) {
-                if (reactor.roles.cache.has(this.leaderOnLeave.id)) {
+                if (this.earlyLocation.includes(u)) {
+                    reactor.send(`The location for this run has been set to \`${this.location}\``);
+                    return;
+                }
+                if (reactor.roles.highest.position >= this.leaderOnLeave.position) {
                     reactor.send(`The location for this run has been set to \`${this.location}\``);
                     this.earlyLocation.push(u);
                     return;
@@ -382,7 +385,7 @@ To end the AFK check as a leader, react to ❌`)
                 }
             }
             if (r.emoji.name == '❌') {
-                if (!(reactor.roles.cache.has(this.raidLeaderRole.id) || reactor.roles.cache.has(this.aRaidLeaderRole.id))) return;
+                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
                 this.endedBy = u;
                 this.postAfk();
             }
@@ -396,7 +399,7 @@ To end the AFK check as a leader, react to ❌`)
             if (u.bot) return;
             let reactor = this.message.guild.members.cache.get(u.id);
             if (r.emoji.name === '❌') {
-                if (!(reactor.roles.cache.has(this.raidLeaderRole.id) || reactor.roles.cache.has(this.aRaidLeaderRole.id))) return;
+                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
                 this.endedBy = u;
                 this.abortAfk();
             }
@@ -480,7 +483,11 @@ To end the AFK check as a leader, react to ❌`)
             }
             //nitro
             if (r.emoji.id === botSettings.emoteIDs.shard) {
-                if (reactor.roles.cache.has(this.leaderOnLeave.id)) {
+                if (this.earlyLocation.includes(u)) {
+                    reactor.send(`The location for this run has been set to \`${this.location}\``);
+                    return;
+                }
+                if (reactor.roles.highest.position >= this.leaderOnLeave.position) {
                     reactor.send(`The location for this run has been set to \`${this.location}\``);
                     this.earlyLocation.push(u);
                     return;
@@ -499,7 +506,7 @@ To end the AFK check as a leader, react to ❌`)
                 }
             }
             if (r.emoji.name == '❌') {
-                if (!(reactor.roles.cache.has(this.raidLeaderRole.id) || reactor.roles.cache.has(this.aRaidLeaderRole.id))) return;
+                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
                 this.endedBy = u;
                 this.postAfk();
             }
@@ -513,7 +520,7 @@ To end the AFK check as a leader, react to ❌`)
             if (u.bot) return;
             let reactor = this.message.guild.members.cache.get(u.id);
             if (r.emoji.name === '❌') {
-                if (!(reactor.roles.cache.has(this.raidLeaderRole.id) || reactor.roles.cache.has(this.aRaidLeaderRole.id))) return;
+                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
                 this.endedBy = u;
                 this.abortAfk();
             }
@@ -734,7 +741,7 @@ To end the AFK check as a leader, react to ❌`)
         this.voiceChannel.members.each(u => {
             if (!this.raider.includes(u)) {
                 let reactor = this.message.guild.members.cache.get(u.id)
-                if (reactor.roles.cache.has(this.raidLeaderRole.id) || reactor.roles.cache.has(this.aRaidLeaderRole.id)) return;
+                if (reactor.roles.highest.position >= this.leaderOnLeave.position) return;
                 reactor.edit({ channel: this.afkChannel }).catch(er => { });
             }
         });

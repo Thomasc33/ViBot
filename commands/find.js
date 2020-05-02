@@ -4,12 +4,8 @@ module.exports = {
     name: "find",
     description: "finds users from a nickname",
     execute(message, args, bot) {
-        var raidLeaderRole = message.guild.roles.cache.find(r => r.name === "Almost Raid Leader");
-        var aRaidLeaderRole = message.guild.roles.cache.find(r => r.name === "Raid Leader");
-        var securityRole = message.guild.roles.cache.find(r => r.name === "Security");
         var suspendedButVerifed = message.guild.roles.cache.find(r => r.name === "Suspended but Verified");
         var suspendedRole = message.guild.roles.cache.find(r => r.name === "Suspended");
-        if (!(message.member.roles.cache.has(raidLeaderRole.id) || message.member.roles.cache.has(aRaidLeaderRole.id) || message.member.roles.cache.has(securityRole.id))) return;
 
         //combines users into an array
         for (let i in args) {

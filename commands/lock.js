@@ -4,9 +4,6 @@ module.exports = {
     name: 'lock',
     description: 'Locks voice channels',
     execute(message, args) {
-        var raidLeaderRole = message.guild.roles.cache.find(r => r.name === "Almost Raid Leader");
-        var aRaidLeaderRole = message.guild.roles.cache.find(r => r.name === "Raid Leader");
-        if (!(message.member.roles.cache.has(raidLeaderRole.id) || message.member.roles.cache.has(aRaidLeaderRole.id))) return;
         if (args[0] > botSettings.voiceChannelCount) return;
         if (message.channel.name === 'dylanbot-commands') {
             var isVet = false;
