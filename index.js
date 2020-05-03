@@ -19,7 +19,7 @@ bot.on('message', message => {
     const args = message.content.slice(prefix.length).split(/ +/);
     const pcommand = args.shift().toLowerCase();
     var command = aliasCheck(pcommand);
-
+    if (/[^a-z]/gi.test(command)) return;
     if (!bot.commands.has(command)) {
         message.channel.send('Command doesnt exist, check \`commands\` and try again');
         return;

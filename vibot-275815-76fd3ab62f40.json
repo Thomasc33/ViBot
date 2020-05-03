@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "vibot-275815",
+  "private_key_id": "76fd3ab62f40b9edaed50370dc0a02464a01c39d",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDy4GAi1Fbs+6iO\nAhj1udQL/9keiMuxodp4vnl4piEkmYMcb4E3z8iGpnfFKs90o3Y72BuzeY7su0ZG\nodAAcixB3VquEaw6ghS3D58MyFRBjebMAcxFqnLYhfWJLVQy5+9F3OinW/K/ggPA\nWNiyp5/sv/PNiNYhUDeFjqp40Wxo7YuwQKuQQ+fwKHSOrswaeiwNIRxHVvNxvrSE\n2M4kSCoO+nVpRaMMa9KV6wafxSrkMhWZMZAOvB1eMtYcyYH0CO+pcE5xa/QZNLZD\nh3VpPuV71wa++DuRK0XJolA3E5+ajTKY9UdFlDLDOT5hKD/D3E6roY448Yh8J+mn\nueIUJHZBAgMBAAECggEAEQcPYQxnVmYDrdu9HufQU1G0nyISuyQQdQv66C0oKwYN\niHN+KQjgPiXIRS0jLkI838/e4U5RvuHCTja5+84FXE4bNWj3x4JR1s5kOuPbRF1L\nzlxckzsdTMuCKK6M4KTHbwEgg9s7wZa+ker+Bkh05dxEnib3HDl2KwmS2grqAXvD\nACWD84KuLUfJA7Ij6/d1rL7629ETwJy6o8ntqJCEUNzvPqodX1t7lBqrPHRGRwIo\n1IyP4p3gDxt3oH1xCE63R0M7BM3Tm0E+Y3ZbUuL63r4jZptgoldcSmEwFfpaFb7h\nkmJFEpWejtm5bxHRNTSa6yfX4CVBkqxdIx7Qd9c9gQKBgQD8CiVXfKPV+CLSlzGz\nnPbpzX+Fb+79me4iOMbwqQPuKglIsV/ICkOA2NjRvNygAgJqvGkHwtuzXCiaoscO\n8rENeWeRWQ/KH9NXp4cepeLuaxtl55AxatT73P0upTWiAVffiu17k1G7cJeCxk6D\nbU7MtUs2jcRxl2wJp05QfBsnjQKBgQD2sV60ADzf5nRrGJgofl1HqQLIA3aLg/1o\n0KTgdncSqUro6jCpmTa3Y5OBmfvaorgSMjZhtjwWFLaBPINUhgmbIaF/lPhL8DIH\nueX1rCCCofxv/fTJDRQ/bU45Y4YHZjEzyG4yPevuFbLzuSC9lMe+TFvRzOoiMHme\np/HU+YUShQKBgQCEt5r+PKXRMD62AeOsHwVuDEYQL+b7J6lb3+XyKC3npb8Jxk0X\ne0AcgxN5LihHIYfASMJN0e/6vJatBvYnCujsnXdJ9En6N1QEnjTqkJO01DWzLYKi\nYw0QK0gu3dQmIOryzadMIUEyoJFHzcDeOBr8dKLMcU52OjQrySvV+eQaqQKBgFNC\ng+sOlX0gA7TNpTUtiQARm92zxYPK9XE10h/r+74xoxW/TNNA4cW9duBr/yPIfYWu\nqsoJvnfZX8t4h/60CnPwQtiTh8XheJFA/csP4B0W3ONTfBWLM4VAuAEIhQjkRcDr\nab3NRl6htjcqCVHS8CNbFDZYCcGmSLXyit1NpcsdAoGAOzVzLcJYhhS2Ebl8I88R\nHnoPyjwJHtGcxPfn5o2JgMMQMQNXq12JTnsQed+6cfWYkXeIne4EbpbMmJjMBxWv\nWX3KFA4q7mROpBdxHK/1WMmsY2+77GjSSn3rRCV+MGs8HSX8000D4DIe7j8lO8SY\nPR3CJX6EC6OPQsJ2muXlHBQ=\n-----END PRIVATE KEY-----\n",
+  "client_email": "vibotparse@vibot-275815.iam.gserviceaccount.com",
+  "client_id": "105958729911995029343",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/vibotparse%40vibot-275815.iam.gserviceaccount.com"
+}
