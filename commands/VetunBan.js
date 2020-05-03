@@ -1,7 +1,7 @@
 const fs = module.require('fs')
 
 module.exports = {
-    name: 'unvetban',
+    name: 'vetunban',
     description: 'removes the banned veteran raider role manually',
     execute(message, args, bot) {
         const vetBanRole = message.guild.roles.cache.find(r => r.name === 'Banned Veteran Raider');

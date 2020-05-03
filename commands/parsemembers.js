@@ -1,11 +1,11 @@
-const gCloud = require('@google-cloud/vision')
+const vision = require('@google-cloud/vision')
 //keyFilename: 'C:/Users/Carrt/OneDrive/Desktop/ViBot/ViBot-7ff3dbd920ee.json'
-const vision = new gCloud.ImageAnnotatorClient();
+const client = new vision.ImageAnnotatorClient();
 
 module.exports = {
     name: 'parsemembers',
     description: 'Parse',
-    execute(message, args, bot) {
+    async execute(message, args, bot) {
         message.channel.send("Feature coming soon™");
         return;
         if (!(message.channel.name === 'dylanbot-commands' || message.channel.name === 'veteran-bot-commands')) {
@@ -15,7 +15,7 @@ module.exports = {
         if (message.attachments.size !== 1) {
             message.channel.send("Issue with attachment, make sure the image and command are on same message");
         }
-        var image = message.attachments.first().proxyURL;
-        message.channel.send('', image);
+        var image = await message.attachments.first().proxyURL;
+        message.channel.send(' ', image);
     }
 }

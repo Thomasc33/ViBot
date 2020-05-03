@@ -44,6 +44,8 @@ function aliasCheck(pcommand) {
             return 'location';
         case 'pm':
             return 'parsemembers';
+        case 'aa':
+            return 'addalt';
         default:
             return pcommand;
     }
