@@ -11,7 +11,7 @@ module.exports = {
             .setTitle('ViBot Status')
             .addField('Ping', `${latency}ms`, true)
             .addField('Uptime', `${Math.floor(bot.uptime / 1000)} seconds`, true)
-            .setFooter('ViBot v1.2')
+            .setFooter('ViBot v1.2.1')
             .setTimestamp(Date.now());
         m.edit('', embed);
     }

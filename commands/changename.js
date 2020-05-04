@@ -1,8 +1,7 @@
 const Discord = require('discord.js')
 
 module.exports = {
-    name: 'addalt',
-    description: 'Adds the username of an alt to a user',
+    name: 'changename',
     execute(message, args, bot) {
         if (message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.find(r => r.name === "Developer").position) return;
         const mention = args.shift();
@@ -15,19 +14,19 @@ module.exports = {
             proof = proof.concat(` ${message.attachments.first().proxyURL}`)
         }
         var member = message.guild.members.cache.get(mention);
-        message.channel.send(`Are you sure you want to add the alt ${altName} to <@!${mention}>? Y/N`);
+        message.channel.send(`Are you sure you want to change <@!${mention}> to ${altName}? Y/N`);
         let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 10000 });
-        collector.on('collect', message => {
+        collector.on('collect', m => {
+            if (m.author != message.author) return;
             try {
-                if (message.content.charAt(0) == 'y') {
-                    console.log(member.nickname)
-                    member.setNickname(`${member.nickname} | ${altName}`);
+                if (m.content.charAt(0) == 'y') {
+                    member.setNickname(altName);
                     let embed = new Discord.MessageEmbed()
-                        .setTitle('Alt Added')
+                        .setTitle('Name Changed')
                         .setDescription(`<@!${mention}>`)
-                        .addField('Main', member.nickname, true)
-                        .addField('New Alt', altName, true)
-                        .addField('Added By', `<@!${message.author.id}>`)
+                        .addField('Old Name', member.nickname, true)
+                        .addField('New Name', altName, true)
+                        .addField('Change By', `<@!${m.author.id}>`)
                         .setTimestamp(Date.now());
                     message.guild.channels.cache.find(c => c.name === 'mod-logs').send(embed);
                     if (proof != ' ') {
@@ -38,7 +37,7 @@ module.exports = {
                     return;
                 }
             } catch (er) {
-                message.channel.send('Error adding alt. `;addalt <id> <alt name> <proof>')
+                message.channel.send('Error changing name. `;changename <id> <alt name> <proof>')
                 console.log(er);
             }
         })

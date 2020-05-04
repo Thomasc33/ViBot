@@ -55,13 +55,13 @@ module.exports = {
             for (let i in voiceUsers) {
                 let nick = voiceUsers.nickname
                 if (!players.includes(nick)) {
-                    alts.push(`<@!${i.id}>`);
+                    alts.push(`<@!${voiceUsers[i].id}>`);
                 }
             }
             var crashersS = ' ', altsS = ' ', movedS = ' '
             for (let i in crashers) { crashersS = crashersS.concat(crashers[i]) + ', ' }
-            for (let i in alts) { altsS = altsS.concat(i) + ', ' }
-            for (let i in movedIn) { movedS = movedS.concat(i) + ', ' }
+            for (let i in alts) { altsS = altsS.concat(alts[i]) + ', ' }
+            for (let i in movedIn) { movedS = movedS.concat(movedIn[i]) + ', ' }
             if (crashersS == ' ') { crashersS = 'None' }
             if (altsS == ' ') { altsS = 'None' }
             if (movedS == ' ') { movedS = 'None' }
