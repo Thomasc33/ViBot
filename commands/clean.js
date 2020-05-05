@@ -3,6 +3,8 @@ const botSettings = require('../settings.json');
 module.exports = {
     name: 'clean',
     description: 'Cleans the given voice channel',
+    args: '<channel number>',
+    role: 'Almost Raid Leader',
     execute(message, args, bot) {
         handler(message, args)
     }

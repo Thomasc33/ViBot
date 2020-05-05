@@ -2,7 +2,9 @@ const Discord = require('discord.js');
 
 module.exports = {
     name: "find",
-    description: "finds users from a nickname",
+    description: "Finds users from a nickname",
+    args: '[Users]',
+    role: 'Almost Raid Leader',
     execute(message, args, bot) {
         var suspendedButVerifed = message.guild.roles.cache.find(r => r.name === "Suspended but Verified");
         var suspendedRole = message.guild.roles.cache.find(r => r.name === "Suspended");

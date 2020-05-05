@@ -3,6 +3,9 @@ const botSettings = require('../settings.json');
 module.exports = {
     name: 'unlock',
     description: 'Unlocks voice channels',
+    alias: 'ul',
+    args: '<channel number>',
+    role: 'Almost Raid Leader',
     execute(message, args) {
         if (args[0] > botSettings.voiceChannelCount) return;
         if (message.channel.name === 'dylanbot-commands') {

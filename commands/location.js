@@ -3,6 +3,9 @@ const afkCheck = require('./afkCheck.js');
 module.exports = {
     name: 'location',
     description: 'Changes the location of the current run',
+    alias: 'loc',
+    args: '<location>',
+    role: 'Almost Raid Leader',
     execute(message, args, bot) {
         var isVet = false;
         if (!(message.channel.name === 'dylanbot-commands' || message.channel.name === 'veteran-bot-commands')) {

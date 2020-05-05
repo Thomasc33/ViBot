@@ -2,6 +2,9 @@ const Discord = require('discord.js')
 
 module.exports = {
     name: 'kick',
+    description: 'Kicks user from server and logs it',
+    args: '<id/mention> <reason>',
+    role: 'Moderator',
     execute(message, args, bot) {
         message.channel.send('Feature coming soon™️');
         return;

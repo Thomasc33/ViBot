@@ -2,7 +2,10 @@ const Discord = require('discord.js')
 
 module.exports = {
     name: 'addalt',
-    description: 'Adds the username of an alt to a user',
+    description: 'Adds the username of an alt to a user and logs it',
+    alias: 'aa',
+    args: '<id/mention> <alt name> (proof)',
+    role: 'Security',
     execute(message, args, bot) {
         if (message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.find(r => r.name === "Developer").position) return;
         var member = message.mentions.members.first()

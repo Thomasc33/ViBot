@@ -47,6 +47,12 @@ function aliasCheck(pcommand) {
             return 'parsemembers';
         case 'aa':
             return 'addalt';
+        case 'ping':
+            return 'status';
+        case 'hc':
+            return 'headcount';
+        case 'cn':
+            return 'changename';
         default:
             return pcommand;
     }

@@ -2,7 +2,8 @@ const afk = require('./afkCheck');
 
 module.exports = {
     name: 'allowrun',
-    descriptions: 'manually allows runs in case bot gets stuck',
+    description: 'Manually allows runs in case bot gets stuck',
+    role: 'Almost Raid Leader',
     execute(message, args, bot) {
         if (message.channel.name === 'dylanbot-commands') {
             afk.allowRun(false);

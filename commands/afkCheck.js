@@ -12,6 +12,8 @@ var bot;
 module.exports = {
     name: 'afk',
     description: 'Afk Check',
+    args: '<channel> <c/v/fsv> <location>',
+    role: 'Almost Raid Leader',
     execute(message, args, bott) {
         bot = bott
         var isVet = false;

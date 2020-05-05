@@ -4,11 +4,16 @@ const { createWorker } = require('tesseract.js');
 module.exports = {
     name: 'parsemembers',
     description: 'Parse',
+    alias: 'pm',
+    args: '<channel number> <image>',
+    notes: 'Image can either be a link, or an embeded image',
+    role: 'Almost Raid Leader',
     async execute(message, args, bot) {
         if (!(message.channel.name === 'dylanbot-commands' || message.channel.name === 'veteran-bot-commands')) {
             message.channel.send("Try again in dylanbot-commands or veteran-bot-commands");
             return;
         }
+        var isVet = false;
         if (message.channel.name == 'veteran-bot-commands') {
             isVet = true;
         } else {
@@ -44,6 +49,7 @@ module.exports = {
             voiceUsers = channel.members.array();
             if (voiceUsers.size == 0) {
                 message.channel.send('Voice Channel is empty. Make sure the correct channel was entered')
+                return;
             }
             for (let i in players) {
 
