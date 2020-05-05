@@ -595,6 +595,7 @@ To end the AFK check as a leader, react to ❌`)
             await DirectMessage.react("✅");
             await dmReactionCollector.on("collect", (r, u) => {
                 if (this.vialCount > 2) return;
+                if (this.vials.includes(u)) return;
                 this.vialCount++;
                 this.vials[this.vialCount - 1] = u;
                 dm.send(`The location for this run has been set to \`${this.location}\`, get there and confirm vial with ${this.message.member.nickname}`);
@@ -634,6 +635,7 @@ To end the AFK check as a leader, react to ❌`)
             await DirectMessage.react("✅");
             await dmReactionCollector.on("collect", (r, u) => {
                 if (this.rusherCount + 1 > 3) return;
+                if (this.rushers.includes(u)) return;
                 this.rushers[this.rusherCount] = u;
                 this.rusherCount++;
                 dm.send(`The location for this run has been set to \`${this.location}\`, get there asap`);
@@ -672,6 +674,7 @@ To end the AFK check as a leader, react to ❌`)
             await DirectMessage.react("✅");
             await dmReactionCollector.on("collect", (r, u) => {
                 if (this.mysticCount > 2) return;
+                if (this.mystics.includes(u)) return;
                 this.mysticCount++;
                 this.mystics[this.mysticCount - 1] = u;
                 dm.send(`The location for this run has been set to \`${this.location}\`, get there asap`);
@@ -712,6 +715,7 @@ To end the AFK check as a leader, react to ❌`)
                 if (this.brainCount > 2) return;
                 this.brainCount++;
                 this.brains[this.brainCount - 1] = u;
+                if (this.brains.includes(u)) return;
                 dm.send(`The location for this run has been set to \`${this.location}\`, get there asap`);
                 console.log(`${u.tag} confirmed brain`);
                 if (this.leaderEmbed.fields[2].value == `None yet!`) {

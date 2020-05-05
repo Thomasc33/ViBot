@@ -29,19 +29,23 @@ async function handler(message, args) {
     if (isVet) {
         let lounge = message.guild.channels.cache.find(c => c.name === "Veteran Lounge");
         let channel = message.guild.channels.cache.find(c => c.name == `Veteran Raiding ${args[0]}` || c.name == `Veteran Raiding ${args[0]} <--Join Now!`);
-        await channel.members.each(u => {
+        var vcUsers = channel.members.array()
+        for (let i in vcUsers) {
+            let u = vcUsers[i];
             if (u.roles.highest.position < message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) {
                 u.edit({ channel: lounge });
             }
-        })
+        }
     } else {
         let lounge = message.guild.channels.cache.find(c => c.name === "lounge");
         let channel = message.guild.channels.cache.find(c => c.name == `raiding-${args[0]}` || c.name == `raiding-${args[0]} <--Join Now!`);
-        await channel.members.each(u => {
+        var vcUsers = channel.members.array()
+        for (let i in vcUsers) {
+            let u = vcUsers[i];
             if (u.roles.highest.position < message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) {
                 u.edit({ channel: lounge });
             }
-        })
+        }
     }
     message.channel.send("Channel successfully cleaned");
 }

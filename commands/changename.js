@@ -4,7 +4,10 @@ module.exports = {
     name: 'changename',
     execute(message, args, bot) {
         if (message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.find(r => r.name === "Developer").position) return;
-        const mention = args.shift();
+        var member = message.mentions.members.first()
+        if (member == null) {
+            member = message.guild.members.cache.get(args.shift);
+        } else { args.shift() }
         const altName = args.shift();
         var proof = ' ';
         for (i = 0; i < args.length; i++) {
@@ -13,13 +16,12 @@ module.exports = {
         if (message.attachments.size != 0) {
             proof = proof.concat(` ${message.attachments.first().proxyURL}`)
         }
-        var member = message.guild.members.cache.get(mention);
         message.channel.send(`Are you sure you want to change <@!${mention}> to ${altName}? Y/N`);
         let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 10000 });
         collector.on('collect', m => {
             if (m.author != message.author) return;
             try {
-                if (m.content.charAt(0) == 'y') {
+                if (m.content.toLowerCase().charAt(0) == 'y') {
                     member.setNickname(altName);
                     let embed = new Discord.MessageEmbed()
                         .setTitle('Name Changed')

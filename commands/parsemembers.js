@@ -1,6 +1,5 @@
 const Discord = require('discord.js');
 const { createWorker } = require('tesseract.js');
-const worker = createWorker();
 
 module.exports = {
     name: 'parsemembers',
@@ -23,7 +22,15 @@ module.exports = {
             image = await message.attachments.first().proxyURL;
         }
         message.channel.send(`Starting the parse.. This will take around a minute`);
-
+        var worker = createWorker();
+        async function parseImage(image) {
+            await worker.load();
+            await worker.loadLanguage('eng');
+            await worker.initialize('eng');
+            const { data: { text } } = await worker.recognize(image);
+            await worker.terminate();
+            return text;
+        }
         const result = await parseImage(image).catch(er => { console.log(er); message.channel.send('Error parsing. Please try again'); return; });
         try {
             const players = result.substring(20, result.length - 2).split(/,\s*\s/);
@@ -38,8 +45,8 @@ module.exports = {
             if (voiceUsers.size == 0) {
                 message.channel.send('Voice Channel is empty. Make sure the correct channel was entered')
             }
-
             for (let i in players) {
+
                 let player = players[i];
                 let member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(player.toLowerCase()));
                 if (member == null) {
@@ -53,8 +60,8 @@ module.exports = {
                 }
             }
             for (let i in voiceUsers) {
-                let nick = voiceUsers.nickname
-                if (!players.includes(nick)) {
+                let nick = voiceUsers.nickname.toLowerCase()
+                if (!players.toLowerCase().includes(nick)) {
                     alts.push(`<@!${voiceUsers[i].id}>`);
                 }
             }
@@ -78,15 +85,7 @@ module.exports = {
         } catch (er) {
             console.log(er);
             message.channel.send(`Error handling parsed data. Try again`)
+            return;
         }
     }
-}
-
-async function parseImage(image) {
-    await worker.load();
-    await worker.loadLanguage('eng');
-    await worker.initialize('eng');
-    const { data: { text } } = await worker.recognize(image);
-    await worker.terminate();
-    return text;
 }

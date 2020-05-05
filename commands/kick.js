@@ -3,8 +3,10 @@ const Discord = require('discord.js')
 module.exports = {
     name: 'kick',
     execute(message, args, bot) {
+        message.channel.send('Feature coming soon™️');
+        return;
         if (message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.find(r => r.name === "Head Raid Leader").position) return;
-        var member = message.mentions.members.first()
+        
         if (member == null) {
             member = message.guild.members.cache.get(args[0]);
         }
@@ -20,7 +22,7 @@ module.exports = {
         collector.on('collect', m => {
             if (m.author != message.author) return;
             try {
-                if (m.content.charAt(0) == 'y') {
+                if (m.content.toLowerCase().charAt(0) == 'y') {
                     message.channel.send(`Kicking now`);
 
                     let embed = new Discord.MessageEmbed()

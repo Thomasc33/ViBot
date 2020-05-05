@@ -5,21 +5,24 @@ module.exports = {
     description: 'Adds the username of an alt to a user',
     execute(message, args, bot) {
         if (message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.find(r => r.name === "Developer").position) return;
+        var member = message.mentions.members.first()
+        if (member == null) {
+            member = message.guild.members.cache.get(args.shift);
+        } else { args.shift() }
         const mention = args.shift();
         const altName = args.shift();
         var proof = ' ';
-        for (i = 0; i < args.length; i++) {
+        for (i = 2; i < args.length; i++) {
             proof = proof.concat(args[i]) + ' ';
         }
         if (message.attachments.size != 0) {
             proof = proof.concat(` ${message.attachments.first().proxyURL}`)
         }
-        var member = message.guild.members.cache.get(mention);
         message.channel.send(`Are you sure you want to add the alt ${altName} to <@!${mention}>? Y/N`);
         let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 10000 });
         collector.on('collect', message => {
             try {
-                if (message.content.charAt(0) == 'y') {
+                if (m.content.toLowerCase().charAt(0) == 'y') {
                     console.log(member.nickname)
                     member.setNickname(`${member.nickname} | ${altName}`);
                     let embed = new Discord.MessageEmbed()
