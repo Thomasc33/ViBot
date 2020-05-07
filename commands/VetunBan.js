@@ -6,9 +6,6 @@ module.exports = {
     args: '<user in game name> (reason)',
     role: 'Veteran Raid Leader',
     execute(message, args, bot) {
-        const vetBanRole = message.guild.roles.cache.find(r => r.name === 'Banned Veteran Raider');
-        const vetRaiderRole = message.guild.roles.cache.find(r => r.name === 'Veteran Raider');
-        const suspensionLog = message.guild.channels.cache.find(c => c.name === 'suspend-log');
         if (!message.channel.name === 'veteran-bot-commands') {
             message.channel.send("Try again, but in dylanbot-commands or veteran-bot-commands");
             return;
@@ -26,7 +23,7 @@ module.exports = {
             return;
         }
 
-        for (const i in bot.vetBans) {
+        for (let i in bot.vetBans) {
             if (i == member.id) {
                 const time = bot.vetBans[i].time;
                 const guildId = bot.vetBans[i].guild;

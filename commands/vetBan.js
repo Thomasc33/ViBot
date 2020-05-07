@@ -123,7 +123,7 @@ module.exports = {
             })
         } catch (er) {
             console.log(er);
-            message.channel.send("Error with command. Please try again");
+            message.channel.send("Error with command. Please check syntax and try again");
         }
     }
 }

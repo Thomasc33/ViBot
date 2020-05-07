@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 const { createWorker } = require('tesseract.js');
 
+
 module.exports = {
     name: 'parsemembers',
     description: 'Parse',

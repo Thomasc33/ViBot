@@ -14,7 +14,7 @@ for (const file of commandFiles) {
 }
 
 bot.on('message', message => {
-    if (message.content.includes(`<@!${bot.user.id}>`) || message.content.includes(`<@!277636691227836419>`)) { message.react('706688782732230696') }
+    //if (message.content.includes(`<@!${bot.user.id}>`) || message.content.includes(`<@!277636691227836419>`)) { message.react('706688782732230696') }
     if (!message.content.startsWith(prefix) || message.channel.type === 'dm' || message.author.bot) return;
     if (message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
     const args = message.content.slice(prefix.length).split(/ +/);
@@ -53,6 +53,8 @@ function aliasCheck(pcommand) {
             return 'headcount';
         case 'cn':
             return 'changename';
+        case 'clear':
+            return 'clean';
         default:
             return pcommand;
     }
@@ -65,7 +67,7 @@ bot.on("ready", () => {
     bot.user.setActivity(`No, I'm not hardcoded`);
 
     bot.setInterval(() => {
-        for (const i in bot.vetBans) {
+        for (let i in bot.vetBans) {
             const time = bot.vetBans[i].time;
             const guildId = bot.vetBans[i].guild;
             const reason = bot.vetBans[i].reason;

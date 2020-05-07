@@ -1,5 +1,5 @@
 //imports
-const botSettings = require('./../settings.json');
+const botSettings = require('../settings.json');
 const Discord = require('discord.js');
 
 //globals
@@ -150,7 +150,6 @@ class afk {
     async start() {
 
         //variables
-
         if (!this.isVet) {
             this.voiceChannel = this.message.guild.channels.cache.find(c => c.name == `raiding-${this.channel}` || c.name == `raiding-${this.channel} <--Join Now!`);
             this.verifiedRaiderRole = this.message.guild.roles.cache.find(r => r.name === 'Verified Raider');
@@ -715,9 +714,9 @@ To end the AFK check as a leader, react to ❌`)
             await DirectMessage.react("✅");
             await dmReactionCollector.on("collect", (r, u) => {
                 if (this.brainCount > 2) return;
+                if (this.brains.includes(u)) return;
                 this.brainCount++;
                 this.brains[this.brainCount - 1] = u;
-                if (this.brains.includes(u)) return;
                 dm.send(`The location for this run has been set to \`${this.location}\`, get there asap`);
                 console.log(`${u.tag} confirmed brain`);
                 if (this.leaderEmbed.fields[2].value == `None yet!`) {
@@ -730,6 +729,7 @@ To end the AFK check as a leader, react to ❌`)
                 dmReactionCollector.stop();
             });
         } catch (er) {
+            console.log(er)
             console.log(`Couldn't pm someone, pm's are private`);
         }
     }
