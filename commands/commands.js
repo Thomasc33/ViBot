@@ -32,7 +32,7 @@ module.exports = {
                 .setColor('#ff0000')
                 .addFields(
                     { name: 'Raiding', value: '\`\`\`css\n;afk ;newafk ;lock ;unlock ;clean ;location ;allowrun ;parsemembers\`\`\`' },
-                    { name: 'Moderation', value: '\`\`\`css\n;find ;vetban ;vetunban ;addalt ;kick ;changename\`\`\`' }
+                    { name: 'Moderation', value: '\`\`\`css\n;find ;vetban ;vetunban ;addalt ;kick ;changename ;getfeedback\`\`\`' }
                 )
             message.channel.send(commandPanel);
         }
