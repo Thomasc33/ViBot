@@ -22,9 +22,10 @@ module.exports = {
             message.channel.send("User not found, please try again");
             return;
         }
-
+        let found = false;
         for (let i in bot.vetBans) {
             if (i == member.id) {
+                found = true;
                 const time = bot.vetBans[i].time;
                 const guildId = bot.vetBans[i].guild;
                 const reason = bot.vetBans[i].reason;
@@ -59,6 +60,21 @@ module.exports = {
                     continue;
                 }
             }
+        }
+        if (!found) {
+            message.channel.send(`This user was not vet banned by ${bot.user}. Would you still like to unban then? Y/N`)
+            let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 10000 });
+            collector.on('collect', m => {
+                try {
+                    if (m.content.toLowerCase().charAt(0) == 'y') {
+                        member.roles.remove(vetBanRole)
+                            .then(member.roles.add(vetRaiderRole));
+                        message.channel.send("User unbanned successfully");
+                    }
+                } catch (er) {
+                    console.log(er)
+                }
+            });
         }
     }
 }

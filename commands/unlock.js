@@ -24,10 +24,10 @@ async function handler(message, channelNumber, isVet) {
     //variables code
     var channel, verifiedRaiderRole
     if (!isVet) {
-        channel = await message.guild.channels.cache.find(c => c.name == `raiding-${channelNumber}` || c.name == `raiding-${channelNumber} <--Join Now!`);
+        channel = await message.guild.channels.cache.find(c => c.name == `raiding-${channelNumber}` || c.name == `raiding-${channelNumber} <-- Join!`);
         verifiedRaiderRole = await message.guild.roles.cache.find(r => r.name === 'Verified Raider');
     } else if (isVet) {
-        channel = await message.guild.channels.cache.find(c => c.name == `Veteran Raiding ${channelNumber}` || c.name == `Veteran Raiding ${channelNumber} <--Join Now!`);
+        channel = await message.guild.channels.cache.find(c => c.name == `Veteran Raiding ${channelNumber}` || c.name == `Veteran Raiding ${channelNumber} <-- Join!`);
         verifiedRaiderRole = await message.guild.roles.cache.find(r => r.name === 'Veteran Raider');
     } else return;
     if (channel == null) {
@@ -40,14 +40,14 @@ async function handler(message, channelNumber, isVet) {
 
 async function unlockChannel(raiderRole, voiceChannel, voiceChannelNumber, isVet) {
     if (isVet) {
-        await voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(r => console.log(r));
-        await voiceChannel.setName(`Veteran Raiding ${voiceChannelNumber} <--Join Now!`).catch(r => console.log(r));
-        await voiceChannel.setUserLimit(0).catch(r => console.log(r));
+        voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(r => console.log(r))
+            .then(voiceChannel.setName(`Veteran Raiding ${voiceChannelNumber} <-- Join!`).catch(r => console.log(r)))
+            .then(voiceChannel.setUserLimit(0).catch(r => console.log(r)));
     }
     if (!isVet) {
-        await voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(r => console.log(r));
-        await voiceChannel.setName(`raiding-${voiceChannelNumber} <--Join Now!`).catch(r => console.log(r));
-        await voiceChannel.setUserLimit(0).catch(r => console.log(r));
+        voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(r => console.log(r))
+            .then(voiceChannel.setName(`raiding-${voiceChannelNumber} <--Join Now!`).catch(r => console.log(r)))
+            .then(voiceChannel.setUserLimit(0).catch(r => console.log(r)));
     }
     return;
 }

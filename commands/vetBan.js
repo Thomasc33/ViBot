@@ -7,8 +7,6 @@ module.exports = {
     args: '[in-game names] <time> <time type d/m/s/w/y> <reason>',
     role: 'Veteran Raid Leader',
     async execute(message, args, bot) {
-        //message.channel.send("Feature not implemented yet, try again later");
-        //return;
         const vetBanRole = message.guild.roles.cache.find(r => r.name === 'Banned Veteran Raider');
         const vetRaiderRole = message.guild.roles.cache.find(r => r.name === 'Veteran Raider');
         const suspensionLog = message.guild.channels.cache.find(c => c.name === 'suspend-log');

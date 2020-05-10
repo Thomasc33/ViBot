@@ -188,11 +188,11 @@ class afk {
             .setColor('#ff0000')
             .setAuthor(`Cult Started by ${this.message.member.nickname} in ${this.voiceChannel.name}`, `${this.message.author.avatarURL()}`)
             .setDescription(`To join, **connect to the raiding channel by clicking its name and react with** <${botSettings.emote.malus}>
-If you have a key react with <${botSettings.emote.LostHallsKey}>
-To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.TomeofPurification}> <${botSettings.emote.MarbleSeal}>
-If you plan on rushing, react with the <${botSettings.emote.Plane}>
-If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.emote.shard}>
-To end the AFK check as a leader, react to ❌`)
+            If you have a key react with <${botSettings.emote.LostHallsKey}>
+            To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.TomeofPurification}> <${botSettings.emote.MarbleSeal}>
+            If you plan on rushing, react with the <${botSettings.emote.Plane}>
+            If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.emote.shard}>
+            To end the AFK check as a leader, react to ❌`)
             .setTimestamp()
             .setFooter(`Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds | ${this.raiders} Raiders`);
         this.afkCheckEmbed = await this.raidStatus.send(this.pingingMessage).catch(er => console.log(er));
@@ -231,8 +231,8 @@ To end the AFK check as a leader, react to ❌`)
             if (r.emoji.id === botSettings.emoteIDs.malus) {
                 this.raiders++;
                 this.raider.push(reactor);
-                if (this.isVet) var channel = this.message.guild.channels.cache.find(c => c.name == `Veteran Raiding ${this.channel}` || c.name == `Veteran Raiding ${this.channel} <--Join Now!`);
-                else var channel = this.message.guild.channels.cache.find(c => c.name == `raiding-${this.channel}` || c.name == `raiding-${this.channel} <--Join Now!`);
+                if (this.isVet) var channel = this.message.guild.channels.cache.find(c => c.name == `Veteran Raiding ${this.channel}` || c.name == `Veteran Raiding ${this.channel} <-- Join!`);
+                else var channel = this.message.guild.channels.cache.find(c => c.name == `raiding-${this.channel}` || c.name == `raiding-${this.channel} <-- Join!`);
                 reactor.edit({ channel: channel }).catch(er => { });
             }
             //key
@@ -916,12 +916,12 @@ async function fsvReact(message) {
 async function unlockChannel(raiderRole, voiceChannel, voiceChannelNumber, isVet) {
     if (isVet) {
         await voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(r => console.log(r));
-        await voiceChannel.setName(`Veteran Raiding ${voiceChannelNumber} <--Join Now!`).catch(r => console.log(r));
+        await voiceChannel.setName(`Veteran Raiding ${voiceChannelNumber} <-- Join!`).catch(r => console.log(r));
         await voiceChannel.setUserLimit(0).catch(r => console.log(r));
     }
     if (!isVet) {
         await voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(r => console.log(r));
-        await voiceChannel.setName(`raiding-${voiceChannelNumber} <--Join Now!`).catch(r => console.log(r));
+        await voiceChannel.setName(`raiding-${voiceChannelNumber} <-- Join!`).catch(r => console.log(r));
         await voiceChannel.setUserLimit(0).catch(r => console.log(r));
     }
     return;

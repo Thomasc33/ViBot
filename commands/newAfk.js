@@ -15,8 +15,7 @@ module.exports = {
     args: '<channel> <c/v/fsv> <location>',
     role: 'Almost Raid Leader',
     async execute(message, args, bott) {
-        message.channel.send("Feature coming soon:tm:")
-        return;
+
         bot = bott
         var isVet = false;
         if (message.channel.name === 'dylanbot-commands') {
@@ -77,12 +76,24 @@ module.exports = {
             message.channel.send('Location must be below 1024 characters, try again');
         }
         if (isVet) {
+            await cleanChannel(message.guild.channels.cache.find(c => c.name === `Veteran Raiding ${args[0]}` || c.name === `Veteran Raiding ${args[0]} <-- Join!`), message.guild.channels.cache.find(c => c.name === 'Veteran Lounge'));
+            message.channel.send('Channel cleaning successful. Beginning afk check in 5 seconds')
             currentVet = new afk(args[0], run, location, message, isVet);
-            currentVet.start();
+            setTimeout(beginRun, 5000, true)
         } else {
+            await cleanChannel(message.guild.channels.cache.find(c => c.name === `raiding-${args[0]}` || c.name === `raiding-${args[0]} <-- Join!`), message.guild.channels.cache.find(c => c.name === 'lounge'));
+            message.channel.send('Channel cleaning successful. Beginning afk check in 5 seconds')
             currentReg = new afk(args[0], run, location, message, isVet);
-            currentReg.start();
+            setTimeout(beginRun, 5000, false)
         }
+    }
+}
+
+async function beginRun(isVet) {
+    if (isVet) {
+        currentVet.start();
+    } else {
+        currentReg.start();
     }
 }
 
@@ -106,35 +117,50 @@ class afk {
         this.leaderOnLeave = message.guild.roles.cache.find(r => r.name === 'Leader on Leave');
         this.minutes;
         this.seconds;
-        this.raiders = 0
-        this.raiderArray = []
         this.nitro = []
         this.key = null
         this.vials = []
         this.rushers = []
-        this.nitroCount = 0
-        this.rusherCount = 0
-        this.vialCount = 0
         this.endedBy
         this.mystics = []
-        this.mysticCount = 0
         this.brains = []
-        this.brainCount = 0;
         this.time = botSettings.afkTimeLimit;
-        this.voiceChannel
+        if (isVet) {
+            this.voiceChannel = message.guild.channels.cache.find(c => c.name === `Veteran Raiding ${channel}` || c.name === `Veteran Raiding ${channel} <-- Join!`)
+        } else {
+            this.voiceChannel = message.guild.channels.cache.find(c => c.name === `raiding-${channel}` || c.name === `raiding-${channel} <-- Join!`)
+        }
         this.verifiedRaiderRole;
         this.postTime = 20;
         this.earlyLocation = [];
         this.raider = [];
+        this.sendMessage();
+    }
+
+    async sendMessage() {
+        switch (this.run) {
+            case 1: //cult
+                this.afkCheckEmbed = await this.raidStatus.send(`@here A \`Cult\` afk will be starting in 5 seconds by ${this.message.member}. Prepare to join raiding \`${this.voiceChannel.name}\``).catch(er => console.log(er));
+                break;
+            case 2: //void
+                this.afkCheckEmbed = await this.raidStatus.send(`@here A \`Void\` afk will be starting in 5 seconds by ${this.message.member}. Prepare to join raiding \`${this.voiceChannel.name}\``).catch(er => console.log(er));
+                break;
+            case 3: //full skip
+                this.afkCheckEmbed = await this.raidStatus.send(`@here A \`Full-Skip Void\` afk will be starting in 5 seconds by ${this.message.member}. Prepare to join raiding \`${this.voiceChannel.name}\``).catch(er => console.log(er));
+                break;
+            default:
+                console.log(`Run type error`);
+                return;
+        }
     }
 
     async start() {
         //variables
         if (!this.isVet) {
-            this.voiceChannel = this.message.guild.channels.cache.find(c => c.name == `raiding-${this.channel}` || c.name == `raiding-${this.channel} <--Join Now!`);
+            this.voiceChannel = this.message.guild.channels.cache.find(c => c.name == `raiding-${this.channel}` || c.name == `raiding-${this.channel} <-- Join!`);
             this.verifiedRaiderRole = this.message.guild.roles.cache.find(r => r.name === 'Verified Raider');
         } else if (this.isVet) {
-            this.voiceChannel = this.message.guild.channels.cache.find(c => c.name == `Veteran Raiding ${this.channel}` || c.name == `Veteran Raiding ${this.channel} <--Join Now!`);
+            this.voiceChannel = this.message.guild.channels.cache.find(c => c.name == `Veteran Raiding ${this.channel}` || c.name == `Veteran Raiding ${this.channel} <-- Join!`);
             this.verifiedRaiderRole = this.message.guild.roles.cache.find(r => r.name === 'Veteran Raider');
         } else return;
         if (this.channel == null) {
@@ -145,16 +171,13 @@ class afk {
         //begin afk check
         switch (this.run) {
             case 1: //cult
-                this.afkCheckEmbed = await this.raidStatus.send(`@here A \`Cult\` afk will be starting in 5 seconds by ${this.message.member}. Prepare to join raiding \`${this.voiceChannel.name}\``).catch(er => console.log(er));
-                setTimeout(await this.cult(), 5000)
+                this.cult()
                 break;
             case 2: //void
-                this.afkCheckEmbed = await this.raidStatus.send(`@here A \`Void\` afk will be starting in 5 seconds by ${this.message.member}. Prepare to join raiding \`${this.voiceChannel.name}\``).catch(er => console.log(er));
-                setTimeout(this.voidd(), 5000)
+                this.voidd()
                 break;
             case 3: //full skip
-                this.afkCheckEmbed = await this.raidStatus.send(`@here A \`Full-Skip Void\` afk will be starting in 5 seconds by ${this.message.member}. Prepare to join raiding \`${this.voiceChannel.name}\``).catch(er => console.log(er));
-                setTimeout(this.fsv(), 5000)
+                this.fsv()
                 break;
             default:
                 console.log(`Run type error`);
@@ -163,107 +186,329 @@ class afk {
     }
 
     async cult() {
-        try {
-            //Raid status message
-            this.minutes = Math.floor(this.time / 60);
-            this.seconds = this.time % 60;
-            this.embedMessage = new Discord.MessageEmbed()
-                .setColor('#ff0000')
-                .setAuthor(`Cult Started by ${this.message.member.nickname} in ${this.voiceChannel.name}`, `${this.message.author.avatarURL()}`)
-                .setDescription(`To join, **connect to the raiding channel by clicking its name**
+        //Raid status message
+        this.minutes = Math.floor(this.time / 60);
+        this.seconds = this.time % 60;
+        this.embedMessage = new Discord.MessageEmbed()
+            .setColor('#ff0000')
+            .setAuthor(`Cult Started by ${this.message.member.nickname} in ${this.voiceChannel.name}`, `${this.message.author.avatarURL()}`)
+            .setDescription(`To join, **connect to the raiding channel by clicking its name**
                 If you have a key react with <${botSettings.emote.LostHallsKey}>
                 To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.TomeofPurification}> <${botSettings.emote.MarbleSeal}>
                 If you plan on rushing, react with the <${botSettings.emote.Plane}>
                 If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.emote.shard}>
                 To end the AFK check as a leader, react to ❌`)
-                .setTimestamp()
-                .setFooter(`Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds | ${this.raiders} Raiders`);
-            this.afkCheckEmbed.edit(this.embedMessage);
+            .setTimestamp()
+            .setFooter(`Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds`);
+        this.afkCheckEmbed.edit(this.embedMessage);
 
-            await unlockChannel(this.verifiedRaiderRole, this.voiceChannel, this.channel, this.isVet)
+        await unlockChannel(this.verifiedRaiderRole, this.voiceChannel, this.channel, this.isVet)
 
-            cultReact(this.afkCheckEmbed);
+        this.moveInTimer = await setInterval(() => { this.moveIn() }, 10000);
+        this.timer = await setInterval(() => { this.updateAfkCheck() }, 5000);
 
-            this.leaderEmbed = new Discord.MessageEmbed()
-                .setColor('#ff0000')
-                .setTitle(`AFK Check control panel for \`${this.voiceChannel.name}\``)
-                .setFooter(`To abort the afk check, react with ❌ below.`)
-                .addFields(
-                    { name: `Our current key`, value: `None yet!` },
-                    { name: `Our current rushers`, value: `None yet!` },
-                    { name: `Location of run`, value: `${this.location}` },
-                    { name: `Nitro Boosters`, value: `None yet!` },
-                );
+        cultReact(this.afkCheckEmbed);
 
-            this.afkControlPanelInfo = await this.dylanBotInfo.send(this.leaderEmbed).catch(er => console.log(er));
-            this.afkControlPanelCommands = await this.dylanBotCommands.send(this.leaderEmbed).catch(er => console.log(er));
+        this.leaderEmbed = new Discord.MessageEmbed()
+            .setColor('#ff0000')
+            .setTitle(`AFK Check control panel for \`${this.voiceChannel.name}\``)
+            .setFooter(`To abort the afk check, react with ❌ below.`)
+            .addFields(
+                { name: `Our current key`, value: `None yet!` },
+                { name: `Our current rushers`, value: `None yet!` },
+                { name: `Location of run`, value: `${this.location}` },
+                { name: `Nitro Boosters`, value: `None yet!` },
+            );
 
-            this.myReactionCollector = new Discord.ReactionCollector(this.afkCheckEmbed, cultFilter);
+        this.afkControlPanelInfo = await this.dylanBotInfo.send(this.leaderEmbed).catch(er => console.log(er));
+        this.afkControlPanelCommands = await this.dylanBotCommands.send(this.leaderEmbed).catch(er => console.log(er));
 
-            this.myReactionCollector.on("collect", (r, u) => {
-                if (u.bot) return;
-                let reactor = this.message.guild.members.cache.get(u.id);
-                //key
-                if (r.emoji.id === botSettings.emoteIDs.LostHallsKey) {
-                    if (this.key != null) return;
-                    this.conefirmKy(u, r);
+        this.mainReactionCollector = new Discord.ReactionCollector(this.afkCheckEmbed, cultFilter);
+
+        this.mainReactionCollector.on("collect", (r, u) => {
+            if (u.bot) return;
+            let reactor = this.message.guild.members.cache.get(u.id);
+            //key
+            if (r.emoji.id === botSettings.emoteIDs.LostHallsKey) {
+                if (this.key != null) return;
+                this.confirmKey(u, r);
+            }
+            //rusher
+            if (r.emoji.id === botSettings.emoteIDs.Plane) {
+                if (!reactor.roles.cache.has(this.officialRusher.id)) {
+                    reactor.send(`Only Official Rushers get early location`);
+                    return;
                 }
-                //rusher
-                if (r.emoji.id === botSettings.emoteIDs.Plane) {
-                    if (!reactor.roles.cache.has(this.officialRusher.id)) {
-                        reactor.send(`Only Official Rushers get early location`);
-                        return;
-                    }
-                    if (this.rusherCount > 3) {
-                        reactor.send(`Too many rushers have already received location`);
-                        return;
-                    }
-                    this.confirmRush(u, r);
+                if (this.rusherCount > 3) {
+                    reactor.send(`Too many rushers have already received location`);
+                    return;
                 }
-                //nitro
-                if (r.emoji.id === botSettings.emoteIDs.shard) {
-                    if (this.earlyLocation.includes(u)) {
-                        reactor.send(`The location for this run has been set to \`${this.location}\``);
-                        return;
-                    }
-                    if (this.nitroCount + 1 > 5) return;
-                    if (reactor.roles.cache.has(this.nitroBooster.id)) {
-                        reactor.send(`The location for this run has been set to \`${this.location}\``);
-                        this.nitro[this.nitroCount] = u;
-                        this.nitroCount++;
-                        if (this.leaderEmbed.fields[3].value == `None yet!`) {
-                            this.leaderEmbed.fields[3].value = `<@!${u.id}> `;
-                        } else this.leaderEmbed.fields[3].value += `, <@!${u.id}>`
-                        this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => console.log(er));
-                        this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => console.log(er));
-                        this.earlyLocation.push(u);
-                    }
+                this.confirmRush(u, r);
+            }
+            //nitro
+            if (r.emoji.id === botSettings.emoteIDs.shard) {
+                if (this.earlyLocation.includes(u)) {
+                    reactor.send(`The location for this run has been set to \`${this.location}\``);
+                    return;
                 }
-                if (r.emoji.name == '❌') {
-                    if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
-                    this.endedBy = u;
-                    this.postAfk();
+                if (this.nitroCount + 1 > 5) return;
+                if (reactor.roles.cache.has(this.nitroBooster.id)) {
+                    reactor.send(`The location for this run has been set to \`${this.location}\``);
+                    this.nitro[this.nitroCount] = u;
+                    this.nitroCount++;
+                    if (this.leaderEmbed.fields[3].value == `None yet!`) {
+                        this.leaderEmbed.fields[3].value = `<@!${u.id}> `;
+                    } else this.leaderEmbed.fields[3].value += `, <@!${u.id}>`
+                    this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => console.log(er));
+                    this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => console.log(er));
+                    this.earlyLocation.push(u);
                 }
-            });
+            }
+            if (r.emoji.name == '❌') {
+                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
+                this.endedBy = u;
+                this.endAfk();
+            }
+        });
 
-            //afk panel reaction collector
-            this.afkControlPanelCommands.react('❌');
-            this.panelReactionCollector = new Discord.ReactionCollector(this.afkControlPanelCommands, cultFilter);
+        //afk panel reaction collector
+        this.afkControlPanelCommands.react('❌');
+        this.panelReactionCollector = new Discord.ReactionCollector(this.afkControlPanelCommands, cultFilter);
 
-            this.panelReactionCollector.on("collect", (r, u) => {
-                if (u.bot) return;
-                let reactor = this.message.guild.members.cache.get(u.id);
-                if (r.emoji.name === '❌') {
-                    if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
-                    this.endedBy = u;
-                    this.abortAfk();
+        this.panelReactionCollector.on("collect", (r, u) => {
+            if (u.bot) return;
+            let reactor = this.message.guild.members.cache.get(u.id);
+            if (r.emoji.name === '❌') {
+                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
+                this.endedBy = u;
+                this.abortAfk();
+            }
+        });
+
+    }
+
+    async voidd() {
+        this.minutes = Math.floor(this.time / 60);
+        this.seconds = this.time % 60;
+        this.embedMessage = new Discord.MessageEmbed()
+            .setColor('#8c00ff')
+            .setAuthor(`Void Started by ${this.message.member.nickname} in ${this.voiceChannel.name}`, `${this.message.author.avatarURL()}`)
+            .setDescription(`To join, **connect to the raiding channel by clicking its name and react with** <${botSettings.emote.voidd}>
+            If you have a key or vial, react with <${botSettings.emote.LostHallsKey}> or <${botSettings.emote.Vial}>
+            To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.TomeofPurification}> <${botSettings.emote.MarbleSeal}>
+            If you are a ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.emote.shard}>
+            To end the AFK check as a leader, react to ❌`)
+            .setTimestamp()
+            .setFooter(`Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds`);
+        this.afkCheckEmbed.edit(this.embedMessage);
+
+        await unlockChannel(this.verifiedRaiderRole, this.voiceChannel, this.channel, this.isVet)
+
+        this.moveInTimer = await setInterval(() => { this.moveIn() }, 10000);
+        this.timer = await setInterval(() => { this.updateAfkCheck() }, 5000);
+
+        voidReact(this.afkCheckEmbed);
+
+        this.leaderEmbed = new Discord.MessageEmbed()
+            .setColor('#8c00ff')
+            .setTitle(`AFK Check control panel for \`${this.voiceChannel.name}\``)
+            .setFooter(`To abort the afk check, react with ❌ below.`)
+            .addFields(
+                { name: `Our current key`, value: `None yet!` },
+                { name: `Our current vials`, value: `None yet!` },
+                { name: `Location of run`, value: `${this.location}` },
+                { name: `Nitro Boosters`, value: `None yet!` },
+            );
+
+        this.afkControlPanelInfo = await this.dylanBotInfo.send(this.leaderEmbed).catch(er => console.log(er));
+        this.afkControlPanelCommands = await this.dylanBotCommands.send(this.leaderEmbed).catch(er => console.log(er));
+
+        this.mainReactionCollector = new Discord.ReactionCollector(this.afkCheckEmbed, voidFilter);
+
+        this.mainReactionCollector.on("collect", (r, u) => {
+            if (u.bot) return;
+            let reactor = this.message.guild.members.cache.get(u.id);
+            //raider
+            if (r.emoji.id === botSettings.emoteIDs.voidd) {
+                this.raiders++;
+                this.raider.push(reactor);
+                if (this.isVet) var channel = this.message.guild.channels.cache.find(c => c.name == `Veteran Raiding ${this.channel}` || c.name == `Veteran Raiding ${this.channel} <--Join Now!`);
+                else var channel = this.message.guild.channels.cache.find(c => c.name == `raiding-${this.channel}` || c.name == `raiding-${this.channel} <--Join Now!`);
+                reactor.edit({ channel: channel }).catch(er => { });
+            }
+            //key
+            if (r.emoji.id === botSettings.emoteIDs.LostHallsKey) {
+                if (this.key != null) return;
+                this.confirmKey(u, r);
+            }
+            //vial
+            if (r.emoji.id === botSettings.emoteIDs.Vial) {
+                if (this.vialCount + 1 > 3) return;
+                this.confirmVial(u, r);
+            }
+            //nitro
+            if (r.emoji.id === botSettings.emoteIDs.shard) {
+                if (this.earlyLocation.includes(u)) {
+                    reactor.send(`The location for this run has been set to \`${this.location}\``);
+                    return;
                 }
-            });
+                if (reactor.roles.highest.position >= this.leaderOnLeave.position) {
+                    reactor.send(`The location for this run has been set to \`${this.location}\``);
+                    this.earlyLocation.push(u);
+                    return;
+                }
+                if (this.nitroCount + 1 > 10) return;
+                if (reactor.roles.cache.has(this.nitroBooster.id)) {
+                    reactor.send(`The location for this run has been set to \`${this.location}\``);
+                    this.nitro[this.nitroCount] = u;
+                    this.nitroCount++;
+                    if (this.leaderEmbed.fields[3].value == `None yet!`) {
+                        this.leaderEmbed.fields[3].value = `<@!${u.id}> `;
+                    } else this.leaderEmbed.fields[3].value += `, <@!${u.id}>`
+                    this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => console.log(er));
+                    this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => console.log(er));
+                    this.earlyLocation.push(u);
+                }
+            }
+            if (r.emoji.name == '❌') {
+                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
+                this.endedBy = u;
+                this.endAfk();
+            }
+        });
 
-        } catch (er) {
-            console.log(er);
-            return;
-        }
+        //afk panel reaction collector
+        this.afkControlPanelCommands.react('❌');
+        this.panelReactionCollector = new Discord.ReactionCollector(this.afkControlPanelCommands, cultFilter);
+
+        this.panelReactionCollector.on("collect", (r, u) => {
+            if (u.bot) return;
+            let reactor = this.message.guild.members.cache.get(u.id);
+            if (r.emoji.name === '❌') {
+                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
+                this.endedBy = u;
+                this.abortAfk();
+            }
+        });
+    }
+
+    async fsv() {
+        this.minutes = Math.floor(this.time / 60);
+        this.seconds = this.time % 60;
+        this.embedMessage = new Discord.MessageEmbed()
+            .setColor('#8c00ff')
+            .setAuthor(`Full Skip Void Started by ${this.message.member.nickname} in ${this.voiceChannel.name}`, `${this.message.author.avatarURL()}`)
+            .setDescription(`To join, **connect to the raiding channel by clicking its name and react with** <${botSettings.emote.SkipBoi}>
+            If you have a key or vial, react with <${botSettings.emote.LostHallsKey}> or <${botSettings.emote.Vial}>
+            To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.TomeofPurification}> <${botSettings.emote.MarbleSeal}>
+            If you have 80+ MHeal and a 8/8 Mystic, react with <${botSettings.emote.Mystic}>
+            If you are an 8/8 trickster with a brain, react with <${botSettings.emote.Brain}>
+            If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.emote.shard}>
+            To end the AFK check as a leader, react to ❌`)
+            .setTimestamp()
+            .setFooter(`Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds`);
+        this.afkCheckEmbed.edit(this.embedMessage);
+
+        await unlockChannel(this.verifiedRaiderRole, this.voiceChannel, this.channel, this.isVet)
+
+        this.moveInTimer = await setInterval(() => { this.moveIn() }, 10000);
+        this.timer = await setInterval(() => { this.updateAfkCheck() }, 5000);
+
+        fsvReact(this.afkCheckEmbed);
+
+        this.leaderEmbed = new Discord.MessageEmbed()
+            .setColor('#8c00ff')
+            .setTitle(`AFK Check control panel for \`${this.voiceChannel.name}\``)
+            .setFooter(`To abort the afk check, react with ❌ below.`)
+            .addFields(
+                { name: `Our current key`, value: `None yet!` },
+                { name: `Our current vials`, value: `None yet!` },
+                { name: `Our current tricksters`, value: `None yet!` },
+                { name: `Our current mystics`, value: `None yet!` },
+                { name: `Location of run`, value: `${this.location}` },
+                { name: `Nitro Boosters`, value: `None yet!` },
+            )
+
+        this.afkControlPanelInfo = await this.dylanBotInfo.send(this.leaderEmbed).catch(er => console.log(er));
+        this.afkControlPanelCommands = await this.dylanBotCommands.send(this.leaderEmbed).catch(er => console.log(er));
+
+        this.mainReactionCollector = new Discord.ReactionCollector(this.afkCheckEmbed, fsvFilter);
+
+        this.mainReactionCollector.on("collect", (r, u) => {
+            if (u.bot) return;
+            let reactor = this.message.guild.members.cache.get(u.id);
+            //raider
+            if (r.emoji.id === botSettings.emoteIDs.voidd) {
+                this.raiders++;
+                this.raider.push(reactor);
+                if (this.isVet) var channel = this.message.guild.channels.cache.find(c => c.name == `Veteran Raiding ${this.channel}` || c.name == `Veteran Raiding ${this.channel} <--Join Now!`);
+                else var channel = this.message.guild.channels.cache.find(c => c.name == `raiding-${this.channel}` || c.name == `raiding-${this.channel} <--Join Now!`);
+                reactor.edit({ channel: channel }).catch(er => { });
+            }
+            //key
+            if (r.emoji.id === botSettings.emoteIDs.LostHallsKey) {
+                if (this.key != null) return;
+                this.confirmKey(u, r);
+            }
+            //vial
+            if (r.emoji.id === botSettings.emoteIDs.Vial) {
+                if (this.vialCount + 1 > 3) return;
+                this.confirmVial(u, r);
+            }
+            //mystic
+            if (r.emoji.id === botSettings.emoteIDs.mystic) {
+                if (this.mysticCount + 1 > 3) return;
+                this.confirmMystic(u, r);
+            }
+            //brain
+            if (r.emoji.id === botSettings.emoteIDs.brain) {
+                if (this.brainCount + 1 > 3) return;
+                this.confirmBrain(u, r);
+            }
+            //nitro
+            if (r.emoji.id === botSettings.emoteIDs.shard) {
+                if (this.earlyLocation.includes(u)) {
+                    reactor.send(`The location for this run has been set to \`${this.location}\``);
+                    return;
+                }
+                if (reactor.roles.highest.position >= this.leaderOnLeave.position) {
+                    reactor.send(`The location for this run has been set to \`${this.location}\``);
+                    this.earlyLocation.push(u);
+                    return;
+                }
+                if (this.nitroCount + 1 > 10) return;
+                if (reactor.roles.cache.has(this.nitroBooster.id)) {
+                    reactor.send(`The location for this run has been set to \`${this.location}\``);
+                    this.nitro[this.nitroCount] = u;
+                    this.nitroCount++;
+                    if (this.leaderEmbed.fields[5].value == `None yet!`) {
+                        this.leaderEmbed.fields[5].value = `<@!${u.id}> `;
+                    } else this.leaderEmbed.fields[5].value += `, <@!${u.id}>`
+                    this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => console.log(er));
+                    this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => console.log(er));
+                    this.earlyLocation.push(u);
+                }
+            }
+            if (r.emoji.name == '❌') {
+                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
+                this.endedBy = u;
+                this.endAfk();
+            }
+        });
+
+        //afk panel reaction collector
+        this.afkControlPanelCommands.react('❌');
+        this.panelReactionCollector = new Discord.ReactionCollector(this.afkControlPanelCommands, cultFilter);
+
+        this.panelReactionCollector.on("collect", (r, u) => {
+            if (u.bot) return;
+            let reactor = this.message.guild.members.cache.get(u.id);
+            if (r.emoji.name === '❌') {
+                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
+                this.endedBy = u;
+                this.abortAfk();
+            }
+        });
     }
 
     async confirmKey(u, r) {
@@ -321,10 +566,8 @@ class afk {
 
             await DirectMessage.react("✅");
             await dmReactionCollector.on("collect", (r, u) => {
-                if (this.vialCount > 2) return;
-                if (this.vials.includes(u)) return;
-                this.vialCount++;
-                this.vials[this.vialCount - 1] = u;
+                if (this.vials.length > 2 || this.vials.includes(u)) return;
+                this.vials.push(u);
                 dm.send(`The location for this run has been set to \`${this.location}\`, get there and confirm vial with ${this.message.member.nickname}`);
                 console.log(`${u.tag} confirmed vial`);
                 if (this.leaderEmbed.fields[1].value == `None yet!`) {
@@ -361,10 +604,8 @@ class afk {
 
             await DirectMessage.react("✅");
             await dmReactionCollector.on("collect", (r, u) => {
-                if (this.rusherCount + 1 > 3) return;
-                if (this.rushers.includes(u)) return;
-                this.rushers[this.rusherCount] = u;
-                this.rusherCount++;
+                if (this.rushers.length > 2 || this.rushers.includes(u)) return;
+                this.rushers.push(u);
                 dm.send(`The location for this run has been set to \`${this.location}\`, get there asap`);
                 console.log(`${u.tag} confirmed rusher`);
                 if (this.leaderEmbed.fields[1].value == `None yet!`) {
@@ -400,10 +641,8 @@ class afk {
             let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, dmReactionFilter);
             await DirectMessage.react("✅");
             await dmReactionCollector.on("collect", (r, u) => {
-                if (this.mysticCount > 2) return;
-                if (this.mystics.includes(u)) return;
-                this.mysticCount++;
-                this.mystics[this.mysticCount - 1] = u;
+                if (this.mystics.length > 2 || this.mystics.includes(u)) return;
+                this.mystics.push(u)
                 dm.send(`The location for this run has been set to \`${this.location}\`, get there asap`);
                 console.log(`${u.tag} confirmed mystic`);
                 if (this.leaderEmbed.fields[3].value == `None yet!`) {
@@ -439,10 +678,8 @@ class afk {
             let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, dmReactionFilter);
             await DirectMessage.react("✅");
             await dmReactionCollector.on("collect", (r, u) => {
-                if (this.brainCount > 2) return;
-                this.brainCount++;
-                this.brains[this.brainCount - 1] = u;
-                if (this.brains.includes(u)) return;
+                if (this.brainCount > 2 || this.brains.includes(u)) return;
+                this.brains.push(u);
                 dm.send(`The location for this run has been set to \`${this.location}\`, get there asap`);
                 console.log(`${u.tag} confirmed brain`);
                 if (this.leaderEmbed.fields[2].value == `None yet!`) {
@@ -459,41 +696,100 @@ class afk {
             console.log(`Couldn't pm someone, pm's are private`);
         }
     }
-
-    async voidd() {
-
+    async updateAfkCheck() {
+        this.time = this.time - 5;
+        if (this.time == 0) {
+            this.endedBy = bot.user;
+            this.endAFK();
+            return;
+        }
+        this.minutes = Math.floor(this.time / 60);
+        this.seconds = this.time % 60;
+        if (this.embedMessage == null) return;
+        this.embedMessage.setFooter(`Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds`);
+        this.afkCheckEmbed.edit(this.embedMessage).catch(er => console.log(er));
     }
+    async moveIn() {
+        for (let i in this.earlyLocation) {
+            let u = this.earlyLocation[i];
+            let member = this.message.guild.members.cache.get(u.id);
+            member.edit({ channel: this.voiceChannel }).catch(er => { });
+        }
+    }
+    async endAfk() {
+        this.mainReactionCollector.stop();
+        this.panelReactionCollector.stop();
 
-    async fsv() {
+        clearInterval(this.moveInTimer);
+        clearInterval(this.timer);
 
+        lockChannel(this.verifiedRaiderRole, this.voiceChannel, this.channel, this.isVet);
+
+        if (this.key != null) {
+            this.embedMessage.setDescription(`This afk check has been ended.
+        Thank you to <@!${this.key.id}> for popping a <${botSettings.emote.LostHallsKey}> for us!`)
+                .setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
+        } else {
+            this.embedMessage.setDescription(`This afk check has been ended.`)
+                .setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
+        }
+
+        this.afkCheckEmbed.edit('', this.embedMessage).catch(er => console.log(er))
+
+        if (this.isVet) activeVetRun = false;
+        else activeRun = false;
+    }
+    async abortAfk() {
+        this.mainReactionCollector.stop();
+        this.panelReactionCollector.stop();
+
+        clearInterval(this.moveInTimer);
+        clearInterval(this.timer);
+
+        lockChannel(this.verifiedRaiderRole, this.voiceChannel, this.channel, this.isVet);
+
+        this.embedMessage.setDescription(`This afk check has been aborted`)
+            .setFooter(`The afk check has been aborted by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
+
+        this.afkCheckEmbed.edit('', this.embedMessage).catch(er => console.log(er))
+
+        if (this.isVet) activeVetRun = false;
+        else activeRun = false;
     }
 }
 
 async function unlockChannel(raiderRole, voiceChannel, voiceChannelNumber, isVet) {
     if (isVet) {
-        await voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(r => console.log(r));
-        await voiceChannel.setName(`Veteran Raiding ${voiceChannelNumber} <--Join Now!`).catch(r => console.log(r));
-        await voiceChannel.setUserLimit(75).catch(r => console.log(r));
+        voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(r => console.log(r))
+            .then(voiceChannel.setName(`Veteran Raiding ${voiceChannelNumber} <-- Join!`).catch(r => console.log(r)))
+            .then(voiceChannel.setUserLimit(75).catch(r => console.log(r)));
     }
     if (!isVet) {
-        await voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(r => console.log(r));
-        await voiceChannel.setName(`raiding-${voiceChannelNumber} <--Join Now!`).catch(r => console.log(r));
-        await voiceChannel.setUserLimit(75).catch(r => console.log(r));
+        voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(r => console.log(r))
+            .then(voiceChannel.setName(`raiding-${voiceChannelNumber} <-- Join!`).catch(r => console.log(r)))
+            .then(voiceChannel.setUserLimit(75).catch(r => console.log(r)));
     }
     return;
 }
 async function lockChannel(raiderRole, voiceChannel, voiceChannelNumber, isVet) {
     if (isVet) {
-        await voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(r => console.log(r));
-        await voiceChannel.setName(`Veteran Raiding ${voiceChannelNumber}`).catch(r => console.log(r));
-        await voiceChannel.setUserLimit(75).catch(r => console.log(r));
+        voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(r => console.log(r))
+            .then(voiceChannel.setName(`Veteran Raiding ${voiceChannelNumber}`).catch(r => console.log(r)))
     }
     if (!isVet) {
-        await voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(r => console.log(r));
-        await voiceChannel.setName(`raiding-${voiceChannelNumber}`).catch(r => console.log(r));
-        await voiceChannel.setUserLimit(75).catch(r => console.log(r));
+        voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(r => console.log(r))
+            .then(voiceChannel.setName(`raiding-${voiceChannelNumber}`).catch(r => console.log(r)))
     }
     return;
+}
+async function cleanChannel(channel, lounge) {
+    var vcUsers = channel.members.array()
+    for (let i in vcUsers) {
+        let u = vcUsers[i];
+        if (u.roles.highest.position < message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) {
+            u.edit({ channel: lounge });
+        }
+    }
 }
 //React functions
 async function cultReact(message) {
