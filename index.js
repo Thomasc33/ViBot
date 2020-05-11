@@ -55,6 +55,8 @@ function aliasCheck(pcommand) {
             return 'changename';
         case 'clear':
             return 'clean';
+        case 'gfb':
+            return 'getfeedback';
         default:
             return pcommand;
     }

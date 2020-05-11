@@ -1,4 +1,5 @@
 const fs = module.require('fs')
+const Discord = require('discord.js')
 
 module.exports = {
     name: 'vetunban',
@@ -28,7 +29,7 @@ module.exports = {
                 found = true;
                 const time = bot.vetBans[i].time;
                 const guildId = bot.vetBans[i].guild;
-                const reason = bot.vetBans[i].reason;
+                const Initialreason = bot.vetBans[i].reason;
                 const banBy = bot.vetBans[i].by;
                 const proofLogID = bot.vetBans[i].logMessage;
                 const guild = bot.guilds.cache.get(guildId);
@@ -67,6 +68,8 @@ module.exports = {
             collector.on('collect', m => {
                 try {
                     if (m.content.toLowerCase().charAt(0) == 'y') {
+                        const vetBanRole = message.guild.roles.cache.find(r => r.name === 'Banned Veteran Raider');
+                        const vetRaiderRole = message.guild.roles.cache.find(r => r.name === 'Veteran Raider');
                         member.roles.remove(vetBanRole)
                             .then(member.roles.add(vetRaiderRole));
                         message.channel.send("User unbanned successfully");

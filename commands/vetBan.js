@@ -59,6 +59,7 @@ module.exports = {
             for (i = 2; i < args.length; i++) {
                 reason = reason.concat(args[i]) + ' ';
             }
+            if (reason == "") reason = "None"
             toBan.forEach(u => {
 
                 let member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(u.toLowerCase()));
