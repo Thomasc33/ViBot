@@ -1,6 +1,7 @@
 //imports
 const botSettings = require('../settings.json');
 const Discord = require('discord.js');
+const ErrorLogger = require('../logError')
 
 //globals
 var activeVetRun = false;
@@ -140,17 +141,15 @@ class afk {
     async sendMessage() {
         switch (this.run) {
             case 1: //cult
-                this.afkCheckEmbed = await this.raidStatus.send(`@here A \`Cult\` afk will be starting in 5 seconds by ${this.message.member}. Prepare to join raiding \`${this.voiceChannel.name}\``).catch(er => console.log(er));
+                this.afkCheckEmbed = await this.raidStatus.send(`@here A \`Cult\` afk will be starting in 5 seconds by ${this.message.member}. Prepare to join raiding \`${this.voiceChannel.name}\``).catch(er => ErrorLogger.log(er, bot));
                 break;
             case 2: //void
-                this.afkCheckEmbed = await this.raidStatus.send(`@here A \`Void\` afk will be starting in 5 seconds by ${this.message.member}. Prepare to join raiding \`${this.voiceChannel.name}\``).catch(er => console.log(er));
+                this.afkCheckEmbed = await this.raidStatus.send(`@here A \`Void\` afk will be starting in 5 seconds by ${this.message.member}. Prepare to join raiding \`${this.voiceChannel.name}\``).catch(er => ErrorLogger.log(er, bot));
                 break;
             case 3: //full skip
-                this.afkCheckEmbed = await this.raidStatus.send(`@here A \`Full-Skip Void\` afk will be starting in 5 seconds by ${this.message.member}. Prepare to join raiding \`${this.voiceChannel.name}\``).catch(er => console.log(er));
+                this.afkCheckEmbed = await this.raidStatus.send(`@here A \`Full-Skip Void\` afk will be starting in 5 seconds by ${this.message.member}. Prepare to join raiding \`${this.voiceChannel.name}\``).catch(er => ErrorLogger.log(er, bot));
                 break;
-            default:
-                console.log(`Run type error`);
-                return;
+            default: return;
         }
     }
 
@@ -179,9 +178,7 @@ class afk {
             case 3: //full skip
                 this.fsv()
                 break;
-            default:
-                console.log(`Run type error`);
-                return;
+            default: return;
         }
     }
 
@@ -220,8 +217,8 @@ class afk {
                 { name: `Nitro Boosters`, value: `None yet!` },
             );
 
-        this.afkControlPanelInfo = await this.dylanBotInfo.send(this.leaderEmbed).catch(er => console.log(er));
-        this.afkControlPanelCommands = await this.dylanBotCommands.send(this.leaderEmbed).catch(er => console.log(er));
+        this.afkControlPanelInfo = await this.dylanBotInfo.send(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+        this.afkControlPanelCommands = await this.dylanBotCommands.send(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
 
         this.mainReactionCollector = new Discord.ReactionCollector(this.afkCheckEmbed, cultFilter);
 
@@ -259,8 +256,8 @@ class afk {
                     if (this.leaderEmbed.fields[3].value == `None yet!`) {
                         this.leaderEmbed.fields[3].value = `<@!${u.id}> `;
                     } else this.leaderEmbed.fields[3].value += `, <@!${u.id}>`
-                    this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => console.log(er));
-                    this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => console.log(er));
+                    this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                    this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                     this.earlyLocation.push(u);
                 }
             }
@@ -320,8 +317,8 @@ class afk {
                 { name: `Nitro Boosters`, value: `None yet!` },
             );
 
-        this.afkControlPanelInfo = await this.dylanBotInfo.send(this.leaderEmbed).catch(er => console.log(er));
-        this.afkControlPanelCommands = await this.dylanBotCommands.send(this.leaderEmbed).catch(er => console.log(er));
+        this.afkControlPanelInfo = await this.dylanBotInfo.send(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+        this.afkControlPanelCommands = await this.dylanBotCommands.send(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
 
         this.mainReactionCollector = new Discord.ReactionCollector(this.afkCheckEmbed, voidFilter);
 
@@ -365,8 +362,8 @@ class afk {
                     if (this.leaderEmbed.fields[3].value == `None yet!`) {
                         this.leaderEmbed.fields[3].value = `<@!${u.id}> `;
                     } else this.leaderEmbed.fields[3].value += `, <@!${u.id}>`
-                    this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => console.log(er));
-                    this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => console.log(er));
+                    this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                    this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                     this.earlyLocation.push(u);
                 }
             }
@@ -429,8 +426,8 @@ class afk {
                 { name: `Nitro Boosters`, value: `None yet!` },
             )
 
-        this.afkControlPanelInfo = await this.dylanBotInfo.send(this.leaderEmbed).catch(er => console.log(er));
-        this.afkControlPanelCommands = await this.dylanBotCommands.send(this.leaderEmbed).catch(er => console.log(er));
+        this.afkControlPanelInfo = await this.dylanBotInfo.send(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+        this.afkControlPanelCommands = await this.dylanBotCommands.send(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
 
         this.mainReactionCollector = new Discord.ReactionCollector(this.afkCheckEmbed, fsvFilter);
 
@@ -484,8 +481,8 @@ class afk {
                     if (this.leaderEmbed.fields[5].value == `None yet!`) {
                         this.leaderEmbed.fields[5].value = `<@!${u.id}> `;
                     } else this.leaderEmbed.fields[5].value += `, <@!${u.id}>`
-                    this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => console.log(er));
-                    this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => console.log(er));
+                    this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                    this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                     this.earlyLocation.push(u);
                 }
             }
@@ -519,13 +516,12 @@ class afk {
                 clearInterval(endAfter);
                 return;
             } catch (er) {
-                console.log(`Someones pm's are private`);
                 clearInterval(endAfter);
                 return;
             }
         }, 60000)
-        let dm = await u.createDM().catch(r => console.log(r)).catch(er => console.log(er));
-        let DirectMessage = await dm.send(`You reacted as <${botSettings.emote.LostHallsKey}>. Press :white_check_mark: to confirm. Ignore this message otherwise`).catch(r => console.log(r));
+        let dm = await u.createDM().catch(r => ErrorLogger.log(er, bot))
+        let DirectMessage = await dm.send(`You reacted as <${botSettings.emote.LostHallsKey}>. Press :white_check_mark: to confirm. Ignore this message otherwise`).catch(r => ErrorLogger.log(er, bot));
 
         let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, dmReactionFilter);
         await DirectMessage.react("✅");
@@ -534,12 +530,11 @@ class afk {
                 return;
             this.key = u;
             dm.send(`The location for this run has been set to \`${this.location}\`, get there and confirm key with ${this.message.member.nickname}`);
-            console.log(`${u.tag} confirmed key`);
             if (this.leaderEmbed.fields[0].value == `None yet!`) {
                 this.leaderEmbed.fields[0].value = `<${botSettings.emote.LostHallsKey}>: <@!${u.id}>`;
             } else this.leaderEmbed.fields[0].value += `\n<${botSettings.emote.LostHallsKey}>: ${`<@!${u.id}>`}`;
-            this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => console.log(er));
-            this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => console.log(er));
+            this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+            this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
             this.earlyLocation.push(u);
             clearInterval(endAfter);
             dmReactionCollector.stop();
@@ -553,7 +548,6 @@ class afk {
                 clearInterval(endAfter);
                 return;
             } catch (er) {
-                console.log(`Someones pm's are private`);
                 clearInterval(endAfter);
                 return;
             }
@@ -569,19 +563,16 @@ class afk {
                 if (this.vials.length > 2 || this.vials.includes(u)) return;
                 this.vials.push(u);
                 dm.send(`The location for this run has been set to \`${this.location}\`, get there and confirm vial with ${this.message.member.nickname}`);
-                console.log(`${u.tag} confirmed vial`);
                 if (this.leaderEmbed.fields[1].value == `None yet!`) {
                     this.leaderEmbed.fields[1].value = `<${botSettings.emote.Vial}>: <@!${u.id}>`;
                 } else this.leaderEmbed.fields[1].value += `\n<${botSettings.emote.Vial}>: ${`<@!${u.id}>`}`
-                this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => console.log(er));
-                this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => console.log(er));
+                this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                 this.earlyLocation.push(u);
                 clearInterval(endAfter);
                 dmReactionCollector.stop();
             });
-        } catch (er) {
-            console.log(`Couldn't pm someone, pm's are private`);
-        }
+        } catch (er) { }
     }
     async confirmRush(u, r) {
         let endAfter = setInterval(function () {
@@ -591,7 +582,6 @@ class afk {
                 clearInterval(endAfter);
                 return;
             } catch (er) {
-                console.log(`Someones pm's are private`);
                 clearInterval(endAfter);
                 return;
             }
@@ -607,19 +597,16 @@ class afk {
                 if (this.rushers.length > 2 || this.rushers.includes(u)) return;
                 this.rushers.push(u);
                 dm.send(`The location for this run has been set to \`${this.location}\`, get there asap`);
-                console.log(`${u.tag} confirmed rusher`);
                 if (this.leaderEmbed.fields[1].value == `None yet!`) {
                     this.leaderEmbed.fields[1].value = `<${botSettings.emote.Plane}>: <@!${u.id}>`;
                 } else this.leaderEmbed.fields[1].value += `\n<${botSettings.emote.Plane}>: ${`<@!${u.id}>`}`;
-                this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => console.log(er));
-                this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => console.log(er));
+                this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                 this.earlyLocation.push(u);
                 clearInterval(endAfter);
                 dmReactionCollector.stop();
             });
-        } catch (er) {
-            console.log(`Couldn't pm someone, pm's are private`);
-        }
+        } catch (er) { }
     }
     async confirmMystic(u, r) {
         let endAfter = setInterval(function () {
@@ -629,7 +616,6 @@ class afk {
                 clearInterval(endAfter);
                 return;
             } catch (er) {
-                console.log(`Someones pm's are private`);
                 clearInterval(endAfter);
                 return;
             }
@@ -644,19 +630,16 @@ class afk {
                 if (this.mystics.length > 2 || this.mystics.includes(u)) return;
                 this.mystics.push(u)
                 dm.send(`The location for this run has been set to \`${this.location}\`, get there asap`);
-                console.log(`${u.tag} confirmed mystic`);
                 if (this.leaderEmbed.fields[3].value == `None yet!`) {
                     this.leaderEmbed.fields[3].value = `<${botSettings.emote.Mystic}>: <@!${u.id}>`;
                 } else this.leaderEmbed.fields[3].value += `\n<${botSettings.emote.Mystic}>: ${`<@!${u.id}>`}`
-                this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => console.log(er));
-                this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => console.log(er));
+                this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                 this.earlyLocation.push(u);
                 clearInterval(endAfter);
                 dmReactionCollector.stop();
             });
-        } catch (er) {
-            console.log(`Couldn't pm someone, pm's are private`);
-        }
+        } catch (er) { }
     }
     async confirmBrain(u, r) {
         let endAfter = setInterval(function () {
@@ -666,7 +649,6 @@ class afk {
                 clearInterval(endAfter);
                 return;
             } catch (er) {
-                console.log(`Someones pm's are private`);
                 clearInterval(endAfter);
                 return;
             }
@@ -681,20 +663,16 @@ class afk {
                 if (this.brainCount > 2 || this.brains.includes(u)) return;
                 this.brains.push(u);
                 dm.send(`The location for this run has been set to \`${this.location}\`, get there asap`);
-                console.log(`${u.tag} confirmed brain`);
                 if (this.leaderEmbed.fields[2].value == `None yet!`) {
                     this.leaderEmbed.fields[2].value = `<${botSettings.emote.Brain}>: <@!${u.id}>`;
                 } else this.leaderEmbed.fields[2].value += `\n<${botSettings.emote.Brain}>: ${`<@!${u.id}>`}`
-                this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => console.log(er));
-                this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => console.log(er));
+                this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                 this.earlyLocation.push(u);
                 clearInterval(endAfter);
                 dmReactionCollector.stop();
             });
-        } catch (er) {
-            console.log(er)
-            console.log(`Couldn't pm someone, pm's are private`);
-        }
+        } catch (er) { }
     }
     async updateAfkCheck() {
         this.time = this.time - 5;
@@ -707,7 +685,7 @@ class afk {
         this.seconds = this.time % 60;
         if (this.embedMessage == null) return;
         this.embedMessage.setFooter(`Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds`);
-        this.afkCheckEmbed.edit(this.embedMessage).catch(er => console.log(er));
+        this.afkCheckEmbed.edit(this.embedMessage).catch(er => ErrorLogger.log(er, bot));
     }
     async moveIn() {
         for (let i in this.earlyLocation) {
@@ -734,7 +712,7 @@ class afk {
                 .setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
         }
 
-        this.afkCheckEmbed.edit('', this.embedMessage).catch(er => console.log(er))
+        this.afkCheckEmbed.edit('', this.embedMessage).catch(er => ErrorLogger.log(er, bot))
 
         if (this.isVet) activeVetRun = false;
         else activeRun = false;
@@ -751,7 +729,7 @@ class afk {
         this.embedMessage.setDescription(`This afk check has been aborted`)
             .setFooter(`The afk check has been aborted by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
 
-        this.afkCheckEmbed.edit('', this.embedMessage).catch(er => console.log(er))
+        this.afkCheckEmbed.edit('', this.embedMessage).catch(er => ErrorLogger.log(er, bot))
 
         if (this.isVet) activeVetRun = false;
         else activeRun = false;
@@ -760,25 +738,25 @@ class afk {
 
 async function unlockChannel(raiderRole, voiceChannel, voiceChannelNumber, isVet) {
     if (isVet) {
-        voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(r => console.log(r))
-            .then(voiceChannel.setName(`Veteran Raiding ${voiceChannelNumber} <-- Join!`).catch(r => console.log(r)))
-            .then(voiceChannel.setUserLimit(75).catch(r => console.log(r)));
+        voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(r => ErrorLogger.log(er, bot))
+            .then(voiceChannel.setName(`Veteran Raiding ${voiceChannelNumber} <-- Join!`).catch(r => ErrorLogger.log(er, bot)))
+            .then(voiceChannel.setUserLimit(75).catch(r => ErrorLogger.log(er, bot)));
     }
     if (!isVet) {
-        voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(r => console.log(r))
-            .then(voiceChannel.setName(`raiding-${voiceChannelNumber} <-- Join!`).catch(r => console.log(r)))
-            .then(voiceChannel.setUserLimit(75).catch(r => console.log(r)));
+        voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(r => ErrorLogger.log(er, bot))
+            .then(voiceChannel.setName(`raiding-${voiceChannelNumber} <-- Join!`).catch(r => ErrorLogger.log(er, bot)))
+            .then(voiceChannel.setUserLimit(75).catch(r => ErrorLogger.log(er, bot)));
     }
     return;
 }
 async function lockChannel(raiderRole, voiceChannel, voiceChannelNumber, isVet) {
     if (isVet) {
-        voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(r => console.log(r))
-            .then(voiceChannel.setName(`Veteran Raiding ${voiceChannelNumber}`).catch(r => console.log(r)))
+        voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(r => ErrorLogger.log(er, bot))
+            .then(voiceChannel.setName(`Veteran Raiding ${voiceChannelNumber}`).catch(r => ErrorLogger.log(er, bot)))
     }
     if (!isVet) {
-        voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(r => console.log(r))
-            .then(voiceChannel.setName(`raiding-${voiceChannelNumber}`).catch(r => console.log(r)))
+        voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(r => ErrorLogger.log(er, bot))
+            .then(voiceChannel.setName(`raiding-${voiceChannelNumber}`).catch(r => ErrorLogger.log(er, bot)))
     }
     return;
 }
@@ -802,7 +780,7 @@ async function cultReact(message) {
         .then(message.react(botSettings.emote.Plane))
         .then(message.react(botSettings.emote.shard))
         .then(message.react('❌'))
-        .catch(err => console.log(err));
+        .catch(er => ErrorLogger.log(er, bot));
 }
 async function voidReact(message) {
     message.react(botSettings.emote.LostHallsKey)
@@ -814,7 +792,7 @@ async function voidReact(message) {
         .then(message.react(botSettings.emote.MarbleSeal))
         .then(message.react(botSettings.emote.shard))
         .then(message.react('❌'))
-        .catch(err => console.log(err));
+        .catch(er => ErrorLogger.log(er, bot));
 }
 async function fsvReact(message) {
     message.react(botSettings.emote.LostHallsKey)
@@ -828,7 +806,7 @@ async function fsvReact(message) {
         .then(message.react(botSettings.emote.Mystic))
         .then(message.react(botSettings.emote.shard))
         .then(message.react('❌'))
-        .catch(err => console.log(err));
+        .catch(er => ErrorLogger.log(er, bot));
 }
 
 //reaction filters

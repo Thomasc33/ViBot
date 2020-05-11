@@ -1,4 +1,5 @@
 const afk = require('./afkCheck');
+const ErrorLogger = require('../logError')
 
 module.exports = {
     name: 'allowrun',

@@ -1,3 +1,5 @@
+const ErrorLogger = require('../logError')
+
 module.exports = {
     name: 'getfeedback',
     description: 'Fetches all mentions of the user in customer feedback',

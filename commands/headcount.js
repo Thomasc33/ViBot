@@ -1,17 +1,19 @@
 const Discord = require('discord.js');
 const botSettings = require('../settings.json');
-
+const ErrorLogger = require('../logError')
+var bot
 module.exports = {
     name: 'headcount',
     description: 'Puts a headcount in a raid status channel',
     alias: 'hc',
     args: '<c/v/fsv>',
     role: 'Almost Raid Leader',
-    async execute(message, args, bot) {
+    async execute(message, args, bott) {
         if (!(message.channel.name === 'dylanbot-commands' || message.channel.name === 'veteran-bot-commands')) {
             message.channel.send("Try again in dylanbot-commands or veteran-bot-commands");
             return;
         }
+        bot = bott;
         var textChannel;
         if (message.channel.name == 'veteran-bot-commands') {
             textChannel = message.guild.channels.cache.find(c => c.name === 'veteran-status-announcements');
@@ -74,7 +76,7 @@ async function cultReact(message) {
         .then(message.react(botSettings.emote.TomeofPurification))
         .then(message.react(botSettings.emote.MarbleSeal))
         .then(message.react(botSettings.emote.Plane))
-        .catch(err => console.log(err));
+        .catch(er => ErrorLogger.log(er, bot));
 }
 async function voidReact(message) {
     message.react(botSettings.emote.voidd)
@@ -85,7 +87,7 @@ async function voidReact(message) {
         .then(message.react(botSettings.emote.Knight))
         .then(message.react(botSettings.emote.TomeofPurification))
         .then(message.react(botSettings.emote.MarbleSeal))
-        .catch(err => console.log(err));
+        .catch(er => ErrorLogger.log(er, bot));
 }
 async function fsvReact(message) {
     message.react(botSettings.emote.SkipBoi)
@@ -98,5 +100,5 @@ async function fsvReact(message) {
         .then(message.react(botSettings.emote.MarbleSeal))
         .then(message.react(botSettings.emote.Brain))
         .then(message.react(botSettings.emote.Mystic))
-        .catch(err => console.log(err));
+        .catch(err => ErrorLogger.log(er, bot));
 }

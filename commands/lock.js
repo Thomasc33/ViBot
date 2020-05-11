@@ -1,12 +1,13 @@
 const botSettings = require('../settings.json');
-
+const ErrorLogger = require('../logError')
+var bot;
 module.exports = {
     name: 'lock',
     description: 'Locks voice channel',
     alias: 'rc, resetchannel',
     args: '<channel>',
     role: 'Almost Raid Leader',
-    execute(message, args) {
+    execute(message, args, bott) {
         if (args[0] > botSettings.voiceChannelCount) return;
         if (message.channel.name === 'dylanbot-commands') {
             var isVet = false;
@@ -16,6 +17,7 @@ module.exports = {
             message.channel.send("Try again, but in dylanbot-commands or veteran-bot-commands");
             return;
         }
+        bot = bott;
         handler(message, args[0], isVet);
     }
 }
@@ -36,14 +38,14 @@ async function handler(message, channelNumber, isVet) {
 
 async function lockChannel(raiderRole, voiceChannel, voiceChannelNumber, isVet) {
     if (isVet) {
-        voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(r => console.log(r))
-            .then(voiceChannel.setName(`Veteran Raiding ${voiceChannelNumber}`).catch(r => console.log(r)))
-            .then(voiceChannel.setUserLimit(75).catch(r => console.log(r)));
+        voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+            .then(voiceChannel.setName(`Veteran Raiding ${voiceChannelNumber}`).catch(er => ErrorLogger.log(er, bot)))
+            .then(voiceChannel.setUserLimit(75).catch(er => ErrorLogger.log(er, bot)));
     }
     if (!isVet) {
-        voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(r => console.log(r))
-            .then(voiceChannel.setName(`raiding-${voiceChannelNumber}`).catch(r => console.log(r)))
-            .then(voiceChannel.setUserLimit(75).catch(r => console.log(r)));
+        voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+            .then(voiceChannel.setName(`raiding-${voiceChannelNumber}`).catch(er => ErrorLogger.log(er, bot)))
+            .then(voiceChannel.setUserLimit(75).catch(er => ErrorLogger.log(er, bot)));
     }
     return;
 }

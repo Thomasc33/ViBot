@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+const ErrorLogger = require('../logError')
 
 module.exports = {
     name: 'status',
@@ -7,7 +8,7 @@ module.exports = {
 
     role: 'Almost Raid Leader',
     async execute(message, args, bot) {
-        const m = await message.channel.send('Pinging...').catch(er => { console.log(er); return; });
+        const m = await message.channel.send('Pinging...').catch(er => { ErrorLogger.log(er, bot); return; });
         let latency = m.createdTimestamp - message.createdTimestamp;
         var embed = new Discord.MessageEmbed()
             .setColor('#ffffff')

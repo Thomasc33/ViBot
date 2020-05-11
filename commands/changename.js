@@ -1,4 +1,5 @@
 const Discord = require('discord.js')
+const ErrorLogger = require('../logError')
 
 module.exports = {
     name: 'changename',
@@ -45,7 +46,7 @@ module.exports = {
                 }
             } catch (er) {
                 message.channel.send('Error changing name. `;changename <id> <alt name> <proof>')
-                console.log(er);
+                ErrorLogger.log(er, bot)
             }
         })
 

@@ -1,4 +1,5 @@
 const Discord = require('discord.js')
+const ErrorLogger = require('../logError')
 
 module.exports = {
     name: 'kick',
@@ -26,11 +27,7 @@ module.exports = {
             try {
                 if (m.content.toLowerCase().charAt(0) == 'y') {
                     message.channel.send(`Kicking now`);
-                    try {
-                        member.kick(reason)
-                    } catch (er) {
-                        message.channel.send("Could not kick because: " + er.message)
-                    }
+                    member.kick(reason).catch(er => { ErrorLogger.log(er, bot); return; })
                     let embed = new Discord.MessageEmbed()
                         .setTitle('User Kicked')
                         .setDescription(member)

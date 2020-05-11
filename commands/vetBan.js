@@ -1,5 +1,6 @@
 const fs = module.require('fs');
 const Discord = require('discord.js');
+const ErrorLogger = require('../logError')
 
 module.exports = {
     name: 'vetban',
@@ -73,7 +74,6 @@ module.exports = {
                     return;
                 }
                 if (member.roles.cache.has(vetBanRole.id)) {
-                    console.log('test');
                     message.channel.send(member.nickname.concat(' already has a veteran ban. Reply __**Y**__es to overwrite'));
                     let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 10000 });
                     collector.on('collect', message => {
@@ -121,7 +121,7 @@ module.exports = {
 
             })
         } catch (er) {
-            console.log(er);
+            ErrorLogger.log(er, bot)
             message.channel.send("Error with command. Please check syntax and try again");
         }
     }

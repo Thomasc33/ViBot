@@ -5,6 +5,7 @@ const prefix = botSettings.prefix;
 const bot = new Discord.Client();
 bot.commands = new Discord.Collection();
 bot.vetBans = require('./vetBans.json');
+const ErrorLogger = require(`./logError`)
 
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
@@ -28,7 +29,7 @@ bot.on('message', message => {
     try {
         bot.commands.get(command).execute(message, args, bot);
     } catch (er) {
-        console.log(er);
+        ErrorLogger.log(er, bot)
         message.channel.send("Issue executing the command, check \`;commands\` and try again");
     }
 });
@@ -94,11 +95,10 @@ bot.on("ready", () => {
                     })
                 }
             } catch (er) {
-                console.log("Error removing a vet suspension. See below")
-                console.log(er);
+                ErrorLogger.log(er, bot)
                 continue;
             }
         }
 
-    }, 5000);//change to 60k after testing
+    }, 60000);//change to 60k after testing
 });

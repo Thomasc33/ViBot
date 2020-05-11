@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+const ErrorLogger = require('../logError')
 
 module.exports = {
     name: 'commands',

@@ -1,12 +1,13 @@
 const botSettings = require('../settings.json');
-
+const ErrorLogger = require('../logError')
+var bot;
 module.exports = {
     name: 'unlock',
     description: 'Unlocks voice channels',
     alias: 'ul',
     args: '<channel number>',
     role: 'Almost Raid Leader',
-    execute(message, args) {
+    execute(message, args, bott) {
         if (args[0] > botSettings.voiceChannelCount) return;
         if (message.channel.name === 'dylanbot-commands') {
             var isVet = false;
@@ -16,6 +17,7 @@ module.exports = {
             message.channel.send("Try again, but in dylanbot-commands or veteran-bot-commands");
             return;
         }
+        bot = bott
         handler(message, args[0], isVet);
     },
 };
@@ -40,14 +42,14 @@ async function handler(message, channelNumber, isVet) {
 
 async function unlockChannel(raiderRole, voiceChannel, voiceChannelNumber, isVet) {
     if (isVet) {
-        voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(r => console.log(r))
-            .then(voiceChannel.setName(`Veteran Raiding ${voiceChannelNumber} <-- Join!`).catch(r => console.log(r)))
-            .then(voiceChannel.setUserLimit(0).catch(r => console.log(r)));
+        voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(r => ErrorLogger.log(er, bot))
+            .then(voiceChannel.setName(`Veteran Raiding ${voiceChannelNumber} <-- Join!`).catch(r => ErrorLogger.log(er, bot)))
+            .then(voiceChannel.setUserLimit(0).catch(r => ErrorLogger.log(er, bot)));
     }
     if (!isVet) {
-        voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(r => console.log(r))
-            .then(voiceChannel.setName(`raiding-${voiceChannelNumber} <--Join Now!`).catch(r => console.log(r)))
-            .then(voiceChannel.setUserLimit(0).catch(r => console.log(r)));
+        voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(r => ErrorLogger.log(er, bot))
+            .then(voiceChannel.setName(`raiding-${voiceChannelNumber} <--Join Now!`).catch(r => ErrorLogger.log(er, bot)))
+            .then(voiceChannel.setUserLimit(0).catch(r => ErrorLogger.log(er, bot)));
     }
     return;
 }

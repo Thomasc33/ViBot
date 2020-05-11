@@ -1,5 +1,6 @@
 const Discord = require('discord.js');
 const botSettings = require('../settings.json');
+const ErrorLogger = require('../logError')
 
 module.exports = {
     name: 'poll',

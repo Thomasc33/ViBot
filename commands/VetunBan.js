@@ -1,5 +1,6 @@
 const fs = module.require('fs')
 const Discord = require('discord.js')
+const ErrorLogger = require('../logError')
 
 module.exports = {
     name: 'vetunban',
@@ -56,8 +57,7 @@ module.exports = {
 
                 } catch (er) {
                     message.channel.send("There was an issue removing the suspension. Try again.")
-                    console.log("Error removing a vet suspension. See below")
-                    console.log(er);
+                    ErrorLogger.log(er, bot)
                     continue;
                 }
             }
@@ -75,7 +75,7 @@ module.exports = {
                         message.channel.send("User unbanned successfully");
                     }
                 } catch (er) {
-                    console.log(er)
+                    ErrorLogger.log(er, bot)
                 }
             });
         }

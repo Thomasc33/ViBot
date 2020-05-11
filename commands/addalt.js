@@ -1,4 +1,5 @@
 const Discord = require('discord.js')
+const ErrorLogger = require('../logError')
 
 module.exports = {
     name: 'addalt',
@@ -25,7 +26,6 @@ module.exports = {
         collector.on('collect', m => {
             try {
                 if (m.content.toLowerCase().charAt(0) == 'y') {
-                    console.log(member.nickname)
                     member.setNickname(`${member.nickname} | ${altName}`);
                     let embed = new Discord.MessageEmbed()
                         .setTitle('Alt Added')
@@ -45,7 +45,7 @@ module.exports = {
                 }
             } catch (er) {
                 message.channel.send('Error adding alt. `;addalt <id> <alt name> <proof>')
-                console.log(er);
+                ErrorLogger.log(er, bot)
             }
         })
 

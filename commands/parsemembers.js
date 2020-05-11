@@ -1,5 +1,6 @@
 const Discord = require('discord.js');
 const { createWorker } = require('tesseract.js');
+const ErrorLogger = require('../logError')
 
 
 module.exports = {
@@ -37,7 +38,7 @@ module.exports = {
             await worker.terminate();
             return text;
         }
-        const result = await parseImage(image).catch(er => { console.log(er); message.channel.send('Error parsing. Please try again'); return; });
+        const result = await parseImage(image).catch(er => { ErrorLogger.log(er, bot); message.channel.send('Error parsing. Please try again'); return; });
         try {
             const players = result.substring(20, result.length - 2).split(/,\s*\s/);
             players[0] = players[0].replace(/\s/g, '');
@@ -90,7 +91,7 @@ module.exports = {
                 )
             message.channel.send(embed);
         } catch (er) {
-            console.log(er);
+            ErrorLogger.log(er, bot)
             message.channel.send(`Error handling parsed data. Try again`)
             return;
         }

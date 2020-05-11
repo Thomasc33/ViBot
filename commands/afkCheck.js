@@ -1,6 +1,7 @@
 //imports
 const botSettings = require('../settings.json');
 const Discord = require('discord.js');
+const ErrorLogger = require('../logError')
 
 //globals
 var activeVetRun = false;
