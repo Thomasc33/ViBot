@@ -11,7 +11,7 @@ module.exports = {
         if (message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.find(r => r.name === "Developer").position) return;
         var member = message.mentions.members.first()
         if (member == null) {
-            member = message.guild.members.cache.get(args.shift);
+            member = message.guild.members.cache.get(args.shift());
         } else { args.shift() }
         const altName = args.shift();
         var proof = ' ';

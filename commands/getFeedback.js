@@ -14,16 +14,21 @@ module.exports = {
         }
         if (member == undefined) { message.channel.send('User not found'); return; }
         const customerFeedback = message.guild.channels.cache.find(c => c.name === "customer-feedback")
-        let findings = await message.channel.send(`Searching for all mentions of ${member} in ${customerFeedback}`)
-        var mentions = `Messages found mentioning ${member} in ${customerFeedback}:\n `
-        customerFeedback.messages.fetch()
-            .then(messages => {
-                let mentioning = messages.filter(m => m.mentions.users.get(member.id))
-                if (mentioning.length == 0) message.channel.send("No mentions of user found")
-                else {
-                    mentioning.each(m => mentions = mentions.concat(`\n${m.url}`));
-                    findings.edit(mentions)
-                }
-            })
+        try {
+            let findings = await message.channel.send(`Searching for all mentions of ${member} in ${customerFeedback}`)
+            var mentions = `Messages found mentioning ${member} in ${customerFeedback}:\n `
+            customerFeedback.messages.fetch()
+                .then(messages => {
+                    let mentioning = messages.filter(m => m.mentions.users.get(member.id))
+                    if (mentioning.length == 0) message.channel.send("No mentions of user found")
+                    else {
+                        mentioning.each(m => mentions = mentions.concat(`\n${m.url}`));
+                        findings.edit(mentions)
+                    }
+                })
+        } catch (er) {
+            message.channel.send("Error occured and details have been sent to Vi")
+            ErrorLogger.log(er, bot)
+        }
     }
 }
