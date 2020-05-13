@@ -87,6 +87,27 @@ module.exports = {
             currentReg = new afk(args[0], run, location, message, isVet);
             setTimeout(beginRun, 5000, false)
         }
+    },
+    changeLocation(location, isVet, channel) {
+        if (isVet) {
+            if (activeVetRun) {
+                currentVet.changeLoc(location);
+            } else {
+                channel.send("There is not a run currently going on at the moment")
+                return;
+            }
+        } else {
+            if (activeRun) {
+                currentReg.changeLoc(location);
+            } else {
+                channel.send("There is not a run currently going on at the moment")
+                return;
+            }
+        }
+    },
+    allowRun(isVet) {
+        if (isVet) activeVetRun = false;
+        else activeRun = false;
     }
 }
 
@@ -733,6 +754,37 @@ class afk {
 
         if (this.isVet) activeVetRun = false;
         else activeRun = false;
+    }
+    async changeLoc(locationn) {
+        this.location = locationn;
+
+        //update afk control panel
+        switch (this.run) {
+            case 1:
+                this.leaderEmbed.fields[2].value = this.location;
+                break;
+            case 2:
+                this.leaderEmbed.fields[2].value = this.location;
+                break;
+            case 3:
+                this.leaderEmbed.fields[4].value = this.location;
+                break;
+        }
+        this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => console.log(er));
+        this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => console.log(er));
+
+        //send location to everyone that already had it
+        var arrayLength = this.earlyLocation.length;
+        try {
+            for (i = 0; i < arrayLength; i++) {
+                let u = this.earlyLocation[i];
+                let dm = await u.createDM();
+                await dm.send(`The location has been changed to \`${this.location}\`. Get there ASAP`);
+            }
+        } catch (er) {
+            console.log(er)
+            return;
+        }
     }
 }
 

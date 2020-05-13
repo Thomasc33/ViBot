@@ -1,6 +1,8 @@
 const Discord = require('discord.js');
 const { createWorker } = require('tesseract.js');
 const ErrorLogger = require('../logError')
+const vision = require('@google-cloud/vision')
+const client = new vision.ImageAnnotatorClient();
 
 
 module.exports = {
@@ -11,6 +13,8 @@ module.exports = {
     notes: 'Image can either be a link, or an embeded image',
     role: 'Almost Raid Leader',
     async execute(message, args, bot) {
+        message.channel.send("Feature coming soon:tm:")
+        return;
         if (!(message.channel.name === 'dylanbot-commands' || message.channel.name === 'veteran-bot-commands')) {
             message.channel.send("Try again in dylanbot-commands or veteran-bot-commands");
             return;
@@ -29,7 +33,7 @@ module.exports = {
             image = await message.attachments.first().proxyURL;
         }
         message.channel.send(`Starting the parse.. This will take around a minute`);
-        var worker = createWorker();
+        /*var worker = createWorker();
         async function parseImage(image) {
             await worker.load();
             await worker.loadLanguage('eng');
@@ -37,8 +41,13 @@ module.exports = {
             const { data: { text } } = await worker.recognize(image);
             await worker.terminate();
             return text;
-        }
-        const result = await parseImage(image).catch(er => { ErrorLogger.log(er, bot); message.channel.send('Error parsing. Please try again'); return; });
+        }*/
+        //const result = await parseImage(image).catch(er => { ErrorLogger.log(er, bot); message.channel.send('Error parsing. Please try again'); return; });
+        const [result] = await client.labelDetection(image)
+        console.log(result)
+        const textArray = result.TextAnnotation;
+        console.log(textArray)
+        return;
         try {
             const players = result.substring(20, result.length - 2).split(/,\s*\s/);
             players[0] = players[0].replace(/\s/g, '');

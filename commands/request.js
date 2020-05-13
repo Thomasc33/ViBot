@@ -55,12 +55,32 @@ module.exports = {
                 var ReactionFilter = (r, u) => r.emoji.id === botSettings.emoteIDs.LostHallsKey && !u.bot;
                 break;
             case 'v':
+                embed.setDescription(`A vial has been requested for \`${voiceChannel.name}\`
+                React with <${botSettings.emote.Vial}>`)
+                    .setColor('#8c00ff')
+                requestMessage.react(botSettings.emoteIDs.Vial)
+                var ReactionFilter = (r, u) => r.emoji.id === botSettings.emoteIDs.Vial && !u.bot;
                 break;
             case 'r':
+                embed.setDescription(`A rusher has been requested for \`${voiceChannel.name}\`
+                React with <${botSettings.emote.Plane}>`)
+                    .setColor('#ff0000')
+                requestMessage.react(botSettings.emoteIDs.Plane)
+                var ReactionFilter = (r, u) => r.emoji.id === botSettings.emoteIDs.Plane && !u.bot;
                 break;
             case 'm':
+                embed.setDescription(`A Mystic has been requested for \`${voiceChannel.name}\`
+                React with <${botSettings.emote.Mystic}>`)
+                    .setColor('#8c00ff')
+                requestMessage.react(botSettings.emoteIDs.mystic)
+                var ReactionFilter = (r, u) => r.emoji.id === botSettings.emoteIDs.mystic && !u.bot;
                 break;
             case 'b':
+                embed.setDescription(`A Brain has been requested for \`${voiceChannel.name}\`
+                React with <${botSettings.emote.Brain}>`)
+                    .setColor('#8c00ff')
+                requestMessage.react(botSettings.emoteIDs.brain)
+                var ReactionFilter = (r, u) => r.emoji.id === botSettings.emoteIDs.brain && !u.bot;
                 break;
         }
         requestMessage.edit(embed)
@@ -71,22 +91,38 @@ module.exports = {
                 if (!recieved) {
                     confirmKey(u, r)
                 }
+            } if (r.emoji.id === botSettings.emoteIDs.Vial) {
+                if (!recieved) {
+                    confirmVial(u, r)
+                }
+            }
+            if (r.emoji.id === botSettings.emoteIDs.Plane) {
+                if (!recieved) {
+                    if (message.guild.members.cache.get(u.id).roles.cache.has(message.guild.roles.cache.find(r => r.name === 'Official Rusher').id)) {
+                        confirmRush(u, r)
+                    }
+                }
+            }
+            if (r.emoji.id === botSettings.emoteIDs.mystic) {
+                if (!recieved) {
+                    confirmMystic(u, r)
+                }
+            }
+            if (r.emoji.id === botSettings.emoteIDs.brain) {
+                if (!recieved) {
+                    confirmBrain(u, r)
+                }
             }
         })
         async function confirmKey(u, r) {
             let endAfter = setInterval(function () {
                 try {
-                    dmReactionCollector.stop();
-                    dm.send('Reaction took too long to receive, or another key already confirmed. Re-react to try again');
-                    clearInterval(endAfter);
-                    return;
-                } catch (er) {
-                    console.log(`Someones pm's are private`);
-                    clearInterval(endAfter);
-                    return;
-                }
+                    dmReactionCollector.stop()
+                } catch (er) { }
+                clearInterval(endAfter);
+                return;
             }, 60000)
-            let dm = await u.createDM().catch(r => console.log(r)).catch(er => console.log(er));
+            let dm = await u.createDM().catch(er => console.log(r));
             let DirectMessage = await dm.send(`You reacted as <${botSettings.emote.LostHallsKey}>. Press :white_check_mark: to confirm. Ignore this message otherwise`).catch(r => console.log(r));
 
             let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, dmReactionFilter);
@@ -97,13 +133,10 @@ module.exports = {
                 dm.send(`The location for this run has been set to \`${location}\`, get there and confirm key with ${message.member.nickname}`);
                 message.channel.send(`<@!${u.id}> has been given location`)
                 let user = message.guild.members.cache.get(u.id)
-                try {
-                    user.edit({ channel: voiceChannel });
-                } catch (er) {
-                    message.channel.send("There was an issue moving them in. Most likely they aren't connect to a voice channel")
-                }
+                user.edit({ channel: voiceChannel }).catch(er => message.channel.send("There was an issue moving them in. Most likely they aren't connect to a voice channel"));
                 embed.setDescription(`Thank you to ${user} for bringing a <${botSettings.emote.LostHallsKey}>`)
                 requestMessage.edit('', embed);
+                reactionCollector.stop();
                 dmReactionCollector.stop();
             });
         }
@@ -111,11 +144,9 @@ module.exports = {
             let endAfter = setInterval(function () {
                 try {
                     dmReactionCollector.stop();
-                    dm.send('Reaction took too long to receive, or another key already confirmed. Re-react to try again');
                     clearInterval(endAfter);
                     return;
                 } catch (er) {
-                    console.log(`Someones pm's are private`);
                     clearInterval(endAfter);
                     return;
                 }
@@ -128,19 +159,15 @@ module.exports = {
 
                 await DirectMessage.react("✅");
                 await dmReactionCollector.on("collect", (r, u) => {
-                    if (this.vialCount > 2) return;
-                    if (this.vials.includes(u)) return;
-                    this.vialCount++;
-                    this.vials[this.vialCount - 1] = u;
-                    dm.send(`The location for this run has been set to \`${this.location}\`, get there and confirm vial with ${this.message.member.nickname}`);
-                    console.log(`${u.tag} confirmed vial`);
-                    if (this.leaderEmbed.fields[1].value == `None yet!`) {
-                        this.leaderEmbed.fields[1].value = `<${botSettings.emote.Vial}>: <@!${u.id}>`;
-                    } else this.leaderEmbed.fields[1].value += `\n<${botSettings.emote.Vial}>: ${`<@!${u.id}>`}`
-                    this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => console.log(er));
-                    this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => console.log(er));
-                    this.earlyLocation.push(u);
-                    clearInterval(endAfter);
+                    if (recieved) return;
+                    recieved = true;
+                    dm.send(`The location for this run has been set to \`${location}\`, get there and confirm vial with ${message.member.nickname}`);
+                    message.channel.send(`<@!${u.id}> has been given location`)
+                    let user = message.guild.members.cache.get(u.id)
+                    user.edit({ channel: voiceChannel }).catch(er => message.channel.send("There was an issue moving them in. Most likely they aren't connect to a voice channel"));
+                    embed.setDescription(`Thank you to ${user} for bringing a <${botSettings.emote.Vial}>`)
+                    requestMessage.edit('', embed);
+                    reactionCollector.stop();
                     dmReactionCollector.stop();
                 });
             } catch (er) {
@@ -151,36 +178,28 @@ module.exports = {
             let endAfter = setInterval(function () {
                 try {
                     dmReactionCollector.stop();
-                    dm.send('Reaction took too long to receive, or another key already confirmed. Re-react to try again');
                     clearInterval(endAfter);
                     return;
                 } catch (er) {
-                    console.log(`Someones pm's are private`);
                     clearInterval(endAfter);
                     return;
                 }
             }, 60000)
             try {
-                let dm = await u.createDM().catch();
-                let DirectMessage = await dm.send(`You reacted as <${botSettings.emote.Plane}>. Press :white_check_mark: to confirm. Ignore this message otherwise`).catch();
-
+                let dm = await u.createDM()
+                let DirectMessage = await dm.send(`You reacted as <${botSettings.emote.Plane}>. Press :white_check_mark: to confirm. Ignore this message otherwise`);
                 let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, dmReactionFilter);
-
                 await DirectMessage.react("✅");
                 await dmReactionCollector.on("collect", (r, u) => {
-                    if (this.rusherCount + 1 > 3) return;
-                    if (this.rushers.includes(u)) return;
-                    this.rushers[this.rusherCount] = u;
-                    this.rusherCount++;
-                    dm.send(`The location for this run has been set to \`${this.location}\`, get there asap`);
-                    console.log(`${u.tag} confirmed rusher`);
-                    if (this.leaderEmbed.fields[1].value == `None yet!`) {
-                        this.leaderEmbed.fields[1].value = `<${botSettings.emote.Plane}>: <@!${u.id}>`;
-                    } else this.leaderEmbed.fields[1].value += `\n<${botSettings.emote.Plane}>: ${`<@!${u.id}>`}`;
-                    this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => console.log(er));
-                    this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => console.log(er));
-                    this.earlyLocation.push(u);
-                    clearInterval(endAfter);
+                    if (recieved) return;
+                    recieved = true;
+                    dm.send(`The location for this run has been set to \`${location}\``);
+                    message.channel.send(`<@!${u.id}> has been given location`)
+                    let user = message.guild.members.cache.get(u.id)
+                    user.edit({ channel: voiceChannel }).catch(er => message.channel.send("There was an issue moving them in. Most likely they aren't connect to a voice channel"));
+                    embed.setDescription(`Thank you to ${user} for bringing a <${botSettings.emote.Plane}>`)
+                    requestMessage.edit('', embed);
+                    reactionCollector.stop();
                     dmReactionCollector.stop();
                 });
             } catch (er) {
@@ -191,11 +210,9 @@ module.exports = {
             let endAfter = setInterval(function () {
                 try {
                     dmReactionCollector.stop();
-                    dm.send('Reaction took too long to receive, or another key already confirmed. Re-react to try again');
                     clearInterval(endAfter);
                     return;
                 } catch (er) {
-                    console.log(`Someones pm's are private`);
                     clearInterval(endAfter);
                     return;
                 }
@@ -207,19 +224,15 @@ module.exports = {
                 let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, dmReactionFilter);
                 await DirectMessage.react("✅");
                 await dmReactionCollector.on("collect", (r, u) => {
-                    if (this.mysticCount > 2) return;
-                    if (this.mystics.includes(u)) return;
-                    this.mysticCount++;
-                    this.mystics[this.mysticCount - 1] = u;
-                    dm.send(`The location for this run has been set to \`${this.location}\`, get there asap`);
-                    console.log(`${u.tag} confirmed mystic`);
-                    if (this.leaderEmbed.fields[3].value == `None yet!`) {
-                        this.leaderEmbed.fields[3].value = `<${botSettings.emote.Mystic}>: <@!${u.id}>`;
-                    } else this.leaderEmbed.fields[3].value += `\n<${botSettings.emote.Mystic}>: ${`<@!${u.id}>`}`
-                    this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => console.log(er));
-                    this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => console.log(er));
-                    this.earlyLocation.push(u);
-                    clearInterval(endAfter);
+                    if (recieved) return;
+                    recieved = true;
+                    dm.send(`The location for this run has been set to \`${location}\``);
+                    message.channel.send(`<@!${u.id}> has been given location`)
+                    let user = message.guild.members.cache.get(u.id)
+                    user.edit({ channel: voiceChannel }).catch(er => message.channel.send("There was an issue moving them in. Most likely they aren't connect to a voice channel"));
+                    embed.setDescription(`Thank you to ${user} for bringing a <${botSettings.emote.Mystic}>`)
+                    requestMessage.edit('', embed);
+                    reactionCollector.stop();
                     dmReactionCollector.stop();
                 });
             } catch (er) {
@@ -246,19 +259,15 @@ module.exports = {
                 let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, dmReactionFilter);
                 await DirectMessage.react("✅");
                 await dmReactionCollector.on("collect", (r, u) => {
-                    if (this.brainCount > 2) return;
-                    if (this.brains.includes(u)) return;
-                    this.brainCount++;
-                    this.brains[this.brainCount - 1] = u;
-                    dm.send(`The location for this run has been set to \`${this.location}\`, get there asap`);
-                    console.log(`${u.tag} confirmed brain`);
-                    if (this.leaderEmbed.fields[2].value == `None yet!`) {
-                        this.leaderEmbed.fields[2].value = `<${botSettings.emote.Brain}>: <@!${u.id}>`;
-                    } else this.leaderEmbed.fields[2].value += `\n<${botSettings.emote.Brain}>: ${`<@!${u.id}>`}`
-                    this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => console.log(er));
-                    this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => console.log(er));
-                    this.earlyLocation.push(u);
-                    clearInterval(endAfter);
+                    if (recieved) return;
+                    recieved = true;
+                    dm.send(`The location for this run has been set to \`${location}\``);
+                    message.channel.send(`<@!${u.id}> has been given location`)
+                    let user = message.guild.members.cache.get(u.id)
+                    user.edit({ channel: voiceChannel }).catch(er => message.channel.send("There was an issue moving them in. Most likely they aren't connect to a voice channel"));
+                    embed.setDescription(`Thank you to ${user} for bringing a <${botSettings.emote.Brain}>`)
+                    requestMessage.edit('', embed);
+                    reactionCollector.stop();
                     dmReactionCollector.stop();
                 });
             } catch (er) {
