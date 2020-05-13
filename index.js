@@ -54,6 +54,8 @@ function aliasCheck(pcommand) {
             return 'headcount';
         case 'cn':
             return 'changename';
+        case 'rq':
+            return 'request';
         case 'clear':
             return 'clean';
         case 'gfb':

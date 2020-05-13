@@ -17,7 +17,10 @@ module.exports = {
         }
         if (message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.find(r => r.name === "Veteran Raid Leader").position) return;
         let toBan = [];
-
+        if (args.length < 3) {
+            message.channel.send("Expected at least 4 arguments, but recieved " + args.length)
+            return;
+        }
         for (i = 0; i < args.length; i++) {
             let arg = args[0];
             if (arg.replace(/[a-z]/gi, '') !== '') {
@@ -56,6 +59,11 @@ module.exports = {
                     message.channel.send("Please enter a valid time type __**d**__ay, __**m**__inute, __**s**__econd, __**w**__eek, __**y**__ear");
                     return;
             }
+        } catch (er) {
+            message.channel.send("Invalid time given. Please try again");
+            return;
+        }
+        try {
             var reason = "";
             for (i = 2; i < args.length; i++) {
                 reason = reason.concat(args[i]) + ' ';
