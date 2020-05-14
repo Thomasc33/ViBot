@@ -12,8 +12,6 @@ module.exports = {
     notes: 'Image can either be a link, or an embeded image',
     role: 'Almost Raid Leader',
     async execute(message, args, bot) {
-        message.channel.send("Feature coming soon:tm:")
-        return;
         if (!(message.channel.name === 'dylanbot-commands' || message.channel.name === 'veteran-bot-commands')) {
             message.channel.send("Try again in dylanbot-commands or veteran-bot-commands");
             return;
@@ -31,19 +29,22 @@ module.exports = {
         } else {
             image = await message.attachments.first().proxyURL;
         }
+        if (image == null) return;
+        console.log(image)
+
         message.channel.send(`Starting the parse.. This will take around a minute`);
-        const [result] = await client.labelDetection(image)
-        console.log(result)
-        const textArray = result.TextAnnotation;
-        console.log(textArray)
-        return;
+        const [result] = await client.textDetection(image)
+        var players = result.fullTextAnnotation.text.replace(/[\n,]/g, " ").split(/ +/)
+        players.shift()
+        players.shift()
+        players.shift()
+        console.log(players)
         try {
-            const players = result.substring(20, result.length - 2).split(/,\s*\s/);
-            players[0] = players[0].replace(/\s/g, '');
             var voiceUsers = []
             var alts = []
             var crashers = []
             var movedIn = []
+            var findA = []
             if (message.channel.name === 'veteran-bot-commands') var channel = message.guild.channels.cache.find(c => c.name == `Veteran Raiding ${channelN}` || c.name == `Veteran Raiding ${this.channelN} <--Join Now!`);
             else var channel = message.guild.channels.cache.find(c => c.name == `raiding-${channelN}` || c.name == `raiding-${channelN} <--Join Now!`);
             voiceUsers = channel.members.array();
@@ -52,8 +53,8 @@ module.exports = {
                 return;
             }
             for (let i in players) {
-
                 let player = players[i];
+                if (player == '') continue;
                 let member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(player.toLowerCase()));
                 if (member == null) {
                     crashers.push(player);
@@ -63,6 +64,7 @@ module.exports = {
                         movedIn.push(`<@!${member.id}>`);
                     }
                     crashers.unshift(`<@!${member.id}>`);
+                    findA.push(player)
                 }
             }
             for (let i in voiceUsers) {
@@ -71,21 +73,23 @@ module.exports = {
                     alts.push(`<@!${voiceUsers[i].id}>`);
                 }
             }
-            var crashersS = ' ', altsS = ' ', movedS = ' '
+            var crashersS = ' ', altsS = ' ', movedS = ' ', find = `;find `
             for (let i in crashers) { crashersS = crashersS.concat(crashers[i]) + ', ' }
             for (let i in alts) { altsS = altsS.concat(alts[i]) + ', ' }
             for (let i in movedIn) { movedS = movedS.concat(movedIn[i]) + ', ' }
+            for (let i in findA) { find = find.concat(findA[i]) + ' ' }
             if (crashersS == ' ') { crashersS = 'None' }
             if (altsS == ' ') { altsS = 'None' }
             if (movedS == ' ') { movedS = 'None' }
             let embed = new Discord.MessageEmbed()
                 .setTitle(`Parse for ${channel.name}`)
                 .setColor('#00ff00')
-                .setDescription(`There are ${crashers.length} crashers, ${alts.length} alts, and ${movedIn.length} people that got moved in`)
+                .setDescription(`There are ${crashers.length} crashers, ${alts.length} potential alts, and ${movedIn.length} people that got moved in`)
                 .addFields(
-                    { name: 'Alts', value: altsS },
+                    { name: 'Potential Alts', value: altsS },
                     { name: 'Moved In', value: movedS },
-                    { name: 'Crashers', value: crashersS }
+                    { name: 'Crashers', value: crashersS },
+                    { name: 'Find Command', value: `\`\`\`${find}\`\`\`` }
                 )
             message.channel.send(embed);
         } catch (er) {

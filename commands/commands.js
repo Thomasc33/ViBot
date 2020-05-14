@@ -33,8 +33,9 @@ module.exports = {
                 .setTitle('Commands')
                 .setColor('#ff0000')
                 .addFields(
-                    { name: 'Raiding', value: '\`\`\`css\n;afk ;newafk ;lock ;unlock ;clean ;location ;allowrun ;parsemembers ;request\`\`\`' },
-                    { name: 'Moderation', value: '\`\`\`css\n;find ;vetban ;vetunban ;addalt ;changename ;manualverify ;manualvetverify ;kick ;getfeedback ;nonicknames\`\`\`' }
+                    { name: 'Raiding', value: '\`\`\`css\n;afk ;newafk ;lock ;unlock ;clean ;location ;allowrun ;newlocation ;allownewrun ;parsemembers ;request\`\`\`' },
+                    { name: 'Moderation', value: '\`\`\`css\n;find ;vetban ;vetunban ;addalt ;changename ;manualverify ;manualvetverify ;kick ;getfeedback ;nonicknames\`\`\`' },
+                    {name: 'Meme', value: '\`\`\`;xbox\`\`\`'}
                 )
             message.channel.send(commandPanel);
         }
