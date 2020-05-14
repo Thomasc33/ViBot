@@ -9,7 +9,7 @@ module.exports = {
     execute(message, args, bot) {
         var suspendedButVerifed = message.guild.roles.cache.find(r => r.name === "Suspended but Verified");
         var suspendedRole = message.guild.roles.cache.find(r => r.name === "Suspended");
-
+        var notFoundString = ''
         //combines users into an array
         for (let i in args) {
             let u = '';
@@ -17,9 +17,7 @@ module.exports = {
             let member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(u.toLowerCase()));
 
             if (member == null) {
-                var embed = new Discord.MessageEmbed()
-                    .setColor('#ffff00')
-                    .setDescription(`I could not find anyone in the server with the nickname ${u}`);
+                notFoundString = notFoundString.concat(`${u}, `)
 
             } else {
                 var embed = new Discord.MessageEmbed()
@@ -41,9 +39,15 @@ module.exports = {
                 if (member.voice.channel != null) {
                     embed.fields[2].value = member.voice.channel.name;
                 }
+                message.channel.send(embed);
             }
-            message.channel.send(embed);
-
+        }
+        if (notFoundString != '') {
+            var embed = new Discord.MessageEmbed()
+                .setColor('#ffff00')
+                .setTitle('Users not found:')
+                .setDescription(notFoundString);
+            message.channel.send(embed)
         }
     }
 }

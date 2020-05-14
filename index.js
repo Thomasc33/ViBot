@@ -26,6 +26,7 @@ bot.on('message', message => {
         message.channel.send('Command doesnt exist, check \`commands\` and try again');
         return;
     }
+    if (message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.find(r => r.name === bot.commands.get(command).role).position) return;
     try {
         bot.commands.get(command).execute(message, args, bot);
     } catch (er) {
@@ -60,6 +61,12 @@ function aliasCheck(pcommand) {
             return 'clean';
         case 'gfb':
             return 'getfeedback';
+        case 'mvv':
+            return 'manualvetverify';
+        case 'mv':
+            return 'manualverify';
+        case 'help':
+            return 'commands';
         default:
             return pcommand;
     }
@@ -70,7 +77,6 @@ bot.login(botSettings.key);
 bot.on("ready", () => {
     console.log(`Bot loaded: ${bot.user.username}`);
     bot.user.setActivity(`No, I'm not hardcoded`);
-
     bot.setInterval(() => {
         for (let i in bot.vetBans) {
             const time = bot.vetBans[i].time;

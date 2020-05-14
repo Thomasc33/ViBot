@@ -16,7 +16,6 @@ module.exports = {
     args: '<channel> <c/v/fsv> <location>',
     role: 'Almost Raid Leader',
     async execute(message, args, bott) {
-
         bot = bott
         var isVet = false;
         if (message.channel.name === 'dylanbot-commands') {
@@ -817,7 +816,9 @@ async function cleanChannel(channel, lounge) {
     for (let i in vcUsers) {
         let u = vcUsers[i];
         if (u.roles.highest.position < message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) {
-            u.edit({ channel: lounge });
+            try {
+                u.edit({ channel: lounge });
+            } catch (er) { ErrorLogger.log(er, bot) }
         }
     }
 }

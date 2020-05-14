@@ -5,6 +5,7 @@ module.exports = {
     name: 'commands',
     description: 'Gives list of commands available or the specifics of a command',
     args: '(Command Name)',
+    alias: 'help',
     role: 'Almost Raid Leader',
     execute(message, args, bot) {
         if (args.length != 0) {
@@ -33,7 +34,7 @@ module.exports = {
                 .setColor('#ff0000')
                 .addFields(
                     { name: 'Raiding', value: '\`\`\`css\n;afk ;newafk ;lock ;unlock ;clean ;location ;allowrun ;parsemembers ;request\`\`\`' },
-                    { name: 'Moderation', value: '\`\`\`css\n;find ;vetban ;vetunban ;addalt ;kick ;changename ;getfeedback\`\`\`' }
+                    { name: 'Moderation', value: '\`\`\`css\n;find ;vetban ;vetunban ;addalt ;changename ;manualverify ;manualvetverify ;kick ;getfeedback ;nonicknames\`\`\`' }
                 )
             message.channel.send(commandPanel);
         }

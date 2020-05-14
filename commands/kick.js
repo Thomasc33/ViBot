@@ -7,7 +7,6 @@ module.exports = {
     args: '<id/mention> <reason>',
     role: 'Security',
     execute(message, args, bot) {
-        if (message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.find(r => r.name === "Security").position) return;
         if (message.guild.members.cache.get(message.author.id).roles.highest.position <= message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) {
             message.channel.send(`You may not kick other staff members`);
             return;
