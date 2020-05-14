@@ -5,7 +5,6 @@ module.exports = {
     name: 'status',
     description: 'returns bot status',
     alias: 'ping',
-
     role: 'Almost Raid Leader',
     async execute(message, args, bot) {
         const m = await message.channel.send('Pinging...').catch(er => { ErrorLogger.log(er, bot); return; });

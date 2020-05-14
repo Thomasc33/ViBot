@@ -5,9 +5,9 @@ module.exports = {
     name: 'kick',
     description: 'Kicks user from server and logs it',
     args: '<id/mention> <reason>',
-    role: 'Moderator',
+    role: 'Security',
     execute(message, args, bot) {
-        if (message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.find(r => r.name === "Head Raid Leader").position) return;
+        if (message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.find(r => r.name === "Security").position) return;
         if (message.guild.members.cache.get(message.author.id).roles.highest.position <= message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) {
             message.channel.send(`You may not kick other staff members`);
             return;
@@ -20,18 +20,19 @@ module.exports = {
         for (i = 1; i < args.length; i++) {
             reason = reason.concat(args[i]) + ' ';
         }
-        message.channel.send(`Are you sure you want to kick ${member.nickname}? Y/N`);
+        message.channel.send(`Are you sure you want to kick ${member.displayName}? Y/N`);
         let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 10000 });
         collector.on('collect', m => {
             if (m.author != message.author) return;
             try {
                 if (m.content.toLowerCase().charAt(0) == 'y') {
                     message.channel.send(`Kicking now`);
-                    member.kick(reason).catch(er => { ErrorLogger.log(er, bot); return; })
+                    member.send(`You have been kicked from ${message.guild.name} for:\n${reason}`)
+                    member.kick(reason).catch(er => { ErrorLogger.log(er, bot); message.channel.send(`Could not kick because: \`${er.message}\``); return; })
                     let embed = new Discord.MessageEmbed()
                         .setTitle('User Kicked')
                         .setDescription(member)
-                        .addField('User', member.nickname, true)
+                        .addField('User', member.displayName, true)
                         .addField('Kicked By', `<@!${m.author.id}>`, true)
                         .setTimestamp(Date.now());
                     message.guild.channels.cache.find(c => c.name === 'mod-logs').send(embed);

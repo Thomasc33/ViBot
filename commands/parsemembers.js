@@ -1,5 +1,4 @@
 const Discord = require('discord.js');
-const { createWorker } = require('tesseract.js');
 const ErrorLogger = require('../logError')
 const vision = require('@google-cloud/vision')
 const client = new vision.ImageAnnotatorClient();
@@ -33,16 +32,6 @@ module.exports = {
             image = await message.attachments.first().proxyURL;
         }
         message.channel.send(`Starting the parse.. This will take around a minute`);
-        /*var worker = createWorker();
-        async function parseImage(image) {
-            await worker.load();
-            await worker.loadLanguage('eng');
-            await worker.initialize('eng');
-            const { data: { text } } = await worker.recognize(image);
-            await worker.terminate();
-            return text;
-        }*/
-        //const result = await parseImage(image).catch(er => { ErrorLogger.log(er, bot); message.channel.send('Error parsing. Please try again'); return; });
         const [result] = await client.labelDetection(image)
         console.log(result)
         const textArray = result.TextAnnotation;
