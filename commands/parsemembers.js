@@ -40,6 +40,10 @@ module.exports = {
         players.shift()
         console.log(players)
         try {
+            var raiders = []
+            for (let i in players) {
+                raiders.push(players[i].toLowerCase())
+            }
             var voiceUsers = []
             var alts = []
             var crashers = []
@@ -52,8 +56,8 @@ module.exports = {
                 message.channel.send('Voice Channel is empty. Make sure the correct channel was entered')
                 return;
             }
-            for (let i in players) {
-                let player = players[i];
+            for (let i in raiders) {
+                let player = raiders[i];
                 if (player == '') continue;
                 let member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(player.toLowerCase()));
                 if (member == null) {
@@ -68,8 +72,8 @@ module.exports = {
                 }
             }
             for (let i in voiceUsers) {
-                let nick = voiceUsers.nickname.toLowerCase()
-                if (!players.toLowerCase().includes(nick)) {
+                let nick = voiceUsers[i].nickname.toLowerCase()
+                if (!raiders.includes(nick)) {
                     alts.push(`<@!${voiceUsers[i].id}>`);
                 }
             }
