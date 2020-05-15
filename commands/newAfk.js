@@ -77,14 +77,14 @@ module.exports = {
         }
         if (isVet) {
             await cleanChannel(message.guild.channels.cache.find(c => c.name === `Veteran Raiding ${args[0]}` || c.name === `Veteran Raiding ${args[0]} <-- Join!`), message.guild.channels.cache.find(c => c.name === 'Veteran Lounge'));
-            message.channel.send('Channel cleaning successful. Beginning afk check in 5 seconds')
+            message.channel.send('Channel cleaning successful. Beginning afk check in 10 seconds')
             currentVet = new afk(args[0], run, location, message, isVet);
-            setTimeout(beginRun, 5000, true)
+            setTimeout(beginRun, 10000, true)
         } else {
             await cleanChannel(message.guild.channels.cache.find(c => c.name === `raiding-${args[0]}` || c.name === `raiding-${args[0]} <-- Join!`), message.guild.channels.cache.find(c => c.name === 'lounge'));
-            message.channel.send('Channel cleaning successful. Beginning afk check in 5 seconds')
+            message.channel.send('Channel cleaning successful. Beginning afk check in 10 seconds')
             currentReg = new afk(args[0], run, location, message, isVet);
-            setTimeout(beginRun, 5000, false)
+            setTimeout(beginRun, 10000, false)
         }
     },
     changeLocation(location, isVet, channel) {
@@ -161,13 +161,13 @@ class afk {
     async sendMessage() {
         switch (this.run) {
             case 1: //cult
-                this.afkCheckEmbed = await this.raidStatus.send(`@here A \`Cult\` afk will be starting in 5 seconds by ${this.message.member}. Prepare to join raiding \`${this.voiceChannel.name}\``).catch(er => ErrorLogger.log(er, bot));
+                this.afkCheckEmbed = await this.raidStatus.send(`@here A \`Cult\` afk will be starting in 10 seconds by ${this.message.member}. Prepare to join raiding \`${this.voiceChannel.name}\``).catch(er => ErrorLogger.log(er, bot));
                 break;
             case 2: //void
-                this.afkCheckEmbed = await this.raidStatus.send(`@here A \`Void\` afk will be starting in 5 seconds by ${this.message.member}. Prepare to join raiding \`${this.voiceChannel.name}\``).catch(er => ErrorLogger.log(er, bot));
+                this.afkCheckEmbed = await this.raidStatus.send(`@here A \`Void\` afk will be starting in 10 seconds by ${this.message.member}. Prepare to join raiding \`${this.voiceChannel.name}\``).catch(er => ErrorLogger.log(er, bot));
                 break;
             case 3: //full skip
-                this.afkCheckEmbed = await this.raidStatus.send(`@here A \`Full-Skip Void\` afk will be starting in 5 seconds by ${this.message.member}. Prepare to join raiding \`${this.voiceChannel.name}\``).catch(er => ErrorLogger.log(er, bot));
+                this.afkCheckEmbed = await this.raidStatus.send(`@here A \`Full-Skip Void\` afk will be starting in 10 seconds by ${this.message.member}. Prepare to join raiding \`${this.voiceChannel.name}\``).catch(er => ErrorLogger.log(er, bot));
                 break;
             default: return;
         }
@@ -817,7 +817,7 @@ async function cleanChannel(channel, lounge) {
         let u = vcUsers[i];
         if (u.roles.highest.position < message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) {
             try {
-                u.edit({ channel: lounge });
+                await u.edit({ channel: lounge });
             } catch (er) { ErrorLogger.log(er, bot) }
         }
     }

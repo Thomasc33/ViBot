@@ -35,7 +35,7 @@ module.exports = {
                 .addFields(
                     { name: 'Raiding', value: '\`\`\`css\n;afk ;newafk ;lock ;unlock ;clean ;location ;allowrun ;newlocation ;allownewrun ;parsemembers ;request\`\`\`' },
                     { name: 'Moderation', value: '\`\`\`css\n;find ;vetban ;vetunban ;addalt ;changename ;manualverify ;manualvetverify ;kick ;getfeedback ;nonicknames\`\`\`' },
-                    {name: 'Meme', value: '\`\`\`;xbox\`\`\`'}
+                    { name: 'Meme', value: '\`\`\`css\n;xbox ;ava\`\`\`' }
                 )
             message.channel.send(commandPanel);
         }

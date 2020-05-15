@@ -26,7 +26,9 @@ bot.on('message', message => {
         message.channel.send('Command doesnt exist, check \`commands\` and try again');
         return;
     }
-    if (message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.find(r => r.name === bot.commands.get(command).role).position) return;
+    try {
+        if (message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.find(r => r.name === bot.commands.get(command).role).position) return;
+    } catch (er) { ErrorLogger.log(er, bot) }
     try {
         bot.commands.get(command).execute(message, args, bot);
     } catch (er) {
@@ -67,6 +69,8 @@ function aliasCheck(pcommand) {
             return 'manualverify';
         case 'help':
             return 'commands';
+        case 'ava':
+            return 'avatar';
         default:
             return pcommand;
     }

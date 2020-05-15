@@ -60,6 +60,7 @@ module.exports = {
                 let player = raiders[i];
                 if (player == '') continue;
                 let member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(player.toLowerCase()));
+                if (member.roles.highest.position >= message.guild.roles.cache.find(r => r.name === 'Almost Raid Leader').position) continue;
                 if (member == null) {
                     crashers.push(player);
                 } else if (!voiceUsers.includes(member)) {
@@ -72,7 +73,8 @@ module.exports = {
                 }
             }
             for (let i in voiceUsers) {
-                let nick = voiceUsers[i].nickname.toLowerCase()
+                if (voiceUsers[i].roles.highest.position >= message.guild.roles.cache.find(r => r.name === 'Almost Raid Leader').position) continue;
+                let nick = voiceUsers[i].nickname.toLowerCase().replace(/[^a-z|]/gi, '')
                 if (!raiders.includes(nick)) {
                     alts.push(`<@!${voiceUsers[i].id}>`);
                 }
