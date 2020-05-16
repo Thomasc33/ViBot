@@ -7,13 +7,12 @@ module.exports = {
     args: '<id/mention> <reason>',
     role: 'Security',
     execute(message, args, bot) {
-        if (message.guild.members.cache.get(message.author.id).roles.highest.position <= message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) {
+        if (args.length > 1) { message.channel.send("Check the command syntax and try again"); return; }
+        var member = message.mentions.members.first()
+        if (member == null) member = message.guild.members.cache.get(args[0]);
+        if (member.roles.highest.position >= message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) {
             message.channel.send(`You may not kick other staff members`);
             return;
-        }
-        var member = message.mentions.members.first()
-        if (member == null) {
-            member = message.guild.members.cache.get(args[0]);
         }
         var reason = ' ';
         for (i = 1; i < args.length; i++) {
@@ -38,6 +37,7 @@ module.exports = {
                     if (reason != ' ') {
                         message.guild.channels.cache.find(c => c.name === 'mod-logs').send(reason);
                     }
+                    message.channel.send("Success")
                 }
             } catch (er) {
                 message.channel.send("Error kicking user. Please try again")

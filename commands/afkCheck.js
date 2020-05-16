@@ -805,9 +805,8 @@ To end the AFK check as a leader, react to ❌`)
         this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => console.log(er));
 
         //allow runs
-
-
-        //TO:DO Move people out
+        if(this.isVet) activeVetRun = false;
+        else activeRun = false;
 
     }
     async abortAfk() {

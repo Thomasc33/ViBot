@@ -36,7 +36,7 @@ async function handler(message, args) {
         for (let i in vcUsers) {
             let u = vcUsers[i];
             if (u.roles.highest.position < message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) {
-                u.edit({ channel: lounge });
+                await u.edit({ channel: lounge });
             }
         }
     } else {
@@ -46,7 +46,7 @@ async function handler(message, args) {
         for (let i in vcUsers) {
             let u = vcUsers[i];
             if (u.roles.highest.position < message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) {
-                u.edit({ channel: lounge });
+                await u.edit({ channel: lounge });
             }
         }
     }

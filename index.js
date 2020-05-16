@@ -71,6 +71,10 @@ function aliasCheck(pcommand) {
             return 'commands';
         case 'ava':
             return 'avatar';
+        case 'bp':
+            return 'bazaarparse';
+        case 'bpm':
+            return 'bazaarparse'
         default:
             return pcommand;
     }

@@ -49,6 +49,7 @@ module.exports = {
             var crashers = []
             var movedIn = []
             var findA = []
+            var kickList = '/kick '
             if (message.channel.name === 'veteran-bot-commands') var channel = message.guild.channels.cache.find(c => c.name == `Veteran Raiding ${channelN}` || c.name == `Veteran Raiding ${this.channelN} <--Join Now!`);
             else var channel = message.guild.channels.cache.find(c => c.name == `raiding-${channelN}` || c.name == `raiding-${channelN} <--Join Now!`);
             voiceUsers = channel.members.array();
@@ -62,6 +63,7 @@ module.exports = {
                 let member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(player.toLowerCase()));
                 if (member == null) {
                     crashers.push(player);
+                    kickList = kickList.concat(` ${player}`)
                 } else if (!voiceUsers.includes(member)) {
                     if (member.roles.highest.position >= message.guild.roles.cache.find(r => r.name === 'Almost Raid Leader').position) continue;
                     if (member.voice.channel == 'lounge' || member.voice.channel == 'afk') {
@@ -69,6 +71,7 @@ module.exports = {
                         movedIn.push(`<@!${member.id}>`);
                     }
                     crashers.unshift(`<@!${member.id}>`);
+                    kickList = kickList.concat(` ${player}`)
                     findA.push(player)
                 }
             }
@@ -95,12 +98,13 @@ module.exports = {
                     { name: 'Potential Alts', value: altsS },
                     { name: 'Moved In', value: movedS },
                     { name: 'Crashers', value: crashersS },
-                    { name: 'Find Command', value: `\`\`\`${find}\`\`\`` }
+                    { name: 'Find Command', value: `\`\`\`${find}\`\`\`` },
+                    { name: 'Kick List', value: `\`\`\`${kickList}\`\`\`` }
                 )
             message.channel.send(embed);
         } catch (er) {
             ErrorLogger.log(er, bot)
-            message.channel.send(`Error handling parsed data. Try again`)
+            message.channel.send(`Error handling parsed data. Details have been shared with Vi. Please try again`)
             return;
         }
     }

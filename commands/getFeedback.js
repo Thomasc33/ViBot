@@ -15,10 +15,10 @@ module.exports = {
         if (member == undefined) { message.channel.send('User not found'); return; }
         const customerFeedback = message.guild.channels.cache.find(c => c.name === "customer-feedback")
         try {
-            let findings = await message.channel.send(`Searching for all mentions of ${member} in ${customerFeedback}`)
-            var mentions = `Messages found mentioning ${member} in ${customerFeedback}:\n `
+            let findings = await message.channel.send(`Searching for all mentions of ${member} in ${customerFeedback}`) 
             customerFeedback.messages.fetch()
                 .then(messages => {
+                    var mentions = `Messages found mentioning ${member} in ${customerFeedback} in past ${messages.size()} messages:\n `
                     let mentioning = messages.filter(m => m.mentions.users.get(member.id))
                     if (mentioning.length == 0) message.channel.send("No mentions of user found")
                     else {
