@@ -60,10 +60,10 @@ module.exports = {
                 let player = raiders[i];
                 if (player == '') continue;
                 let member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(player.toLowerCase()));
-                if (member.roles.highest.position >= message.guild.roles.cache.find(r => r.name === 'Almost Raid Leader').position) continue;
                 if (member == null) {
                     crashers.push(player);
                 } else if (!voiceUsers.includes(member)) {
+                    if (member.roles.highest.position >= message.guild.roles.cache.find(r => r.name === 'Almost Raid Leader').position) continue;
                     if (member.voice.channel == 'lounge' || member.voice.channel == 'afk') {
                         member.edit({ channel: channel });
                         movedIn.push(`<@!${member.id}>`);
