@@ -10,28 +10,29 @@ module.exports = {
         let arl = message.guild.roles.cache.find(r => r.name === 'Almost Raid Leader')
         let rl = message.guild.roles.cache.find(r => r.name === 'Raid Leader')
         let fs = message.guild.roles.cache.find(r => r.name === 'Fullskip')
-        if(member.roles.cache.has(fs.id)){
+        if (member.roles.cache.has(fs.id)) {
             voteType = 'Veteran Raid Leader'
             var channel = message.guild.channels.cache.find(c => c.name === 'veteran-rl-chat')
-        } else if(member.roles.cache.has(rl.id)){
+        } else if (member.roles.cache.has(rl.id)) {
             voteType = 'Full Skip'
             var channel = message.guild.chanels.cache.find(c => c.name === 'veteran-rl-chat')
-        } else if(member.roles.cache.has(arl.id)){
+        } else if (member.roles.cache.has(arl.id)) {
             voteType = 'Raid Leader'
             var channel = message.guild.channels.cache.find(c => c.name === 'leader-chat')
-        } else if (member.roles.cache.has(trl.id)){
+        } else if (member.roles.cache.has(trl.id)) {
             voteType = 'Almost Raid Leader'
             var channel = message.guild.channels.cache.find(c => c.name === 'leader-chat')
-        } else{
+        } else {
             message.channel.send(`${member} doesn't have a role eligible for promotion`)
+            return;
         }
         message.delete()
         channel.send(`${member} to ${voteType}`)
-        .then(m => {
-            m.react('✅')
-            .then(m.react('😐'))
-            .then(m.react('❌'))
-            .then(m.react('👀'))
-        })
+            .then(m => {
+                m.react('✅')
+                    .then(m.react('😐'))
+                    .then(m.react('❌'))
+                    .then(m.react('👀'))
+            })
     }
 }
