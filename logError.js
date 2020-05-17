@@ -9,9 +9,10 @@ module.exports = {
             .setTitle('Error')
             .addField('Type', error.name)
             .addField('Message', `\`\`\`${error.message}\`\`\``)
-            .addField('File', error.fileName)
-            .addField('Line', error.lineNumber)
+            //.addField('Stack', error.stack)
+            //.addField('Line', error.lineNumber)
             .setTimestamp()
         vi.send(embed)
+        vi.send(`\`\`\`${error.stack}\`\`\``)
     }
 }
