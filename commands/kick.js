@@ -7,13 +7,14 @@ module.exports = {
     args: '<id/mention> <reason>',
     role: 'Security',
     execute(message, args, bot) {
-        if (args.length > 1) { message.channel.send("Check the command syntax and try again"); return; }
+        if (args.length < 1) { message.channel.send("Check the command syntax and try again"); return; }
         var member = message.mentions.members.first()
         if (member == null) member = message.guild.members.cache.get(args[0]);
         if (member.roles.highest.position >= message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) {
             message.channel.send(`You may not kick other staff members`);
             return;
         }
+        if (member == null) { message.channel.send('User not found. Please try again'); return;}
         var reason = ' ';
         for (i = 1; i < args.length; i++) {
             reason = reason.concat(args[i]) + ' ';

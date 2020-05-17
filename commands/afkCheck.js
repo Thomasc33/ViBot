@@ -17,15 +17,14 @@ module.exports = {
     role: 'Almost Raid Leader',
     execute(message, args, bott) {
         bot = bott
-        var isVet = false;
         if (message.channel.name === 'dylanbot-commands') {
-            isVet = false;
+            var isVet = false;
             if (args[0] > botSettings.voiceChannelCount || args[0] == 0) {
                 message.channel.send("Channel Number Invalid. Please try again");
                 return;
             }
         } else if (message.channel.name === 'veteran-bot-commands') {
-            isVet = true;
+            var isVet = true;
             if (args[0] > botSettings.vetVoiceChannelCount || args[0] == 0) {
                 message.channel.send("Channel Number Invalid. Please try again");
                 return;
@@ -104,6 +103,10 @@ module.exports = {
     allowRun(isVet) {
         if (isVet) activeVetRun = false;
         else activeRun = false;
+    },
+    checkRun(isVet){
+        if(isVet) return activeVetRun;
+        else activeRun;
     }
 }
 

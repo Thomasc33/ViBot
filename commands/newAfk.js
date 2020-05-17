@@ -42,12 +42,12 @@ module.exports = {
         //checks for active run
         if (isVet) {
             if (activeVetRun == true) {
-                message.channel.send("There is already a run active. If this is an error, do \`;allowrun\`");
+                message.channel.send("There is already a run active. If this is an error, do \`;allownewrun\`");
                 return;
             }
         } else {
             if (activeRun == true) {
-                message.channel.send("There is already a run active. If this is an error, do \`;allowrun\`");
+                message.channel.send("There is already a run active. If this is an error, do \`;allownewrun\`");
                 return;
             }
         }
@@ -75,6 +75,7 @@ module.exports = {
         if (location.length >= 1024) {
             message.channel.send('Location must be below 1024 characters, try again');
         }
+        message.channel.send("Channel is being cleaned. AFK check will begin when cleaned")
         if (isVet) {
             await cleanChannel(message.guild.channels.cache.find(c => c.name === `Veteran Raiding ${args[0]}` || c.name === `Veteran Raiding ${args[0]} <-- Join!`), message.guild.channels.cache.find(c => c.name === 'Veteran Lounge'), message);
             message.channel.send('Channel cleaning successful. Beginning afk check in 10 seconds')
