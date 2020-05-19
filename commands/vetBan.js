@@ -22,7 +22,7 @@ module.exports = {
             return;
         }
         for (i = 0; i < args.length; i++) {
-            let arg = args[0];
+            var arg = args[0];
             if (arg.replace(/[a-z]/gi, '') !== '') {
                 break;
             } else {
@@ -30,9 +30,9 @@ module.exports = {
             }
         }
         try {
-            let time = parseInt(args[0]);
-            let timeType = args[1];
-            let timeTypeString;
+            var time = parseInt(args[0]);
+            var timeType = args[1];
+            var timeTypeString;
 
             switch (timeType.toLowerCase()) {
                 case 'd':

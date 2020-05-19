@@ -16,7 +16,7 @@ module.exports = {
     args: '<channel> <c/v/fsv> <location>',
     role: 'Almost Raid Leader',
     async execute(message, args, bott) {
-        if(args.length == 0) return;
+        if (args.length == 0) return;
         bot = bott
         var isVet = false;
         if (message.channel.name === 'dylanbot-commands') {
@@ -378,14 +378,6 @@ class afk {
         this.mainReactionCollector.on("collect", (r, u) => {
             if (u.bot) return;
             let reactor = this.message.guild.members.cache.get(u.id);
-            //raider
-            if (r.emoji.id === botSettings.emoteIDs.voidd) {
-                this.raiders++;
-                this.raider.push(reactor);
-                if (this.isVet) var channel = this.message.guild.channels.cache.find(c => c.name == `Veteran Raiding ${this.channel}` || c.name == `Veteran Raiding ${this.channel} <--Join Now!`);
-                else var channel = this.message.guild.channels.cache.find(c => c.name == `raiding-${this.channel}` || c.name == `raiding-${this.channel} <--Join Now!`);
-                reactor.edit({ channel: channel }).catch(er => { });
-            }
             //key
             if (r.emoji.id === botSettings.emoteIDs.LostHallsKey) {
                 if (this.key != null) return;
@@ -744,7 +736,9 @@ class afk {
         for (let i in this.earlyLocation) {
             let u = this.earlyLocation[i];
             let member = this.message.guild.members.cache.get(u.id);
-            member.edit({ channel: this.voiceChannel }).catch(er => { });
+            if (member.voice.channel.name == 'lounge' || member.voice.channel.name == 'Veteran Lounge') {
+                member.edit({ channel: this.voiceChannel }).catch(er => { });
+            }
         }
     }
     async endAfk() {
@@ -850,8 +844,15 @@ async function cleanChannel(channel, lounge, message) {
         let u = vcUsers[i];
         if (u.roles.highest.position < message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) {
             try {
-                await u.setVoiceChannel(lounge)
-            } catch (er) { }
+                await u.edit({ channel: lounge }).catch(er => { });
+            } catch (er) {
+                try {
+                    await u.edit({ channel: lounge }).catch(er => { });
+                } catch (er) {
+                    if (er.message == 'Target user is not connected to voice.') continue;
+                    else ErrorLogger.log(er, bot)
+                }
+            }
         }
     }
 }

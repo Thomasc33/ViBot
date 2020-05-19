@@ -9,6 +9,7 @@ module.exports = {
     role: 'Almost Raid Leader',
     args: '<channel number> <key/vial/brian/mystic/rusher> [Location]',
     async execute(message, args, bot) {
+        if (args[0].replace(/[0-9]+/g, '') == '') { message.channel.send('Channel number invalid. Please try again'); return; }
         if (message.channel.name === 'dylanbot-commands') {
             isVet = false;
             if (args[0] > botSettings.voiceChannelCount || args[0] == 0) {
@@ -27,10 +28,8 @@ module.exports = {
         }
         if (!isVet) {
             var voiceChannel = message.guild.channels.cache.find(c => c.name == `raiding-${args[0]}` || c.name == `raiding-${args[0]} <--Join Now!`);
-            var verifiedRaiderRole = message.guild.roles.cache.find(r => r.name === 'Verified Raider');
         } else {
             var voiceChannel = message.guild.channels.cache.find(c => c.name == `Veteran Raiding ${args[0]}` || c.name == `Veteran Raiding ${args[0]} <--Join Now!`);
-            var verifiedRaiderRole = message.guild.roles.cache.find(r => r.name === 'Veteran Raider');
         }
         if (isVet) var raidStatus = message.guild.channels.cache.find(c => c.name === "veteran-status-announcements");
         else var raidStatus = message.guild.channels.cache.find(c => c.name === "raid-status-announcements");
