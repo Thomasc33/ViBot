@@ -76,15 +76,14 @@ module.exports = {
             message.channel.send('Location must be below 1024 characters, try again');
         }
         message.channel.send("Channel is being cleaned. AFK check will begin when cleaned")
+        currentReg = new afk(args[0], run, location, message, isVet);
         if (isVet) {
             await cleanChannel(message.guild.channels.cache.find(c => c.name === `Veteran Raiding ${args[0]}` || c.name === `Veteran Raiding ${args[0]} <-- Join!`), message.guild.channels.cache.find(c => c.name === 'Veteran Lounge'), message);
             message.channel.send('Channel cleaning successful. Beginning afk check in 10 seconds')
-            currentVet = new afk(args[0], run, location, message, isVet);
             setTimeout(beginRun, 10000, true)
         } else {
             await cleanChannel(message.guild.channels.cache.find(c => c.name === `raiding-${args[0]}` || c.name === `raiding-${args[0]} <-- Join!`), message.guild.channels.cache.find(c => c.name === 'lounge'), message);
             message.channel.send('Channel cleaning successful. Beginning afk check in 10 seconds')
-            currentReg = new afk(args[0], run, location, message, isVet);
             setTimeout(beginRun, 10000, false)
         }
     },
@@ -818,8 +817,8 @@ async function cleanChannel(channel, lounge, message) {
         let u = vcUsers[i];
         if (u.roles.highest.position < message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) {
             try {
-                await u.edit({ channel: lounge });
-            } catch (er) { ErrorLogger.log(er, bot) }
+                await u.setVoiceChannel(lounge)
+            } catch (er) { }
         }
     }
 }

@@ -74,7 +74,9 @@ function aliasCheck(pcommand) {
         case 'bp':
             return 'bazaarparse';
         case 'bpm':
-            return 'bazaarparse'
+            return 'bazaarparse';
+        case 'suspect':
+            return 'suspectalt';
         default:
             return pcommand;
     }
