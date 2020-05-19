@@ -7,6 +7,7 @@ module.exports = {
     args: '[Users]',
     role: 'Almost Raid Leader',
     execute(message, args, bot) {
+        if(args.length == 0) return;
         var suspendedButVerifed = message.guild.roles.cache.find(r => r.name === "Suspended but Verified");
         var suspendedRole = message.guild.roles.cache.find(r => r.name === "Suspended");
         var notFoundString = ''

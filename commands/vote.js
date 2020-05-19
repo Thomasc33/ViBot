@@ -5,6 +5,8 @@ module.exports = {
     description: 'Puts up a vote for promotions based on users current role.',
     notes: 'Puts the message in leader-chat/veteran-rl-chat based on vote',
     execute(message, args, bot) {
+        console.log(args.length)
+        if(args.length == 0) return;
         let member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
         let trl = message.guild.roles.cache.find(r => r.name === 'Trial Raid Leader')
         let arl = message.guild.roles.cache.find(r => r.name === 'Almost Raid Leader')

@@ -40,12 +40,10 @@ async function lockChannel(raiderRole, voiceChannel, voiceChannelNumber, isVet) 
     if (isVet) {
         voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
             .then(voiceChannel.setName(`Veteran Raiding ${voiceChannelNumber}`).catch(er => ErrorLogger.log(er, bot)))
-            .then(voiceChannel.setUserLimit(75).catch(er => ErrorLogger.log(er, bot)));
     }
     if (!isVet) {
         voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
             .then(voiceChannel.setName(`raiding-${voiceChannelNumber}`).catch(er => ErrorLogger.log(er, bot)))
-            .then(voiceChannel.setUserLimit(75).catch(er => ErrorLogger.log(er, bot)));
     }
     return;
 }

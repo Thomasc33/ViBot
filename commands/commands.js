@@ -33,7 +33,7 @@ module.exports = {
                 .setTitle('Commands')
                 .setColor('#ff0000')
                 .addFields(
-                    { name: 'Raiding', value: '\`\`\`css\n;afk ;newafk ;lock ;unlock ;clean ;location ;allowrun ;newlocation ;allownewrun ;parsemembers ;request\`\`\`' },
+                    { name: 'Raiding', value: '\`\`\`css\n;afk ;newafk ;lock ;unlock ;clean ;location ;allowrun ;newlocation ;allownewrun ;parsemembers ;request ;fixname\`\`\`' },
                     { name: 'Moderation', value: '\`\`\`css\n;find ;vetban ;vetunban ;addalt ;changename ;manualverify ;manualvetverify ;kick ;getfeedback ;nonicknames ;vote ;list ;rectify ;suspect\`\`\`' },
                     { name: 'Meme', value: '\`\`\`css\n;xbox ;avatar\`\`\`' }
                 )

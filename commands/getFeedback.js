@@ -16,11 +16,11 @@ module.exports = {
         const customerFeedback = message.guild.channels.cache.find(c => c.name === "customer-feedback")
         try {
             let findings = await message.channel.send(`Searching for all mentions of ${member} in ${customerFeedback}`)
-            customerFeedback.messages.fetch({ limit: 500 })
+            customerFeedback.messages.fetch({ limit: 100 })
                 .then(messages => {
-                    var mentions = `Messages found mentioning ${member} in ${customerFeedback} in past 200 messages:\n`
+                    var mentions = `Messages found mentioning ${member} in ${customerFeedback} in past 100 messages:\n`
                     let mentioning = messages.filter(m => m.mentions.users.get(member.id))
-                    if (mentioning.length == 0) message.channel.send("No mentions of user found")
+                    if (mentioning.length == 0) findings.edit(`No mentions of ${member} in ${customerFeedback} in past 100 messages:`)
                     else {
                         mentioning.each(m => mentions = mentions.concat(`\n${m.url}`));
                         findings.edit(mentions)

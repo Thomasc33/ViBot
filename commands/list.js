@@ -6,6 +6,7 @@ module.exports = {
     args: '<lol/sa>',
     role: 'Security',
     async execute(message, args, bot) {
+        if(args.length == 0) return;
         switch (args[0]) {
             case 'lol':
                 let leaderOnLeave = message.guild.roles.cache.find(r => r.name === 'Leader on Leave')

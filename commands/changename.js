@@ -8,7 +8,7 @@ module.exports = {
     args: '<User id/mention> <new name> (proof)',
     role: 'Security',
     execute(message, args, bot) {
-        if (message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.find(r => r.name === "Developer").position) return;
+        if(args.length == 0) return;
         var member = message.mentions.members.first()
         if (member == null) {
             member = message.guild.members.cache.get(args.shift());

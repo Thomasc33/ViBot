@@ -16,6 +16,7 @@ module.exports = {
     args: '<channel> <c/v/fsv> <location>',
     role: 'Almost Raid Leader',
     async execute(message, args, bott) {
+        if(args.length == 0) return;
         bot = bott
         var isVet = false;
         if (message.channel.name === 'dylanbot-commands') {
@@ -23,12 +24,14 @@ module.exports = {
                 message.channel.send("Channel Number Invalid. Please try again");
                 return;
             }
+            var channel = message.guild.channels.cache.find(c => c.name === `raiding-${args[0]}` || c.name === `raiding-${args[0]} <-- Join!`)
         } else if (message.channel.name === 'veteran-bot-commands') {
             isVet = true;
             if (args[0] > botSettings.vetVoiceChannelCount || args[0] == 0) {
                 message.channel.send("Channel Number Invalid. Please try again");
                 return;
             }
+            var channel = message.guild.channels.cache.find(c => c.name === `Veteran Raiding ${args[0]}` || c.name === `Veteran Raiding ${args[0]} <-- Join!`)
         } else {
             message.channel.send("Try again, but in dylanbot-commands or veteran-bot-commands");
             return;
@@ -38,8 +41,6 @@ module.exports = {
             message.channel.send("Command entered incorrectly -> ;afk <channel #> <c/v/fsv> <location>");
             return;
         }
-
-        //checks for active run
         if (isVet) {
             if (activeVetRun == true) {
                 message.channel.send("There is already a run active. If this is an error, do \`;allownewrun\`");
@@ -51,17 +52,15 @@ module.exports = {
                 return;
             }
         }
-
-        let run = 0;
         switch (args[1].charAt(0).toLowerCase()) {
             case 'c':
-                run = 1;
+                var run = 1;
                 break;
             case 'v':
-                run = 2;
+                var run = 2;
                 break;
             case 'f':
-                run = 3;
+                var run = 3;
                 break;
             default:
                 message.channel.send("Command entered incorrectly -> ;afk <channel #> <c/v/fsv> <location>");
@@ -75,16 +74,50 @@ module.exports = {
         if (location.length >= 1024) {
             message.channel.send('Location must be below 1024 characters, try again');
         }
-        message.channel.send("Channel is being cleaned. AFK check will begin when cleaned")
-        currentReg = new afk(args[0], run, location, message, isVet);
-        if (isVet) {
-            await cleanChannel(message.guild.channels.cache.find(c => c.name === `Veteran Raiding ${args[0]}` || c.name === `Veteran Raiding ${args[0]} <-- Join!`), message.guild.channels.cache.find(c => c.name === 'Veteran Lounge'), message);
-            message.channel.send('Channel cleaning successful. Beginning afk check in 10 seconds')
-            setTimeout(beginRun, 10000, true)
-        } else {
-            await cleanChannel(message.guild.channels.cache.find(c => c.name === `raiding-${args[0]}` || c.name === `raiding-${args[0]} <-- Join!`), message.guild.channels.cache.find(c => c.name === 'lounge'), message);
-            message.channel.send('Channel cleaning successful. Beginning afk check in 10 seconds')
-            setTimeout(beginRun, 10000, false)
+        let authorVC = message.member.voice.channel
+        if (authorVC != undefined) {
+            if (authorVC.id != channel.id) {
+                message.channel.send(`You attempted to start an afk check in ${channel.name}, but you are in ${authorVC.name}. Would you like to continue? (Y/N)`)
+            } else { begin() }
+        } else { begin() }
+        let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 10000 });
+        collector.on('collect', m => {
+            if (m.author != message.author) return;
+            try {
+                if (m.content.toLowerCase().charAt(0) == 'y') {
+                    begin()
+                } else if (m.content.toLowerCase().charAt(0) == 'n') {
+                    return;
+                } else {
+                    console.log(`bruh`)
+                }
+            } catch (er) {
+                ErrorLogger.log(er, bot)
+            }
+        });
+        async function begin() {
+            if (isVet) {
+                if (activeVetRun == true) {
+                    message.channel.send("There is already a run active. If this is an error, do \`;allownewrun\`");
+                    return;
+                }
+            } else {
+                if (activeRun == true) {
+                    message.channel.send("There is already a run active. If this is an error, do \`;allownewrun\`");
+                    return;
+                }
+            }
+            message.channel.send("Channel is being cleaned. AFK check will begin when cleaned")
+            currentReg = new afk(args[0], run, location, message, isVet);
+            if (isVet) {
+                await cleanChannel(channel, message.guild.channels.cache.find(c => c.name === 'Veteran Lounge'), message);
+                message.channel.send('Channel cleaning successful. Beginning afk check in 10 seconds')
+                setTimeout(beginRun, 10000, true)
+            } else {
+                await cleanChannel(channel, message.guild.channels.cache.find(c => c.name === 'lounge'), message);
+                message.channel.send('Channel cleaning successful. Beginning afk check in 10 seconds')
+                setTimeout(beginRun, 10000, false)
+            }
         }
     },
     changeLocation(location, isVet, channel) {
