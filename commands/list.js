@@ -1,26 +1,14 @@
 const Discord = require('discord.js')
+const ErrorLogger = require('../logError')
 
 module.exports = {
     name: 'list',
-    description: 'Lists all players with either: Leader on Leave (lol) or Suspected Alts (sa)',
-    args: '<lol/sa>',
+    description: 'Lists all suspected alts, or members with a specific role',
+    args: '<sa/role>',
     role: 'Security',
     async execute(message, args, bot) {
-        if(args.length == 0) return;
+        if (args.length == 0) return;
         switch (args[0]) {
-            case 'lol':
-                let leaderOnLeave = message.guild.roles.cache.find(r => r.name === 'Leader on Leave')
-                let lols = ' '
-                let embed = new Discord.MessageEmbed()
-                    .setTitle('Leaders on Leave')
-                    .setColor(leaderOnLeave.hexColor)
-                message.guild.members.cache.filter(m => m.roles.cache.has(leaderOnLeave.id))
-                    .each(m => {
-                        lols = lols.concat(`${m}\n`)
-                    })
-                embed.setDescription(lols)
-                message.channel.send(embed)
-                break;
             case 'sa':
                 let sa = ' '
                 let saembed = new Discord.MessageEmbed()
@@ -34,6 +22,28 @@ module.exports = {
                     })
                 break;
             default:
+                let roleN = '';
+                for (i = 0; i < args.length; i++) {
+                    roleN = roleN.concat(args[i]) + ' ';
+                }
+                roleN = roleN.trim().toLowerCase();
+                let role = message.guild.roles.cache.find(r => r.name.toLowerCase() === roleN)
+                if (role == undefined) { message.channel.send('Role not found'); return; }
+                let members = ' '
+                var embed = new Discord.MessageEmbed()
+                    .setTitle(role.name)
+                    .setColor(role.hexColor)
+                message.guild.members.cache.filter(m => m.roles.cache.has(role.id))
+                    .each(m => {
+                        if (members.length >= 1024) {
+                            embed.setDescription(members)
+                            message.channel.send(embed).catch(er => ErrorLogger.log(er, bot))
+                            members = ''
+                        }
+                        members = members.concat(`${m}\n`)
+                    })
+                embed.setDescription(members)
+                message.channel.send(embed).catch(er => ErrorLogger.log(er, bot))
                 break;
         }
     }

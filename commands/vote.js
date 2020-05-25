@@ -6,8 +6,9 @@ module.exports = {
     notes: 'Puts the message in leader-chat/veteran-rl-chat based on vote',
     execute(message, args, bot) {
         console.log(args.length)
-        if(args.length == 0) return;
+        if (args.length == 0) return;
         let member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
+        if (member == null) { message.channel.send('Issue finding user. Try again'); return; }
         let trl = message.guild.roles.cache.find(r => r.name === 'Trial Raid Leader')
         let arl = message.guild.roles.cache.find(r => r.name === 'Almost Raid Leader')
         let rl = message.guild.roles.cache.find(r => r.name === 'Raid Leader')
@@ -17,7 +18,7 @@ module.exports = {
             var channel = message.guild.channels.cache.find(c => c.name === 'veteran-rl-chat')
         } else if (member.roles.cache.has(rl.id)) {
             voteType = 'Full Skip'
-            var channel = message.guild.chanels.cache.find(c => c.name === 'veteran-rl-chat')
+            var channel = message.guild.channels.cache.find(c => c.name === 'veteran-rl-chat')
         } else if (member.roles.cache.has(arl.id)) {
             voteType = 'Raid Leader'
             var channel = message.guild.channels.cache.find(c => c.name === 'leader-chat')

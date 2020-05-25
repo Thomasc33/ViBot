@@ -836,10 +836,6 @@ To end the AFK check as a leader, react to ❌`)
         //allow runs
         if (this.isVet) activeVetRun = false;
         else activeRun = false;
-
-        //TO:DO Move people out
-
-
     }
     async changeLoc(locationn) {
         this.location = locationn;

@@ -589,7 +589,7 @@ class afk {
         let endAfter = setInterval(function () {
             try {
                 dmReactionCollector.stop();
-                dm.send('Reaction took too long to receive, or another key already confirmed. Re-react to try again');
+                dm.send('Reaction took too long to receive, or another vial already confirmed. Re-react to try again');
                 clearInterval(endAfter);
                 return;
             } catch (er) {
@@ -736,7 +736,7 @@ class afk {
         for (let i in this.earlyLocation) {
             let u = this.earlyLocation[i];
             let member = this.message.guild.members.cache.get(u.id);
-            if (member.voice.channel.name == 'lounge' || member.voice.channel.name == 'Veteran Lounge') {
+            if (member.voice.channel.name == 'lounge' || member.voice.channel.name == 'Veteran Lounge' || member.voice.channel.name.contains('drag')) {
                 member.edit({ channel: this.voiceChannel }).catch(er => { });
             }
         }
