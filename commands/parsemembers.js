@@ -23,6 +23,12 @@ module.exports = {
             isVet = false;
         }
         const channelN = args.shift();
+        if (message.channel.name === 'veteran-bot-commands') var channel = message.guild.channels.cache.find(c => c.name == `Veteran Raiding ${channelN}` || c.name == `Veteran Raiding ${this.channelN} <-- Join!`);
+        else var channel = message.guild.channels.cache.find(c => c.name == `raiding-${channelN}` || c.name == `raiding-${channelN} <-- Join!`);
+        if (channel == null) {
+            message.channel.send('Channel not found. Please try again');
+            return;
+        }
         var image;
         if (message.attachments.size == 0) {
             image = args[0];
@@ -50,8 +56,6 @@ module.exports = {
             var movedIn = []
             var findA = []
             var kickList = '/kick '
-            if (message.channel.name === 'veteran-bot-commands') var channel = message.guild.channels.cache.find(c => c.name == `Veteran Raiding ${channelN}` || c.name == `Veteran Raiding ${this.channelN} <--Join Now!`);
-            else var channel = message.guild.channels.cache.find(c => c.name == `raiding-${channelN}` || c.name == `raiding-${channelN} <--Join Now!`);
             voiceUsers = channel.members.array();
             if (voiceUsers.size == 0) {
                 message.channel.send('Voice Channel is empty. Make sure the correct channel was entered')

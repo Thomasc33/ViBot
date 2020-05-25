@@ -2,6 +2,8 @@
 const botSettings = require('../settings.json');
 const Discord = require('discord.js');
 const ErrorLogger = require('../logError')
+const Locker = require('./lock');
+const Unlocker = require('./unlock')
 
 //globals
 var activeVetRun = false;
@@ -252,7 +254,7 @@ class afk {
             .setFooter(`Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds`);
         this.afkCheckEmbed.edit(this.embedMessage);
 
-        await unlockChannel(this.verifiedRaiderRole, this.voiceChannel, this.channel, this.isVet)
+        await Unlocker.unlock(this.message, this.voiceChannel, this.channel, this.verifiedRaiderRole)
 
         this.moveInTimer = await setInterval(() => { this.moveIn() }, 10000);
         this.timer = await setInterval(() => { this.updateAfkCheck() }, 5000);
@@ -352,7 +354,7 @@ class afk {
             .setFooter(`Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds`);
         this.afkCheckEmbed.edit(this.embedMessage);
 
-        await unlockChannel(this.verifiedRaiderRole, this.voiceChannel, this.channel, this.isVet)
+        await Unlocker.unlock(this.message, this.voiceChannel, this.channel, this.verifiedRaiderRole)
 
         this.moveInTimer = await setInterval(() => { this.moveIn() }, 10000);
         this.timer = await setInterval(() => { this.updateAfkCheck() }, 5000);
@@ -451,7 +453,7 @@ class afk {
             .setFooter(`Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds`);
         this.afkCheckEmbed.edit(this.embedMessage);
 
-        await unlockChannel(this.verifiedRaiderRole, this.voiceChannel, this.channel, this.isVet)
+        await Unlocker.unlock(this.message, this.voiceChannel, this.channel, this.verifiedRaiderRole)
 
         this.moveInTimer = await setInterval(() => { this.moveIn() }, 10000);
         this.timer = await setInterval(() => { this.updateAfkCheck() }, 5000);
@@ -748,7 +750,7 @@ class afk {
         clearInterval(this.moveInTimer);
         clearInterval(this.timer);
 
-        lockChannel(this.verifiedRaiderRole, this.voiceChannel, this.channel, this.isVet);
+        Locker.lock(this.message, this.voiceChannel, this.channel, this.verifiedRaiderRole)
 
         if (this.key != null) {
             this.embedMessage.setDescription(`This afk check has been ended.
@@ -758,8 +760,11 @@ class afk {
             this.embedMessage.setDescription(`This afk check has been ended.`)
                 .setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
         }
+        this.leaderEmbed.setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
 
         this.afkCheckEmbed.edit('', this.embedMessage).catch(er => ErrorLogger.log(er, bot))
+        this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot))
+        this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot))
 
         if (this.isVet) activeVetRun = false;
         else activeRun = false;
@@ -771,12 +776,15 @@ class afk {
         clearInterval(this.moveInTimer);
         clearInterval(this.timer);
 
-        lockChannel(this.verifiedRaiderRole, this.voiceChannel, this.channel, this.isVet);
+        Locker.lock(this.message, this.voiceChannel, this.channel, this.verifiedRaiderRole)
 
         this.embedMessage.setDescription(`This afk check has been aborted`)
             .setFooter(`The afk check has been aborted by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
+        this.leaderEmbed.setFooter(`The afk check has been aborted by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
 
         this.afkCheckEmbed.edit('', this.embedMessage).catch(er => ErrorLogger.log(er, bot))
+        this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot))
+        this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot))
 
         if (this.isVet) activeVetRun = false;
         else activeRun = false;
@@ -812,31 +820,6 @@ class afk {
             return;
         }
     }
-}
-
-async function unlockChannel(raiderRole, voiceChannel, voiceChannelNumber, isVet) {
-    if (isVet) {
-        voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(r => ErrorLogger.log(er, bot))
-            .then(voiceChannel.setName(`Veteran Raiding ${voiceChannelNumber} <-- Join!`).catch(r => ErrorLogger.log(er, bot)))
-            .then(voiceChannel.setUserLimit(75).catch(r => ErrorLogger.log(er, bot)));
-    }
-    if (!isVet) {
-        voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(r => ErrorLogger.log(er, bot))
-            .then(voiceChannel.setName(`raiding-${voiceChannelNumber} <-- Join!`).catch(r => ErrorLogger.log(er, bot)))
-            .then(voiceChannel.setUserLimit(75).catch(r => ErrorLogger.log(er, bot)));
-    }
-    return;
-}
-async function lockChannel(raiderRole, voiceChannel, voiceChannelNumber, isVet) {
-    if (isVet) {
-        voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(r => ErrorLogger.log(er, bot))
-            .then(voiceChannel.setName(`Veteran Raiding ${voiceChannelNumber}`).catch(r => ErrorLogger.log(er, bot)))
-    }
-    if (!isVet) {
-        voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(r => ErrorLogger.log(er, bot))
-            .then(voiceChannel.setName(`raiding-${voiceChannelNumber}`).catch(r => ErrorLogger.log(er, bot)))
-    }
-    return;
 }
 async function cleanChannel(channel, lounge, message) {
     var vcUsers = channel.members.array()

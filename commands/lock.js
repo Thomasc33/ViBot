@@ -32,42 +32,18 @@ module.exports = {
             message.channel.send("Could not find channel correctly, please try again");
             return;
         }
-        /*let overwrites = channel.permissionOverwrites.array()
-        var newPerms = []
-        for (let i in overwrites) {
-            let p = overwrites[i];
-            if (p.id == raider.id) {
-                newPerms.push({
-                    role: raider.id,
-                    type: p.type,
-                    allow: ['VIEW_CHANNEL'],
-                    deny: ['CONNECT']
-                })
-            } else {
-                newPerms.push({
-                    role: p.id,
-                    type: p.type,
-                    allow: p.allow,
-                    deny: p.deny
-                })
-            }
-        }*/
         if (message.channel.name === 'dylanbot-commands') {
-            /*channel.edit({
-                name: `raiding-${channelNumber}`,
-                permissionOverwrites: newPerms
-            }).catch(r => console.log(r))*/
-            channel.updateOverwrite(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(r => ErrorLogger.log(er, bot))
-                .then(c => c.setName(`raiding-${channelNumber}`).catch(r => ErrorLogger.log(er, bot)))
+            await channel.updateOverwrite(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(r => ErrorLogger.log(er, bot))
+            setTimeout(function () { channel.setName(`raiding-${channelNumber}`).catch(r => ErrorLogger.log(er, bot)) }, 500)
         }
         if (message.channel.name === 'veteran-bot-commands') {
-            channel.updateOverwrite(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(r => ErrorLogger.log(er, bot))
-                .then(channel.setName(`Veteran Raiding ${channelNumber}`).catch(r => ErrorLogger.log(er, bot)))
+            channel.updateOverwrite(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+            setTimeout(function () { channel.setName(`Veteran Raiding ${channelNumber}`).catch(er => ErrorLogger.log(er, bot)) }, 500)
         }
         if (message.channel.name === 'eventbot-commands') {
             let name = channel.name.substring(0, channel.name.indexOf(channelNumber) + 1)
-            channel.updateOverwrite(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(r => ErrorLogger.log(er, bot))
-                .then(channel.setName(`${name}`).catch(r => ErrorLogger.log(er, bot)))
+            channel.updateOverwrite(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+            setTimeout(function () { channel.setName(`${name}`).catch(er => ErrorLogger.log(er, bot)) }, 500)
         }
     }
 }

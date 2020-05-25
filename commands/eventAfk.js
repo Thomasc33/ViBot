@@ -114,6 +114,13 @@ class afk {
         if (this.event.paladin) this.embed.addField('Paladin', `<${botSettings.emote.Paladin}>`, true)
         if (this.event.bard) this.embed.addField('Bard', `<${botSettings.emote.Bard}>`, true)
         if (this.event.priest) this.embed.addField('Priest', `<${botSettings.emote.Priest}>`, true)
+        if (this.event.trickster) this.embed.addField('Trickster', `<${botSettings.emote.trickster}>`, true)
+        if (this.event.knight) this.embed.addField('Knight', `<${botSettings.emote.Knight}>`, true)
+        if(this.event.name == 'Shatters'){
+            this.embed.addField('Switch 1', `<${botSettings.emote.switch1}>`, true)
+            this.embed.addField('Switch 2', `<${botSettings.emote.switch2}>`, true)
+            this.embed.addField('Switch S', `<${botSettings.emote.switchS}>`, true)
+        }
         this.pingMessage.edit(this.embed)
         this.addReacts();
 
@@ -269,6 +276,13 @@ class afk {
         if (this.event.paladin) await this.pingMessage.react(botSettings.emoteIDs.Paladin)
         if (this.event.bard) await this.pingMessage.react(botSettings.emoteIDs.Bard)
         if (this.event.priest) await this.pingMessage.react(botSettings.emoteIDs.Priest)
+        if (this.event.trickster) await this.pingMessage.react(botSettings.emoteIDs.trickster)
+        if (this.event.knight) await this.pingMessage.react(botSettings.emoteIDs.Knight)
+        if (this.event.name == 'Shatters') {
+            await this.pingMessage.react(botSettings.emoteIDs.switch1)
+            await this.pingMessage.react(botSettings.emoteIDs.switch2)
+            await this.pingMessage.react(botSettings.emoteIDs.switchS)
+        }
         await this.pingMessage.react('❌')
     }
     async changeLocation(location) {
