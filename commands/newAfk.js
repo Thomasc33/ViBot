@@ -707,7 +707,7 @@ class afk {
             let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, dmReactionFilter);
             await DirectMessage.react("✅");
             await dmReactionCollector.on("collect", (r, u) => {
-                if (this.brainCount > 2 || this.brains.includes(u)) return;
+                if (this.brain.length > 2 || this.brains.includes(u)) return;
                 this.brains.push(u);
                 dm.send(`The location for this run has been set to \`${this.location}\`, get there asap`);
                 if (this.leaderEmbed.fields[2].value == `None yet!`) {
