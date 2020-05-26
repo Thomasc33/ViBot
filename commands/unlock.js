@@ -34,19 +34,19 @@ module.exports = {
         }
         if (message.channel.name === 'dylanbot-commands') {
             await channel.setName(`raiding-${channelNumber} <-- Join!`).catch(er => ErrorLogger.log(er, bot))
-            setTimeout(function () { await channel.setUserLimit(75).catch(er => ErrorLogger.log(er, bot)) }, 1000)
-            setTimeout(function () { await channel.updateOverwrite(raider.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)) }, 1000)
+            setTimeout(function () { channel.setUserLimit(75).catch(er => ErrorLogger.log(er, bot)) }, 1000)
+            setTimeout(function () { channel.updateOverwrite(raider.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)) }, 1000)
         }
         if (message.channel.name === 'veteran-bot-commands') {
             await channel.setName(`Veteran Raiding ${channelNumber} <-- Join!`).catch(er => ErrorLogger.log(er, bot))
-            setTimeout(function () { await channel.setUserLimit(75).catch(er => ErrorLogger.log(er, bot)) }, 1000)
-            setTimeout(function () { await channel.updateOverwrite(raider.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)) }, 1000)
+            setTimeout(function () { channel.setUserLimit(75).catch(er => ErrorLogger.log(er, bot)) }, 1000)
+            setTimeout(function () { channel.updateOverwrite(raider.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)) }, 1000)
         }
         if (message.channel.name === 'eventbot-commands') {
             let name = channel.name.substring(0, channel.name.indexOf(channelNumber) + 1)
             await channel.setName(`${name} <-- Join!`).catch(er => ErrorLogger.log(er, bot))
-            setTimeout(function () { await channel.setUserLimit(75).catch(er => ErrorLogger.log(er, bot)) }, 1000)
-            setTimeout(function () { await channel.updateOverwrite(raider.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)) }, 1000)
+            setTimeout(function () { channel.setUserLimit(75).catch(er => ErrorLogger.log(er, bot)) }, 1000)
+            setTimeout(function () { channel.updateOverwrite(raider.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)) }, 1000)
         }
     }
 };
