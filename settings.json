@@ -7,6 +7,7 @@
     "vetVoiceChannelCount": 5,
     "afkTimeLimit": 360,
     "eventAfkTimeLimit": 360,
+    "nitroCount": 5,
     "emote": {
         "Warrior": ":Warrior:701491230395072522",
         "voidd": ":Void:701491230210523247",

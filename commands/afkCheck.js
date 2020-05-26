@@ -104,8 +104,8 @@ module.exports = {
         if (isVet) activeVetRun = false;
         else activeRun = false;
     },
-    checkRun(isVet){
-        if(isVet) return activeVetRun;
+    checkRun(isVet) {
+        if (isVet) return activeVetRun;
         else activeRun;
     }
 }
@@ -268,7 +268,7 @@ class afk {
                     this.earlyLocation.push(u);
                     return;
                 }
-                if (this.nitroCount + 1 > 10) return;
+                if (this.nitroCount + 1 > botSettings.nitroCount) return;
                 if (reactor.roles.cache.has(this.nitroBooster.id)) {
                     reactor.send(`The location for this run has been set to \`${this.location}\``);
                     this.nitro[this.nitroCount] = u;
@@ -376,7 +376,7 @@ To end the AFK check as a leader, react to ❌`)
                     this.earlyLocation.push(u);
                     return;
                 }
-                if (this.nitroCount + 1 > 10) return;
+                if (this.nitroCount + 1 > botSettings.nitroCount) return;
                 if (reactor.roles.cache.has(this.nitroBooster.id)) {
                     reactor.send(`The location for this run has been set to \`${this.location}\``);
                     this.nitro[this.nitroCount] = u;
@@ -497,7 +497,7 @@ To end the AFK check as a leader, react to ❌`)
                     this.earlyLocation.push(u);
                     return;
                 }
-                if (this.nitroCount + 1 > 10) return;
+                if (this.nitroCount + 1 > botSettings.nitroCount) return;
                 if (reactor.roles.cache.has(this.nitroBooster.id)) {
                     reactor.send(`The location for this run has been set to \`${this.location}\``);
                     this.nitro[this.nitroCount] = u;
@@ -808,7 +808,7 @@ To end the AFK check as a leader, react to ❌`)
         this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => console.log(er));
 
         //allow runs
-        if(this.isVet) activeVetRun = false;
+        if (this.isVet) activeVetRun = false;
         else activeRun = false;
 
     }
