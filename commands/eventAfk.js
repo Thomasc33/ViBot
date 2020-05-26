@@ -116,7 +116,7 @@ class afk {
         if (this.event.priest) this.embed.addField('Priest', `<${botSettings.emote.Priest}>`, true)
         if (this.event.trickster) this.embed.addField('Trickster', `<${botSettings.emote.trickster}>`, true)
         if (this.event.knight) this.embed.addField('Knight', `<${botSettings.emote.Knight}>`, true)
-        if(this.event.name == 'Shatters'){
+        if (this.event.name == 'Shatters') {
             this.embed.addField('Switch 1', `<${botSettings.emote.switch1}>`, true)
             this.embed.addField('Switch 2', `<${botSettings.emote.switch2}>`, true)
             this.embed.addField('Switch S', `<${botSettings.emote.switchS}>`, true)
@@ -187,7 +187,7 @@ class afk {
 
             await DirectMessage.react("✅");
             await dmReactionCollector.on("collect", (r, u) => {
-                if (this.keys.length > 2 || this.keys.includes(u)) { dmReactionCollector.stop(); clearInterval(endAfter); return; }
+                if (this.keys.length + 1 > 2 || this.keys.includes(u)) { dmReactionCollector.stop(); clearInterval(endAfter); return; }
                 this.keys.push(u);
                 dm.send(`The location for this run has been set to \`${this.location}\`, get there and confirm vial with ${this.message.member.nickname}`);
                 if (this.leaderEmbed.fields[0].value == `None yet!`) {
