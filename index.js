@@ -77,6 +77,8 @@ function aliasCheck(pcommand) {
             return 'bazaarparse';
         case 'suspect':
             return 'suspectalt';
+        case 'sa':
+            return 'suspectalt';
         case 'eafk':
             return 'eventafk';
         default:
