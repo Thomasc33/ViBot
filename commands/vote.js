@@ -4,8 +4,7 @@ module.exports = {
     args: '<ign>',
     description: 'Puts up a vote for promotions based on users current role.',
     notes: 'Puts the message in leader-chat/veteran-rl-chat based on vote',
-    execute(message, args, bot) {
-        console.log(args.length)
+    async execute(message, args, bot) {
         if (args.length == 0) return;
         let member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
         if (member == null) { message.channel.send('Issue finding user. Try again'); return; }
@@ -17,7 +16,7 @@ module.exports = {
             voteType = 'Veteran Raid Leader'
             var channel = message.guild.channels.cache.find(c => c.name === 'veteran-rl-chat')
         } else if (member.roles.cache.has(rl.id)) {
-            voteType = 'Full Skip'
+            voteType = 'Fullskip'
             var channel = message.guild.channels.cache.find(c => c.name === 'veteran-rl-chat')
         } else if (member.roles.cache.has(arl.id)) {
             voteType = 'Raid Leader'
@@ -30,12 +29,12 @@ module.exports = {
             return;
         }
         message.delete()
-        channel.send(`${member} to ${voteType}`)
-            .then(m => {
-                m.react('✅')
-                    .then(m.react('😐'))
-                    .then(m.react('❌'))
-                    .then(m.react('👀'))
-            })
+        let m = await channel.send(`${member} to ${voteType}`)
+        await m.react('✅')
+        await m.react('😐')
+        await m.react('❌')
+        if (voteType == 'Raid Leader' || voteType == 'Almost Raid Leader') {
+            m.react('👀')
+        }
     }
 }

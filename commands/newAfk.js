@@ -504,7 +504,7 @@ class afk {
             }
             //brain
             if (r.emoji.id === botSettings.emoteIDs.brain) {
-                if (this.brainCount + 1 > 3) return;
+                if (this.brains.length + 1 > 3) return;
                 this.confirmBrain(u, r);
             }
             //nitro
@@ -704,7 +704,7 @@ class afk {
             let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, dmReactionFilter);
             await DirectMessage.react("✅");
             await dmReactionCollector.on("collect", (r, u) => {
-                if (this.brain.length > 2 || this.brains.includes(u)) return;
+                if (this.brains.length > 2 || this.brains.includes(u)) return;
                 this.brains.push(u);
                 dm.send(`The location for this run has been set to \`${this.location}\`, get there asap`);
                 if (this.leaderEmbed.fields[2].value == `None yet!`) {
