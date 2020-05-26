@@ -443,7 +443,7 @@ class afk {
             .setDescription(`To join, **connect to the raiding channel by clicking its name and react with** <${botSettings.emote.SkipBoi}>
             If you have a key or vial, react with <${botSettings.emote.LostHallsKey}> or <${botSettings.emote.Vial}>
             To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.TomeofPurification}> <${botSettings.emote.MarbleSeal}>
-            If you have 80+ MHeal and a 8/8 Mystic, react with <${botSettings.emote.Mystic}>
+            If you have 85+ MHeal and a 8/8 Mystic, react with <${botSettings.emote.Mystic}>
             If you are an 8/8 trickster with a brain, react with <${botSettings.emote.Brain}>
             If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.emote.shard}>
             To end the AFK check as a leader, react to ❌`)
