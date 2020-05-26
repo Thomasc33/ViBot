@@ -303,14 +303,13 @@ class afk {
                     reactor.send(`The location for this run has been set to \`${this.location}\``);
                     return;
                 }
-                if (this.nitroCount + 1 > botSettings.nitroCount) return;
+                if (this.nitro.length + 1 > botSettings.nitroCount) return;
                 if (reactor.roles.cache.has(this.nitroBooster.id)) {
                     reactor.send(`The location for this run has been set to \`${this.location}\``);
-                    this.nitro[this.nitroCount] = u;
-                    this.nitroCount++;
-                    if (this.leaderEmbed.fields[3].value == `None yet!`) {
-                        this.leaderEmbed.fields[3].value = `<@!${u.id}> `;
-                    } else this.leaderEmbed.fields[3].value += `, <@!${u.id}>`
+                    this.nitro[this.nitro.length-1] = u;
+                    if (this.leaderEmbed.fields[5].value == `None yet!`) {
+                        this.leaderEmbed.fields[5].value = `<@!${u.id}> `;
+                    } else this.leaderEmbed.fields[5].value += `, <@!${u.id}>`
                     this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                     this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                     this.earlyLocation.push(u);
@@ -401,14 +400,13 @@ class afk {
                     this.earlyLocation.push(u);
                     return;
                 }
-                if (this.nitroCount + 1 > botSettings.nitroCount) return;
+                if (this.nitro.length + 1 > botSettings.nitroCount) return;
                 if (reactor.roles.cache.has(this.nitroBooster.id)) {
                     reactor.send(`The location for this run has been set to \`${this.location}\``);
-                    this.nitro[this.nitroCount] = u;
-                    this.nitroCount++;
-                    if (this.leaderEmbed.fields[3].value == `None yet!`) {
-                        this.leaderEmbed.fields[3].value = `<@!${u.id}> `;
-                    } else this.leaderEmbed.fields[3].value += `, <@!${u.id}>`
+                    this.nitro[this.nitro.length-1] = u;
+                    if (this.leaderEmbed.fields[5].value == `None yet!`) {
+                        this.leaderEmbed.fields[5].value = `<@!${u.id}> `;
+                    } else this.leaderEmbed.fields[5].value += `, <@!${u.id}>`
                     this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                     this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                     this.earlyLocation.push(u);
@@ -520,11 +518,10 @@ class afk {
                     this.earlyLocation.push(u);
                     return;
                 }
-                if (this.nitroCount + 1 > botSettings.nitroCount) return;
+                if (this.nitro.length + 1 > botSettings.nitroCount) return;
                 if (reactor.roles.cache.has(this.nitroBooster.id)) {
                     reactor.send(`The location for this run has been set to \`${this.location}\``);
-                    this.nitro[this.nitroCount] = u;
-                    this.nitroCount++;
+                    this.nitro[this.nitro.length-1] = u;
                     if (this.leaderEmbed.fields[5].value == `None yet!`) {
                         this.leaderEmbed.fields[5].value = `<@!${u.id}> `;
                     } else this.leaderEmbed.fields[5].value += `, <@!${u.id}>`
