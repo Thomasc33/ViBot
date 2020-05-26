@@ -11,6 +11,10 @@ module.exports = {
             .setTitle('Current event run types')
         for (x in Events) {
             if (Events[x].enabled) {
+                if (embed.fields.length == 25) {
+                    message.channel.send(embed);
+                    embed.fields = []
+                }
                 embed.addField(x, `<${Events[x].keyEmote}>`, true)
             }
         }

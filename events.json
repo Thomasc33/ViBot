@@ -191,7 +191,7 @@
         "name": "Magic Woods",
         "enabled": true,
         "keyEmojiId": "713564851099795507",
-        "keyEmote": ":mwoodK:",
+        "keyEmote": ":mwoodK:713564851099795507",
         "portalEmojiId": "713564850818908172",
         "portalEmote": ":mwood:713564850818908172",
         "color": "#00ff00",

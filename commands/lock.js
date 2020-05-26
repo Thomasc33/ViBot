@@ -6,7 +6,7 @@ module.exports = {
     description: 'Locks voice channel',
     alias: 'rc, resetchannel',
     args: '<channel>',
-    role: 'Almost Raid Leader',
+    role: 'Event Organizer',
     async execute(message, args, bott) {
         if (args[0] > botSettings.voiceChannelCount) return;
         if (message.channel.name === 'dylanbot-commands') {

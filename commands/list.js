@@ -27,6 +27,7 @@ module.exports = {
                     roleN = roleN.concat(args[i]) + ' ';
                 }
                 roleN = roleN.trim().toLowerCase();
+                if (roleN == 'Verified Raider') { message.channel.send('Yeah, lets not do that'); return; }
                 let role = message.guild.roles.cache.find(r => r.name.toLowerCase() === roleN)
                 if (role == undefined) { message.channel.send('Role not found'); return; }
                 let members = ' '
