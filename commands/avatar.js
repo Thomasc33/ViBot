@@ -7,8 +7,10 @@ module.exports = {
     alias: 'ava',
     role: 'Almost Raid Leader',
     execute(message, args, bot) {
-        if(args.length == 0) return;
-        let member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
+        if (args.length == 0) return;
+        let member = message.mentions.members.first()
+        if (member == null) member = message.guild.members.cache.get(args[0])
+        if (member == null) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
         let embed = new Discord.MessageEmbed()
             .setColor('#fefefe')
             .setDescription(member)
