@@ -306,10 +306,10 @@ class afk {
                 if (this.nitro.length + 1 > botSettings.nitroCount) return;
                 if (reactor.roles.cache.has(this.nitroBooster.id)) {
                     reactor.send(`The location for this run has been set to \`${this.location}\``);
-                    this.nitro[this.nitro.length-1] = u;
-                    if (this.leaderEmbed.fields[5].value == `None yet!`) {
-                        this.leaderEmbed.fields[5].value = `<@!${u.id}> `;
-                    } else this.leaderEmbed.fields[5].value += `, <@!${u.id}>`
+                    this.nitro[this.nitro.length - 1] = u;
+                    if (this.leaderEmbed.fields[3].value == `None yet!`) {
+                        this.leaderEmbed.fields[3].value = `<@!${u.id}> `;
+                    } else this.leaderEmbed.fields[3].value += `, <@!${u.id}>`
                     this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                     this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                     this.earlyLocation.push(u);
@@ -403,10 +403,10 @@ class afk {
                 if (this.nitro.length + 1 > botSettings.nitroCount) return;
                 if (reactor.roles.cache.has(this.nitroBooster.id)) {
                     reactor.send(`The location for this run has been set to \`${this.location}\``);
-                    this.nitro[this.nitro.length-1] = u;
-                    if (this.leaderEmbed.fields[5].value == `None yet!`) {
-                        this.leaderEmbed.fields[5].value = `<@!${u.id}> `;
-                    } else this.leaderEmbed.fields[5].value += `, <@!${u.id}>`
+                    this.nitro[this.nitro.length - 1] = u;
+                    if (this.leaderEmbed.fields[3].value == `None yet!`) {
+                        this.leaderEmbed.fields[3].value = `<@!${u.id}> `;
+                    } else this.leaderEmbed.fields[3].value += `, <@!${u.id}>`
                     this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                     this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                     this.earlyLocation.push(u);
@@ -521,7 +521,7 @@ class afk {
                 if (this.nitro.length + 1 > botSettings.nitroCount) return;
                 if (reactor.roles.cache.has(this.nitroBooster.id)) {
                     reactor.send(`The location for this run has been set to \`${this.location}\``);
-                    this.nitro[this.nitro.length-1] = u;
+                    this.nitro[this.nitro.length - 1] = u;
                     if (this.leaderEmbed.fields[5].value == `None yet!`) {
                         this.leaderEmbed.fields[5].value = `<@!${u.id}> `;
                     } else this.leaderEmbed.fields[5].value += `, <@!${u.id}>`
@@ -722,7 +722,7 @@ class afk {
         this.time = this.time - 5;
         if (this.time == 0) {
             this.endedBy = bot.user;
-            this.endAFK();
+            this.endAfk();
             return;
         }
         this.minutes = Math.floor(this.time / 60);
@@ -735,9 +735,11 @@ class afk {
         for (let i in this.earlyLocation) {
             let u = this.earlyLocation[i];
             let member = this.message.guild.members.cache.get(u.id);
-            if (member.voice.channel.name == 'lounge' || member.voice.channel.name == 'Veteran Lounge' || member.voice.channel.name.contains('drag')) {
-                member.edit({ channel: this.voiceChannel }).catch(er => { });
-            }
+            try {
+                if (member.voice.channel.name == 'lounge' || member.voice.channel.name == 'Veteran Lounge' || member.voice.channel.name.contains('drag')) {
+                    member.edit({ channel: this.voiceChannel }).catch(er => { });
+                }
+            } catch (er) { }
         }
     }
     async endAfk() {

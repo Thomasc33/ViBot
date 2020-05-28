@@ -6,6 +6,8 @@ module.exports = {
     alias: 'mv',
     args: '<id/mention> <ign>',
     async execute(message, args, bot) {
+        message.channel.send('Feature has been disabled');
+        return;
         const suspendedRole = message.guild.roles.cache.find(r => r.name === 'Suspended');
         const sbvRole = message.guild.roles.cache.find(r => r.name === 'Suspended but Verified');
         const raiderRole = message.guild.roles.cache.find(r => r.name === 'Verified Raider');
