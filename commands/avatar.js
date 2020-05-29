@@ -3,7 +3,7 @@ const Discord = require('discord.js')
 module.exports = {
     name: 'avatar',
     description: 'Posts avatar of user provided',
-    args: '<ign>',
+    args: '(user)',
     alias: 'ava',
     role: 'Almost Raid Leader',
     execute(message, args, bot) {

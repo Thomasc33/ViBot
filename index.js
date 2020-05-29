@@ -81,6 +81,8 @@ function aliasCheck(pcommand) {
             return 'suspectalt';
         case 'eafk':
             return 'eventafk';
+        case 'rr':
+            return 'russianroulette';
         default:
             return pcommand;
     }
