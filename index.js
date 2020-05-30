@@ -5,6 +5,7 @@ const prefix = botSettings.prefix;
 const bot = new Discord.Client();
 bot.commands = new Discord.Collection();
 bot.vetBans = require('./vetBans.json');
+bot.suspensions = require('./suspensions.json')
 const ErrorLogger = require(`./logError`)
 
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
@@ -125,4 +126,36 @@ bot.on("ready", () => {
         }
 
     }, 60000);//change to 60k after testing
+    bot.setInterval(() => {
+        for (let i in bot.suspensions) {
+            const time = bot.suspensions[i].time;
+            const guildId = bot.suspensions[i].guild;
+            const proofLogID = bot.suspensions[i].logMessage;
+            const roles = bot.suspensions[i].roles;
+            const guild = bot.guilds.cache.get(guildId);
+            const member = guild.members.cache.get(i);
+            const suspendedRole = guild.roles.cache.find(r => r.name === 'Suspended but Verified');
+            try {
+                if (Date.now() > time) {
+                    member.edit({
+                        roles: roles
+                    })
+                    member.roles.add(roles)
+                    delete bot.suspensions[i];
+                    fs.writeFile('./suspensions.json', JSON.stringify(bot.suspensions, null, 4), function (err) {
+                        if (err) throw err;
+
+                        let embed = bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').messages.cache.get(proofLogID).embeds.shift();
+                        embed.setColor('#00ff00')
+                            .setFooter('Unsuspended at');
+                        bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').messages.cache.get(proofLogID).edit(embed);
+                    })
+                }
+            } catch (er) {
+                ErrorLogger.log(er, bot)
+                continue;
+            }
+        }
+
+    }, 1000);
 });
