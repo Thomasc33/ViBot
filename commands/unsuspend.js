@@ -44,13 +44,16 @@ module.exports = {
                     fs.writeFile('./suspensions.json', JSON.stringify(bot.suspensions, null, 4), function (err) {
                         if (err) throw err;
 
-                        let embed = bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').messages.cache.get(proofLogID).embeds.shift();
-                        embed.setColor('#00ff00')
-                            .setDescription(embed.description.concat(`\nUnsuspended manually by <@!${message.author.id}>`))
-                            .setFooter('Unsuspended at')
-                            .setTimestamp(Date.now())
-                            .addField('Reason for unsuspension', reason)
-                        bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').messages.cache.get(proofLogID).edit(embed);
+                        try {
+                            let embed = bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').messages.cache.get(proofLogID).embeds.shift();
+                            embed.setColor('#00ff00')
+                                .setDescription(embed.description.concat(`\nUnsuspended manually by <@!${message.author.id}>`))
+                                .setFooter('Unsuspended at')
+                                .setTimestamp(Date.now())
+                                .addField('Reason for unsuspension', reason)
+                            bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').messages.cache.get(proofLogID).edit(embed);
+                        }
+                        catch (er) { bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').send(`${member} has been unsuspended by ${message.member}`) }
 
                         message.channel.send(`${member} has been unsuspended`)
                     })

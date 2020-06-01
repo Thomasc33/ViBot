@@ -19,7 +19,7 @@ module.exports = {
         reactionCollector.on('collect', (r, u) => {
             if (!reactors.includes(u)) reactors.push(u)
         })
-        let time = 10
+        let time = 60
         let timer = setInterval(update, 5000);
         async function update() {
             time = time - 5;

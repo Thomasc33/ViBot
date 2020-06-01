@@ -79,19 +79,26 @@ module.exports = {
                 }
 
                 if (member.roles.cache.has(suspendedRole.id)) {
-                    message.channel.send(member.nickname.concat(' is already suspended. Reply __**Y**__es to overwrite. *This is not recommended if they are suspended by dylanbot'));
-                    let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 10000 });
-                    collector.on('collect', message => {
-                        if (message.content.charAt(0) == 'y') {
-                            message.channel.send('Overwriting suspension...');
-                            vetBanProcess()
-                            collector.stop();
-                        } else {
-                            message.channel.send('Response not recognized. Please try suspending again');
-                            cont = false;
-                            collector.stop();
-                        }
-                    })
+                    if (bot.suspensions[member.id]) {
+                        message.channel.send(member.nickname.concat(' is already suspended. Reply __**Y**__es to overwrite. *This is not recommended if they are suspended by dylanbot'));
+                        let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 10000 });
+                        collector.on('collect', message => {
+                            if (message.content.charAt(0) == 'y') {
+                                message.channel.send('Overwriting suspension...');
+                                vetBanProcess()
+                                collector.stop();
+                            } else if (message.content.carAt(0) == 'n') {
+                                collector.stop()
+                                return;
+                            } else {
+                                message.channel.send('Response not recognized. Please try suspending again');
+                                cont = false;
+                                collector.stop();
+                            }
+                        })
+                    } else {
+                        message.channel.send(member.nickname.concat(' was not suspended by me. Please try to overwrite through funman'))
+                    }
                 } else {
                     vetBanProcess()
                 }

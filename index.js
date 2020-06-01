@@ -7,6 +7,7 @@ bot.commands = new Discord.Collection();
 bot.vetBans = require('./vetBans.json');
 bot.suspensions = require('./suspensions.json')
 const ErrorLogger = require(`./logError`)
+const mysql = require('mysql')
 
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
@@ -31,7 +32,7 @@ bot.on('message', message => {
         if (message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.find(r => r.name === bot.commands.get(command).role).position && message.author.id !== '277636691227836419') return;
     } catch (er) { ErrorLogger.log(er, bot) }
     try {
-        bot.commands.get(command).execute(message, args, bot);
+        bot.commands.get(command).execute(message, args, bot, db);
     } catch (er) {
         ErrorLogger.log(er, bot)
         message.channel.send("Issue executing the command, check \`;commands\` and try again");
@@ -90,6 +91,13 @@ function aliasCheck(pcommand) {
 }
 
 bot.login(botSettings.key);
+
+var db = mysql.createConnection(botSettings.dbInfo)
+
+db.connect(err => {
+    if(err) throw err;
+    console.log('Connected to database')
+})
 
 bot.on("ready", () => {
     console.log(`Bot loaded: ${bot.user.username}`);

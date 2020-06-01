@@ -17,7 +17,7 @@ module.exports = {
     description: 'The new version of the afk check',
     args: '<channel> <c/v/fsv> <location>',
     role: 'Almost Raid Leader',
-    async execute(message, args, bott) {
+    async execute(message, args, bott, db) {
         if (args.length == 0) return;
         bot = bott
         var isVet = false;
@@ -110,7 +110,7 @@ module.exports = {
                 }
             }
             message.channel.send("Channel is being cleaned. AFK check will begin when cleaned")
-            currentReg = new afk(args[0], run, location, message, isVet);
+            currentReg = new afk(args[0], run, location, message, isVet, db);
             if (isVet) {
                 await cleanChannel(channel, message.guild.channels.cache.find(c => c.name === 'Veteran Lounge'), message);
                 message.channel.send('Channel cleaning successful. Beginning afk check in 10 seconds')
@@ -154,9 +154,10 @@ async function beginRun(isVet) {
 }
 
 class afk {
-    constructor(channel, run, location, message, isVet) {
+    constructor(channel, run, location, message, isVet, db) {
         this.channel = channel;
         this.run = run;
+        this.db = db;
         this.location = location;
         this.message = message;
         this.isVet = isVet;
@@ -767,6 +768,22 @@ class afk {
 
         if (this.isVet) activeVetRun = false;
         else activeRun = false;
+
+        this.voiceChannel.members.each(m => {
+            try {
+                this.db.query(`SELECT * FROM users WHERE id = '${m.id}'`, (err, rows) => {
+                    if(rows[0] == undefined) return;
+                    if (this.run == 1) {
+                        this.db.query(`UPDATE users SET cultRuns = '${parseInt(rows[0].cultRuns + 1)}' WHERE id = '${m.id}'`)
+                    } else {
+                        this.db.query(`UPDATE users SET voidRuns = '${parseInt(rows[0].voidRuns + 1)}' WHERE id = '${m.id}'`)
+                    }
+                    if (err) { ErrorLogger(err, bot); return; }
+                })
+            } catch (er) {
+                ErrorLogger(er, bot);
+            }
+        })
     }
     async abortAfk() {
         this.mainReactionCollector.stop();

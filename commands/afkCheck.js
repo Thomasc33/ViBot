@@ -15,7 +15,7 @@ module.exports = {
     description: 'Afk Check',
     args: '<channel> <c/v/fsv> <location>',
     role: 'Almost Raid Leader',
-    execute(message, args, bott) {
+    execute(message, args, bott, db) {
         bot = bott
         if (message.channel.name === 'dylanbot-commands') {
             var isVet = false;
@@ -76,10 +76,10 @@ module.exports = {
             message.channel.send('Location must be below 1024 characters, try again');
         }
         if (isVet) {
-            currentVet = new afk(args[0], run, location, message, isVet);
+            currentVet = new afk(args[0], run, location, message, isVet, db);
             currentVet.start();
         } else {
-            currentReg = new afk(args[0], run, location, message, isVet);
+            currentReg = new afk(args[0], run, location, message, isVet, db);
             currentReg.start();
         }
     },
@@ -111,11 +111,12 @@ module.exports = {
 }
 
 class afk {
-    constructor(channel, run, location, message, isVet) {
+    constructor(channel, run, location, message, isVet, db) {
         this.channel = channel;
         this.run = run;
         this.location = location;
         this.message = message;
+        this.db = db;
         this.isVet = isVet;
         if (this.isVet) this.raidStatus = this.message.guild.channels.cache.find(c => c.name === "veteran-status-announcements");
         else this.raidStatus = this.message.guild.channels.cache.find(c => c.name === "raid-status-announcements");
@@ -810,6 +811,22 @@ To end the AFK check as a leader, react to ❌`)
         //allow runs
         if (this.isVet) activeVetRun = false;
         else activeRun = false;
+
+        this.voiceChannel.members.each(m => {
+            try {
+                this.db.query(`SELECT * FROM users WHERE id = '${m.id}'`, (err, rows) => {
+                    if(rows[0] == undefined) return;
+                    if (this.run == 1) {
+                        this.db.query(`UPDATE users SET cultRuns = '${parseInt(rows[0].cultRuns + 1)}' WHERE id = '${m.id}'`)
+                    } else {
+                        this.db.query(`UPDATE users SET voidRuns = '${parseInt(rows[0].voidRuns + 1)}' WHERE id = '${m.id}'`)
+                    }
+                    if (err) { ErrorLogger(err, bot); return; }
+                })
+            } catch (er) {
+                ErrorLogger(er, bot);
+            }
+        })
 
     }
     async abortAfk() {
