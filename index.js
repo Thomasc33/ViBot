@@ -19,7 +19,6 @@ for (const file of commandFiles) {
 bot.on('message', message => {
     //if (message.content.includes(`<@!${bot.user.id}>`) || message.content.includes(`<@!277636691227836419>`)) { message.react('706688782732230696') }
     if (!message.content.startsWith(prefix) || message.channel.type === 'dm' || message.author.bot) return;
-    if (message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.find(r => r.name === "Event Organizer").position) return;
     const args = message.content.slice(prefix.length).split(/ +/);
     const pcommand = args.shift().toLowerCase();
     var command = aliasCheck(pcommand);

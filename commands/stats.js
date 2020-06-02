@@ -12,12 +12,10 @@ module.exports = {
         } else {
             var member = args[0]
             var guildMember = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(member.toLowerCase()));
-        } 
-        //if (guildMember == undefined) { message.channel.send('User not found'); return; }
+        }
         db.query(`SELECT * FROM users WHERE ign = '${member}'`, (err, rows) => {
             if (err) { message.channel.send('User not found'); return; }
-            if (rows == []) { message.channel.send('User not found'); return; }
-            if (rows[0] == undefined) { message.channel.send('User not found'); return; }
+            if (rows[0] == undefined) { message.channel.send('User is not logged. User database is updated every 24-48 hours for new raiders'); return; }
             let embed = new Discord.MessageEmbed()
                 .setColor('#015c21')
                 .setDescription(`<${botSettings.emote.hallsPortal}> __**Stats for ${rows[0].ign} on Pub Halls**__ <${botSettings.emote.hallsPortal}>
@@ -30,7 +28,7 @@ module.exports = {
                 Cult: ${rows[0].cultRuns}
                 Void: ${rows[0].voidRuns}
                 Solo cults: ${rows[0].solocult}
-                Other: ${rows[0].eventRuns}
+                Other: ${rows[0].eventruns}
                 
                 <${botSettings.emote.hallsPortal}>__**Runs Led**__<${botSettings.emote.hallsPortal}>
                 Cult: ${rows[0].cultsLead}

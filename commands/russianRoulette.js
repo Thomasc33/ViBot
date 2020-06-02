@@ -11,7 +11,7 @@ module.exports = {
             .setTitle('Russian Roulette')
             .setDescription(`Started by ${message.member}
             React with 🔫 to join`)
-            .setFooter('Time remaining 1 minute')
+            .setFooter('Time remaining 30 seconds')
         let embedMessage = await message.channel.send(embed)
         embedMessage.react('🔫')
         let reactors = []
@@ -19,7 +19,7 @@ module.exports = {
         reactionCollector.on('collect', (r, u) => {
             if (!reactors.includes(u)) reactors.push(u)
         })
-        let time = 60
+        let time = 30
         let timer = setInterval(update, 5000);
         async function update() {
             time = time - 5;

@@ -772,7 +772,7 @@ class afk {
         this.voiceChannel.members.each(m => {
             try {
                 this.db.query(`SELECT * FROM users WHERE id = '${m.id}'`, (err, rows) => {
-                    if(rows[0] == undefined) return;
+                    if (rows[0] == undefined) return;
                     if (this.run == 1) {
                         this.db.query(`UPDATE users SET cultRuns = '${parseInt(rows[0].cultRuns + 1)}' WHERE id = '${m.id}'`)
                     } else {
@@ -784,6 +784,17 @@ class afk {
                 ErrorLogger(er, bot);
             }
         })
+
+        if (this.key != null) {
+            try {
+                this.db.query(`SELECT * FROM users WHERE id = '${this.key.id}'`, (err, rows) => {
+                    if (rows[0] == undefined) return;
+                    this.db.query(`UPDATE users SET keypops = '${parseInt(rows[0].keypops + 1)}' WHERE id = '${this.key.id}'`)
+                })
+            } catch (er) {
+                ErrorLogger(er, bot)
+            }
+        }
     }
     async abortAfk() {
         this.mainReactionCollector.stop();
