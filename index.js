@@ -84,6 +84,10 @@ function aliasCheck(pcommand) {
             return 'eventafk';
         case 'rr':
             return 'russianroulette';
+        case 'av':
+            return 'addvial';
+        case 'uv':
+            return 'usevial';
         default:
             return pcommand;
     }
@@ -94,7 +98,7 @@ bot.login(botSettings.key);
 var db = mysql.createConnection(botSettings.dbInfo)
 
 db.connect(err => {
-    if(err) throw err;
+    if (err) throw err;
     console.log('Connected to database')
 })
 

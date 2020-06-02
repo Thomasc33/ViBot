@@ -13,7 +13,7 @@ module.exports = {
                 message.channel.send('Command doesnt exist, check \`commands\` and try again');
                 return;
             }
-            if (message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.find(r => r.name === bot.commands.get(command).role).position && message.author.id !== '277636691227836419') {
+            if (message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.find(r => r.name === bot.commands.get(args[0]).role).position && message.author.id !== '277636691227836419') {
                 message.channel.send('Command doesnt exist, check \`commands\` and try again');
                 return;
             }

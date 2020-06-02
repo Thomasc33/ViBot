@@ -9,28 +9,15 @@ module.exports = {
     role: 'Almost Raid Leader',
     args: '<channel number> <key/vial/brian/mystic/rusher> [Location]',
     async execute(message, args, bot) {
-        if (args[0].replace(/[0-9]+/g, '') == '') { message.channel.send('Channel number invalid. Please try again'); return; }
-        if (message.channel.name === 'dylanbot-commands') {
-            isVet = false;
-            if (args[0] > botSettings.voiceChannelCount || args[0] == 0) {
-                message.channel.send("Channel Number Invalid. Please try again");
-                return;
-            }
-        } else if (message.channel.name === 'veteran-bot-commands') {
-            isVet = true;
-            if (args[0] > botSettings.vetVoiceChannelCount || args[0] == 0) {
-                message.channel.send("Channel Number Invalid. Please try again");
-                return;
-            }
-        } else {
+        if (message.channel.name === 'dylanbot-commands') { isVet = false; }
+        else if (message.channel.name === 'veteran-bot-commands') { isVet = true; }
+        else {
             message.channel.send("Try again, but in dylanbot-commands or veteran-bot-commands");
             return;
         }
-        if (!isVet) {
-            var voiceChannel = message.guild.channels.cache.find(c => c.name == `raiding-${args[0]}` || c.name == `raiding-${args[0]} <--Join Now!`);
-        } else {
-            var voiceChannel = message.guild.channels.cache.find(c => c.name == `Veteran Raiding ${args[0]}` || c.name == `Veteran Raiding ${args[0]} <--Join Now!`);
-        }
+        if (!isVet) { var voiceChannel = message.guild.channels.cache.find(c => c.name == `raiding-${args[0]}` || c.name == `raiding-${args[0]} <--Join Now!`); }
+        else { var voiceChannel = message.guild.channels.cache.find(c => c.name == `Veteran Raiding ${args[0]}` || c.name == `Veteran Raiding ${args[0]} <--Join Now!`); }
+        if (voiceChannel == null) { message.channel.send("Channel not found"); return; }
         if (isVet) var raidStatus = message.guild.channels.cache.find(c => c.name === "veteran-status-announcements");
         else var raidStatus = message.guild.channels.cache.find(c => c.name === "raid-status-announcements");
         var location = "";
