@@ -774,9 +774,9 @@ class afk {
                 this.db.query(`SELECT * FROM users WHERE id = '${m.id}'`, (err, rows) => {
                     if (rows[0] == undefined) return;
                     if (this.run == 1) {
-                        this.db.query(`UPDATE users SET cultRuns = '${parseInt(rows[0].cultRuns + 1)}' WHERE id = '${m.id}'`)
+                        this.db.query(`UPDATE users SET cultRuns = '${parseInt(rows[0].cultRuns) + 1}' WHERE id = '${m.id}'`)
                     } else {
-                        this.db.query(`UPDATE users SET voidRuns = '${parseInt(rows[0].voidRuns + 1)}' WHERE id = '${m.id}'`)
+                        this.db.query(`UPDATE users SET voidRuns = '${parseInt(rows[0].voidRuns) + 1}' WHERE id = '${m.id}'`)
                     }
                     if (err) { ErrorLogger(err, bot); return; }
                 })
