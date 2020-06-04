@@ -34,7 +34,7 @@ module.exports = {
         }
         if (message.channel.name === 'dylanbot-commands') {
             await channel.updateOverwrite(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(r => ErrorLogger.log(er, bot))
-            setTimeout(function () { channel.setName(`raiding-${channelNumber}`).catch(r => ErrorLogger.log(er, bot)) }, 1000)
+            setTimeout(function () { channel.setName(`raiding-${channelNumber}`).catch(r => ErrorLogger.log(r, bot)) }, 1000)
         }
         if (message.channel.name === 'veteran-bot-commands') {
             await channel.updateOverwrite(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))

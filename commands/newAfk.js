@@ -4,6 +4,7 @@ const Discord = require('discord.js');
 const ErrorLogger = require('../logError')
 const Locker = require('./lock');
 const Unlocker = require('./unlock')
+const Channels = require('./vibotChannels')
 
 //globals
 var activeVetRun = false;
@@ -15,32 +16,20 @@ var bot;
 module.exports = {
     name: 'newafk',
     description: 'The new version of the afk check',
-    args: '<channel> <c/v/fsv> <location>',
+    args: '<c/v/fsv> <location>',
     role: 'Almost Raid Leader',
     async execute(message, args, bott, db) {
         if (args.length == 0) return;
         bot = bott
-        var isVet = false;
-        if (message.channel.name === 'dylanbot-commands') {
-            if (args[0] > botSettings.voiceChannelCount || args[0] == 0) {
-                message.channel.send("Channel Number Invalid. Please try again");
-                return;
-            }
-            var channel = message.guild.channels.cache.find(c => c.name === `raiding-${args[0]}` || c.name === `raiding-${args[0]} <-- Join!`)
-        } else if (message.channel.name === 'veteran-bot-commands') {
-            isVet = true;
-            if (args[0] > botSettings.vetVoiceChannelCount || args[0] == 0) {
-                message.channel.send("Channel Number Invalid. Please try again");
-                return;
-            }
-            var channel = message.guild.channels.cache.find(c => c.name === `Veteran Raiding ${args[0]}` || c.name === `Veteran Raiding ${args[0]} <-- Join!`)
-        } else {
+
+        if (message.channel.name === 'dylanbot-commands') var isVet = false;
+        else if (message.channel.name === 'veteran-bot-commands') var isVet = true;
+        else {
             message.channel.send("Try again, but in dylanbot-commands or veteran-bot-commands");
             return;
         }
-        if (!(message.channel.name === 'dylanbot-commands' || message.channel.name === 'veteran-bot-commands')) return;
         if (args.length < 2) {
-            message.channel.send("Command entered incorrectly -> ;afk <channel #> <c/v/fsv> <location>");
+            message.channel.send("Command entered incorrectly -> ;afk <c/v/fsv> <location>");
             return;
         }
         if (isVet) {
@@ -54,7 +43,7 @@ module.exports = {
                 return;
             }
         }
-        switch (args[1].charAt(0).toLowerCase()) {
+        switch (args[0].charAt(0).toLowerCase()) {
             case 'c':
                 var run = 1;
                 break;
@@ -65,62 +54,31 @@ module.exports = {
                 var run = 3;
                 break;
             default:
-                message.channel.send("Command entered incorrectly -> ;afk <channel #> <c/v/fsv> <location>");
+                message.channel.send("Command entered incorrectly -> ;afk <c/v/fsv> <location>");
                 return;
         }
         let location = "";
-        for (i = 2; i < args.length; i++) {
+        for (i = 1; i < args.length; i++) {
             location = location.concat(args[i]) + ' ';
         }
         location = location.trim();
         if (location.length >= 1024) {
             message.channel.send('Location must be below 1024 characters, try again');
         }
-        let authorVC = message.member.voice.channel
-        if (authorVC != undefined) {
-            if (authorVC.id != channel.id) {
-                message.channel.send(`You attempted to start an afk check in ${channel.name}, but you are in ${authorVC.name}. Would you like to continue? (Y/N)`)
-            } else { begin() }
-        } else { begin() }
-        let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 10000 });
-        collector.on('collect', m => {
-            if (m.author != message.author) return;
-            try {
-                if (m.content.toLowerCase().charAt(0) == 'y') {
-                    begin()
-                } else if (m.content.toLowerCase().charAt(0) == 'n') {
-                    return;
-                } else {
-                    console.log(`bruh`)
-                }
-            } catch (er) {
-                ErrorLogger.log(er, bot)
+        if (isVet) {
+            if (activeVetRun == true) {
+                message.channel.send("There is already a run active. If this is an error, do \`;allownewrun\`");
+                return;
             }
-        });
-        async function begin() {
-            if (isVet) {
-                if (activeVetRun == true) {
-                    message.channel.send("There is already a run active. If this is an error, do \`;allownewrun\`");
-                    return;
-                }
-            } else {
-                if (activeRun == true) {
-                    message.channel.send("There is already a run active. If this is an error, do \`;allownewrun\`");
-                    return;
-                }
-            }
-            message.channel.send("Channel is being cleaned. AFK check will begin when cleaned")
-            currentReg = new afk(args[0], run, location, message, isVet, db);
-            if (isVet) {
-                await cleanChannel(channel, message.guild.channels.cache.find(c => c.name === 'Veteran Lounge'), message);
-                message.channel.send('Channel cleaning successful. Beginning afk check in 10 seconds')
-                setTimeout(beginRun, 10000, true)
-            } else {
-                await cleanChannel(channel, message.guild.channels.cache.find(c => c.name === 'lounge'), message);
-                message.channel.send('Channel cleaning successful. Beginning afk check in 10 seconds')
-                setTimeout(beginRun, 10000, false)
-            }
+        } else if (activeRun == true) {
+            message.channel.send("There is already a run active. If this is an error, do \`;allownewrun\`");
+            return;
         }
+        let channel = await createChannel(isVet, message, run);
+        currentReg = new afk(run, location, message, isVet, db, channel);
+        message.channel.send('Channel created successfully. Beginning afk check in 10 seconds')
+        if (isVet) setTimeout(beginRun, 10000, true)
+        else setTimeout(beginRun, 10000, false)
     },
     changeLocation(location, isVet, channel) {
         if (isVet) {
@@ -154,7 +112,7 @@ async function beginRun(isVet) {
 }
 
 class afk {
-    constructor(channel, run, location, message, isVet, db) {
+    constructor(run, location, message, isVet, db, channel) {
         this.channel = channel;
         this.run = run;
         this.db = db;
@@ -165,6 +123,8 @@ class afk {
         else this.raidStatus = this.message.guild.channels.cache.find(c => c.name === "raid-status-announcements");
         if (this.isVet) this.dylanBotCommands = this.message.guild.channels.cache.find(c => c.name === "veteran-bot-commands");
         else this.dylanBotCommands = this.message.guild.channels.cache.find(c => c.name === "dylanbot-commands");
+        if (!this.isVet) this.verifiedRaiderRole = this.message.guild.roles.cache.find(r => r.name === 'Verified Raider');
+        else this.verifiedRaiderRole = this.message.guild.roles.cache.find(r => r.name === 'Veteran Raider');
         if (this.isVet) activeVetRun = true;
         else activeRun = true;
         this.afkChannel = message.guild.channels.cache.find(c => c.name === 'afk');
@@ -182,12 +142,6 @@ class afk {
         this.mystics = []
         this.brains = []
         this.time = botSettings.afkTimeLimit;
-        if (isVet) {
-            this.voiceChannel = message.guild.channels.cache.find(c => c.name === `Veteran Raiding ${channel}` || c.name === `Veteran Raiding ${channel} <-- Join!`)
-        } else {
-            this.voiceChannel = message.guild.channels.cache.find(c => c.name === `raiding-${channel}` || c.name === `raiding-${channel} <-- Join!`)
-        }
-        this.verifiedRaiderRole;
         this.postTime = 20;
         this.earlyLocation = [];
         this.raider = [];
@@ -197,32 +151,19 @@ class afk {
     async sendMessage() {
         switch (this.run) {
             case 1: //cult
-                this.afkCheckEmbed = await this.raidStatus.send(`@here A \`Cult\` afk will be starting in 10 seconds by ${this.message.member}. Prepare to join raiding \`${this.voiceChannel.name}\`. **You do not need to react to anything**`).catch(er => ErrorLogger.log(er, bot));
+                this.afkCheckEmbed = await this.raidStatus.send(`@here A \`Cult\` afk will be starting in 10 seconds by ${this.message.member}. Prepare to join raiding \`${this.channel.name}\` *Now located above lounge*. **You do not need to react to anything**`).catch(er => ErrorLogger.log(er, bot));
                 break;
             case 2: //void
-                this.afkCheckEmbed = await this.raidStatus.send(`@here A \`Void\` afk will be starting in 10 seconds by ${this.message.member}. Prepare to join raiding \`${this.voiceChannel.name}\`. **You do not need to react to anything**`).catch(er => ErrorLogger.log(er, bot));
+                this.afkCheckEmbed = await this.raidStatus.send(`@here A \`Void\` afk will be starting in 10 seconds by ${this.message.member}. Prepare to join raiding \`${this.channel.name}\` *Now located above lounge*. **You do not need to react to anything**`).catch(er => ErrorLogger.log(er, bot));
                 break;
             case 3: //full skip
-                this.afkCheckEmbed = await this.raidStatus.send(`@here A \`Full-Skip Void\` afk will be starting in 10 seconds by ${this.message.member}. Prepare to join raiding \`${this.voiceChannel.name}\`. **You do not need to react to anything**`).catch(er => ErrorLogger.log(er, bot));
+                this.afkCheckEmbed = await this.raidStatus.send(`@here A \`Full-Skip Void\` afk will be starting in 10 seconds by ${this.message.member}. Prepare to join raiding \`${this.channel.name}\` *Now located above lounge*. **You do not need to react to anything**`).catch(er => ErrorLogger.log(er, bot));
                 break;
             default: return;
         }
     }
 
     async start() {
-        //variables
-        if (!this.isVet) {
-            this.voiceChannel = this.message.guild.channels.cache.find(c => c.name == `raiding-${this.channel}` || c.name == `raiding-${this.channel} <-- Join!`);
-            this.verifiedRaiderRole = this.message.guild.roles.cache.find(r => r.name === 'Verified Raider');
-        } else if (this.isVet) {
-            this.voiceChannel = this.message.guild.channels.cache.find(c => c.name == `Veteran Raiding ${this.channel}` || c.name == `Veteran Raiding ${this.channel} <-- Join!`);
-            this.verifiedRaiderRole = this.message.guild.roles.cache.find(r => r.name === 'Veteran Raider');
-        } else return;
-        if (this.channel == null) {
-            this.message.channel.send("Could not find channel correctly, please try again");
-            return;
-        }
-
         //begin afk check
         switch (this.run) {
             case 1: //cult
@@ -244,7 +185,7 @@ class afk {
         this.seconds = this.time % 60;
         this.embedMessage = new Discord.MessageEmbed()
             .setColor('#ff0000')
-            .setAuthor(`Cult Started by ${this.message.member.nickname} in ${this.voiceChannel.name}`, `${this.message.author.avatarURL()}`)
+            .setAuthor(`Cult Started by ${this.message.member.nickname} in ${this.channel.name}`, `${this.message.author.avatarURL()}`)
             .setDescription(`To join, **connect to the raiding channel by clicking its name**
                 If you have a key react with <${botSettings.emote.LostHallsKey}>
                 To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.TomeofPurification}> <${botSettings.emote.MarbleSeal}>
@@ -255,7 +196,7 @@ class afk {
             .setFooter(`Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds`);
         this.afkCheckEmbed.edit(this.embedMessage);
 
-        await Unlocker.unlock(this.message, this.voiceChannel, this.channel, this.verifiedRaiderRole)
+        this.channel.updateOverwrite(this.verifiedRaiderRole.id, { CONNECT: true, VIEW_CHANNEL: true })
 
         this.moveInTimer = await setInterval(() => { this.moveIn() }, 10000);
         this.timer = await setInterval(() => { this.updateAfkCheck() }, 5000);
@@ -264,7 +205,7 @@ class afk {
 
         this.leaderEmbed = new Discord.MessageEmbed()
             .setColor('#ff0000')
-            .setTitle(`AFK Check control panel for \`${this.voiceChannel.name}\``)
+            .setTitle(`AFK Check control panel for \`${this.channel.name}\``)
             .setFooter(`To abort the afk check, react with ❌ below.`)
             .addFields(
                 { name: `Our current key`, value: `None yet!` },
@@ -344,7 +285,7 @@ class afk {
         this.seconds = this.time % 60;
         this.embedMessage = new Discord.MessageEmbed()
             .setColor('#8c00ff')
-            .setAuthor(`Void Started by ${this.message.member.nickname} in ${this.voiceChannel.name}`, `${this.message.author.avatarURL()}`)
+            .setAuthor(`Void Started by ${this.message.member.nickname} in ${this.channel.name}`, `${this.message.author.avatarURL()}`)
             .setDescription(`To join, **connect to the raiding channel by clicking its name and react with** <${botSettings.emote.voidd}>
             If you have a key or vial, react with <${botSettings.emote.LostHallsKey}> or <${botSettings.emote.Vial}>
             To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.TomeofPurification}> <${botSettings.emote.MarbleSeal}>
@@ -354,7 +295,7 @@ class afk {
             .setFooter(`Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds`);
         this.afkCheckEmbed.edit(this.embedMessage);
 
-        await Unlocker.unlock(this.message, this.voiceChannel, this.channel, this.verifiedRaiderRole)
+        this.channel.updateOverwrite(this.verifiedRaiderRole.id, { CONNECT: true, VIEW_CHANNEL: true })
 
         this.moveInTimer = await setInterval(() => { this.moveIn() }, 10000);
         this.timer = await setInterval(() => { this.updateAfkCheck() }, 5000);
@@ -363,7 +304,7 @@ class afk {
 
         this.leaderEmbed = new Discord.MessageEmbed()
             .setColor('#8c00ff')
-            .setTitle(`AFK Check control panel for \`${this.voiceChannel.name}\``)
+            .setTitle(`AFK Check control panel for \`${this.channel.name}\``)
             .setFooter(`To abort the afk check, react with ❌ below.`)
             .addFields(
                 { name: `Our current key`, value: `None yet!` },
@@ -440,7 +381,7 @@ class afk {
         this.seconds = this.time % 60;
         this.embedMessage = new Discord.MessageEmbed()
             .setColor('#8c00ff')
-            .setAuthor(`Full Skip Void Started by ${this.message.member.nickname} in ${this.voiceChannel.name}`, `${this.message.author.avatarURL()}`)
+            .setAuthor(`Full Skip Void Started by ${this.message.member.nickname} in ${this.channel.name}`, `${this.message.author.avatarURL()}`)
             .setDescription(`To join, **connect to the raiding channel by clicking its name and react with** <${botSettings.emote.SkipBoi}>
             If you have a key or vial, react with <${botSettings.emote.LostHallsKey}> or <${botSettings.emote.Vial}>
             To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.TomeofPurification}> <${botSettings.emote.MarbleSeal}>
@@ -452,7 +393,7 @@ class afk {
             .setFooter(`Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds`);
         this.afkCheckEmbed.edit(this.embedMessage);
 
-        await Unlocker.unlock(this.message, this.voiceChannel, this.channel, this.verifiedRaiderRole)
+        this.channel.updateOverwrite(this.verifiedRaiderRole.id, { CONNECT: true, VIEW_CHANNEL: true })
 
         this.moveInTimer = await setInterval(() => { this.moveIn() }, 10000);
         this.timer = await setInterval(() => { this.updateAfkCheck() }, 5000);
@@ -461,7 +402,7 @@ class afk {
 
         this.leaderEmbed = new Discord.MessageEmbed()
             .setColor('#8c00ff')
-            .setTitle(`AFK Check control panel for \`${this.voiceChannel.name}\``)
+            .setTitle(`AFK Check control panel for \`${this.channel.name}\``)
             .setFooter(`To abort the afk check, react with ❌ below.`)
             .addFields(
                 { name: `Our current key`, value: `None yet!` },
@@ -738,7 +679,7 @@ class afk {
             let member = this.message.guild.members.cache.get(u.id);
             try {
                 if (member.voice.channel.name == 'lounge' || member.voice.channel.name == 'Veteran Lounge' || member.voice.channel.name.contains('drag')) {
-                    member.edit({ channel: this.voiceChannel }).catch(er => { });
+                    member.edit({ channel: this.channel }).catch(er => { });
                 }
             } catch (er) { }
         }
@@ -750,7 +691,8 @@ class afk {
         clearInterval(this.moveInTimer);
         clearInterval(this.timer);
 
-        Locker.lock(this.message, this.voiceChannel, this.channel, this.verifiedRaiderRole)
+        this.channel.updateOverwrite(this.verifiedRaiderRole.id, { CONNECT: false, VIEW_CHANNEL: false })
+        this.channel.setPosition(25)
 
         if (this.key != null) {
             this.embedMessage.setDescription(`This afk check has been ended.
@@ -769,7 +711,7 @@ class afk {
         if (this.isVet) activeVetRun = false;
         else activeRun = false;
 
-        this.voiceChannel.members.each(m => {
+        this.channel.members.each(m => {
             try {
                 this.db.query(`SELECT * FROM users WHERE id = '${m.id}'`, (err, rows) => {
                     if (rows[0] == undefined) return;
@@ -803,7 +745,8 @@ class afk {
         clearInterval(this.moveInTimer);
         clearInterval(this.timer);
 
-        Locker.lock(this.message, this.voiceChannel, this.channel, this.verifiedRaiderRole)
+        this.channel.updateOverwrite(this.verifiedRaiderRole.id, { CONNECT: false, VIEW_CHANNEL: false })
+        this.channel.setPosition(this.channel.parent.children.filter(c => c.type == 'voice').size - 1)
 
         this.embedMessage.setDescription(`This afk check has been aborted`)
             .setFooter(`The afk check has been aborted by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
@@ -848,23 +791,34 @@ class afk {
         }
     }
 }
-async function cleanChannel(channel, lounge, message) {
-    var vcUsers = channel.members.array()
-    for (let i in vcUsers) {
-        let u = vcUsers[i];
-        if (u.roles.highest.position < message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) {
-            try {
-                await u.edit({ channel: lounge }).catch(er => { });
-            } catch (er) {
-                try {
-                    await u.edit({ channel: lounge }).catch(er => { });
-                } catch (er) {
-                    if (er.message == 'Target user is not connected to voice.') continue;
-                    else ErrorLogger.log(er, bot)
-                }
-            }
-        }
-    }
+async function createChannel(isVet, message, run) {
+    //channel creation
+    if (isVet) { var parent = 'veteran raiding'; var template = message.guild.channels.cache.find(c => c.name === 'Vet Raiding Template'); var raider = message.guild.roles.cache.find(r => r.name === 'Veteran Raider') }
+    else { var parent = 'raiding'; var template = message.guild.channels.cache.find(c => c.name === 'Raiding Template'); var raider = message.guild.roles.cache.find(r => r.name === 'Verified Raider') }
+    let channel = await template.clone()
+    setTimeout(async function () {
+        await channel.setParent(message.guild.channels.cache.filter(c => c.type == 'category').find(c => c.name.toLowerCase() === parent))
+        channel.setPosition(0)
+    }, 1000)
+    await message.member.voice.setChannel(channel).catch(er => { ErrorLogger.log(er, bot) })
+    if (run == 1) { await channel.setName(`${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s Cult`) }
+    if (run == 2) { await channel.setName(`${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s Void`) }
+    if (run == 3) { await channel.setName(`${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s Full-Skip Void`) }
+
+    //allows raiders to view
+    channel.updateOverwrite(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+
+    //Embed to remove
+    let vibotChannels = message.guild.channels.cache.find(c => c.name === 'vibot-channels')
+    let embed = new Discord.MessageEmbed()
+        .setTitle(channel.name)
+        .setDescription('Whenever the run is over. React with the ❌ to delete the channel.')
+        .setFooter(channel.id)
+        .setTimestamp()
+    let m = await vibotChannels.send(embed)
+    m.react('❌')
+    Channels.update(message)
+    return channel;
 }
 //React functions
 async function cultReact(message) {

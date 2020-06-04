@@ -8,6 +8,7 @@ bot.vetBans = require('./vetBans.json');
 bot.suspensions = require('./suspensions.json')
 const ErrorLogger = require(`./logError`)
 const mysql = require('mysql')
+const vibotChannels = require('./commands/vibotChannels')
 
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
@@ -169,4 +170,9 @@ bot.on("ready", () => {
         }
 
     }, 1000);
+    bot.guilds.cache.each(g => {
+        try {
+            vibotChannels.update(g)
+        } catch (er) { return; }
+    })
 });
