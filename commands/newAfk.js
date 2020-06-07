@@ -692,7 +692,9 @@ class afk {
         clearInterval(this.timer);
 
         this.channel.updateOverwrite(this.verifiedRaiderRole.id, { CONNECT: false, VIEW_CHANNEL: false })
-        this.channel.setPosition(25)
+        if (!this.isVet) {
+            this.channel.setPosition(this.afkChannel.position)
+        }
 
         if (this.key != null) {
             this.embedMessage.setDescription(`This afk check has been ended.
@@ -811,8 +813,8 @@ async function createChannel(isVet, message, run) {
     //Embed to remove
     let vibotChannels = message.guild.channels.cache.find(c => c.name === 'vibot-channels')
     let embed = new Discord.MessageEmbed()
-        .setTitle(channel.name)
-        .setDescription('Whenever the run is over. React with the ❌ to delete the channel.')
+        .setTitle(`${message.member.nickname}'s Run`)
+        .setDescription('Whenever the run is over. React with the ❌ to delete the channel. View the timestamp for more information')
         .setFooter(channel.id)
         .setTimestamp()
     let m = await vibotChannels.send(embed)
