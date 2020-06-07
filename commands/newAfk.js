@@ -819,7 +819,7 @@ async function createChannel(isVet, message, run) {
         .setTimestamp()
     let m = await vibotChannels.send(embed)
     m.react('❌')
-    Channels.update(message)
+    setTimeout(() => {Channels.update(message.guild)}, 10000)
     return channel;
 }
 //React functions
