@@ -1,10 +1,6 @@
 {
-    "key": "NzAxMTk2NTI5NTE5Njg5Nzkw.Xq43Gg.HvrUYWTacadXXplmYK2w9bO8cNE",
+    "key": "botKey",
     "prefix": ";",
-    "raidingChannels": "6",
-    "botID": "701196529519689790",
-    "voiceChannelCount": 15,
-    "vetVoiceChannelCount": 5,
     "afkTimeLimit": 360,
     "eventAfkTimeLimit": 360,
     "nitroCount": 5,
