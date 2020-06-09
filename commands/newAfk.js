@@ -381,7 +381,7 @@ class afk {
         this.seconds = this.time % 60;
         this.embedMessage = new Discord.MessageEmbed()
             .setColor('#8c00ff')
-            .setAuthor(`Full Skip Void Started by ${this.message.member.nickname} in ${this.channel.name}`, `${this.message.author.avatarURL()}`)
+            .setAuthor(`Fullskip Void Started by ${this.message.member.nickname} in ${this.channel.name}`, `${this.message.author.avatarURL()}`)
             .setDescription(`To join, **connect to the raiding channel by clicking its name and react with** <${botSettings.emote.SkipBoi}>
             If you have a key or vial, react with <${botSettings.emote.LostHallsKey}> or <${botSettings.emote.Vial}>
             To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.TomeofPurification}> <${botSettings.emote.MarbleSeal}>
@@ -691,7 +691,7 @@ class afk {
         clearInterval(this.moveInTimer);
         clearInterval(this.timer);
 
-        this.channel.updateOverwrite(this.verifiedRaiderRole.id, { CONNECT: false, VIEW_CHANNEL: false })
+        this.channel.updateOverwrite(this.verifiedRaiderRole.id, { CONNECT: false, VIEW_CHANNEL: true })
         if (!this.isVet) {
             this.channel.setPosition(this.afkChannel.position)
         }

@@ -414,10 +414,10 @@ To end the AFK check as a leader, react to ❌`)
     async fsv() {
         this.minutes = Math.floor(this.time / 60);
         this.seconds = this.time % 60;
-        this.pingingMessage = `@here \`Full Skip Void\` started by ${this.message.member} in \`${this.voiceChannel.name}\``;
+        this.pingingMessage = `@here \`Fullskip Void\` started by ${this.message.member} in \`${this.voiceChannel.name}\``;
         this.embedMessage = new Discord.MessageEmbed()
             .setColor('#8c00ff')
-            .setAuthor(`Full Skip Void Started by ${this.message.member.nickname} in ${this.voiceChannel.name}`, `${this.message.author.avatarURL()}`)
+            .setAuthor(`Fullskip Void Started by ${this.message.member.nickname} in ${this.voiceChannel.name}`, `${this.message.author.avatarURL()}`)
             .setDescription(`To join, **connect to the raiding channel by clicking its name and react with** <${botSettings.emote.SkipBoi}>
         If you have a key or vial, react with <${botSettings.emote.LostHallsKey}> or <${botSettings.emote.Vial}>
         To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.TomeofPurification}> <${botSettings.emote.MarbleSeal}>

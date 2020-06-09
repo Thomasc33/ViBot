@@ -1,10 +1,10 @@
 const Discord = require('discord.js')
 
 module.exports = {
-    name: 'manualeventboi',
+    name: 'removeeventboi',
     description: 'Gives user event boi role',
-    args: '<id/mention> <ign> (proof)',
-    alias: 'meb',
+    args: '<id/mention> (proof)',
+    alias: 'reb',
     role: 'Security',
     async execute(message, args, bot) {
         const suspendedRole = message.guild.roles.cache.find(r => r.name === 'Suspended');
@@ -22,23 +22,26 @@ module.exports = {
             message.channel.send("User is suspended")
             return;
         }
-        await member.roles.add(eventRole)
-        await member.setNickname(args[1])
+        if(!member.roles.cache.has(eventRole.id)){
+            message.channel.send('User does not have event boi')
+            return;
+        }
+        await member.roles.remove(eventRole)
         let image;
         if (message.attachments.first() != null) image = message.attachments.first().proxyURL
-        if (image == null) image = args[2]
+        if (image == null) image = args[1]
         let embed = new Discord.MessageEmbed()
-            .setTitle('Manual Event Boi Verify')
+            .setTitle('Event Boi Removed')
             .setDescription(member)
             .addField('User', member.displayName, true)
-            .addField('Verified By', `<@!${message.author.id}>`, true)
+            .addField('Removed By', `<@!${message.author.id}>`, true)
             .setTimestamp(Date.now());
         try {
             if (validURL(image)) embed.setImage(image)
             message.guild.channels.cache.find(c => c.name === 'mod-logs').send(embed);
-            message.channel.send(`${member} has been given ${eventRole}`)
+            message.channel.send(`Event Boi has been removed from ${member}`)
         } catch (er) {
-            message.channel.send('There was an issue attaching the image. However they have still been verified as event boi')
+            message.channel.send('There was an issue attaching the image. However, Event Boi was still removed')
             message.guild.channels.cache.find(c => c.name === 'mod-logs').send(embed);
         }
         function validURL(str) {

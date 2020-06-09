@@ -7,7 +7,7 @@ module.exports = {
     description: 'In the event someone fake reacts, simply use this command and a message will be send to raid-status/vet-status where a new key/vial can react and get sent location',
     alias: 'rq',
     role: 'Almost Raid Leader',
-    args: '<channel number> <key/vial/brian/mystic/rusher> [Location]',
+    args: '<key/vial/brian/mystic/rusher> [Location]',
     async execute(message, args, bot) {
         if (message.channel.name === 'dylanbot-commands') { isVet = false; }
         else if (message.channel.name === 'veteran-bot-commands') { isVet = true; }
@@ -15,9 +15,8 @@ module.exports = {
             message.channel.send("Try again, but in dylanbot-commands or veteran-bot-commands");
             return;
         }
-        if (!isVet) { var voiceChannel = message.guild.channels.cache.find(c => c.name == `raiding-${args[0]}` || c.name == `raiding-${args[0]} <--Join Now!`); }
-        else { var voiceChannel = message.guild.channels.cache.find(c => c.name == `Veteran Raiding ${args[0]}` || c.name == `Veteran Raiding ${args[0]} <--Join Now!`); }
-        if (voiceChannel == null) { message.channel.send("Channel not found"); return; }
+        var voiceChannel = message.member.voice.channel
+        if (voiceChannel == null) { message.channel.send("Channel not found. Make sure you are in a VC"); return; }
         if (isVet) var raidStatus = message.guild.channels.cache.find(c => c.name === "veteran-status-announcements");
         else var raidStatus = message.guild.channels.cache.find(c => c.name === "raid-status-announcements");
         var location = "";

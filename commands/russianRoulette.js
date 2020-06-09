@@ -21,10 +21,12 @@ module.exports = {
         })
         let time = 30
         let timer = setInterval(update, 5000);
+        message.delete()
         async function update() {
             time = time - 5;
             if (time == 0) {
                 shoot()
+                return;
             }
             embed.setFooter(`Time remaining ${time} seconds`)
             embedMessage.edit(embed)

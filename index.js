@@ -89,6 +89,10 @@ function aliasCheck(pcommand) {
             return 'addvial';
         case 'uv':
             return 'usevial';
+        case 'meb':
+            return 'manualeventboi';
+        case 'reb':
+            return 'removeeventboi';
         default:
             return pcommand;
     }
@@ -137,7 +141,7 @@ bot.on("ready", () => {
             }
         }
 
-    }, 60000);//change to 60k after testing
+    }, 60000);
     bot.setInterval(() => {
         for (let i in bot.suspensions) {
             const time = bot.suspensions[i].time;
@@ -169,7 +173,7 @@ bot.on("ready", () => {
             }
         }
 
-    }, 1000);
+    }, 5000);
     bot.guilds.cache.each(g => {
         try {
             vibotChannels.update(g)

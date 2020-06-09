@@ -8,7 +8,7 @@ module.exports = {
     role: 'Event Organizer',
     async execute(message, args, bot) {
         var isVet = false;
-        if (!(message.channel.name === 'dylanbot-commands' || message.channel.name === 'veteran-bot-commands')) {
+        if (!(message.channel.name === 'dylanbot-commands' || message.channel.name === 'veteran-bot-commands') || message.channel.name === 'eventbot-commands') {
             message.channel.send("Try again, but in dylanbot-commands or veteran-bot-commands");
             return;
         }
@@ -23,6 +23,12 @@ module.exports = {
                 message.channel.send("Channel number invalid");
                 return;
             }
+        }
+        if (message.channel.name == 'eventbot-commands') {
+            let channel = message.guild.channels.cache.find(c => c.type == 'category' && c.name == 'Events').children.find(c => c.name.includes(args[0]) && !c.name.includes('Realm Clearing'))
+            let lounge = message.guild.channels.cache.find(c => c.name === 'Event Lounge')
+            this.clean(channel, lounge, message)
+            return;
         }
         if (isVet) {
             let lounge = message.guild.channels.cache.find(c => c.name === "Veteran Lounge");

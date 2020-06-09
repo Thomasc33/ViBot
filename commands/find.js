@@ -7,7 +7,7 @@ module.exports = {
     args: '[Users]',
     role: 'Almost Raid Leader',
     execute(message, args, bot) {
-        if(args.length == 0) return;
+        if (args.length == 0) return;
         var suspendedButVerifed = message.guild.roles.cache.find(r => r.name === "Suspended but Verified");
         var suspendedRole = message.guild.roles.cache.find(r => r.name === "Suspended");
         var notFoundString = ''
@@ -15,10 +15,13 @@ module.exports = {
         for (let i in args) {
             let u = '';
             u = args[i];
-            let member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(u.toLowerCase()));
+
+            var member = message.guild.members.cache.get(u)
+            if (member == null) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(u.toLowerCase()));
 
             if (member == null) {
-                notFoundString = notFoundString.concat(`${u}, `)
+                if (notFoundString == '') notFoundString = `${u}`
+                else notFoundString = notFoundString.concat(`${u}, `)
 
             } else {
                 var embed = new Discord.MessageEmbed()

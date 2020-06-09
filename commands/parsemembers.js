@@ -8,25 +8,13 @@ module.exports = {
     name: 'parsemembers',
     description: 'Parse',
     alias: 'pm',
-    args: '<channel number> <image>',
+    args: '<image>',
     notes: 'Image can either be a link, or an embeded image',
     role: 'Almost Raid Leader',
     async execute(message, args, bot) {
-        if (!(message.channel.name === 'dylanbot-commands' || message.channel.name === 'veteran-bot-commands')) {
-            message.channel.send("Try again in dylanbot-commands or veteran-bot-commands");
-            return;
-        }
-        var isVet = false;
-        if (message.channel.name == 'veteran-bot-commands') {
-            isVet = true;
-        } else {
-            isVet = false;
-        }
-        const channelN = args.shift();
-        if (message.channel.name === 'veteran-bot-commands') var channel = message.guild.channels.cache.find(c => c.name == `Veteran Raiding ${channelN}` || c.name == `Veteran Raiding ${this.channelN} <-- Join!`);
-        else var channel = message.guild.channels.cache.find(c => c.name == `raiding-${channelN}` || c.name == `raiding-${channelN} <-- Join!`);
+        var channel = message.member.voice.channel
         if (channel == null) {
-            message.channel.send('Channel not found. Please try again');
+            message.channel.send('Channel not found. Make sure you are in a channel, then try again');
             return;
         }
         var image;
