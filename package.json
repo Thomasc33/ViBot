@@ -1,0 +1,28 @@
+{
+  "name": "vibot",
+  "version": "2.1.3",
+  "description": "ViBot for the Lost Halls Server",
+  "main": "index.js",
+  "dependencies": {
+    "cron": "^1.8.2",
+    "discord.js": "^12.2.0",
+    "mysql": "^2.18.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": ";ping"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tcarr9442/ViBot.git"
+  },
+  "keywords": [
+    "rotmg"
+  ],
+  "author": "Thomas Carr",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Tcarr9442/ViBot/issues"
+  },
+  "homepage": "https://github.com/Tcarr9442/ViBot#readme"
+}

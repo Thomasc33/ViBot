@@ -1,18 +1,14 @@
 {
     "key": "NzAxMTk2NTI5NTE5Njg5Nzkw.Xq43Gg.HvrUYWTacadXXplmYK2w9bO8cNE",
     "prefix": ";",
-    "raidingChannels": "6",
-    "botID": "701196529519689790",
-    "voiceChannelCount": 15,
-    "vetVoiceChannelCount": 5,
     "afkTimeLimit": 360,
     "eventAfkTimeLimit": 360,
     "nitroCount": 5,
     "dbInfo": {
-        "host": "localhost",
-        "user": "root",
-        "password": "1234",
-        "database": "halls"
+        "host": "192.168.254.65",
+        "user": "DevComputer",
+        "password": "Poiewq20021313$",
+        "database": "testinghalls"
     },
     "emote": {
         "Warrior": ":Warrior:701491230395072522",

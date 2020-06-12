@@ -17,19 +17,9 @@ module.exports = {
     role: 'Almost Raid Leader',
     execute(message, args, bott, db) {
         bot = bott
-        if (message.channel.name === 'dylanbot-commands') {
-            var isVet = false;
-            if (args[0] > botSettings.voiceChannelCount || args[0] == 0) {
-                message.channel.send("Channel Number Invalid. Please try again");
-                return;
-            }
-        } else if (message.channel.name === 'veteran-bot-commands') {
-            var isVet = true;
-            if (args[0] > botSettings.vetVoiceChannelCount || args[0] == 0) {
-                message.channel.send("Channel Number Invalid. Please try again");
-                return;
-            }
-        } else {
+        if (message.channel.name === 'dylanbot-commands') var isVet = false;
+        else if (message.channel.name === 'veteran-bot-commands') var isVet = true;
+        else {
             message.channel.send("Try again, but in dylanbot-commands or veteran-bot-commands");
             return;
         }
@@ -827,7 +817,7 @@ To end the AFK check as a leader, react to ❌`)
                 ErrorLogger(er, bot);
             }
         })
-        
+
         if (this.key != null) {
             try {
                 this.db.query(`SELECT * FROM users WHERE id = '${this.key.id}'`, (err, rows) => {
