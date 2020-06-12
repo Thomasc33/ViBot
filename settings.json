@@ -1,5 +1,5 @@
 {
-    "key": "botKey",
+    "key": "NzAxMTk2NTI5NTE5Njg5Nzkw.XuL0jA.G7WH6qH2cVnurSHABDjy2dnac1s",
     "prefix": ";",
     "afkTimeLimit": 360,
     "eventAfkTimeLimit": 360,
@@ -38,7 +38,7 @@
         "switch2": ":switch2:714314550878535700",
         "switchS": ":switchS:714314550933192725",
         "trickster": ":trickster:714612460161859705",
-        "hallsPortal" : ":hallsPortal:716763303480786968"
+        "hallsPortal": ":hallsPortal:716763303480786968"
     },
     "emoteIDs": {
         "Warrior": "701491230395072522",
@@ -68,6 +68,6 @@
         "switch1": "714314550899638302",
         "switch2": "714314550878535700",
         "switchS": "714314550933192725",
-        "hallsPortal" : "716763303480786968"
+        "hallsPortal": "716763303480786968"
     }
 }

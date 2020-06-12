@@ -4,9 +4,13 @@
   "description": "ViBot for the Lost Halls Server",
   "main": "index.js",
   "dependencies": {
+    "@google-cloud/vision": "^2.0.0",
+    "cheerio": "^1.0.0-rc.3",
     "cron": "^1.8.2",
+    "dependencies": "0.0.1",
     "discord.js": "^12.2.0",
-    "mysql": "^2.18.1"
+    "mysql": "^2.18.1",
+    "request": "^2.88.2"
   },
   "devDependencies": {},
   "scripts": {

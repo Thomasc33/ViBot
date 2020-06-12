@@ -1,6 +1,7 @@
 const Discord = require('discord.js')
 const botSettings = require('../settings.json')
 const ErrorLogger = require('../logError')
+const realmEyeScrape = require('../realmEyeScrape')
 
 var embedMessage, bot
 
@@ -16,7 +17,7 @@ module.exports = {
         }
     },
     async createMessage(message, bot, db) {
-        let vetVeriChannel = message.guild.channels.cache.find(c => c.name === 'veteran-vericication')
+        let vetVeriChannel = message.guild.channels.cache.find(c => c.name === 'veteran-verification')
         if (vetVeriChannel == null) {
             message.channel.send('`veteran-verification` not found')
             return;
@@ -32,7 +33,7 @@ module.exports = {
     async init(guild, bott, db) {
         bot = bott
         if (embedMessage == undefined) {
-            let vetVeriChannel = guild.channels.cache.find(c => c.name === 'veteran-vericication')
+            let vetVeriChannel = guild.channels.cache.find(c => c.name === 'veteran-verification')
             if (vetVeriChannel == null) return;
             let messages = await vetVeriChannel.messages.fetch({ limit: 1 })
             embedMessage = messages.first()
@@ -49,11 +50,11 @@ module.exports = {
         if (members.roles.cache.has(vetRaider.id)) return;
         let runs = 0
         db.query(`SELECT * FROM users WHERE id = '${u.id}'`, (err, rows) => {
-            if(err) ErrorLogger.log(err, bot)
+            if (err) ErrorLogger.log(err, bot)
             runs += parseInt(rows[0].cultRuns)
             runs += parseInt(rows[0].voidRuns)
         })
-        
+        let userInfo = realmEyeScrape.getUserInfo(member.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|')[0])
     }
 }
 const checkFilter = (r, u) => !u.bot && r.emoji.name === '✅'
