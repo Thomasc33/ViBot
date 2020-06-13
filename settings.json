@@ -4,11 +4,40 @@
     "afkTimeLimit": 360,
     "eventAfkTimeLimit": 360,
     "nitroCount": 5,
+    "guildID": "701483950559985705",
+    "vetVeriReqs": {
+        "maxed": 2,
+        "meleeMaxed": 1,
+        "runs": 100
+    },
     "dbInfo": {
         "host": "192.168.254.65",
         "user": "DevComputer",
         "password": "Poiewq20021313$",
         "database": "testinghalls"
+    },
+    "lootInfo": {
+        "whites": [
+            "Sword of the Colossus",
+            "Marble Seal",
+            "Breastplate of New Life",
+            "Magical Lodestone",
+            "Bow of the Void",
+            "Quiver of the Shadows",
+            "Armor of Nil",
+            "Sourcestone",
+            "Staff of Unholy Sacrifice",
+            "Skull of Corrupted Souls",
+            "Ritual Robe",
+            "Bloodshed Ring",
+            "Omnipotence Ring"
+        ],
+        "STs": [
+            "Carved Golem Remains",
+            "Brain of the Golem",
+            "Golem Garments",
+            "Rusty Cuffs"
+        ]
     },
     "emote": {
         "Warrior": ":Warrior:701491230395072522",

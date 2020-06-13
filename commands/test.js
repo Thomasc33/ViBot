@@ -12,6 +12,6 @@ module.exports = {
     description: 'Holds testing code',
     role: 'Developer',
     execute(message, args, bot, db) {
-        realmEyeScrape.getUserInfo('vi')
+        realmEyeScrape.getGraveyardSummary('vi')
     }
 }

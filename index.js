@@ -9,6 +9,7 @@ bot.suspensions = require('./suspensions.json')
 const ErrorLogger = require(`./logError`)
 const mysql = require('mysql')
 const vibotChannels = require('./commands/vibotChannels')
+const vetVerification = require('./commands/vetVerification')
 
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
@@ -179,4 +180,5 @@ bot.on("ready", () => {
             vibotChannels.update(g)
         } catch (er) { return; }
     })
+    vetVerification.init(bot.guilds.cache.get(botSettings.guildID), bot, db)
 });
