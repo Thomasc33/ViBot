@@ -55,8 +55,12 @@ module.exports = {
                     time *= 31536000000;
                     timeTypeString = 'year(s)';
                     break;
+                case 'h':
+                    time *= 3600000;
+                    timeTypeString = 'hour(s)';
+                    break;
                 default:
-                    message.channel.send("Please enter a valid time type __**d**__ay, __**m**__inute, __**s**__econd, __**w**__eek, __**y**__ear");
+                    message.channel.send("Please enter a valid time type __**d**__ay, __**m**__inute, __**h**__our, __**s**__econd, __**w**__eek, __**y**__ear");
                     return;
             }
         } catch (er) {

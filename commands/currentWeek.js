@@ -10,10 +10,10 @@ module.exports = {
         }
         switch (args[0].toLowerCase()) {
             case 'reset':
-                this.newWeek(message, bot, db)
+                this.newWeek(message.guild, bot, db)
                 break;
             case 'update':
-                this.update(message, db);
+                this.update(message.guild, db);
                 break;
         }
     },
@@ -21,7 +21,7 @@ module.exports = {
         let leaderLog = guild.channels.cache.find(c => c.name === 'leader-activity-log')
         if (leaderLog == null) { console.log('Channel not found'); return; }
         await this.sendEmbed(leaderLog, db)
-        await db.query(`UPDATE users SET currentweek = '0', currentweekfailed = '0', currentweekassists = '0'`)
+        await db.query(`UPDATE users SET currentweekCult = '0', currentweekVoid = '0', currentweekAssists = '0'`)
         //this.update(guild, db)
     },
     async update(guild, db) {
