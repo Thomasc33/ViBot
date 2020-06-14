@@ -3,9 +3,11 @@ module.exports = {
     name: 'currentweek',
     description: 'Updates the current week stats or force starts the next week',
     role: 'Developer',
-    execute(message, args, bot, db) {
-        return;
-        if (args.length == 0) return;
+    async execute(message, args, bot, db) {
+        if (args.length == 0) {
+            this.sendEmbed(message.channel, db)
+            return;
+        }
         switch (args[0].toLowerCase()) {
             case 'reset':
                 this.newWeek(message, bot, db)
@@ -15,41 +17,67 @@ module.exports = {
                 break;
         }
     },
-    newWeek(message, bot, db) {
-        db.query(`SELECT * FROM users WHERE currentweek != '0' OR currentweekfailed != '0' OR currentweekassists != '0'`, (err, rows) => {
-            let embed = new Discord.MessageEmbed()
-                .setDescription(`**This weeks total logged runs**\n`)
-                .setColor('#015c21')
-            for (let i in rows) {
-                let desc = `<@!${rows[i].id}>:\n\`${parseInt(rows[i].currentweek) + parseInt(rows[i].currentweekfailed)}\` runs: \`${rows[i].currentweek}\` Successful, \`${rows[i].currentweekfailed}\` Failed, and \`${rows[i].currentweekassists}\` Assists\n`
-                if (embed.description.length + desc.length > 2048) {
-                    message.guild.channels.cache.find(c => c.name === 'leader-activity-log').send(embed)
-                    embed.setDescription('')
-                }
-                embed.setDescription(embed.description.concat(desc))
-            }
-            message.guild.channels.cache.find(c => c.name === 'leader-activity-log').send(embed)
-        })
-        db.query(`UPDATE users SET currentweek = '0', currentweekfailed = '0', currentweekassists = '0'`)
-        this.update(message, db)
+    async newWeek(guild, bot, db) {
+        let leaderLog = guild.channels.cache.find(c => c.name === 'leader-activity-log')
+        if (leaderLog == null) { console.log('Channel not found'); return; }
+        await this.sendEmbed(leaderLog, db)
+        await db.query(`UPDATE users SET currentweek = '0', currentweekfailed = '0', currentweekassists = '0'`)
+        //this.update(guild, db)
     },
-    async update(message, db) {
-        let currentweek = message.guild.channels.cache.find(c => c.name === 'current-week');
+    async update(guild, db) {
+        return;
+        let currentweek = guild.channels.cache.find(c => c.name === 'current-week');
         if (currentweek == undefined) return;
         await currentweek.bulkDelete(100);
-        db.query(`SELECT * FROM users WHERE currentweek != '0' OR currentweekfailed != '0' OR currentweekassists != '0'`, (err, rows) => {
-            let embed = new Discord.MessageEmbed()
-                .setDescription(`**This weeks total logged runs**\n`)
-                .setColor('#015c21')
-            for (let i in rows) {
-                let desc = `<@!${rows[i].id}>:\n\`${parseInt(rows[i].currentweek) + parseInt(rows[i].currentweekfailed)}\` runs: \`${rows[i].currentweek}\` Successful, \`${rows[i].currentweekfailed}\` Failed, and \`${rows[i].currentweekassists}\` Assists\n`
-                if (embed.description.length + desc.length > 2048) {
-                    currentweek.send(embed)
-                    embed.setDescription('')
+        this.sendEmbed(currentweek, db)
+    },
+    async sendEmbed(channel, db) {
+        return new Promise(async function (resolve, reject) {
+            db.query(`SELECT * FROM users WHERE currentweekCult != '0' OR currentweekVoid != '0' OR currentweekAssists != '0'`, async function (err, rows) {
+                if (err) reject(err)
+                let logged = []
+                let embed = new Discord.MessageEmbed()
+                    .setColor('#00ff00')
+                    .setTitle('This weeks current logged runs!')
+                    .setDescription('None!')
+                rows.sort((a, b) => (parseInt(a.currentweekCult) + parseInt(a.currentweekVoid) + parseInt(a.currentweekAssists) / 2 < parseInt(b.currentweekCult) + parseInt(b.currentweekVoid) + parseInt(b.currentweekAssists) / 2) ? 1 : -1)
+                let index = 0
+                for (let i in rows) {
+                    let string = `**[${index + 1}]** <@!${rows[i].id}>:\nRaids: \`${parseInt(rows[i].currentweekCult) + parseInt(rows[i].currentweekVoid) + parseInt(rows[i].currentweekAssists) / 2}\` (Void: ${rows[i].currentweekVoid}, Cult: ${rows[i].currentweekCult}, Assists: ${rows[i].currentweekAssists})`
+                    fitStringIntoEmbed(embed, string)
+                    logged.push(rows[i].id)
+                    index++;
                 }
-                embed.setDescription(embed.description.concat(desc))
-            }
-            currentweek.send(embed)
+                channel.guild.members.cache.filter(m => m.roles.cache.has(channel.guild.roles.cache.find(r => r.name === 'Almost Raid Leader').id) || m.roles.cache.has(channel.guild.roles.cache.find(r => r.name === 'Raid Leader').id)).each(m => {
+                    if (!rows.includes(m.id)) {
+                        let string = `<@!${m.id}> has not logged any runs or been assisted this week`
+                        fitStringIntoEmbed(embed, string)
+                    }
+                })
+                channel.send(embed)
+                function fitStringIntoEmbed(embed, string) {
+                    if (embed.description == 'None!') {
+                        embed.setDescription(string)
+                    } else if (embed.description.length + string.length > 2048) {
+                        if (embed.fields.length == 0) {
+                            embed.addField('-', string)
+                        } else if (embed.fields[embed.fields.length - 1].value.length + string.length > 1024) {
+                            if (embed.length + string.length > 6000) {
+                                channel.send(embed)
+                                embed.setDescription('None!')
+                                embed.fields = []
+                            } else {
+                                embed.addField('-', string)
+                            }
+                        } else {
+                            embed.fields[embed.fields.length - 1].value = embed.fields[embed.fields.length - 1].value.concat(`\n${string}`)
+                        }
+                    } else {
+                        embed.setDescription(embed.description.concat(`\n${string}`))
+                    }
+                }
+                resolve(true)
+            })
         })
     }
 }

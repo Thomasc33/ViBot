@@ -4,7 +4,7 @@ const CurrentWeek = require('./currentWeek')
 module.exports = {
     name: 'log',
     description: 'Logs runs',
-    args: '(f) [mention for assists] <#>',
+    args: '(c/v) [mention for assists] <#>',
     role: 'Almost Raid Leader',
     execute(message, args, bot, db) {
         var embed = new Discord.MessageEmbed()
@@ -55,6 +55,6 @@ module.exports = {
         }
         embed.setDescription(desc)
         message.guild.channels.cache.find(c => c.name === 'leader-leading-logs').send(embed)
-        //CurrentWeek.update(message, db)
+        //CurrentWeek.update(message.guild, db)
     }
 }

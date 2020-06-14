@@ -10,6 +10,8 @@ module.exports = {
     role: 'Moderator',
     description: 'createmessage',
     execute(message, args, bot, db) {
+        message.channel.send('Temporarily Disabled')
+        return;
         switch (args[0]) {
             case 'createmessage':
                 this.createMessage(message, bot, db)

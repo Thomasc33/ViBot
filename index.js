@@ -10,6 +10,8 @@ const ErrorLogger = require(`./logError`)
 const mysql = require('mysql')
 const vibotChannels = require('./commands/vibotChannels')
 const vetVerification = require('./commands/vetVerification')
+const cron = require('cron')
+const currentWeek = require('./commands/currentWeek')
 
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
@@ -111,6 +113,7 @@ db.connect(err => {
 bot.on("ready", () => {
     console.log(`Bot loaded: ${bot.user.username}`);
     bot.user.setActivity(`No, I'm not hardcoded`);
+    const halls = bot.guilds.cache.get(botSettings.guildID);
     bot.setInterval(() => {
         for (let i in bot.vetBans) {
             const time = bot.vetBans[i].time;
@@ -180,5 +183,6 @@ bot.on("ready", () => {
             vibotChannels.update(g)
         } catch (er) { return; }
     })
-    vetVerification.init(bot.guilds.cache.get(botSettings.guildID), bot, db)
+    const currentWeekReset = cron.job('0 0 * * SUN', () => currentWeek.newWeek(halls, db), null, true, null, null, false)
+    //vetVerification.init(bot.guilds.cache.get(botSettings.guildID), bot, db)
 });

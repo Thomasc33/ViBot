@@ -15,6 +15,7 @@ module.exports = {
                 if (m.embeds.length == 0) return;
                 let embed = m.embeds[0]
                 let channel = guild.channels.cache.get(embed.footer.text)
+                if (channel == null) m.delete()
                 let reactionCollector = new Discord.ReactionCollector(m, xFilter)
                 reactionCollector.on('collect', async function (r, u) {
                     await channel.delete()
