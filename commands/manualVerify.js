@@ -3,7 +3,7 @@ module.exports = {
     name: 'manualverify',
     description: 'Manually verifies a user',
     role: 'Security',
-    alias: 'mv',
+    alias: ['mv'],
     args: '<id/mention> <ign>',
     async execute(message, args, bot) {
         const suspendedRole = message.guild.roles.cache.find(r => r.name === 'Suspended');

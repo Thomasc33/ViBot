@@ -2,7 +2,7 @@ const ErrorLogger = require('../logError')
 
 module.exports = {
     name: 'usevial',
-    alias: 'uv',
+    alias: ['uv'],
     description: 'Adds popped vial to user',
     args: '<user>',
     role: 'Almost Raid Leader',

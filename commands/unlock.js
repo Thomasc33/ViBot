@@ -4,8 +4,8 @@ var bot;
 module.exports = {
     name: 'unlock',
     description: 'Unlocks voice channels',
-    alias: 'ul',
-    args: '<channel number>',
+    alias: ['ul'],
+    args: '<channel>',
     role: 'Event Organizer',
     async execute(message, args, bott) {
         if (args[0] > botSettings.voiceChannelCount) return;

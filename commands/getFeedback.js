@@ -5,7 +5,7 @@ module.exports = {
     description: 'Fetches all mentions of the user in customer feedback',
     args: '<user mention/id>',
     role: 'Raid Leader',
-    alias: 'gfb',
+    alias: ['gfb'],
     async execute(message, args, bot) {
         if (message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.find(r => r.name === "Raid Leader").position) return;
         var member = message.mentions.members.first()

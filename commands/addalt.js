@@ -4,7 +4,7 @@ const ErrorLogger = require('../logError')
 module.exports = {
     name: 'addalt',
     description: 'Adds the username of an alt to a user and logs it',
-    alias: 'aa',
+    alias: ['aa'],
     args: '<id/mention> <alt name> (proof)',
     role: 'Security',
     execute(message, args, bot) {

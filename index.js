@@ -12,6 +12,8 @@ const vibotChannels = require('./commands/vibotChannels')
 const vetVerification = require('./commands/vetVerification')
 const cron = require('cron')
 const currentWeek = require('./commands/currentWeek')
+const stats = require('./commands/stats');
+const modmail = require('./commands/modmail');
 
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
@@ -22,82 +24,31 @@ for (const file of commandFiles) {
 
 bot.on('message', message => {
     //if (message.content.includes(`<@!${bot.user.id}>`) || message.content.includes(`<@!277636691227836419>`)) { message.react('706688782732230696') }
-    if (!message.content.startsWith(prefix) || message.channel.type === 'dm' || message.author.bot) return;
+    if (message.channel.type === 'dm') return dmHandler(message)
+    if (!message.content.startsWith(prefix) || message.author.bot) return;
     const args = message.content.slice(prefix.length).split(/ +/);
-    const pcommand = args.shift().toLowerCase();
-    var command = aliasCheck(pcommand);
-    if (/[^a-z]/gi.test(command)) return;
-    if (!bot.commands.has(command)) {
-        message.channel.send('Command doesnt exist, check \`commands\` and try again');
-        return;
-    }
+    const commandName = args.shift().toLowerCase()
+    const command = bot.commands.get(commandName) || bot.commands.find(cmd => cmd.alias && cmd.alias.includes(commandName))
+
+    if (!command) return message.channel.send('Command doesnt exist, check \`commands\` and try again');
     try {
-        if (message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.find(r => r.name === bot.commands.get(command).role).position && message.author.id !== '277636691227836419') return;
+        if (message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.find(r => r.name === command.role).position && message.author.id !== '277636691227836419') return;
     } catch (er) { ErrorLogger.log(er, bot) }
     try {
-        bot.commands.get(command).execute(message, args, bot, db);
+        command.execute(message, args, bot, db);
     } catch (er) {
         ErrorLogger.log(er, bot)
         message.channel.send("Issue executing the command, check \`;commands\` and try again");
     }
 });
 
-function aliasCheck(pcommand) {
-    switch (pcommand) {
-        case 'rc':
-            return 'lock';
-        case 'resetchannel':
-            return 'lock';
-        case 'ul':
-            return 'unlock';
-        case 'loc':
-            return 'location';
-        case 'pm':
-            return 'parsemembers';
-        case 'aa':
-            return 'addalt';
-        case 'ping':
-            return 'status';
-        case 'hc':
-            return 'headcount';
-        case 'cn':
-            return 'changename';
-        case 'rq':
-            return 'request';
-        case 'clear':
-            return 'clean';
-        case 'gfb':
-            return 'getfeedback';
-        case 'mvv':
-            return 'manualvetverify';
-        case 'mv':
-            return 'manualverify';
-        case 'help':
-            return 'commands';
-        case 'ava':
-            return 'avatar';
-        case 'bp':
-            return 'bazaarparse';
-        case 'bpm':
-            return 'bazaarparse';
-        case 'suspect':
-            return 'suspectalt';
-        case 'sa':
-            return 'suspectalt';
-        case 'eafk':
-            return 'eventafk';
-        case 'rr':
-            return 'russianroulette';
-        case 'av':
-            return 'addvial';
-        case 'uv':
-            return 'usevial';
-        case 'meb':
-            return 'manualeventboi';
-        case 'reb':
-            return 'removeeventboi';
-        default:
-            return pcommand;
+async function dmHandler(message) {
+    if (message.author.bot) return;
+    let statsTypos = ['stats', 'satts', '-stats', ';stats', '.stats', 'stat', 'status', 'sats', '!stats', '=stats', ';stata', '-stat']
+    if (statsTypos.includes(message.content)) {
+        message.channel.send(await stats.getStatsEmbed(message.author.id, bot.guilds.cache.get(botSettings.guildID), db))
+    } else {
+        modmail.sendModMail(message, bot.guilds.cache.get(botSettings.guildID), bot, db)
     }
 }
 
@@ -180,9 +131,10 @@ bot.on("ready", () => {
     }, 5000);
     bot.guilds.cache.each(g => {
         try {
-            vibotChannels.update(g)
+            vibotChannels.update(g, bot)
         } catch (er) { return; }
     })
     const currentWeekReset = cron.job('0 0 * * SUN', () => currentWeek.newWeek(halls, db), null, true, null, null, false)
+    modmail.update(halls, bot, db)
     //vetVerification.init(bot.guilds.cache.get(botSettings.guildID), bot, db)
 });

@@ -4,7 +4,7 @@ module.exports = {
     name: 'avatar',
     description: 'Posts avatar of user provided',
     args: '(user)',
-    alias: 'ava',
+    alias: ['ava'],
     role: 'Almost Raid Leader',
     execute(message, args, bot) {
         let member = null

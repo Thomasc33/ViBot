@@ -4,7 +4,7 @@ const ErrorLogger = require('../logError')
 module.exports = {
     name: 'changename',
     description: 'Changes the name of a user and logs it automatically',
-    alias: 'cn',
+    alias: ['cn'],
     args: '<User id/mention> <new name> (proof)',
     role: 'Security',
     execute(message, args, bot) {

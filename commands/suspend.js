@@ -110,19 +110,27 @@ module.exports = {
                     let embed = new Discord.MessageEmbed()
                         .setColor('#ff0000')
                         .setTitle('Suspension Information')
-                        .setDescription(`The ban is for ${parseInt(args[0])} ${timeTypeString}`)
+                        .setDescription(`The suspension is for ${parseInt(args[0])} ${timeTypeString}`)
                         .addField(`User Information \`${member.nickname}\``, `<@!${member.id}> (Tag: ${member.user.tag})`, true)
                         .addField(`Mod Information \`${message.guild.members.cache.get(message.author.id).nickname}\``, `<@!${message.author.id}> (Tag: ${message.author.tag})`, true)
                         .addField(`Reason:`, reason)
+                        .addField(`Roles`, 'None!')
                         .setFooter(`Unsuspending at `)
                         .setTimestamp(Date.now() + time);
-                    messageId = await suspensionLog.send(embed);
+
 
                     let userRoles = []
                     member.roles.cache.each(r => {
-                        userRoles.push(r.id)
+                        if (!r.managed) {
+                            userRoles.push(r.id)
+                        }
+                        if (embed.fields[3].value == 'None!') {
+                            embed.fields[3].value = `<@&${r.id}>`
+                        } else {
+                            embed.fields[3].value += `, <@&${r.id}>`
+                        }
                     })
-
+                    messageId = await suspensionLog.send(embed);
                     await member.roles.remove(userRoles)
                     setTimeout(() => { member.roles.add(suspendedRole.id); }, 2000)
 

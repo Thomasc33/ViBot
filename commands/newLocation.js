@@ -4,7 +4,7 @@ const ErrorLogger = require('../logError')
 module.exports = {
     name: 'newlocation',
     description: 'Changes the location of the current run',
-    alias: 'loc',
+    alias: ['loc'],
     args: '<location>',
     role: 'Almost Raid Leader',
     execute(message, args, bot) {

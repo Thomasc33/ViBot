@@ -5,6 +5,7 @@ const ErrorLogger = require('../logError')
 const Clean = require('./clean')
 const Unlock = require('./unlock')
 const Lock = require('./lock')
+const Channels = require('./vibotChannels')
 
 var bot
 var activeRun = false;
@@ -13,38 +14,25 @@ var currentRun
 module.exports = {
     name: 'eventafk',
     description: 'Starts a new style afk check for event dungeons',
-    args: '<channel> <dungeon> [Location]',
+    args: '<dungeon> [Location]',
     role: 'Event Organizer',
-    alias: 'eafk',
+    alias: ['eafk'],
     async execute(message, args, bott) {
         if (message.channel.name !== 'eventbot-commands') return;
-        if (args[0].replace(/[^1-9]g/, '') == '') { message.channel.send('Invalid channel number. Try again'); return; }
-        var channel = message.guild.channels.cache.find(c => c.type == 'category' && c.name == 'Events').children.find(c => c.name.includes(args[0]) && !c.name.includes('Realm Clearing'))
-        if (channel == null) { message.channel.send("Channel not found. Please try again"); return; }
-        var eventType = args[1]
-        if (!eventFile[eventType]) {
-            message.channel.send("Event type unrecognized. Check ;events and try again")
-            return;
-        }
+        var eventType = args[0]
+        if (!eventFile[eventType]) return message.channel.send("Event type unrecognized. Check ;events and try again")
         var event = eventFile[eventType]
-        if (!event.enabled) {
-            message.channel.send(`${event.name} is currently disabled.`);
-            return;
-        }
+        if (!event.enabled) return message.channel.send(`${event.name} is currently disabled.`);
         let location = "";
-        for (i = 2; i < args.length; i++) {
+        for (i = 1; i < args.length; i++) {
             location = location.concat(args[i]) + ' ';
         }
         location = location.trim();
-        if (location.length >= 1024) {
-            message.channel.send('Location must be below 1024 characters, try again');
-        }
-        if (activeRun) { message.channel.send("There is already an active run"); return; }
+        if (location.length >= 1024) return message.channel.send('Location must be below 1024 characters, try again');
+        if (activeRun) return message.channel.send("There is already an active run");
         bot = bott
-        let lounge = message.guild.channels.cache.find(c => c.name === 'Event Lounge')
-        message.channel.send('Cleaning channel beginning. AFK check will start after that')
-        await Clean.clean(channel, lounge, message)
-        message.channel.send('Channel cleaning completed. Beginning AFK check in 10 seconds')
+        let channel = await createChannel(message)
+        message.channel.send('Channel Created Successfully. Beginning AFK check in 5 seconds.')
         currentRun = new afk(event, args[0], channel, location, message)
         setTimeout(begin, 10000)
     },
@@ -73,6 +61,7 @@ class afk {
         this.location = location
         this.time = botSettings.eventAfkTimeLimit
         this.raider = this.message.guild.roles.cache.find(r => r.name === 'Verified Raider')
+        this.eventBoi = this.message.guild.roles.cache.find(r => r.name === 'Event boi')
         this.minutes = Math.floor(botSettings.eventAfkTimeLimit / 60);
         this.seconds = botSettings.eventAfkTimeLimit % 60;
         activeRun = true;
@@ -82,7 +71,7 @@ class afk {
     }
     async ping() {
         this.eventStatus = this.message.guild.channels.cache.find(c => c.name === 'event-status-announcements')
-        this.pingMessage = await this.eventStatus.send(`@here A ${this.event.name} run will begin in 10 seconds in ${this.channel.name}. **Be prepared to join vc before it fills up**`)
+        this.pingMessage = await this.eventStatus.send(`@here A ${this.event.name} run will begin in 5 seconds in ${this.channel.name}. **Be prepared to join vc before it fills up**`)
     }
     async start() {
         //Start timer
@@ -129,7 +118,8 @@ class afk {
         this.reactionCollector = new Discord.ReactionCollector(this.pingMessage, openFilter);
 
         //Unlock channel
-        Unlock.unlock(this.message, this.channel, this.channelNumber, this.raider)
+        await this.channel.updateOverwrite(this.raider.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+        await this.channel.updateOverwrite(this.eventBoi.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
 
         //Leader Panel
         this.leaderEmbed = new Discord.MessageEmbed()
@@ -233,7 +223,9 @@ class afk {
         clearInterval(this.moveInTimer);
         clearInterval(this.timer);
 
-        Lock.lock(this.message, this.channel, this.channelNumber, this.raider);
+        await this.channel.updateOverwrite(this.raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+        await this.channel.updateOverwrite(this.eventBoi.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+        await this.channel.setPosition(this.channel.parent.children.filter(c => c.type == 'voice').size - 1)
 
         this.embed.setDescription(`This afk check has ended`)
             .setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
@@ -249,7 +241,9 @@ class afk {
         clearInterval(this.moveInTimer);
         clearInterval(this.timer);
 
-        Lock.lock(this.message, this.channel, this.channelNumber, this.raider);
+        await this.channel.updateOverwrite(this.raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+        await this.channel.updateOverwrite(this.eventBoi.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+        await this.channel.setPosition(this.channel.parent.children.filter(c => c.type == 'voice').size - 1)
 
         this.embed.setDescription(`This afk check has been aborted`)
             .setFooter(`The afk check has been aborted by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
@@ -301,6 +295,37 @@ class afk {
             return;
         }
     }
+}
+
+async function createChannel(message) {
+    //channel creation
+    var template = message.guild.channels.cache.find(c => c.name === 'Raiding Template');
+    var raider = message.guild.roles.cache.find(r => r.name === 'Verified Raider')
+    var EventBoi = message.guild.roles.cache.find(r => r.name === 'Event boi')
+    var vibotChannels = message.guild.channels.cache.find(c => c.name === botSettings.ActiveEventName)
+
+    let channel = await template.clone()
+    setTimeout(async function () {
+        await channel.setParent(message.guild.channels.cache.filter(c => c.type == 'category').find(c => c.name.toLowerCase() === 'events'))
+        channel.setPosition(0)
+    }, 1000)
+    await message.member.voice.setChannel(channel).catch(er => { })
+    await channel.setName(`${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s Run`)
+
+    //allows raiders to view
+    await channel.updateOverwrite(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+    await channel.updateOverwrite(EventBoi.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+
+    //Embed to remove
+    let embed = new Discord.MessageEmbed()
+        .setTitle(`${message.member.nickname}'s Run`)
+        .setDescription('Whenever the run is over. React with the ❌ to delete the channel. View the timestamp for more information')
+        .setFooter(channel.id)
+        .setTimestamp()
+    let m = await vibotChannels.send(embed)
+    m.react('❌')
+    setTimeout(() => { Channels.update(message.guild, bot) }, 10000)
+    return channel;
 }
 
 const xFilter = (r, u) => r.emoji.name === '❌' && !u.bot;

@@ -7,7 +7,7 @@ var bot
 module.exports = {
     name: 'headcount',
     description: 'Puts a headcount in a raid status channel',
-    alias: 'hc',
+    alias: ['hc'],
     args: '<c/v/fsv/event>',
     role: 'Event Organizer',
     async execute(message, args, bott) {

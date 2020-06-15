@@ -5,7 +5,7 @@ const ErrorLogger = require('../logError')
 module.exports = {
     name: 'poll',
     description: 'Puts a poll in a raid status channel',
-    args: '<\`c/v\` -or- \`us/eu>\`',
+    args: '<\`c/v\` -or- \`us/eu\`>',
     role: 'Almost Raid Leader',
     async execute(message, args, bot) {
         if (!(message.channel.name === 'dylanbot-commands' || message.channel.name === 'veteran-bot-commands')) {

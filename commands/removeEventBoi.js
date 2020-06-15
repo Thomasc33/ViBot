@@ -4,7 +4,7 @@ module.exports = {
     name: 'removeeventboi',
     description: 'Gives user event boi role',
     args: '<id/mention> (proof)',
-    alias: 'reb',
+    alias: ['reb'],
     role: 'Security',
     async execute(message, args, bot) {
         const suspendedRole = message.guild.roles.cache.find(r => r.name === 'Suspended');

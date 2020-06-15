@@ -4,8 +4,8 @@ const ErrorLogger = require('../logError')
 
 module.exports = {
     name: 'request',
-    description: 'In the event someone fake reacts, simply use this command and a message will be send to raid-status/vet-status where a new key/vial can react and get sent location',
-    alias: 'rq',
+    description: 'In the event someone fake reacts, simply use this command and a message will be sent to raid-status/vet-status where a new raider can react and get sent location',
+    alias: ['rq'],
     role: 'Almost Raid Leader',
     args: '<key/vial/brian/mystic/rusher> [Location]',
     async execute(message, args, bot) {

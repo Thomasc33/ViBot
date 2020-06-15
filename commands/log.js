@@ -4,7 +4,7 @@ const CurrentWeek = require('./currentWeek')
 module.exports = {
     name: 'log',
     description: 'Logs runs',
-    args: '(c/v) [mention for assists] <#>',
+    args: '<c/v> [mention for assists] (#)',
     role: 'Almost Raid Leader',
     execute(message, args, bot, db) {
         var embed = new Discord.MessageEmbed()

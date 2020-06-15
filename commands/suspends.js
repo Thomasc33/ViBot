@@ -5,7 +5,7 @@ module.exports = {
     description: 'Shows all suspends that the bot is currently tracking',
     role: 'Security',
     args: '(user)',
-    alias: 'suspensions',
+    alias: ['suspensions'],
     async execute(message, args, bot) {
         if (args.length > 0) {
             let member = message.mentions.members.first()

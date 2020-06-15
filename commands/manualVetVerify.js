@@ -5,7 +5,7 @@ module.exports = {
     description: 'Adds Veteran Raider Role to user',
     args: '<id/mention>',
     role: 'Security',
-    alias: 'mvv',
+    alias: ['mvv'],
     execute(message, args, bot) {
         const vetBanRole = message.guild.roles.cache.find(r => r.name === 'Banned Veteran Raider');
         const vetRaiderRole = message.guild.roles.cache.find(r => r.name === 'Veteran Raider');

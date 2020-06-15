@@ -21,7 +21,6 @@ module.exports = {
     async execute(message, args, bott, db) {
         if (args.length == 0) return;
         bot = bott
-
         if (message.channel.name === 'dylanbot-commands') var isVet = false;
         else if (message.channel.name === 'veteran-bot-commands') var isVet = true;
         else {
@@ -75,7 +74,9 @@ module.exports = {
             return;
         }
         let channel = await createChannel(isVet, message, run);
-        currentReg = new afk(run, location, message, isVet, db, channel);
+        if (isVet) currentVet = new afk(run, location, message, isVet, db, channel);
+        else currentReg = new afk(run, location, message, isVet, db, channel);
+
         message.channel.send('Channel created successfully. Beginning afk check in 10 seconds')
         if (isVet) setTimeout(beginRun, 10000, true)
         else setTimeout(beginRun, 10000, false)
@@ -149,18 +150,30 @@ class afk {
     }
 
     async sendMessage() {
+        let runType = 'Unspecified'
+        let location
         switch (this.run) {
             case 1: //cult
-                this.afkCheckEmbed = await this.raidStatus.send(`@here A \`Cult\` afk will be starting in 10 seconds by ${this.message.member}. Prepare to join raiding \`${this.channel.name}\` *Now located above lounge*. **You do not need to react to anything**`).catch(er => ErrorLogger.log(er, bot));
+                runType = 'Cult'
                 break;
             case 2: //void
-                this.afkCheckEmbed = await this.raidStatus.send(`@here A \`Void\` afk will be starting in 10 seconds by ${this.message.member}. Prepare to join raiding \`${this.channel.name}\` *Now located above lounge*. **You do not need to react to anything**`).catch(er => ErrorLogger.log(er, bot));
+                runType = 'Void'
                 break;
             case 3: //full skip
-                this.afkCheckEmbed = await this.raidStatus.send(`@here A \`Full-Skip Void\` afk will be starting in 10 seconds by ${this.message.member}. Prepare to join raiding \`${this.channel.name}\` *Now located above lounge*. **You do not need to react to anything**`).catch(er => ErrorLogger.log(er, bot));
+                runType = 'Fullskip Void'
                 break;
             default: return;
         }
+        switch (this.location.substring(0, 2)) {
+            case 'us':
+                location = ':flag_us:'
+                break;
+            case 'eu':
+                location = ':flag_eu:'
+                break;
+        }
+        if (location) this.afkCheckEmbed = await this.raidStatus.send(`@here A \`${runType}\` (${location}) afk will be starting in 10 seconds by ${this.message.member}. Prepare to join raiding \`${this.channel.name}\` *Now located above lounge*. **You do not need to react to anything**`).catch(er => ErrorLogger.log(er, bot));
+        else this.afkCheckEmbed = await this.raidStatus.send(`@here A \`${runType}\` afk will be starting in 10 seconds by ${this.message.member}. Prepare to join raiding \`${this.channel.name}\` *Now located above lounge*. **You do not need to react to anything**`).catch(er => ErrorLogger.log(er, bot));
     }
 
     async start() {
@@ -795,14 +808,24 @@ class afk {
 }
 async function createChannel(isVet, message, run) {
     //channel creation
-    if (isVet) { var parent = 'veteran raiding'; var template = message.guild.channels.cache.find(c => c.name === 'Vet Raiding Template'); var raider = message.guild.roles.cache.find(r => r.name === 'Veteran Raider') }
-    else { var parent = 'raiding'; var template = message.guild.channels.cache.find(c => c.name === 'Raiding Template'); var raider = message.guild.roles.cache.find(r => r.name === 'Verified Raider') }
+    if (isVet) {
+        var parent = 'veteran raiding';
+        var template = message.guild.channels.cache.find(c => c.name === 'Vet Raiding Template');
+        var raider = message.guild.roles.cache.find(r => r.name === 'Veteran Raider')
+        var vibotChannels = message.guild.channels.cache.find(c => c.name === botSettings.ActiveVetName)
+    }
+    else {
+        var parent = 'raiding';
+        var template = message.guild.channels.cache.find(c => c.name === 'Raiding Template');
+        var raider = message.guild.roles.cache.find(r => r.name === 'Verified Raider')
+        var vibotChannels = message.guild.channels.cache.find(c => c.name === botSettings.ActiveRaidingName)
+    }
     let channel = await template.clone()
     setTimeout(async function () {
         await channel.setParent(message.guild.channels.cache.filter(c => c.type == 'category').find(c => c.name.toLowerCase() === parent))
         channel.setPosition(0)
     }, 1000)
-    await message.member.voice.setChannel(channel).catch(er => { ErrorLogger.log(er, bot) })
+    await message.member.voice.setChannel(channel).catch(er => { })
     if (run == 1) { await channel.setName(`${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s Cult`) }
     if (run == 2) { await channel.setName(`${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s Void`) }
     if (run == 3) { await channel.setName(`${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s Full-Skip Void`) }
@@ -811,7 +834,6 @@ async function createChannel(isVet, message, run) {
     channel.updateOverwrite(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
 
     //Embed to remove
-    let vibotChannels = message.guild.channels.cache.find(c => c.name === 'vibot-channels')
     let embed = new Discord.MessageEmbed()
         .setTitle(`${message.member.nickname}'s Run`)
         .setDescription('Whenever the run is over. React with the ❌ to delete the channel. View the timestamp for more information')
@@ -819,7 +841,7 @@ async function createChannel(isVet, message, run) {
         .setTimestamp()
     let m = await vibotChannels.send(embed)
     m.react('❌')
-    setTimeout(() => {Channels.update(message.guild)}, 10000)
+    setTimeout(() => { Channels.update(message.guild, bot) }, 10000)
     return channel;
 }
 //React functions

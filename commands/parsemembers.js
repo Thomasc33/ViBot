@@ -7,7 +7,7 @@ const client = new vision.ImageAnnotatorClient();
 module.exports = {
     name: 'parsemembers',
     description: 'Parse',
-    alias: 'pm',
+    alias: ['pm'],
     args: '<image>',
     notes: 'Image can either be a link, or an embeded image',
     role: 'Almost Raid Leader',

@@ -5,7 +5,7 @@ module.exports = {
     name: 'commands',
     description: 'Gives list of commands available or the specifics of a command',
     args: '(Command Name)',
-    alias: 'help',
+    alias: ['help'],
     role: 'Verified Raider',
     execute(message, args, bot) {
         if (args.length != 0) {

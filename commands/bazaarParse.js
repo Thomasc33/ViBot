@@ -7,7 +7,7 @@ module.exports = {
     name: 'bazaarparse',
     description: 'Parses people in bazaar to find people entering location early',
     role: 'Almost Raid Leader',
-    alias: 'bp, bpm',
+    alias: ['bp', 'bpm'],
     args: '<embed message id> <image>',
     async execute(message, args, bot) {
         message.channel.send('Feature coming soon:tm:')

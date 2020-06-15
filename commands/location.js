@@ -5,7 +5,7 @@ const EventAFK = require('./eventAfk')
 module.exports = {
     name: 'location',
     description: 'Changes the location of the current run',
-    alias: 'loc',
+    alias: ['loc'],
     args: '<location>',
     role: 'Event Organizer',
     execute(message, args, bot) {

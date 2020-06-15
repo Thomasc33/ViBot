@@ -2,7 +2,7 @@ const Discord = require('discord.js')
 
 module.exports = {
     name: 'suspectalt',
-    alias: 'suspect, sa',
+    alias: ['suspect', 'sa'],
     description: 'Adds a ? infront of someones name',
     role: 'Security',
     args: '<id/mention>',

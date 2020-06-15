@@ -4,7 +4,7 @@ const ErrorLogger = require('../logError')
 module.exports = {
     name: 'clean',
     description: 'Cleans the given voice channel',
-    args: '<channel number>',
+    args: '<channel>',
     role: 'Event Organizer',
     async execute(message, args, bot) {
         var isVet = false;

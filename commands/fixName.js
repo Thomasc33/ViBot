@@ -2,10 +2,10 @@ const botSettings = require(`../settings.json`)
 
 module.exports = {
     name: 'fixname',
-    alias: 'fn',
+    alias: ['fn'],
     role: 'Almost Raid Leader',
     description: 'Fixes the name of the raiding channel',
-    args: '<channel #>',
+    args: '<channel>',
     execute(message, args, bot) {
         if (args.length == 0) return;
         if (args[0] > botSettings.voiceChannelCount) return;
