@@ -4,9 +4,9 @@ const CurrentWeek = require('./currentWeek')
 module.exports = {
     name: 'log',
     description: 'Logs runs',
-    args: '<c/v> [mention for assists] (#)',
+    args: '<c/v/e> [mention for assists] (#)',
     role: 'Almost Raid Leader',
-    execute(message, args, bot, db) {
+    async execute(message, args, bot, db) {
         var embed = new Discord.MessageEmbed()
             .setAuthor(message.member.nickname, message.author.avatarURL())
             .setColor('#015c21')
@@ -32,6 +32,36 @@ module.exports = {
                 })
                 embed.setColor('#ff0000')
                 desc = '`Cult` Run'
+            } else if (args[0].toLowerCase().charAt(0) == 'e') {
+                let confirmEmbed = new Discord.MessageEmbed()
+                    .setColor('#ffff00')
+                    .setTitle('Confirm')
+                    .setDescription(`Are you sure that you lead for around ${parseInt(count) * 10} minutes?`)
+                    .setFooter(message.member.nickname)
+                    .setTimestamp()
+                let confirmMessage = await message.channel.send(confirmEmbed)
+                let confirmCollector = new Discord.ReactionCollector(confirmMessage, (r, u) => !u.bot && u.id == message.author.id && (r.emoji.name === '✅' || r.emoji.name === '❌'))
+                await confirmMessage.react('✅')
+                await confirmMessage.react('❌')
+                confirmCollector.on('collect', async function (r, u) {
+                    if (r.emoji.name === '✅') {
+                        await confirmMessage.delete()
+                        db.query(`SELECT * FROM users WHERE id = '${message.author.id}'`, (err, rows) => {
+                            if (err) throw err;
+                            db.query(`UPDATE users SET eventsLead = '${parseInt(rows[0].eventsLead) + parseInt(count)}', currentweekEvents = '${parseInt(rows[0].currentweekEvents) + parseInt(count)}' WHERE id = '${message.author.id}'`)
+                            message.channel.send(`Run logged for ${message.member.nickname}. Current week: ${parseInt(rows[0].currentweekEvents) + parseInt(count)}`)
+                        })
+                        embed.setColor('#00FF00')
+                        desc = '`Event` Run'
+                        confirmCollector.stop()
+                        cont()
+                    }
+                    else if (r.emoji.name === '❌') {
+                        await confirmMessage.delete()
+                        confirmCollector.stop()
+                        return;
+                    }
+                })
             } else {
                 message.channel.send('Run type not recognized. Please try again');
                 return;
@@ -40,7 +70,7 @@ module.exports = {
             message.channel.send("Please specify a run type");
             return;
         }
-        if (message.mentions.users) {
+        if (message.mentions.users && args[0].toLowerCase().charAt(0) !== 'e') {
             desc = desc.concat(`\n`)
             message.mentions.users.each(u => {
                 if (u.id !== message.author.id) {
@@ -52,9 +82,12 @@ module.exports = {
                     })
                 }
             })
+            cont()
         }
-        embed.setDescription(desc)
-        message.guild.channels.cache.find(c => c.name === 'leader-leading-logs').send(embed)
-        //CurrentWeek.update(message.guild, db)
+        function cont() {
+            embed.setDescription(desc)
+            message.guild.channels.cache.find(c => c.name === 'leader-leading-logs').send(embed)
+            //CurrentWeek.update(message.guild, db)
+        }
     }
 }

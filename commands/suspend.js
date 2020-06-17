@@ -143,9 +143,9 @@ module.exports = {
                         roles: userRoles
                     }
 
-                    fs.writeFile('./suspensions.json', JSON.stringify(bot.suspensions, null, 4), function (err) {
-                        if (err) return console.error(err);
-                        message.channel.send(`${member.nickname} will be suspended`);
+                    fs.writeFile('./suspensions.json', JSON.stringify(bot.suspensions, null, 4), err => {
+                        if (err) return ErrorLogger.log(err, bot);
+                        message.channel.send(`${member.nickname} has been suspended`);
                     });
                 }
 

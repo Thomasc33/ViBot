@@ -95,7 +95,6 @@ bot.on("ready", () => {
                 continue;
             }
         }
-
     }, 60000);
     bot.setInterval(() => {
         for (let i in bot.suspensions) {

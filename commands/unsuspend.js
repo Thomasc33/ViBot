@@ -36,27 +36,32 @@ module.exports = {
                 const member = guild.members.cache.get(i);
                 const suspendedRole = guild.roles.cache.find(r => r.name === 'Suspended but Verified');
                 try {
-                    member.edit({
-                        roles: roles
-                    })
+                    unsuspend()
+                    async function unsuspend() {
+                        await member.edit({
+                            roles: roles
+                        })
+                        setTimeout(() => {
+                            delete bot.suspensions[i];
+                            fs.writeFile('./suspensions.json', JSON.stringify(bot.suspensions, null, 4), async function (err) {
+                                if (err) throw err;
 
-                    delete bot.suspensions[i];
-                    fs.writeFile('./suspensions.json', JSON.stringify(bot.suspensions, null, 4), function (err) {
-                        if (err) throw err;
+                                try {
+                                    let embed = bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').messages.cache.get(proofLogID).embeds.shift();
+                                    embed.setColor('#00ff00')
+                                        .setDescription(embed.description.concat(`\nUnsuspended manually by <@!${message.author.id}>`))
+                                        .setFooter('Unsuspended at')
+                                        .setTimestamp(Date.now())
+                                        .addField('Reason for unsuspension', reason)
+                                    let messages = await bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').messages.fetch({ limit: 100 })
+                                    messages.filter(m => m.id == proofLogID && m.author.id == bot.user.id).first().edit(embed)
+                                }
+                                catch (er) { bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').send(`${member} has been unsuspended by ${message.member}`) }
 
-                        try {
-                            let embed = bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').messages.cache.get(proofLogID).embeds.shift();
-                            embed.setColor('#00ff00')
-                                .setDescription(embed.description.concat(`\nUnsuspended manually by <@!${message.author.id}>`))
-                                .setFooter('Unsuspended at')
-                                .setTimestamp(Date.now())
-                                .addField('Reason for unsuspension', reason)
-                            bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').messages.cache.get(proofLogID).edit(embed);
-                        }
-                        catch (er) { bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').send(`${member} has been unsuspended by ${message.member}`) }
-
-                        message.channel.send(`${member} has been unsuspended`)
-                    })
+                                message.channel.send(`${member} has been unsuspended`)
+                            })
+                        }, 2000)
+                    }
                 } catch (er) {
                     ErrorLogger.log(er, bot)
                     continue;
@@ -64,7 +69,7 @@ module.exports = {
             }
         }
         if (!found) {
-            message.channel.send(`This user was not vet suspended by ${bot.user}. Would you still like to unsuspend then? Y/N`)
+            message.channel.send(`This user was not suspended by ${bot.user}. Would you still like to unsuspend then? Y/N`)
             let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 10000 });
             collector.on('collect', m => {
                 try {

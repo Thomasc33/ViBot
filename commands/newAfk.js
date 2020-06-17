@@ -726,32 +726,34 @@ class afk {
         if (this.isVet) activeVetRun = false;
         else activeRun = false;
 
-        this.channel.members.each(m => {
-            try {
-                this.db.query(`SELECT * FROM users WHERE id = '${m.id}'`, (err, rows) => {
-                    if (rows[0] == undefined) return;
-                    if (this.run == 1) {
-                        this.db.query(`UPDATE users SET cultRuns = '${parseInt(rows[0].cultRuns) + 1}' WHERE id = '${m.id}'`)
-                    } else {
-                        this.db.query(`UPDATE users SET voidRuns = '${parseInt(rows[0].voidRuns) + 1}' WHERE id = '${m.id}'`)
-                    }
-                    if (err) { ErrorLogger(err, bot); return; }
-                })
-            } catch (er) {
-                ErrorLogger(er, bot);
-            }
-        })
+        setTimeout(() => {
+            this.channel.members.each(m => {
+                try {
+                    this.db.query(`SELECT * FROM users WHERE id = '${m.id}'`, (err, rows) => {
+                        if (rows[0] == undefined) return;
+                        if (this.run == 1) {
+                            this.db.query(`UPDATE users SET cultRuns = '${parseInt(rows[0].cultRuns) + 1}' WHERE id = '${m.id}'`)
+                        } else {
+                            this.db.query(`UPDATE users SET voidRuns = '${parseInt(rows[0].voidRuns) + 1}' WHERE id = '${m.id}'`)
+                        }
+                        if (err) { ErrorLogger(err, bot); return; }
+                    })
+                } catch (er) {
+                    ErrorLogger(er, bot);
+                }
+            })
 
-        if (this.key != null) {
-            try {
-                this.db.query(`SELECT * FROM users WHERE id = '${this.key.id}'`, (err, rows) => {
-                    if (rows[0] == undefined) return;
-                    this.db.query(`UPDATE users SET keypops = '${parseInt(rows[0].keypops + 1)}' WHERE id = '${this.key.id}'`)
-                })
-            } catch (er) {
-                ErrorLogger(er, bot)
+            if (this.key != null) {
+                try {
+                    this.db.query(`SELECT * FROM users WHERE id = '${this.key.id}'`, (err, rows) => {
+                        if (rows[0] == undefined) return;
+                        this.db.query(`UPDATE users SET keypops = '${parseInt(rows[0].keypops + 1)}' WHERE id = '${this.key.id}'`)
+                    })
+                } catch (er) {
+                    ErrorLogger(er, bot)
+                }
             }
-        }
+        }, 60000)
     }
     async abortAfk() {
         this.mainReactionCollector.stop();

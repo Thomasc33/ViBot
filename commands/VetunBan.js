@@ -38,23 +38,25 @@ module.exports = {
                 const vetBanRole = guild.roles.cache.find(r => r.name === 'Banned Veteran Raider');
                 const vetRaiderRole = guild.roles.cache.find(r => r.name === 'Veteran Raider');
                 try {
-                    member.roles.remove(vetBanRole)
-                        .then(member.roles.add(vetRaiderRole));
-                    delete bot.vetBans[i];
-                    fs.writeFile('./vetBans.json', JSON.stringify(bot.vetBans, null, 7), function (err) {
-                        if (err) throw err;
+                    unban()
+                    async function unban() {
+                        member.roles.remove(vetBanRole)
+                            .then(member.roles.add(vetRaiderRole));
+                        delete bot.vetBans[i];
+                        fs.writeFile('./vetBans.json', JSON.stringify(bot.vetBans, null, 7), function (err) {
+                            if (err) throw err;
 
-                        let embed = bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').messages.cache.get(proofLogID).embeds.shift();
-                        embed.setColor('#00ff00')
-                            .setDescription(embed.description.concat(`\nUnsuspended manually by <@!${message.author.id}>`))
-                            .setFooter('Unsuspended at')
-                            .setTimestamp(Date.now())
-                            .addField('Reason for unsuspension', reason)
-                        bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').messages.cache.get(proofLogID).edit(embed);
+                            let embed = bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').messages.cache.get(proofLogID).embeds.shift();
+                            embed.setColor('#00ff00')
+                                .setDescription(embed.description.concat(`\nUnsuspended manually by <@!${message.author.id}>`))
+                                .setFooter('Unsuspended at')
+                                .setTimestamp(Date.now())
+                                .addField('Reason for unsuspension', reason)
+                            bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').messages.cache.get(proofLogID).edit(embed);
 
-                        message.channel.send("User unbanned successfully");
-                    })
-
+                            message.channel.send("User unbanned successfully");
+                        })
+                    }
                 } catch (er) {
                     message.channel.send("There was an issue removing the suspension. Try again.")
                     ErrorLogger.log(er, bot)

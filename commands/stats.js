@@ -33,6 +33,7 @@ module.exports = {
                 <${botSettings.emote.hallsPortal}>__**Runs Led**__<${botSettings.emote.hallsPortal}>
                 Cult: ${rows[0].cultsLead}
                 Void: ${rows[0].voidsLead}
+                Events: ${rows[0].eventsLead}
                 Assists: ${rows[0].assists}
                 
                 <${botSettings.emote.Vial}>__**Vials**__<${botSettings.emote.Vial}>
