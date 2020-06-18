@@ -299,7 +299,7 @@ class afk {
 
 async function createChannel(message) {
     //channel creation
-    var template = message.guild.channels.cache.find(c => c.name === 'Raiding Template');
+    var template = message.guild.channels.cache.find(c => c.name === 'Event Raiding Template');
     var raider = message.guild.roles.cache.find(r => r.name === 'Verified Raider')
     var EventBoi = message.guild.roles.cache.find(r => r.name === 'Event boi')
     var vibotChannels = message.guild.channels.cache.find(c => c.name === botSettings.ActiveEventName)

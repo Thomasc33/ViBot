@@ -13,6 +13,7 @@ module.exports = {
                 if (!html) reject({ message: 'No body' })
                 const $ = cheerio.load(html);
                 var ign = $('.col-md-12').find("h1").text()
+                if (ign == '') reject('User not found')
                 //summary
                 let rows = $(".summary").find("tr")
                 for (var i = 0; i < rows.length; i++) {
@@ -81,7 +82,6 @@ module.exports = {
                     desc: desc,
                     characters: characters
                 }
-                //console.log(userInfo)
                 resolve(userInfo)
             })
         })

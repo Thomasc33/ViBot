@@ -135,5 +135,5 @@ bot.on("ready", () => {
     })
     const currentWeekReset = cron.job('0 0 * * SUN', () => currentWeek.newWeek(halls, db), null, true, null, null, false)
     modmail.update(halls, bot, db)
-    //vetVerification.init(bot.guilds.cache.get(botSettings.guildID), bot, db)
+    vetVerification.init(bot.guilds.cache.get(botSettings.guildID), bot, db)
 });

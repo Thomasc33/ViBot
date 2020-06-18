@@ -2,6 +2,7 @@ const Discord = require('discord.js')
 const botSettings = require('../settings.json')
 const ErrorLogger = require('../logError')
 const realmEyeScrape = require('../realmEyeScrape')
+const charList = require('./characterList')
 
 var embedMessage, bot
 
@@ -55,7 +56,7 @@ module.exports = {
         let veriPending = guild.channels.cache.find(c => c.name === 'veri-pending-veterans')
         let ign = member.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|')[0]
         if (member == null) return;
-        if (member.roles.cache.has(vetRaider.id)) return;
+        //if (member.roles.cache.has(vetRaider.id)) return;
         let loggedRuns = 0
         db.query(`SELECT * FROM users WHERE id = '${u.id}'`, (err, rows) => {
             if (err) ErrorLogger.log(err, bot)
@@ -130,6 +131,7 @@ module.exports = {
             let pendingMessage = await veriPending.send(mainEmbed)
             await pendingMessage.react('🔑')
             await u.send('You are currently under manual review for veteran verification. If you do not hear back within 48 hours, Please reach out to a Security or higher')
+            veriPending.send(await charList.getEmbed(ign, bot))
             this.pendingModule(pendingMessage, db)
         }
     },
