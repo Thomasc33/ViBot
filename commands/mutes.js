@@ -15,19 +15,25 @@ module.exports = {
             function fitStringIntoEmbed(embed, string) {
                 if (embed.description == 'None!') {
                     embed.setDescription(string)
-                } else if (embed.description.length + string.length > 2048) {
+                } else if (embed.description.length + string.length >= 2048) {
                     if (embed.fields.length == 0) {
                         embed.addField('-', string)
-                    } else if (embed.fields[embed.fields.length - 1].value.length + string.length > 1024) {
-                        if (embed.length + string.length > 6000) {
-                            channel.send(embed)
+                    } else if (embed.fields[embed.fields.length - 1].value.length + string.length >= 1024) {
+                        if (embed.length + string.length + 1 >= 6000) {
+                            message.channel.send(embed)
                             embed.setDescription('None!')
                             embed.fields = []
                         } else {
                             embed.addField('-', string)
                         }
                     } else {
-                        embed.fields[embed.fields.length - 1].value = embed.fields[embed.fields.length - 1].value.concat(`\n${string}`)
+                        if (embed.length + string.length >= 6000) {
+                            message.channel.send(embed)
+                            embed.setDescription('None!')
+                            embed.fields = []
+                        } else {
+                            embed.fields[embed.fields.length - 1].value = embed.fields[embed.fields.length - 1].value.concat(`\n${string}`)
+                        }
                     }
                 } else {
                     embed.setDescription(embed.description.concat(`\n${string}`))
