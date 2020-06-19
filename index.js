@@ -7,6 +7,7 @@ bot.commands = new Discord.Collection();
 bot.vetBans = require('./vetBans.json');
 bot.suspensions = require('./suspensions.json')
 bot.crasherList = require('./crasherList.json')
+bot.mutes = require('./mutes.json')
 const ErrorLogger = require(`./logError`)
 const mysql = require('mysql')
 const vibotChannels = require('./commands/vibotChannels')

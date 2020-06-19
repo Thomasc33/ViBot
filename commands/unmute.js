@@ -1,5 +1,6 @@
 const Discord = require('discord.js')
 const ErrorLogger = require('../logError')
+const fs = require('fs')
 
 module.exports = {
     name: 'unmute',
@@ -20,7 +21,48 @@ module.exports = {
             message.channel.send(`${member} is not muted`)
             return;
         }
-        member.roles.remove(muted.id).catch(er => ErrorLogger.log(er, bot))
-        message.channel.send(`${member} has been unmuted`)
+        let found = false;
+        for (let i in bot.mutes) {
+            if (i == member.id && bot.mutes[i].guild == message.guild.id) {
+                found = true;
+                const reason = bot.mutes[i].reason
+                const by = message.guild.members.cache.get(bot.mutes[i].modid)
+                const unmuteDate = new Date(bot.mutes[i].time)
+                let embed = new Discord.MessageEmbed()
+                    .setTitle('Confirm Action')
+                    .setColor('#ff0000')
+                    .setDescription(`Are you sure you want to unmute ${member}\nReason: ${reason}\nMuted by ${by}\nMuted until: ${unmuteDate.toDateString()}`)
+                let confirmMessage = await message.channel.send(embed)
+                let reactionCollector = new Discord.ReactionCollector(confirmMessage, (r, u) => !u.bot && u.id == message.author.id && (r.emoji.name === '✅' || r.emoji.name === '❌'))
+                await confirmMessage.react('✅')
+                await confirmMessage.react('❌')
+                reactionCollector.on('collect', async (r, u) => {
+                    confirmMessage.delete()
+                    if (r.emoji.name !== '✅') return;
+                    await member.roles.remove(muted.id).catch(er => ErrorLogger.log(er, bot))
+                    await message.channel.send(`${member} has been unmuted`)
+                    delete bot.mutes[i];
+                    fs.writeFile('./mutes.json', JSON.stringify(bot.mutes, null, 4), async err => {
+                        if (err) ErrorLogger.log(err, bot)
+                    })
+                })
+            }
+        }
+        if (!found) {
+            let embed = new Discord.MessageEmbed()
+                .setTitle('Confirm Action')
+                .setColor('#ff0000')
+                .setDescription(`I don't have any log of ${member} being muted. Are you sure you want to unmute them?`)
+            let confirmMessage = await message.channel.send(embed)
+            let reactionCollector = new Discord.ReactionCollector(confirmMessage, (r, u) => !u.bot && u.id == message.author.id && (r.emoji.name === '✅' || r.emoji.name === '❌'))
+            await confirmMessage.react('✅')
+            await confirmMessage.react('❌')
+            reactionCollector.on('collect', async (r, u) => {
+                confirmMessage.delete()
+                if (r.emoji.name !== '✅') return;
+                member.roles.remove(muted.id).catch(er => ErrorLogger.log(er, bot))
+                message.channel.send(`${member} has been unmuted`)
+            })
+        }
     }
 }
