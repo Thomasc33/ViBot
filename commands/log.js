@@ -1,5 +1,6 @@
 const Discord = require('discord.js')
 const CurrentWeek = require('./currentWeek')
+const eCurrentWeek = require('./eventCurrentWeek')
 
 module.exports = {
     name: 'log',
@@ -83,6 +84,9 @@ module.exports = {
                 }
             })
             cont()
+        } else {
+            //this is only here because event currentweek is handled by me, but not regular currentweek
+            eCurrentWeek.update(message.guild, db)
         }
         function cont() {
             embed.setDescription(desc)
