@@ -5,7 +5,7 @@ module.exports = {
     name: 'log',
     description: 'Logs runs',
     args: '<c/v/e> [mention for assists] (#)',
-    role: 'Almost Raid Leader',
+    role: 'Event Organizer',
     async execute(message, args, bot, db) {
         var embed = new Discord.MessageEmbed()
             .setAuthor(message.member.nickname, message.author.avatarURL())
