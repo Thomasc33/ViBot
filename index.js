@@ -8,12 +8,14 @@ bot.vetBans = require('./vetBans.json');
 bot.suspensions = require('./suspensions.json')
 bot.crasherList = require('./crasherList.json')
 bot.mutes = require('./mutes.json')
+bot.afkChecks = require('./afkChecks.json')
 const ErrorLogger = require(`./logError`)
 const mysql = require('mysql')
 const vibotChannels = require('./commands/vibotChannels')
 const vetVerification = require('./commands/vetVerification')
 const cron = require('cron')
 const currentWeek = require('./commands/currentWeek')
+const ecurrentWeek = require('./commands/eventCurrentWeek')
 const stats = require('./commands/stats');
 const modmail = require('./commands/modmail');
 
@@ -116,7 +118,6 @@ bot.on("ready", () => {
                     delete bot.suspensions[i];
                     fs.writeFile('./suspensions.json', JSON.stringify(bot.suspensions, null, 4), function (err) {
                         if (err) throw err;
-
                         let embed = bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').messages.cache.get(proofLogID).embeds.shift();
                         embed.setColor('#00ff00')
                             .setFooter('Unsuspended at');
@@ -135,7 +136,7 @@ bot.on("ready", () => {
             vibotChannels.update(g, bot)
         } catch (er) { return; }
     })
-    const currentWeekReset = cron.job('0 0 * * SUN', () => currentWeek.newWeek(halls, db), null, true, null, null, false)
+    const currentWeekReset = cron.job('0 0 * * SUN', () => { currentWeek.newWeek(halls, db); ecurrentWeek.newWeek(halls, db) }, null, true, null, null, false)
     modmail.update(halls, bot, db)
     //vetVerification.init(bot.guilds.cache.get(botSettings.guildID), bot, db)
 });

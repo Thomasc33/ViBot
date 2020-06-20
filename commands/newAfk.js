@@ -1,6 +1,7 @@
 //imports
 const botSettings = require('../settings.json');
 const Discord = require('discord.js');
+const fs = require('fs')
 const ErrorLogger = require('../logError')
 const Locker = require('./lock');
 const Unlocker = require('./unlock')
@@ -76,7 +77,6 @@ module.exports = {
         let channel = await createChannel(isVet, message, run);
         if (isVet) currentVet = new afk(run, location, message, isVet, db, channel);
         else currentReg = new afk(run, location, message, isVet, db, channel);
-
         message.channel.send('Channel created successfully. Beginning afk check in 10 seconds')
         if (isVet) setTimeout(beginRun, 10000, true)
         else setTimeout(beginRun, 10000, false)
@@ -537,6 +537,9 @@ class afk {
             this.earlyLocation.push(u);
             clearInterval(endAfter);
             dmReactionCollector.stop();
+            let keyMember = this.message.guild.members.cache.get(u.id)
+            let tempKeyPopper = this.message.guild.roles.cache.find(r => r.name === '')
+            if (tempKeyPopper && keyMember) keyMember.roles.add(tempKeyPopper.id)
         });
     }
     async confirmVial(u, r) {
@@ -722,9 +725,27 @@ class afk {
         this.afkCheckEmbed.edit('', this.embedMessage).catch(er => ErrorLogger.log(er, bot))
         this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot))
         this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot))
+        this.afkControlPanelCommands.reactions.removeAll()
 
         if (this.isVet) activeVetRun = false;
         else activeRun = false;
+
+        let earlyLocationIDS = []
+        for (let i in this.earlyLocation) {
+            earlyLocationIDS.push(this.earlyLocation[i].id)
+        }
+        bot.afkChecks[this.channel.id] = {
+            isVet: this.isVet,
+            location: this.location,
+            key: this.key.id,
+            leader: this.message.author.id,
+            earlyLocation: earlyLocationIDS,
+            time: Date.now(),
+            runType: this.run
+        }
+        fs.writeFile('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => {
+            if (err) ErrorLogger.log(err, bot)
+        })
 
         setTimeout(() => {
             this.channel.members.each(m => {
@@ -772,6 +793,20 @@ class afk {
         this.afkCheckEmbed.edit('', this.embedMessage).catch(er => ErrorLogger.log(er, bot))
         this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot))
         this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot))
+
+        bot.afkChecks[channel.id] = {
+            isVet: this.isVet,
+            location: this.location,
+            key: null,
+            leader: this.message.author.id,
+            earlyLocation: null,
+            time: Date.now(),
+            runType: this.run
+        }
+
+        fs.writeFile('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => {
+            if (err) ErrorLogger.log(err, bot)
+        })
 
         if (this.isVet) activeVetRun = false;
         else activeRun = false;
