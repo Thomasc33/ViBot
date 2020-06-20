@@ -8,7 +8,7 @@ module.exports = {
     description: 'Parses people in bazaar to find people entering location early',
     role: 'Almost Raid Leader',
     alias: ['bp', 'bpm'],
-    args: '<embed message id> <image>',
+    args: '<image>',
     async execute(message, args, bot) {
         let channel = message.member.voice.channel
         if (!channel) return message.channel.send('Make sure you are in a voice channel before parsing')
