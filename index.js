@@ -150,3 +150,7 @@ bot.on("ready", () => {
     modmail.update(halls, bot, db)
     //vetVerification.init(bot.guilds.cache.get(botSettings.guildID), bot, db)
 });
+
+bot.on('error', err => {
+    ErrorLogger.log(err, bot)
+})
