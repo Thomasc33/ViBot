@@ -64,6 +64,8 @@ module.exports = {
                             armor: $(row).children('td:nth-child(9)').children('span:nth-child(3)').children('a').children('span').attr('title'),
                             ring: $(row).children('td:nth-child(9)').children('span:nth-child(4)').children('a').children('span').attr('title'),
                             stats: $(row).children('td:nth-child(10)').text(),
+                            statsTotal: $(row).children('td:nth-child(10)').children('span').attr('data-stats'),
+                            statsBonus: $(row).children('td:nth-child(10)').children('span').attr('data-bonuses')
                         })
                     } catch (er) { continue }
                 }

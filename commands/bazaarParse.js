@@ -64,7 +64,9 @@ module.exports = {
             let name = players[i]
             if (name != '') {
                 if (!earlyLocationNames.includes(name)) {
-                    crashers.push(name)
+                    let member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(name.toLowerCase()));
+                    if (member.roles.highest.position < message.guild.roles.cache.find(r => r.name === 'Almost Raid Leader').position)
+                        crashers.push(name)
                 }
             }
         }
@@ -85,7 +87,9 @@ module.exports = {
         }
 
         await message.channel.send(embed)
-        parseStatusEmbed.fields[1].value = 'Parse Complete'
+        parseStatusEmbed.fields[1].value = 'Parse Complete.'
         parseStatusMessage.edit(parseStatusEmbed)
+
+
     }
-}
+}  

@@ -4,7 +4,7 @@ var bot;
 module.exports = {
     name: 'lock',
     description: 'Locks voice channel',
-    alias: 'rc, resetchannel',
+    alias: ['rc', 'resetchannel'],
     args: '<channel>',
     role: 'Event Organizer',
     async execute(message, args, bott) {

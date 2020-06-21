@@ -9,27 +9,36 @@ module.exports = {
     role: 'Verified Raider',
     execute(message, args, bot) {
         if (args.length != 0) {
-            if (!bot.commands.has(args[0].toLowerCase())) {
+            bot.commands.get(args[0].toLowerCase())
+            let command = bot.commands.get(args[0].toLowerCase())
+            if (!command) bot.commands.each(c => {
+                if (c.alias) {
+                    if (c.alias.includes(args[0].toLowerCase())) {
+                        command = c
+                    }
+                }
+            })
+            if (!command) {
                 message.channel.send('Command doesnt exist, check \`commands\` and try again');
                 return;
             }
-            if (message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.find(r => r.name === bot.commands.get(args[0]).role).position && message.author.id !== '277636691227836419') {
+            if (message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.find(r => r.name === command.role).position && message.author.id !== '277636691227836419') {
                 message.channel.send('Command doesnt exist, check \`commands\` and try again');
                 return;
             }
             var commandPanel = new Discord.MessageEmbed()
-                .setTitle(bot.commands.get(args[0].toLowerCase()).name)
+                .setTitle(command.name)
                 .setColor('#ff0000')
-                .setDescription(bot.commands.get(args[0].toLowerCase()).description)
+                .setDescription(command.description)
                 .setFooter('<Required> (Optional) [Item1, Item2, Item3]');
-            if (bot.commands.get(args[0].toLowerCase()).alias != null) {
-                commandPanel.addField('Aliases', bot.commands.get(args[0].toLowerCase()).alias)
-            } if (bot.commands.get(args[0].toLowerCase()).args != null) {
-                commandPanel.addField('Args', bot.commands.get(args[0].toLowerCase()).args)
-            } if (bot.commands.get(args[0].toLowerCase()).notes != null) {
-                commandPanel.addField('Special Notes', bot.commands.get(args[0].toLowerCase()).notes)
+            if (command.alias != null) {
+                commandPanel.addField('Aliases', command.alias)
+            } if (command.args != null) {
+                commandPanel.addField('Args', command.args)
+            } if (command.notes != null) {
+                commandPanel.addField('Special Notes', command.notes)
             }
-            var minimumRole = message.guild.roles.cache.find(r => r.name === bot.commands.get(args[0].toLowerCase()).role);
+            var minimumRole = message.guild.roles.cache.find(r => r.name === command.role);
             commandPanel.addField('Minimum Role', minimumRole);
             message.channel.send(commandPanel);
         } else {

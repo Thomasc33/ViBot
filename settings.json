@@ -8,6 +8,12 @@
     "ActiveRaidingName": "vibot-channels",
     "ActiveVetName": "placeholder-channel-v",
     "ActiveEventName": "placeholder-channel-e",
+    "runReqs": {
+        "weapon": 10,
+        "ability": 4,
+        "armor": 10,
+        "ring": 4
+    },
     "vetVeriReqs": {
         "maxed": 2,
         "meleeMaxed": 1,

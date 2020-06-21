@@ -3,6 +3,7 @@ module.exports = {
     name: 'nonicknames',
     description: 'Lists all verified raiders that dont have a nickname',
     role: 'Security',
+    alias: ['nn'],
     notes: 'Only usable in mod-bot-commands',
     execute(message, args, bot) {
         if (message.channel.name !== 'mod-bot-commands') return;

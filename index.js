@@ -111,18 +111,28 @@ bot.on("ready", () => {
             const suspendedRole = guild.roles.cache.find(r => r.name === 'Suspended but Verified');
             try {
                 if (Date.now() > time) {
-                    member.edit({
-                        roles: roles
-                    })
-                    member.roles.add(roles)
-                    delete bot.suspensions[i];
-                    fs.writeFile('./suspensions.json', JSON.stringify(bot.suspensions, null, 4), function (err) {
-                        if (err) throw err;
-                        let embed = bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').messages.cache.get(proofLogID).embeds.shift();
-                        embed.setColor('#00ff00')
-                            .setFooter('Unsuspended at');
-                        bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').messages.cache.get(proofLogID).edit(embed);
-                    })
+                    unsuspendProcess()
+                    async function unsuspendProcess() {
+                        await member.edit({
+                            roles: roles
+                        })
+                        setTimeout(() => {
+                            delete bot.suspensions[i];
+                            fs.writeFile('./suspensions.json', JSON.stringify(bot.suspensions, null, 4), async function (err) {
+                                if (err) throw err;
+
+                                try {
+                                    let messages = await bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').messages.fetch({ limit: 100 })
+                                    let message = messages.get(proofLogID)
+                                    let embed = message.embeds.shift();
+                                    embed.setColor('#00ff00')
+                                        .setFooter('Unsuspended at');
+                                    message.edit(embed)
+                                }
+                                catch (er) { bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').send(`${member} has been unsuspended automatically`) }
+                            })
+                        }, 2000)
+                    }
                 }
             } catch (er) {
                 ErrorLogger.log(er, bot)
