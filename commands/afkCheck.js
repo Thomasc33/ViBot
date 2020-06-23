@@ -822,7 +822,7 @@ To end the AFK check as a leader, react to ❌`)
             try {
                 this.db.query(`SELECT * FROM users WHERE id = '${this.key.id}'`, (err, rows) => {
                     if (rows[0] == undefined) return;
-                    this.db.query(`UPDATE users SET keypops = '${parseInt(rows[0].keypops + 1)}' WHERE id = '${this.key.id}'`)
+                    this.db.query(`UPDATE users SET keypops = '${parseInt(rows[0].keypops) + 1}' WHERE id = '${this.key.id}'`)
                 })
             } catch (er) {
                 ErrorLogger(er, bot)
