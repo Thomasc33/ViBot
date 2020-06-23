@@ -15,31 +15,28 @@ module.exports = {
             else checkEmbed.fields[0].value = checkEmbed.fields[0].value.concat(`, <@!${m.id}>`)
         })
         //people with same name
-        let dupes = []
-        let names = []
-        message.guild.members.cache.filter(m => m.nickname != null).each(m => {
-            let n = {
-                nick: [],
-                id: m.id
-            }
-            m.nickname.replace(/[^a-zA-Z|]/g, '').split('|').forEach(nick => {
-                for (let i in names) {
-                    try {
-                        if (names[i].nick.includes(nick.toLowerCase())) {
-                            if (!dupes.includes(m.id)) dupes.push(m.id)
-                            if (!dupes.includes(names[i].id)) dupes.push(names[i].id)
-                            break;
-                        }
-                    } catch (er) { }
-                }
-                n.nick.push(nick.toLowerCase())
-            })
-            names.push(n)
-        })
+        let dupesArray = []
+
+        let allMembers = message.guild.members.cache.filter(u => u.nickname && (u.roles.cache.has(message.guild.roles.cache.find(r => r.name === 'Verified Raider').id) || u.roles.cache.has(message.guild.roles.cache.find(r => r.name === 'Event boi').id))).map(m => m)
+        let allNames = message.guild.members.cache.filter(u => u.nickname && (u.roles.cache.has(message.guild.roles.cache.find(r => r.name === 'Verified Raider').id) || u.roles.cache.has(message.guild.roles.cache.find(r => r.name === 'Event boi').id))).map(m => m.nickname.toLowerCase().replace(/[^a-z|]/gi, "").split("|"))
+        allNames = allNames.flat()
+        let uniqueNames = [... new Set(allNames)]
+        for (var i in uniqueNames) {
+            allNames.splice(allNames.indexOf(uniqueNames[i]), 1)
+        }
+        allNames = [... new Set(allNames)]
+        for (var i in allNames) {
+            let dupes = allMembers.filter(m => m.nickname.toLowerCase().replace(/[^a-z|]/gi, "").split("|").includes(allNames[i]))
+            dupes = dupes.map(m => m.id)
+            dupesArray.push(dupes[0])
+        }
+        console.log(dupesArray)
+        dupesArray = dupesArray.filter((item, index) => dupesArray.indexOf(item) === index)
+        console.log(dupesArray)
         checkEmbed.addField('Duplicate Names', 'None!')
-        for (let i in dupes) {
-            if (checkEmbed.fields[1].value == 'None!') checkEmbed.fields[1].value = `<@!${dupes[i]}>`
-            else checkEmbed.fields[1].value += `, <@!${dupes[i]}>`
+        for (let i in dupesArray) {
+            if (checkEmbed.fields[1].value == 'None!') checkEmbed.fields[1].value = `<@!${dupesArray[i]}>`
+            else checkEmbed.fields[1].value += `, <@!${dupesArray[i]}>`
         }
         //pending vet verification
         let veriPendingVet = message.guild.channels.cache.find(c => c.name === 'veri-pending-veterans')

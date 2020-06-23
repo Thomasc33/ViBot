@@ -5,6 +5,6 @@ module.exports = {
     description: 'Holds testing code',
     role: 'Developer',
     async execute(message, args, bot, db) {
-        console.log(parseInt('UT'))
+        message.channel.send(message.member.nickname.replace(/[^a-zA-Z|]/g, '').split('|')[0])
     }
 }
