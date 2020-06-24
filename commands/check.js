@@ -27,8 +27,7 @@ module.exports = {
         allNames = [... new Set(allNames)]
         for (var i in allNames) {
             let dupes = allMembers.filter(m => m.nickname.toLowerCase().replace(/[^a-z|]/gi, "").split("|").includes(allNames[i]))
-            dupes = dupes.map(m => m.id)
-            dupesArray.push(dupes[0])
+            dupes = dupes.map(m => dupesArray.push(m.id))
         }
         dupesArray = dupesArray.filter((item, index) => dupesArray.indexOf(item) === index)
         checkEmbed.addField('Duplicate Names', 'None!')
