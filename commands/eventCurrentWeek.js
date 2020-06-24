@@ -47,8 +47,8 @@ module.exports = {
                     logged.push(rows[i].id)
                     index++;
                 }
-                channel.guild.members.cache.filter(m => m.roles.cache.has(channel.guild.roles.cache.find(r => r.name === 'Event Organizer').id)).each(m => {
-                    if (!rows.includes(m.id)) {
+                channel.guild.members.cache.filter(m => m.roles.highest.id == channel.guild.roles.cache.find(r => r.name === 'Event Organizer').id).each(m => {
+                    if (!logged.includes(`${m.id}`)) {
                         let string = `<@!${m.id}> has not logged any runs or been assisted this week`
                         fitStringIntoEmbed(embed, string)
                     }

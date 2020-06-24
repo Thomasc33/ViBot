@@ -9,7 +9,7 @@ module.exports = {
     async execute(message, args, bot) {
         const suspendedRole = message.guild.roles.cache.find(r => r.name === 'Suspended');
         const sbvRole = message.guild.roles.cache.find(r => r.name === 'Suspended but Verified');
-        const eventRole = message.guild.roles.cache.find(r => r.name === 'Event boi');
+        const eventRole = message.guild.roles.cache.find(r => r.name === 'Event Boi');
         var member = message.mentions.members.first()
         if (member == null) {
             member = message.guild.members.cache.get(args[0]);

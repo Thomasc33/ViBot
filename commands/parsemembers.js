@@ -176,10 +176,12 @@ module.exports = {
                 }
                 //ability
                 if (character.ability) {
-                    let abilityTier = parseInt(character.ability.split(/ +/).pop().replace('T', ''))
-                    if (abilityTier < botSettings.runReqs.ability && abilityTier !== NaN && (character.class.toLowerCase() != 'trickster' || character.class.toLowerCase() != 'mystic')) {
-                        issue = true;
-                        issueString += `\nAbility tier is too low (T${abilityTier})`
+                    if (character.class.toLowerCase() != 'trickster' && character.class.toLowerCase() != 'mystic') {
+                        let abilityTier = parseInt(character.ability.split(/ +/).pop().replace('T', ''))
+                        if (abilityTier < botSettings.runReqs.ability && abilityTier !== NaN) {
+                            issue = true;
+                            issueString += `\nAbility tier is too low (T${abilityTier})`
+                        }
                     }
                 } else {
                     issue = true;

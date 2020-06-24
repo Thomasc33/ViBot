@@ -17,8 +17,8 @@ module.exports = {
         //people with same name
         let dupesArray = []
 
-        let allMembers = message.guild.members.cache.filter(u => u.nickname && (u.roles.cache.has(message.guild.roles.cache.find(r => r.name === 'Verified Raider').id) || u.roles.cache.has(message.guild.roles.cache.find(r => r.name === 'Event boi').id))).map(m => m)
-        let allNames = message.guild.members.cache.filter(u => u.nickname && (u.roles.cache.has(message.guild.roles.cache.find(r => r.name === 'Verified Raider').id) || u.roles.cache.has(message.guild.roles.cache.find(r => r.name === 'Event boi').id))).map(m => m.nickname.toLowerCase().replace(/[^a-z|]/gi, "").split("|"))
+        let allMembers = message.guild.members.cache.filter(u => u.nickname && (u.roles.cache.has(message.guild.roles.cache.find(r => r.name === 'Verified Raider').id) || u.roles.cache.has(message.guild.roles.cache.find(r => r.name === 'Event Boi').id))).map(m => m)
+        let allNames = message.guild.members.cache.filter(u => u.nickname && (u.roles.cache.has(message.guild.roles.cache.find(r => r.name === 'Verified Raider').id) || u.roles.cache.has(message.guild.roles.cache.find(r => r.name === 'Event Boi').id))).map(m => m.nickname.toLowerCase().replace(/[^a-z|]/gi, "").split("|"))
         allNames = allNames.flat()
         let uniqueNames = [... new Set(allNames)]
         for (var i in uniqueNames) {
@@ -30,9 +30,7 @@ module.exports = {
             dupes = dupes.map(m => m.id)
             dupesArray.push(dupes[0])
         }
-        console.log(dupesArray)
         dupesArray = dupesArray.filter((item, index) => dupesArray.indexOf(item) === index)
-        console.log(dupesArray)
         checkEmbed.addField('Duplicate Names', 'None!')
         for (let i in dupesArray) {
             if (checkEmbed.fields[1].value == 'None!') checkEmbed.fields[1].value = `<@!${dupesArray[i]}>`
@@ -68,7 +66,7 @@ module.exports = {
         let nn = []
         let noNickname = message.guild.members.cache.filter(m => m.nickname == null);
         noNickname.each(user => {
-            if (user.roles.cache.has(message.guild.roles.cache.find(r => r.name === 'Verified Raider').id) || user.roles.cache.has(message.guild.roles.cache.find(r => r.name === 'Event boi').id)) {
+            if (user.roles.cache.has(message.guild.roles.cache.find(r => r.name === 'Verified Raider').id) || user.roles.cache.has(message.guild.roles.cache.find(r => r.name === 'Event Boi').id)) {
                 nn.push(user)
             }
         })

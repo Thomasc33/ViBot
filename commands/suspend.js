@@ -9,6 +9,7 @@ module.exports = {
     role: 'Raid Leader',
     async execute(message, args, bot) {
         const suspendedRole = message.guild.roles.cache.find(r => r.name === 'Suspended but Verified');
+        const pSuspendRole = message.guild.roles.cache.find(r => r.name === 'Suspended')
         const raiderRole = message.guild.roles.cache.find(r => r.name === 'Verified Raider');
         const suspensionLog = message.guild.channels.cache.find(c => c.name === 'suspend-log');
         let toBan = [];
@@ -72,15 +73,11 @@ module.exports = {
 
                 let member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(u.toLowerCase()));
 
-                if (member == null) {
-                    message.channel.send(`${u} not found, please try again`);
-                    return;
-                }
+                if (member == null) return message.channel.send(`${u} not found, please try again`);
 
-                if (member.roles.highest.position >= message.member.roles.highest.position) {
-                    message.channel.send(`${member} has a role greater than or equal to you and cannot be muted`);
-                    return;
-                }
+                if (member.roles.highest.position >= message.member.roles.highest.position) return message.channel.send(`${member} has a role greater than or equal to you and cannot be muted`);
+
+                if (member.roles.cache.has(pSuspendRole.id)) return message.channel.send('User is perma suspended already, no need to suspend again')
 
                 if (member.roles.cache.has(suspendedRole.id)) {
                     if (bot.suspensions[member.id]) {

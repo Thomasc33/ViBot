@@ -9,7 +9,7 @@ module.exports = {
     async execute(message, args, bot) {
         const suspendedRole = message.guild.roles.cache.find(r => r.name === 'Suspended');
         const sbvRole = message.guild.roles.cache.find(r => r.name === 'Suspended but Verified');
-        const eventRole = message.guild.roles.cache.find(r => r.name === 'Event boi');
+        const eventRole = message.guild.roles.cache.find(r => r.name === 'Event Boi');
         var member = message.mentions.members.first()
         if (member == null) {
             member = message.guild.members.cache.get(args[0]);
@@ -26,7 +26,7 @@ module.exports = {
             message.channel.send('User does not have event boi')
             return;
         }
-        await member.roles.remove(eventRole)
+        await member.roles.remove(eventRole.id)
         let image;
         if (message.attachments.first() != null) image = message.attachments.first().proxyURL
         if (image == null) image = args[1]

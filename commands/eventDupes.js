@@ -5,7 +5,7 @@ module.exports = {
     description: 'Displays all users who have both Event Bois and Verified Raider',
     role: 'Security',
     async execute(message, args, bot) {
-        let eventbois = message.guild.roles.cache.find(r => r.name === 'Event boi')
+        let eventbois = message.guild.roles.cache.find(r => r.name === 'Event Boi')
         let raider = message.guild.roles.cache.find(r => r.name === 'Verified Raider')
 
         let embed = new Discord.MessageEmbed()
