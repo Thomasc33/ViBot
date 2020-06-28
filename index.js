@@ -69,7 +69,7 @@ bot.on("ready", () => {
     const halls = bot.guilds.cache.get(botSettings.guildID);
     bot.setInterval(() => {
         for (let i in bot.vetBans) {
-            const time = bot.vetBans[i].time;
+            const time = parseInt(bot.vetBans[i].time);
             const guildId = bot.vetBans[i].guild;
             const reason = bot.vetBans[i].reason;
             const banBy = bot.vetBans[i].by;
