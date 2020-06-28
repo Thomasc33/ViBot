@@ -7,7 +7,7 @@ module.exports = {
     description: 'Suspends user',
     args: '[in-game names] <time> <time type d/m/s/w/y> <reason>',
     role: 'Raid Leader',
-    async execute(message, args, bot) {
+    async execute(message, args, bot, db) {
         const suspendedRole = message.guild.roles.cache.find(r => r.name === 'Suspended but Verified');
         const pSuspendRole = message.guild.roles.cache.find(r => r.name === 'Suspended')
         const raiderRole = message.guild.roles.cache.find(r => r.name === 'Verified Raider');
@@ -116,10 +116,11 @@ module.exports = {
                         .setTimestamp(Date.now() + time);
 
 
-                    let userRoles = []
+                    let userRolesString = '', userRoles = []
                     member.roles.cache.each(r => {
                         if (!r.managed) {
                             userRoles.push(r.id)
+                            userRolesString = userRolesString.concat(`${r.id} `)
                         }
                         if (embed.fields[3].value == 'None!') {
                             embed.fields[3].value = `<@&${r.id}>`
@@ -131,6 +132,9 @@ module.exports = {
                     await member.roles.remove(userRoles)
                     setTimeout(() => { member.roles.add(suspendedRole.id); }, 2000)
 
+                    db.query(`INSERT INTO suspensions (id, guildid, suspended, uTime, reason, modid, roles, logmessage) VALUES ('${member.id}', '${message.guild.id}', true, '${Date.now() + time}', '${reason}', '${message.author.id}', '${userRolesString}', '${messageId.id}');`)
+
+                    /*
                     bot.suspensions[member.id] = {
                         guild: message.guild.id,
                         time: Date.now() + time,
@@ -139,11 +143,11 @@ module.exports = {
                         logMessage: messageId.id,
                         roles: userRoles
                     }
-
                     fs.writeFile('./suspensions.json', JSON.stringify(bot.suspensions, null, 4), err => {
                         if (err) return ErrorLogger.log(err, bot);
                         message.channel.send(`${member.nickname} has been suspended`);
                     });
+                    */
                 }
 
             })

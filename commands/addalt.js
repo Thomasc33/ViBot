@@ -7,7 +7,7 @@ module.exports = {
     alias: ['aa'],
     args: '<id/mention> <alt name> (proof)',
     role: 'Security',
-    execute(message, args, bot) {
+    async execute(message, args, bot) {
         if (message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.find(r => r.name === "Developer").position) return;
         var member = message.mentions.members.first()
         if (member == null) {
@@ -21,9 +21,9 @@ module.exports = {
         if (message.attachments.size != 0) {
             proof = proof.concat(` ${message.attachments.first().proxyURL}`)
         }
-        message.channel.send(`Are you sure you want to add the alt ${altName} to ${member}? Y/N`);
+        await message.channel.send(`Are you sure you want to add the alt ${altName} to ${member}? Y/N`);
         let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 10000 });
-        collector.on('collect', m => {
+        collector.on('collect', async m => {
             try {
                 if (m.content.toLowerCase().charAt(0) == 'y') {
                     member.setNickname(`${member.nickname} | ${altName}`);
@@ -34,9 +34,9 @@ module.exports = {
                         .addField('New Alt', altName, true)
                         .addField('Added By', `<@!${message.author.id}>`)
                         .setTimestamp(Date.now());
-                    message.guild.channels.cache.find(c => c.name === 'mod-logs').send(embed);
+                    await message.guild.channels.cache.find(c => c.name === 'mod-logs').send(embed);
                     if (proof != ' ') {
-                        message.guild.channels.cache.find(c => c.name === 'mod-logs').send(proof);
+                        await message.guild.channels.cache.find(c => c.name === 'mod-logs').send(proof);
                     }
                     collector.stop();
                 } else {
