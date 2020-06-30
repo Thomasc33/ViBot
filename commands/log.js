@@ -73,13 +73,13 @@ module.exports = {
         }
         if (message.mentions.users && args[0].toLowerCase().charAt(0) !== 'e') {
             desc = desc.concat(`\n`)
-            message.mentions.users.each(u => {
+            message.mentions.members.each(u => {
                 if (u.id !== message.author.id) {
                     desc = desc + `${message.guild.members.cache.get(u.id)} `
                     db.query(`SELECT * FROM users WHERE id = '${u.id}'`, (err, rows) => {
                         if (err) throw err;
                         db.query(`UPDATE users SET assists = '${parseInt(rows[0].assists) + parseInt(count)}', currentweekAssists = '${parseInt(rows[0].currentweekAssists) + parseInt(count)}' WHERE id = '${u.id}'`)
-                        message.channel.send(`Run logged for ${message.member.nickname}. Current week: ${parseInt(rows[0].currentweekCult)} cult, ${parseInt(rows[0].currentweekVoid)} void, and ${parseInt(rows[0].currentweekAssists) + parseInt(count)} assists`)
+                        message.channel.send(`Run logged for ${u.nickname}. Current week: ${parseInt(rows[0].currentweekCult)} cult, ${parseInt(rows[0].currentweekVoid)} void, and ${parseInt(rows[0].currentweekAssists) + parseInt(count)} assists`)
                     })
                 }
             })

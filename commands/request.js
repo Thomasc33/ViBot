@@ -20,7 +20,7 @@ module.exports = {
         if (isVet) var raidStatus = message.guild.channels.cache.find(c => c.name === "veteran-status-announcements");
         else var raidStatus = message.guild.channels.cache.find(c => c.name === "raid-status-announcements");
         var location = "";
-        for (i = 2; i < args.length; i++) {
+        for (i = 1; i < args.length; i++) {
             location = location.concat(args[i]) + ' ';
         }
         location = location.trim();
@@ -32,7 +32,7 @@ module.exports = {
         let embed = new Discord.MessageEmbed()
             .setAuthor(`Requested by ${message.member.nickname} in ${voiceChannel.name}`, `${message.author.avatarURL()}`)
             .setTimestamp()
-        switch (args[1].charAt(0).toLowerCase()) {
+        switch (args[0].charAt(0).toLowerCase()) {
             case 'k':
                 embed.setDescription(`A key has been requested for \`${voiceChannel.name}\`
                 React with <${botSettings.emote.LostHallsKey}>`)
