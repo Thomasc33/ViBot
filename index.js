@@ -107,20 +107,20 @@ bot.on("ready", () => {
                     const proofLogID = rows[i].logmessage;
                     const rolesString = rows[i].roles;
                     let roles = []
-                    const guild = bot.guilds.cache.get(guildId);
+                    const guild = bot.guilds.cache.get('701483950559985705');
                     const reason = rows[i].reason
-                    console.log(reason)
                     const member = guild.members.cache.get(rows[i].id);
                     rolesString.split(' ').forEach(r => { if (r !== '') roles.push(r) })
                     try {
                         await member.edit({
                             roles: roles
                         })
+                        .catch(er => ErrorLogger.log(er, bot))
                         try {
                             let messages = await bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').messages.fetch({ limit: 100 })
                             let m = messages.get(proofLogID)
                             if (!m) {
-                                guild.channels.cache.find(c => c.name === 'suspend-log').send(`${member} has been unsuspended automatically`)
+                                guild.channels.cache.find(c => c.name === 'suspend-log').send(`<@!${rows[i].id}> has been unsuspended automatically`)
                             } else {
                                 let embed = m.embeds.shift();
                                 embed.setColor('#00ff00')
@@ -130,8 +130,14 @@ bot.on("ready", () => {
                                 m.edit(embed)
                             }
                         }
-                        catch (er) { bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').send(`${member} has been unsuspended automatically`) }
-                        db.query(`UPDATE suspensions SET suspended = 0 WHERE id = '${member.id}'`)
+                        catch (er) {
+                            bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').send(`<@!${rows[i].id}> has been unsuspended automatically`)
+                        }
+                        finally {
+                            console.log(`UPDATE suspensions SET suspended = 0 WHERE id = '${rows[i].id}'`)
+                            await db.query(`UPDATE suspensions SET suspended = 0 WHERE id = '${rows[i].id}'`)
+                        }
+
                     } catch (er) {
                         ErrorLogger.log(er, bot)
                     }
