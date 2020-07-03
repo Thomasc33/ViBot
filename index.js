@@ -107,7 +107,7 @@ bot.on("ready", () => {
                     const proofLogID = rows[i].logmessage;
                     const rolesString = rows[i].roles;
                     let roles = []
-                    const guild = bot.guilds.cache.get('701483950559985705');
+                    const guild = bot.guilds.cache.get(guildId);
                     const reason = rows[i].reason
                     const member = guild.members.cache.get(rows[i].id);
                     rolesString.split(' ').forEach(r => { if (r !== '') roles.push(r) })

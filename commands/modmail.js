@@ -27,7 +27,9 @@ module.exports = {
             keyCollector.on('collect', async function (r, u) {
                 let reactor = guild.members.cache.get(u.id)
                 let choiceCollector = new Discord.ReactionCollector(m, choiceFilter)
+                let collected = false;
                 choiceCollector.on('collect', async function (r, u) {
+                    collected = true;
                     choiceCollector.stop()
                     if (reactor.id !== u.id) return;
                     switch (r.emoji.name) {
@@ -53,7 +55,7 @@ module.exports = {
                                         ConfirmReactionCollector.stop()
                                         await dms.send(response)
                                         responseEmbedMessage.delete()
-                                        embed.addField(`Response from ${reactor.nickname}:`, response)
+                                        embed.addField(`Response by ${reactor.nickname}:`, response)
                                         m.edit(embed)
                                         await m.reactions.removeAll()
                                         await m.react('📫')
@@ -98,12 +100,12 @@ module.exports = {
                     }
                 })
                 await m.reactions.removeAll()
-                await m.react('📧')
-                await m.react('👀')
-                await m.react('🗑️')
-                await m.react('❌')
-                await m.react('🔨')
-                await m.react('🔒')
+                if (!collected) await m.react('📧')
+                if (!collected) await m.react('👀')
+                if (!collected) await m.react('🗑️')
+                if (!collected) await m.react('❌')
+                if (!collected) await m.react('🔨')
+                if (!collected) await m.react('🔒')
             })
         })
     },

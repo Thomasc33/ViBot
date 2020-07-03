@@ -5,7 +5,7 @@
     "eventAfkTimeLimit": 360,
     "nitroCount": 5,
     "guildID": "701483950559985705",
-    "ActiveRaidingName": "vibot-channels",
+    "ActiveRaidingName": "active-channels",
     "ActiveVetName": "placeholder-channel-v",
     "ActiveEventName": "placeholder-channel-e",
     "runReqs": {

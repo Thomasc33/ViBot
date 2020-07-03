@@ -6,6 +6,8 @@ const ErrorLogger = require('../logError')
 const Locker = require('./lock');
 const Unlocker = require('./unlock')
 const Channels = require('./vibotChannels')
+const realmEyeScrape = require('../realmEyeScrape');
+const { rejects } = require('assert');
 
 //globals
 var activeVetRun = false;
@@ -24,25 +26,10 @@ module.exports = {
         bot = bott
         if (message.channel.name === 'dylanbot-commands') var isVet = false;
         else if (message.channel.name === 'veteran-bot-commands') var isVet = true;
-        else {
-            message.channel.send("Try again, but in dylanbot-commands or veteran-bot-commands");
-            return;
-        }
-        if (args.length < 2) {
-            message.channel.send("Command entered incorrectly -> ;afk <c/v/fsv> <location>");
-            return;
-        }
-        if (isVet) {
-            if (activeVetRun == true) {
-                message.channel.send("There is already a run active. If this is an error, do \`;allownewrun\`");
-                return;
-            }
-        } else {
-            if (activeRun == true) {
-                message.channel.send("There is already a run active. If this is an error, do \`;allownewrun\`");
-                return;
-            }
-        }
+        else return message.channel.send("Try again, but in dylanbot-commands or veteran-bot-commands");
+        if (args.length < 2) return message.channel.send("Command entered incorrectly -> ;newafk <c/v/fsv> <location>");
+        if (isVet && activeVetRun) return message.channel.send("There is already a run active. If this is an error, do \`;allownewrun\`");
+        else if (activeRun) return message.channel.send("There is already a run active. If this is an error, do \`;allownewrun\`");
         switch (args[0].charAt(0).toLowerCase()) {
             case 'c':
                 var run = 1;
@@ -54,27 +41,15 @@ module.exports = {
                 var run = 3;
                 break;
             default:
-                message.channel.send("Command entered incorrectly -> ;afk <c/v/fsv> <location>");
+                message.channel.send("Command entered incorrectly -> ;newafk <c/v/fsv> <location>");
                 return;
         }
         let location = "";
-        for (i = 1; i < args.length; i++) {
-            location = location.concat(args[i]) + ' ';
-        }
+        for (i = 1; i < args.length; i++) location = location.concat(args[i]) + ' ';
         location = location.trim();
-        if (location.length >= 1024) {
-            message.channel.send('Location must be below 1024 characters, try again');
-        }
-        if (isVet) {
-            if (activeVetRun == true) {
-                message.channel.send("There is already a run active. If this is an error, do \`;allownewrun\`");
-                return;
-            }
-        } else if (activeRun == true) {
-            message.channel.send("There is already a run active. If this is an error, do \`;allownewrun\`");
-            return;
-        }
-        let channel = await createChannel(isVet, message, run);
+        if (location.length >= 1024) return message.channel.send('Location must be below 1024 characters, try again');
+        let channel = await createChannel(isVet, message, run)
+            .catch(er => { ErrorLogger.log(er, bot); return message.channel.send('There was an issue creating the channel. Please try again') })
         if (isVet) currentVet = new afk(run, location, message, isVet, db, channel);
         else currentReg = new afk(run, location, message, isVet, db, channel);
         message.channel.send('Channel created successfully. Beginning afk check in 10 seconds')
@@ -105,11 +80,8 @@ module.exports = {
 }
 
 async function beginRun(isVet) {
-    if (isVet) {
-        currentVet.start();
-    } else {
-        currentReg.start();
-    }
+    if (isVet) currentVet.start();
+    else currentReg.start();
 }
 
 class afk {
@@ -131,7 +103,7 @@ class afk {
         this.afkChannel = message.guild.channels.cache.find(c => c.name === 'afk');
         this.dylanBotInfo = message.guild.channels.cache.find(c => c.name === "dylanbot-info");
         this.officialRusher = message.guild.roles.cache.find(r => r.name === 'Official Rusher');
-        this.nitroBooster = message.guild.roles.cache.find(r => r.name === "Nitro Booster");
+        this.nitroBooster = message.guild.roles.cache.find(r => r.name === 'Nitro Booster');
         this.leaderOnLeave = message.guild.roles.cache.find(r => r.name === 'Leader on Leave');
         this.minutes;
         this.seconds;
@@ -219,7 +191,7 @@ class afk {
         this.leaderEmbed = new Discord.MessageEmbed()
             .setColor('#ff0000')
             .setTitle(`AFK Check control panel for \`${this.channel.name}\``)
-            .setFooter(`To abort the afk check, react with ❌ below.`)
+            .setFooter(`❌ to abort. 🔑 for fake key react`)
             .addFields(
                 { name: `Our current key`, value: `None yet!` },
                 { name: `Our current rushers`, value: `None yet!` },
@@ -278,16 +250,23 @@ class afk {
         });
 
         //afk panel reaction collector
-        this.afkControlPanelCommands.react('❌');
-        this.panelReactionCollector = new Discord.ReactionCollector(this.afkControlPanelCommands, cultFilter);
+        this.afkControlPanelCommands.react('❌')
+            .then(this.afkControlPanelCommands.react('🔑'))
+        this.panelReactionCollector = new Discord.ReactionCollector(this.afkControlPanelCommands, keyXFilter);
 
         this.panelReactionCollector.on("collect", (r, u) => {
-            if (u.bot) return;
             let reactor = this.message.guild.members.cache.get(u.id);
             if (r.emoji.name === '❌') {
                 if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
                 this.endedBy = u;
                 this.abortAfk();
+            }
+            if (r.emoji.name === '🔑') {
+                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
+                this.leaderEmbed.fields[0].value = `None yet!`
+                this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                this.key = null
             }
         });
 
@@ -318,7 +297,7 @@ class afk {
         this.leaderEmbed = new Discord.MessageEmbed()
             .setColor('#8c00ff')
             .setTitle(`AFK Check control panel for \`${this.channel.name}\``)
-            .setFooter(`To abort the afk check, react with ❌ below.`)
+            .setFooter(`❌ to abort. 🔑 for fake key react`)
             .addFields(
                 { name: `Our current key`, value: `None yet!` },
                 { name: `Our current vials`, value: `None yet!` },
@@ -375,16 +354,23 @@ class afk {
         });
 
         //afk panel reaction collector
-        this.afkControlPanelCommands.react('❌');
-        this.panelReactionCollector = new Discord.ReactionCollector(this.afkControlPanelCommands, cultFilter);
+        this.afkControlPanelCommands.react('❌')
+            .then(this.afkControlPanelCommands.react('🔑'))
+        this.panelReactionCollector = new Discord.ReactionCollector(this.afkControlPanelCommands, keyXFilter);
 
         this.panelReactionCollector.on("collect", (r, u) => {
-            if (u.bot) return;
             let reactor = this.message.guild.members.cache.get(u.id);
             if (r.emoji.name === '❌') {
                 if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
                 this.endedBy = u;
                 this.abortAfk();
+            }
+            if (r.emoji.name === '🔑') {
+                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
+                this.leaderEmbed.fields[0].value = `None yet!`
+                this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                this.key = null
             }
         });
     }
@@ -416,7 +402,7 @@ class afk {
         this.leaderEmbed = new Discord.MessageEmbed()
             .setColor('#8c00ff')
             .setTitle(`AFK Check control panel for \`${this.channel.name}\``)
-            .setFooter(`To abort the afk check, react with ❌ below.`)
+            .setFooter(`❌ to abort. 🔑 for fake key react`)
             .addFields(
                 { name: `Our current key`, value: `None yet!` },
                 { name: `Our current vials`, value: `None yet!` },
@@ -493,16 +479,23 @@ class afk {
         });
 
         //afk panel reaction collector
-        this.afkControlPanelCommands.react('❌');
-        this.panelReactionCollector = new Discord.ReactionCollector(this.afkControlPanelCommands, cultFilter);
+        this.afkControlPanelCommands.react('❌')
+            .then(this.afkControlPanelCommands.react('🔑'))
+        this.panelReactionCollector = new Discord.ReactionCollector(this.afkControlPanelCommands, keyXFilter);
 
         this.panelReactionCollector.on("collect", (r, u) => {
-            if (u.bot) return;
             let reactor = this.message.guild.members.cache.get(u.id);
             if (r.emoji.name === '❌') {
                 if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
                 this.endedBy = u;
                 this.abortAfk();
+            }
+            if (r.emoji.name === '🔑') {
+                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
+                this.leaderEmbed.fields[0].value = `None yet!`
+                this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                this.key = null
             }
         });
     }
@@ -525,8 +518,7 @@ class afk {
         let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, dmReactionFilter);
         await DirectMessage.react("✅");
         dmReactionCollector.on("collect", (r, u) => {
-            if (this.key != null)
-                return;
+            if (this.key != null) return;
             this.key = u;
             dm.send(`The location for this run has been set to \`${this.location}\`, get there and confirm key with ${this.message.member.nickname}`);
             if (this.leaderEmbed.fields[0].value == `None yet!`) {
@@ -614,6 +606,7 @@ class afk {
         let endAfter = setInterval(function () {
             try {
                 dmReactionCollector.stop();
+                if (reactionCollector) reactionCollector.stop()
                 dm.send('Reaction took too long to receive, or another key already confirmed. Re-react to try again');
                 clearInterval(endAfter);
                 return;
@@ -624,22 +617,46 @@ class afk {
         }, 60000)
         try {
             let dm = await u.createDM();
-            let DirectMessage = await dm.send(`You reacted as <${botSettings.emote.Mystic}>. Press :white_check_mark: to confirm. Ignore this message otherwise`);
-
+            let DirectMessage = await dm.send(`You reacted as <${botSettings.emote.Mystic}>. If your mystic is 8/8 and you have an 85 magic heal pet, then press :white_check_mark: to confirm. Ignore this message otherwise`);
             let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, dmReactionFilter);
             await DirectMessage.react("✅");
-            await dmReactionCollector.on("collect", (r, u) => {
+            await dmReactionCollector.on("collect", async (r, u) => {
                 if (this.mystics.length > 2 || this.mystics.includes(u)) return;
-                this.mystics.push(u)
-                dm.send(`The location for this run has been set to \`${this.location}\`, get there asap`);
-                if (this.leaderEmbed.fields[3].value == `None yet!`) {
-                    this.leaderEmbed.fields[3].value = `<${botSettings.emote.Mystic}>: <@!${u.id}>`;
-                } else this.leaderEmbed.fields[3].value += `\n<${botSettings.emote.Mystic}>: ${`<@!${u.id}>`}`
-                this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
-                this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
-                this.earlyLocation.push(u);
-                clearInterval(endAfter);
-                dmReactionCollector.stop();
+                let found = false;
+                let characters = await realmEyeScrape.getUserInfo(this.message.guild.members.cache.get(u.id).nickname.replace(/[^a-z|]/gi, '').split('|')[0]).catch(er => found = false)
+                if (characters) characters.characters.forEach(c => {
+                    if (c.class == 'Mystic' && c.stats == '8/8') {
+                        found = true;
+                        this.mystics.push(u)
+                        dm.send(`The location for this run has been set to \`${this.location}\`, get there asap`);
+                        if (this.leaderEmbed.fields[3].value == `None yet!`) {
+                            this.leaderEmbed.fields[3].value = `<${botSettings.emote.Mystic}>: <@!${u.id}>`;
+                        } else this.leaderEmbed.fields[3].value += `\n<${botSettings.emote.Mystic}>: ${`<@!${u.id}>`}`
+                        this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                        this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                        this.earlyLocation.push(u);
+                        clearInterval(endAfter);
+                        dmReactionCollector.stop();
+                    }
+                })
+                if (!found) {
+                    let prompt = await dm.send(`I could not find any 8/8 mystics under \`${this.message.guild.members.cache.get(u.id).nickname.replace(/[^a-z|]/gi, '').split('|')[0]}\`. React with :white_check_mark: if you do have an 8/8 mystic on another account`)
+                    let reactionCollector = new Discord.ReactionCollector(prompt, dmReactionFilter);
+                    await prompt.react('✅')
+                    reactionCollector.on('collect', (r, u) => {
+                        this.mystics.push(u)
+                        dm.send(`The location for this run has been set to \`${this.location}\`, get there asap`);
+                        if (this.leaderEmbed.fields[3].value == `None yet!`) {
+                            this.leaderEmbed.fields[3].value = `<${botSettings.emote.Mystic}>: <@!${u.id}>`;
+                        } else this.leaderEmbed.fields[3].value += `\n<${botSettings.emote.Mystic}>: ${`<@!${u.id}>`}`
+                        this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                        this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                        this.earlyLocation.push(u);
+                        clearInterval(endAfter);
+                        dmReactionCollector.stop();
+                    })
+                }
+
             });
         } catch (er) { }
     }
@@ -734,10 +751,19 @@ class afk {
         for (let i in this.earlyLocation) {
             earlyLocationIDS.push(this.earlyLocation[i].id)
         }
-        bot.afkChecks[this.channel.id] = {
+        if (this.key) {
+            bot.afkChecks[this.channel.id] = {
+                isVet: this.isVet,
+                location: this.location,
+                key: this.key.id,
+                leader: this.message.author.id,
+                earlyLocation: earlyLocationIDS,
+                time: Date.now(),
+                runType: this.run
+            }
+        } else bot.afkChecks[this.channel.id] = {
             isVet: this.isVet,
             location: this.location,
-            key: this.key.id,
             leader: this.message.author.id,
             earlyLocation: earlyLocationIDS,
             time: Date.now(),
@@ -746,7 +772,6 @@ class afk {
         fs.writeFile('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => {
             if (err) ErrorLogger.log(err, bot)
         })
-
         setTimeout(() => {
             this.channel.members.each(m => {
                 try {
@@ -844,42 +869,46 @@ class afk {
     }
 }
 async function createChannel(isVet, message, run) {
-    //channel creation
-    if (isVet) {
-        var parent = 'veteran raiding';
-        var template = message.guild.channels.cache.find(c => c.name === 'Vet Raiding Template');
-        var raider = message.guild.roles.cache.find(r => r.name === 'Veteran Raider')
-        var vibotChannels = message.guild.channels.cache.find(c => c.name === botSettings.ActiveVetName)
-    }
-    else {
-        var parent = 'raiding';
-        var template = message.guild.channels.cache.find(c => c.name === 'Raiding Template');
-        var raider = message.guild.roles.cache.find(r => r.name === 'Verified Raider')
-        var vibotChannels = message.guild.channels.cache.find(c => c.name === botSettings.ActiveRaidingName)
-    }
-    let channel = await template.clone()
-    setTimeout(async function () {
-        await channel.setParent(message.guild.channels.cache.filter(c => c.type == 'category').find(c => c.name.toLowerCase() === parent))
-        channel.setPosition(0)
-    }, 1000)
-    await message.member.voice.setChannel(channel).catch(er => { })
-    if (run == 1) { await channel.setName(`${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s Cult`) }
-    if (run == 2) { await channel.setName(`${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s Void`) }
-    if (run == 3) { await channel.setName(`${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s Full-Skip Void`) }
+    return new Promise(async (res, rej) => {
+        //channel creation
+        if (isVet) {
+            var parent = 'veteran raiding';
+            var template = message.guild.channels.cache.find(c => c.name === 'Vet Raiding Template');
+            var raider = message.guild.roles.cache.find(r => r.name === 'Veteran Raider')
+            var vibotChannels = message.guild.channels.cache.find(c => c.name === botSettings.ActiveVetName)
+        }
+        else {
+            var parent = 'raiding';
+            var template = message.guild.channels.cache.find(c => c.name === 'Raiding Template');
+            var raider = message.guild.roles.cache.find(r => r.name === 'Verified Raider')
+            var vibotChannels = message.guild.channels.cache.find(c => c.name === botSettings.ActiveRaidingName)
+        }
+        let channel = await template.clone()
+        setTimeout(async function () {
+            await channel.setParent(message.guild.channels.cache.filter(c => c.type == 'category').find(c => c.name.toLowerCase() === parent))
+            channel.setPosition(0)
+        }, 1000)
+        await message.member.voice.setChannel(channel).catch(er => { })
+        if (run == 1) { await channel.setName(`${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s Cult`) }
+        if (run == 2) { await channel.setName(`${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s Void`) }
+        if (run == 3) { await channel.setName(`${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s Full-Skip Void`) }
 
-    //allows raiders to view
-    channel.updateOverwrite(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+        //allows raiders to view
+        channel.updateOverwrite(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
 
-    //Embed to remove
-    let embed = new Discord.MessageEmbed()
-        .setTitle(`${message.member.nickname}'s Run`)
-        .setDescription('Whenever the run is over. React with the ❌ to delete the channel. View the timestamp for more information')
-        .setFooter(channel.id)
-        .setTimestamp()
-    let m = await vibotChannels.send(embed)
-    m.react('❌')
-    setTimeout(() => { Channels.update(message.guild, bot) }, 10000)
-    return channel;
+        //Embed to remove
+        let embed = new Discord.MessageEmbed()
+            .setTitle(`${message.member.nickname}'s Run`)
+            .setDescription('Whenever the run is over. React with the ❌ to delete the channel. View the timestamp for more information')
+            .setFooter(channel.id)
+            .setTimestamp()
+        let m = await vibotChannels.send(embed)
+        await m.react('❌')
+        setTimeout(() => { Channels.update(message.guild, bot) }, 5000)
+        if (!channel) rej('No channel was made')
+        res(channel);
+    })
+
 }
 //React functions
 async function cultReact(message) {
@@ -922,7 +951,7 @@ async function fsvReact(message) {
 }
 
 //reaction filters
-const xFilter = (r, u) => r.emoji.name === '❌' && !u.bot;
+const keyXFilter = (r, u) => (r.emoji.name === '❌' || r.emoji.name === '🔑') && !u.bot;
 const dmReactionFilter = (r, u) => r.emoji.name === '✅' && !u.bot;
 const cultFilter = (r, u) => r.emoji.id === botSettings.emoteIDs.LostHallsKey || r.emoji.id === botSettings.emoteIDs.Plane || r.emoji.id === botSettings.emoteIDs.shard || r.emoji.name === '❌'
 const voidFilter = (r, u) => r.emoji.id === botSettings.emoteIDs.LostHallsKey || r.emoji.id === botSettings.emoteIDs.Vial || r.emoji.id === botSettings.emoteIDs.shard || r.emoji.name === '❌'

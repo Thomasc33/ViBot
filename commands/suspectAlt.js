@@ -20,6 +20,7 @@ module.exports = {
             .addField('User', user.displayName, true)
             .addField('Suspected By', `<@!${message.author.id}>`, true)
             .setTimestamp(Date.now());
-        message.guild.channels.cache.find(c => c.name === 'mod-logs').send(embed);
+        await message.guild.channels.cache.find(c => c.name === 'mod-logs').send(embed);
+        message.react('✅')
     }
 }
