@@ -43,10 +43,12 @@ module.exports = {
             setTimeout(function () { channel.updateOverwrite(raider.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)) }, 1000)
         }
         if (message.channel.name === 'eventbot-commands') {
+            let eventBoi = await message.guild.roles.cache.find(r => r.name === 'Event Boi')
             let name = channel.name.substring(0, channel.name.indexOf(channelNumber) + 1)
             await channel.setName(`${name} <-- Join!`).catch(er => ErrorLogger.log(er, bot))
             setTimeout(function () { channel.setUserLimit(75).catch(er => ErrorLogger.log(er, bot)) }, 500)
             setTimeout(function () { channel.updateOverwrite(raider.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)) }, 1000)
+            setTimeout(function () { channel.updateOverwrite(eventBoi.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)) }, 1000)
         }
     }
 };

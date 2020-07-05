@@ -41,8 +41,10 @@ module.exports = {
             setTimeout(function () { channel.setName(`Veteran Raiding ${channelNumber}`).catch(er => ErrorLogger.log(er, bot)) }, 1000)
         }
         if (message.channel.name === 'eventbot-commands') {
+            let eventBoi = await message.guild.roles.cache.find(r => r.name === 'Event Boi')
             let name = channel.name.substring(0, channel.name.indexOf(channelNumber) + 1)
-            channel.updateOverwrite(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+            await channel.updateOverwrite(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+            await channel.updateOverwrite(eventBoi.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
             setTimeout(function () { channel.setName(`${name}`).catch(er => ErrorLogger.log(er, bot)) }, 1000)
         }
     }

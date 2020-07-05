@@ -31,7 +31,7 @@ module.exports = {
         if (location.length >= 1024) return message.channel.send('Location must be below 1024 characters, try again');
         if (activeRun) return message.channel.send("There is already an active run");
         bot = bott
-        let channel = await createChannel(message)
+        let channel = await createChannel(message).catch(er => { return message.channel.send(er) })
         message.channel.send('Channel Created Successfully. Beginning AFK check in 5 seconds.')
         currentRun = new afk(event, args[0], channel, location, message)
         setTimeout(begin, 10000)
@@ -61,7 +61,7 @@ class afk {
         this.location = location
         this.time = botSettings.eventAfkTimeLimit
         this.raider = this.message.guild.roles.cache.find(r => r.name === 'Verified Raider')
-        this.eventBoi = this.message.guild.roles.cache.find(r => r.name === 'Event boi')
+        this.eventBoi = this.message.guild.roles.cache.find(r => r.name === 'Event Boi')
         this.minutes = Math.floor(botSettings.eventAfkTimeLimit / 60);
         this.seconds = botSettings.eventAfkTimeLimit % 60;
         activeRun = true;
@@ -297,35 +297,38 @@ class afk {
     }
 }
 
-async function createChannel(message) {
+function createChannel(message) {
     //channel creation
-    var template = message.guild.channels.cache.find(c => c.name === 'Event Raiding Template');
-    var raider = message.guild.roles.cache.find(r => r.name === 'Verified Raider')
-    var EventBoi = message.guild.roles.cache.find(r => r.name === 'Event boi')
-    var vibotChannels = message.guild.channels.cache.find(c => c.name === botSettings.ActiveEventName)
+    return new Promise(async (resolve, reject) => {
+        var template = message.guild.channels.cache.find(c => c.name === 'Event Raiding Template');
+        var raider = message.guild.roles.cache.find(r => r.name === 'Verified Raider')
+        var EventBoi = message.guild.roles.cache.find(r => r.name === 'Event Boi')
+        var vibotChannels = message.guild.channels.cache.find(c => c.name === botSettings.ActiveEventName)
 
-    let channel = await template.clone()
-    setTimeout(async function () {
-        await channel.setParent(message.guild.channels.cache.filter(c => c.type == 'category').find(c => c.name.toLowerCase() === 'events'))
-        channel.setPosition(0)
-    }, 1000)
-    await message.member.voice.setChannel(channel).catch(er => { })
-    await channel.setName(`${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s Run`)
+        let channel = await template.clone()
+        setTimeout(async function () {
+            await channel.setParent(message.guild.channels.cache.filter(c => c.type == 'category').find(c => c.name.toLowerCase() === 'events')).catch(er => reject('Failed to move channel to event section'))
+            await channel.setPosition(0).catch(er => reject('Failed to move to position 0'))
+        }, 1000)
+        await message.member.voice.setChannel(channel).catch(er => { })
+        await channel.setName(`${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s Run`).catch(er => reject('Failed to set name'))
 
-    //allows raiders to view
-    await channel.updateOverwrite(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
-    await channel.updateOverwrite(EventBoi.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+        //allows raiders to view
+        await channel.updateOverwrite(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)).catch(er => reject('Failed to give perms to raider'))
+        await channel.updateOverwrite(EventBoi.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)).catch(er => reject('Failed to give Event Boi Perms'))
 
-    //Embed to remove
-    let embed = new Discord.MessageEmbed()
-        .setTitle(`${message.member.nickname}'s Run`)
-        .setDescription('Whenever the run is over. React with the ❌ to delete the channel. View the timestamp for more information')
-        .setFooter(channel.id)
-        .setTimestamp()
-    let m = await vibotChannels.send(embed)
-    m.react('❌')
-    setTimeout(() => { Channels.update(message.guild, bot) }, 10000)
-    return channel;
+        //Embed to remove
+        let embed = new Discord.MessageEmbed()
+            .setTitle(`${message.member.nickname}'s Run`)
+            .setDescription('Whenever the run is over. React with the ❌ to delete the channel. View the timestamp for more information')
+            .setFooter(channel.id)
+            .setTimestamp()
+        let m = await vibotChannels.send(embed).catch(er => ErrorLogger.log(er))
+        m.react('❌').catch(er => { })
+        setTimeout(() => { Channels.update(message.guild, bot) }, 10000)
+        resolve(channel)
+    })
+
 }
 
 const xFilter = (r, u) => r.emoji.name === '❌' && !u.bot;
