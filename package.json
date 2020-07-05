@@ -9,6 +9,7 @@
     "cron": "^1.8.2",
     "dependencies": "0.0.1",
     "discord.js": "^12.2.0",
+    "mime": "^2.4.6",
     "mysql": "^2.18.1",
     "request": "^2.88.2"
   },
