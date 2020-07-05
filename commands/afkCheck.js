@@ -805,7 +805,7 @@ To end the AFK check as a leader, react to ❌`)
         this.voiceChannel.members.each(m => {
             try {
                 this.db.query(`SELECT * FROM users WHERE id = '${m.id}'`, (err, rows) => {
-                    if (rows[0] == undefined) return;
+                    if (rows[0] == undefined) await this.db.query(`INSERT INTO users (id, ign) VALUES('${m.id}', '${m.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}')`)
                     if (this.run == 1) {
                         this.db.query(`UPDATE users SET cultRuns = '${parseInt(rows[0].cultRuns) + 1}' WHERE id = '${m.id}'`)
                     } else {

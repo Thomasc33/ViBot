@@ -42,7 +42,7 @@ module.exports = {
                     await member.roles.remove(muted.id).catch(er => ErrorLogger.log(er, bot))
                     await message.channel.send(`${member} has been unmuted`)
                     delete bot.mutes[i];
-                    fs.writeFile('./mutes.json', JSON.stringify(bot.mutes, null, 4), async err => {
+                    fs.writeFileSync('./mutes.json', JSON.stringify(bot.mutes, null, 4), async err => {
                         if (err) ErrorLogger.log(err, bot)
                     })
                 })

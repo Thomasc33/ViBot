@@ -1,4 +1,4 @@
-const fs = module.require('fs')
+const fs = require('fs')
 const Discord = require('discord.js')
 const ErrorLogger = require('../logError')
 
@@ -43,7 +43,7 @@ module.exports = {
                         member.roles.remove(vetBanRole)
                             .then(member.roles.add(vetRaiderRole));
                         delete bot.vetBans[i];
-                        fs.writeFile('./vetBans.json', JSON.stringify(bot.vetBans, null, 7), function (err) {
+                        fs.writeFileSync('./vetBans.json', JSON.stringify(bot.vetBans, null, 7), function (err) {
                             if (err) throw err;
 
                             let embed = bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').messages.cache.get(proofLogID).embeds.shift();

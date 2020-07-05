@@ -1,4 +1,4 @@
-const fs = module.require('fs');
+const fs = require('fs');
 const Discord = require('discord.js');
 const ErrorLogger = require('../logError')
 
@@ -125,7 +125,7 @@ module.exports = {
                         logMessage: messageId.id
                     }
 
-                    fs.writeFile('./vetBans.json', JSON.stringify(bot.vetBans, null, 7), function (err) {
+                    fs.writeFileSync('./vetBans.json', JSON.stringify(bot.vetBans, null, 4), function (err) {
                         if (err) return console.error(err);
                         message.channel.send(`${member.nickname} will be suspended`);
                     });

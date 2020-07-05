@@ -623,7 +623,7 @@ class afk {
             await dmReactionCollector.on("collect", async (r, u) => {
                 if (this.mystics.length > 2 || this.mystics.includes(u)) return;
                 let found = false;
-                let characters = await realmEyeScrape.getUserInfo(this.message.guild.members.cache.get(u.id).nickname.replace(/[^a-z|]/gi, '').split('|')[0]).catch(er => found = false)
+                let characters = await realmEyeScrape.getUserInfo(this.message.guild.members.cache.get(u.id).nickname.replace(/[^a-z|]/gi, '').split('|')[0]).catch(er => found = true)
                 if (characters) characters.characters.forEach(c => {
                     if (c.class == 'Mystic' && c.stats == '8/8') {
                         found = true;
@@ -748,9 +748,9 @@ class afk {
         else activeRun = false;
 
         let earlyLocationIDS = []
-        for (let i in this.earlyLocation) {
-            earlyLocationIDS.push(this.earlyLocation[i].id)
-        }
+        for (let i in this.earlyLocation) earlyLocationIDS.push(this.earlyLocation[i].id)
+        let raiders = []
+        this.channel.members.array().forEach(m => raiders.push(m.id))
         if (this.key) {
             bot.afkChecks[this.channel.id] = {
                 isVet: this.isVet,
@@ -758,6 +758,7 @@ class afk {
                 key: this.key.id,
                 leader: this.message.author.id,
                 earlyLocation: earlyLocationIDS,
+                raiders: raiders,
                 time: Date.now(),
                 runType: this.run
             }
@@ -766,17 +767,18 @@ class afk {
             location: this.location,
             leader: this.message.author.id,
             earlyLocation: earlyLocationIDS,
+            raiders: raiders,
             time: Date.now(),
             runType: this.run
         }
-        fs.writeFile('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => {
+        fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => {
             if (err) ErrorLogger.log(err, bot)
         })
         setTimeout(() => {
             this.channel.members.each(m => {
                 try {
                     this.db.query(`SELECT * FROM users WHERE id = '${m.id}'`, (err, rows) => {
-                        if (rows[0] == undefined) return;
+                        if (rows[0] == undefined) await this.db.query(`INSERT INTO users (id, ign) VALUES('${m.id}', '${m.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}')`)
                         if (this.run == 1) {
                             this.db.query(`UPDATE users SET cultRuns = '${parseInt(rows[0].cultRuns) + 1}' WHERE id = '${m.id}'`)
                         } else {
@@ -819,17 +821,31 @@ class afk {
         this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot))
         this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot))
 
-        bot.afkChecks[channel.id] = {
+        let earlyLocationIDS = []
+        for (let i in this.earlyLocation) earlyLocationIDS.push(this.earlyLocation[i].id)
+        let raiders = []
+        this.channel.members.array().forEach(m => raiders.push(m.id))
+        if (this.key) {
+            bot.afkChecks[this.channel.id] = {
+                isVet: this.isVet,
+                location: this.location,
+                key: this.key.id,
+                leader: this.message.author.id,
+                earlyLocation: earlyLocationIDS,
+                raiders: raiders,
+                time: Date.now(),
+                runType: this.run
+            }
+        } else bot.afkChecks[this.channel.id] = {
             isVet: this.isVet,
             location: this.location,
-            key: null,
             leader: this.message.author.id,
-            earlyLocation: null,
+            earlyLocation: earlyLocationIDS,
+            raiders: raiders,
             time: Date.now(),
             runType: this.run
         }
-
-        fs.writeFile('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => {
+        fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => {
             if (err) ErrorLogger.log(err, bot)
         })
 
