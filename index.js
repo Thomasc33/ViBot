@@ -7,7 +7,6 @@ const prefix = botSettings.prefix
 const bot = new Discord.Client()
 bot.commands = new Discord.Collection()
 bot.vetBans = require('./vetBans.json')
-bot.suspensions = require('./suspensions.json')
 bot.crasherList = require('./crasherList.json')
 bot.mutes = require('./mutes.json')
 bot.afkChecks = require('./afkChecks.json')
@@ -115,7 +114,7 @@ bot.on("ready", () => {
                         await member.edit({
                             roles: roles
                         })
-                        .catch(er => ErrorLogger.log(er, bot))
+                            .catch(er => ErrorLogger.log(er, bot))
                         try {
                             let messages = await bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').messages.fetch({ limit: 100 })
                             let m = messages.get(proofLogID)
