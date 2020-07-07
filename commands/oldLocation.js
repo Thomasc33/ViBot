@@ -1,10 +1,10 @@
-const afkCheck = require('./newAfk.js');
+const afkCheck = require('./oldAfkCheck.js');
 const ErrorLogger = require('../logError')
 
 module.exports = {
-    name: 'newlocation',
+    name: 'oldlocation',
     description: 'Changes the location of the current run',
-    alias: ['loc'],
+    alias: ['oldloc'],
     args: '<location>',
     role: 'Almost Raid Leader',
     execute(message, args, bot) {

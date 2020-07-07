@@ -1,8 +1,8 @@
-const afk = require('./newAfk');
+const afk = require('./oldAfkCheck');
 const ErrorLogger = require('../logError')
 
 module.exports = {
-    name: 'allownewrun',
+    name: 'allowoldrun',
     description: 'Manually allows runs in case bot gets stuck',
     role: 'Almost Raid Leader',
     execute(message, args, bot) {
