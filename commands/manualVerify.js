@@ -23,7 +23,15 @@ module.exports = {
             return;
         }
         await member.roles.add(raiderRole)
-        await member.setNickname(args[1])
+        let tag = member.user.tag.substring(0, member.user.tag.length - 5)
+        let nick = ''
+        if (tag == args[1]) {
+            nick = args[1].toLowerCase()
+            if (tag == nick) {
+                nick = nick.charAt(0).toUpperCase() + nick.substring(1, nick.length)
+            }
+        } else nick = args[1]
+        await member.setNickname(nick)
         let embed = new Discord.MessageEmbed()
             .setTitle('Manual Verify')
             .setDescription(member)

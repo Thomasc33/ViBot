@@ -24,7 +24,15 @@ module.exports = {
             return;
         }
         await member.roles.add(eventRole)
-        await member.setNickname(args[1])
+        let tag = member.user.tag.substring(0, member.user.tag.length - 5)
+        let nick = ''
+        if (tag == args[1]) {
+            nick = args[1].toLowerCase()
+            if (tag == nick) {
+                nick = nick.charAt(0).toUpperCase() + nick.substring(1, nick.length)
+            }
+        } else nick = args[1]
+        await member.setNickname(nick)
         let image;
         if (message.attachments.first() != null) image = message.attachments.first().proxyURL
         if (image == null) image = args[2]
