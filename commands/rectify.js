@@ -6,6 +6,7 @@ module.exports = {
     role: 'Security',
     args: '<id/mention>',
     async execute(message, args, bot) {
+        let settings = bot.settings[message.guild.id]
         var user = message.mentions.members.first()
         if (user == null) user = message.guild.members.cache.get(args[0]);
         if (user == null) {
@@ -19,6 +20,7 @@ module.exports = {
             .addField('User', user.displayName, true)
             .addField('Rectified By', `<@!${message.author.id}>`, true)
             .setTimestamp(Date.now());
-        message.guild.channels.cache.find(c => c.name === 'mod-logs').send(embed);
+        message.guild.channels.cache.find(c => c.name === settings.modlog).send(embed);
+        message.react('✅')
     }
 }

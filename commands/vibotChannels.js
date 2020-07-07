@@ -11,10 +11,11 @@ module.exports = {
         if (args[0].toLowerCase() == 'update') this.update(message.guild)
     },
     async update(guild, bot) {
+        let settings = bot.settings[guild.id]
         try {
-            await updateChannel(guild.channels.cache.find(c => c.name === botSettings.ActiveRaidingName))
-            await updateChannel(guild.channels.cache.find(c => c.name === botSettings.ActiveVetName))
-            await updateChannel(guild.channels.cache.find(c => c.name === botSettings.ActiveEventName))
+            await updateChannel(guild.channels.cache.find(c => c.name === settings.activechannels))
+            await updateChannel(guild.channels.cache.find(c => c.name === settings.vetchannels))
+            await updateChannel(guild.channels.cache.find(c => c.name === settings.eventchannels))
             async function updateChannel(c) {
                 if (!c) return;
                 let messages = await c.messages.fetch()
@@ -30,7 +31,7 @@ module.exports = {
                             if (i == embed.footer.text) {
                                 let key = await guild.members.cache.get(bot.afkChecks[i].key)
                                 if (key) {
-                                    let keyRole = await guild.roles.cache.find(r => r.name === 'Temporary Key Popper')
+                                    let keyRole = await guild.roles.cache.find(r => r.name === settings.tempkey)
                                     await key.roles.remove(keyRole.id).catch(r => ErrorLogger.log(r, bot))
                                 }
                                 delete bot.afkChecks[i];

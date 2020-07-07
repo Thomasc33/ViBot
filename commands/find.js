@@ -7,9 +7,10 @@ module.exports = {
     args: '[Users]',
     role: 'Almost Raid Leader',
     execute(message, args, bot) {
+        let settings = bot.settings[message.guild.id]
         if (args.length == 0) return;
-        var suspendedButVerifed = message.guild.roles.cache.find(r => r.name === "Suspended but Verified");
-        var suspendedRole = message.guild.roles.cache.find(r => r.name === "Suspended");
+        var suspendedButVerifed = message.guild.roles.cache.find(r => r.name === settings.tempsuspend);
+        var suspendedRole = message.guild.roles.cache.find(r => r.name === settings.psuspended);
         var notFoundString = ''
         //combines users into an array
         for (let i in args) {

@@ -8,7 +8,7 @@ module.exports = {
     args: '<id/mention> <alt name> (proof)',
     role: 'Security',
     async execute(message, args, bot) {
-        if (message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.find(r => r.name === "Developer").position) return;
+        let settings = bot.settings[message.guild.id]
         var member = message.mentions.members.first()
         if (member == null) {
             member = message.guild.members.cache.get(args.shift());
@@ -34,9 +34,9 @@ module.exports = {
                         .addField('New Alt', altName, true)
                         .addField('Added By', `<@!${message.author.id}>`)
                         .setTimestamp(Date.now());
-                    await message.guild.channels.cache.find(c => c.name === 'mod-logs').send(embed);
+                    await message.guild.channels.cache.find(c => c.name === settings.modlog).send(embed);
                     if (proof != ' ') {
-                        await message.guild.channels.cache.find(c => c.name === 'mod-logs').send(proof);
+                        await message.guild.channels.cache.find(c => c.name === settings.modlog).send(proof);
                     }
                     collector.stop();
                 } else {

@@ -8,17 +8,13 @@ module.exports = {
     args: '<\`c/v\` -or- \`us/eu\`>',
     role: 'Almost Raid Leader',
     async execute(message, args, bot) {
-        if (!(message.channel.name === 'dylanbot-commands' || message.channel.name === 'veteran-bot-commands')) {
-            message.channel.send("Try again in dylanbot-commands or veteran-bot-commands");
+        let settings = bot.settings[message.guild.id]
+        if (!(message.channel.parent.name.toLowerCase() === 'raiding' || message.channel.parent.name.toLowerCase() === 'veteran raiding' || message.channel.parent.name.toLowerCase() === 'events')) {
+            message.channel.send("Try again in a correct category");
             return;
         }
-        var textChannel;
-        if (message.channel.name == 'veteran-bot-commands') {
-            textChannel = message.guild.channels.cache.find(c => c.name === 'veteran-status-announcements');
-        } else {
-            textChannel = message.guild.channels.cache.find(c => c.name === 'raid-status-announcements');
-        }
-
+        if (message.channel.parent.name.toLowerCase() === 'veteran raiding') var textChannel = message.guild.channels.cache.find(c => c.name === settings.vetstatus);
+        else var textChannel = message.guild.channels.cache.find(c => c.name === settings.raidstatus);
         switch (args[0].toLowerCase()) {
             case 'c/v':
                 var embed = new Discord.MessageEmbed()
@@ -31,6 +27,8 @@ module.exports = {
 
                 embedMessage.react(botSettings.emote.malus)
                     .then(embedMessage.react(botSettings.emote.voidd))
+                    .then(embedMessage.react(botSettings.emote.Plane))
+                    .then(embedMessage.react(botSettings.emote.Vial))
                 return;
             case 'us/eu':
                 var embed = new Discord.MessageEmbed()

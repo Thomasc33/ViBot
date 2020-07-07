@@ -6,9 +6,10 @@ module.exports = {
     alias: ['mv'],
     args: '<id/mention> <ign>',
     async execute(message, args, bot) {
-        const suspendedRole = message.guild.roles.cache.find(r => r.name === 'Suspended');
-        const sbvRole = message.guild.roles.cache.find(r => r.name === 'Suspended but Verified');
-        const raiderRole = message.guild.roles.cache.find(r => r.name === 'Verified Raider');
+        let settings = bot.settings[message.guild.id]
+        const suspendedRole = message.guild.roles.cache.find(r => r.name === settings.psuspended);
+        const sbvRole = message.guild.roles.cache.find(r => r.name === settings.tempsuspend);
+        const raiderRole = message.guild.roles.cache.find(r => r.name === settings.raider);
         var member = message.mentions.members.first()
         if (member == null) {
             member = message.guild.members.cache.get(args[0]);
@@ -29,7 +30,7 @@ module.exports = {
             .addField('User', member.displayName, true)
             .addField('Verified By', `<@!${message.author.id}>`, true)
             .setTimestamp(Date.now());
-        message.guild.channels.cache.find(c => c.name === 'mod-logs').send(embed);
+        message.guild.channels.cache.find(c => c.name === settings.modlog).send(embed);
         message.channel.send(`${member} has been given ${raiderRole}`)
     }
 }

@@ -9,6 +9,7 @@ module.exports = {
     role: 'Almost Raid Leader',
     args: '<key/vial/brian/mystic/rusher> [Location]',
     async execute(message, args, bot) {
+        let settings = bot.settings[message.guild.id]
         if (message.channel.name === 'dylanbot-commands') { isVet = false; }
         else if (message.channel.name === 'veteran-bot-commands') { isVet = true; }
         else {
@@ -17,8 +18,8 @@ module.exports = {
         }
         var voiceChannel = message.member.voice.channel
         if (voiceChannel == null) { message.channel.send("Channel not found. Make sure you are in a VC"); return; }
-        if (isVet) var raidStatus = message.guild.channels.cache.find(c => c.name === "veteran-status-announcements");
-        else var raidStatus = message.guild.channels.cache.find(c => c.name === "raid-status-announcements");
+        if (isVet) var raidStatus = message.guild.channels.cache.find(c => c.name === settings.vetstatus);
+        else var raidStatus = message.guild.channels.cache.find(c => c.name === settings.raidstatus);
         var location = "";
         for (i = 1; i < args.length; i++) {
             location = location.concat(args[i]) + ' ';
@@ -83,7 +84,7 @@ module.exports = {
             }
             if (r.emoji.id === botSettings.emoteIDs.Plane) {
                 if (!recieved) {
-                    if (message.guild.members.cache.get(u.id).roles.cache.has(message.guild.roles.cache.find(r => r.name === 'Official Rusher').id)) {
+                    if (message.guild.members.cache.get(u.id).roles.cache.has(message.guild.roles.cache.find(r => r.name === settings.rusher).id)) {
                         confirmRush(u, r)
                     }
                 }

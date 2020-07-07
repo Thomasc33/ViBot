@@ -16,6 +16,7 @@ module.exports = {
     args: '<channel> <c/v/fsv> <location>',
     role: 'Almost Raid Leader',
     execute(message, args, bott, db) {
+        let settings = bott.settings[message.guild.id]
         bot = bott
         if (message.channel.name === 'dylanbot-commands') var isVet = false;
         else if (message.channel.name === 'veteran-bot-commands') var isVet = true;
@@ -66,10 +67,10 @@ module.exports = {
             message.channel.send('Location must be below 1024 characters, try again');
         }
         if (isVet) {
-            currentVet = new afk(args[0], run, location, message, isVet, db);
+            currentVet = new afk(args[0], run, location, message, isVet, db, settings);
             currentVet.start();
         } else {
-            currentReg = new afk(args[0], run, location, message, isVet, db);
+            currentReg = new afk(args[0], run, location, message, isVet, db, settings);
             currentReg.start();
         }
     },
@@ -101,24 +102,25 @@ module.exports = {
 }
 
 class afk {
-    constructor(channel, run, location, message, isVet, db) {
+    constructor(channel, run, location, message, isVet, db, settings) {
+        this.settings = settings
         this.channel = channel;
         this.run = run;
         this.location = location;
         this.message = message;
         this.db = db;
         this.isVet = isVet;
-        if (this.isVet) this.raidStatus = this.message.guild.channels.cache.find(c => c.name === "veteran-status-announcements");
-        else this.raidStatus = this.message.guild.channels.cache.find(c => c.name === "raid-status-announcements");
-        if (this.isVet) this.dylanBotCommands = this.message.guild.channels.cache.find(c => c.name === "veteran-bot-commands");
-        else this.dylanBotCommands = this.message.guild.channels.cache.find(c => c.name === "dylanbot-commands");
+        if (this.isVet) this.raidStatus = this.message.guild.channels.cache.find(c => c.name === settings.eventstatus);
+        else this.raidStatus = this.message.guild.channels.cache.find(c => c.name === settings.raidstatus);
+        if (this.isVet) this.dylanBotCommands = this.message.guild.channels.cache.find(c => c.name === settings.vetcommands);
+        else this.dylanBotCommands = this.message.guild.channels.cache.find(c => c.name === settings.raidcommands);
         if (this.isVet) activeVetRun = true;
         else activeRun = true;
         this.afkChannel = message.guild.channels.cache.find(c => c.name === 'afk');
-        this.dylanBotInfo = message.guild.channels.cache.find(c => c.name === "dylanbot-info");
-        this.officialRusher = message.guild.roles.cache.find(r => r.name === 'Official Rusher');
-        this.nitroBooster = message.guild.roles.cache.find(r => r.name === "Nitro Booster");
-        this.leaderOnLeave = message.guild.roles.cache.find(r => r.name === 'Leader on Leave');
+        this.dylanBotInfo = message.guild.channels.cache.find(c => c.name === settings.runinfo);
+        this.officialRusher = message.guild.roles.cache.find(r => r.name === settings.rusher);
+        this.nitroBooster = message.guild.roles.cache.find(r => r.name === settings.nitro);
+        this.leaderOnLeave = message.guild.roles.cache.find(r => r.name === settings.lol);
         this.minutes;
         this.seconds;
         this.raiders = 0
@@ -147,10 +149,10 @@ class afk {
         //variables
         if (!this.isVet) {
             this.voiceChannel = this.message.guild.channels.cache.find(c => c.name == `raiding-${this.channel}` || c.name == `raiding-${this.channel} <--Join Now!`);
-            this.verifiedRaiderRole = this.message.guild.roles.cache.find(r => r.name === 'Verified Raider');
+            this.verifiedRaiderRole = this.message.guild.roles.cache.find(r => r.name === this.settings.raider);
         } else if (this.isVet) {
             this.voiceChannel = this.message.guild.channels.cache.find(c => c.name == `Veteran Raiding ${this.channel}` || c.name == `Veteran Raiding ${this.channel} <--Join Now!`);
-            this.verifiedRaiderRole = this.message.guild.roles.cache.find(r => r.name === 'Veteran Raider');
+            this.verifiedRaiderRole = this.message.guild.roles.cache.find(r => r.name === this.settings.vetraider);
         } else return;
         if (this.channel == null) {
             this.message.channel.send("Could not find channel correctly, please try again");
@@ -273,7 +275,7 @@ class afk {
                 }
             }
             if (r.emoji.name == '❌') {
-                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
+                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
                 this.endedBy = u;
                 this.postAfk();
             }
@@ -287,7 +289,7 @@ class afk {
             if (u.bot) return;
             let reactor = this.message.guild.members.cache.get(u.id);
             if (r.emoji.name === '❌') {
-                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
+                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
                 this.endedBy = u;
                 this.abortAfk();
             }
@@ -381,7 +383,7 @@ To end the AFK check as a leader, react to ❌`)
                 }
             }
             if (r.emoji.name == '❌') {
-                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
+                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
                 this.endedBy = u;
                 this.postAfk();
             }
@@ -395,7 +397,7 @@ To end the AFK check as a leader, react to ❌`)
             if (u.bot) return;
             let reactor = this.message.guild.members.cache.get(u.id);
             if (r.emoji.name === '❌') {
-                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
+                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
                 this.endedBy = u;
                 this.abortAfk();
             }
@@ -502,7 +504,7 @@ To end the AFK check as a leader, react to ❌`)
                 }
             }
             if (r.emoji.name == '❌') {
-                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
+                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
                 this.endedBy = u;
                 this.postAfk();
             }
@@ -516,7 +518,7 @@ To end the AFK check as a leader, react to ❌`)
             if (u.bot) return;
             let reactor = this.message.guild.members.cache.get(u.id);
             if (r.emoji.name === '❌') {
-                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
+                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
                 this.endedBy = u;
                 this.abortAfk();
             }
@@ -804,7 +806,7 @@ To end the AFK check as a leader, react to ❌`)
 
         this.voiceChannel.members.each(m => {
             try {
-                this.db.query(`SELECT * FROM users WHERE id = '${m.id}'`, (err, rows) => {
+                this.db.query(`SELECT * FROM users WHERE id = '${m.id}'`, async (err, rows) => {
                     if (rows[0] == undefined) await this.db.query(`INSERT INTO users (id, ign) VALUES('${m.id}', '${m.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}')`)
                     if (this.run == 1) {
                         this.db.query(`UPDATE users SET cultRuns = '${parseInt(rows[0].cultRuns) + 1}' WHERE id = '${m.id}'`)

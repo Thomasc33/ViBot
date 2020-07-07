@@ -13,7 +13,8 @@ module.exports = {
         }
     },
     async update(guild, bot, db) {
-        let modMailChannel = guild.channels.cache.find(c => c.name === 'history-bot-dms')
+        let settings = bot.settings[guild.id]
+        let modMailChannel = guild.channels.cache.find(c => c.name === settings.modmailchannel)
         let messages = await modMailChannel.messages.fetch({ limit: 100 })
         messages.filter(m => m.author.id == bot.user.id && m.reactions.cache.has('🔑')).each(async function (m) {
             if (!m.reactions.cache.has('🔑')) return;
@@ -110,6 +111,7 @@ module.exports = {
         })
     },
     async sendModMail(message, guild, bot, db) {
+        let settings = bot.settings[guild.id]
         db.query(`SELECT * FROM users WHERE id = '${message.author.id}'`, async function (err, rows) {
             if (err) throw err;
             if (rows == [] || rows[0].modMailBlacklisted == 0) {
@@ -121,7 +123,7 @@ module.exports = {
                     .setDescription(`<@!${message.author.id}> send the bot: "${message.content}"`)
                     .setFooter(`User ID: ${message.author.id} MSG ID: ${message.id}`)
                     .setTimestamp()
-                let modMailChannel = guild.channels.cache.find(c => c.name === 'history-bot-dms')
+                let modMailChannel = guild.channels.cache.find(c => c.name === settings.modmailchannel)
                 let embedMessage = await modMailChannel.send(embed).catch(er => ErrorLogger.log(er, bot))
                 await embedMessage.react('🔑')
             }

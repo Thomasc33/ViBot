@@ -6,10 +6,11 @@ module.exports = {
     description: 'Displays how many points a user has',
     role: 'Verified Raider',
     async execute(message, args, bot, db) {
-        if (message.member.roles.highest.position < message.guild.roles.cache.find(r => r.name === 'Event Organizer').position) {
+        let settings = bot.settings[message.guild.id]
+        if (message.member.roles.highest.position < message.guild.roles.cache.find(r => r.name === settings.eo).position) {
             await message.member.send(await this.getPointEmbed(message.member, db))
             message.react('✅')
-        } else if (message.member.roles.highest.position >= message.guild.roles.cache.find(r => r.name === 'Head Raid Leader').position || message.member.roles.has(message.guild.roles.cache.find(r => r.name === 'Developer'))) {
+        } else if (message.member.roles.highest.position >= message.guild.roles.cache.find(r => r.name === settings.hrl).position || message.member.roles.has(message.guild.roles.cache.find(r => r.name === settings.developer))) {
             if (args.length == 0) return await message.member.send(await this.getPointEmbed(message.member, db))
             switch (args[0].toLowerCase()) {
                 case 'add':

@@ -6,6 +6,7 @@ module.exports = {
     description: 'Fixes logging issues with bot',
     role: 'Moderator',
     async execute(message, args, bot, db) {
+        let settings = bot.settings[message.guild.id]
         if (args[0].toLowerCase() == 'unlogged') {
             let mes = await message.channel.send('Processing. This may take a minute')
             db.query('SELECT * FROM users', (err, rows) => {
@@ -18,7 +19,7 @@ module.exports = {
                     .addField('Has nickname, has Verified Raider, not in db', 'None')
                 for (let i in members) {
                     let m = members[i]
-                    if (!m.roles.cache.has(message.guild.roles.cache.find(r => r.name === 'Verified Raider').id)) continue;
+                    if (!m.roles.cache.has(message.guild.roles.cache.find(r => r.name === settings.raider).id)) continue;
                     let found = false
                     for (let i in rows) {
                         if (rows[i].id == m.id) {
@@ -28,7 +29,7 @@ module.exports = {
                     }
                     if (!found) {
                         if (m.nickname == undefined) {
-                            m.roles.remove(message.guild.roles.cache.find(r => r.name === 'Verified Raider').id)
+                            m.roles.remove(message.guild.roles.cache.find(r => r.name === settings.raider).id)
                             if (embed.fields[0].value == 'None') {
                                 embed.fields[0].value = m
                             } else {

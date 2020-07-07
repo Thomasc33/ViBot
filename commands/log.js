@@ -8,6 +8,7 @@ module.exports = {
     args: '<c/v/e> [mention for assists] (#)',
     role: 'Event Organizer',
     async execute(message, args, bot, db) {
+        let settings = bot.settings[message.guild.id]
         var embed = new Discord.MessageEmbed()
             .setAuthor(message.member.nickname, message.author.avatarURL())
             .setColor('#015c21')
@@ -90,7 +91,7 @@ module.exports = {
         }
         function cont() {
             embed.setDescription(desc)
-            message.guild.channels.cache.find(c => c.name === 'leader-leading-logs').send(embed)
+            message.guild.channels.cache.find(c => c.name === settings.leadinglogs).send(embed)
             //CurrentWeek.update(message.guild, db)
         }
     }

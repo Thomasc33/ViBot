@@ -8,6 +8,7 @@ module.exports = {
     args: '<ign> (reason)',
     role: 'Raid Leader',
     execute(message, args, bot, db) {
+        let settings = bot.settings[message.guild.id]
         var raider = args.shift();
         var reason = '';
         for (i = 0; i < args.length; i++) {
@@ -21,7 +22,7 @@ module.exports = {
             message.channel.send("User not found, please try again");
             return;
         }
-        if (!member.roles.cache.has(message.guild.roles.cache.find(r => r.name == 'Suspended but Verified').id)) {
+        if (!member.roles.cache.has(message.guild.roles.cache.find(r => r.name == settings.tempsuspend).id)) {
             message.channel.send("User is not suspended")
             return;
         }
@@ -34,8 +35,8 @@ module.exports = {
                 collector.on('collect', m => {
                     try {
                         if (m.content.toLowerCase().charAt(0) == 'y') {
-                            const suspendedRole = message.guild.roles.cache.find(r => r.name === 'Suspended but Verified');
-                            const raiderRole = message.guild.roles.cache.find(r => r.name === 'Verified Raider');
+                            const suspendedRole = message.guild.roles.cache.find(r => r.name === settings.tempsuspend);
+                            const raiderRole = message.guild.roles.cache.find(r => r.name === settings.raider);
                             member.roles.remove(suspendedRole)
                                 .then(member.roles.add(raiderRole));
                             message.channel.send("User unsuspended successfully");
@@ -52,22 +53,22 @@ module.exports = {
                 const guild = bot.guilds.cache.get(guildId);
                 const member = guild.members.cache.get(rows[0].id);
                 const reason = rows[0].reason
-                rolesString.split(' ').forEach(r => { roles.push(r) })
+                rolesString.split(' ').forEach(r => { if (r != '') roles.push(r) })
                 try {
                     await member.edit({
                         roles: roles
                     })
                     try {
-                        let embed = bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').messages.cache.get(proofLogID).embeds.shift();
+                        let embed = bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === settings.suspendlog).messages.cache.get(proofLogID).embeds.shift();
                         embed.setColor('#00ff00')
                             .setDescription(embed.description.concat(`\nUnsuspended manually by <@!${message.author.id}>`))
                             .setFooter('Unsuspended at')
                             .setTimestamp(Date.now())
                             .addField('Reason for unsuspension', reason)
-                        let messages = await bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').messages.fetch({ limit: 100 })
+                        let messages = await bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === settings.suspendlog).messages.fetch({ limit: 100 })
                         messages.filter(m => m.id == proofLogID && m.author.id == bot.user.id).first().edit(embed)
                     }
-                    catch (er) { bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').send(`${member} has been unsuspended by ${message.member}`) }
+                    catch (er) { bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === settings.suspendlog).send(`${member} has been unsuspended by ${message.member}`) }
                     db.query(`UPDATE suspensions SET suspended = 0 WHERE id = '${member.id}'`)
                     message.channel.send(`${member} has been unsuspended`)
                 } catch (er) {

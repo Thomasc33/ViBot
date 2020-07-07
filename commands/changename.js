@@ -8,7 +8,8 @@ module.exports = {
     args: '<User id/mention> <new name> (proof)',
     role: 'Security',
     execute(message, args, bot) {
-        if(args.length == 0) return;
+        let settings = bot.settings[message.guild.id]
+        if (args.length == 0) return;
         var member = message.mentions.members.first()
         if (member == null) {
             member = message.guild.members.cache.get(args.shift());
@@ -35,13 +36,14 @@ module.exports = {
                         .addField('New Name', altName, true)
                         .addField('Change By', `<@!${m.author.id}>`)
                         .setTimestamp(Date.now());
-                    message.guild.channels.cache.find(c => c.name === 'mod-logs').send(embed);
+                    message.guild.channels.cache.find(c => c.name === settings.modlog).send(embed);
                     if (proof != ' ') {
-                        message.guild.channels.cache.find(c => c.name === 'mod-logs').send(proof);
+                        message.guild.channels.cache.find(c => c.name === settings.modlog).send(proof);
                     }
                     message.channel.send('Done!');
+                    collector.stop()
                 } else {
-                    message.channel.send('Response not recognized. Please try suspending again');
+                    message.channel.send('Response not recognized. Please try again');
                     return;
                 }
             } catch (er) {

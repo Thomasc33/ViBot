@@ -6,6 +6,7 @@ module.exports = {
     role: 'Security',
     description: 'Begins russian roulette',
     async execute(message, args, bot) {
+        let settings = bot.settings[message.guild.id]
         let embed = new Discord.MessageEmbed()
             .setColor('#ff0000')
             .setTitle('Russian Roulette')
@@ -45,9 +46,9 @@ module.exports = {
 
             let member = message.guild.members.cache.get(loser.id)
 
-            member.roles.add(message.guild.roles.cache.find(r => r.name === 'Muted'))
+            member.roles.add(message.guild.roles.cache.find(r => r.name === settings.muted))
 
-            setTimeout(() => { member.roles.remove(message.guild.roles.cache.find(r => r.name === 'Muted')) }, 60000)
+            setTimeout(() => { member.roles.remove(message.guild.roles.cache.find(r => r.name === settings.muted)) }, 60000)
 
         }
     }

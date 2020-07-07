@@ -16,6 +16,7 @@ module.exports = {
     notes: 'Image can either be a link, or an embeded image',
     role: 'Almost Raid Leader',
     async execute(message, args, bot) {
+        let settings = bot.settings[message.guild.id]
         var channel = message.member.voice.channel
         if (channel == null) {
             message.channel.send('Channel not found. Make sure you are in a channel, then try again');
@@ -73,7 +74,7 @@ module.exports = {
                 crashers.push(player);
                 kickList = kickList.concat(` ${player}`)
             } else if (!voiceUsers.includes(member)) {
-                if (member.roles.highest.position >= message.guild.roles.cache.find(r => r.name === 'Almost Raid Leader').position) continue;
+                if (member.roles.highest.position >= message.guild.roles.cache.find(r => r.name === settings.arl).position) continue;
                 if (member.voice.channel == 'lounge' || member.voice.channel == 'afk') {
                     member.edit({ channel: channel });
                     movedIn.push(`<@!${member.id}>`);
@@ -84,7 +85,7 @@ module.exports = {
             }
         }
         for (let i in voiceUsers) {
-            if (voiceUsers[i].roles.highest.position >= message.guild.roles.cache.find(r => r.name === 'Almost Raid Leader').position) continue;
+            if (voiceUsers[i].roles.highest.position >= message.guild.roles.cache.find(r => r.name === settings.arl).position) continue;
             let nick = voiceUsers[i].nickname.toLowerCase().replace(/[^a-z|]/gi, '')
             if (!raiders.includes(nick)) {
                 alts.push(`<@!${voiceUsers[i].id}>`);

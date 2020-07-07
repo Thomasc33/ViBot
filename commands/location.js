@@ -10,11 +10,12 @@ module.exports = {
     role: 'Event Organizer',
     execute(message, args, bot) {
         var isVet = false;
-        if (!(message.channel.name === 'dylanbot-commands' || message.channel.name === 'veteran-bot-commands' || message.channel.name === 'eventbot-commands')) {
-            message.channel.send("Try again, but in dylanbot-commands or veteran-bot-commands");
+        let settings = bot.settings[message.guild.id]
+        if (!(message.channel.parent.name.toLowerCase() === 'raiding' || message.channel.parent.name.toLowerCase() === 'veteran raiding' || message.channel.parent.name.toLowerCase() === 'events')) {
+            message.channel.send("Try again in a correct category");
             return;
         }
-        if (message.channel.name === 'veteran-bot-commands') {
+        if (message.channel.parent.name.toLowerCase() === 'veteran raiding') {
             isVet = true;
         }
         let location = "";
@@ -26,7 +27,7 @@ module.exports = {
             message.channel.send('Location must be below 1024 characters, try again');
         }
         if (location == '') return;
-        if (message.channel.name === 'eventbot-commands') {
+        if (message.channel.parent.name.toLowerCase() === 'events') {
             EventAFK.changeLocation(location)
         } else {
             afkCheck.changeLocation(location, isVet, message.channel);

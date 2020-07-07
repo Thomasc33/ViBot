@@ -22,9 +22,10 @@ module.exports = {
         }
     },
     async createMessage(message, bot, db) {
-        let vetVeriChannel = message.guild.channels.cache.find(c => c.name === 'veteran-verification')
+        let settings = bot.settings[message.guild.id]
+        let vetVeriChannel = message.guild.channels.cache.find(c => c.name === settings.vetverify)
         if (vetVeriChannel == null) {
-            message.channel.send('`veteran-verification` not found')
+            message.channel.send(`\`${settings.vetverify}\` not found`)
             return;
         }
         let vetVeriEmbed = new Discord.MessageEmbed()
@@ -36,9 +37,10 @@ module.exports = {
         this.init(message.guild, bot, db)
     },
     async init(guild, bott, db) {
+        let settings = bot.settings[guild.id]
         bot = bott
         if (embedMessage == undefined) {
-            let vetVeriChannel = guild.channels.cache.find(c => c.name === 'veteran-verification')
+            let vetVeriChannel = guild.channels.cache.find(c => c.name === settings.vetverify)
             if (vetVeriChannel == null) return;
             let messages = await vetVeriChannel.messages.fetch({ limit: 1 })
             embedMessage = messages.first()
@@ -50,10 +52,11 @@ module.exports = {
         this.restartPending(guild, db)
     },
     async vetVerify(u, guild, db) {
+        let settings = bot.settings[guild.id]
         let member = guild.members.cache.get(u.id)
-        let vetRaider = guild.roles.cache.find(r => r.name === 'Veteran Raider')
-        let veriLog = guild.channels.cache.find(c => c.name === 'veri-log')
-        let veriPending = guild.channels.cache.find(c => c.name === 'veri-pending-veterans')
+        let vetRaider = guild.roles.cache.find(r => r.name === settings.vetraider)
+        let veriLog = guild.channels.cache.find(c => c.name === settings.verilog)
+        let veriPending = guild.channels.cache.find(c => c.name === settings.vetveri)
         let ign = member.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|')[0]
         if (member == null) return;
         //if (member.roles.cache.has(vetRaider.id)) return;
@@ -136,7 +139,8 @@ module.exports = {
         }
     },
     async restartPending(guild, db) {
-        let veriPending = guild.channels.cache.find(c => c.name === 'veri-pending-veterans')
+        let settings = bot.settings[guild.id]
+        let veriPending = guild.channels.cache.find(c => c.name === settings.vetveri)
         let messages = await veriPending.messages.fetch({ limit: 100 })
         messages.each(m => {
             if (m.reactions.cache.has('🔑')) {
@@ -145,8 +149,9 @@ module.exports = {
         })
     },
     async pendingModule(message, db) {
+        let settings = bot.settings[message.guild.id]
         if (!message.reactions.cache.has('🔑')) message.react('🔑')
-        let vetRaider = message.guild.roles.cache.find(r => r.name === 'Veteran Raider')
+        let vetRaider = message.guild.roles.cache.find(r => r.name === settings.vetraider)
         let keyCollector = new Discord.ReactionCollector(message, KeyFilter)
         keyCollector.on('collect', async function (r, u) {
             let reactor = message.guild.members.cache.get(u.id)

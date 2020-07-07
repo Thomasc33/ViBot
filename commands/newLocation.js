@@ -9,11 +9,12 @@ module.exports = {
     role: 'Almost Raid Leader',
     execute(message, args, bot) {
         var isVet = false;
-        if (!(message.channel.name === 'dylanbot-commands' || message.channel.name === 'veteran-bot-commands')) {
-            message.channel.send("Try again, but in dylanbot-commands or veteran-bot-commands");
+        let settings = bot.settings[message.guild.id]
+        if (!(message.channel.parent.name.toLowerCase() === 'raiding' || message.channel.parent.name.toLowerCase() === 'veteran raiding' || message.channel.parent.name.toLowerCase() === 'events')) {
+            message.channel.send("Try again in a correct category");
             return;
         }
-        if (message.channel.name === 'veteran-bot-commands') {
+        if (message.channel.parent.name.toLowerCase() === 'veteran raiding') {
             isVet = true;
         }
         let location = "";

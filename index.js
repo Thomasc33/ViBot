@@ -10,6 +10,7 @@ bot.vetBans = require('./vetBans.json')
 bot.crasherList = require('./crasherList.json')
 bot.mutes = require('./mutes.json')
 bot.afkChecks = require('./afkChecks.json')
+bot.settings = require('./guildSettings.json')
 const ErrorLogger = require(`./logError`)
 const vibotChannels = require('./commands/vibotChannels')
 const vetVerification = require('./commands/vetVerification')
@@ -103,7 +104,77 @@ db.connect(err => {
 bot.on("ready", () => {
     console.log(`Bot loaded: ${bot.user.username}`);
     bot.user.setActivity(`bruh`);
+    let changed = false
+    bot.guilds.cache.each(g => {
+        if (!emojiServers.includes(g.id)) {
+            if (!bot.settings[g.id]) {
+                bot.settings[g.id] = {
+                    modmail: false,
+                    currentweek: false,
+                    eventCurrentweek: false,
+                    verification: false,
+                    vetVerification: false,
+                    moderator: 'Moderator',
+                    officer: 'Officer',
+                    hrl: 'Head Raid Leader',
+                    sec: 'Security',
+                    developer: 'Developer',
+                    vrl: 'Veteran Raid Leader',
+                    fs: 'Fullskip',
+                    rl: 'Raid Leader',
+                    arl: 'Almost Raid Leader',
+                    trl: 'Trial Raid Leader',
+                    eo: 'Event Organizer',
+                    rusher: 'Official Rusher',
+                    nitro: 'Nitro Booster',
+                    lol: 'Leader on Leave',
+                    vetraider: 'Veteran Raider',
+                    raider: 'Verified Raider',
+                    events: 'Event Boi',
+                    muted: 'Muted',
+                    tempsuspend: 'Suspended but Verified',
+                    psuspended: 'Suspended',
+                    vetban: 'Banned Veteran Raider',
+                    tempkey: 'Temporary Key Popper',
+                    modmailchannel: 'history-bot-dms',
+                    verify: 'get-verified',
+                    vetverify: 'veteran-verification',
+                    vetveri: 'veri-pending-veterans',
+                    veri: 'veri-pending',
+                    verilog: 'veri-log',
+                    modlog: 'mod-logs',
+                    suspendlog: 'suspend-log',
+                    viallog: 'vial-logs',
+                    rlfeedback: 'customer-feedback',
+                    currentweekchannel: 'currentweek',
+                    pastweeks: 'leader-activity-log',
+                    eventcurrentweek: 'e-currentweek',
+                    pasteventweeks: 'e-weekly-logs',
+                    leadinglogs: 'leader-leading-logs',
+                    leaderchat: 'leader-chat',
+                    vetleaderchat: 'veteran-rl-chat',
+                    crasherlist: 'crasher-list',
+                    raidstatus: 'raid-status-announcements',
+                    raidcommands: 'dylanbot-commands',
+                    activechannels: 'active-channels',
+                    vetstatus: 'veteran-status-announcements',
+                    vetcommands: 'veteran-bot-commands',
+                    vetchannels: 'active-channels-v',
+                    eventstatus: 'event-status-announcements',
+                    eventcommands: 'eventbot-commands',
+                    eventchannels: 'active-channels-e',
+                    runinfo: 'dylanbot-info',
+                    raidingtemplate: 'Raiding Template',
+                    vettemplate: 'Veteran Raiding Template',
+                    eventtemplate: 'Event Raiding Template'
+                }
+                changed = true
+            }
+        }
+    })
+    if (changed) fs.writeFileSync('./guildSettings.json', JSON.stringify(bot.settings, null, 4), er => ErrorLogger.log(er, bot))
     const halls = bot.guilds.cache.get(botSettings.guildID);
+    //vetban check
     bot.setInterval(() => {
         for (let i in bot.vetBans) {
             const time = parseInt(bot.vetBans[i].time);
@@ -120,7 +191,7 @@ bot.on("ready", () => {
                     member.roles.remove(vetBanRole)
                         .then(member.roles.add(vetRaiderRole));
                     delete bot.vetBans[i];
-                    fs.writeFile('./vetBans.json', JSON.stringify(bot.vetBans, null, 7), function (err) {
+                    fs.writeFile('./vetBans.json', JSON.stringify(bot.vetBans, null, 4), function (err) {
                         if (err) throw err;
 
                         let embed = bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').messages.cache.get(proofLogID).embeds.shift();
@@ -135,6 +206,7 @@ bot.on("ready", () => {
             }
         }
     }, 60000);
+    //suspension check
     bot.setInterval(() => {
         db.query(`SELECT * FROM suspensions WHERE suspended = '1'`, async (err, rows) => {
             if (err) ErrorLogger.log(err, bot)
@@ -223,20 +295,27 @@ bot.on("ready", () => {
 */
     }, 60000);
     bot.guilds.cache.each(g => {
-        try {
-            vibotChannels.update(g, bot)
-        } catch (er) { return; }
+        if (!emojiServers.includes(g.id)) {
+            try {
+                vibotChannels.update(g, bot)
+                if (bot.settings[g.id].modmail) modmail.update(g, bot, db)
+                if (bot.settings[g.id].vetVerification) vetVerification.init(g, bot, db)
+            } catch (er) { return; }
+        }
     })
-    const currentWeekReset = cron.job('0 0 * * SUN', () => { currentWeek.newWeek(halls, bot, db); ecurrentWeek.newWeek(halls, bot, db) }, null, true, null, null, false)
-    modmail.update(halls, bot, db)
-    //vetVerification.init(bot.guilds.cache.get(botSettings.guildID), bot, db)
+    const currentWeekReset = cron.job('0 0 * * SUN', () => {
+        bot.guilds.cache.each(g => {
+            if (bot.settings[g.id].currentweek) currentWeek.newWeek(halls, bot, db);
+            if (bot.settings[g.id].eventCurrentweek) ecurrentWeek.newWeek(halls, bot, db)
+        }, null, true, null, null, false)
+    })
 });
 
 bot.on('error', err => {
     ErrorLogger.log(err, bot)
 })
 
-process.on('uncaughtException', err => { ErrorLogger.log(err, bot); process.exit(1) })
+process.on('uncaughtException', err => { ErrorLogger.log(err, bot); console.log(err); process.exit(1) })
 
 async function getGuild(message) {
     return new Promise(async (resolve, reject) => {

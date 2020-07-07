@@ -22,6 +22,7 @@ module.exports = {
     args: '<c/v/fsv> <location>',
     role: 'Almost Raid Leader',
     async execute(message, args, bott, db) {
+        let settings = bott.settings[message.guild.id]
         if (args.length == 0) return;
         bot = bott
         if (message.channel.name === 'dylanbot-commands') var isVet = false;
@@ -50,8 +51,8 @@ module.exports = {
         if (location.length >= 1024) return message.channel.send('Location must be below 1024 characters, try again');
         let channel = await createChannel(isVet, message, run)
             .catch(er => { ErrorLogger.log(er, bot); return message.channel.send('There was an issue creating the channel. Please try again') })
-        if (isVet) currentVet = new afk(run, location, message, isVet, db, channel);
-        else currentReg = new afk(run, location, message, isVet, db, channel);
+        if (isVet) currentVet = new afk(run, location, message, isVet, db, channel, settings);
+        else currentReg = new afk(run, location, message, isVet, db, channel, settings);
         message.channel.send('Channel created successfully. Beginning afk check in 10 seconds')
         if (isVet) setTimeout(beginRun, 10000, true)
         else setTimeout(beginRun, 10000, false)
@@ -85,26 +86,27 @@ async function beginRun(isVet) {
 }
 
 class afk {
-    constructor(run, location, message, isVet, db, channel) {
+    constructor(run, location, message, isVet, db, channel, settings) {
+        this.settings = settings;
         this.channel = channel;
         this.run = run;
         this.db = db;
         this.location = location;
         this.message = message;
         this.isVet = isVet;
-        if (this.isVet) this.raidStatus = this.message.guild.channels.cache.find(c => c.name === "veteran-status-announcements");
-        else this.raidStatus = this.message.guild.channels.cache.find(c => c.name === "raid-status-announcements");
-        if (this.isVet) this.dylanBotCommands = this.message.guild.channels.cache.find(c => c.name === "veteran-bot-commands");
-        else this.dylanBotCommands = this.message.guild.channels.cache.find(c => c.name === "dylanbot-commands");
-        if (!this.isVet) this.verifiedRaiderRole = this.message.guild.roles.cache.find(r => r.name === 'Verified Raider');
-        else this.verifiedRaiderRole = this.message.guild.roles.cache.find(r => r.name === 'Veteran Raider');
+        if (this.isVet) this.raidStatus = this.message.guild.channels.cache.find(c => c.name === settings.vetstatus);
+        else this.raidStatus = this.message.guild.channels.cache.find(c => c.name === settings.raidstatus);
+        if (this.isVet) this.dylanBotCommands = this.message.guild.channels.cache.find(c => c.name === settings.vetcommands);
+        else this.dylanBotCommands = this.message.guild.channels.cache.find(c => c.name === settings.raidcommands);
+        if (this.isVet) this.verifiedRaiderRole = this.message.guild.roles.cache.find(r => r.name === settings.vetraider);
+        else this.verifiedRaiderRole = this.message.guild.roles.cache.find(r => r.name === settings.raider);
         if (this.isVet) activeVetRun = true;
         else activeRun = true;
         this.afkChannel = message.guild.channels.cache.find(c => c.name === 'afk');
-        this.dylanBotInfo = message.guild.channels.cache.find(c => c.name === "dylanbot-info");
-        this.officialRusher = message.guild.roles.cache.find(r => r.name === 'Official Rusher');
-        this.nitroBooster = message.guild.roles.cache.find(r => r.name === 'Nitro Booster');
-        this.leaderOnLeave = message.guild.roles.cache.find(r => r.name === 'Leader on Leave');
+        this.dylanBotInfo = message.guild.channels.cache.find(c => c.name === settings.runinfo);
+        this.officialRusher = message.guild.roles.cache.find(r => r.name === settings.rusher);
+        this.nitroBooster = message.guild.roles.cache.find(r => r.name === settings.nitro);
+        this.leaderOnLeave = message.guild.roles.cache.find(r => r.name === settings.lol);
         this.minutes;
         this.seconds;
         this.nitro = []
@@ -243,7 +245,7 @@ class afk {
                 }
             }
             if (r.emoji.name == '❌') {
-                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
+                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
                 this.endedBy = u;
                 this.endAfk();
             }
@@ -257,12 +259,12 @@ class afk {
         this.panelReactionCollector.on("collect", (r, u) => {
             let reactor = this.message.guild.members.cache.get(u.id);
             if (r.emoji.name === '❌') {
-                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
+                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
                 this.endedBy = u;
                 this.abortAfk();
             }
             if (r.emoji.name === '🔑') {
-                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
+                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
                 this.leaderEmbed.fields[0].value = `None yet!`
                 this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                 this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
@@ -347,7 +349,7 @@ class afk {
                 }
             }
             if (r.emoji.name == '❌') {
-                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
+                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
                 this.endedBy = u;
                 this.endAfk();
             }
@@ -361,12 +363,12 @@ class afk {
         this.panelReactionCollector.on("collect", (r, u) => {
             let reactor = this.message.guild.members.cache.get(u.id);
             if (r.emoji.name === '❌') {
-                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
+                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
                 this.endedBy = u;
                 this.abortAfk();
             }
             if (r.emoji.name === '🔑') {
-                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
+                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
                 this.leaderEmbed.fields[0].value = `None yet!`
                 this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                 this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
@@ -420,14 +422,6 @@ class afk {
         this.mainReactionCollector.on("collect", (r, u) => {
             if (u.bot) return;
             let reactor = this.message.guild.members.cache.get(u.id);
-            //raider
-            if (r.emoji.id === botSettings.emoteIDs.voidd) {
-                this.raiders++;
-                this.raider.push(reactor);
-                if (this.isVet) var channel = this.message.guild.channels.cache.find(c => c.name == `Veteran Raiding ${this.channel}` || c.name == `Veteran Raiding ${this.channel} <--Join Now!`);
-                else var channel = this.message.guild.channels.cache.find(c => c.name == `raiding-${this.channel}` || c.name == `raiding-${this.channel} <--Join Now!`);
-                reactor.edit({ channel: channel }).catch(er => { });
-            }
             //key
             if (r.emoji.id === botSettings.emoteIDs.LostHallsKey) {
                 if (this.key != null) return;
@@ -472,7 +466,7 @@ class afk {
                 }
             }
             if (r.emoji.name == '❌') {
-                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
+                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
                 this.endedBy = u;
                 this.endAfk();
             }
@@ -486,12 +480,12 @@ class afk {
         this.panelReactionCollector.on("collect", (r, u) => {
             let reactor = this.message.guild.members.cache.get(u.id);
             if (r.emoji.name === '❌') {
-                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
+                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
                 this.endedBy = u;
                 this.abortAfk();
             }
             if (r.emoji.name === '🔑') {
-                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) return;
+                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
                 this.leaderEmbed.fields[0].value = `None yet!`
                 this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                 this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
@@ -530,7 +524,7 @@ class afk {
             clearInterval(endAfter);
             dmReactionCollector.stop();
             let keyMember = this.message.guild.members.cache.get(u.id)
-            let tempKeyPopper = this.message.guild.roles.cache.find(r => r.name === '')
+            let tempKeyPopper = this.message.guild.roles.cache.find(r => r.name === this.settings.tempkey)
             if (tempKeyPopper && keyMember) keyMember.roles.add(tempKeyPopper.id)
         });
     }
@@ -777,7 +771,7 @@ class afk {
         setTimeout(() => {
             this.channel.members.each(m => {
                 try {
-                    this.db.query(`SELECT * FROM users WHERE id = '${m.id}'`, (err, rows) => {
+                    this.db.query(`SELECT * FROM users WHERE id = '${m.id}'`, async (err, rows) => {
                         if (rows[0] == undefined) await this.db.query(`INSERT INTO users (id, ign) VALUES('${m.id}', '${m.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}')`)
                         if (this.run == 1) {
                             this.db.query(`UPDATE users SET cultRuns = '${parseInt(rows[0].cultRuns) + 1}' WHERE id = '${m.id}'`)
@@ -885,18 +879,19 @@ class afk {
     }
 }
 async function createChannel(isVet, message, run) {
+    let settings = bot.settings[message.guild.id]
     return new Promise(async (res, rej) => {
         //channel creation
         if (isVet) {
             var parent = 'veteran raiding';
-            var template = message.guild.channels.cache.find(c => c.name === 'Vet Raiding Template');
-            var raider = message.guild.roles.cache.find(r => r.name === 'Veteran Raider')
+            var template = message.guild.channels.cache.find(c => c.name === settings.vettemplate);
+            var raider = message.guild.roles.cache.find(r => r.name === settings.vetraider)
             var vibotChannels = message.guild.channels.cache.find(c => c.name === botSettings.ActiveVetName)
         }
         else {
             var parent = 'raiding';
-            var template = message.guild.channels.cache.find(c => c.name === 'Raiding Template');
-            var raider = message.guild.roles.cache.find(r => r.name === 'Verified Raider')
+            var template = message.guild.channels.cache.find(c => c.name === settings.raidingtemplate);
+            var raider = message.guild.roles.cache.find(r => r.name === settings.raider)
             var vibotChannels = message.guild.channels.cache.find(c => c.name === botSettings.ActiveRaidingName)
         }
         let channel = await template.clone()

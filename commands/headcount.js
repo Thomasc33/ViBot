@@ -11,21 +11,18 @@ module.exports = {
     args: '<c/v/fsv/event>',
     role: 'Event Organizer',
     async execute(message, args, bott) {
-        if (!(message.channel.name === 'dylanbot-commands' || message.channel.name === 'veteran-bot-commands' || message.channel.name === 'eventbot-commands')) {
-            message.channel.send("Try again in dylanbot-commands or veteran-bot-commands");
+        let settings = bott.settings[message.guild.id]
+        if (!(message.channel.parent.name.toLowerCase() === 'raiding' || message.channel.parent.name.toLowerCase() === 'veteran raiding' || message.channel.parent.name.toLowerCase() === 'events')) {
+            message.channel.send("Try again in a correct category");
             return;
         }
         bot = bott;
         var textChannel;
-        if (message.channel.name == 'veteran-bot-commands') {
-            textChannel = message.guild.channels.cache.find(c => c.name === 'veteran-status-announcements');
-        } else if (message.channel.name == 'eventbot-commands') {
-            textChannel = message.guild.channels.cache.find(c => c.name === 'event-status-announcements')
-        } else {
-            textChannel = message.guild.channels.cache.find(c => c.name === 'raid-status-announcements');
-        }
+        if (message.channel.parent.name.toLowerCase() === 'veteran raiding') textChannel = message.guild.channels.cache.find(c => c.name === settings.vetstatus);
+        else if (message.channel.parent.name.toLowerCase() === 'raiding') textChannel = message.guild.channels.cache.find(c => c.name === settings.raidstatus);
+        else if (message.channel.parent.name.toLowerCase() === 'events') textChannel = message.guild.channels.cache.find(c => c.name === settings.eventstatus)
 
-        if (message.channel.name !== 'eventbot-commands') {
+        if (message.channel.parent.name.toLowerCase() !== 'events') {
             switch (args[0].charAt(0).toLowerCase()) {
                 case 'c':
                     var embed = new Discord.MessageEmbed()

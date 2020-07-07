@@ -7,9 +7,9 @@ module.exports = {
     role: 'Security',
     alias: ['mvv'],
     execute(message, args, bot) {
-        const vetBanRole = message.guild.roles.cache.find(r => r.name === 'Banned Veteran Raider');
-        const vetRaiderRole = message.guild.roles.cache.find(r => r.name === 'Veteran Raider');
-        if (message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.find(r => r.name === "Developer").position) return;
+        let settings = bot.settings[message.guild.id]
+        const vetBanRole = message.guild.roles.cache.find(r => r.name === settings.vetban);
+        const vetRaiderRole = message.guild.roles.cache.find(r => r.name === settings.vetraider);
         var member = message.mentions.members.first()
         if (member == null) {
             member = message.guild.members.cache.get(args[0]);
@@ -29,7 +29,7 @@ module.exports = {
             .addField('User', member.displayName, true)
             .addField('Verified By', `<@!${message.author.id}>`, true)
             .setTimestamp(Date.now());
-        message.guild.channels.cache.find(c => c.name === 'mod-logs').send(embed);
+        message.guild.channels.cache.find(c => c.name === settings.modlog).send(embed);
         message.channel.send(`${member} has been given ${vetRaiderRole}`)
     }
 }

@@ -7,13 +7,13 @@ module.exports = {
     role: 'Raid Leader',
     alias: ['gfb'],
     async execute(message, args, bot) {
-        if (message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.find(r => r.name === "Raid Leader").position) return;
+        let settings = bot.settings[message.guild.id]
         var member = message.mentions.members.first()
         if (member == undefined) {
             member = message.guild.members.cache.get(args[0]);
         }
         if (member == undefined) { message.channel.send('User not found'); return; }
-        const customerFeedback = message.guild.channels.cache.find(c => c.name === "customer-feedback")
+        const customerFeedback = message.guild.channels.cache.find(c => c.name === settings.rlfeedback)
         try {
             let findings = await message.channel.send(`Searching for all mentions of ${member} in ${customerFeedback}`)
             customerFeedback.messages.fetch({ limit: 100 })

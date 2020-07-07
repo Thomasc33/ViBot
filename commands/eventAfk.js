@@ -18,6 +18,7 @@ module.exports = {
     role: 'Event Organizer',
     alias: ['eafk'],
     async execute(message, args, bott) {
+        let settings = bott.settings[message.guild.id]
         if (message.channel.name !== 'eventbot-commands') return;
         var eventType = args[0]
         if (!eventFile[eventType]) return message.channel.send("Event type unrecognized. Check ;events and try again")
@@ -31,9 +32,9 @@ module.exports = {
         if (location.length >= 1024) return message.channel.send('Location must be below 1024 characters, try again');
         if (activeRun) return message.channel.send("There is already an active run");
         bot = bott
-        let channel = await createChannel(message).catch(er => { return message.channel.send(er) })
+        let channel = await createChannel(message, bott).catch(er => { return message.channel.send(er) })
         message.channel.send('Channel Created Successfully. Beginning AFK check in 5 seconds.')
-        currentRun = new afk(event, args[0], channel, location, message)
+        currentRun = new afk(event, args[0], channel, location, message, settings)
         setTimeout(begin, 10000)
     },
     async changeLocation(location) {
@@ -53,15 +54,16 @@ async function begin() {
 }
 
 class afk {
-    constructor(event, channelNumber, channel, location, message) {
+    constructor(event, channelNumber, channel, location, message, settings) {
+        this.settings = settings
         this.event = event
         this.channelNumber = channelNumber
         this.channel = channel
         this.message = message
         this.location = location
         this.time = botSettings.eventAfkTimeLimit
-        this.raider = this.message.guild.roles.cache.find(r => r.name === 'Verified Raider')
-        this.eventBoi = this.message.guild.roles.cache.find(r => r.name === 'Event Boi')
+        this.raider = this.message.guild.roles.cache.find(r => r.name === settings.raider)
+        this.eventBoi = this.message.guild.roles.cache.find(r => r.name === settings.events)
         this.minutes = Math.floor(botSettings.eventAfkTimeLimit / 60);
         this.seconds = botSettings.eventAfkTimeLimit % 60;
         activeRun = true;
@@ -70,7 +72,7 @@ class afk {
         this.earlyLocation = []
     }
     async ping() {
-        this.eventStatus = this.message.guild.channels.cache.find(c => c.name === 'event-status-announcements')
+        this.eventStatus = this.message.guild.channels.cache.find(c => c.name === this.settings.eventstatus)
         this.pingMessage = await this.eventStatus.send(`@here A ${this.event.name} run will begin in 5 seconds in ${this.channel.name}. **Be prepared to join vc before it fills up**`)
     }
     async start() {
@@ -130,8 +132,8 @@ class afk {
                 { name: `Our current keys`, value: `None yet!` },
                 { name: `Location of run`, value: `${this.location}` },
             )
-        this.afkControlPanelInfo = await this.message.guild.channels.cache.find(c => c.name === 'dylanbot-info').send(this.leaderEmbed)
-        this.afkControlPanelCommands = await this.message.guild.channels.cache.find(c => c.name === 'eventbot-commands').send(this.leaderEmbed)
+        this.afkControlPanelInfo = await this.message.guild.channels.cache.find(c => c.name === this.settings.runinfo).send(this.leaderEmbed)
+        this.afkControlPanelCommands = await this.message.guild.channels.cache.find(c => c.name === this.settings.eventcommands).send(this.leaderEmbed)
         this.afkControlPanelCommands.react('❌')
         this.panelReactionCollector = new Discord.ReactionCollector(this.afkControlPanelCommands, xFilter);
 
@@ -143,7 +145,7 @@ class afk {
                 this.confirmKey(r, u);
             }
             if (r.emoji.name == '❌') {
-                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Event Organizer").position) return;
+                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.eo).position) return;
                 this.endedBy = u
                 this.endAFK();
             }
@@ -151,7 +153,7 @@ class afk {
         this.panelReactionCollector.on('collect', (r, u) => {
             let reactor = this.message.guild.members.cache.get(u.id)
             if (r.emoji.name == '❌') {
-                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === "Event Organizer").position) return;
+                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.eo).position) return;
                 this.endedBy = u
                 this.abortAFK();
             }
@@ -297,13 +299,14 @@ class afk {
     }
 }
 
-function createChannel(message) {
+function createChannel(message, bot) {
+    let settings = bot.settings[message.guild.id]
     //channel creation
     return new Promise(async (resolve, reject) => {
-        var template = message.guild.channels.cache.find(c => c.name === 'Event Raiding Template');
-        var raider = message.guild.roles.cache.find(r => r.name === 'Verified Raider')
-        var EventBoi = message.guild.roles.cache.find(r => r.name === 'Event Boi')
-        var vibotChannels = message.guild.channels.cache.find(c => c.name === botSettings.ActiveEventName)
+        var template = message.guild.channels.cache.find(c => c.name === settings.eventtemplate);
+        var raider = message.guild.roles.cache.find(r => r.name === settings.raider)
+        var EventBoi = message.guild.roles.cache.find(r => r.name === settings.events)
+        var vibotChannels = message.guild.channels.cache.find(c => c.name === settings.eventchannels)
 
         let channel = await template.clone()
         setTimeout(async function () {

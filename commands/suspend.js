@@ -8,10 +8,11 @@ module.exports = {
     args: '[in-game names] <time> <time type d/m/s/w/y> <reason>',
     role: 'Raid Leader',
     async execute(message, args, bot, db) {
-        const suspendedRole = message.guild.roles.cache.find(r => r.name === 'Suspended but Verified');
-        const pSuspendRole = message.guild.roles.cache.find(r => r.name === 'Suspended')
-        const raiderRole = message.guild.roles.cache.find(r => r.name === 'Verified Raider');
-        const suspensionLog = message.guild.channels.cache.find(c => c.name === 'suspend-log');
+        let settings = bot.settings[message.guild.id]
+        const suspendedRole = message.guild.roles.cache.find(r => r.name === settings.tempsuspend);
+        const pSuspendRole = message.guild.roles.cache.find(r => r.name === settings.psuspended)
+        const raiderRole = message.guild.roles.cache.find(r => r.name === settings.raider);
+        const suspensionLog = message.guild.channels.cache.find(c => c.name === settings.suspendlog);
         let toBan = [];
         if (args.length < 3) {
             message.channel.send("Expected at least 4 arguments, but recieved " + args.length)
@@ -133,6 +134,8 @@ module.exports = {
                     setTimeout(() => { member.roles.add(suspendedRole.id); }, 2000)
 
                     db.query(`INSERT INTO suspensions (id, guildid, suspended, uTime, reason, modid, roles, logmessage) VALUES ('${member.id}', '${message.guild.id}', true, '${Date.now() + time}', '${reason}', '${message.author.id}', '${userRolesString}', '${messageId.id}');`)
+
+                    message.channel.send(`${member} has been suspended`)
 
                     /*
                     bot.suspensions[member.id] = {

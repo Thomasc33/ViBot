@@ -10,6 +10,7 @@ module.exports = {
     alias: ['bp', 'bpm'],
     args: '<image>',
     async execute(message, args, bot) {
+        let settings = bot.settings[message.guild.id]
         let channel = message.member.voice.channel
         if (!channel) return message.channel.send('Make sure you are in a voice channel before parsing')
         let EarlyLocation = bot.afkChecks[channel.id].earlyLocation
@@ -65,7 +66,7 @@ module.exports = {
             if (name != '') {
                 if (!earlyLocationNames.includes(name)) {
                     let member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(name.toLowerCase()));
-                    if (member.roles.highest.position < message.guild.roles.cache.find(r => r.name === 'Almost Raid Leader').position)
+                    if (member.roles.highest.position < message.guild.roles.cache.find(r => r.name === settings.arl).position)
                         crashers.push(name)
                 }
             }

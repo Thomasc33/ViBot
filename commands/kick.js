@@ -7,12 +7,13 @@ module.exports = {
     args: '<id/mention> <reason>',
     role: 'Security',
     execute(message, args, bot) {
-        if(args.length == 0) return;
+        let settings = bot.settings[message.guild.id]
+        if (args.length == 0) return;
         var member = message.mentions.members.first()
         if (member == null) member = message.guild.members.cache.get(args[0]);
         if (member == null) { message.channel.send('User not found. Please try again'); return; }
-        if (member.roles.highest.position >= message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) {
-            message.channel.send(`You may not kick other staff members`);
+        if (member.roles.highest.position >= message.guild.roles.cache.find(r => r.name === settings.eo).position) {
+            message.channel.send(`You may not kick other staff members (eo+)`);
             return;
         }
         var reason = ' ';
@@ -34,9 +35,9 @@ module.exports = {
                         .addField('User', member.displayName, true)
                         .addField('Kicked By', `<@!${m.author.id}>`, true)
                         .setTimestamp(Date.now());
-                    message.guild.channels.cache.find(c => c.name === 'mod-logs').send(embed);
+                    message.guild.channels.cache.find(c => c.name === settings.modlog).send(embed);
                     if (reason != ' ') {
-                        message.guild.channels.cache.find(c => c.name === 'mod-logs').send(reason);
+                        message.guild.channels.cache.find(c => c.name === settings.modlog).send(reason);
                     }
                     message.channel.send("Success")
                 }

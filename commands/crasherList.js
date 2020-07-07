@@ -9,10 +9,11 @@ module.exports = {
     role: 'Officer',
     args: '<send/update/add/remove/preview>',
     execute(message, args, bot) {
+        let settings = bot.settings[message.guild.id]
         if (args.length < 1) return message.channel.send('Please provide an argument')
         switch (args[0].toLowerCase()) {
             case 'send':
-                this.send(message.guild.channels.cache.find(c => c.name === 'crasher-list'), bot)
+                this.send(message.guild.channels.cache.find(c => c.name === settings.crasherlist), bot)
                 break;
             case 'update':
                 this.update(message, args, bot)
@@ -120,7 +121,8 @@ module.exports = {
         if (!found) return message.channel.send(`${args[1].toLowerCase()} was not found.`)
     },
     async update(message, args, bot) {
-        let crasherChannel = message.guild.channels.cache.find(c => c.name === 'crasher-list')
+        let settings = bot.settings[message.guild.id]
+        let crasherChannel = message.guild.channels.cache.find(c => c.name === settings.crasherlist)
         if (!crasherChannel) return;
         await crasherChannel.bulkDelete(100)
         this.send(crasherChannel, bot)

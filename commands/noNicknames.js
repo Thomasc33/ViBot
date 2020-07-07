@@ -6,11 +6,11 @@ module.exports = {
     alias: ['nn'],
     notes: 'Only usable in mod-bot-commands',
     execute(message, args, bot) {
-        if (message.channel.name !== 'mod-bot-commands') return;
+        let settings = bot.settings[message.guild.id]
         var users = []
         let noNickname = message.guild.members.cache.filter(m => m.nickname == null);// && m.roles.cache.has(message.guild.roles.cache.find(r => r.name === 'Verified Raider'))
         noNickname.each(user => {
-            if (user.roles.cache.has(message.guild.roles.cache.find(r => r.name === 'Verified Raider').id)) {
+            if (user.roles.cache.has(message.guild.roles.cache.find(r => r.name === settings.raider).id)) {
                 users.push(user)
             }
         })
@@ -25,7 +25,7 @@ module.exports = {
             }
             embed.addField('Users', usersString)
         } else {
-            embed.setDescription(`No users found with ${message.guild.roles.cache.find(r => r.name === 'Verified Raider')} and no nickname`)
+            embed.setDescription(`No users found with ${message.guild.roles.cache.find(r => r.name === settings.raider)} and no nickname`)
         }
         message.channel.send(embed)
     }

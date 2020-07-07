@@ -5,7 +5,7 @@ module.exports = {
     role: 'Developer',
     async execute(message, args, bot, db) {
         if (args.length == 0) {
-            this.sendEmbed(message.channel, db)
+            this.sendEmbed(message.channel, db, bot)
             return;
         }
         switch (args[0].toLowerCase()) {
@@ -13,24 +13,27 @@ module.exports = {
                 this.newWeek(message.guild, bot, db)
                 break;
             case 'update':
-                this.update(message.guild, db);
+                this.update(message.guild, db, bot);
                 break;
         }
     },
     async newWeek(guild, bot, db) {
-        let leaderLog = guild.channels.cache.find(c => c.name === 'e-weekly-logs')
+        let settings = bot.settings[guild.id]
+        let leaderLog = guild.channels.cache.find(c => c.name === settings.eventcurrentweek)
         if (leaderLog == null) { console.log('Channel not found'); return; }
-        await this.sendEmbed(leaderLog, db)
+        await this.sendEmbed(leaderLog, db, bot)
         await db.query(`UPDATE users SET currentweekEvents = '0'`)
-        this.update(guild, db)
+        this.update(guild, db, bot)
     },
-    async update(guild, db) {
-        let currentweek = guild.channels.cache.find(c => c.name === 'e-currentweek');
+    async update(guild, db, bot) {
+        let settings = bot.settings[guild.id]
+        let currentweek = guild.channels.cache.find(c => c.name === settings.pasteventweeks);
         if (currentweek == undefined) return;
         await currentweek.bulkDelete(100);
-        this.sendEmbed(currentweek, db)
+        this.sendEmbed(currentweek, db, bot)
     },
-    async sendEmbed(channel, db) {
+    async sendEmbed(channel, db, bot) {
+        let settings = bot.settings[channel.guild.id]
         return new Promise(async function (resolve, reject) {
             db.query(`SELECT * FROM users WHERE currentweekEvents != '0'`, async function (err, rows) {
                 if (err) reject(err)
@@ -47,7 +50,7 @@ module.exports = {
                     logged.push(rows[i].id)
                     index++;
                 }
-                channel.guild.members.cache.filter(m => m.roles.highest.id == channel.guild.roles.cache.find(r => r.name === 'Event Organizer').id).each(m => {
+                channel.guild.members.cache.filter(m => m.roles.highest.id == channel.guild.roles.cache.find(r => r.name === settings.eo).id).each(m => {
                     if (!logged.includes(`${m.id}`)) {
                         let string = `<@!${m.id}> has not logged any runs or been assisted this week`
                         fitStringIntoEmbed(embed, string)

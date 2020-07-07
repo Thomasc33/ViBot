@@ -7,53 +7,31 @@ module.exports = {
     args: '<channel>',
     role: 'Event Organizer',
     async execute(message, args, bot) {
-        var isVet = false;
-        if (!(message.channel.name === 'dylanbot-commands' || message.channel.name === 'veteran-bot-commands') || message.channel.name === 'eventbot-commands') {
-            message.channel.send("Try again, but in dylanbot-commands or veteran-bot-commands");
+        let settings = bot.settings[message.guild.id]
+        if (!(message.channel.parent.name.toLowerCase() === 'raiding' || message.channel.parent.name.toLowerCase() === 'veteran raiding' || message.channel.parent.name.toLowerCase() === 'events')) {
+            message.channel.send("Try again in a correct category");
             return;
         }
-        if (message.channel.name === 'veteran-bot-commands') {
-            isVet = true;
-            if (args[0] > botSettings.vetVoiceChannelCount) {
-                message.channel.send("Channel number invalid");
-                return;
-            }
-        } else {
-            if (args[0] > botSettings.voiceChannelCount) {
-                message.channel.send("Channel number invalid");
-                return;
-            }
-        }
-        if (message.channel.name == 'eventbot-commands') {
-            let channel = message.guild.channels.cache.find(c => c.type == 'category' && c.name == 'Events').children.find(c => c.name.includes(args[0]) && !c.name.includes('Realm Clearing'))
-            let lounge = message.guild.channels.cache.find(c => c.name === 'Event Lounge')
-            this.clean(channel, lounge, message)
-            return;
-        }
-        if (isVet) {
+        if (message.channel.parent.name.toLowerCase() === 'veteran raiding') {
             let lounge = message.guild.channels.cache.find(c => c.name === "Veteran Lounge");
             let channel = message.guild.channels.cache.find(c => c.name == `Veteran Raiding ${args[0]}` || c.name == `Veteran Raiding ${args[0]} <-- Join!`);
-            var vcUsers = channel.members.array()
-            for (let i in vcUsers) {
-                let u = vcUsers[i];
-                if (u.roles.highest.position < message.guild.roles.cache.find(r => r.name === "Almost Raid Leader").position) {
-                    await u.edit({ channel: lounge });
-                }
-            }
-        } else {
+            await this.clean(channel, lounge, message, settings)
+        } else if (message.channel.parent.name.toLowerCase() === 'raiding') {
             let lounge = message.guild.channels.cache.find(c => c.name === "lounge");
             let channel = message.guild.channels.cache.find(c => c.name == `raiding-${args[0]}` || c.name == `raiding-${args[0]} <-- Join!`);
-            this.clean(channel, lounge, message)
+            await this.clean(channel, lounge, message, settings)
+        } else if (message.channel.parent.name.toLowerCase() === 'events') {
+            let channel = message.guild.channels.cache.find(c => c.type == 'category' && c.name == 'Events').children.find(c => c.name.includes(args[0]) && !c.name.includes('Realm Clearing'))
+            let lounge = message.guild.channels.cache.find(c => c.name === 'Event Lounge')
+            await this.clean(channel, lounge, message, settings)
         }
-        message.channel.send("Channel successfully cleaned");
+        await message.channel.send("Channel successfully cleaned");
     },
-    async clean(channel, lounge, message) {
-        let users = channel.members.array()
-        for (let i in users) {
-            let u = users[i]
-            if (u.roles.highest.position < message.guild.roles.cache.find(r => r.name === "Event Organizer").position) {
-                await u.edit({ channel: lounge });
+    async clean(channel, lounge, message, settings) {
+        channel.members.each(async m => {
+            if (m.roles.highest.position < message.guild.roles.cache.find(r => r.name === settings.eo).position) {
+                await m.voice.setChannel(lounge, 'cleaning')
             }
-        }
+        })
     }
 }

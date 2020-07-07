@@ -7,9 +7,10 @@ module.exports = {
     alias: ['reb'],
     role: 'Security',
     async execute(message, args, bot) {
-        const suspendedRole = message.guild.roles.cache.find(r => r.name === 'Suspended');
-        const sbvRole = message.guild.roles.cache.find(r => r.name === 'Suspended but Verified');
-        const eventRole = message.guild.roles.cache.find(r => r.name === 'Event Boi');
+        let settings = bot.settings[message.guild.id]
+        const suspendedRole = message.guild.roles.cache.find(r => r.name === settings.psuspended);
+        const sbvRole = message.guild.roles.cache.find(r => r.name === settings.tempsuspend);
+        const eventRole = message.guild.roles.cache.find(r => r.name === settings.events);
         var member = message.mentions.members.first()
         if (member == null) {
             member = message.guild.members.cache.get(args[0]);
@@ -22,7 +23,7 @@ module.exports = {
             message.channel.send("User is suspended")
             return;
         }
-        if(!member.roles.cache.has(eventRole.id)){
+        if (!member.roles.cache.has(eventRole.id)) {
             message.channel.send('User does not have event boi')
             return;
         }
@@ -38,11 +39,11 @@ module.exports = {
             .setTimestamp(Date.now());
         try {
             if (validURL(image)) embed.setImage(image)
-            message.guild.channels.cache.find(c => c.name === 'mod-logs').send(embed);
+            message.guild.channels.cache.find(c => c.name === settings.modlog).send(embed);
             message.channel.send(`Event Boi has been removed from ${member}`)
         } catch (er) {
             message.channel.send('There was an issue attaching the image. However, Event Boi was still removed')
-            message.guild.channels.cache.find(c => c.name === 'mod-logs').send(embed);
+            message.guild.channels.cache.find(c => c.name === settings.modlog).send(embed);
         }
         function validURL(str) {
             var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol

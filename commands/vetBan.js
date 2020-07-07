@@ -8,14 +8,15 @@ module.exports = {
     args: '[in-game names] <time> <time type d/m/s/w/y> <reason>',
     role: 'Veteran Raid Leader',
     async execute(message, args, bot) {
-        const vetBanRole = message.guild.roles.cache.find(r => r.name === 'Banned Veteran Raider');
-        const vetRaiderRole = message.guild.roles.cache.find(r => r.name === 'Veteran Raider');
-        const suspensionLog = message.guild.channels.cache.find(c => c.name === 'suspend-log');
+        let settings = bot.settings[message.guild.id]
+        const vetBanRole = message.guild.roles.cache.find(r => r.name === settings.vetban);
+        const vetRaiderRole = message.guild.roles.cache.find(r => r.name === settings.raider);
+        const suspensionLog = message.guild.channels.cache.find(c => c.name === settings.suspendlog);
         if (!message.channel.name === 'veteran-bot-commands') {
             message.channel.send("Try again, but in dylanbot-commands or veteran-bot-commands");
             return;
         }
-        if (message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.find(r => r.name === "Veteran Raid Leader").position) return;
+        if (message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.find(r => r.name === settings.vrl).position) return;
         let toBan = [];
         if (args.length < 3) {
             message.channel.send("Expected at least 4 arguments, but recieved " + args.length)
