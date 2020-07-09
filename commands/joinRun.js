@@ -20,7 +20,7 @@ module.exports = {
             }
         }
         if (runsIn.length == 0) { message.channel.send('I could not find any runs that you were a part of.') }
-        else if (runsIn.length == 1) { this.moveIn(guild.members.cache.get(message.author.id), runsIn[0].id).catch(er => message.channel.send('Join lounge, then try this command again')) }
+        else if (runsIn.length == 1) { this.moveIn(guild.members.cache.get(message.author.id), runsIn[0]).catch(er => message.channel.send('Join lounge, then try this command again')) }
         else {
             let runEmbed = new Discord.MessageEmbed()
                 .setColor('#ff0000')

@@ -85,14 +85,12 @@ module.exports = {
                 }
             })
             cont()
-        } else {
-            //this is only here because event currentweek is handled by me, but not regular currentweek
-            eCurrentWeek.update(message.guild, db)
         }
         function cont() {
             embed.setDescription(desc)
             message.guild.channels.cache.find(c => c.name === settings.leadinglogs).send(embed)
-            //CurrentWeek.update(message.guild, db)
+            CurrentWeek.update(message.guild, db, bot)
+            //eCurrentWeek.update(message.guild, db, bot)
         }
     }
 }

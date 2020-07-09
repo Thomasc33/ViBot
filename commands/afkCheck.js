@@ -885,13 +885,13 @@ async function createChannel(isVet, message, run) {
             var parent = 'veteran raiding';
             var template = message.guild.channels.cache.find(c => c.name === settings.vettemplate);
             var raider = message.guild.roles.cache.find(r => r.name === settings.vetraider)
-            var vibotChannels = message.guild.channels.cache.find(c => c.name === botSettings.ActiveVetName)
+            var vibotChannels = message.guild.channels.cache.find(c => c.name === settings.vetchannels)
         }
         else {
             var parent = 'raiding';
             var template = message.guild.channels.cache.find(c => c.name === settings.raidingtemplate);
             var raider = message.guild.roles.cache.find(r => r.name === settings.raider)
-            var vibotChannels = message.guild.channels.cache.find(c => c.name === botSettings.ActiveRaidingName)
+            var vibotChannels = message.guild.channels.cache.find(c => c.name === settings.activechannels)
         }
         let channel = await template.clone()
         setTimeout(async function () {

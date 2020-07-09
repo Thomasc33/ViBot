@@ -105,6 +105,7 @@ bot.on("ready", () => {
     console.log(`Bot loaded: ${bot.user.username}`);
     bot.user.setActivity(`bruh`);
     let changed = false
+    //generate default settings
     bot.guilds.cache.each(g => {
         if (!emojiServers.includes(g.id)) {
             if (!bot.settings[g.id]) {
@@ -173,7 +174,6 @@ bot.on("ready", () => {
         }
     })
     if (changed) fs.writeFileSync('./guildSettings.json', JSON.stringify(bot.settings, null, 4), er => ErrorLogger.log(er, bot))
-    const halls = bot.guilds.cache.get(botSettings.guildID);
     //vetban check
     bot.setInterval(() => {
         for (let i in bot.vetBans) {
@@ -305,8 +305,8 @@ bot.on("ready", () => {
     })
     const currentWeekReset = cron.job('0 0 * * SUN', () => {
         bot.guilds.cache.each(g => {
-            if (bot.settings[g.id].currentweek) currentWeek.newWeek(halls, bot, db);
-            if (bot.settings[g.id].eventCurrentweek) ecurrentWeek.newWeek(halls, bot, db)
+            if (bot.settings[g.id].currentweek) currentWeek.newWeek(g, bot, db);
+            if (bot.settings[g.id].eventCurrentweek) ecurrentWeek.newWeek(g, bot, db)
         }, null, true, null, null, false)
     })
 });
@@ -315,7 +315,11 @@ bot.on('error', err => {
     ErrorLogger.log(err, bot)
 })
 
-process.on('uncaughtException', err => { ErrorLogger.log(err, bot); console.log(err); process.exit(1) })
+process.on('uncaughtException', err => {
+    ErrorLogger.log(err, bot);
+    console.log(err);
+    process.exit(1)
+})
 
 async function getGuild(message) {
     return new Promise(async (resolve, reject) => {

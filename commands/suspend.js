@@ -71,36 +71,31 @@ module.exports = {
             }
             if (reason == "") reason = "None"
             toBan.forEach(u => {
-
                 let member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(u.toLowerCase()));
-
                 if (member == null) return message.channel.send(`${u} not found, please try again`);
-
                 if (member.roles.highest.position >= message.member.roles.highest.position) return message.channel.send(`${member} has a role greater than or equal to you and cannot be muted`);
-
                 if (member.roles.cache.has(pSuspendRole.id)) return message.channel.send('User is perma suspended already, no need to suspend again')
-
                 if (member.roles.cache.has(suspendedRole.id)) {
-                    if (bot.suspensions[member.id]) {
-                        message.channel.send(member.nickname.concat(' is already suspended. Reply __**Y**__es to overwrite. *This is not recommended if they are suspended by dylanbot'));
-                        let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 10000 });
-                        collector.on('collect', message => {
-                            if (message.content.charAt(0) == 'y') {
-                                message.channel.send('Overwriting suspension...');
-                                vetBanProcess()
-                                collector.stop();
-                            } else if (message.content.carAt(0) == 'n') {
-                                collector.stop()
-                                return;
-                            } else {
-                                message.channel.send('Response not recognized. Please try suspending again');
-                                cont = false;
-                                collector.stop();
-                            }
-                        })
-                    } else {
-                        message.channel.send(member.nickname.concat(' was not suspended by me. Please try to overwrite through funman'))
-                    }
+                    db.query(`SELECT * FROM suspensions WHERE id = '${member.id}' AND suspended = true`, async (err, rows) => {
+                        if (rows.length != 0) {
+                            message.channel.send(member.nickname.concat(' is already suspended. Reply __**Y**__es to overwrite. *This is not recommended if they are suspended by dylanbot'));
+                            let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 10000 });
+                            collector.on('collect', message => {
+                                if (message.content.charAt(0) == 'y') {
+                                    db.query(`UPDATE suspensions SET suspended = 0 WHERE id = '${member.id}'`)
+                                    message.channel.send('Overwriting suspension...');
+                                    vetBanProcess()
+                                    collector.stop();
+                                } else if (message.content.carAt(0) == 'n') {
+                                    collector.stop()
+                                    return;
+                                } else {
+                                    message.channel.send('Response not recognized. Please try suspending again');
+                                    collector.stop();
+                                }
+                            })
+                        } else return message.channel.send('Suspension was not made through ViBot. Please attempt to overwrite the suspension through another bot')
+                    })
                 } else {
                     vetBanProcess()
                 }

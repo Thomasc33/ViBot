@@ -7,9 +7,12 @@ module.exports = {
     role: 'Verified Raider',
     dms: true,
     async execute(message, args, bot, db) {
-        if (args.length == 0) var member = message.member.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|')[0]
-        else var member = args[0]
+        if (args.length == 0) var member = message.author
+        else var member = message.mentions.members.first()
+        if (!member) member = message.guild.members.cache.get(args[0])
+        if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
         let embed = await this.getStatsEmbed(member.id, message.guild, db).catch(er => {
+            console.log(er)
             message.channel.send('User has not been logged yet. Database is updated every 24-48 hours')
         })
         if (embed) {
@@ -18,8 +21,10 @@ module.exports = {
         }
     },
     async dmExecution(message, args, bot, db, guild) {
-        if (args.length == 0) var member = message.member.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|')[0]
-        else var member = args[0]
+        if (args.length == 0) var member = message.author
+        else var member = message.mentions.members.first()
+        if (!member) member = guild.members.cache.get(args[0])
+        if (!member) member = guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
         let embed = await this.getStatsEmbed(member.id, guild, db).catch(er => {
             message.channel.send('User has not been logged yet. Database is updated every 24-48 hours')
         })
@@ -37,7 +42,7 @@ module.exports = {
                 let guildMember = guild.members.cache.get(id)
                 let embed = new Discord.MessageEmbed()
                     .setColor('#015c21')
-                    .setDescription(`<${botSettings.emote.hallsPortal}> __**Stats for <@!${id}>**__ <${botSettings.emote.hallsPortal}>
+                    .setDescription(`<${botSettings.emote.hallsPortal}> __**Stats for**__ <@!${id}> <${botSettings.emote.hallsPortal}>
                     
                     <${botSettings.emote.LostHallsKey}> __**Keys Popped**__ <${botSettings.emote.LostHallsKey}>
                     Halls: ${rows[0].keypops}
