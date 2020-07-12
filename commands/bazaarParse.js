@@ -1,7 +1,8 @@
 const Discord = require('discord.js');
 const ErrorLogger = require('../logError')
 const vision = require('@google-cloud/vision')
-const client = new vision.ImageAnnotatorClient();
+const botSettings = require('../settings.json')
+const client = new vision.ImageAnnotatorClient(botSettings.gcloudOptions);
 
 module.exports = {
     name: 'bazaarparse',

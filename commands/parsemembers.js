@@ -5,7 +5,7 @@ const botSettings = require('../settings.json')
 const vision = require('@google-cloud/vision');
 const realmEyeScrape = require('../realmEyeScrape');
 const charStats = require('../charStats.json')
-const client = new vision.ImageAnnotatorClient();
+const client = new vision.ImageAnnotatorClient(botSettings.gcloudOptions);
 
 
 module.exports = {
