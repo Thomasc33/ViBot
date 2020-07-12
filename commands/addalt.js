@@ -21,7 +21,7 @@ module.exports = {
         if (message.attachments.size != 0) {
             proof = proof.concat(` ${message.attachments.first().proxyURL}`)
         }
-        await message.channel.send(`Are you sure you want to add the alt ${altName} to ${member}? Y/N`);
+        let confirmMessage = await message.channel.send(`Are you sure you want to add the alt ${altName} to ${member}? Y/N`);
         let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 10000 });
         collector.on('collect', async m => {
             try {
@@ -39,6 +39,8 @@ module.exports = {
                         await message.guild.channels.cache.find(c => c.name === settings.modlog).send(proof);
                     }
                     collector.stop();
+                    message.react('✅')
+                    confirmMessage.delete()
                 } else {
                     message.channel.send('Response not recognized. Please try suspending again');
                     collector.stop();
