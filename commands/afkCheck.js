@@ -226,22 +226,25 @@ class afk {
                 this.confirmRush(u, r);
             }
             //nitro
-            if (r.emoji.id === botSettings.emoteIDs.shard) {
-                if (this.earlyLocation.includes(u)) {
-                    reactor.send(`The location for this run has been set to \`${this.location}\``);
-                    return;
-                }
-                if (this.nitro.length + 1 > botSettings.nitroCount) return;
-                if (reactor.roles.cache.has(this.nitroBooster.id)) {
-                    reactor.send(`The location for this run has been set to \`${this.location}\``);
-                    this.nitro[this.nitro.length - 1] = u;
-                    if (this.leaderEmbed.fields[3].value == `None yet!`) {
-                        this.leaderEmbed.fields[3].value = `<@!${u.id}> `;
-                    } else this.leaderEmbed.fields[3].value += `, <@!${u.id}>`
-                    this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
-                    this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
-                    this.earlyLocation.push(u);
-                }
+            if (reactor.roles.cache.has(this.nitroBooster.id)) {
+                this.db.query(`SELECT * FROM users WHERE id = '${u.id}'`, async (err, rows) => {
+                    if (err) ErrorLogger.log(err, bot)
+                    if (rows.length == 0) await this.db.query(`INSERT INTO users (id, ign) VALUES('${u.id}', '${reactor.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}')`)
+                    if (Date.now() - 3600000 > parseInt(rows[0].lastnitrouse)) {
+                        reactor.send(`The location for this run has been set to \`${this.location}\``);
+                        this.nitro[this.nitro.length - 1] = u;
+                        if (this.leaderEmbed.fields[3].value == `None yet!`) {
+                            this.leaderEmbed.fields[3].value = `<@!${u.id}> `;
+                        } else this.leaderEmbed.fields[3].value += `, <@!${u.id}>`
+                        this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                        this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                        this.earlyLocation.push(u);
+                        this.db.query(`UPDATE users SET lastnitrouse = '${Date.now()}' WHERE id = ${u.id}`)
+                    } else {
+                        let lastUse = Math.round((Date.now() - rows[0].lastnitrouse) / 60000)
+                        reactor.send(`Nitro perks have been limited to once an hour. Your last use was \`${lastUse}\` minutes ago`)
+                    }
+                })
             }
             if (r.emoji.name == '❌') {
                 if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
@@ -337,14 +340,24 @@ class afk {
                 }
                 if (this.nitro.length + 1 > botSettings.nitroCount) return;
                 if (reactor.roles.cache.has(this.nitroBooster.id)) {
-                    reactor.send(`The location for this run has been set to \`${this.location}\``);
-                    this.nitro[this.nitro.length - 1] = u;
-                    if (this.leaderEmbed.fields[3].value == `None yet!`) {
-                        this.leaderEmbed.fields[3].value = `<@!${u.id}> `;
-                    } else this.leaderEmbed.fields[3].value += `, <@!${u.id}>`
-                    this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
-                    this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
-                    this.earlyLocation.push(u);
+                    this.db.query(`SELECT * FROM users WHERE id = '${u.id}'`, async (err, rows) => {
+                        if (err) ErrorLogger.log(err, bot)
+                        if (rows.length == 0) await this.db.query(`INSERT INTO users (id, ign) VALUES('${u.id}', '${reactor.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}')`)
+                        if (Date.now() - 3600000 > parseInt(rows[0].lastnitrouse)) {
+                            reactor.send(`The location for this run has been set to \`${this.location}\``);
+                            this.nitro[this.nitro.length - 1] = u;
+                            if (this.leaderEmbed.fields[3].value == `None yet!`) {
+                                this.leaderEmbed.fields[3].value = `<@!${u.id}> `;
+                            } else this.leaderEmbed.fields[3].value += `, <@!${u.id}>`
+                            this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                            this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                            this.earlyLocation.push(u);
+                            this.db.query(`UPDATE users SET lastnitrouse = '${Date.now()}' WHERE id = ${u.id}`)
+                        } else {
+                            let lastUse = Math.round((Date.now() - rows[0].lastnitrouse) / 60000)
+                            reactor.send(`Nitro perks have been limited to once an hour. Your last use was \`${lastUse}\` minutes ago`)
+                        }
+                    })
                 }
             }
             if (r.emoji.name == '❌') {
@@ -454,14 +467,24 @@ class afk {
                 }
                 if (this.nitro.length + 1 > botSettings.nitroCount) return;
                 if (reactor.roles.cache.has(this.nitroBooster.id)) {
-                    reactor.send(`The location for this run has been set to \`${this.location}\``);
-                    this.nitro[this.nitro.length - 1] = u;
-                    if (this.leaderEmbed.fields[5].value == `None yet!`) {
-                        this.leaderEmbed.fields[5].value = `<@!${u.id}> `;
-                    } else this.leaderEmbed.fields[5].value += `, <@!${u.id}>`
-                    this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
-                    this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
-                    this.earlyLocation.push(u);
+                    this.db.query(`SELECT * FROM users WHERE id = '${u.id}'`, async (err, rows) => {
+                        if (err) ErrorLogger.log(err, bot)
+                        if (rows.length == 0) await this.db.query(`INSERT INTO users (id, ign) VALUES('${u.id}', '${reactor.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}')`)
+                        if (Date.now() - 3600000 > parseInt(rows[0].lastnitrouse)) {
+                            reactor.send(`The location for this run has been set to \`${this.location}\``);
+                            this.nitro[this.nitro.length - 1] = u;
+                            if (this.leaderEmbed.fields[5].value == `None yet!`) {
+                                this.leaderEmbed.fields[5].value = `<@!${u.id}> `;
+                            } else this.leaderEmbed.fields[5].value += `, <@!${u.id}>`
+                            this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                            this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                            this.earlyLocation.push(u);
+                            this.db.query(`UPDATE users SET lastnitrouse = '${Date.now()}' WHERE id = ${u.id}`)
+                        } else {
+                            let lastUse = Math.round((Date.now() - rows[0].lastnitrouse) / 60000)
+                            reactor.send(`Nitro perks have been limited to once an hour. Your last use was \`${lastUse}\` minutes ago`)
+                        }
+                    })
                 }
             }
             if (r.emoji.name == '❌') {
@@ -767,6 +790,24 @@ class afk {
         fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => {
             if (err) ErrorLogger.log(err, bot)
         })
+        let historyEmbed = new Discord.MessageEmbed()
+            .setColor(this.embedMessage.hexColor)
+            .setTitle(this.embedMessage.author.name)
+            .addField('Leader', `${this.message.member}`)
+            .addField('Ended by', `${this.endedBy}`)
+            .addField('Key', 'None!')
+            .addField('Early Location', 'None!')
+            .addField('Raiders', 'None!')
+        if (this.key) historyEmbed.fields[2].value = `<@!${this.key.id}>`
+        this.earlyLocation.forEach(m => {
+            if (historyEmbed.fields[3].value == `None!`) historyEmbed.fields[3].value = `<@!${m.id}>`
+            else historyEmbed.fields[3].value += `, <@!${m.id}>`
+        })
+        raiders.forEach(m => {
+            if (historyEmbed.fields[4].value == `None!`) historyEmbed.fields[4].value = `<@!${m}>`
+            else historyEmbed.fields[4].value += `, <@!${m}>`
+        })
+        this.message.guild.channels.cache.find(c => c.name === this.settings.history).send(historyEmbed)
         setTimeout(() => {
             this.channel.members.each(m => {
                 try {
@@ -783,7 +824,15 @@ class afk {
                     ErrorLogger(er, bot);
                 }
             })
-
+            //for whenever varchar is changed to int
+            /*let query = `UPDATE users SET `
+            if (this.run == 1) query = query.concat('cultRuns = cultRuns + 1 WHERE ')
+            else query = query.concat('voidRuns = voidRuns + 1 WHERE ')
+            this.channel.members.each(m => query = query.concat(`id = '${m.id}' OR `))
+            query = query.substring(0, query.length - 4)
+            this.db.query(query, err => {
+                if (err) ErrorLogger.log(err, bot)
+            })*/
             if (this.key != null) {
                 try {
                     this.db.query(`SELECT * FROM users WHERE id = '${this.key.id}'`, (err, rows) => {
@@ -912,7 +961,7 @@ async function createChannel(isVet, message, run) {
             .setDescription('Whenever the run is over. React with the ❌ to delete the channel. View the timestamp for more information')
             .setFooter(channel.id)
             .setTimestamp()
-        let m = await vibotChannels.send(embed)
+        let m = await vibotChannels.send(`${message.member}`, embed)
         await m.react('❌')
         setTimeout(() => { Channels.update(message.guild, bot) }, 5000)
         if (!channel) rej('No channel was made')

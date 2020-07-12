@@ -12,23 +12,38 @@ module.exports = {
         if (member == undefined) {
             member = message.guild.members.cache.get(args[0]);
         }
-        if (member == undefined) { message.channel.send('User not found'); return; }
+        if (member == undefined) return message.channel.send('User not found');
         const customerFeedback = message.guild.channels.cache.find(c => c.name === settings.rlfeedback)
         try {
-            let findings = await message.channel.send(`Searching for all mentions of ${member} in ${customerFeedback}`)
-            customerFeedback.messages.fetch({ limit: 100 })
-                .then(messages => {
-                    var mentions = `Messages found mentioning ${member} in ${customerFeedback} in past 100 messages:\n`
-                    let mentioning = messages.filter(m => m.mentions.users.get(member.id))
-                    if (mentioning.length == 0) findings.edit(`No mentions of ${member} in ${customerFeedback} in past 100 messages:`)
-                    else {
-                        mentioning.each(m => mentions = mentions.concat(`\n${m.url}`));
-                        findings.edit(mentions)
-                    }
-                })
+            let findings = await message.channel.send(`Searching for mentions of ${member} in ${customerFeedback}`)
+            let mentions = `Messages found mentioning ${member} in ${customerFeedback} in past 500 messages:\n`
+            let messages = await getMessages(customerFeedback, 500)
+            messages.forEach(m => {
+                if (m.mentions.users.get(member.id)) {
+                    mentions = mentions.concat(`\n${m.url}`)
+                }
+            })
+            findings.edit(mentions)
         } catch (er) {
             message.channel.send("Error occured and details have been sent to Vi")
             ErrorLogger.log(er, bot)
         }
     }
+}
+async function getMessages(channel, limit) {
+    const sum_messages = [];
+    let last_id;
+    while (true) {
+        const options = { limit: 100 };
+        if (last_id) {
+            options.before = last_id;
+        }
+        const messages = await channel.messages.fetch(options);
+        sum_messages.push(...messages.array());
+        last_id = messages.last().id;
+        if (messages.size != 100 || sum_messages >= limit) {
+            break;
+        }
+    }
+    return sum_messages;
 }

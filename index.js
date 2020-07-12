@@ -165,6 +165,7 @@ bot.on("ready", () => {
                     eventcommands: 'eventbot-commands',
                     eventchannels: 'active-channels-e',
                     runinfo: 'dylanbot-info',
+                    history: 'history',
                     raidingtemplate: 'Raiding Template',
                     vettemplate: 'Veteran Raiding Template',
                     eventtemplate: 'Event Raiding Template'

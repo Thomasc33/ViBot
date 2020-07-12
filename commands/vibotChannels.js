@@ -26,22 +26,40 @@ module.exports = {
                     let channel = guild.channels.cache.get(embed.footer.text)
                     if (channel == null) m.delete()
                     let reactionCollector = new Discord.ReactionCollector(m, xFilter)
-                    reactionCollector.on('collect', async function (r, u) {
-                        for (let i in bot.afkChecks) {
-                            if (i == embed.footer.text) {
-                                let key = await guild.members.cache.get(bot.afkChecks[i].key)
-                                if (key) {
-                                    let keyRole = await guild.roles.cache.find(r => r.name === settings.tempkey)
-                                    await key.roles.remove(keyRole.id).catch(r => ErrorLogger.log(r, bot))
-                                }
-                                delete bot.afkChecks[i];
-                                fs.writeFile('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => {
-                                    if (err) ErrorLogger.log(err, bot)
-                                })
-                            }
+                    reactionCollector.on('collect', async (r, u) => {
+                        if (u.id == m.mentions.members.first().id) remove()
+                        else {
+                            await m.reactions.removeAll()
+                            reactionCollector.stop()
+                            await m.react('✅')
+                            await m.react('❌')
+                            let confirmReactionCollector = new Discord.ReactionCollector(m, (r, uu) => (r.emoji.name === '✅' || r.emoji.name === '❌') && u.id == uu.id)
+                            confirmReactionCollector.on('collect', async (r, u) => {
+                                if (r.emoji.name == '❌') {
+                                    await m.reactions.removeAll()
+                                    confirmReactionCollector.stop()
+                                    await m.react('❌')
+                                } else remove()
+                            })
                         }
-                        await channel.delete()
-                        await m.delete()
+                        async function remove() {
+                            for (let i in bot.afkChecks) {
+                                if (i == embed.footer.text) {
+                                    let key = await guild.members.cache.get(bot.afkChecks[i].key)
+                                    if (key) {
+                                        let keyRole = await guild.roles.cache.find(r => r.name === settings.tempkey)
+                                        await key.roles.remove(keyRole.id).catch(r => ErrorLogger.log(r, bot))
+                                    }
+                                    delete bot.afkChecks[i];
+                                    fs.writeFile('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => {
+                                        if (err) ErrorLogger.log(err, bot)
+                                    })
+                                }
+                            }
+                            await channel.delete()
+                            await m.delete()
+                        }
+
                     })
                 })
             }
