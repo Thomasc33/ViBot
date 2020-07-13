@@ -226,25 +226,37 @@ class afk {
                 this.confirmRush(u, r);
             }
             //nitro
-            if (reactor.roles.cache.has(this.nitroBooster.id)) {
-                this.db.query(`SELECT * FROM users WHERE id = '${u.id}'`, async (err, rows) => {
-                    if (err) ErrorLogger.log(err, bot)
-                    if (rows.length == 0) await this.db.query(`INSERT INTO users (id, ign) VALUES('${u.id}', '${reactor.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}')`)
-                    if (Date.now() - 3600000 > parseInt(rows[0].lastnitrouse)) {
-                        //reactor.send(`The location for this run has been set to \`${this.location}\``);
-                        this.nitro[this.nitro.length - 1] = u;
-                        if (this.leaderEmbed.fields[3].value == `None yet!`) {
-                            this.leaderEmbed.fields[3].value = `<@!${u.id}> `;
-                        } else this.leaderEmbed.fields[3].value += `, <@!${u.id}>`
-                        this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
-                        this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
-                        //this.earlyLocation.push(u);
-                        this.db.query(`UPDATE users SET lastnitrouse = '${Date.now()}' WHERE id = ${u.id}`)
-                    } else {
-                        let lastUse = Math.round((Date.now() - rows[0].lastnitrouse) / 60000)
-                        reactor.send(`Nitro perks have been limited to once an hour. Your last use was \`${lastUse}\` minutes ago`)
-                    }
-                })
+            if (r.emoji.id === botSettings.emoteIDs.shard) {
+                if (this.earlyLocation.includes(u)) {
+                    reactor.send(`The location for this run has been set to \`${this.location}\``);
+                    return;
+                }
+                if (reactor.roles.highest.position >= this.leaderOnLeave.position) {
+                    reactor.send(`The location for this run has been set to \`${this.location}\``);
+                    this.earlyLocation.push(u);
+                    return;
+                }
+                if (this.nitro.length + 1 > botSettings.nitroCount) return;
+                if (reactor.roles.cache.has(this.nitroBooster.id)) {
+                    this.db.query(`SELECT * FROM users WHERE id = '${u.id}'`, async (err, rows) => {
+                        if (err) ErrorLogger.log(err, bot)
+                        if (rows.length == 0) await this.db.query(`INSERT INTO users (id, ign) VALUES('${u.id}', '${reactor.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}')`)
+                        if (Date.now() - 3600000 > parseInt(rows[0].lastnitrouse)) {
+                            //reactor.send(`The location for this run has been set to \`${this.location}\``);
+                            this.nitro[this.nitro.length - 1] = u;
+                            if (this.leaderEmbed.fields[3].value == `None yet!`) {
+                                this.leaderEmbed.fields[3].value = `<@!${u.id}> `;
+                            } else this.leaderEmbed.fields[3].value += `, <@!${u.id}>`
+                            this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                            this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                            //this.earlyLocation.push(u);
+                            this.db.query(`UPDATE users SET lastnitrouse = '${Date.now()}' WHERE id = ${u.id}`)
+                        } else {
+                            let lastUse = Math.round((Date.now() - rows[0].lastnitrouse) / 60000)
+                            reactor.send(`Nitro perks have been limited to once an hour. Your last use was \`${lastUse}\` minutes ago`)
+                        }
+                    })
+                }
             }
             if (r.emoji.name == '❌') {
                 if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
