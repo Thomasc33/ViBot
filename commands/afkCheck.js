@@ -231,14 +231,14 @@ class afk {
                     if (err) ErrorLogger.log(err, bot)
                     if (rows.length == 0) await this.db.query(`INSERT INTO users (id, ign) VALUES('${u.id}', '${reactor.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}')`)
                     if (Date.now() - 3600000 > parseInt(rows[0].lastnitrouse)) {
-                        reactor.send(`The location for this run has been set to \`${this.location}\``);
+                        //reactor.send(`The location for this run has been set to \`${this.location}\``);
                         this.nitro[this.nitro.length - 1] = u;
                         if (this.leaderEmbed.fields[3].value == `None yet!`) {
                             this.leaderEmbed.fields[3].value = `<@!${u.id}> `;
                         } else this.leaderEmbed.fields[3].value += `, <@!${u.id}>`
                         this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                         this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
-                        this.earlyLocation.push(u);
+                        //this.earlyLocation.push(u);
                         this.db.query(`UPDATE users SET lastnitrouse = '${Date.now()}' WHERE id = ${u.id}`)
                     } else {
                         let lastUse = Math.round((Date.now() - rows[0].lastnitrouse) / 60000)
@@ -344,14 +344,14 @@ class afk {
                         if (err) ErrorLogger.log(err, bot)
                         if (rows.length == 0) await this.db.query(`INSERT INTO users (id, ign) VALUES('${u.id}', '${reactor.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}')`)
                         if (Date.now() - 3600000 > parseInt(rows[0].lastnitrouse)) {
-                            reactor.send(`The location for this run has been set to \`${this.location}\``);
+                            //reactor.send(`The location for this run has been set to \`${this.location}\``);
                             this.nitro[this.nitro.length - 1] = u;
                             if (this.leaderEmbed.fields[3].value == `None yet!`) {
                                 this.leaderEmbed.fields[3].value = `<@!${u.id}> `;
                             } else this.leaderEmbed.fields[3].value += `, <@!${u.id}>`
                             this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                             this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
-                            this.earlyLocation.push(u);
+                            //this.earlyLocation.push(u);
                             this.db.query(`UPDATE users SET lastnitrouse = '${Date.now()}' WHERE id = ${u.id}`)
                         } else {
                             let lastUse = Math.round((Date.now() - rows[0].lastnitrouse) / 60000)
@@ -471,14 +471,14 @@ class afk {
                         if (err) ErrorLogger.log(err, bot)
                         if (rows.length == 0) await this.db.query(`INSERT INTO users (id, ign) VALUES('${u.id}', '${reactor.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}')`)
                         if (Date.now() - 3600000 > parseInt(rows[0].lastnitrouse)) {
-                            reactor.send(`The location for this run has been set to \`${this.location}\``);
+                            //reactor.send(`The location for this run has been set to \`${this.location}\``);
                             this.nitro[this.nitro.length - 1] = u;
                             if (this.leaderEmbed.fields[5].value == `None yet!`) {
                                 this.leaderEmbed.fields[5].value = `<@!${u.id}> `;
                             } else this.leaderEmbed.fields[5].value += `, <@!${u.id}>`
                             this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                             this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
-                            this.earlyLocation.push(u);
+                            //this.earlyLocation.push(u);
                             this.db.query(`UPDATE users SET lastnitrouse = '${Date.now()}' WHERE id = ${u.id}`)
                         } else {
                             let lastUse = Math.round((Date.now() - rows[0].lastnitrouse) / 60000)

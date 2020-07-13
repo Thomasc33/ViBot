@@ -14,11 +14,11 @@ module.exports = {
         }
         if (message.channel.parent.name.toLowerCase() === 'veteran raiding') {
             let lounge = message.guild.channels.cache.find(c => c.name === "Veteran Lounge");
-            let channel = message.guild.channels.cache.find(c => c.name == `Veteran Raiding ${args[0]}` || c.name == `Veteran Raiding ${args[0]} <-- Join!`);
+            let channel = message.guild.channels.cache.find(c => c.name == `${settings.vetprefix}${args[0]}` || c.name == `${settings.vetprefix}${args[0]} <-- Join!`);
             await this.clean(channel, lounge, message, settings)
         } else if (message.channel.parent.name.toLowerCase() === 'raiding') {
             let lounge = message.guild.channels.cache.find(c => c.name === "lounge");
-            let channel = message.guild.channels.cache.find(c => c.name == `raiding-${args[0]}` || c.name == `raiding-${args[0]} <-- Join!`);
+            let channel = message.guild.channels.cache.find(c => c.name == `${settings.raidprefix}${args[0]}` || c.name == `${settings.raidprefix}${args[0]} <-- Join!`);
             await this.clean(channel, lounge, message, settings)
         } else if (message.channel.parent.name.toLowerCase() === 'events') {
             let channel = message.guild.channels.cache.find(c => c.type == 'category' && c.name == 'Events').children.find(c => c.name.includes(args[0]) && !c.name.includes('Realm Clearing'))

@@ -10,13 +10,13 @@ module.exports = {
     async execute(message, args, bott) {
         let settings = bott.settings[message.guild.id]
         if (args[0] > botSettings.voiceChannelCount) return;
-        if (message.channel.name === 'dylanbot-commands') {
-            var channel = await message.guild.channels.cache.find(c => c.name == `raiding-${args[0]}` || c.name == `raiding-${args[0]} <-- Join!`);
+        if (message.channel.parent.name.toLowerCase() === 'raiding') {
+            var channel = await message.guild.channels.cache.find(c => c.name == `${settings.raidprefix}${args[0]}` || c.name == `${settings.raidprefix}${args[0]} <-- Join!`);
             var verifiedRaiderRole = await message.guild.roles.cache.find(r => r.name === settings.raider);
-        } else if (message.channel.name === 'veteran-bot-commands') {
-            var channel = await message.guild.channels.cache.find(c => c.name == `Veteran Raiding ${args[0]}` || c.name == `Veteran Raiding ${args[0]} <-- Join!`);
+        } else if (message.channel.parent.name.toLowerCase() === 'veteran raiding') {
+            var channel = await message.guild.channels.cache.find(c => c.name == `${settings.vetprefix}${args[0]}` || c.name == `${settings.vetprefix}${args[0]} <-- Join!`);
             var verifiedRaiderRole = await message.guild.roles.cache.find(r => r.name === settings.vetraider);
-        } else if (message.channel.name === 'eventbot-commands') {
+        } else if (message.channel.parent.name.toLowerCase() === 'events') {
             var channel = message.guild.channels.cache.find(c => c.type == 'category' && c.name == 'Events').children.find(c => c.name.includes(args[0]) && !c.name.includes('Realm Clearing'))
             var verifiedRaiderRole = await message.guild.roles.cache.find(r => r.name === settings.raider);
         } else {
@@ -34,15 +34,15 @@ module.exports = {
             message.channel.send("Could not find channel correctly, please try again");
             return;
         }
-        if (message.channel.name === 'dylanbot-commands') {
+        if (message.channel.parent.name.toLowerCase() === 'raiding') {
             await channel.updateOverwrite(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(r => ErrorLogger.log(er, bot))
-            setTimeout(function () { channel.setName(`raiding-${channelNumber}`).catch(r => ErrorLogger.log(r, bot)) }, 1000)
+            setTimeout(function () { channel.setName(`${settings.raidprefix}${channelNumber}`).catch(r => ErrorLogger.log(r, bot)) }, 1000)
         }
-        if (message.channel.name === 'veteran-bot-commands') {
+        if (message.channel.parent.name.toLowerCase() === 'veteran raiding') {
             await channel.updateOverwrite(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
-            setTimeout(function () { channel.setName(`Veteran Raiding ${channelNumber}`).catch(er => ErrorLogger.log(er, bot)) }, 1000)
+            setTimeout(function () { channel.setName(`${settings.vetprefix}${channelNumber}`).catch(er => ErrorLogger.log(er, bot)) }, 1000)
         }
-        if (message.channel.name === 'eventbot-commands') {
+        if (message.channel.parent.name.toLowerCase() === 'events') {
             let eventBoi = await message.guild.roles.cache.find(r => r.name === settings.events)
             let name = channel.name.substring(0, channel.name.indexOf(channelNumber) + 1)
             await channel.updateOverwrite(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))

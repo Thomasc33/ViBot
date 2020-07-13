@@ -19,31 +19,13 @@ module.exports = {
     execute(message, args, bott, db) {
         let settings = bott.settings[message.guild.id]
         bot = bott
-        if (message.channel.name === 'dylanbot-commands') var isVet = false;
-        else if (message.channel.name === 'veteran-bot-commands') var isVet = true;
-        else {
-            message.channel.send("Try again, but in dylanbot-commands or veteran-bot-commands");
-            return;
-        }
-        if (!(message.channel.name === 'dylanbot-commands' || message.channel.name === 'veteran-bot-commands')) return;
-        if (args.length < 2) {
-            message.channel.send("Command entered incorrectly -> ;ofk <channel #> <c/v/fsv> <location>");
-            return;
-        }
-
+        if (message.channel.parent.name.toLowerCase() === 'raiding') var isVet = false;
+        else if (message.channel.parent.name.toLowerCase() === 'veteran raiding') var isVet = true;
+        else return message.channel.send("Try again, but in dylanbot-commands or veteran-bot-commands");
+        if (args.length < 2) return message.channel.send("Command entered incorrectly -> ;ofk <channel #> <c/v/fsv> <location>");
         //checks for active run
-        if (isVet) {
-            if (activeVetRun == true) {
-                message.channel.send("There is already a run active. If this is an error, do \`;allowoldrun\`");
-                return;
-            }
-        } else {
-            if (activeRun == true) {
-                message.channel.send("There is already a run active. If this is an error, do \`;allowoldrun\`");
-                return;
-            }
-        }
-
+        if (isVet && activeVetRun) return message.channel.send("There is already a run active. If this is an error, do \`;allowoldrun\`");
+        else if (activeRun == true) return message.channel.send("There is already a run active. If this is an error, do \`;allowoldrun\`");
         let run = 0;
         switch (args[1].charAt(0).toLowerCase()) {
             case 'c':
@@ -60,13 +42,10 @@ module.exports = {
                 return;
         }
         let location = "";
-        for (i = 2; i < args.length; i++) {
-            location = location.concat(args[i]) + ' ';
-        }
+        for (i = 2; i < args.length; i++) location = location.concat(args[i]) + ' ';
         location = location.trim();
-        if (location.length >= 1024) {
-            message.channel.send('Location must be below 1024 characters, try again');
-        }
+        if (location == '') location = 'None!'
+        if (location.length >= 1024) return message.channel.send('Location must be below 1024 characters, try again');
         if (isVet) {
             currentVet = new afk(args[0], run, location, message, isVet, db, settings);
             currentVet.start();
@@ -149,17 +128,14 @@ class afk {
 
         //variables
         if (!this.isVet) {
-            this.voiceChannel = this.message.guild.channels.cache.find(c => c.name == `raiding-${this.channel}` || c.name == `raiding-${this.channel} <--Join Now!`);
+            this.voiceChannel = this.message.guild.channels.cache.find(c => c.name == `${this.settings.raidprefix}${this.channel}` || c.name == `${this.settings.raidprefix}${this.channel} <--Join Now!`);
             this.verifiedRaiderRole = this.message.guild.roles.cache.find(r => r.name === this.settings.raider);
         } else if (this.isVet) {
-            this.voiceChannel = this.message.guild.channels.cache.find(c => c.name == `Veteran Raiding ${this.channel}` || c.name == `Veteran Raiding ${this.channel} <--Join Now!`);
+            this.voiceChannel = this.message.guild.channels.cache.find(c => c.name == `${this.settings.vetprefix}${this.channel}` || c.name == `${this.settings.vetprefix}${this.channel} <--Join Now!`);
             this.verifiedRaiderRole = this.message.guild.roles.cache.find(r => r.name === this.settings.vetraider);
         } else return;
-        if (this.channel == null) {
-            this.message.channel.send("Could not find channel correctly, please try again");
-            return;
-        }
-        await unlockChannel(this.verifiedRaiderRole, this.voiceChannel, this.channel, this.isVet)
+        if (this.channel == null) return this.message.channel.send("Could not find channel correctly, please try again");
+        await unlockChannel(this.verifiedRaiderRole, this.voiceChannel, this.channel, this.isVet, this.settings)
 
         //begin afk check
         switch (this.run) {
@@ -758,7 +734,7 @@ To end the AFK check as a leader, react to ❌`)
         this.timer = await setInterval(() => { this.updatePost() }, 5000);
 
         //lock vc
-        await lockChannel(this.verifiedRaiderRole, this.voiceChannel, this.channel, this.isVet);
+        await lockChannel(this.verifiedRaiderRole, this.voiceChannel, this.channel, this.isVet, this.settings);
 
         //post afk check embed
         this.embedMessage.setDescription(`__**Post AFK Move-in**__
@@ -820,7 +796,6 @@ To end the AFK check as a leader, react to ❌`)
                 ErrorLogger(er, bot);
             }
         })
-
         if (this.key != null) {
             try {
                 this.db.query(`SELECT * FROM users WHERE id = '${this.key.id}'`, (err, rows) => {
@@ -831,7 +806,6 @@ To end the AFK check as a leader, react to ❌`)
                 ErrorLogger(er, bot)
             }
         }
-
     }
     async abortAfk() {
         //Stops reaction collector
@@ -847,7 +821,7 @@ To end the AFK check as a leader, react to ❌`)
         this.afkCheckEmbed.edit("", this.embedMessage).catch(er => console.log(er));
 
         //lock vc
-        await lockChannel(this.verifiedRaiderRole, this.voiceChannel, this.channel, this.isVet);
+        await lockChannel(this.verifiedRaiderRole, this.voiceChannel, this.channel, this.isVet, this.settings);
 
         //Update afk control panel
         this.leaderEmbed.setFooter(`The afk check has been aborted by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`);
@@ -933,28 +907,28 @@ async function fsvReact(message) {
         .then(message.react('❌'))
         .catch(err => console.log(err));
 }
-async function unlockChannel(raiderRole, voiceChannel, voiceChannelNumber, isVet) {
+async function unlockChannel(raiderRole, voiceChannel, voiceChannelNumber, isVet, settings) {
     if (isVet) {
         await voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(r => console.log(r));
-        await voiceChannel.setName(`Veteran Raiding ${voiceChannelNumber} <-- Join!`).catch(r => console.log(r));
+        await voiceChannel.setName(`${settings.vetprefix}${voiceChannelNumber} <-- Join!`).catch(r => console.log(r));
         await voiceChannel.setUserLimit(0).catch(r => console.log(r));
     }
     if (!isVet) {
         await voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(r => console.log(r));
-        await voiceChannel.setName(`raiding-${voiceChannelNumber} <-- Join!`).catch(r => console.log(r));
+        await voiceChannel.setName(`${settings.raidprefix}${voiceChannelNumber} <-- Join!`).catch(r => console.log(r));
         await voiceChannel.setUserLimit(0).catch(r => console.log(r));
     }
     return;
 }
-async function lockChannel(raiderRole, voiceChannel, voiceChannelNumber, isVet) {
+async function lockChannel(raiderRole, voiceChannel, voiceChannelNumber, isVet, settings) {
     if (isVet) {
         await voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(r => console.log(r));
-        await voiceChannel.setName(`Veteran Raiding ${voiceChannelNumber}`).catch(r => console.log(r));
+        await voiceChannel.setName(`${settings.vetprefix}${voiceChannelNumber}`).catch(r => console.log(r));
         await voiceChannel.setUserLimit(99).catch(r => console.log(r));
     }
     if (!isVet) {
         await voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(r => console.log(r));
-        await voiceChannel.setName(`raiding-${voiceChannelNumber}`).catch(r => console.log(r));
+        await voiceChannel.setName(`${settings.raidprefix}${voiceChannelNumber}`).catch(r => console.log(r));
         await voiceChannel.setUserLimit(99).catch(r => console.log(r));
     }
     return;

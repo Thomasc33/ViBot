@@ -203,7 +203,9 @@ module.exports = {
                             .setDescription(`\`\`\`Please select what you wish to edit
 1: Raiding Template
 2: Vet Template
-3: Event Template\`\`\``)
+3: Event Template
+4: Raiding Prefix
+5: Veteran Prefix\`\`\``)
                         await setupMessage.edit(setupEmbed)
                         let voiceMenu = new Discord.MessageCollector(message.channel, m => m.author.id == message.author.id)
                         voiceMenu.on('collect', async m => {
@@ -226,6 +228,8 @@ module.exports = {
                                         case '1': bot.settings[message.guild.id].raidingtemplate = newRoleName; break;
                                         case '2': bot.settings[message.guild.id].vettemplate = newRoleName; break;
                                         case '3': bot.settings[message.guild.id].eventtemplate = newRoleName; break;
+                                        case '4': bot.settings[message.guild.id].raidprefix = newRoleName; break;
+                                        case '5': bot.settings[message.guild.id].vetprefix = newRoleName; break;
                                         default: message.channel.send('error (number not found)'); break;
                                     }
                                     fs.writeFileSync('./guildSettings.json', JSON.stringify(bot.settings, null, 4), err => message.channel.send(err))
