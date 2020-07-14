@@ -738,11 +738,16 @@ class afk {
         for (let i in this.earlyLocation) {
             let u = this.earlyLocation[i];
             let member = this.message.guild.members.cache.get(u.id);
-            try {
-                if (member.voice.channel.name == 'lounge' || member.voice.channel.name == 'Veteran Lounge' || member.voice.channel.name.contains('drag')) {
-                    member.edit({ channel: this.channel }).catch(er => { });
-                }
-            } catch (er) { }
+            if (member.voice.channel.name == 'lounge' || member.voice.channel.name == 'Veteran Lounge' || member.voice.channel.name.contains('drag')) {
+                await member.voice.setChannel(this.channel.id).catch(er => { });
+            }
+        }
+        for (let i in this.nitro) {
+            let u = this.nitro[i];
+            let member = this.message.guild.members.cache.get(u.id);
+            if (member.voice.channel.name == 'lounge' || member.voice.channel.name == 'Veteran Lounge' || member.voice.channel.name.contains('drag')) {
+                await member.voice.setChannel(this.channel.id).catch(er => { });
+            }
         }
     }
     async endAfk() {
@@ -752,9 +757,9 @@ class afk {
         clearInterval(this.moveInTimer);
         clearInterval(this.timer);
 
-        this.channel.updateOverwrite(this.verifiedRaiderRole.id, { CONNECT: false, VIEW_CHANNEL: true })
+        await this.channel.updateOverwrite(this.verifiedRaiderRole.id, { CONNECT: false, VIEW_CHANNEL: true })
         if (!this.isVet) {
-            this.channel.setPosition(this.afkChannel.position)
+            setTimeout(() => this.channel.setPosition(this.afkChannel.position), 1000)
         }
 
         if (this.key != null) {
@@ -864,8 +869,8 @@ class afk {
         clearInterval(this.moveInTimer);
         clearInterval(this.timer);
 
-        this.channel.updateOverwrite(this.verifiedRaiderRole.id, { CONNECT: false, VIEW_CHANNEL: false })
-        this.channel.setPosition(this.channel.parent.children.filter(c => c.type == 'voice').size - 1)
+        await this.channel.updateOverwrite(this.verifiedRaiderRole.id, { CONNECT: false, VIEW_CHANNEL: false })
+        setTimeout(() => this.channel.setPosition(this.channel.parent.children.filter(c => c.type == 'voice').size - 1), 1000)
 
         this.embedMessage.setDescription(`This afk check has been aborted`)
             .setFooter(`The afk check has been aborted by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
@@ -955,10 +960,8 @@ async function createChannel(isVet, message, run) {
             var vibotChannels = message.guild.channels.cache.find(c => c.name === settings.activechannels)
         }
         let channel = await template.clone()
-        setTimeout(async function () {
-            await channel.setParent(message.guild.channels.cache.filter(c => c.type == 'category').find(c => c.name.toLowerCase() === parent))
-            channel.setPosition(0)
-        }, 1000)
+        setTimeout(() => channel.setParent(message.guild.channels.cache.filter(c => c.type == 'category').find(c => c.name.toLowerCase() === parent)), 1000)
+        setTimeout(() => channel.setPosition(0), 2000)
         await message.member.voice.setChannel(channel).catch(er => { })
         if (run == 1) { await channel.setName(`${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s Cult`) }
         if (run == 2) { await channel.setName(`${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s Void`) }
