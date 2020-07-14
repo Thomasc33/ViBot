@@ -18,7 +18,7 @@ module.exports = {
         await updateChannel(guild.channels.cache.find(c => c.name === settings.vetchannels))
         await updateChannel(guild.channels.cache.find(c => c.name === settings.eventchannels))
         async function updateChannel(c) {
-            if (!c) return ErrorLogger.log(new Error(`a channel was not found`), bot);
+            if (!c) return;
             let messages = await c.messages.fetch()
             messages.each(async m => {
                 if (m.author.id !== bot.user.id) return;

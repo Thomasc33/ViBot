@@ -24,7 +24,7 @@ module.exports = {
         let leaderLog = guild.channels.cache.find(c => c.name === settings.pastweeks)
         if (leaderLog == null) { console.log('Channel not found'); return; }
         await this.sendEmbed(leaderLog, db, bot)
-        await db.query(`UPDATE users SET currentweekCult = '0', currentweekVoid = '0', currentweekAssists = '0'`)
+        await db.query(`UPDATE users SET currentweekCult = 0, currentweekVoid = 0, currentweekAssists = 0`)
         this.update(guild, db, bot)
     },
     async update(guild, db, bot) {
@@ -37,7 +37,7 @@ module.exports = {
     async sendEmbed(channel, db, bot) {
         let settings = bot.settings[channel.guild.id]
         return new Promise(async function (resolve, reject) {
-            db.query(`SELECT * FROM users WHERE currentweekCult != '0' OR currentweekVoid != '0' OR currentweekAssists != '0'`, async function (err, rows) {
+            db.query(`SELECT * FROM users WHERE currentweekCult != 0 OR currentweekVoid != 0 OR currentweekAssists != 0`, async function (err, rows) {
                 if (err) reject(err)
                 let logged = []
                 let runs = 0, cults = 0, voids = 0, assists = 0

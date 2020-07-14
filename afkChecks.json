@@ -1,1 +1,11 @@
-{}
+{
+    "732682214231375903": {
+        "isVet": false,
+        "location": "test",
+        "leader": "277636691227836419",
+        "earlyLocation": [],
+        "raiders": [],
+        "time": 1594755821455,
+        "runType": 1
+    }
+}

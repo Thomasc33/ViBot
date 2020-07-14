@@ -5,6 +5,6 @@ module.exports = {
     description: 'Holds testing code',
     role: 'Developer',
     async execute(message, args, bot, db) {
-        return;
+        return
     }
 }

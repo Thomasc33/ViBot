@@ -225,7 +225,7 @@ module.exports = {
                         await message.channel.send(characterParseEmbed)
                         characterParseEmbed.fields = []
                     }
-                    characterParseEmbed.addField(players[i], `${characterEmote} | LVL: \`${character.level}\` | Fame: \`${character.fame}\` | Stats: \`${character.stats}\` | ${weaponEmoji} ${abilityEmoji} ${armorEmoji} ${ringEmoji}${issueString}`)
+                    characterParseEmbed.addField(players[i], `[Link](https://www.realmeye.com/player/${players[i]}) | ${characterEmote} | LVL: \`${character.level}\` | Fame: \`${character.fame}\` | Stats: \`${character.stats}\` | ${weaponEmoji} ${abilityEmoji} ${armorEmoji} ${ringEmoji}${issueString}`)
                     if (i % 20 == 0) {
                         parseStatusEmbed.fields[1].value = `Parsing Characters (${i}/${players.length})`
                         await parseStatusMessage.edit(parseStatusEmbed)

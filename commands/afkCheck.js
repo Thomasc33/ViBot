@@ -238,15 +238,15 @@ class afk {
                 }
                 if (this.nitro.length + 1 > botSettings.nitroCount) return;
                 if (reactor.roles.cache.has(this.nitroBooster.id)) {
-                    if (reactor.voice.channel.id == this.channel.id) {
-                        reactor.send('Nitro has changed and only gives garunteed spot in VC. You are already in the VC so this use hasn\'t been counted')
+                    if (reactor.voice && reactor.voice.channel.id == this.channel.id) {
+                        reactor.send('Nitro has changed and only gives garunteed spot in VC. You are already in the VC so this use hasn\'t been counted').catch(er => { })
                     } else {
                         this.db.query(`SELECT * FROM users WHERE id = '${u.id}'`, async (err, rows) => {
                             if (err) ErrorLogger.log(err, bot)
                             if (rows.length == 0) await this.db.query(`INSERT INTO users (id, ign) VALUES('${u.id}', '${reactor.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}')`)
                             if (Date.now() - 3600000 > parseInt(rows[0].lastnitrouse)) {
                                 //reactor.send(`The location for this run has been set to \`${this.location}\``);
-                                reactor.voice.setChannel(this.channel.id)
+                                reactor.voice.setChannel(this.channel.id).catch(er => { reactor.send('Please join a voice channel to get moved in') })
                                 this.nitro[this.nitro.length - 1] = u;
                                 if (this.leaderEmbed.fields[3].value == `None yet!`) {
                                     this.leaderEmbed.fields[3].value = `<@!${u.id}> `;
@@ -357,15 +357,15 @@ class afk {
                 }
                 if (this.nitro.length + 1 > botSettings.nitroCount) return;
                 if (reactor.roles.cache.has(this.nitroBooster.id)) {
-                    if (reactor.voice.channel.id == this.channel.id) {
-                        reactor.send('Nitro has changed and only gives garunteed spot in VC. You are already in the VC so this use hasn\'t been counted')
+                    if (reactor.voice && reactor.voice.channel.id == this.channel.id) {
+                        reactor.send('Nitro has changed and only gives garunteed spot in VC. You are already in the VC so this use hasn\'t been counted').catch(er => { })
                     } else {
                         this.db.query(`SELECT * FROM users WHERE id = '${u.id}'`, async (err, rows) => {
                             if (err) ErrorLogger.log(err, bot)
                             if (rows.length == 0) await this.db.query(`INSERT INTO users (id, ign) VALUES('${u.id}', '${reactor.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}')`)
                             if (Date.now() - 3600000 > parseInt(rows[0].lastnitrouse)) {
                                 //reactor.send(`The location for this run has been set to \`${this.location}\``);
-                                reactor.voice.setChannel(this.channel.id)
+                                reactor.voice.setChannel(this.channel.id).catch(er => { reactor.send('Please join a voice channel to get moved in') })
                                 this.nitro[this.nitro.length - 1] = u;
                                 if (this.leaderEmbed.fields[3].value == `None yet!`) {
                                     this.leaderEmbed.fields[3].value = `<@!${u.id}> `;
@@ -489,16 +489,16 @@ class afk {
                 }
                 if (this.nitro.length + 1 > botSettings.nitroCount) return;
                 if (reactor.roles.cache.has(this.nitroBooster.id)) {
-                    if (reactor.voice.channel.id == this.channel.id) {
-                        reactor.send('Nitro has changed and only gives garunteed spot in VC. You are already in the VC so this use hasn\'t been counted')
+                    if (reactor.voice && reactor.voice.channel.id == this.channel.id) {
+                        reactor.send('Nitro has changed and only gives garunteed spot in VC. You are already in the VC so this use hasn\'t been counted').catch(er => { })
                     } else {
                         this.db.query(`SELECT * FROM users WHERE id = '${u.id}'`, async (err, rows) => {
                             if (err) ErrorLogger.log(err, bot)
                             if (rows.length == 0) await this.db.query(`INSERT INTO users (id, ign) VALUES('${u.id}', '${reactor.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}')`)
                             if (Date.now() - 3600000 > parseInt(rows[0].lastnitrouse)) {
                                 //reactor.send(`The location for this run has been set to \`${this.location}\``);
-                                reactor.voice.setChannel(this.channel.id)
-                                this.nitro.push(u);
+                                reactor.voice.setChannel(this.channel.id).catch(er => { reactor.send('Please join a voice channel to get moved in') })
+                                this.nitro[this.nitro.length - 1] = u;
                                 if (this.leaderEmbed.fields[3].value == `None yet!`) {
                                     this.leaderEmbed.fields[3].value = `<@!${u.id}> `;
                                 } else this.leaderEmbed.fields[3].value += `, <@!${u.id}>`

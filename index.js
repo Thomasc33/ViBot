@@ -101,8 +101,10 @@ db.connect(err => {
     console.log('Connected to database')
 })
 
-bot.on("ready", () => {
+bot.on("ready", async () => {
     console.log(`Bot loaded: ${bot.user.username}`);
+    let vi = await bot.users.fetch(`277636691227836419`)
+    vi.send('Bot Starting Back Up')
     bot.user.setActivity(`bruh`);
     let changed = false
     //generate default settings

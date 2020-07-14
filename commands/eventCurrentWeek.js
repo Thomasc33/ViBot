@@ -22,7 +22,7 @@ module.exports = {
         let leaderLog = guild.channels.cache.find(c => c.name === settings.eventcurrentweek)
         if (leaderLog == null) { console.log('Channel not found'); return; }
         await this.sendEmbed(leaderLog, db, bot)
-        await db.query(`UPDATE users SET currentweekEvents = '0'`)
+        await db.query(`UPDATE users SET currentweekEvents = 0`)
         this.update(guild, db, bot)
     },
     async update(guild, db, bot) {
@@ -35,7 +35,7 @@ module.exports = {
     async sendEmbed(channel, db, bot) {
         let settings = bot.settings[channel.guild.id]
         return new Promise(async function (resolve, reject) {
-            db.query(`SELECT * FROM users WHERE currentweekEvents != '0'`, async function (err, rows) {
+            db.query(`SELECT * FROM users WHERE currentweekEvents != 0`, async function (err, rows) {
                 if (err) reject(err)
                 let logged = []
                 let embed = new Discord.MessageEmbed()
