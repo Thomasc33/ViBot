@@ -28,8 +28,8 @@ module.exports = {
     async update(guild, db, bot) {
         let settings = bot.settings[guild.id]
         let currentweek = guild.channels.cache.find(c => c.name === settings.pasteventweeks);
-        if (currentweek == undefined) return;
-        await currentweek.bulkDelete(100);
+        if (!currentweek) return;
+        //await currentweek.bulkDelete(100);
         this.sendEmbed(currentweek, db, bot)
     },
     async sendEmbed(channel, db, bot) {
@@ -44,46 +44,50 @@ module.exports = {
                     .setDescription('None!')
                 rows.sort((a, b) => (parseInt(a.currentweekEvents) < parseInt(b.currentweekEvents)) ? 1 : -1)
                 let index = 0
+                let embeds = []
                 for (let i in rows) {
                     let string = `**[${index + 1}]** <@!${rows[i].id}>:\nMinutes Lead: \`${parseInt(rows[i].currentweekEvents) * 10}\``
                     fitStringIntoEmbed(embed, string)
                     logged.push(rows[i].id)
                     index++;
                 }
-                channel.guild.members.cache.filter(m => m.roles.highest.id == channel.guild.roles.cache.find(r => r.name === settings.eo).id).each(m => {
-                    if (!logged.includes(`${m.id}`)) {
+                await channel.guild.members.cache.filter(m => m.roles.cache.has(channel.guild.roles.cache.find(r => r.name === settings.arl).id) || m.roles.cache.has(channel.guild.roles.cache.find(r => r.name === settings.rl).id)).each(m => {
+                    if (!rows.includes(m.id)) {
                         let string = `<@!${m.id}> has not logged any runs or been assisted this week`
                         fitStringIntoEmbed(embed, string)
                     }
                 })
-                channel.send(embed)
+                embeds.push(new Discord.MessageEmbed(embed))
                 function fitStringIntoEmbed(embed, string) {
-                    if (embed.description == 'None!') {
-                        embed.setDescription(string)
-                    } else if (embed.description.length + string.length >= 2048) {
-                        if (embed.fields.length == 0) {
-                            embed.addField('-', string)
-                        } else if (embed.fields[embed.fields.length - 1].value.length + string.length >= 1024) {
-                            if (embed.length + string.length + 1 >= 6000) {
-                                channel.send(embed)
+                    if (embed.description == 'None!') embed.setDescription(string)
+                    else if (embed.description.length + string.length >= 2048) {//change to 2048
+                        if (embed.fields.length == 0) embed.addField('-', string)
+                        else if (embed.fields[embed.fields.length - 1].value.length + string.length >= 1024) { //change to 1024
+                            if (embed.length + string.length + 1 >= 6000) {//change back to 6k
+                                embeds.push(new Discord.MessageEmbed(embed))
                                 embed.setDescription('None!')
                                 embed.fields = []
-                            } else {
-                                embed.addField('-', string)
-                            }
+                            } else embed.addField('-', string)
                         } else {
-                            if (embed.length + string.length >= 6000) {
-                                channel.send(embed)
+                            if (embed.length + string.length >= 6000) { //change back to 6k
+                                embeds.push(new Discord.MessageEmbed(embed))
                                 embed.setDescription('None!')
                                 embed.fields = []
-                            } else {
-                                embed.fields[embed.fields.length - 1].value = embed.fields[embed.fields.length - 1].value.concat(`\n${string}`)
-                            }
+                            } else embed.fields[embed.fields.length - 1].value = embed.fields[embed.fields.length - 1].value.concat(`\n${string}`)
                         }
-                    } else {
-                        embed.setDescription(embed.description.concat(`\n${string}`))
-                    }
+                    } else embed.setDescription(embed.description.concat(`\n${string}`))
                 }
+                if (channel.name == settings.currentweekchannel) {
+                    let messages = await channel.messages.fetch({ limit: 20 })
+                    let messageArray = messages.array()
+                    if (messageArray.length != embeds.length) channel.bulkDelete(20);
+                    messages = await channel.messages.fetch({ limit: 20 })
+                    messageArray = messages.array()
+                    for (let i in embeds) {
+                        if (messageArray[i]) await messageArray[i].edit(embeds[embeds.length - (parseInt(i) + 1)])
+                        else channel.send(embeds[i])
+                    }
+                } else for (let i in embeds) await channel.send(embeds[i])
                 resolve(true)
             })
         })

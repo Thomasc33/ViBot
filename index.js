@@ -261,11 +261,10 @@ bot.on("ready", async () => {
     }, 60000);
     bot.guilds.cache.each(g => {
         if (!emojiServers.includes(g.id)) {
-            try {
-                vibotChannels.update(g, bot)
-                if (bot.settings[g.id].modmail) modmail.update(g, bot, db)
-                if (bot.settings[g.id].vetVerification) vetVerification.init(g, bot, db)
-            } catch (er) { return; }
+            vi.send(`${g.name}, ${g.id}`)
+            vibotChannels.update(g, bot).catch(er => { })
+            if (bot.settings[g.id].modmail) modmail.update(g, bot, db).catch(er => { })
+            if (bot.settings[g.id].vetVerification) vetVerification.init(g, bot, db).catch(er => { })
         }
     })
     const currentWeekReset = cron.job('0 0 * * SUN', () => {
@@ -283,8 +282,13 @@ bot.on('error', err => {
 process.on('uncaughtException', err => {
     ErrorLogger.log(err, bot);
     console.log(err);
-    process.exit(1)
 })
+
+process.on('unhandledRejection', err => {
+    ErrorLogger.log(err, bot);
+    console.log(err);
+})
+
 
 async function getGuild(message) {
     return new Promise(async (resolve, reject) => {

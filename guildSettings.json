@@ -1,8 +1,8 @@
 {
     "701483950559985705": {
-        "modmail": false,
+        "modmail": true,
         "currentweek": true,
-        "eventCurrentweek": false,
+        "eventCurrentweek": true,
         "verification": false,
         "vetVerification": false,
         "moderator": "asdfasdfasdf",

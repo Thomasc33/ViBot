@@ -1,6 +1,4 @@
 const Discord = require('discord.js')
-const ErrorLogger = require('../logError')
-
 module.exports = {
     name: 'currentweek',
     description: 'Updates the current week stats or force starts the next week',
@@ -30,7 +28,7 @@ module.exports = {
     async update(guild, db, bot) {
         let settings = bot.settings[guild.id]
         let currentweek = guild.channels.cache.find(c => c.name === settings.currentweekchannel);
-        if (currentweek == undefined) return;
+        if (!currentweek) return;
         //await currentweek.bulkDelete(100);
         this.sendEmbed(currentweek, db, bot)
     },

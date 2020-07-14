@@ -499,9 +499,9 @@ class afk {
                                 //reactor.send(`The location for this run has been set to \`${this.location}\``);
                                 reactor.voice.setChannel(this.channel.id).catch(er => { reactor.send('Please join a voice channel to get moved in') })
                                 this.nitro[this.nitro.length - 1] = u;
-                                if (this.leaderEmbed.fields[3].value == `None yet!`) {
-                                    this.leaderEmbed.fields[3].value = `<@!${u.id}> `;
-                                } else this.leaderEmbed.fields[3].value += `, <@!${u.id}>`
+                                if (this.leaderEmbed.fields[5].value == `None yet!`) {
+                                    this.leaderEmbed.fields[5].value = `<@!${u.id}> `;
+                                } else this.leaderEmbed.fields[5].value += `, <@!${u.id}>`
                                 this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                                 this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                                 //this.earlyLocation.push(u);
@@ -753,14 +753,15 @@ class afk {
         for (let i in this.earlyLocation) {
             let u = this.earlyLocation[i];
             let member = this.message.guild.members.cache.get(u.id);
-            if (member.voice.channel.name == 'lounge' || member.voice.channel.name == 'Veteran Lounge' || member.voice.channel.name.contains('drag')) {
+            if (!member.voice) continue;
+            if (member.voice.channel.name == 'lounge' || member.voice.channel.name == 'Veteran Lounge' || member.voice.channel.name.includes('drag')) {
                 await member.voice.setChannel(this.channel.id).catch(er => { });
             }
         }
         for (let i in this.nitro) {
             let u = this.nitro[i];
             let member = this.message.guild.members.cache.get(u.id);
-            if (member.voice.channel.name == 'lounge' || member.voice.channel.name == 'Veteran Lounge' || member.voice.channel.name.contains('drag')) {
+            if (member.voice.channel.name == 'lounge' || member.voice.channel.name == 'Veteran Lounge' || member.voice.channel.name.includes('drag')) {
                 await member.voice.setChannel(this.channel.id).catch(er => { });
             }
         }
@@ -835,9 +836,17 @@ class afk {
             if (historyEmbed.fields[3].value == `None!`) historyEmbed.fields[3].value = `<@!${m.id}>`
             else historyEmbed.fields[3].value += `, <@!${m.id}>`
         })
+        let bigEmbed = false
         raiders.forEach(m => {
-            if (historyEmbed.fields[4].value == `None!`) historyEmbed.fields[4].value = `<@!${m}>`
-            else historyEmbed.fields[4].value += `, <@!${m}>`
+            if (bigEmbed) historyEmbed.fields[5].value += `, <@!${m}>`
+            else {
+                if (historyEmbed.fields[4].value == `None!`) historyEmbed.fields[4].value = `<@!${m}>`
+                else if (historyEmbed.fields[4].value.length >= 1000) {
+                    bigEmbed = true;
+                    historyEmbed.addField('-', `, <@!${m}>`)
+                }
+                else historyEmbed.fields[4].value += `, <@!${m}>`
+            }
         })
         this.message.guild.channels.cache.find(c => c.name === this.settings.history).send(historyEmbed)
         setTimeout(() => {

@@ -12,7 +12,6 @@ module.exports = {
             //.addField('Stack', error.stack)
             //.addField('Line', error.lineNumber)
             .setTimestamp()
-        vi.send(embed)
-        vi.send(`\`\`\`${error.stack}\`\`\``)
+        let m = vi.send(`\`\`\`${error.stack}\`\`\``, embed)
     }
 }
