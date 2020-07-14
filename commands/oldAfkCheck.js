@@ -781,31 +781,17 @@ To end the AFK check as a leader, react to ❌`)
         if (this.isVet) activeVetRun = false;
         else activeRun = false;
 
-        this.voiceChannel.members.each(m => {
-            try {
-                this.db.query(`SELECT * FROM users WHERE id = '${m.id}'`, async (err, rows) => {
-                    if (rows[0] == undefined) await this.db.query(`INSERT INTO users (id, ign) VALUES('${m.id}', '${m.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}')`)
-                    if (this.run == 1) {
-                        this.db.query(`UPDATE users SET cultRuns = '${parseInt(rows[0].cultRuns) + 1}' WHERE id = '${m.id}'`)
-                    } else {
-                        this.db.query(`UPDATE users SET voidRuns = '${parseInt(rows[0].voidRuns) + 1}' WHERE id = '${m.id}'`)
-                    }
-                    if (err) { ErrorLogger(err, bot); return; }
-                })
-            } catch (er) {
-                ErrorLogger(er, bot);
-            }
-        })
-        if (this.key != null) {
-            try {
-                this.db.query(`SELECT * FROM users WHERE id = '${this.key.id}'`, (err, rows) => {
-                    if (rows[0] == undefined) return;
-                    this.db.query(`UPDATE users SET keypops = '${parseInt(rows[0].keypops) + 1}' WHERE id = '${this.key.id}'`)
-                })
-            } catch (er) {
-                ErrorLogger(er, bot)
-            }
-        }
+        setTimeout(() => {
+            let query = `UPDATE users SET `
+            if (this.run == 1) query = query.concat('cultRuns = cultRuns + 1 WHERE ')
+            else query = query.concat('voidRuns = voidRuns + 1 WHERE ')
+            this.channel.members.each(m => query = query.concat(`id = '${m.id}' OR `))
+            query = query.substring(0, query.length - 4)
+            this.db.query(query, err => {
+                if (err) ErrorLogger.log(err, bot)
+            })
+            if (this.key != null) this.db.query(`UPDATE users SET keypops = keypops + 1 WHERE id = '${this.key.id}'`)
+        }, 60000)
     }
     async abortAfk() {
         //Stops reaction collector

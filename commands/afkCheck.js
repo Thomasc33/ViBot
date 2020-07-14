@@ -238,24 +238,29 @@ class afk {
                 }
                 if (this.nitro.length + 1 > botSettings.nitroCount) return;
                 if (reactor.roles.cache.has(this.nitroBooster.id)) {
-                    this.db.query(`SELECT * FROM users WHERE id = '${u.id}'`, async (err, rows) => {
-                        if (err) ErrorLogger.log(err, bot)
-                        if (rows.length == 0) await this.db.query(`INSERT INTO users (id, ign) VALUES('${u.id}', '${reactor.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}')`)
-                        if (Date.now() - 3600000 > parseInt(rows[0].lastnitrouse)) {
-                            //reactor.send(`The location for this run has been set to \`${this.location}\``);
-                            this.nitro[this.nitro.length - 1] = u;
-                            if (this.leaderEmbed.fields[3].value == `None yet!`) {
-                                this.leaderEmbed.fields[3].value = `<@!${u.id}> `;
-                            } else this.leaderEmbed.fields[3].value += `, <@!${u.id}>`
-                            this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
-                            this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
-                            //this.earlyLocation.push(u);
-                            this.db.query(`UPDATE users SET lastnitrouse = '${Date.now()}' WHERE id = ${u.id}`)
-                        } else {
-                            let lastUse = Math.round((Date.now() - rows[0].lastnitrouse) / 60000)
-                            reactor.send(`Nitro perks have been limited to once an hour. Your last use was \`${lastUse}\` minutes ago`)
-                        }
-                    })
+                    if (reactor.voice.channel.id == this.channel.id) {
+                        reactor.send('Nitro has changed and only gives garunteed spot in VC. You are already in the VC so this use hasn\'t been counted')
+                    } else {
+                        this.db.query(`SELECT * FROM users WHERE id = '${u.id}'`, async (err, rows) => {
+                            if (err) ErrorLogger.log(err, bot)
+                            if (rows.length == 0) await this.db.query(`INSERT INTO users (id, ign) VALUES('${u.id}', '${reactor.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}')`)
+                            if (Date.now() - 3600000 > parseInt(rows[0].lastnitrouse)) {
+                                //reactor.send(`The location for this run has been set to \`${this.location}\``);
+                                reactor.voice.setChannel(this.channel.id)
+                                this.nitro[this.nitro.length - 1] = u;
+                                if (this.leaderEmbed.fields[3].value == `None yet!`) {
+                                    this.leaderEmbed.fields[3].value = `<@!${u.id}> `;
+                                } else this.leaderEmbed.fields[3].value += `, <@!${u.id}>`
+                                this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                                this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                                //this.earlyLocation.push(u);
+                                this.db.query(`UPDATE users SET lastnitrouse = '${Date.now()}' WHERE id = ${u.id}`)
+                            } else {
+                                let lastUse = Math.round((Date.now() - rows[0].lastnitrouse) / 60000)
+                                reactor.send(`Nitro perks have been limited to once an hour. Your last use was \`${lastUse}\` minutes ago`)
+                            }
+                        })
+                    }
                 }
             }
             if (r.emoji.name == '❌') {
@@ -352,24 +357,29 @@ class afk {
                 }
                 if (this.nitro.length + 1 > botSettings.nitroCount) return;
                 if (reactor.roles.cache.has(this.nitroBooster.id)) {
-                    this.db.query(`SELECT * FROM users WHERE id = '${u.id}'`, async (err, rows) => {
-                        if (err) ErrorLogger.log(err, bot)
-                        if (rows.length == 0) await this.db.query(`INSERT INTO users (id, ign) VALUES('${u.id}', '${reactor.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}')`)
-                        if (Date.now() - 3600000 > parseInt(rows[0].lastnitrouse)) {
-                            //reactor.send(`The location for this run has been set to \`${this.location}\``);
-                            this.nitro[this.nitro.length - 1] = u;
-                            if (this.leaderEmbed.fields[3].value == `None yet!`) {
-                                this.leaderEmbed.fields[3].value = `<@!${u.id}> `;
-                            } else this.leaderEmbed.fields[3].value += `, <@!${u.id}>`
-                            this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
-                            this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
-                            //this.earlyLocation.push(u);
-                            this.db.query(`UPDATE users SET lastnitrouse = '${Date.now()}' WHERE id = ${u.id}`)
-                        } else {
-                            let lastUse = Math.round((Date.now() - rows[0].lastnitrouse) / 60000)
-                            reactor.send(`Nitro perks have been limited to once an hour. Your last use was \`${lastUse}\` minutes ago`)
-                        }
-                    })
+                    if (reactor.voice.channel.id == this.channel.id) {
+                        reactor.send('Nitro has changed and only gives garunteed spot in VC. You are already in the VC so this use hasn\'t been counted')
+                    } else {
+                        this.db.query(`SELECT * FROM users WHERE id = '${u.id}'`, async (err, rows) => {
+                            if (err) ErrorLogger.log(err, bot)
+                            if (rows.length == 0) await this.db.query(`INSERT INTO users (id, ign) VALUES('${u.id}', '${reactor.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}')`)
+                            if (Date.now() - 3600000 > parseInt(rows[0].lastnitrouse)) {
+                                //reactor.send(`The location for this run has been set to \`${this.location}\``);
+                                reactor.voice.setChannel(this.channel.id)
+                                this.nitro[this.nitro.length - 1] = u;
+                                if (this.leaderEmbed.fields[3].value == `None yet!`) {
+                                    this.leaderEmbed.fields[3].value = `<@!${u.id}> `;
+                                } else this.leaderEmbed.fields[3].value += `, <@!${u.id}>`
+                                this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                                this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                                //this.earlyLocation.push(u);
+                                this.db.query(`UPDATE users SET lastnitrouse = '${Date.now()}' WHERE id = ${u.id}`)
+                            } else {
+                                let lastUse = Math.round((Date.now() - rows[0].lastnitrouse) / 60000)
+                                reactor.send(`Nitro perks have been limited to once an hour. Your last use was \`${lastUse}\` minutes ago`)
+                            }
+                        })
+                    }
                 }
             }
             if (r.emoji.name == '❌') {
@@ -479,24 +489,29 @@ class afk {
                 }
                 if (this.nitro.length + 1 > botSettings.nitroCount) return;
                 if (reactor.roles.cache.has(this.nitroBooster.id)) {
-                    this.db.query(`SELECT * FROM users WHERE id = '${u.id}'`, async (err, rows) => {
-                        if (err) ErrorLogger.log(err, bot)
-                        if (rows.length == 0) await this.db.query(`INSERT INTO users (id, ign) VALUES('${u.id}', '${reactor.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}')`)
-                        if (Date.now() - 3600000 > parseInt(rows[0].lastnitrouse)) {
-                            //reactor.send(`The location for this run has been set to \`${this.location}\``);
-                            this.nitro[this.nitro.length - 1] = u;
-                            if (this.leaderEmbed.fields[5].value == `None yet!`) {
-                                this.leaderEmbed.fields[5].value = `<@!${u.id}> `;
-                            } else this.leaderEmbed.fields[5].value += `, <@!${u.id}>`
-                            this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
-                            this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
-                            //this.earlyLocation.push(u);
-                            this.db.query(`UPDATE users SET lastnitrouse = '${Date.now()}' WHERE id = ${u.id}`)
-                        } else {
-                            let lastUse = Math.round((Date.now() - rows[0].lastnitrouse) / 60000)
-                            reactor.send(`Nitro perks have been limited to once an hour. Your last use was \`${lastUse}\` minutes ago`)
-                        }
-                    })
+                    if (reactor.voice.channel.id == this.channel.id) {
+                        reactor.send('Nitro has changed and only gives garunteed spot in VC. You are already in the VC so this use hasn\'t been counted')
+                    } else {
+                        this.db.query(`SELECT * FROM users WHERE id = '${u.id}'`, async (err, rows) => {
+                            if (err) ErrorLogger.log(err, bot)
+                            if (rows.length == 0) await this.db.query(`INSERT INTO users (id, ign) VALUES('${u.id}', '${reactor.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}')`)
+                            if (Date.now() - 3600000 > parseInt(rows[0].lastnitrouse)) {
+                                //reactor.send(`The location for this run has been set to \`${this.location}\``);
+                                reactor.voice.setChannel(this.channel.id)
+                                this.nitro.push(u);
+                                if (this.leaderEmbed.fields[3].value == `None yet!`) {
+                                    this.leaderEmbed.fields[3].value = `<@!${u.id}> `;
+                                } else this.leaderEmbed.fields[3].value += `, <@!${u.id}>`
+                                this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                                this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                                //this.earlyLocation.push(u);
+                                this.db.query(`UPDATE users SET lastnitrouse = '${Date.now()}' WHERE id = ${u.id}`)
+                            } else {
+                                let lastUse = Math.round((Date.now() - rows[0].lastnitrouse) / 60000)
+                                reactor.send(`Nitro perks have been limited to once an hour. Your last use was \`${lastUse}\` minutes ago`)
+                            }
+                        })
+                    }
                 }
             }
             if (r.emoji.name == '❌') {
@@ -826,40 +841,31 @@ class afk {
         })
         this.message.guild.channels.cache.find(c => c.name === this.settings.history).send(historyEmbed)
         setTimeout(() => {
-            this.channel.members.each(m => {
+            /*this.channel.members.each(m => {
                 try {
                     this.db.query(`SELECT * FROM users WHERE id = '${m.id}'`, async (err, rows) => {
                         if (rows[0] == undefined) await this.db.query(`INSERT INTO users (id, ign) VALUES('${m.id}', '${m.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}')`)
                         if (this.run == 1) {
-                            this.db.query(`UPDATE users SET cultRuns = '${parseInt(rows[0].cultRuns) + 1}' WHERE id = '${m.id}'`)
+                            this.db.query(`UPDATE users SET cultRuns = ${rows[0].cultRuns + 1} WHERE id = '${m.id}'`)
                         } else {
-                            this.db.query(`UPDATE users SET voidRuns = '${parseInt(rows[0].voidRuns) + 1}' WHERE id = '${m.id}'`)
+                            this.db.query(`UPDATE users SET voidRuns = ${rows[0].voidRuns + 1} WHERE id = '${m.id}'`)
                         }
                         if (err) { ErrorLogger(err, bot); return; }
                     })
                 } catch (er) {
                     ErrorLogger(er, bot);
                 }
-            })
+            })*/
             //for whenever varchar is changed to int
-            /*let query = `UPDATE users SET `
+            let query = `UPDATE users SET `
             if (this.run == 1) query = query.concat('cultRuns = cultRuns + 1 WHERE ')
             else query = query.concat('voidRuns = voidRuns + 1 WHERE ')
             this.channel.members.each(m => query = query.concat(`id = '${m.id}' OR `))
             query = query.substring(0, query.length - 4)
             this.db.query(query, err => {
                 if (err) ErrorLogger.log(err, bot)
-            })*/
-            if (this.key != null) {
-                try {
-                    this.db.query(`SELECT * FROM users WHERE id = '${this.key.id}'`, (err, rows) => {
-                        if (rows[0] == undefined) return;
-                        this.db.query(`UPDATE users SET keypops = '${parseInt(rows[0].keypops) + 1}' WHERE id = '${this.key.id}'`)
-                    })
-                } catch (er) {
-                    ErrorLogger(er, bot)
-                }
-            }
+            })
+            if (this.key != null) this.db.query(`UPDATE users SET keypops = keypops + 1 WHERE id = '${this.key.id}'`)
         }, 60000)
     }
     async abortAfk() {
@@ -978,7 +984,7 @@ async function createChannel(isVet, message, run) {
             .setTimestamp()
         let m = await vibotChannels.send(`${message.member}`, embed)
         await m.react('❌')
-        setTimeout(() => { Channels.update(message.guild, bot) }, 5000)
+        setTimeout(() => { Channels.watchMessage(m, bot, settings) }, 5000)
         if (!channel) rej('No channel was made')
         res(channel);
     })

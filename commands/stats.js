@@ -61,7 +61,7 @@ module.exports = {
                     Assists: ${rows[0].assists}
                     
                     <${botSettings.emote.Vial}>__**Vials**__<${botSettings.emote.Vial}>
-                    Stored: ${rows[0].vialStored}
+                    Dropped: ${rows[0].vialStored}
                     Used: ${rows[0].vialUsed}`)
                 if (guildMember) embed.setThumbnail(guildMember.user.avatarURL())
                 resolve(embed)

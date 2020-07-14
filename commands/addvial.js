@@ -14,7 +14,7 @@ module.exports = {
         if(member == null) {message.channel.send('User not found'); return;}
         db.query(`SELECT * FROM users WHERE id = '${member.id}'`, (err, rows) => {
             if(err) ErrorLogger.log(err, bot)
-            db.query(`UPDATE users SET vialStored = '${parseInt(rows[0].vialStored) + 1}' WHERE id = '${member.id}'`)
+            db.query(`UPDATE users SET vialStored = ${parseInt(rows[0].vialStored) + 1} WHERE id = '${member.id}'`)
             message.channel.send(`Vial logged. They now have ${parseInt(rows[0].vialStored) + 1} vials stored`)
             message.guild.channels.cache.find(c => c.name === settings.viallog).send(`Vial added to ${member} (${member.nickname}), logged by ${message.member} (${parseInt(rows[0].vialStored) + 1} remaining vials)`)
         })

@@ -26,7 +26,7 @@ module.exports = {
                     collector.stop()
                     db.query(`SELECT * FROM users WHERE id = '${user.id}'`, (err, rows) => {
                         if (err) ErrorLogger.log(err, bot)
-                        db.query(`UPDATE users SET keypops = '${parseInt(rows[0].keypops) + parseInt(count)}' WHERE id = '${user.id}'`)
+                        db.query(`UPDATE users SET keypops = ${parseInt(rows[0].keypops) + parseInt(count)} WHERE id = '${user.id}'`)
                         message.channel.send(`Key has been logged. ${user.nickname} now has ${parseInt(rows[0].keypops) + parseInt(count)} pops`)
                     })
                 } else if (m.content.charAt(0).toLowerCase() == 'n') {
@@ -43,7 +43,7 @@ module.exports = {
                     collector.stop()
                     db.query(`SELECT * FROM users WHERE id = '${user.id}'`, (err, rows) => {
                         if (err) ErrorLogger.log(err, bot)
-                        db.query(`UPDATE users SET eventpops = '${parseInt(rows[0].eventpops) + parseInt(count)}' WHERE id = '${user.id}'`)
+                        db.query(`UPDATE users SET eventpops = ${parseInt(rows[0].eventpops) + parseInt(count)} WHERE id = '${user.id}'`)
                         message.channel.send(`Key has been logged. ${user.nickname} now has ${parseInt(rows[0].eventpops) + parseInt(count)} event pops`)
                     })
                 } else if (m.content.charAt(0).toLowerCase() == 'n') {

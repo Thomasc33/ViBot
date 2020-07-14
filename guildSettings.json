@@ -49,7 +49,7 @@
         "activechannels": "active-channels",
         "vetstatus": "veteran-status-announcements",
         "vetcommands": "veteran-bot-commands",
-        "vetchannels": "active-channels-v",
+        "vetchannels": "placeholder-channel-v",
         "eventstatus": "event-status-announcements",
         "eventcommands": "eventbot-commands",
         "eventchannels": "placeholder-channel-e",
