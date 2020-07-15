@@ -238,7 +238,7 @@ class afk {
                 }
                 if (this.nitro.length + 1 > botSettings.nitroCount) return;
                 if (reactor.roles.cache.has(this.nitroBooster.id)) {
-                    if (reactor.voice && reactor.voice.channel.id == this.channel.id) {
+                    if (reactor.voice.channel && reactor.voice.channel.id == this.channel.id) {
                         reactor.send('Nitro has changed and only gives garunteed spot in VC. You are already in the VC so this use hasn\'t been counted').catch(er => { })
                     } else {
                         this.db.query(`SELECT * FROM users WHERE id = '${u.id}'`, async (err, rows) => {
@@ -357,7 +357,7 @@ class afk {
                 }
                 if (this.nitro.length + 1 > botSettings.nitroCount) return;
                 if (reactor.roles.cache.has(this.nitroBooster.id)) {
-                    if (reactor.voice && reactor.voice.channel.id == this.channel.id) {
+                    if (reactor.voice.channel && reactor.voice.channel.id == this.channel.id) {
                         reactor.send('Nitro has changed and only gives garunteed spot in VC. You are already in the VC so this use hasn\'t been counted').catch(er => { })
                     } else {
                         this.db.query(`SELECT * FROM users WHERE id = '${u.id}'`, async (err, rows) => {
@@ -489,7 +489,7 @@ class afk {
                 }
                 if (this.nitro.length + 1 > botSettings.nitroCount) return;
                 if (reactor.roles.cache.has(this.nitroBooster.id)) {
-                    if (reactor.voice && reactor.voice.channel.id == this.channel.id) {
+                    if (reactor.voice.channel && reactor.voice.channel.id == this.channel.id) {
                         reactor.send('Nitro has changed and only gives garunteed spot in VC. You are already in the VC so this use hasn\'t been counted').catch(er => { })
                     } else {
                         this.db.query(`SELECT * FROM users WHERE id = '${u.id}'`, async (err, rows) => {
@@ -753,7 +753,7 @@ class afk {
         for (let i in this.earlyLocation) {
             let u = this.earlyLocation[i];
             let member = this.message.guild.members.cache.get(u.id);
-            if (!member.voice) continue;
+            if (!member.voice.channel) continue;
             if (member.voice.channel.name == 'lounge' || member.voice.channel.name == 'Veteran Lounge' || member.voice.channel.name.includes('drag')) {
                 await member.voice.setChannel(this.channel.id).catch(er => { });
             }

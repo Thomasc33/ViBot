@@ -139,8 +139,8 @@ module.exports = {
                     issueString += `\nNot level 20 (${character.level}/20)`
                 }
                 //check for max dex/attack
-                let statstot = character.statsTotal.replace(/[^0-9,]/g, '').split(',')
-                let statsbonus = character.statsBonus.replace(/[^0-9,]/g, '').split(',')
+                let statstot = character.statsTotal.replace(/[^0-9-,]/g, '').split(',')
+                let statsbonus = character.statsBonus.replace(/[^0-9-,]/g, '').split(',')
                 let statsArray = []
                 for (let i in statstot) {
                     statsArray.push(parseInt(statstot[i]) - parseInt(statsbonus[i]))
