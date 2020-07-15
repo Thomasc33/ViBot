@@ -282,6 +282,7 @@ bot.on('error', err => {
 process.on('uncaughtException', err => {
     ErrorLogger.log(err, bot);
     console.log(err);
+    process.exit(1)
 })
 
 process.on('unhandledRejection', err => {
