@@ -31,8 +31,8 @@ bot.on('message', message => {
     if (!message.content.startsWith(prefix) || message.author.bot) return;
     const args = message.content.slice(prefix.length).split(/ +/);
     const commandName = args.shift().toLowerCase()
+    if (commandName.replace(/[^a-z]/gi, '') == '') return
     const command = bot.commands.get(commandName) || bot.commands.find(cmd => cmd.alias && cmd.alias.includes(commandName))
-
     if (!command) return message.channel.send('Command doesnt exist, check \`commands\` and try again');
     try {
         if (message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.find(r => r.name === command.role).position && message.author.id !== '277636691227836419') return;
@@ -289,7 +289,6 @@ process.on('unhandledRejection', err => {
     ErrorLogger.log(err, bot);
     console.log(err);
 })
-
 
 async function getGuild(message) {
     return new Promise(async (resolve, reject) => {

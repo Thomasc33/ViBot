@@ -9,6 +9,7 @@ module.exports = {
     role: 'Security',
     notes: 'Timed feature coming soon:tm:',
     async execute(message, args, bot) {
+        if (args.length == 0) return;
         let settings = bot.settings[message.guild.id]
         var member = message.mentions.members.first()
         if (member == null) member = message.guild.members.cache.get(args[0]);

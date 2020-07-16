@@ -556,7 +556,7 @@ class afk {
             }
         }, 60000)
         let dm = await u.createDM().catch(r => ErrorLogger.log(er, bot))
-        let DirectMessage = await dm.send(`You reacted as <${botSettings.emote.LostHallsKey}>. Press :white_check_mark: to confirm. Ignore this message otherwise`).catch(r => ErrorLogger.log(er, bot));
+        let DirectMessage = await dm.send(`You reacted as <${botSettings.emote.LostHallsKey}>. Press :white_check_mark: to confirm. Ignore this message otherwise`).catch(er => ErrorLogger.log(er, bot));
 
         let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, dmReactionFilter);
         await DirectMessage.react("✅");
@@ -761,6 +761,7 @@ class afk {
         for (let i in this.nitro) {
             let u = this.nitro[i];
             let member = this.message.guild.members.cache.get(u.id);
+            if (!member.voice.channel) continue;
             if (member.voice.channel.name == 'lounge' || member.voice.channel.name == 'Veteran Lounge' || member.voice.channel.name.includes('drag')) {
                 await member.voice.setChannel(this.channel.id).catch(er => { });
             }

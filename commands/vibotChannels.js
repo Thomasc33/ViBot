@@ -10,7 +10,7 @@ module.exports = {
     description: 'update',
     role: 'Developer',
     async execute(message, args, bot, db) {
-        if (args[0].toLowerCase() == 'update') this.update(message.guild)
+        if (args[0].toLowerCase() == 'update') this.update(message.guild, bot)
     },
     async update(guild, bot) {
         let settings = bot.settings[guild.id]
@@ -39,9 +39,10 @@ module.exports = {
         let embed = m.embeds[0]
         watchedMessages.push(embed.footer)
         let channel = message.guild.channels.cache.get(embed.footer.text)
-        if (channel == null) m.delete()
+        if (channel == null) return m.delete()
         let reactionCollector = new Discord.ReactionCollector(m, xFilter)
         reactionCollector.on('collect', async (r, u) => {
+            if (m.mentions.members.size == 0) remove()
             if (u.id == m.mentions.members.first().id) remove()
             else {
                 await m.reactions.removeAll()
@@ -54,6 +55,7 @@ module.exports = {
                         await m.reactions.removeAll()
                         confirmReactionCollector.stop()
                         await m.react('❌')
+                        this.update(m.guild, bot)
                     } else remove()
                 })
             }
