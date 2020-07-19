@@ -10,7 +10,7 @@ module.exports = {
                 }
             }
             request(options, function (err, resp, html) {
-                if (!html) reject({ message: 'No body' })
+                if (!html) return reject({ message: 'No body' })
                 const $ = cheerio.load(html);
                 var ign = $('.col-md-12').find("h1").text()
                 if (ign == '') reject('User not found')
@@ -97,7 +97,7 @@ module.exports = {
                 }
             }
             request(options, function (err, resp, html) {
-                if (!html) reject({ message: 'No body' })
+                if (!html) return reject({ message: 'No body' })
                 const $ = cheerio.load(html);
                 var ign = $('.col-md-12').find("h1").text()
                 let dungeonCompletes = []

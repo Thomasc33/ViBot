@@ -249,7 +249,8 @@ module.exports = {
 2: Current Week
 3: Event Current Week
 4: Verification
-5: Vet Verification\`\`\``)
+5: Vet Verification
+6. Points System\`\`\``)
                         await setupMessage.edit(setupEmbed)
                         let backendMenu = new Discord.MessageCollector(message.channel, m => m.author.id == message.author.id)
                         backendMenu.on('collect', async m => {
@@ -275,6 +276,7 @@ module.exports = {
                                         case '3': bot.settings[message.guild.id].eventCurrentweek = newValue; break;
                                         case '4': bot.settings[message.guild.id].verification = newValue; break;
                                         case '5': bot.settings[message.guild.id].vetVerification = newValue; break;
+                                        case '6': bot.settings[message.guild.id].points = newValue; break;
                                         default: message.channel.send('error (number not found)'); break;
                                     }
                                     fs.writeFileSync('./guildSettings.json', JSON.stringify(bot.settings, null, 4), err => message.channel.send(err))

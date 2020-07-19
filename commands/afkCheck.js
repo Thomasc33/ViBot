@@ -7,6 +7,8 @@ const Locker = require('./lock');
 const Unlocker = require('./unlock')
 const Channels = require('./vibotChannels')
 const realmEyeScrape = require('../realmEyeScrape');
+const Points = require('./points');
+const points = require('./points');
 
 //globals
 var activeVetRun = false;
@@ -176,10 +178,12 @@ class afk {
                 If you have a key react with <${botSettings.emote.LostHallsKey}>
                 To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.TomeofPurification}> <${botSettings.emote.MarbleSeal}>
                 If you plan on rushing, react with the <${botSettings.emote.Plane}>
-                If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.emote.shard}>
-                To end the AFK check as a leader, react to ❌`)
+                If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.emote.shard}> to get into VC`)
             .setTimestamp()
             .setFooter(`Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds`);
+        if (this.settings.points) this.embedMessage.setDescription(this.embedMessage.description.concat(`\nTo use points for early location, react with 🎟️
+            To end the AFK check as a leader, react to ❌`))
+        else this.embedMessage.setDescription(this.embedMessage.description.concat(`\nTo end the AFK check as a leader, react to ❌`))
         this.afkCheckEmbed.edit(this.embedMessage);
 
         this.channel.updateOverwrite(this.verifiedRaiderRole.id, { CONNECT: true, VIEW_CHANNEL: true })
@@ -187,7 +191,7 @@ class afk {
         this.moveInTimer = await setInterval(() => { this.moveIn() }, 10000);
         this.timer = await setInterval(() => { this.updateAfkCheck() }, 5000);
 
-        cultReact(this.afkCheckEmbed);
+        cultReact(this.afkCheckEmbed, this.settings);
 
         this.leaderEmbed = new Discord.MessageEmbed()
             .setColor('#ff0000')
@@ -197,8 +201,9 @@ class afk {
                 { name: `Our current key`, value: `None yet!` },
                 { name: `Our current rushers`, value: `None yet!` },
                 { name: `Location of run`, value: `${this.location}` },
-                { name: `Nitro Boosters`, value: `None yet!` },
-            );
+                { name: `Nitro Boosters`, value: `None yet!` }
+            )
+        if (this.settings.points) this.leaderEmbed.addField(`Point Users`, `None yet!`)
 
         this.afkControlPanelInfo = await this.dylanBotInfo.send(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
         this.afkControlPanelCommands = await this.dylanBotCommands.send(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
@@ -227,42 +232,13 @@ class afk {
             }
             //nitro
             if (r.emoji.id === botSettings.emoteIDs.shard) {
-                if (this.earlyLocation.includes(u)) {
-                    reactor.send(`The location for this run has been set to \`${this.location}\``);
-                    return;
-                }
-                if (reactor.roles.highest.position >= this.leaderOnLeave.position) {
-                    reactor.send(`The location for this run has been set to \`${this.location}\``);
-                    this.earlyLocation.push(u);
-                    return;
-                }
-                if (this.nitro.length + 1 > botSettings.nitroCount) return;
-                if (reactor.roles.cache.has(this.nitroBooster.id)) {
-                    if (reactor.voice.channel && reactor.voice.channel.id == this.channel.id) {
-                        reactor.send('Nitro has changed and only gives garunteed spot in VC. You are already in the VC so this use hasn\'t been counted').catch(er => { })
-                    } else {
-                        this.db.query(`SELECT * FROM users WHERE id = '${u.id}'`, async (err, rows) => {
-                            if (err) ErrorLogger.log(err, bot)
-                            if (rows.length == 0) await this.db.query(`INSERT INTO users (id, ign) VALUES('${u.id}', '${reactor.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}')`)
-                            if (Date.now() - 3600000 > parseInt(rows[0].lastnitrouse)) {
-                                //reactor.send(`The location for this run has been set to \`${this.location}\``);
-                                reactor.voice.setChannel(this.channel.id).catch(er => { reactor.send('Please join a voice channel to get moved in') })
-                                this.nitro[this.nitro.length - 1] = u;
-                                if (this.leaderEmbed.fields[3].value == `None yet!`) {
-                                    this.leaderEmbed.fields[3].value = `<@!${u.id}> `;
-                                } else this.leaderEmbed.fields[3].value += `, <@!${u.id}>`
-                                this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
-                                this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
-                                //this.earlyLocation.push(u);
-                                this.db.query(`UPDATE users SET lastnitrouse = '${Date.now()}' WHERE id = ${u.id}`)
-                            } else {
-                                let lastUse = Math.round((Date.now() - rows[0].lastnitrouse) / 60000)
-                                reactor.send(`Nitro perks have been limited to once an hour. Your last use was \`${lastUse}\` minutes ago`)
-                            }
-                        })
-                    }
-                }
+                this.useNitro(u, 3)
             }
+            //points
+            if (r.emoji.name === '🎟️') {
+                this.pointsUse(u, 4)
+            }
+            //end
             if (r.emoji.name == '❌') {
                 if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
                 this.endedBy = u;
@@ -302,10 +278,12 @@ class afk {
             .setDescription(`To join, **connect to the raiding channel by clicking its name and react with** <${botSettings.emote.voidd}>
             If you have a key or vial, react with <${botSettings.emote.LostHallsKey}> or <${botSettings.emote.Vial}>
             To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.TomeofPurification}> <${botSettings.emote.MarbleSeal}>
-            If you are a ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.emote.shard}>
-            To end the AFK check as a leader, react to ❌`)
+            If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.emote.shard}> to get into VC`)
             .setTimestamp()
             .setFooter(`Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds`);
+        if (this.settings.points) this.embedMessage.setDescription(this.embedMessage.description.concat(`\nTo use points for early location, react with 🎟️
+        To end the AFK check as a leader, react to ❌`))
+        else this.embedMessage.setDescription(this.embedMessage.description.concat(`\nTo end the AFK check as a leader, react to ❌`))
         this.afkCheckEmbed.edit(this.embedMessage);
 
         this.channel.updateOverwrite(this.verifiedRaiderRole.id, { CONNECT: true, VIEW_CHANNEL: true })
@@ -313,7 +291,7 @@ class afk {
         this.moveInTimer = await setInterval(() => { this.moveIn() }, 10000);
         this.timer = await setInterval(() => { this.updateAfkCheck() }, 5000);
 
-        voidReact(this.afkCheckEmbed);
+        voidReact(this.afkCheckEmbed, this.settings);
 
         this.leaderEmbed = new Discord.MessageEmbed()
             .setColor('#8c00ff')
@@ -323,8 +301,9 @@ class afk {
                 { name: `Our current key`, value: `None yet!` },
                 { name: `Our current vials`, value: `None yet!` },
                 { name: `Location of run`, value: `${this.location}` },
-                { name: `Nitro Boosters`, value: `None yet!` },
-            );
+                { name: `Nitro Boosters`, value: `None yet!` }
+            )
+        if (this.settings.points) this.leaderEmbed.addField(`Point Users`, `None yet!`)
 
         this.afkControlPanelInfo = await this.dylanBotInfo.send(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
         this.afkControlPanelCommands = await this.dylanBotCommands.send(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
@@ -332,8 +311,8 @@ class afk {
         this.mainReactionCollector = new Discord.ReactionCollector(this.afkCheckEmbed, voidFilter);
 
         this.mainReactionCollector.on("collect", (r, u) => {
-            if (u.bot) return;
             let reactor = this.message.guild.members.cache.get(u.id);
+            if (u.bot) return;
             //key
             if (r.emoji.id === botSettings.emoteIDs.LostHallsKey) {
                 if (this.key != null) return;
@@ -346,42 +325,13 @@ class afk {
             }
             //nitro
             if (r.emoji.id === botSettings.emoteIDs.shard) {
-                if (this.earlyLocation.includes(u)) {
-                    reactor.send(`The location for this run has been set to \`${this.location}\``);
-                    return;
-                }
-                if (reactor.roles.highest.position >= this.leaderOnLeave.position) {
-                    reactor.send(`The location for this run has been set to \`${this.location}\``);
-                    this.earlyLocation.push(u);
-                    return;
-                }
-                if (this.nitro.length + 1 > botSettings.nitroCount) return;
-                if (reactor.roles.cache.has(this.nitroBooster.id)) {
-                    if (reactor.voice.channel && reactor.voice.channel.id == this.channel.id) {
-                        reactor.send('Nitro has changed and only gives garunteed spot in VC. You are already in the VC so this use hasn\'t been counted').catch(er => { })
-                    } else {
-                        this.db.query(`SELECT * FROM users WHERE id = '${u.id}'`, async (err, rows) => {
-                            if (err) ErrorLogger.log(err, bot)
-                            if (rows.length == 0) await this.db.query(`INSERT INTO users (id, ign) VALUES('${u.id}', '${reactor.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}')`)
-                            if (Date.now() - 3600000 > parseInt(rows[0].lastnitrouse)) {
-                                //reactor.send(`The location for this run has been set to \`${this.location}\``);
-                                reactor.voice.setChannel(this.channel.id).catch(er => { reactor.send('Please join a voice channel to get moved in') })
-                                this.nitro[this.nitro.length - 1] = u;
-                                if (this.leaderEmbed.fields[3].value == `None yet!`) {
-                                    this.leaderEmbed.fields[3].value = `<@!${u.id}> `;
-                                } else this.leaderEmbed.fields[3].value += `, <@!${u.id}>`
-                                this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
-                                this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
-                                //this.earlyLocation.push(u);
-                                this.db.query(`UPDATE users SET lastnitrouse = '${Date.now()}' WHERE id = ${u.id}`)
-                            } else {
-                                let lastUse = Math.round((Date.now() - rows[0].lastnitrouse) / 60000)
-                                reactor.send(`Nitro perks have been limited to once an hour. Your last use was \`${lastUse}\` minutes ago`)
-                            }
-                        })
-                    }
-                }
+                this.useNitro(u, 3)
             }
+            //points
+            if (r.emoji.name === '🎟️') {
+                this.pointsUse(u, 4)
+            }
+            //end
             if (r.emoji.name == '❌') {
                 if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
                 this.endedBy = u;
@@ -422,10 +372,12 @@ class afk {
             To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.TomeofPurification}> <${botSettings.emote.MarbleSeal}>
             If you have 85+ MHeal and a 8/8 Mystic, react with <${botSettings.emote.Mystic}>
             If you are an 8/8 trickster with a brain, react with <${botSettings.emote.Brain}>
-            If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.emote.shard}>
-            To end the AFK check as a leader, react to ❌`)
+            If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.emote.shard}> to get into VC`)
             .setTimestamp()
             .setFooter(`Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds`);
+        if (this.settings.points) this.embedMessage.setDescription(this.embedMessage.description.concat(`\nTo use points for early location, react with 🎟️
+        To end the AFK check as a leader, react to ❌`))
+        else this.embedMessage.setDescription(this.embedMessage.description.concat(`\nTo end the AFK check as a leader, react to ❌`))
         this.afkCheckEmbed.edit(this.embedMessage);
 
         this.channel.updateOverwrite(this.verifiedRaiderRole.id, { CONNECT: true, VIEW_CHANNEL: true })
@@ -433,7 +385,7 @@ class afk {
         this.moveInTimer = await setInterval(() => { this.moveIn() }, 10000);
         this.timer = await setInterval(() => { this.updateAfkCheck() }, 5000);
 
-        fsvReact(this.afkCheckEmbed);
+        fsvReact(this.afkCheckEmbed, this.settings);
 
         this.leaderEmbed = new Discord.MessageEmbed()
             .setColor('#8c00ff')
@@ -445,8 +397,9 @@ class afk {
                 { name: `Our current tricksters`, value: `None yet!` },
                 { name: `Our current mystics`, value: `None yet!` },
                 { name: `Location of run`, value: `${this.location}` },
-                { name: `Nitro Boosters`, value: `None yet!` },
+                { name: `Nitro Boosters`, value: `None yet!` }
             )
+        if (this.settings.points) this.leaderEmbed.addField(`Point Users`, `None yet!`)
 
         this.afkControlPanelInfo = await this.dylanBotInfo.send(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
         this.afkControlPanelCommands = await this.dylanBotCommands.send(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
@@ -478,42 +431,13 @@ class afk {
             }
             //nitro
             if (r.emoji.id === botSettings.emoteIDs.shard) {
-                if (this.earlyLocation.includes(u)) {
-                    reactor.send(`The location for this run has been set to \`${this.location}\``);
-                    return;
-                }
-                if (reactor.roles.highest.position >= this.leaderOnLeave.position) {
-                    reactor.send(`The location for this run has been set to \`${this.location}\``);
-                    this.earlyLocation.push(u);
-                    return;
-                }
-                if (this.nitro.length + 1 > botSettings.nitroCount) return;
-                if (reactor.roles.cache.has(this.nitroBooster.id)) {
-                    if (reactor.voice.channel && reactor.voice.channel.id == this.channel.id) {
-                        reactor.send('Nitro has changed and only gives garunteed spot in VC. You are already in the VC so this use hasn\'t been counted').catch(er => { })
-                    } else {
-                        this.db.query(`SELECT * FROM users WHERE id = '${u.id}'`, async (err, rows) => {
-                            if (err) ErrorLogger.log(err, bot)
-                            if (rows.length == 0) await this.db.query(`INSERT INTO users (id, ign) VALUES('${u.id}', '${reactor.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}')`)
-                            if (Date.now() - 3600000 > parseInt(rows[0].lastnitrouse)) {
-                                //reactor.send(`The location for this run has been set to \`${this.location}\``);
-                                reactor.voice.setChannel(this.channel.id).catch(er => { reactor.send('Please join a voice channel to get moved in') })
-                                this.nitro[this.nitro.length - 1] = u;
-                                if (this.leaderEmbed.fields[5].value == `None yet!`) {
-                                    this.leaderEmbed.fields[5].value = `<@!${u.id}> `;
-                                } else this.leaderEmbed.fields[5].value += `, <@!${u.id}>`
-                                this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
-                                this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
-                                //this.earlyLocation.push(u);
-                                this.db.query(`UPDATE users SET lastnitrouse = '${Date.now()}' WHERE id = ${u.id}`)
-                            } else {
-                                let lastUse = Math.round((Date.now() - rows[0].lastnitrouse) / 60000)
-                                reactor.send(`Nitro perks have been limited to once an hour. Your last use was \`${lastUse}\` minutes ago`)
-                            }
-                        })
-                    }
-                }
+                this.useNitro(u, 5)
             }
+            //points
+            if (r.emoji.name === '🎟️') {
+                this.pointsUse(u, 6)
+            }
+            //end
             if (r.emoji.name == '❌') {
                 if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
                 this.endedBy = u;
@@ -667,7 +591,7 @@ class afk {
                 if (this.mystics.length > 2 || this.mystics.includes(u)) return;
                 let found = false;
                 let characters = await realmEyeScrape.getUserInfo(this.message.guild.members.cache.get(u.id).nickname.replace(/[^a-z|]/gi, '').split('|')[0]).catch(er => found = true)
-                if (characters) characters.characters.forEach(c => {
+                if (characters.characters) characters.characters.forEach(c => {
                     if (c.class == 'Mystic' && c.stats == '8/8') {
                         found = true;
                         this.mystics.push(u)
@@ -736,6 +660,79 @@ class afk {
             });
         } catch (er) { }
     }
+    async useNitro(u, index) {
+        let reactor = this.message.guild.members.cache.get(u.id);
+        if (this.earlyLocation.includes(u)) {
+            reactor.send(`The location for this run has been set to \`${this.location}\``);
+            return;
+        }
+        if (reactor.roles.highest.position >= this.leaderOnLeave.position) {
+            reactor.send(`The location for this run has been set to \`${this.location}\``);
+            this.earlyLocation.push(u);
+            return;
+        }
+        if (this.nitro.length + 1 > botSettings.nitroCount) return;
+        if (reactor.roles.cache.has(this.nitroBooster.id)) {
+            if (reactor.voice.channel && reactor.voice.channel.id == this.channel.id) {
+                reactor.send('Nitro has changed and only gives garunteed spot in VC. You are already in the VC so this use hasn\'t been counted').catch(er => { })
+            } else {
+                this.db.query(`SELECT * FROM users WHERE id = '${u.id}'`, async (err, rows) => {
+                    if (err) ErrorLogger.log(err, bot)
+                    if (rows.length == 0) return await this.db.query(`INSERT INTO users (id) VALUES('${u.id}')`)
+                    if (Date.now() - 3600000 > parseInt(rows[0].lastnitrouse)) {
+                        //reactor.send(`The location for this run has been set to \`${this.location}\``);
+                        //this.earlyLocation.push(u);
+                        reactor.voice.setChannel(this.channel.id).catch(er => { reactor.send('Please join a voice channel to get moved in') })
+                        this.nitro.push(u)
+                        if (this.leaderEmbed.fields[index].value == `None yet!`) this.leaderEmbed.fields[index].value = `<@!${u.id}> `;
+                        else this.leaderEmbed.fields[index].value += `, <@!${u.id}>`
+                        this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                        this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                        this.db.query(`UPDATE users SET lastnitrouse = '${Date.now()}' WHERE id = ${u.id}`)
+                    } else {
+                        let lastUse = Math.round((Date.now() - rows[0].lastnitrouse) / 60000)
+                        reactor.send(`Nitro perks have been limited to once an hour. Your last use was \`${lastUse}\` minutes ago`)
+                    }
+                })
+            }
+        }
+    }
+    async pointsUse(u, index) {
+        if (!this.settings.points) return
+        let pointEmbed = new Discord.MessageEmbed()
+            .setColor('#ff0000')
+            .setFooter(`React with ✅ to confirm, or ❌ to cancel`)
+        if (u.avatarURL()) pointEmbed.setAuthor('Please Confirm Point Usage', u.avatarURL())
+        else pointEmbed.setAuthor('Please Confirm Point Usage')
+        this.db.query(`SELECT points FROM users WHERE id = '${u.id}'`, async (err, rows) => {
+            if (err) return
+            if (rows.length == 0) return this.db.query(`INSERT INTO users (id) VALUES('${u.id}')`)
+            if (rows[0].points < botSettings.points.earlyLocationCost) return
+            pointEmbed.setDescription(`You currently have \`${rows[0].points}\` points\nEarly location costs \`${botSettings.points.earlyLocationCost}\``)
+            let dms = await u.createDM().catch()
+            let m = await dms.send(pointEmbed).catch()
+            let reactionCollector = new Discord.ReactionCollector(m, (r, u) => !u.bot && (r.emoji.name == '❌' || r.emoji.name == '✅'))
+            reactionCollector.on('collect', async (r, u) => {
+                if (r.emoji.name == '❌') m.delete()
+                else if (r.emoji.name == '✅') {
+                    let er, success = true
+                    let leftOver = await points.buyEarlyLocaton(u, this.db).catch(r => { er = r; success = false })
+                    if (success) {
+                        await dms.send(`The location for this run has been set to \`${this.location}\`\nYou now have \`${leftOver}\` points left over`)
+                        if (this.leaderEmbed.fields[index].value == 'None yet!') this.leaderEmbed.fields[index].value = `<@!${u.id}>`
+                        else this.leaderEmbed.fields[index].value += `, <@!${u.id}>`
+                        this.earlyLocation.push(u)
+                        await this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                        await this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                        await m.delete()
+                    }
+                    else dms.send(`There was an issue using the points: \`${er}\``)
+                }
+            })
+            await m.react('✅')
+            await m.react('❌')
+        })
+    }
     async updateAfkCheck() {
         this.time = this.time - 5;
         if (this.time == 0) {
@@ -768,17 +765,19 @@ class afk {
         }
     }
     async endAfk() {
+        //stop reaction collectors and timers
         this.mainReactionCollector.stop();
         this.panelReactionCollector.stop();
-
         clearInterval(this.moveInTimer);
         clearInterval(this.timer);
 
+        //lock channel
         await this.channel.updateOverwrite(this.verifiedRaiderRole.id, { CONNECT: false, VIEW_CHANNEL: true })
         if (!this.isVet) {
             setTimeout(() => this.channel.setPosition(this.afkChannel.position), 1000)
         }
 
+        //update embeds/messages
         if (this.key != null) {
             this.embedMessage.setDescription(`This afk check has been ended.
         Thank you to <@!${this.key.id}> for popping a <${botSettings.emote.LostHallsKey}> for us!`)
@@ -788,15 +787,16 @@ class afk {
                 .setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
         }
         this.leaderEmbed.setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
-
         this.afkCheckEmbed.edit('', this.embedMessage).catch(er => ErrorLogger.log(er, bot))
-        this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot))
-        this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot))
-        this.afkControlPanelCommands.reactions.removeAll()
+            .then(this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot)))
+            .then(this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot)))
+            .then(this.afkControlPanelCommands.reactions.removeAll())
 
+        //reset global variable
         if (this.isVet) activeVetRun = false;
         else activeRun = false;
 
+        //store afk check information
         let earlyLocationIDS = []
         for (let i in this.earlyLocation) earlyLocationIDS.push(this.earlyLocation[i].id)
         let raiders = []
@@ -824,6 +824,8 @@ class afk {
         fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => {
             if (err) ErrorLogger.log(err, bot)
         })
+
+        //send embed to history
         let historyEmbed = new Discord.MessageEmbed()
             .setColor(this.embedMessage.hexColor)
             .setTitle(this.embedMessage.author.name)
@@ -838,44 +840,121 @@ class afk {
             else historyEmbed.fields[3].value += `, <@!${m.id}>`
         })
         let bigEmbed = false
+        let biggerEmbed = false
+        let biggestEmbed = false
         raiders.forEach(m => {
             if (bigEmbed) historyEmbed.fields[5].value += `, <@!${m}>`
+            else if (biggerEmbed) historyEmbed.fields[6].value += `, <@!${m}>`
+            else if (biggestEmbed) historyEmbed.fields[7].value += `, <@!${m}>`
             else {
                 if (historyEmbed.fields[4].value == `None!`) historyEmbed.fields[4].value = `<@!${m}>`
                 else if (historyEmbed.fields[4].value.length >= 1000) {
-                    bigEmbed = true;
-                    historyEmbed.addField('-', `, <@!${m}>`)
+                    if (bigEmbed) {
+                        biggerEmbed = true;
+                        historyEmbed.addField('-', `, <@!${m}>`)
+                    } else if (biggerEmbed) {
+                        biggestEmbed = true;
+                        historyEmbed.addField('-', `, <@!${m}>`)
+                    } else {
+                        bigEmbed = true;
+                        historyEmbed.addField('-', `, <@!${m}>`)
+                    }
                 }
                 else historyEmbed.fields[4].value += `, <@!${m}>`
             }
         })
         this.message.guild.channels.cache.find(c => c.name === this.settings.history).send(historyEmbed)
-        setTimeout(() => {
-            /*this.channel.members.each(m => {
-                try {
-                    this.db.query(`SELECT * FROM users WHERE id = '${m.id}'`, async (err, rows) => {
-                        if (rows[0] == undefined) await this.db.query(`INSERT INTO users (id, ign) VALUES('${m.id}', '${m.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}')`)
-                        if (this.run == 1) {
-                            this.db.query(`UPDATE users SET cultRuns = ${rows[0].cultRuns + 1} WHERE id = '${m.id}'`)
-                        } else {
-                            this.db.query(`UPDATE users SET voidRuns = ${rows[0].voidRuns + 1} WHERE id = '${m.id}'`)
-                        }
-                        if (err) { ErrorLogger(err, bot); return; }
-                    })
-                } catch (er) {
-                    ErrorLogger(er, bot);
+
+        //make sure everyone in run is in db
+        if (this.channel.members) {
+            let loggingQuery = `SELECT id FROM users WHERE `
+            this.channel.members.each(m => { loggingQuery += `id = '${m.id}' OR ` })
+            loggingQuery = loggingQuery.substring(0, loggingQuery.length - 4)
+            this.db.query(loggingQuery, (err, rows) => {
+                if (err) return
+                if (rows.length != this.channel.members.size) {
+                    let unlogged = this.channel.members.keyArray().filter(e => !rows.includes(e))
+                    for (let i in unlogged) {
+                        this.db.query(`INSERT INTO users (id) VALUES('${unlogged[i]}')`)
+                    }
                 }
-            })*/
-            //for whenever varchar is changed to int
-            let query = `UPDATE users SET `
-            if (this.run == 1) query = query.concat('cultRuns = cultRuns + 1 WHERE ')
-            else query = query.concat('voidRuns = voidRuns + 1 WHERE ')
-            this.channel.members.each(m => query = query.concat(`id = '${m.id}' OR `))
-            query = query.substring(0, query.length - 4)
-            this.db.query(query, err => {
-                if (err) ErrorLogger.log(err, bot)
             })
-            if (this.key != null) this.db.query(`UPDATE users SET keypops = keypops + 1 WHERE id = '${this.key.id}'`)
+        }
+
+        if (this.settings.points) {
+            //key point logging
+            if (this.key) {
+                let points = botSettings.points.keyPopsPoints
+                if (this.message.guild.members.cache.get(this.key.id).roles.cache.has(this.nitroBooster.id)) points = points * botSettings.points.nitroMultiplier
+                this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${this.key.id}'`)
+            }
+            //vial point logging
+            if (this.vials.length > 0) {
+                this.vials.forEach(u => {
+                    let points = botSettings.points.vialPopPoints
+                    if (this.message.guild.members.cache.get(u.id).roles.cache.has(this.nitroBooster.id)) points = points * botSettings.points.nitroMultiplier
+                    this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u.id}'`)
+                })
+            }
+            //rusher point logging
+            if (this.vials.length > 0) {
+                this.vials.forEach(u => {
+                    let points = botSettings.points.rushingPoints
+                    if (this.message.guild.members.cache.get(u.id).roles.cache.has(this.nitroBooster.id)) points = points * botSettings.points.nitroMultiplier
+                    this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u.id}'`)
+                })
+            }
+            //mystic point logging
+            if (this.vials.length > 0) {
+                this.vials.forEach(u => {
+                    let points = botSettings.points.mysticPoints
+                    if (this.message.guild.members.cache.get(u.id).roles.cache.has(this.nitroBooster.id)) points = points * botSettings.points.nitroMultiplier
+                    this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u.id}'`)
+                })
+            }
+            //brain point logging
+            if (this.vials.length > 0) {
+                this.vials.forEach(u => {
+                    let points = botSettings.points.brainPoints
+                    if (this.message.guild.members.cache.get(u.id).roles.cache.has(this.nitroBooster.id)) points = points * botSettings.points.nitroMultiplier
+                    this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u.id}'`)
+                })
+            }
+        }
+
+        //log run 1 minute after afk check
+        setTimeout(() => {
+            if (this.channel.members) {
+                let query = `UPDATE users SET `
+                if (this.run == 1) query = query.concat('cultRuns = cultRuns + 1 WHERE ')
+                else query = query.concat('voidRuns = voidRuns + 1 WHERE ')
+                this.channel.members.each(m => query = query.concat(`id = '${m.id}' OR `))
+                query = query.substring(0, query.length - 4)
+                this.db.query(query, err => {
+                    if (err) ErrorLogger.log(err, bot)
+                })
+                if (this.key != null) this.db.query(`UPDATE users SET keypops = keypops + 1 WHERE id = '${this.key.id}'`)
+
+                if (this.settings.points) {
+                    //give points to everyone in run
+                    let regular = []
+                    let nitros = []
+                    this.channel.members.each(m => {
+                        if (m.roles.cache.has(this.nitroBooster.id)) nitros.push(m)
+                        else regular.push(u)
+                    })
+                    //regular raiders point logging
+                    let regularQuery = `UPDATE users SET points = points + ${botSettings.points.pointsPerRun} WHERE `
+                    regular.forEach(m => regularQuery = regularQuery.concat(`id = '${m.id}' OR `))
+                    regularQuery = regularQuery.substring(0, regularQuery.length - 4)
+                    this.db.query(regularQuery, err => { if (err) ErrorLogger.log(err, bot) })
+                    //nitro raiders point logging
+                    let nitroQuery = `UPDATE users SET points = points + ${botSettings.points.pointsPerRun * botSettings.points.nitroMultiplier} WHERE `
+                    regular.forEach(m => nitroQuery = nitroQuery.concat(`id = '${m.id}' OR `))
+                    nitroQuery = nitroQuery.substring(0, nitroQuery.length - 4)
+                    this.db.query(nitroQuery, err => { if (err) ErrorLogger.log(err, bot) })
+                }
+            }
         }, 60000)
     }
     async abortAfk() {
@@ -1001,48 +1080,54 @@ async function createChannel(isVet, message, run) {
 
 }
 //React functions
-async function cultReact(message) {
-    message.react(botSettings.emote.LostHallsKey)
-        .then(message.react(botSettings.emote.Warrior))
-        .then(message.react(botSettings.emote.Paladin))
-        .then(message.react(botSettings.emote.Knight))
-        .then(message.react(botSettings.emote.TomeofPurification))
-        .then(message.react(botSettings.emote.MarbleSeal))
-        .then(message.react(botSettings.emote.Plane))
-        .then(message.react(botSettings.emote.shard))
-        .then(message.react('❌'))
-        .catch(er => ErrorLogger.log(er, bot));
+async function cultReact(message, settings) {
+    try {
+        message.react(botSettings.emote.LostHallsKey)
+            .then(message.react(botSettings.emote.Warrior))
+            .then(message.react(botSettings.emote.Paladin))
+            .then(message.react(botSettings.emote.Knight))
+            .then(message.react(botSettings.emote.TomeofPurification))
+            .then(message.react(botSettings.emote.MarbleSeal))
+            .then(message.react(botSettings.emote.Plane))
+            .then(message.react(botSettings.emote.shard))
+        if (settings.points) await message.react('🎟️')
+        await message.react('❌')
+    } catch (er) { ErrorLogger.log(er, bot) }
 }
-async function voidReact(message) {
-    message.react(botSettings.emote.LostHallsKey)
-        .then(message.react(botSettings.emote.Vial))
-        .then(message.react(botSettings.emote.Warrior))
-        .then(message.react(botSettings.emote.Paladin))
-        .then(message.react(botSettings.emote.Knight))
-        .then(message.react(botSettings.emote.TomeofPurification))
-        .then(message.react(botSettings.emote.MarbleSeal))
-        .then(message.react(botSettings.emote.shard))
-        .then(message.react('❌'))
-        .catch(er => ErrorLogger.log(er, bot));
+async function voidReact(message, settings) {
+    try {
+        message.react(botSettings.emote.LostHallsKey)
+            .then(message.react(botSettings.emote.Vial))
+            .then(message.react(botSettings.emote.Warrior))
+            .then(message.react(botSettings.emote.Paladin))
+            .then(message.react(botSettings.emote.Knight))
+            .then(message.react(botSettings.emote.TomeofPurification))
+            .then(message.react(botSettings.emote.MarbleSeal))
+            .then(message.react(botSettings.emote.shard))
+        if (settings.points) await message.react('🎟️')
+        await message.react('❌')
+    } catch (er) { ErrorLogger.log(er, bot) }
 }
-async function fsvReact(message) {
-    message.react(botSettings.emote.LostHallsKey)
-        .then(message.react(botSettings.emote.Vial))
-        .then(message.react(botSettings.emote.Warrior))
-        .then(message.react(botSettings.emote.Paladin))
-        .then(message.react(botSettings.emote.Knight))
-        .then(message.react(botSettings.emote.TomeofPurification))
-        .then(message.react(botSettings.emote.MarbleSeal))
-        .then(message.react(botSettings.emote.Brain))
-        .then(message.react(botSettings.emote.Mystic))
-        .then(message.react(botSettings.emote.shard))
-        .then(message.react('❌'))
-        .catch(er => ErrorLogger.log(er, bot));
+async function fsvReact(message, settings) {
+    try {
+        message.react(botSettings.emote.LostHallsKey)
+            .then(message.react(botSettings.emote.Vial))
+            .then(message.react(botSettings.emote.Warrior))
+            .then(message.react(botSettings.emote.Paladin))
+            .then(message.react(botSettings.emote.Knight))
+            .then(message.react(botSettings.emote.TomeofPurification))
+            .then(message.react(botSettings.emote.MarbleSeal))
+            .then(message.react(botSettings.emote.Brain))
+            .then(message.react(botSettings.emote.Mystic))
+            .then(message.react(botSettings.emote.shard))
+        if (settings.points) await message.react('🎟️')
+        await message.react('❌')
+    } catch (er) { ErrorLogger.log(er, bot) }
 }
 
 //reaction filters
 const keyXFilter = (r, u) => (r.emoji.name === '❌' || r.emoji.name === '🔑') && !u.bot;
 const dmReactionFilter = (r, u) => r.emoji.name === '✅' && !u.bot;
-const cultFilter = (r, u) => r.emoji.id === botSettings.emoteIDs.LostHallsKey || r.emoji.id === botSettings.emoteIDs.Plane || r.emoji.id === botSettings.emoteIDs.shard || r.emoji.name === '❌'
-const voidFilter = (r, u) => r.emoji.id === botSettings.emoteIDs.LostHallsKey || r.emoji.id === botSettings.emoteIDs.Vial || r.emoji.id === botSettings.emoteIDs.shard || r.emoji.name === '❌'
-const fsvFilter = (r, u) => r.emoji.id === botSettings.emoteIDs.LostHallsKey || r.emoji.id === botSettings.emoteIDs.Vial || r.emoji.id === botSettings.emoteIDs.shard || r.emoji.id === botSettings.emoteIDs.mystic || r.emoji.id === botSettings.emoteIDs.brain || r.emoji.name === '❌'
+const cultFilter = (r, u) => r.emoji.id === botSettings.emoteIDs.LostHallsKey || r.emoji.id === botSettings.emoteIDs.Plane || r.emoji.id === botSettings.emoteIDs.shard || r.emoji.name === '❌' || r.emoji.name === '🎟️'
+const voidFilter = (r, u) => r.emoji.id === botSettings.emoteIDs.LostHallsKey || r.emoji.id === botSettings.emoteIDs.Vial || r.emoji.id === botSettings.emoteIDs.shard || r.emoji.name === '❌' || r.emoji.name === '🎟️'
+const fsvFilter = (r, u) => r.emoji.id === botSettings.emoteIDs.LostHallsKey || r.emoji.id === botSettings.emoteIDs.Vial || r.emoji.id === botSettings.emoteIDs.shard || r.emoji.id === botSettings.emoteIDs.mystic || r.emoji.id === botSettings.emoteIDs.brain || r.emoji.name === '❌' || r.emoji.name === '🎟️'

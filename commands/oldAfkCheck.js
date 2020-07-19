@@ -90,7 +90,7 @@ class afk {
         this.message = message;
         this.db = db;
         this.isVet = isVet;
-        if (this.isVet) this.raidStatus = this.message.guild.channels.cache.find(c => c.name === settings.eventstatus);
+        if (this.isVet) this.raidStatus = this.message.guild.channels.cache.find(c => c.name === settings.vetstatus);
         else this.raidStatus = this.message.guild.channels.cache.find(c => c.name === settings.raidstatus);
         if (this.isVet) this.dylanBotCommands = this.message.guild.channels.cache.find(c => c.name === settings.vetcommands);
         else this.dylanBotCommands = this.message.guild.channels.cache.find(c => c.name === settings.raidcommands);

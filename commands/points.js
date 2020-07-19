@@ -61,8 +61,21 @@ module.exports = {
                 if (err || (rows && rows.length == 0)) reject()
                 let pointEmbed = new Discord.MessageEmbed()
                     .setColor('#015c21')
-                    .setDescription(`<${botSettings.emote.hallsPortal}> __**Points for ${rows[0].ign} on Pub Halls**__ <${botSettings.emote.hallsPortal}>\n**Points:** ${rows[0].points}`)
+                    .setDescription(`<${botSettings.emote.hallsPortal}> __**Points for <@!${rows[0].id}> on Pub Halls**__ <${botSettings.emote.hallsPortal}>\n**Points:** ${rows[0].points}`)
                 resolve(pointEmbed)
+            })
+        })
+    },
+    buyEarlyLocaton(user, db) {
+        return new Promise((resolve, reject) => {
+            db.query(`SELECT points FROM users WHERE id = '${user.id}'`, (err, rows) => {
+                if (err) return reject(err)
+                if (rows.length == 0) return reject('User not in DB')
+                if (rows[0].points < botSettings.points.earlyLocationCost) return reject(`Only has ${rows[0].points}/${botSettings.points.earlyLocationCost} points`)
+                db.query(`UPDATE users SET points = points - 20 WHERE id = '${user.id}'`, err => {
+                    if (err) return reject(err)
+                    resolve(`${rows[0].points - botSettings.points.earlyLocationCost}`)
+                })
             })
         })
     }

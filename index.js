@@ -117,6 +117,7 @@ bot.on("ready", async () => {
                     eventCurrentweek: false,
                     verification: false,
                     vetVerification: false,
+                    points: false,
                     moderator: 'Moderator',
                     officer: 'Officer',
                     hrl: 'Head Raid Leader',

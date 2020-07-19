@@ -89,7 +89,7 @@ module.exports = {
         function cont() {
             embed.setDescription(desc)
             message.guild.channels.cache.find(c => c.name === settings.leadinglogs).send(embed)
-            if (settings.currentWeek) CurrentWeek.update(message.guild, db, bot)
+            if (settings.currentweek) CurrentWeek.update(message.guild, db, bot)
             if (settings.eventCurrentweek) eCurrentWeek.update(message.guild, db, bot)
         }
     }

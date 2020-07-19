@@ -4,6 +4,16 @@
     "afkTimeLimit": 360,
     "eventAfkTimeLimit": 360,
     "nitroCount": 5,
+    "points": {
+        "earlyLocationCost": 20,
+        "pointsPerRun": 1,
+        "nitroMultiplier": 2,
+        "keyPopsPoints": 20,
+        "vialPopPoints": 3,
+        "rushingPoints": 1,
+        "brainPoints": 1,
+        "mysticPoints": 1
+    },
     "runReqs": {
         "weapon": 10,
         "ability": 4,
