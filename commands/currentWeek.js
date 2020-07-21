@@ -29,7 +29,6 @@ module.exports = {
         let settings = bot.settings[guild.id]
         let currentweek = guild.channels.cache.find(c => c.name === settings.currentweekchannel);
         if (!currentweek) return;
-        //await currentweek.bulkDelete(100);
         this.sendEmbed(currentweek, db, bot)
     },
     async sendEmbed(channel, db, bot) {
@@ -48,10 +47,10 @@ module.exports = {
                 let embeds = []
                 for (let i in rows) {
                     let string = `**[${index + 1}]** <@!${rows[i].id}>:\nRaids: \`${parseInt(rows[i].currentweekCult) + parseInt(rows[i].currentweekVoid) + parseInt(rows[i].currentweekAssists) / 2}\` (Void: ${rows[i].currentweekVoid}, Cult: ${rows[i].currentweekCult}, Assists: ${rows[i].currentweekAssists})`
-                    runs = rows[i].currentweekCult + rows[i].currentweekVoid
-                    cults = rows[i].currentweekCult
-                    voids = rows[i].currentweekVoid
-                    assists = rows[i].currentweekAssists
+                    runs += rows[i].currentweekCult + rows[i].currentweekVoid
+                    cults += rows[i].currentweekCult
+                    voids += rows[i].currentweekVoid
+                    assists += rows[i].currentweekAssists
                     fitStringIntoEmbed(embed, string)
                     logged.push(rows[i].id)
                     index++;
@@ -94,21 +93,6 @@ module.exports = {
                         else channel.send(embeds[i])
                     }
                 } else for (let i in embeds) await channel.send(embeds[i])
-
-                /*async function sendEmbed(embed) {
-                    embedCount++;
-                    try {
-                        if (channel.name !== settings.currentweekchannel) return channel.send(embed)
-                        let messages = await channel.messages.fetch({ limit: 20 })
-                        let messageArray = messages.array()
-                        if (!messageArray[messageArray.length - embedCount]) await channel.send(embed)
-                        else await messageArray[messageArray.length - embedCount].edit(embed)
-                    } catch (er) {
-                        ErrorLogger.log(er, bot);
-                        await channel.bulkDelete(100)
-                        channel.send(embed)
-                    }
-                }*/
                 resolve(true)
             })
         })
