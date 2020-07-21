@@ -62,7 +62,7 @@ module.exports = {
         var voiceUsers = []
         var alts = []
         var crashers = []
-        var movedIn = []
+        var otherChannel = []
         var findA = []
         var kickList = '/kick'
         voiceUsers = channel.members.array();
@@ -75,11 +75,11 @@ module.exports = {
                 kickList = kickList.concat(` ${player}`)
             } else if (!voiceUsers.includes(member)) {
                 if (member.roles.highest.position >= message.guild.roles.cache.find(r => r.name === settings.arl).position) continue;
-                if (member.voice.channel == 'lounge' || member.voice.channel == 'afk') {
-                    member.edit({ channel: channel });
-                    movedIn.push(`<@!${member.id}>`);
+                if (member.voice.channel) {
+                    otherChannel.push(`${member}: ${member.voice.channel}`);
+                } else {
+                    crashers.unshift(`<@!${member.id}>`);
                 }
-                crashers.unshift(`<@!${member.id}>`);
                 kickList = kickList.concat(` ${player}`)
                 findA.push(player)
             }
@@ -94,7 +94,7 @@ module.exports = {
         var crashersS = ' ', altsS = ' ', movedS = ' ', find = `;find `
         for (let i in crashers) { crashersS = crashersS.concat(crashers[i]) + ', ' }
         for (let i in alts) { altsS = altsS.concat(alts[i]) + ', ' }
-        for (let i in movedIn) { movedS = movedS.concat(movedIn[i]) + ', ' }
+        for (let i in otherChannel) { movedS = movedS.concat(otherChannel[i]) + '\n' }
         for (let i in findA) { find = find.concat(findA[i]) + ' ' }
         if (crashersS == ' ') { crashersS = 'None' }
         if (altsS == ' ') { altsS = 'None' }
@@ -102,10 +102,10 @@ module.exports = {
         let embed = new Discord.MessageEmbed()
             .setTitle(`Parse for ${channel.name}`)
             .setColor('#00ff00')
-            .setDescription(`There are ${crashers.length} crashers, ${alts.length} potential alts, and ${movedIn.length} people that got moved in`)
+            .setDescription(`There are ${crashers.length} crashers, ${alts.length} potential alts, and ${otherChannel.length} people in other channels`)
             .addFields(
                 { name: 'Potential Alts', value: altsS },
-                { name: 'Moved In', value: movedS },
+                { name: 'Other Channels', value: movedS },
                 { name: 'Crashers', value: crashersS },
                 { name: 'Find Command', value: `\`\`\`${find}\`\`\`` },
                 { name: 'Kick List', value: `\`\`\`${kickList}\`\`\`` }

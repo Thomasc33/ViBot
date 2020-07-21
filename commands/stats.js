@@ -11,6 +11,7 @@ module.exports = {
         else var member = message.mentions.members.first()
         if (!member) member = message.guild.members.cache.get(args[0])
         if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
+        if(!member) return message.channel.send(`\`${args[0]}\` not found`)
         let embed = await this.getStatsEmbed(member.id, message.guild, db).catch(er => {
             console.log(er)
             message.channel.send('User has not been logged yet. Database is updated every 24-48 hours')

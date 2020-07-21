@@ -73,7 +73,7 @@ module.exports = {
                         })
                     }
                 }
-                await channel.delete()
+                channel.delete()
                 await m.delete()
             }
 

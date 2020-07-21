@@ -41,7 +41,7 @@ module.exports = {
                                 embed.fields[0].value += `\n${m}`
                             }
                         } else {
-                            db.query(`INSERT INTO users (id, ign) VALUES ('${m.id}', '${m.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|')[0]}')`)
+                            db.query(`INSERT INTO users (id) VALUES ('${m.id}')`)
                             if (embed.fields[1].value == 'None') {
                                 embed.fields[1].value = m
                             } else {

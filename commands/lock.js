@@ -8,6 +8,7 @@ module.exports = {
     args: '<channel>',
     role: 'Event Organizer',
     async execute(message, args, bott) {
+        if (args.length == 0) return;
         let settings = bott.settings[message.guild.id]
         if (args[0] > botSettings.voiceChannelCount) return;
         if (message.channel.parent.name.toLowerCase() === 'raiding') {
@@ -24,6 +25,8 @@ module.exports = {
             return;
         }
         bot = bott
+        if(!channel) return message.channel.send(`Channel ${args[0]} was not found`)
+        if(!verifiedRaiderRole) return message.channel.send('Raider role was not found')
         await this.lock(message, channel, args[0], verifiedRaiderRole)
 
         message.channel.send(`${channel.name} has been locked`)

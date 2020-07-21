@@ -20,7 +20,7 @@ module.exports = {
         }
         for (i = 0; i < args.length; i++) {
             var arg = args[0];
-            if (arg.replace(/[a-z]/gi, '') !== '') {
+            if (arg.replace(/^\d{1,2}$/, '') == '') {
                 break;
             } else {
                 toBan.push(args.shift());
@@ -71,7 +71,8 @@ module.exports = {
             }
             if (reason == "") reason = "None"
             toBan.forEach(u => {
-                let member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(u.toLowerCase()));
+                let member = message.guild.members.cache.get(u)
+                if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(u.toLowerCase()));
                 if (member == null) return message.channel.send(`${u} not found, please try again`);
                 if (member.roles.highest.position >= message.member.roles.highest.position) return message.channel.send(`${member} has a role greater than or equal to you and cannot be muted`);
                 if (member.roles.cache.has(pSuspendRole.id)) return message.channel.send('User is perma suspended already, no need to suspend again')
@@ -131,21 +132,6 @@ module.exports = {
                     db.query(`INSERT INTO suspensions (id, guildid, suspended, uTime, reason, modid, roles, logmessage) VALUES ('${member.id}', '${message.guild.id}', true, '${Date.now() + time}', '${reason}', '${message.author.id}', '${userRolesString}', '${messageId.id}');`)
 
                     message.channel.send(`${member} has been suspended`)
-
-                    /*
-                    bot.suspensions[member.id] = {
-                        guild: message.guild.id,
-                        time: Date.now() + time,
-                        reason: reason,
-                        by: message.author.id,
-                        logMessage: messageId.id,
-                        roles: userRoles
-                    }
-                    fs.writeFile('./suspensions.json', JSON.stringify(bot.suspensions, null, 4), err => {
-                        if (err) return ErrorLogger.log(err, bot);
-                        message.channel.send(`${member.nickname} has been suspended`);
-                    });
-                    */
                 }
 
             })

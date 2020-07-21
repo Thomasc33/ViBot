@@ -676,7 +676,7 @@ class afk {
             if (reactor.voice.channel && reactor.voice.channel.id == this.channel.id) {
                 reactor.send('Nitro has changed and only gives garunteed spot in VC. You are already in the VC so this use hasn\'t been counted').catch(er => { })
             } else {
-                this.db.query(`SELECT * FROM users WHERE id = '${u.id}'`, async (err, rows) => {
+                await this.db.query(`SELECT * FROM users WHERE id = '${u.id}'`, async (err, rows) => {
                     if (err) ErrorLogger.log(err, bot)
                     if (rows.length == 0) return await this.db.query(`INSERT INTO users (id) VALUES('${u.id}')`)
                     if (Date.now() - 3600000 > parseInt(rows[0].lastnitrouse)) {
@@ -872,8 +872,10 @@ class afk {
             loggingQuery = loggingQuery.substring(0, loggingQuery.length - 4)
             this.db.query(loggingQuery, (err, rows) => {
                 if (err) return
-                if (rows.length != this.channel.members.size) {
-                    let unlogged = this.channel.members.keyArray().filter(e => !rows.includes(e))
+                let dbIds = []
+                for (let i in rows) dbIds.push(rows[i].id)
+                if (rows.length < this.channel.members.size) {
+                    let unlogged = this.channel.members.keyArray().filter(e => !dbIds.includes(e))
                     for (let i in unlogged) {
                         this.db.query(`INSERT INTO users (id) VALUES('${unlogged[i]}')`)
                     }
@@ -1054,6 +1056,7 @@ async function createChannel(isVet, message, run) {
             var raider = message.guild.roles.cache.find(r => r.name === settings.raider)
             var vibotChannels = message.guild.channels.cache.find(c => c.name === settings.activechannels)
         }
+        if(!template) return rej(`Template channel not found`)
         let channel = await template.clone()
         setTimeout(() => channel.setParent(message.guild.channels.cache.filter(c => c.type == 'category').find(c => c.name.toLowerCase() === parent)), 1000)
         setTimeout(() => channel.setPosition(0), 2000)
