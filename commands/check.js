@@ -11,8 +11,8 @@ module.exports = {
             .setTitle('Check Report')
         //temporary keypopper
         checkEmbed.addField('Temporary Key Poppers', 'None!')
-        message.guild.members.cache.filter(u => u.roles.cache.has(message.guild.roles.cache.find(r => r.name === settings.tempkey)).id).each(m => {
-            if (checkEmbed.fields[0].value == None) checkEmbed.fields[0].value = `<@!${m.id}>`
+        message.guild.members.cache.filter(u => u.roles.cache.has(message.guild.roles.cache.find(r => r.name === settings.tempkey).id)).each(m => {
+            if (checkEmbed.fields[0].value == 'None!') checkEmbed.fields[0].value = `<@!${m.id}>`
             else checkEmbed.fields[0].value = checkEmbed.fields[0].value.concat(`, <@!${m.id}>`)
         })
         //people with same name
@@ -79,11 +79,42 @@ module.exports = {
             if (checkEmbed.fields[i].value.length >= 1024) {
                 let replacementEmbed = new Discord.MessageEmbed()
                     .setTitle(checkEmbed.fields[i].name)
-                    .setDescription(checkEmbed.fields[i].value)
+                    .setDescription('None!')
+                checkEmbed.fields[i].value.split(', ').forEach(s => {
+                    fitStringIntoEmbed(replacementEmbed, s, message.channel)
+                })
                 message.channel.send(replacementEmbed)
                 checkEmbed.fields[i].value = 'See Below'
             }
         }
         checkMessage.edit('', checkEmbed)
+    }
+}
+
+function fitStringIntoEmbed(embed, string, channel) {
+    if (embed.description == 'None!') {
+        embed.setDescription(string)
+    } else if (embed.description.length + string.length >= 2048) {
+        if (embed.fields.length == 0) {
+            embed.addField('-', string)
+        } else if (embed.fields[embed.fields.length - 1].value.length + string.length >= 1024) {
+            if (embed.length + string.length + 1 >= 6000) {
+                channel.send(embed)
+                embed.setDescription('None!')
+                embed.fields = []
+            } else {
+                embed.addField('-', string)
+            }
+        } else {
+            if (embed.length + string.length >= 6000) {
+                channel.send(embed)
+                embed.setDescription('None!')
+                embed.fields = []
+            } else {
+                embed.fields[embed.fields.length - 1].value = embed.fields[embed.fields.length - 1].value.concat(`, ${string}`)
+            }
+        }
+    } else {
+        embed.setDescription(embed.description.concat(`, ${string}`))
     }
 }

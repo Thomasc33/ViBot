@@ -51,6 +51,7 @@ async function dmHandler(message) {
     let statsTypos = ['stats', 'satts', 'stat', 'status', 'sats', 'stata', 'stts']
     if (statsTypos.includes(message.content.replace(/[^a-z0-9]/gi, ''))) {
         let guild = await getGuild(message).catch(er => { cancelled = true })
+        logCommand(guild)
         if (!cancelled) message.channel.send(await stats.getStatsEmbed(message.author.id, guild, db)
             .catch(er => { message.channel.send('You are not currently logged in the database. The database gets updated every 24-48 hours') }))
     } else {
@@ -62,6 +63,7 @@ async function dmHandler(message) {
             sendModMail()
         } else if (command.dms) {
             let guild = await getGuild(message).catch(er => cancelled = true)
+            logCommand(guild)
             if (!cancelled) {
                 if (guild.members.cache.get(message.author.id).roles.highest.position < guild.roles.cache.find(r => r.name === command.role).position && message.author.id !== '277636691227836419') {
                     message.channel.send('You do not have permissions to use this command')
@@ -89,6 +91,16 @@ async function dmHandler(message) {
             confirmModMailMessage.react('✅')
                 .then(confirmModMailMessage.react('❌'))
         }
+    }
+    async function logCommand(guild) {
+        let logEmbed = new Discord.MessageEmbed()
+            .setAuthor(message.author.tag)
+            .setColor('#0000ff')
+            .setDescription(`<@!${message.author.id}> sent the bot: "${message.content}"`)
+            .setFooter(`User ID: ${message.author.id}`)
+            .setTimestamp()
+        if (message.author.avatarURL()) logEmbed.author.iconURL = message.author.avatarURL()
+        guild.channels.cache.find(c => c.name === bot.settings[guild.id].botdms).send(logEmbed)
     }
 }
 
@@ -169,6 +181,7 @@ bot.on("ready", async () => {
                     eventchannels: 'active-channels-e',
                     runinfo: 'dylanbot-info',
                     history: 'history',
+                    botdms: 'history-reacts',
                     raidingtemplate: 'Raiding Template',
                     vettemplate: 'Veteran Raiding Template',
                     eventtemplate: 'Event Raiding Template',
@@ -260,6 +273,22 @@ bot.on("ready", async () => {
             }
         })
     }, 60000);
+    //mute check
+    bot.setInterval(() => {
+        for (let i in bot.mutes) {
+            const time = parseInt(bot.mutes[i].time);
+            const guild = bot.guilds.cache.get(bot.mutes[i].guild);
+            const member = guild.members.cache.get(i);
+            const muteRole = guild.roles.cache.find(r => r.name === bot.settings[guild.id].muted)
+            if (Date.now() > time) {
+                member.roles.remove(muteRole).catch(er => ErrorLogger.log(er, bot))
+                delete bot.mutes[i];
+                fs.writeFile('./mutes.json', JSON.stringify(bot.mutes, null, 4), function (err) {
+                    if (err) ErrorLogger.log(err, bot);
+                })
+            }
+        }
+    }, 60000)
     bot.guilds.cache.each(g => {
         if (!emojiServers.includes(g.id)) {
             vi.send(`${g.name}, ${g.id}`)
@@ -280,13 +309,24 @@ bot.on('error', err => {
     ErrorLogger.log(err, bot)
 })
 
+bot.on('guildMemberRemove', async member => {
+    db.query(`SELECT suspended FROM suspensions WHERE id = '${member.id}'`, (err, rows) => {
+        if (err) ErrorLogger.log(err, bot)
+        if (rows.length !== 0) {
+            let modlog = member.guild.channels.cache.find(c => c.name === bot.settings[member.guild.id].modlog)
+            if (!modlog) return ErrorLogger.log(new Error(`mod log not found in ${member.guild.id}`), bot)
+            modlog.send(`${member} is attempting to dodge a suspension by leaving the server`)
+        }
+    })
+})
+
 process.on('uncaughtException', err => {
     ErrorLogger.log(err, bot);
     console.log(err);
     process.exit(1)
 })
-
 process.on('unhandledRejection', err => {
+    if (err.message == 'Target user is not connected to voice.') return;
     ErrorLogger.log(err, bot);
     console.log(err);
 })

@@ -58,6 +58,7 @@
         "raidingtemplate": "Raiding Template",
         "vettemplate": "Veteran Raiding Template",
         "eventtemplate": "Event Raiding Template",
-        "currentweekchannel": "currentweek"
+        "currentweekchannel": "currentweek",
+        "botdms": "history-reacts"
     }
 }

@@ -11,7 +11,7 @@ module.exports = {
         let member = message.mentions.members.first()
         if(member == null) member = message.guild.members.cache.get(args[0])
         if(member == null) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
-        if(member == null) {message.channel.send('User not found'); return;}
+        if(member == null) return message.channel.send('User not found')
         db.query(`SELECT * FROM users WHERE id = '${member.id}'`, (err, rows) => {
             if(err) ErrorLogger.log(err, bot)
             db.query(`UPDATE users SET vialStored = ${parseInt(rows[0].vialStored) + 1} WHERE id = '${member.id}'`)

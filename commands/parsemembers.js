@@ -114,6 +114,12 @@ module.exports = {
         parseStatusEmbed.fields[1].value = `Crasher Parse Completed. See Below. Beginning Character Parse`
         await parseStatusMessage.edit(parseStatusEmbed)
 
+        //post in crasher-list
+        let key = null
+        if (message.member.voice.channel && bot.afkChecks[message.member.voice.channel.id] && bot.afkChecks[message.member.voice.channel.id].key) key = bot.afkChecks[message.member.voice.channel.id].key
+        postInCrasherList(embed, message.guild.channels.cache.find(c => c.name === settings.crasherlist), message.member, key)
+
+        //character parse
         let unreachable = []
         let characterParseEmbed = new Discord.MessageEmbed()
             .setColor('#00ff00')
@@ -226,7 +232,7 @@ module.exports = {
                         characterParseEmbed.fields = []
                     }
                     characterParseEmbed.addField(players[i], `[Link](https://www.realmeye.com/player/${players[i]}) | ${characterEmote} | LVL: \`${character.level}\` | Fame: \`${character.fame}\` | Stats: \`${character.stats}\` | ${weaponEmoji} ${abilityEmoji} ${armorEmoji} ${ringEmoji}${issueString}`)
-                    if (i % 20 == 0) {
+                    if (i % 5 == 0) {
                         parseStatusEmbed.fields[1].value = `Parsing Characters (${i}/${players.length})`
                         await parseStatusMessage.edit(parseStatusEmbed)
                     }
@@ -249,4 +255,14 @@ module.exports = {
         parseStatusEmbed.fields[1].value = 'Parse Completed'
         await parseStatusMessage.edit(parseStatusEmbed)
     }
+}
+
+async function postInCrasherList(embed, channel, parser, key) {
+    let m
+    if (key) {
+        m = await channel.send(`<@!${key}> please double check with ${parser} \`${parser.nickname}\` before kicking anyone`, embed)
+    } else {
+        m = await channel.send(embed)
+    }
+    setTimeout(() => { m.delete() }, 600000)
 }

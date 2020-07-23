@@ -7,8 +7,8 @@ module.exports = {
     args: '<id/mention>',
     async execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
-        var user = message.mentions.members.first()
-        if (user == null) user = message.guild.members.cache.get(args[0]);
+        var user = message.guild.members.cache.get(args[0]);
+        if (user == null) user = message.mentions.members.first()
         if (user == null) {
             message.channel.send('User not found. Try again')
             return;

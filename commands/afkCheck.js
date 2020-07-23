@@ -26,25 +26,17 @@ module.exports = {
         let settings = bott.settings[message.guild.id]
         if (args.length == 0) return;
         bot = bott
-        if (message.channel.name === 'dylanbot-commands') var isVet = false;
-        else if (message.channel.name === 'veteran-bot-commands') var isVet = true;
-        else return message.channel.send("Try again, but in dylanbot-commands or veteran-bot-commands");
-        if (args.length < 2) return message.channel.send("Command entered incorrectly -> ;afk <c/v/fsv> <location>");
-        if (isVet && activeVetRun) return message.channel.send("There is already a run active. If this is an error, do \`;allowrun\`");
-        else if (activeRun) return message.channel.send("There is already a run active. If this is an error, do \`;allowrun\`");
+        if (message.channel.name === settings.raidcommands) var isVet = false;
+        else if (message.channel.name === settings.vetcommands) var isVet = true;
+        else return message.channel.send(`Try again, but in ${settings.raidcommands} or ${settings.vetcommands}`);
+        if (args.length < 2) return message.channel.send(`Command entered incorrectly -> ${botSettings.prefix}${this.name} ${this.args}`);
+        if (isVet && activeVetRun) return message.channel.send(`There is already a run active. If this is an error, do \`;allowrun\``);
+        else if (activeRun) return message.channel.send(`There is already a run active. If this is an error, do \`;allowrun\``);
         switch (args[0].charAt(0).toLowerCase()) {
-            case 'c':
-                var run = 1;
-                break;
-            case 'v':
-                var run = 2;
-                break;
-            case 'f':
-                var run = 3;
-                break;
-            default:
-                message.channel.send("Command entered incorrectly -> ;afk <c/v/fsv> <location>");
-                return;
+            case 'c': var run = 1; break;
+            case 'v': var run = 2; break;
+            case 'f': var run = 3; break;
+            default: return message.channel.send(`Command entered incorrectly -> ${botSettings.prefix}${this.name} ${this.args}`);
         }
         let location = "";
         for (i = 1; i < args.length; i++) location = location.concat(args[i]) + ' ';
@@ -173,14 +165,15 @@ class afk {
         this.seconds = this.time % 60;
         this.embedMessage = new Discord.MessageEmbed()
             .setColor('#ff0000')
-            .setAuthor(`Cult Started by ${this.message.member.nickname} in ${this.channel.name}`, `${this.message.author.avatarURL()}`)
+            .setAuthor(`Cult Started by ${this.message.member.nickname} in ${this.channel.name}`)
             .setDescription(`To join, **connect to the raiding channel by clicking its name**
-                If you have a key react with <${botSettings.emote.LostHallsKey}>
-                To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.TomeofPurification}> <${botSettings.emote.MarbleSeal}>
-                If you plan on rushing, react with the <${botSettings.emote.Plane}>
-                If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.emote.shard}> to get into VC`)
+If you have a key react with <${botSettings.emote.LostHallsKey}>
+To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.TomeofPurification}> <${botSettings.emote.MarbleSeal}>
+If you plan on rushing, react with the <${botSettings.emote.Plane}>
+If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.emote.shard}> to get into VC`)
             .setTimestamp()
             .setFooter(`Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds`);
+        if (this.message.author.avatarURL()) this.embedMessage.author.iconURL = this.message.author.avatarURL()
         if (this.settings.points) this.embedMessage.setDescription(this.embedMessage.description.concat(`\nTo use points for early location, react with 🎟️
             To end the AFK check as a leader, react to ❌`))
         else this.embedMessage.setDescription(this.embedMessage.description.concat(`\nTo end the AFK check as a leader, react to ❌`))
@@ -274,13 +267,14 @@ class afk {
         this.seconds = this.time % 60;
         this.embedMessage = new Discord.MessageEmbed()
             .setColor('#8c00ff')
-            .setAuthor(`Void Started by ${this.message.member.nickname} in ${this.channel.name}`, `${this.message.author.avatarURL()}`)
+            .setAuthor(`Void Started by ${this.message.member.nickname} in ${this.channel.name}`)
             .setDescription(`To join, **connect to the raiding channel by clicking its name and react with** <${botSettings.emote.voidd}>
-            If you have a key or vial, react with <${botSettings.emote.LostHallsKey}> or <${botSettings.emote.Vial}>
-            To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.TomeofPurification}> <${botSettings.emote.MarbleSeal}>
-            If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.emote.shard}> to get into VC`)
+If you have a key or vial, react with <${botSettings.emote.LostHallsKey}> or <${botSettings.emote.Vial}>
+To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.TomeofPurification}> <${botSettings.emote.MarbleSeal}>
+If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.emote.shard}> to get into VC`)
             .setTimestamp()
             .setFooter(`Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds`);
+        if (this.message.author.avatarURL()) this.embedMessage.author.iconURL = this.message.author.avatarURL()
         if (this.settings.points) this.embedMessage.setDescription(this.embedMessage.description.concat(`\nTo use points for early location, react with 🎟️
         To end the AFK check as a leader, react to ❌`))
         else this.embedMessage.setDescription(this.embedMessage.description.concat(`\nTo end the AFK check as a leader, react to ❌`))
@@ -366,15 +360,16 @@ class afk {
         this.seconds = this.time % 60;
         this.embedMessage = new Discord.MessageEmbed()
             .setColor('#8c00ff')
-            .setAuthor(`Fullskip Void Started by ${this.message.member.nickname} in ${this.channel.name}`, `${this.message.author.avatarURL()}`)
+            .setAuthor(`Fullskip Void Started by ${this.message.member.nickname} in ${this.channel.name}`)
             .setDescription(`To join, **connect to the raiding channel by clicking its name and react with** <${botSettings.emote.SkipBoi}>
-            If you have a key or vial, react with <${botSettings.emote.LostHallsKey}> or <${botSettings.emote.Vial}>
-            To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.TomeofPurification}> <${botSettings.emote.MarbleSeal}>
-            If you have 85+ MHeal and a 8/8 Mystic, react with <${botSettings.emote.Mystic}>
-            If you are an 8/8 trickster with a brain, react with <${botSettings.emote.Brain}>
-            If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.emote.shard}> to get into VC`)
+If you have a key or vial, react with <${botSettings.emote.LostHallsKey}> or <${botSettings.emote.Vial}>
+To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.TomeofPurification}> <${botSettings.emote.MarbleSeal}>
+If you have 85+ MHeal and a 8/8 Mystic, react with <${botSettings.emote.Mystic}>
+If you are an 8/8 trickster with a brain, react with <${botSettings.emote.Brain}>
+If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.emote.shard}> to get into VC`)
             .setTimestamp()
             .setFooter(`Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds`);
+        if (this.message.author.avatarURL()) this.embedMessage.author.iconURL = this.message.author.avatarURL()
         if (this.settings.points) this.embedMessage.setDescription(this.embedMessage.description.concat(`\nTo use points for early location, react with 🎟️
         To end the AFK check as a leader, react to ❌`))
         else this.embedMessage.setDescription(this.embedMessage.description.concat(`\nTo end the AFK check as a leader, react to ❌`))
@@ -778,14 +773,13 @@ class afk {
         }
 
         //update embeds/messages
-        if (this.key != null) {
-            this.embedMessage.setDescription(`This afk check has been ended.
-        Thank you to <@!${this.key.id}> for popping a <${botSettings.emote.LostHallsKey}> for us!`)
-                .setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
-        } else {
-            this.embedMessage.setDescription(`This afk check has been ended.`)
-                .setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
-        }
+        if (this.key != null) this.embedMessage
+            .setDescription(`This afk check has been ended.\nThank you to <@!${this.key.id}> for popping a <${botSettings.emote.LostHallsKey}> for us!\nIf you get disconnected during the run, **JOIN LOUNGE** *then* DM me \`join\` to get back in`)
+            .setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
+        else this.embedMessage
+            .setDescription(`This afk check has been ended.\nIf you get disconnected during the run, **JOIN LOUNGE** *then* DM me \`join\` to get back in`)
+            .setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
+
         this.leaderEmbed.setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
         this.afkCheckEmbed.edit('', this.embedMessage).catch(er => ErrorLogger.log(er, bot))
             .then(this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot)))
@@ -864,6 +858,7 @@ class afk {
             }
         })
         this.message.guild.channels.cache.find(c => c.name === this.settings.history).send(historyEmbed)
+        this.message.guild.channels.cache.find(c => c.name === this.settings.runinfo).send(historyEmbed)
 
         //make sure everyone in run is in db
         if (this.channel.members) {
@@ -1012,20 +1007,22 @@ class afk {
         this.location = locationn;
 
         //update afk control panel
-        switch (this.run) {
-            case 1:
-                this.leaderEmbed.fields[2].value = this.location;
-                break;
-            case 2:
-                this.leaderEmbed.fields[2].value = this.location;
-                break;
-            case 3:
-                this.leaderEmbed.fields[4].value = this.location;
-                break;
+        if (this.leaderEmbed) {
+            switch (this.run) {
+                case 1:
+                    this.leaderEmbed.fields[2].value = this.location;
+                    break;
+                case 2:
+                    this.leaderEmbed.fields[2].value = this.location;
+                    break;
+                case 3:
+                    this.leaderEmbed.fields[4].value = this.location;
+                    break;
+            }
+            this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => console.log(er));
+            this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => console.log(er));
         }
-        this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => console.log(er));
-        this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => console.log(er));
-
+        
         //send location to everyone that already had it
         var arrayLength = this.earlyLocation.length;
         try {
@@ -1056,7 +1053,7 @@ async function createChannel(isVet, message, run) {
             var raider = message.guild.roles.cache.find(r => r.name === settings.raider)
             var vibotChannels = message.guild.channels.cache.find(c => c.name === settings.activechannels)
         }
-        if(!template) return rej(`Template channel not found`)
+        if (!template) return rej(`Template channel not found`)
         let channel = await template.clone()
         setTimeout(() => channel.setParent(message.guild.channels.cache.filter(c => c.type == 'category').find(c => c.name.toLowerCase() === parent)), 1000)
         setTimeout(() => channel.setPosition(0), 2000)

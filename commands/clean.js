@@ -30,7 +30,7 @@ module.exports = {
     async clean(channel, lounge, message, settings) {
         channel.members.each(async m => {
             if (m.roles.highest.position < message.guild.roles.cache.find(r => r.name === settings.eo).position) {
-                await m.voice.setChannel(lounge, 'cleaning')
+                await m.voice.setChannel(lounge, 'cleaning').catch(er => { })
             }
         })
     }

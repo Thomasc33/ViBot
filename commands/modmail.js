@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+var watchedModMails = []
 
 module.exports = {
     name: 'modmail',
@@ -17,7 +18,7 @@ module.exports = {
         let modMailChannel = guild.channels.cache.find(c => c.name === settings.modmailchannel)
         let messages = await modMailChannel.messages.fetch({ limit: 100 })
         messages.filter(m => m.author.id == bot.user.id && m.reactions.cache.has('🔑')).each(async function (m) {
-            if (!m.reactions.cache.has('🔑')) return;
+            if (!m.reactions.cache.has('🔑') || watchedModMails.includes(m.id)) return;
             module.exports.watchMessage(m, db)
         })
     },
@@ -42,6 +43,7 @@ module.exports = {
         })
     },
     async watchMessage(message, db) {
+        watchedModMails.push(message.id)
         let m = message
         let guild = m.guild
         let bot = message.client
@@ -73,7 +75,7 @@ module.exports = {
                         responseCollector.on('collect', async function (mes) {
                             let response = mes.content.trim()
                             responseCollector.stop()
-                            mes.delete()
+                            await mes.delete()
                             responseEmbed.setDescription(`__Are you sure you want to respond with the following?__\n${response}`)
                             await responseEmbedMessage.edit(responseEmbed)
                             await responseEmbedMessage.react('✅')

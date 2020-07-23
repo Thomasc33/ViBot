@@ -57,7 +57,8 @@ module.exports = {
         }
     },
     async moveIn(member, runId) {
-        member.voice.setChannel(runId, 'joinrun').catch(er => member.send('Please connect to lounge and try again'))
+        if (member.voice.channel) member.voice.setChannel(runId, 'joinrun').catch(er => member.send('Please connect to lounge and try again'))
+        else member.send('Please connect to lounge and try again')
     }
 }
 

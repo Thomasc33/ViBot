@@ -11,7 +11,7 @@ module.exports = {
         else var member = message.mentions.members.first()
         if (!member) member = message.guild.members.cache.get(args[0])
         if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
-        if(!member) return message.channel.send(`\`${args[0]}\` not found`)
+        if (!member) return message.channel.send(`\`${args[0]}\` not found`)
         let embed = await this.getStatsEmbed(member.id, message.guild, db).catch(er => {
             console.log(er)
             message.channel.send('User has not been logged yet. Database is updated every 24-48 hours')
@@ -22,8 +22,9 @@ module.exports = {
         }
     },
     async dmExecution(message, args, bot, db, guild) {
-        if (args.length == 0) var member = message.author
-        else var member = message.mentions.members.first()
+        let member
+        if (args.length == 0) member = message.author
+        else if (message.mentions.members) member = message.mentions.members.first()
         if (!member) member = guild.members.cache.get(args[0])
         if (!member) member = guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
         let embed = await this.getStatsEmbed(member.id, guild, db).catch(er => {
@@ -39,7 +40,6 @@ module.exports = {
             db.query(`SELECT * FROM users WHERE id = '${id}'`, (err, rows) => {
                 if (err) { reject(); return; }
                 if (rows.length == 0) { reject('No user found'); return; }
-                console.log(rows)
                 let guildMember = guild.members.cache.get(id)
                 let embed = new Discord.MessageEmbed()
                     .setColor('#015c21')

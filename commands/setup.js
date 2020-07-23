@@ -137,7 +137,8 @@ module.exports = {
 26: Event Commands
 27: Event Channels
 28: Run Info
-29: History\`\`\``)
+29: History
+30: Bot-DMS\`\`\``)
                         await setupMessage.edit(setupEmbed)
                         let textMenu = new Discord.MessageCollector(message.channel, m => m.author.id == message.author.id)
                         textMenu.on('collect', async m => {
@@ -186,6 +187,7 @@ module.exports = {
                                         case '27': bot.settings[message.guild.id].eventchannels = newRoleName; break;
                                         case '28': bot.settings[message.guild.id].runinfo = newRoleName; break;
                                         case '29': bot.settings[message.guild.id].history = newRoleName; break;
+                                        case '30': bot.settings[message.guild.id].botdms = newRoleName; break;
                                         default: message.channel.send('error (number not found)'); break;
                                     }
                                     fs.writeFileSync('./guildSettings.json', JSON.stringify(bot.settings, null, 4), err => message.channel.send(err))

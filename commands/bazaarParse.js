@@ -67,8 +67,8 @@ module.exports = {
             if (name != '') {
                 if (!earlyLocationNames.includes(name)) {
                     let member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(name.toLowerCase()));
-                    if (member.roles.highest.position < message.guild.roles.cache.find(r => r.name === settings.arl).position)
-                        crashers.push(name)
+                    if (!member) crashers.push(name)
+                    else if (member.roles.highest.position < message.guild.roles.cache.find(r => r.name === settings.arl).position) crashers.push(name)
                 }
             }
         }

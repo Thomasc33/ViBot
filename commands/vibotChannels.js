@@ -73,10 +73,10 @@ module.exports = {
                         })
                     }
                 }
-                channel.delete()
+                message.guild.channels.cache.find(c => c.name === settings.history).send(`${channel.name} deleted by <@!${u.id}>`)
+                await channel.delete()
                 await m.delete()
             }
-
         })
     }
 }

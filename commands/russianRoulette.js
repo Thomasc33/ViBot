@@ -36,9 +36,16 @@ module.exports = {
             clearInterval(timer)
             reactionCollector.stop()
             if (reactors.length == 0) { return; }
-            let loser = reactors[Math.floor(Math.random() * reactors.length)]
-            if (loser == null) return;
-
+            let loser = getLoser(0)
+            function getLoser(rolls) {
+                if (rolls >= 10) return null
+                let i = Math.floor(Math.random() * reactors.length)
+                let loser = message.guild.members.cache.get(reactors[i].id)
+                if (loser == null) return;
+                if (loser.roles.cache.has(message.guild.roles.cache.find(r => r.name === settings.muted).id)) return getLoser(rolls + 1)
+                else return loser
+            }
+            if (loser == null) return console.log(`rolled too many times`);
             embed.setDescription(`${embed.description}\nWinner: <@!${loser.id}> was shot to death!
             They have been muted for 1 minute`)
             embed.setFooter('Game Over')

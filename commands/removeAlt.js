@@ -13,7 +13,7 @@ module.exports = {
         if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
         if (!member) return message.channel.send(`\`${args[0]}\` not found`)
 
-        let names = member.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|')
+        let names = member.nickname.replace(/[^a-z|]/gi, '').split('|')
 
         if (names.length <= 1) return message.channel.send(`${member} does not have any alts`)
 
