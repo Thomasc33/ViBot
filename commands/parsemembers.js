@@ -1,10 +1,10 @@
 const Discord = require('discord.js');
 const ErrorLogger = require('../logError')
 const RealmeyeScrape = require('../realmEyeScrape')
-const botSettings = require('../settings.json')
 const vision = require('@google-cloud/vision');
 const realmEyeScrape = require('../realmEyeScrape');
 const charStats = require('../charStats.json')
+const botSettings = require('../settings.json')
 const client = new vision.ImageAnnotatorClient(botSettings.gcloudOptions);
 
 
@@ -74,7 +74,7 @@ module.exports = {
                 crashers.push(player);
                 kickList = kickList.concat(` ${player}`)
             } else if (!voiceUsers.includes(member)) {
-                if (member.roles.highest.position >= message.guild.roles.cache.find(r => r.name === settings.arl).position) continue;
+                if (member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.almostrl).position) continue;
                 if (member.voice.channel) {
                     otherChannel.push(`${member}: ${member.voice.channel}`);
                 } else {
@@ -85,7 +85,7 @@ module.exports = {
             }
         }
         for (let i in voiceUsers) {
-            if (voiceUsers[i].roles.highest.position >= message.guild.roles.cache.find(r => r.name === settings.arl).position) continue;
+            if (voiceUsers[i].roles.highest.position >= message.guild.roles.cache.get(settings.roles.almostrl).position) continue;
             let nick = voiceUsers[i].nickname.toLowerCase().replace(/[^a-z|]/gi, '')
             if (!raiders.includes(nick)) {
                 alts.push(`<@!${voiceUsers[i].id}>`);
@@ -117,7 +117,7 @@ module.exports = {
         //post in crasher-list
         let key = null
         if (message.member.voice.channel && bot.afkChecks[message.member.voice.channel.id] && bot.afkChecks[message.member.voice.channel.id].key) key = bot.afkChecks[message.member.voice.channel.id].key
-        postInCrasherList(embed, message.guild.channels.cache.find(c => c.name === settings.crasherlist), message.member, key)
+        postInCrasherList(embed, message.guild.channels.cache.get(settings.channels.parsechannel), message.member, key)
 
         //character parse
         let unreachable = []
@@ -173,7 +173,7 @@ module.exports = {
                 //weapon
                 if (character.weapon) {
                     let weaponTier = parseInt(character.weapon.split(/ +/).pop().replace('T', ''))
-                    if (weaponTier < botSettings.runReqs.weapon && weaponTier !== NaN) {
+                    if (weaponTier < settings.runreqs.weapon && weaponTier !== NaN) {
                         issue = true;
                         issueString += `\nWeapon tier is too low (T${weaponTier})`
                     }
@@ -185,7 +185,7 @@ module.exports = {
                 if (character.ability) {
                     if (character.class.toLowerCase() != 'trickster' && character.class.toLowerCase() != 'mystic') {
                         let abilityTier = parseInt(character.ability.split(/ +/).pop().replace('T', ''))
-                        if (abilityTier < botSettings.runReqs.ability && abilityTier !== NaN) {
+                        if (abilityTier < settings.runreqs.ability && abilityTier !== NaN) {
                             issue = true;
                             issueString += `\nAbility tier is too low (T${abilityTier})`
                         }
@@ -197,7 +197,7 @@ module.exports = {
                 //armor
                 if (character.armor) {
                     let armorTier = parseInt(character.armor.split(/ +/).pop().replace('T', ''))
-                    if (armorTier < botSettings.runReqs.armor && armorTier !== NaN) {
+                    if (armorTier < settings.runreqs.armor && armorTier !== NaN) {
                         issue = true;
                         issueString += `\nArmor tier is too low (T${armorTier})`
                     }
@@ -208,7 +208,7 @@ module.exports = {
                 //ring
                 if (character.ring) {
                     let ringTier = parseInt(character.ring.split(/ +/).pop().replace('T', ''))
-                    if (ringTier < botSettings.runReqs.ring && ringTier !== NaN) {
+                    if (ringTier < settings.runreqs.ring && ringTier !== NaN) {
                         issue = true;
                         issueString += `\nRing tier is too low (T${ringTier})`
                     }

@@ -90,17 +90,22 @@ class afk {
         this.message = message;
         this.db = db;
         this.isVet = isVet;
-        if (this.isVet) this.raidStatus = this.message.guild.channels.cache.find(c => c.name === settings.vetstatus);
-        else this.raidStatus = this.message.guild.channels.cache.find(c => c.name === settings.raidstatus);
-        if (this.isVet) this.dylanBotCommands = this.message.guild.channels.cache.find(c => c.name === settings.vetcommands);
-        else this.dylanBotCommands = this.message.guild.channels.cache.find(c => c.name === settings.raidcommands);
+        if (this.isVet) this.raidStatus = this.message.guild.channels.cache.get(settings.channels.vetstatus)
+        else this.raidStatus = this.message.guild.channels.cache.get(settings.channels.raidstatus)
+        if (this.isVet) this.dylanBotCommands = this.message.guild.channels.cache.get(settings.channels.vetcommands)
+        else this.dylanBotCommands = this.message.guild.channels.cache.get(settings.channels.raidcommands)
+        if (this.isVet) this.verifiedRaiderRole = this.message.guild.roles.cache.get(settings.roles.vetraider)
+        else this.verifiedRaiderRole = this.message.guild.roles.cache.get(settings.roles.raider)
         if (this.isVet) activeVetRun = true;
         else activeRun = true;
-        this.afkChannel = message.guild.channels.cache.find(c => c.name === 'afk');
-        this.dylanBotInfo = message.guild.channels.cache.find(c => c.name === settings.runinfo);
-        this.officialRusher = message.guild.roles.cache.find(r => r.name === settings.rusher);
-        this.nitroBooster = message.guild.roles.cache.find(r => r.name === settings.nitro);
-        this.leaderOnLeave = message.guild.roles.cache.find(r => r.name === settings.lol);
+        if (this.isVet) this.voiceChannel = this.message.guild.channels.cache.find(c => c.name.includes(`${this.settings.voiceprefixes.vetprefix}${this.channel}`))
+        else this.voiceChannel = this.message.guild.channels.cache.find(c => c.name.includes(`${this.settings.voiceprefixes.raidingprefix}${this.channel}`))
+        this.staffRole = message.guild.roles.cache.get(settings.roles.almostrl)
+        this.afkChannel = message.guild.channels.cache.get(settings.voice.afk)
+        this.dylanBotInfo = message.guild.channels.cache.get(settings.channels.runlogs)
+        this.officialRusher = message.guild.roles.cache.get(settings.roles.rusher)
+        this.nitroBooster = message.guild.roles.cache.get(settings.roles.nitro)
+        this.leaderOnLeave = message.guild.roles.cache.get(settings.roles.lol)
         this.minutes;
         this.seconds;
         this.raiders = 0
@@ -117,23 +122,13 @@ class afk {
         this.mysticCount = 0
         this.brains = []
         this.brainCount = 0;
-        this.time = botSettings.afkTimeLimit;
+        this.time = settings.numerical.afktime
         this.voiceChannel
-        this.verifiedRaiderRole;
         this.postTime = 20;
         this.earlyLocation = [];
         this.raider = [];
     }
     async start() {
-
-        //variables
-        if (!this.isVet) {
-            this.voiceChannel = this.message.guild.channels.cache.find(c => c.name == `${this.settings.raidprefix}${this.channel}` || c.name == `${this.settings.raidprefix}${this.channel} <--Join Now!`);
-            this.verifiedRaiderRole = this.message.guild.roles.cache.find(r => r.name === this.settings.raider);
-        } else if (this.isVet) {
-            this.voiceChannel = this.message.guild.channels.cache.find(c => c.name == `${this.settings.vetprefix}${this.channel}` || c.name == `${this.settings.vetprefix}${this.channel} <--Join Now!`);
-            this.verifiedRaiderRole = this.message.guild.roles.cache.find(r => r.name === this.settings.vetraider);
-        } else return;
         if (this.channel == null) return this.message.channel.send("Could not find channel correctly, please try again");
         await unlockChannel(this.verifiedRaiderRole, this.voiceChannel, this.channel, this.isVet, this.settings)
 
@@ -205,9 +200,7 @@ class afk {
             if (r.emoji.id === botSettings.emoteIDs.malus) {
                 this.raiders++;
                 this.raider.push(reactor);
-                if (this.isVet) var channel = this.message.guild.channels.cache.find(c => c.name == `Veteran Raiding ${this.channel}` || c.name == `Veteran Raiding ${this.channel} <-- Join!`);
-                else var channel = this.message.guild.channels.cache.find(c => c.name == `raiding-${this.channel}` || c.name == `raiding-${this.channel} <-- Join!`);
-                reactor.edit({ channel: channel }).catch(er => { });
+                reactor.voice.setChannel(this.voiceChannel.id).catch(er => { })
             }
             //key
             if (r.emoji.id === botSettings.emoteIDs.LostHallsKey) {
@@ -238,7 +231,7 @@ class afk {
                     this.earlyLocation.push(u);
                     return;
                 }
-                if (this.nitroCount + 1 > botSettings.nitroCount) return;
+                if (this.nitroCount + 1 > this.settings.numerical.nitrocount) return;
                 if (reactor.roles.cache.has(this.nitroBooster.id)) {
                     reactor.send(`The location for this run has been set to \`${this.location}\``);
                     this.nitro[this.nitroCount] = u;
@@ -252,7 +245,7 @@ class afk {
                 }
             }
             if (r.emoji.name == '❌') {
-                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
+                if (reactor.roles.highest.position < this.staffRole.position) return;
                 this.endedBy = u;
                 this.postAfk();
             }
@@ -266,7 +259,7 @@ class afk {
             if (u.bot) return;
             let reactor = this.message.guild.members.cache.get(u.id);
             if (r.emoji.name === '❌') {
-                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
+                if (reactor.roles.highest.position < this.staffRole.position) return;
                 this.endedBy = u;
                 this.abortAfk();
             }
@@ -321,9 +314,7 @@ To end the AFK check as a leader, react to ❌`)
             if (r.emoji.id === botSettings.emoteIDs.voidd) {
                 this.raiders++;
                 this.raider.push(reactor);
-                if (this.isVet) var channel = this.message.guild.channels.cache.find(c => c.name == `Veteran Raiding ${this.channel}` || c.name == `Veteran Raiding ${this.channel} <--Join Now!`);
-                else var channel = this.message.guild.channels.cache.find(c => c.name == `raiding-${this.channel}` || c.name == `raiding-${this.channel} <--Join Now!`);
-                reactor.edit({ channel: channel }).catch(er => { });
+                reactor.voice.setChannel(this.voiceChannel.id).catch(er => { })
             }
             //key
             if (r.emoji.id === botSettings.emoteIDs.LostHallsKey) {
@@ -346,7 +337,7 @@ To end the AFK check as a leader, react to ❌`)
                     this.earlyLocation.push(u);
                     return;
                 }
-                if (this.nitroCount + 1 > botSettings.nitroCount) return;
+                if (this.nitroCount + 1 > this.settings.numerical.nitrocount) return;
                 if (reactor.roles.cache.has(this.nitroBooster.id)) {
                     reactor.send(`The location for this run has been set to \`${this.location}\``);
                     this.nitro[this.nitroCount] = u;
@@ -360,7 +351,7 @@ To end the AFK check as a leader, react to ❌`)
                 }
             }
             if (r.emoji.name == '❌') {
-                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
+                if (reactor.roles.highest.position < this.staffRole.position) return;
                 this.endedBy = u;
                 this.postAfk();
             }
@@ -374,7 +365,7 @@ To end the AFK check as a leader, react to ❌`)
             if (u.bot) return;
             let reactor = this.message.guild.members.cache.get(u.id);
             if (r.emoji.name === '❌') {
-                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
+                if (reactor.roles.highest.position < this.staffRole.position) return;
                 this.endedBy = u;
                 this.abortAfk();
             }
@@ -432,9 +423,7 @@ To end the AFK check as a leader, react to ❌`)
             if (r.emoji.id === botSettings.emoteIDs.SkipBoi) {
                 this.raiders++;
                 this.raider.push(reactor);
-                if (this.isVet) var channel = this.message.guild.channels.cache.find(c => c.name == `Veteran Raiding ${this.channel}` || c.name == `Veteran Raiding ${this.channel} <--Join Now!`);
-                else var channel = this.message.guild.channels.cache.find(c => c.name == `raiding-${this.channel}` || c.name == `raiding-${this.channel} <--Join Now!`);
-                reactor.edit({ channel: channel }).catch(er => { });
+                reactor.voice.setChannel(this.voiceChannel.id).catch(er => { })
             }
             //key
             if (r.emoji.id === botSettings.emoteIDs.LostHallsKey) {
@@ -467,7 +456,7 @@ To end the AFK check as a leader, react to ❌`)
                     this.earlyLocation.push(u);
                     return;
                 }
-                if (this.nitroCount + 1 > botSettings.nitroCount) return;
+                if (this.nitroCount + 1 > this.settings.numerical.nitrocount) return;
                 if (reactor.roles.cache.has(this.nitroBooster.id)) {
                     reactor.send(`The location for this run has been set to \`${this.location}\``);
                     this.nitro[this.nitroCount] = u;
@@ -481,7 +470,7 @@ To end the AFK check as a leader, react to ❌`)
                 }
             }
             if (r.emoji.name == '❌') {
-                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
+                if (reactor.roles.highest.position < this.staffRole.position) return;
                 this.endedBy = u;
                 this.postAfk();
             }
@@ -495,7 +484,7 @@ To end the AFK check as a leader, react to ❌`)
             if (u.bot) return;
             let reactor = this.message.guild.members.cache.get(u.id);
             if (r.emoji.name === '❌') {
-                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
+                if (reactor.roles.highest.position < this.staffRole.position) return;
                 this.endedBy = u;
                 this.abortAfk();
             }
@@ -896,12 +885,12 @@ async function fsvReact(message) {
 async function unlockChannel(raiderRole, voiceChannel, voiceChannelNumber, isVet, settings) {
     if (isVet) {
         await voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(r => console.log(r));
-        await voiceChannel.setName(`${settings.vetprefix}${voiceChannelNumber} <-- Join!`).catch(r => console.log(r));
+        await voiceChannel.setName(`${settings.voiceprefixes.vetprefix}${voiceChannelNumber} <-- Join!`).catch(r => console.log(r));
         await voiceChannel.setUserLimit(0).catch(r => console.log(r));
     }
     if (!isVet) {
         await voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(r => console.log(r));
-        await voiceChannel.setName(`${settings.raidprefix}${voiceChannelNumber} <-- Join!`).catch(r => console.log(r));
+        await voiceChannel.setName(`${settings.voiceprefixes.raidingprefix}${voiceChannelNumber} <-- Join!`).catch(r => console.log(r));
         await voiceChannel.setUserLimit(0).catch(r => console.log(r));
     }
     return;
@@ -909,12 +898,12 @@ async function unlockChannel(raiderRole, voiceChannel, voiceChannelNumber, isVet
 async function lockChannel(raiderRole, voiceChannel, voiceChannelNumber, isVet, settings) {
     if (isVet) {
         await voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(r => console.log(r));
-        await voiceChannel.setName(`${settings.vetprefix}${voiceChannelNumber}`).catch(r => console.log(r));
+        await voiceChannel.setName(`${settings.voiceprefixes.vetprefix}${voiceChannelNumber}`).catch(r => console.log(r));
         await voiceChannel.setUserLimit(99).catch(r => console.log(r));
     }
     if (!isVet) {
         await voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(r => console.log(r));
-        await voiceChannel.setName(`${settings.raidprefix}${voiceChannelNumber}`).catch(r => console.log(r));
+        await voiceChannel.setName(`${settings.voiceprefixes.raidingprefix}${voiceChannelNumber}`).catch(r => console.log(r));
         await voiceChannel.setUserLimit(99).catch(r => console.log(r));
     }
     return;

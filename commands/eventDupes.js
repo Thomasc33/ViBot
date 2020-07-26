@@ -6,8 +6,8 @@ module.exports = {
     role: 'Security',
     async execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
-        let eventbois = message.guild.roles.cache.find(r => r.name === settings.events)
-        let raider = message.guild.roles.cache.find(r => r.name === settings.raider)
+        let eventbois = message.guild.roles.cache.get(settings.roles.eventraider)
+        let raider = message.guild.roles.cache.get(settings.roles.raider)
 
         let embed = new Discord.MessageEmbed()
             .setTitle('Users with Event bois and Verified Raider')

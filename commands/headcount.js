@@ -13,14 +13,13 @@ module.exports = {
     async execute(message, args, bott) {
         let settings = bott.settings[message.guild.id]
         if (!(message.channel.parent.name.toLowerCase() === 'raiding' || message.channel.parent.name.toLowerCase() === 'veteran raiding' || message.channel.parent.name.toLowerCase() === 'events')) {
-            message.channel.send("Try again in a correct category");
-            return;
+            return message.channel.send("Try again in a correct category");
         }
         bot = bott;
         var textChannel;
-        if (message.channel.parent.name.toLowerCase() === 'veteran raiding') textChannel = message.guild.channels.cache.find(c => c.name === settings.vetstatus);
-        else if (message.channel.parent.name.toLowerCase() === 'raiding') textChannel = message.guild.channels.cache.find(c => c.name === settings.raidstatus);
-        else if (message.channel.parent.name.toLowerCase() === 'events') textChannel = message.guild.channels.cache.find(c => c.name === settings.eventstatus)
+        if (message.channel.parent.name.toLowerCase() === 'veteran raiding') textChannel = message.guild.channels.cache.get(settings.channels.vetstatus)
+        else if (message.channel.parent.name.toLowerCase() === 'raiding') textChannel = message.guild.channels.cache.get(settings.channels.raidstatus)
+        else if (message.channel.parent.name.toLowerCase() === 'events') textChannel = message.guild.channels.cache.find(settings.channels.eventstatus)
 
         if (message.channel.parent.name.toLowerCase() !== 'events') {
             switch (args[0].charAt(0).toLowerCase()) {
@@ -32,7 +31,7 @@ module.exports = {
                     React with <${botSettings.emote.LostHallsKey}> if you have a key and are willing to pop.
                     React with <${botSettings.emote.Plane}> if you plan on rushing.`)
                         .setTimestamp(Date.now());
-                    var embedMessage = await textChannel.send(embed);
+                    var embedMessage = await textChannel.send(`@here`, embed);
 
                     cultReact(embedMessage);
                     break;
@@ -44,7 +43,7 @@ module.exports = {
                 React with <${botSettings.emote.LostHallsKey}> if you have a key and are willing to pop.
                 React with <${botSettings.emote.Vial}> if you have a vial.`)
                         .setTimestamp(Date.now());
-                    var embedMessage = await textChannel.send(embed);
+                    var embedMessage = await textChannel.send(`@here`, embed);
 
                     voidReact(embedMessage);
                     break;
@@ -58,7 +57,7 @@ module.exports = {
                     React with <${botSettings.emote.Brain}> if you are a brain trickster.
                     React with <${botSettings.emote.Mystic}> if you are a mystic.`)
                         .setTimestamp(Date.now());
-                    var embedMessage = await textChannel.send(embed);
+                    var embedMessage = await textChannel.send(`@here`, embed);
 
                     fsvReact(embedMessage);
                     break;

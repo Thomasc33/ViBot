@@ -18,6 +18,7 @@ const currentWeek = require('./commands/currentWeek')
 const ecurrentWeek = require('./commands/eventCurrentWeek')
 const stats = require('./commands/stats')
 const modmail = require('./commands/modmail')
+const setup = require('./commands/setup')
 const emojiServers = ['719905601131511850', '719905712507191358', '719930605101383780', '719905684816396359', '719905777363714078', '720260310014885919', '720260593696768061', '720259966505844818', '719905506054897737', '720260132633706577', '719934329857376289', '720260221720592394', '720260562390351972', '720260005487575050', '719905949409869835', '720260467049758781', '720260436875935827', '719905747986677760', '720260079131164692', '719932430126940332', '719905565035200573', '719905806082113546', '722999001460244491', '720260272488710165', '722999622372556871', '720260194596290650', '720260499312476253', '720259927318331513', '722999694212726858', '722999033387548812', '720260531901956166', '720260398103920670', '719905651337461820']
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
@@ -100,7 +101,7 @@ async function dmHandler(message) {
             .setFooter(`User ID: ${message.author.id}`)
             .setTimestamp()
         if (message.author.avatarURL()) logEmbed.author.iconURL = message.author.avatarURL()
-        guild.channels.cache.find(c => c.name === bot.settings[guild.id].botdms).send(logEmbed)
+        guild.channels.cache.get(bot.settings[guild.id].channels.dmcommands).send(logEmbed)
     }
 }
 
@@ -118,81 +119,12 @@ bot.on("ready", async () => {
     let vi = await bot.users.fetch(`277636691227836419`)
     vi.send('Bot Starting Back Up')
     bot.user.setActivity(`bruh`);
-    let changed = false
     //generate default settings
     bot.guilds.cache.each(g => {
         if (!emojiServers.includes(g.id)) {
-            if (!bot.settings[g.id]) {
-                bot.settings[g.id] = {
-                    modmail: false,
-                    currentweek: false,
-                    eventCurrentweek: false,
-                    verification: false,
-                    vetVerification: false,
-                    points: false,
-                    moderator: 'Moderator',
-                    officer: 'Officer',
-                    hrl: 'Head Raid Leader',
-                    sec: 'Security',
-                    developer: 'Developer',
-                    vrl: 'Veteran Raid Leader',
-                    fs: 'Fullskip',
-                    rl: 'Raid Leader',
-                    arl: 'Almost Raid Leader',
-                    trl: 'Trial Raid Leader',
-                    eo: 'Event Organizer',
-                    rusher: 'Official Rusher',
-                    nitro: 'Nitro Booster',
-                    lol: 'Leader on Leave',
-                    vetraider: 'Veteran Raider',
-                    raider: 'Verified Raider',
-                    events: 'Event Boi',
-                    muted: 'Muted',
-                    tempsuspend: 'Suspended but Verified',
-                    psuspended: 'Suspended',
-                    vetban: 'Banned Veteran Raider',
-                    tempkey: 'Temporary Key Popper',
-                    modmailchannel: 'history-bot-dms',
-                    verify: 'get-verified',
-                    vetverify: 'veteran-verification',
-                    vetveri: 'veri-pending-veterans',
-                    veri: 'veri-pending',
-                    verilog: 'veri-log',
-                    modlog: 'mod-logs',
-                    suspendlog: 'suspend-log',
-                    viallog: 'vial-logs',
-                    rlfeedback: 'customer-feedback',
-                    currentweekchannel: 'currentweek',
-                    pastweeks: 'leader-activity-log',
-                    eventcurrentweek: 'e-currentweek',
-                    pasteventweeks: 'e-weekly-logs',
-                    leadinglogs: 'leader-leading-logs',
-                    leaderchat: 'leader-chat',
-                    vetleaderchat: 'veteran-rl-chat',
-                    crasherlist: 'crasher-list',
-                    raidstatus: 'raid-status-announcements',
-                    raidcommands: 'dylanbot-commands',
-                    activechannels: 'active-channels',
-                    vetstatus: 'veteran-status-announcements',
-                    vetcommands: 'veteran-bot-commands',
-                    vetchannels: 'active-channels-v',
-                    eventstatus: 'event-status-announcements',
-                    eventcommands: 'eventbot-commands',
-                    eventchannels: 'active-channels-e',
-                    runinfo: 'dylanbot-info',
-                    history: 'history',
-                    botdms: 'history-reacts',
-                    raidingtemplate: 'Raiding Template',
-                    vettemplate: 'Veteran Raiding Template',
-                    eventtemplate: 'Event Raiding Template',
-                    raidprefix: 'Backup raiding-',
-                    vetprefix: 'Veteran Raiding '
-                }
-                changed = true
-            }
+            setup.autoSetup(g, bot)
         }
     })
-    if (changed) fs.writeFileSync('./guildSettings.json', JSON.stringify(bot.settings, null, 4), er => ErrorLogger.log(er, bot))
     //vetban check
     bot.setInterval(() => {
         for (let i in bot.vetBans) {
@@ -279,7 +211,7 @@ bot.on("ready", async () => {
             const time = parseInt(bot.mutes[i].time);
             const guild = bot.guilds.cache.get(bot.mutes[i].guild);
             const member = guild.members.cache.get(i);
-            const muteRole = guild.roles.cache.find(r => r.name === bot.settings[guild.id].muted)
+            const muteRole = guild.roles.cache.get(bot.settings[guild.id].roles.muted)
             if (Date.now() > time) {
                 member.roles.remove(muteRole).catch(er => ErrorLogger.log(er, bot))
                 delete bot.mutes[i];
@@ -293,14 +225,14 @@ bot.on("ready", async () => {
         if (!emojiServers.includes(g.id)) {
             vi.send(`${g.name}, ${g.id}`)
             vibotChannels.update(g, bot).catch(er => { })
-            if (bot.settings[g.id].modmail) modmail.update(g, bot, db).catch(er => { })
-            if (bot.settings[g.id].vetVerification) vetVerification.init(g, bot, db).catch(er => { })
+            if (bot.settings[g.id].backend.modmail) modmail.update(g, bot, db).catch(er => { })
+            if (bot.settings[g.id].backend.vetverification) vetVerification.init(g, bot, db).catch(er => { })
         }
     })
     const currentWeekReset = cron.job('0 0 * * SUN', () => {
         bot.guilds.cache.each(g => {
-            if (bot.settings[g.id].currentweek) currentWeek.newWeek(g, bot, db);
-            if (bot.settings[g.id].eventCurrentweek) ecurrentWeek.newWeek(g, bot, db)
+            if (bot.settings[g.id].backend.currentweek) currentWeek.newWeek(g, bot, db);
+            if (bot.settings[g.id].backend.eventcurrentweek) ecurrentWeek.newWeek(g, bot, db)
         }, null, true, null, null, false)
     })
 });
@@ -313,7 +245,7 @@ bot.on('guildMemberRemove', async member => {
     db.query(`SELECT suspended FROM suspensions WHERE id = '${member.id}'`, (err, rows) => {
         if (err) ErrorLogger.log(err, bot)
         if (rows.length !== 0) {
-            let modlog = member.guild.channels.cache.find(c => c.name === bot.settings[member.guild.id].modlog)
+            let modlog = member.guild.channels.cache.get(bot.settings[member.guild.id].channels.modlogs)
             if (!modlog) return ErrorLogger.log(new Error(`mod log not found in ${member.guild.id}`), bot)
             modlog.send(`${member} is attempting to dodge a suspension by leaving the server`)
         }

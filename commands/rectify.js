@@ -20,7 +20,7 @@ module.exports = {
             .addField('User', user.displayName, true)
             .addField('Rectified By', `<@!${message.author.id}>`, true)
             .setTimestamp(Date.now());
-        message.guild.channels.cache.find(c => c.name === settings.modlog).send(embed);
+        message.guild.channels.cache.get(settings.channels.modlogs).send(embed);
         message.react('✅')
     }
 }

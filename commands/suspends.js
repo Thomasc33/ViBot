@@ -30,7 +30,7 @@ module.exports = {
 
         } else {
             let embed = new Discord.MessageEmbed()
-                .setColor(message.guild.roles.cache.find(r => r.name === settings.tempsuspend).hexColor)
+                .setColor(message.guild.roles.cache.get(settings.roles.tempsuspended).hexColor)
                 .setTitle('Current Logged Suspensions')
                 .setDescription('None')
             for (let i in bot.suspensions) {

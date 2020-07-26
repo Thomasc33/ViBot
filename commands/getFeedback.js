@@ -13,7 +13,7 @@ module.exports = {
             member = message.guild.members.cache.get(args[0]);
         }
         if (member == undefined) return message.channel.send('User not found');
-        const customerFeedback = message.guild.channels.cache.find(c => c.name === settings.rlfeedback)
+        const customerFeedback = message.guild.channels.cache.get(settings.channels.rlfeedback)
         try {
             let findings = await message.channel.send(`Searching for mentions of ${member} in ${customerFeedback}`)
             let mentions = `Messages found mentioning ${member} in ${customerFeedback} in past 500 messages:\n`

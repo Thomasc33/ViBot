@@ -13,23 +13,23 @@ module.exports = {
             return;
         }
         if (message.channel.parent.name.toLowerCase() === 'veteran raiding') {
-            let lounge = message.guild.channels.cache.find(c => c.name === "Veteran Lounge");
-            let channel = message.guild.channels.cache.find(c => c.name == `${settings.vetprefix}${args[0]}` || c.name == `${settings.vetprefix}${args[0]} <-- Join!`);
+            let lounge = message.guild.channels.cache.get(settings.channels.vetlounge);
+            let channel = message.guild.channels.cache.find(c => c.name.includes(`${settings.voiceprefixes.vetprefix}${args[0]}`))
             await this.clean(channel, lounge, message, settings)
         } else if (message.channel.parent.name.toLowerCase() === 'raiding') {
-            let lounge = message.guild.channels.cache.find(c => c.name === "lounge");
-            let channel = message.guild.channels.cache.find(c => c.name == `${settings.raidprefix}${args[0]}` || c.name == `${settings.raidprefix}${args[0]} <-- Join!`);
+            let lounge = message.guild.channels.cache.get(settings.channels.lounge);
+            let channel = message.guild.channels.cache.find(c => c.name.includes(`${settings.voiceprefixes.raidprefix}${args[0]}`))
             await this.clean(channel, lounge, message, settings)
         } else if (message.channel.parent.name.toLowerCase() === 'events') {
             let channel = message.guild.channels.cache.find(c => c.type == 'category' && c.name == 'Events').children.find(c => c.name.includes(args[0]) && !c.name.includes('Realm Clearing'))
-            let lounge = message.guild.channels.cache.find(c => c.name === 'Event Lounge')
+            let lounge = message.guild.channels.cache.get(settings.channels.eventlounge)
             await this.clean(channel, lounge, message, settings)
         }
         await message.channel.send("Channel successfully cleaned");
     },
     async clean(channel, lounge, message, settings) {
         channel.members.each(async m => {
-            if (m.roles.highest.position < message.guild.roles.cache.find(r => r.name === settings.eo).position) {
+            if (m.roles.highest.position < message.guild.roles.cache.get(settings.roles.eventrl).position) {
                 await m.voice.setChannel(lounge, 'cleaning').catch(er => { })
             }
         })

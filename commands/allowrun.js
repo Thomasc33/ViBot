@@ -16,7 +16,7 @@ module.exports = {
             EventAFK.allowRun()
         }
         else {
-            message.channel.send(`Please try again in ${message.guild.channels.cache.find(r => r.name == settings.raidcommands)} or ${message.guild.channels.cache.find(r => r.name == settings.vetcommands)}`);
+            message.channel.send(`Please try again in ${message.guild.channels.cache.get(settings.channels.raidcommands)} or ${message.guild.channels.cache.get(settings.channels.vetcommands)}`);
             return;
         }
         message.channel.send('Run has been reset, try again')

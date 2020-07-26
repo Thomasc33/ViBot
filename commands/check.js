@@ -11,15 +11,15 @@ module.exports = {
             .setTitle('Check Report')
         //temporary keypopper
         checkEmbed.addField('Temporary Key Poppers', 'None!')
-        message.guild.members.cache.filter(u => u.roles.cache.has(message.guild.roles.cache.find(r => r.name === settings.tempkey).id)).each(m => {
+        message.guild.members.cache.filter(u => u.roles.cache.has(settings.roles.tempkey)).each(m => {
             if (checkEmbed.fields[0].value == 'None!') checkEmbed.fields[0].value = `<@!${m.id}>`
             else checkEmbed.fields[0].value = checkEmbed.fields[0].value.concat(`, <@!${m.id}>`)
         })
         //people with same name
         let dupesArray = []
 
-        let allMembers = message.guild.members.cache.filter(u => u.nickname && (u.roles.cache.has(message.guild.roles.cache.find(r => r.name === settings.raider).id) || u.roles.cache.has(message.guild.roles.cache.find(r => r.name === settings.events).id))).map(m => m)
-        let allNames = message.guild.members.cache.filter(u => u.nickname && (u.roles.cache.has(message.guild.roles.cache.find(r => r.name === settings.raider).id) || u.roles.cache.has(message.guild.roles.cache.find(r => r.name === settings.events).id))).map(m => m.nickname.toLowerCase().replace(/[^a-z|]/gi, "").split("|"))
+        let allMembers = message.guild.members.cache.filter(u => u.nickname && (u.roles.cache.has(settings.roles.raider) || u.roles.cache.has(settings.roles.eventraider))).map(m => m)
+        let allNames = message.guild.members.cache.filter(u => u.nickname && (u.roles.cache.has(settings.roles.raider) || u.roles.cache.has(settings.roles.eventraider))).map(m => m.nickname.toLowerCase().replace(/[^a-z|]/gi, "").split("|"))
         allNames = allNames.flat()
         let uniqueNames = [... new Set(allNames)]
         for (var i in uniqueNames) {
@@ -37,7 +37,7 @@ module.exports = {
             else checkEmbed.fields[1].value += `, <@!${dupesArray[i]}>`
         }
         //pending vet verification
-        let veriPendingVet = message.guild.channels.cache.find(c => c.name === settings.vetveri)
+        let veriPendingVet = message.guild.channels.cache.get(settings.channels.manualvetverification)
         checkEmbed.addField('Pending Veteran Verification', 'None!')
         if (!veriPendingVet) checkEmbed.fields[2].value = 'Error finding channel'
         else {
@@ -50,7 +50,7 @@ module.exports = {
             })
         }
         //pending mod mail
-        let modMailChannel = message.guild.channels.cache.find(c => c.name === settings.modmailchannel)
+        let modMailChannel = message.guild.channels.cache.get(settings.channels.modmail)
         checkEmbed.addField('Pending ModMail', 'None!')
         if (!modMailChannel) checkEmbed.fields[3].value = 'Error finding channel'
         else {
@@ -66,7 +66,7 @@ module.exports = {
         let nn = []
         let noNickname = message.guild.members.cache.filter(m => m.nickname == null);
         noNickname.each(user => {
-            if (user.roles.cache.has(message.guild.roles.cache.find(r => r.name === settings.raider).id) || user.roles.cache.has(message.guild.roles.cache.find(r => r.name === settings.events).id)) {
+            if (user.roles.cache.has(settings.roles.raider) || user.roles.cache.has(settings.roles.eventraider)) {
                 nn.push(user)
             }
         })

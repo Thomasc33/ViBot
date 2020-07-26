@@ -19,7 +19,7 @@ module.exports = {
     },
     async newWeek(guild, bot, db) {
         let settings = bot.settings[guild.id]
-        let leaderLog = guild.channels.cache.find(c => c.name === settings.pastweeks)
+        let leaderLog = guild.channels.cache.get(settings.channels.pastweeks)
         if (leaderLog == null) { console.log('Channel not found'); return; }
         await this.sendEmbed(leaderLog, db, bot)
         await db.query(`UPDATE users SET currentweekCult = 0, currentweekVoid = 0, currentweekAssists = 0`)
@@ -27,7 +27,7 @@ module.exports = {
     },
     async update(guild, db, bot) {
         let settings = bot.settings[guild.id]
-        let currentweek = guild.channels.cache.find(c => c.name === settings.currentweekchannel);
+        let currentweek = guild.channels.cache.get(settings.channels.currentweek)
         if (!currentweek) return;
         this.sendEmbed(currentweek, db, bot)
     },
@@ -55,8 +55,8 @@ module.exports = {
                     logged.push(rows[i].id)
                     index++;
                 }
-                await channel.guild.members.cache.filter(m => m.roles.cache.has(channel.guild.roles.cache.find(r => r.name === settings.arl).id) || m.roles.cache.has(channel.guild.roles.cache.find(r => r.name === settings.rl).id)).each(m => {
-                    if (!rows.includes(m.id)) {
+                await channel.guild.members.cache.filter(m => m.roles.cache.has(settings.roles.almostrl) || m.roles.cache.has(settings.roles.rl)).each(m => {
+                    if (!logged.includes(m.id)) {
                         let string = `<@!${m.id}> has not logged any runs or been assisted this week`
                         fitStringIntoEmbed(embed, string)
                     }
@@ -82,7 +82,7 @@ module.exports = {
                         }
                     } else embed.setDescription(embed.description.concat(`\n${string}`))
                 }
-                if (channel.name == settings.currentweekchannel) {
+                if (channel.name == settings.channels.currentweek) {
                     let messages = await channel.messages.fetch({ limit: 20 })
                     let messageArray = messages.array()
                     if (messageArray.length != embeds.length) channel.bulkDelete(20);

@@ -7,10 +7,10 @@ module.exports = {
     role: 'Verified Raider',
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
-        if (message.member.roles.highest.position < message.guild.roles.cache.find(r => r.name === settings.eo).position) {
+        if (message.member.roles.highest.position < message.guild.roles.cache.get(settings.roles.eventrl).position) {
             await message.member.send(await this.getPointEmbed(message.member, db))
             message.react('✅')
-        } else if (message.member.roles.highest.position >= message.guild.roles.cache.find(r => r.name === settings.hrl).position || message.member.roles.has(message.guild.roles.cache.find(r => r.name === settings.developer))) {
+        } else if (message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.headrl).position || message.member.id == '277636691227836419') {
             if (args.length == 0) return await message.member.send(await this.getPointEmbed(message.member, db))
             switch (args[0].toLowerCase()) {
                 case 'add':

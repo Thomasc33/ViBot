@@ -16,7 +16,7 @@ module.exports = {
             if(err) ErrorLogger.log(err, bot)
             db.query(`UPDATE users SET vialStored = ${parseInt(rows[0].vialStored) + 1} WHERE id = '${member.id}'`)
             message.channel.send(`Vial logged. They now have ${parseInt(rows[0].vialStored) + 1} vials stored`)
-            message.guild.channels.cache.find(c => c.name === settings.viallog).send(`Vial added to ${member} (${member.nickname}), logged by ${message.member} (${parseInt(rows[0].vialStored) + 1} remaining vials)`)
+            message.guild.channels.cache.get(settings.channels.viallog).send(`Vial added to ${member} (${member.nickname}), logged by ${message.member} (${parseInt(rows[0].vialStored) + 1} remaining vials)`)
         })
     }
 }

@@ -9,10 +9,10 @@ module.exports = {
     role: 'Raid Leader',
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
-        const suspendedRole = message.guild.roles.cache.find(r => r.name === settings.tempsuspend);
-        const pSuspendRole = message.guild.roles.cache.find(r => r.name === settings.psuspended)
-        const raiderRole = message.guild.roles.cache.find(r => r.name === settings.raider);
-        const suspensionLog = message.guild.channels.cache.find(c => c.name === settings.suspendlog);
+        const suspendedRole = message.guild.roles.cache.get(settings.roles.tempsuspended)
+        const pSuspendRole = message.guild.roles.cache.get(settings.roles.permasuspended)
+        const raiderRole = message.guild.roles.cache.get(settings.roles.raider)
+        const suspensionLog = message.guild.channels.cache.get(settings.channels.suspendlog)
         let toBan = [];
         if (args.length < 3) {
             message.channel.send("Expected at least 4 arguments, but recieved " + args.length)
@@ -127,7 +127,7 @@ module.exports = {
                     })
                     messageId = await suspensionLog.send(embed);
                     await member.roles.remove(userRoles)
-                    setTimeout(() => { member.roles.add(suspendedRole.id); }, 2000)
+                    setTimeout(() => { member.roles.add(suspendedRole.id); }, 1000)
 
                     db.query(`INSERT INTO suspensions (id, guildid, suspended, uTime, reason, modid, roles, logmessage) VALUES ('${member.id}', '${message.guild.id}', true, '${Date.now() + time}', '${reason}', '${message.author.id}', '${userRolesString}', '${messageId.id}');`)
 

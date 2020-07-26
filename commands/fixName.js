@@ -9,17 +9,13 @@ module.exports = {
     execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
         if (args.length == 0) return;
-        if (args[0] > botSettings.voiceChannelCount) return;
         if (message.channel.parent.name.toLowerCase() === 'raiding') {
-            message.guild.channels.cache.find(c => c.name.includes(`${settings.raidprefix}${args[0]}`))
-                .setName(`${settings.raidprefix}${args[0]}`).catch(er => ErrorLogger.log(er, bot))
+            message.guild.channels.cache.find(c => c.name.includes(`${settings.voiceprefixes.raidingprefix}${args[0]}`))
+                .setName(`${settings.voiceprefixes.raidingprefix}${args[0]}`).catch(er => { })
         } else if (message.channel.parent.name.toLowerCase() === 'veteran raiding') {
-            message.guild.channels.cache.find(c => c.name.includes(`${settings.vetprefix}${args[0]}`))
-                .setName(`${settings.vetprefix}${args[0]}`).catch(r => ErrorLogger.log(er, bot))
-        } else {
-            message.channel.send(`Please try again in ${message.guild.channels.cache.find(r => r.name == settings.raidcommands)} or ${message.guild.channels.cache.find(r => r.name == settings.vetcommands)}`);
-            return;
-        }
+            message.guild.channels.cache.find(c => c.name.includes(`${settings.voiceprefixes.vetprefix}${args[0]}`))
+                .setName(`${settings.voiceprefixes.vetprefix}${args[0]}`).catch(r => { })
+        } else return message.channel.send(`Please try again in ${message.guild.channels.cache.get(settings.channels.raidcommands)} or ${message.guild.channels.cache.get(settings.channels.vetcommands)}`);
         message.react('✅')
     }
 }

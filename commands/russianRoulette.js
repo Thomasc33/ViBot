@@ -42,7 +42,7 @@ module.exports = {
                 let i = Math.floor(Math.random() * reactors.length)
                 let loser = message.guild.members.cache.get(reactors[i].id)
                 if (loser == null) return;
-                if (loser.roles.cache.has(message.guild.roles.cache.find(r => r.name === settings.muted).id)) return getLoser(rolls + 1)
+                if (loser.roles.cache.has(settings.roles.muted)) return getLoser(rolls + 1)
                 else return loser
             }
             if (loser == null) return console.log(`rolled too many times`);
@@ -53,9 +53,9 @@ module.exports = {
 
             let member = message.guild.members.cache.get(loser.id)
 
-            member.roles.add(message.guild.roles.cache.find(r => r.name === settings.muted))
+            member.roles.add(settings.roles.muted)
 
-            setTimeout(() => { member.roles.remove(message.guild.roles.cache.find(r => r.name === settings.muted)) }, 60000)
+            setTimeout(() => { member.roles.remove(settings.roles.muted) }, 60000)
 
         }
     }

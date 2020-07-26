@@ -8,9 +8,9 @@ module.exports = {
     role: 'Security',
     async execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
-        const suspendedRole = message.guild.roles.cache.find(r => r.name === settings.psuspended);
-        const sbvRole = message.guild.roles.cache.find(r => r.name === settings.tempsuspend);
-        const eventRole = message.guild.roles.cache.find(r => r.name === settings.events);
+        const suspendedRole = message.guild.roles.cache.get(settings.roles.permasuspended)
+        const sbvRole = message.guild.roles.cache.get(settings.roles.tempsuspended)
+        const eventRole = message.guild.roles.cache.get(settings.roles.eventraider)
         var member = message.mentions.members.first()
         if (member == null) {
             member = message.guild.members.cache.get(args[0]);
@@ -44,11 +44,11 @@ module.exports = {
             .setTimestamp(Date.now());
         try {
             if (validURL(image)) embed.setImage(image)
-            message.guild.channels.cache.find(c => c.name === settings.modlog).send(embed);
+            message.guild.channels.cache.get(settings.channels.modlogs).send(embed);
             message.channel.send(`${member} has been given ${eventRole}`)
         } catch (er) {
             message.channel.send('There was an issue attaching the image. However they have still been verified as event boi')
-            message.guild.channels.cache.find(c => c.name === settings.modlog).send(embed);
+            message.guild.channels.cache.get(settings.channels.modlogs).send(embed);
         }
         function validURL(str) {
             var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol

@@ -9,9 +9,9 @@ module.exports = {
     role: 'Veteran Raid Leader',
     async execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
-        const vetBanRole = message.guild.roles.cache.find(r => r.name === settings.vetban);
-        const vetRaiderRole = message.guild.roles.cache.find(r => r.name === settings.vetraider);
-        const suspensionLog = message.guild.channels.cache.find(c => c.name === settings.suspendlog);
+        const vetBanRole = message.guild.roles.cache.get(settings.roles.vetban)
+        const vetRaiderRole = message.guild.roles.cache.get(settings.roles.vetraider);
+        const suspensionLog = message.guild.channels.cache.get(settings.channels.suspendlog)
         let toBan = [];
         if (args.length < 3) {
             message.channel.send("Expected at least 4 arguments, but recieved " + args.length)
@@ -125,6 +125,7 @@ module.exports = {
                         if (err) return console.error(err);
                         message.channel.send(`${member.nickname} will be suspended`);
                     });
+                    message.react('✅')
                 }
 
             })

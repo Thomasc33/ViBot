@@ -23,11 +23,9 @@ module.exports = {
     },
     async createMessage(message, bot, db) {
         let settings = bot.settings[message.guild.id]
-        let vetVeriChannel = message.guild.channels.cache.find(c => c.name === settings.vetverify)
-        if (vetVeriChannel == null) {
-            message.channel.send(`\`${settings.vetverify}\` not found`)
-            return;
-        }
+        let vetVeriChannel = message.guild.channels.cache.get(settings.channels.vetverification)
+        if (vetVeriChannel == null) return message.channel.send(`Vet Verification channel not found`)
+
         let vetVeriEmbed = new Discord.MessageEmbed()
             .setTitle('Veteran Verification for Lost Halls')
             .addField('How to', 'React with the :white_check_mark: to get the role.\nMake sure to make your graveyard and character list public on realmeye before reacting\nAlso run the command ;stats and -stats and see if you have a total of 100 runs completed.')
@@ -40,7 +38,7 @@ module.exports = {
         let settings = bot.settings[guild.id]
         bot = bott
         if (embedMessage == undefined) {
-            let vetVeriChannel = guild.channels.cache.find(c => c.name === settings.vetverify)
+            let vetVeriChannel = guild.channels.cache.get(settings.channels.vetverification)
             if (vetVeriChannel == null) return;
             let messages = await vetVeriChannel.messages.fetch({ limit: 1 })
             embedMessage = messages.first()
@@ -54,9 +52,9 @@ module.exports = {
     async vetVerify(u, guild, db) {
         let settings = bot.settings[guild.id]
         let member = guild.members.cache.get(u.id)
-        let vetRaider = guild.roles.cache.find(r => r.name === settings.vetraider)
-        let veriLog = guild.channels.cache.find(c => c.name === settings.verilog)
-        let veriPending = guild.channels.cache.find(c => c.name === settings.vetveri)
+        let vetRaider = guild.roles.cache.get(settings.roles.vetraider)
+        let veriLog = guild.channels.cache.get(settings.channels.verificationlog)
+        let veriPending = guild.channels.cache.get(settings.channels.manualvetverification)
         let ign = member.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|')[0]
         if (member == null) return;
         //if (member.roles.cache.has(vetRaider.id)) return;
@@ -87,9 +85,9 @@ module.exports = {
             }
         }
         let problems = []
-        if (!(loggedRuns >= botSettings.vetVeriReqs.runs || realmEyeRuns >= botSettings.vetVeriReqs.runs)) problems.push(1)
-        if (maxedChars < botSettings.vetVeriReqs.maxed) problems.push(2)
-        if (meleeMaxed < botSettings.vetVeriReqs.meleeMaxed) problems.push(3)
+        if (!(loggedRuns >= settings.vetverireqs.runs || realmEyeRuns >= settings.vetverireqs.runs)) problems.push(1)
+        if (maxedChars < settings.vetverireqs.maxed) problems.push(2)
+        if (meleeMaxed < settings.vetverireqs.meleeMaxed) problems.push(3)
         if (problems.length == 0) {
             //vet verify
             veriLog.send(`${member} (${member} has been given the Veteran Raider role automatically)`)
@@ -140,7 +138,7 @@ module.exports = {
     },
     async restartPending(guild, db) {
         let settings = bot.settings[guild.id]
-        let veriPending = guild.channels.cache.find(c => c.name === settings.vetveri)
+        let veriPending = guild.channels.cache.get(settings.channels.manualvetverification)
         let messages = await veriPending.messages.fetch({ limit: 100 })
         messages.each(m => {
             if (m.reactions.cache.has('🔑')) {
@@ -151,7 +149,7 @@ module.exports = {
     async pendingModule(message, db) {
         let settings = bot.settings[message.guild.id]
         if (!message.reactions.cache.has('🔑')) message.react('🔑')
-        let vetRaider = message.guild.roles.cache.find(r => r.name === settings.vetraider)
+        let vetRaider = message.guild.roles.cache.get(settings.roles.vetraider)
         let keyCollector = new Discord.ReactionCollector(message, KeyFilter)
         keyCollector.on('collect', async function (r, u) {
             let reactor = message.guild.members.cache.get(u.id)

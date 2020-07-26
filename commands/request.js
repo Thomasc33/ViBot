@@ -18,8 +18,8 @@ module.exports = {
         }
         var voiceChannel = message.member.voice.channel
         if (voiceChannel == null) { message.channel.send("Channel not found. Make sure you are in a VC"); return; }
-        if (isVet) var raidStatus = message.guild.channels.cache.find(c => c.name === settings.vetstatus);
-        else var raidStatus = message.guild.channels.cache.find(c => c.name === settings.raidstatus);
+        if (isVet) var raidStatus = message.guild.channels.cache.get(settings.channels.vetstatus)
+        else var raidStatus = message.guild.channels.cache.get(settings.channels.raidstatus)
         var location = "";
         for (i = 1; i < args.length; i++) {
             location = location.concat(args[i]) + ' ';
@@ -84,7 +84,7 @@ module.exports = {
             }
             if (r.emoji.id === botSettings.emoteIDs.Plane) {
                 if (!recieved) {
-                    if (message.guild.members.cache.get(u.id).roles.cache.has(message.guild.roles.cache.find(r => r.name === settings.rusher).id)) {
+                    if (message.guild.members.cache.get(u.id).roles.cache.has(settings.roles.rusher)) {
                         confirmRush(u, r)
                     }
                 }

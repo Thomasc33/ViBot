@@ -36,9 +36,9 @@ module.exports = {
                         .addField('New Name', altName, true)
                         .addField('Change By', `<@!${m.author.id}>`)
                         .setTimestamp(Date.now());
-                    message.guild.channels.cache.find(c => c.name === settings.modlog).send(embed);
+                    message.guild.channels.cache.get(settings.channels.modlogs).send(embed);
                     if (proof != ' ') {
-                        message.guild.channels.cache.find(c => c.name === settings.modlog).send(proof);
+                        message.guild.channels.cache.get(settings.channels.modlogs).send(proof);
                     }
                     message.channel.send('Done!');
                     collector.stop()

@@ -46,7 +46,7 @@ module.exports = {
             var commandPanel = new Discord.MessageEmbed()
                 .setTitle('Commands')
                 .setColor('#ff0000')
-            if (message.member.roles.highest.position >= message.guild.roles.cache.find(r => r.name === settings.raider).position) {
+            if (message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.raider).position) {
                 let line = ''
                 bot.commands.each(c => {
                     if (c.role == 'Verified Raider') {
@@ -56,7 +56,7 @@ module.exports = {
                 if (line == '') line = 'No role specific commands'
                 commandPanel.addField('Verified Raider+', `\`\`\`css\n${line}\`\`\``)
             }
-            if (message.member.roles.highest.position >= message.guild.roles.cache.find(r => r.name === settings.eo).position) {
+            if (message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.eventrl).position) {
                 let line = ''
                 bot.commands.each(c => {
                     if (c.role == 'Event Organizer') {
@@ -66,7 +66,7 @@ module.exports = {
                 if (line == '') line = 'No role specific commands'
                 commandPanel.addField('Event Organizer+', `\`\`\`css\n${line}\`\`\``)
             }
-            if (message.member.roles.highest.position >= message.guild.roles.cache.find(r => r.name === settings.arl).position) {
+            if (message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.almostrl).position) {
                 let line = ''
                 bot.commands.each(c => {
                     if (c.role == 'Almost Raid Leader') {
@@ -76,7 +76,7 @@ module.exports = {
                 if (line == '') line = 'No role specific commands'
                 commandPanel.addField('Almost Raid Leader+', `\`\`\`css\n${line}\`\`\``)
             }
-            if (message.member.roles.highest.position >= message.guild.roles.cache.find(r => r.name === settings.rl).position) {
+            if (message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.rl).position) {
                 let line = ''
                 bot.commands.each(c => {
                     if (c.role == 'Raid Leader') {
@@ -86,7 +86,7 @@ module.exports = {
                 if (line == '') line = 'No role specific commands'
                 commandPanel.addField('Raid Leader+', `\`\`\`css\n${line}\`\`\``)
             }
-            if (message.member.roles.highest.position >= message.guild.roles.cache.find(r => r.name === settings.vrl).position) {
+            if (message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.vetrl).position) {
                 let line = ''
                 bot.commands.each(c => {
                     if (c.role == 'Veteran Raid Leader') {
@@ -96,7 +96,7 @@ module.exports = {
                 if (line == '') line = 'No role specific commands'
                 commandPanel.addField('Veteran Raid Leader+', `\`\`\`css\n${line}\`\`\``)
             }
-            if (message.member.roles.highest.position >= message.guild.roles.cache.find(r => r.name === settings.sec).position) {
+            if (message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.security).position) {
                 let line = ''
                 bot.commands.each(c => {
                     if (c.role == 'Security') {
@@ -106,7 +106,7 @@ module.exports = {
                 if (line == '') line = 'No role specific commands'
                 commandPanel.addField('Security+', `\`\`\`css\n${line}\`\`\``)
             }
-            if (message.member.roles.highest.position >= message.guild.roles.cache.find(r => r.name === settings.hrl).position) {
+            if (message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.headrl).position) {
                 let line = ''
                 bot.commands.each(c => {
                     if (c.role == 'Head Raid Leader') {
@@ -116,7 +116,7 @@ module.exports = {
                 if (line == '') line = 'No role specific commands'
                 commandPanel.addField('Head Raid Leader+', `\`\`\`css\n${line}\`\`\``)
             }
-            if (message.member.roles.highest.position >= message.guild.roles.cache.find(r => r.name === settings.officer).position) {
+            if (message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.officer).position) {
                 let line = ''
                 bot.commands.each(c => {
                     if (c.role == 'Officer') {
@@ -126,7 +126,7 @@ module.exports = {
                 if (line == '') line = 'No role specific commands'
                 commandPanel.addField('Officer+', `\`\`\`css\n${line}\`\`\``)
             }
-            if (message.member.roles.highest.position >= message.guild.roles.cache.find(r => r.name === settings.moderator).position) {
+            if (message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.moderator).position) {
                 let line = ''
                 bot.commands.each(c => {
                     if (c.role == 'Moderator') {
@@ -136,7 +136,7 @@ module.exports = {
                 if (line == '') line = 'No role specific commands'
                 commandPanel.addField('Moderator+', `\`\`\`css\n${line}\`\`\``)
             }
-            if (message.member.roles.cache.has(message.guild.roles.cache.find(r => r.name === settings.developer))) {
+            if (message.member.roles.cache.has(message.guild.roles.cache.get(settings.roles.developer))) {
                 let line = ''
                 bot.commands.each(c => {
                     if (c.role == 'Developer') {

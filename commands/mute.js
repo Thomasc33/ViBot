@@ -19,7 +19,7 @@ module.exports = {
             message.channel.send(`${member} has a role greater than or equal to you and cannot be muted`);
             return;
         }
-        let muted = message.guild.roles.cache.find(r => r.name === settings.muted)
+        let muted = message.guild.roles.cache.get(settings.roles.muted)
         if (member.roles.cache.has(muted.id)) {
             message.channel.send(`${member} is already muted`)
             return;

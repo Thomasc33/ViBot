@@ -7,9 +7,9 @@ module.exports = {
     args: '<id/mention> <ign>',
     async execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
-        const suspendedRole = message.guild.roles.cache.find(r => r.name === settings.psuspended);
-        const sbvRole = message.guild.roles.cache.find(r => r.name === settings.tempsuspend);
-        const raiderRole = message.guild.roles.cache.find(r => r.name === settings.raider);
+        const suspendedRole = message.guild.roles.cache.get(settings.roles.permasuspended)
+        const sbvRole = message.guild.roles.cache.get(settings.roles.tempsuspended)
+        const raiderRole = message.guild.roles.cache.get(settings.roles.raider)
         var member = message.mentions.members.first()
         if (member == null) {
             member = message.guild.members.cache.get(args[0]);
@@ -38,7 +38,7 @@ module.exports = {
             .addField('User', member.displayName, true)
             .addField('Verified By', `<@!${message.author.id}>`, true)
             .setTimestamp(Date.now());
-        message.guild.channels.cache.find(c => c.name === settings.modlog).send(embed);
+        message.guild.channels.cache.get(settings.channels.modlogs).send(embed);
         message.channel.send(`${member} has been given ${raiderRole}`)
     }
 }

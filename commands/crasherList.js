@@ -13,7 +13,7 @@ module.exports = {
         if (args.length < 1) return message.channel.send('Please provide an argument')
         switch (args[0].toLowerCase()) {
             case 'send':
-                this.send(message.guild.channels.cache.find(c => c.name === settings.crasherlist), bot)
+                this.send(message.guild.channels.cache.get(settings.channels.parsechannel), bot)
                 break;
             case 'update':
                 this.update(message, args, bot)
@@ -122,7 +122,7 @@ module.exports = {
     },
     async update(message, args, bot) {
         let settings = bot.settings[message.guild.id]
-        let crasherChannel = message.guild.channels.cache.find(c => c.name === settings.crasherlist)
+        let crasherChannel = message.guild.channels.cache.get(settings.channels.parsechannel)
         if (!crasherChannel) return;
         await crasherChannel.bulkDelete(100)
         this.send(crasherChannel, bot)

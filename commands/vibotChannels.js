@@ -14,9 +14,9 @@ module.exports = {
     },
     async update(guild, bot) {
         let settings = bot.settings[guild.id]
-        await updateChannel(guild.channels.cache.find(c => c.name === settings.activechannels))
-        await updateChannel(guild.channels.cache.find(c => c.name === settings.vetchannels))
-        await updateChannel(guild.channels.cache.find(c => c.name === settings.eventchannels))
+        await updateChannel(guild.channels.cache.get(settings.channels.raidingchannels))
+        await updateChannel(guild.channels.cache.get(settings.channels.vetchannels))
+        await updateChannel(guild.channels.cache.get(settings.channels.eventchannels))
         async function updateChannel(c) {
             if (!c) return;
             let messages = await c.messages.fetch()
@@ -64,7 +64,7 @@ module.exports = {
                     if (i == embed.footer.text) {
                         let key = await message.guild.members.cache.get(bot.afkChecks[i].key)
                         if (key) {
-                            let keyRole = await message.guild.roles.cache.find(r => r.name === settings.tempkey)
+                            let keyRole = await message.guild.roles.cache.get(settings.roles.tempkey)
                             await key.roles.remove(keyRole.id).catch(r => ErrorLogger.log(r, bot))
                         }
                         delete bot.afkChecks[i];
@@ -73,7 +73,7 @@ module.exports = {
                         })
                     }
                 }
-                message.guild.channels.cache.find(c => c.name === settings.history).send(`${channel.name} deleted by <@!${u.id}>`)
+                message.guild.channels.cache.get(settings.channels.history).send(`${channel.name} deleted by <@!${u.id}>`)
                 await channel.delete()
                 await m.delete()
             }

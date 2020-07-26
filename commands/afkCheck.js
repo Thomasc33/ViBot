@@ -3,12 +3,11 @@ const botSettings = require('../settings.json');
 const Discord = require('discord.js');
 const fs = require('fs')
 const ErrorLogger = require('../logError')
-const Locker = require('./lock');
-const Unlocker = require('./unlock')
 const Channels = require('./vibotChannels')
 const realmEyeScrape = require('../realmEyeScrape');
-const Points = require('./points');
 const points = require('./points');
+const KeyRoles = require('./keyRoles');
+const keyRoles = require('./keyRoles');
 
 //globals
 var activeVetRun = false;
@@ -26,9 +25,9 @@ module.exports = {
         let settings = bott.settings[message.guild.id]
         if (args.length == 0) return;
         bot = bott
-        if (message.channel.name === settings.raidcommands) var isVet = false;
-        else if (message.channel.name === settings.vetcommands) var isVet = true;
-        else return message.channel.send(`Try again, but in ${settings.raidcommands} or ${settings.vetcommands}`);
+        if (message.channel.id === settings.channels.raidcommands) var isVet = false;
+        else if (message.channel.name === settings.channels.vetcommands) var isVet = true;
+        else return message.channel.send(`Try again, but in <@#${settings.channels.raidcommands}> or <@#${settings.channels.vetcommands}>`);
         if (args.length < 2) return message.channel.send(`Command entered incorrectly -> ${botSettings.prefix}${this.name} ${this.args}`);
         if (isVet && activeVetRun) return message.channel.send(`There is already a run active. If this is an error, do \`;allowrun\``);
         else if (activeRun) return message.channel.send(`There is already a run active. If this is an error, do \`;allowrun\``);
@@ -87,19 +86,20 @@ class afk {
         this.location = location;
         this.message = message;
         this.isVet = isVet;
-        if (this.isVet) this.raidStatus = this.message.guild.channels.cache.find(c => c.name === settings.vetstatus);
-        else this.raidStatus = this.message.guild.channels.cache.find(c => c.name === settings.raidstatus);
-        if (this.isVet) this.dylanBotCommands = this.message.guild.channels.cache.find(c => c.name === settings.vetcommands);
-        else this.dylanBotCommands = this.message.guild.channels.cache.find(c => c.name === settings.raidcommands);
-        if (this.isVet) this.verifiedRaiderRole = this.message.guild.roles.cache.find(r => r.name === settings.vetraider);
-        else this.verifiedRaiderRole = this.message.guild.roles.cache.find(r => r.name === settings.raider);
+        if (this.isVet) this.raidStatus = this.message.guild.channels.cache.get(settings.channels.vetstatus)
+        else this.raidStatus = this.message.guild.channels.cache.get(settings.channels.raidstatus)
+        if (this.isVet) this.dylanBotCommands = this.message.guild.channels.cache.get(settings.channels.vetcommands)
+        else this.dylanBotCommands = this.message.guild.channels.cache.get(settings.channels.raidcommands)
+        if (this.isVet) this.verifiedRaiderRole = this.message.guild.roles.cache.get(settings.roles.vetraider)
+        else this.verifiedRaiderRole = this.message.guild.roles.cache.get(settings.roles.raider)
         if (this.isVet) activeVetRun = true;
         else activeRun = true;
-        this.afkChannel = message.guild.channels.cache.find(c => c.name === 'afk');
-        this.dylanBotInfo = message.guild.channels.cache.find(c => c.name === settings.runinfo);
-        this.officialRusher = message.guild.roles.cache.find(r => r.name === settings.rusher);
-        this.nitroBooster = message.guild.roles.cache.find(r => r.name === settings.nitro);
-        this.leaderOnLeave = message.guild.roles.cache.find(r => r.name === settings.lol);
+        this.staffRole = message.guild.roles.cache.get(settings.roles.almostrl)
+        this.afkChannel = message.guild.channels.cache.get(settings.voice.afk)
+        this.dylanBotInfo = message.guild.channels.cache.get(settings.channels.runlogs)
+        this.officialRusher = message.guild.roles.cache.get(settings.roles.rusher)
+        this.nitroBooster = message.guild.roles.cache.get(settings.roles.nitro)
+        this.leaderOnLeave = message.guild.roles.cache.get(settings.roles.lol)
         this.minutes;
         this.seconds;
         this.nitro = []
@@ -109,7 +109,7 @@ class afk {
         this.endedBy
         this.mystics = []
         this.brains = []
-        this.time = botSettings.afkTimeLimit;
+        this.time = settings.numerical.afktime
         this.postTime = 20;
         this.earlyLocation = [];
         this.raider = [];
@@ -174,7 +174,7 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
             .setTimestamp()
             .setFooter(`Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds`);
         if (this.message.author.avatarURL()) this.embedMessage.author.iconURL = this.message.author.avatarURL()
-        if (this.settings.points) this.embedMessage.setDescription(this.embedMessage.description.concat(`\nTo use points for early location, react with 🎟️
+        if (this.settings.backend.points) this.embedMessage.setDescription(this.embedMessage.description.concat(`\nTo use points for early location, react with 🎟️
             To end the AFK check as a leader, react to ❌`))
         else this.embedMessage.setDescription(this.embedMessage.description.concat(`\nTo end the AFK check as a leader, react to ❌`))
         this.afkCheckEmbed.edit(this.embedMessage);
@@ -196,7 +196,7 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
                 { name: `Location of run`, value: `${this.location}` },
                 { name: `Nitro Boosters`, value: `None yet!` }
             )
-        if (this.settings.points) this.leaderEmbed.addField(`Point Users`, `None yet!`)
+        if (this.settings.backend.points) this.leaderEmbed.addField(`Point Users`, `None yet!`)
 
         this.afkControlPanelInfo = await this.dylanBotInfo.send(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
         this.afkControlPanelCommands = await this.dylanBotCommands.send(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
@@ -233,7 +233,7 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
             }
             //end
             if (r.emoji.name == '❌') {
-                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
+                if (reactor.roles.highest.position < this.staffRole.position) return;
                 this.endedBy = u;
                 this.endAfk();
             }
@@ -247,12 +247,12 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
         this.panelReactionCollector.on("collect", (r, u) => {
             let reactor = this.message.guild.members.cache.get(u.id);
             if (r.emoji.name === '❌') {
-                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
+                if (reactor.roles.highest.position < this.staffRole.position) return;
                 this.endedBy = u;
                 this.abortAfk();
             }
             if (r.emoji.name === '🔑') {
-                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
+                if (reactor.roles.highest.position < this.staffRole.position) return;
                 this.leaderEmbed.fields[0].value = `None yet!`
                 this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                 this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
@@ -275,7 +275,7 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
             .setTimestamp()
             .setFooter(`Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds`);
         if (this.message.author.avatarURL()) this.embedMessage.author.iconURL = this.message.author.avatarURL()
-        if (this.settings.points) this.embedMessage.setDescription(this.embedMessage.description.concat(`\nTo use points for early location, react with 🎟️
+        if (this.settings.backend.points) this.embedMessage.setDescription(this.embedMessage.description.concat(`\nTo use points for early location, react with 🎟️
         To end the AFK check as a leader, react to ❌`))
         else this.embedMessage.setDescription(this.embedMessage.description.concat(`\nTo end the AFK check as a leader, react to ❌`))
         this.afkCheckEmbed.edit(this.embedMessage);
@@ -297,7 +297,7 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
                 { name: `Location of run`, value: `${this.location}` },
                 { name: `Nitro Boosters`, value: `None yet!` }
             )
-        if (this.settings.points) this.leaderEmbed.addField(`Point Users`, `None yet!`)
+        if (this.settings.backend.points) this.leaderEmbed.addField(`Point Users`, `None yet!`)
 
         this.afkControlPanelInfo = await this.dylanBotInfo.send(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
         this.afkControlPanelCommands = await this.dylanBotCommands.send(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
@@ -327,7 +327,7 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
             }
             //end
             if (r.emoji.name == '❌') {
-                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
+                if (reactor.roles.highest.position < this.staffRole.position) return;
                 this.endedBy = u;
                 this.endAfk();
             }
@@ -341,12 +341,12 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
         this.panelReactionCollector.on("collect", (r, u) => {
             let reactor = this.message.guild.members.cache.get(u.id);
             if (r.emoji.name === '❌') {
-                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
+                if (reactor.roles.highest.position < this.staffRole.position) return;
                 this.endedBy = u;
                 this.abortAfk();
             }
             if (r.emoji.name === '🔑') {
-                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
+                if (reactor.roles.highest.position < this.staffRole.position) return;
                 this.leaderEmbed.fields[0].value = `None yet!`
                 this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                 this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
@@ -370,7 +370,7 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
             .setTimestamp()
             .setFooter(`Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds`);
         if (this.message.author.avatarURL()) this.embedMessage.author.iconURL = this.message.author.avatarURL()
-        if (this.settings.points) this.embedMessage.setDescription(this.embedMessage.description.concat(`\nTo use points for early location, react with 🎟️
+        if (this.settings.backend.points) this.embedMessage.setDescription(this.embedMessage.description.concat(`\nTo use points for early location, react with 🎟️
         To end the AFK check as a leader, react to ❌`))
         else this.embedMessage.setDescription(this.embedMessage.description.concat(`\nTo end the AFK check as a leader, react to ❌`))
         this.afkCheckEmbed.edit(this.embedMessage);
@@ -394,7 +394,7 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
                 { name: `Location of run`, value: `${this.location}` },
                 { name: `Nitro Boosters`, value: `None yet!` }
             )
-        if (this.settings.points) this.leaderEmbed.addField(`Point Users`, `None yet!`)
+        if (this.settings.backend.points) this.leaderEmbed.addField(`Point Users`, `None yet!`)
 
         this.afkControlPanelInfo = await this.dylanBotInfo.send(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
         this.afkControlPanelCommands = await this.dylanBotCommands.send(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
@@ -434,7 +434,7 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
             }
             //end
             if (r.emoji.name == '❌') {
-                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
+                if (reactor.roles.highest.position < this.staffRole.position) return;
                 this.endedBy = u;
                 this.endAfk();
             }
@@ -448,12 +448,12 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
         this.panelReactionCollector.on("collect", (r, u) => {
             let reactor = this.message.guild.members.cache.get(u.id);
             if (r.emoji.name === '❌') {
-                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
+                if (reactor.roles.highest.position < this.staffRole.position) return;
                 this.endedBy = u;
                 this.abortAfk();
             }
             if (r.emoji.name === '🔑') {
-                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.arl).position) return;
+                if (reactor.roles.highest.position < this.staffRole.position) return;
                 this.leaderEmbed.fields[0].value = `None yet!`
                 this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                 this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
@@ -474,8 +474,8 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
                 return;
             }
         }, 60000)
-        let dm = await u.createDM().catch(r => ErrorLogger.log(er, bot))
-        let DirectMessage = await dm.send(`You reacted as <${botSettings.emote.LostHallsKey}>. Press :white_check_mark: to confirm. Ignore this message otherwise`).catch(er => ErrorLogger.log(er, bot));
+        let dm = await u.createDM().catch(r => this.dylanBotCommands.send(`<@!${u.id}> tried to react with <${botSettings.emote.LostHallsKey}> but their DMs are private`))
+        let DirectMessage = await dm.send(`You reacted as <${botSettings.emote.LostHallsKey}>. Press :white_check_mark: to confirm. Ignore this message otherwise`).catch(er => this.dylanBotCommands.send(`<@!${u.id}> tried to react with <${botSettings.emote.LostHallsKey}> but their DMs are private`));
 
         let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, dmReactionFilter);
         await DirectMessage.react("✅");
@@ -492,7 +492,7 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
             clearInterval(endAfter);
             dmReactionCollector.stop();
             let keyMember = this.message.guild.members.cache.get(u.id)
-            let tempKeyPopper = this.message.guild.roles.cache.find(r => r.name === this.settings.tempkey)
+            let tempKeyPopper = this.message.guild.roles.cache.get(this.settings.roles.tempkey)
             if (tempKeyPopper && keyMember) keyMember.roles.add(tempKeyPopper.id)
         });
     }
@@ -509,8 +509,8 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
             }
         }, 60000)
         try {
-            let dm = await u.createDM().catch();
-            let DirectMessage = await dm.send(`You reacted as <${botSettings.emote.Vial}>. Press :white_check_mark: to confirm. Ignore this message otherwise`).catch();
+            let dm = await u.createDM().catch(this.dylanBotCommands.send(`<@!${u.id}> tried to react with <${botSettings.emote.Vial}> but their DMs are private`));
+            let DirectMessage = await dm.send(`You reacted as <${botSettings.emote.Vial}>. Press :white_check_mark: to confirm. Ignore this message otherwise`).catch(this.dylanBotCommands.send(`<@!${u.id}> tried to react with <${botSettings.emote.Vial}> but their DMs are private`));
 
             let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, dmReactionFilter);
 
@@ -543,8 +543,8 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
             }
         }, 60000)
         try {
-            let dm = await u.createDM().catch();
-            let DirectMessage = await dm.send(`You reacted as <${botSettings.emote.Plane}>. Press :white_check_mark: to confirm. Ignore this message otherwise`).catch();
+            let dm = await u.createDM().catch(this.dylanBotCommands.send(`<@!${u.id}> tried to react with <${botSettings.emote.Plane}> but their DMs are private`));
+            let DirectMessage = await dm.send(`You reacted as <${botSettings.emote.Plane}>. Press :white_check_mark: to confirm. Ignore this message otherwise`).catch(this.dylanBotCommands.send(`<@!${u.id}> tried to react with <${botSettings.emote.Plane}> but their DMs are private`));
 
             let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, dmReactionFilter);
 
@@ -578,8 +578,8 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
             }
         }, 60000)
         try {
-            let dm = await u.createDM();
-            let DirectMessage = await dm.send(`You reacted as <${botSettings.emote.Mystic}>. If your mystic is 8/8 and you have an 85 magic heal pet, then press :white_check_mark: to confirm. Ignore this message otherwise`);
+            let dm = await u.createDM(this.dylanBotCommands.send(`<@!${u.id}> tried to react with <${botSettings.emote.Mystic}> but their DMs are private`));
+            let DirectMessage = await dm.send(`You reacted as <${botSettings.emote.Mystic}>. If your mystic is 8/8 and you have an 85 magic heal pet, then press :white_check_mark: to confirm. Ignore this message otherwise`).catch(this.dylanBotCommands.send(`<@!${u.id}> tried to react with <${botSettings.emote.Mystic}> but their DMs are private`));
             let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, dmReactionFilter);
             await DirectMessage.react("✅");
             await dmReactionCollector.on("collect", async (r, u) => {
@@ -635,8 +635,8 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
             }
         }, 60000)
         try {
-            let dm = await u.createDM().catch();
-            let DirectMessage = await dm.send(`You reacted as <${botSettings.emote.Brain}>. Press :white_check_mark: to confirm. Ignore this message otherwise`).catch();
+            let dm = await u.createDM().catch(this.dylanBotCommands.send(`<@!${u.id}> tried to react with <${botSettings.emote.Brain}> but their DMs are private`));
+            let DirectMessage = await dm.send(`You reacted as <${botSettings.emote.Brain}>. Press :white_check_mark: to confirm. Ignore this message otherwise`).catch(this.dylanBotCommands.send(`<@!${u.id}> tried to react with <${botSettings.emote.Brain}> but their DMs are private`));
 
             let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, dmReactionFilter);
             await DirectMessage.react("✅");
@@ -666,15 +666,15 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
             this.earlyLocation.push(u);
             return;
         }
-        if (this.nitro.length + 1 > botSettings.nitroCount) return;
+        if (this.nitro.length + 1 > this.settings.numerical.nitrocount) return;
         if (reactor.roles.cache.has(this.nitroBooster.id)) {
             if (reactor.voice.channel && reactor.voice.channel.id == this.channel.id) {
-                reactor.send('Nitro has changed and only gives garunteed spot in VC. You are already in the VC so this use hasn\'t been counted').catch(er => { })
+                reactor.send('Nitro has changed and only gives garunteed spot in VC. You are already in the VC so this use hasn\'t been counted').catch(er => this.dylanBotCommands.send(`<@!${u.id}> tried to react with <${botSettings.emote.shard}> but their DMs are private`))
             } else {
                 await this.db.query(`SELECT * FROM users WHERE id = '${u.id}'`, async (err, rows) => {
                     if (err) ErrorLogger.log(err, bot)
                     if (rows.length == 0) return await this.db.query(`INSERT INTO users (id) VALUES('${u.id}')`)
-                    if (Date.now() - 3600000 > parseInt(rows[0].lastnitrouse)) {
+                    if (Date.now() - this.settings.numerical.nitrocooldown > parseInt(rows[0].lastnitrouse)) {
                         //reactor.send(`The location for this run has been set to \`${this.location}\``);
                         //this.earlyLocation.push(u);
                         reactor.voice.setChannel(this.channel.id).catch(er => { reactor.send('Please join a voice channel to get moved in') })
@@ -686,14 +686,14 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
                         this.db.query(`UPDATE users SET lastnitrouse = '${Date.now()}' WHERE id = ${u.id}`)
                     } else {
                         let lastUse = Math.round((Date.now() - rows[0].lastnitrouse) / 60000)
-                        reactor.send(`Nitro perks have been limited to once an hour. Your last use was \`${lastUse}\` minutes ago`)
+                        reactor.send(`Nitro perks have been limited to once an hour. Your last use was \`${lastUse}\` minutes ago`).catch(er => this.dylanBotCommands.send(`<@!${u.id}> tried to react with <${botSettings.emote.shard}> but their DMs are private`))
                     }
                 })
             }
         }
     }
     async pointsUse(u, index) {
-        if (!this.settings.points) return
+        if (!this.settings.backend.points) return
         let pointEmbed = new Discord.MessageEmbed()
             .setColor('#ff0000')
             .setFooter(`React with ✅ to confirm, or ❌ to cancel`)
@@ -705,7 +705,7 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
             if (rows[0].points < botSettings.points.earlyLocationCost) return
             pointEmbed.setDescription(`You currently have \`${rows[0].points}\` points\nEarly location costs \`${botSettings.points.earlyLocationCost}\``)
             let dms = await u.createDM().catch()
-            let m = await dms.send(pointEmbed).catch()
+            let m = await dms.send(pointEmbed).catch(er => this.dylanBotCommands.send(`<@!${u.id}> tried to react with 🎟️ but their DMs are private`))
             let reactionCollector = new Discord.ReactionCollector(m, (r, u) => !u.bot && (r.emoji.name == '❌' || r.emoji.name == '✅'))
             reactionCollector.on('collect', async (r, u) => {
                 if (r.emoji.name == '❌') m.delete()
@@ -713,7 +713,7 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
                     let er, success = true
                     let leftOver = await points.buyEarlyLocaton(u, this.db).catch(r => { er = r; success = false })
                     if (success) {
-                        await dms.send(`The location for this run has been set to \`${this.location}\`\nYou now have \`${leftOver}\` points left over`)
+                        await dms.send(`The location for this run has been set to \`${this.location}\`\nYou now have \`${leftOver}\` points left over`)(er => this.dylanBotCommands.send(`<@!${u.id}> tried to react with 🎟️ but their DMs are private`))
                         if (this.leaderEmbed.fields[index].value == 'None yet!') this.leaderEmbed.fields[index].value = `<@!${u.id}>`
                         else this.leaderEmbed.fields[index].value += `, <@!${u.id}>`
                         this.earlyLocation.push(u)
@@ -721,7 +721,7 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
                         await this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                         await m.delete()
                     }
-                    else dms.send(`There was an issue using the points: \`${er}\``)
+                    else dms.send(`There was an issue using the points: \`${er}\``)(er => this.dylanBotCommands.send(`<@!${u.id}> tried to react with 🎟️ but their DMs are private`))
                 }
             })
             await m.react('✅')
@@ -857,8 +857,8 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
                 else historyEmbed.fields[4].value += `, <@!${m}>`
             }
         })
-        this.message.guild.channels.cache.find(c => c.name === this.settings.history).send(historyEmbed)
-        this.message.guild.channels.cache.find(c => c.name === this.settings.runinfo).send(historyEmbed)
+        this.message.guild.channels.cache.get(this.settings.channels.history).send(historyEmbed)
+        this.message.guild.channels.cache.get(this.settings.channels.runlogs).send(historyEmbed)
 
         //make sure everyone in run is in db
         if (this.channel.members) {
@@ -878,42 +878,42 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
             })
         }
 
-        if (this.settings.points) {
+        if (this.settings.backend.points) {
             //key point logging
             if (this.key) {
-                let points = botSettings.points.keyPopsPoints
-                if (this.message.guild.members.cache.get(this.key.id).roles.cache.has(this.nitroBooster.id)) points = points * botSettings.points.nitroMultiplier
+                let points = this.settings.points.keypop
+                if (this.message.guild.members.cache.get(this.key.id).roles.cache.has(this.nitroBooster.id)) points = points * this.settings.points.nitromultiplier
                 this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${this.key.id}'`)
             }
             //vial point logging
             if (this.vials.length > 0) {
                 this.vials.forEach(u => {
-                    let points = botSettings.points.vialPopPoints
-                    if (this.message.guild.members.cache.get(u.id).roles.cache.has(this.nitroBooster.id)) points = points * botSettings.points.nitroMultiplier
+                    let points = this.settings.points.vialpop
+                    if (this.message.guild.members.cache.get(u.id).roles.cache.has(this.nitroBooster.id)) points = points * this.settings.points.nitromultiplier
                     this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u.id}'`)
                 })
             }
             //rusher point logging
             if (this.vials.length > 0) {
                 this.vials.forEach(u => {
-                    let points = botSettings.points.rushingPoints
-                    if (this.message.guild.members.cache.get(u.id).roles.cache.has(this.nitroBooster.id)) points = points * botSettings.points.nitroMultiplier
+                    let points = this.settings.points.rushing
+                    if (this.message.guild.members.cache.get(u.id).roles.cache.has(this.nitroBooster.id)) points = points * this.settings.points.nitromultiplier
                     this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u.id}'`)
                 })
             }
             //mystic point logging
             if (this.vials.length > 0) {
                 this.vials.forEach(u => {
-                    let points = botSettings.points.mysticPoints
-                    if (this.message.guild.members.cache.get(u.id).roles.cache.has(this.nitroBooster.id)) points = points * botSettings.points.nitroMultiplier
+                    let points = this.settings.points.mystic
+                    if (this.message.guild.members.cache.get(u.id).roles.cache.has(this.nitroBooster.id)) points = points * this.settings.points.nitromultiplier
                     this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u.id}'`)
                 })
             }
             //brain point logging
             if (this.vials.length > 0) {
                 this.vials.forEach(u => {
-                    let points = botSettings.points.brainPoints
-                    if (this.message.guild.members.cache.get(u.id).roles.cache.has(this.nitroBooster.id)) points = points * botSettings.points.nitroMultiplier
+                    let points = this.settings.points.brain
+                    if (this.message.guild.members.cache.get(u.id).roles.cache.has(this.nitroBooster.id)) points = points * this.settings.points.nitromultiplier
                     this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u.id}'`)
                 })
             }
@@ -921,7 +921,7 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
 
         //log run 1 minute after afk check
         setTimeout(() => {
-            if (this.channel.members) {
+            if (this.channel.members.size != 0) {
                 let query = `UPDATE users SET `
                 if (this.run == 1) query = query.concat('cultRuns = cultRuns + 1 WHERE ')
                 else query = query.concat('voidRuns = voidRuns + 1 WHERE ')
@@ -930,9 +930,7 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
                 this.db.query(query, err => {
                     if (err) ErrorLogger.log(err, bot)
                 })
-                if (this.key != null) this.db.query(`UPDATE users SET keypops = keypops + 1 WHERE id = '${this.key.id}'`)
-
-                if (this.settings.points) {
+                if (this.settings.backend.points) {
                     //give points to everyone in run
                     let regular = []
                     let nitros = []
@@ -941,18 +939,22 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
                         else regular.push(u)
                     })
                     //regular raiders point logging
-                    let regularQuery = `UPDATE users SET points = points + ${botSettings.points.pointsPerRun} WHERE `
+                    let regularQuery = `UPDATE users SET points = points + ${this.settings.points.perrun} WHERE `
                     regular.forEach(m => regularQuery = regularQuery.concat(`id = '${m.id}' OR `))
                     regularQuery = regularQuery.substring(0, regularQuery.length - 4)
                     this.db.query(regularQuery, err => { if (err) ErrorLogger.log(err, bot) })
                     //nitro raiders point logging
-                    let nitroQuery = `UPDATE users SET points = points + ${botSettings.points.pointsPerRun * botSettings.points.nitroMultiplier} WHERE `
+                    let nitroQuery = `UPDATE users SET points = points + ${this.settings.points.perrun * this.settings.points.nitromultiplier} WHERE `
                     regular.forEach(m => nitroQuery = nitroQuery.concat(`id = '${m.id}' OR `))
                     nitroQuery = nitroQuery.substring(0, nitroQuery.length - 4)
                     this.db.query(nitroQuery, err => { if (err) ErrorLogger.log(err, bot) })
                 }
             }
-        }, 60000)
+            if (this.key) {
+                this.db.query(`UPDATE users SET keypops = keypops + 1 WHERE id = '${this.key.id}'`)
+                keyRoles.checkUser(this.message.guild.members.cache.get(this.key.id), bot, this.db)
+            }
+        }, 1000)
     }
     async abortAfk() {
         this.mainReactionCollector.stop();
@@ -1022,7 +1024,7 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
             this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => console.log(er));
             this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => console.log(er));
         }
-        
+
         //send location to everyone that already had it
         var arrayLength = this.earlyLocation.length;
         try {
@@ -1043,15 +1045,15 @@ async function createChannel(isVet, message, run) {
         //channel creation
         if (isVet) {
             var parent = 'veteran raiding';
-            var template = message.guild.channels.cache.find(c => c.name === settings.vettemplate);
-            var raider = message.guild.roles.cache.find(r => r.name === settings.vetraider)
-            var vibotChannels = message.guild.channels.cache.find(c => c.name === settings.vetchannels)
+            var template = message.guild.channels.cache.get(settings.voice.vettemplate)
+            var raider = message.guild.roles.cache.get(settings.roles.vetraider)
+            var vibotChannels = message.guild.channels.cache.get(settings.channels.vetchannels)
         }
         else {
             var parent = 'raiding';
-            var template = message.guild.channels.cache.find(c => c.name === settings.raidingtemplate);
-            var raider = message.guild.roles.cache.find(r => r.name === settings.raider)
-            var vibotChannels = message.guild.channels.cache.find(c => c.name === settings.activechannels)
+            var template = message.guild.channels.cache.get(settings.voice.raidingtemplate)
+            var raider = message.guild.roles.cache.get(settings.roles.raider)
+            var vibotChannels = message.guild.channels.cache.get(settings.channels.raidingchannels)
         }
         if (!template) return rej(`Template channel not found`)
         let channel = await template.clone()
@@ -1090,7 +1092,7 @@ async function cultReact(message, settings) {
             .then(message.react(botSettings.emote.MarbleSeal))
             .then(message.react(botSettings.emote.Plane))
             .then(message.react(botSettings.emote.shard))
-        if (settings.points) await message.react('🎟️')
+        if (settings.backend.points) await message.react('🎟️')
         await message.react('❌')
     } catch (er) { ErrorLogger.log(er, bot) }
 }
@@ -1104,7 +1106,7 @@ async function voidReact(message, settings) {
             .then(message.react(botSettings.emote.TomeofPurification))
             .then(message.react(botSettings.emote.MarbleSeal))
             .then(message.react(botSettings.emote.shard))
-        if (settings.points) await message.react('🎟️')
+        if (settings.backend.points) await message.react('🎟️')
         await message.react('❌')
     } catch (er) { ErrorLogger.log(er, bot) }
 }
@@ -1120,7 +1122,7 @@ async function fsvReact(message, settings) {
             .then(message.react(botSettings.emote.Brain))
             .then(message.react(botSettings.emote.Mystic))
             .then(message.react(botSettings.emote.shard))
-        if (settings.points) await message.react('🎟️')
+        if (settings.backend.points) await message.react('🎟️')
         await message.react('❌')
     } catch (er) { ErrorLogger.log(er, bot) }
 }

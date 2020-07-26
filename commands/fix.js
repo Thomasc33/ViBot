@@ -19,7 +19,7 @@ module.exports = {
                     .addField('Has nickname, has Verified Raider, not in db', 'None')
                 for (let i in members) {
                     let m = members[i]
-                    if (!m.roles.cache.has(message.guild.roles.cache.find(r => r.name === settings.raider).id)) continue;
+                    if (!m.roles.cache.has(settings.roles.raider)) continue;
                     let found = false
                     for (let i in rows) {
                         if (rows[i].id == m.id) {
@@ -29,7 +29,7 @@ module.exports = {
                     }
                     if (!found) {
                         if (m.nickname == undefined) {
-                            m.roles.remove(message.guild.roles.cache.find(r => r.name === settings.raider).id)
+                            m.roles.remove(settings.roles.raider)
                             if (embed.fields[0].value == 'None') {
                                 embed.fields[0].value = m
                             } else {

@@ -15,7 +15,7 @@ module.exports = {
     },
     async update(guild, bot, db) {
         let settings = bot.settings[guild.id]
-        let modMailChannel = guild.channels.cache.find(c => c.name === settings.modmailchannel)
+        let modMailChannel = guild.channels.cache.get(settings.channels.modmail)
         let messages = await modMailChannel.messages.fetch({ limit: 100 })
         messages.filter(m => m.author.id == bot.user.id && m.reactions.cache.has('🔑')).each(async function (m) {
             if (!m.reactions.cache.has('🔑') || watchedModMails.includes(m.id)) return;
@@ -35,7 +35,7 @@ module.exports = {
                     .setDescription(`<@!${message.author.id}> send the bot: "${message.content}"`)
                     .setFooter(`User ID: ${message.author.id} MSG ID: ${message.id}`)
                     .setTimestamp()
-                let modMailChannel = guild.channels.cache.find(c => c.name === settings.modmailchannel)
+                let modMailChannel = guild.channels.cache.get(settings.channels.modmail)
                 let embedMessage = await modMailChannel.send(embed).catch(er => ErrorLogger.log(er, bot))
                 await embedMessage.react('🔑')
                 setTimeout(() => module.exports.watchMessage(embedMessage, db), 1000)
@@ -48,7 +48,7 @@ module.exports = {
         let guild = m.guild
         let bot = message.client
         let settings = bot.settings[guild.id]
-        let modMailChannel = guild.channels.cache.find(c => c.name === settings.modmailchannel)
+        let modMailChannel = guild.channels.cache.get(settings.channels.modmail)
         let embed = m.embeds[0]
         if (embed == undefined) return;
         let modMailMessageID = embed.footer.text.split(/ +/g)[5]

@@ -13,8 +13,8 @@ module.exports = {
             message.channel.send("Try again in a correct category");
             return;
         }
-        if (message.channel.parent.name.toLowerCase() === 'veteran raiding') var textChannel = message.guild.channels.cache.find(c => c.name === settings.vetstatus);
-        else var textChannel = message.guild.channels.cache.find(c => c.name === settings.raidstatus);
+        if (message.channel.parent.name.toLowerCase() === 'veteran raiding') var textChannel = message.guild.channels.cache.get(settings.channels.vetstatus);
+        else var textChannel = message.guild.channels.cache.get(settings.channels.raidstatus)
         switch (args[0].toLowerCase()) {
             case 'c/v':
                 var embed = new Discord.MessageEmbed()

@@ -2,9 +2,6 @@ const Discord = require('discord.js')
 const botSettings = require('../settings.json')
 const eventFile = require('../events.json')
 const ErrorLogger = require('../logError')
-const Clean = require('./clean')
-const Unlock = require('./unlock')
-const Lock = require('./lock')
 const Channels = require('./vibotChannels')
 
 var bot
@@ -61,18 +58,19 @@ class afk {
         this.channel = channel
         this.message = message
         this.location = location
-        this.time = botSettings.eventAfkTimeLimit
-        this.raider = this.message.guild.roles.cache.find(r => r.name === settings.raider)
-        this.eventBoi = this.message.guild.roles.cache.find(r => r.name === settings.events)
-        this.minutes = Math.floor(botSettings.eventAfkTimeLimit / 60);
-        this.seconds = botSettings.eventAfkTimeLimit % 60;
+        this.time = settings.numerical.eventafktime
+        this.raider = this.message.guild.roles.cache.get(settings.roles.raider)
+        this.eventBoi = this.message.guild.roles.cache.get(settings.roles.eventraider)
+        this.minutes = Math.floor(this.time / 60);
+        this.seconds = this.time % 60;
+        this.staffRole = this.message.guild.roles.cache.get(settings.roles.eventrl)
         activeRun = true;
         this.ping();
         this.keys = []
         this.earlyLocation = []
     }
     async ping() {
-        this.eventStatus = this.message.guild.channels.cache.find(c => c.name === this.settings.eventstatus)
+        this.eventStatus = this.message.guild.channels.cache.get(this.settings.channels.eventstatus)
         this.pingMessage = await this.eventStatus.send(`@here A ${this.event.name} run will begin in 5 seconds in ${this.channel.name}. **Be prepared to join vc before it fills up**`)
     }
     async start() {
@@ -132,8 +130,8 @@ class afk {
                 { name: `Our current keys`, value: `None yet!` },
                 { name: `Location of run`, value: `${this.location}` },
             )
-        this.afkControlPanelInfo = await this.message.guild.channels.cache.find(c => c.name === this.settings.runinfo).send(this.leaderEmbed)
-        this.afkControlPanelCommands = await this.message.guild.channels.cache.find(c => c.name === this.settings.eventcommands).send(this.leaderEmbed)
+        this.afkControlPanelInfo = await this.message.guild.channels.cache.get(this.settings.channels.runlogs).send(this.leaderEmbed)
+        this.afkControlPanelCommands = await this.message.guild.channels.cache.get(this.settings.channels.eventcommands).send(this.leaderEmbed)
         this.afkControlPanelCommands.react('❌')
         this.panelReactionCollector = new Discord.ReactionCollector(this.afkControlPanelCommands, xFilter);
 
@@ -145,7 +143,7 @@ class afk {
                 this.confirmKey(r, u);
             }
             if (r.emoji.name == '❌') {
-                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.eo).position) return;
+                if (reactor.roles.highest.position < this.staffRole.position) return;
                 this.endedBy = u
                 this.endAFK();
             }
@@ -153,7 +151,7 @@ class afk {
         this.panelReactionCollector.on('collect', (r, u) => {
             let reactor = this.message.guild.members.cache.get(u.id)
             if (r.emoji.name == '❌') {
-                if (reactor.roles.highest.position < this.message.guild.roles.cache.find(r => r.name === this.settings.eo).position) return;
+                if (reactor.roles.highest.position < this.staffRole.position) return;
                 this.endedBy = u
                 this.abortAFK();
             }
@@ -234,6 +232,8 @@ class afk {
         this.embed.fields = []
         this.pingMessage.edit('', this.embed).catch(er => ErrorLogger.log(er, bot))
 
+        this.afkControlPanelCommands.reactions.removeAll()
+
         activeRun = false
     }
     async abortAFK() {
@@ -251,6 +251,8 @@ class afk {
             .setFooter(`The afk check has been aborted by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
         this.embed.fields = []
         this.pingMessage.edit('', this.embedMessage).catch(er => ErrorLogger.log(er, bot))
+
+        this.afkControlPanelCommands.reactions.removeAll()
 
         activeRun = false
     }
@@ -303,10 +305,10 @@ function createChannel(message, bot) {
     let settings = bot.settings[message.guild.id]
     //channel creation
     return new Promise(async (resolve, reject) => {
-        var template = message.guild.channels.cache.find(c => c.name === settings.eventtemplate);
-        var raider = message.guild.roles.cache.find(r => r.name === settings.raider)
-        var EventBoi = message.guild.roles.cache.find(r => r.name === settings.events)
-        var vibotChannels = message.guild.channels.cache.find(c => c.name === settings.eventchannels)
+        var template = message.guild.channels.cache.get(settings.voice.eventtemplate)
+        var raider = message.guild.roles.cache.get(settings.roles.raider)
+        var EventBoi = message.guild.roles.cache.get(settings.roles.eventraider)
+        var vibotChannels = message.guild.channels.cache.get(settings.channels.eventchannels)
 
         let channel = await template.clone()
         setTimeout(async function () {
@@ -326,7 +328,7 @@ function createChannel(message, bot) {
             .setDescription('Whenever the run is over. React with the ❌ to delete the channel. View the timestamp for more information')
             .setFooter(channel.id)
             .setTimestamp()
-        let m = await vibotChannels.send(embed).catch(er => ErrorLogger.log(er))
+        let m = await vibotChannels.send(`${message.member}`,embed).catch(er => ErrorLogger.log(er))
         m.react('❌').catch(er => { })
         setTimeout(() => { Channels.update(message.guild, bot) }, 10000)
         resolve(channel)

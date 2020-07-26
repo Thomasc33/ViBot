@@ -72,7 +72,7 @@ module.exports = {
                         embed.addField('Reason 1', reason.substring(0, 1024))
                         embed.addField('Reason Cont', reason.substring(1024, reason.length))
                     } else embed.addField('Reason', reason)
-                await message.guild.channels.cache.find(c => c.name === settings.modlog).send(embed);
+                await message.guild.channels.cache.get(settings.channels.modlogs).send(embed);
             }
         })
         for (let i = 1; i < names.length; i++) {
