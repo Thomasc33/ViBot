@@ -82,7 +82,7 @@ module.exports = {
                         }
                     } else embed.setDescription(embed.description.concat(`\n${string}`))
                 }
-                if (channel.name == settings.channels.currentweek) {
+                if (channel.id == settings.channels.currentweek) {
                     let messages = await channel.messages.fetch({ limit: 20 })
                     let messageArray = messages.array()
                     if (messageArray.length != embeds.length) channel.bulkDelete(20);
