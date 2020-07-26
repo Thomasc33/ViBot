@@ -474,15 +474,13 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
                 return;
             }
         }, 60000)
-        let dm = await u.createDM().catch(r => this.dylanBotCommands.send(`<@!${u.id}> tried to react with <${botSettings.emote.LostHallsKey}> but their DMs are private`))
-        let DirectMessage = await dm.send(`You reacted as <${botSettings.emote.LostHallsKey}>. Press :white_check_mark: to confirm. Ignore this message otherwise`).catch(er => this.dylanBotCommands.send(`<@!${u.id}> tried to react with <${botSettings.emote.LostHallsKey}> but their DMs are private`));
-
+        let DirectMessage = await u.send(`You reacted as <${botSettings.emote.LostHallsKey}>. Press :white_check_mark: to confirm. Ignore this message otherwise`).catch(r => { if (r.message == 'Cannot send messages to this user') this.dylanBotCommands.send(`<@!${u.id}> tried to react with <${botSettings.emote.LostHallsKey}> but their DMs are private`) })
         let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, dmReactionFilter);
         await DirectMessage.react("✅");
         dmReactionCollector.on("collect", (r, u) => {
             if (this.key != null) return;
             this.key = u;
-            dm.send(`The location for this run has been set to \`${this.location}\`, get there and confirm key with ${this.message.member.nickname}`);
+            u.send(`The location for this run has been set to \`${this.location}\`, get there and confirm key with ${this.message.member.nickname}`);
             if (this.leaderEmbed.fields[0].value == `None yet!`) {
                 this.leaderEmbed.fields[0].value = `<${botSettings.emote.LostHallsKey}>: <@!${u.id}>`;
             } else this.leaderEmbed.fields[0].value += `\n<${botSettings.emote.LostHallsKey}>: ${`<@!${u.id}>`}`;
@@ -509,16 +507,14 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
             }
         }, 60000)
         try {
-            let dm = await u.createDM().catch(this.dylanBotCommands.send(`<@!${u.id}> tried to react with <${botSettings.emote.Vial}> but their DMs are private`));
-            let DirectMessage = await dm.send(`You reacted as <${botSettings.emote.Vial}>. Press :white_check_mark: to confirm. Ignore this message otherwise`).catch(this.dylanBotCommands.send(`<@!${u.id}> tried to react with <${botSettings.emote.Vial}> but their DMs are private`));
-
+            let DirectMessage = await y.send(`You reacted as <${botSettings.emote.Vial}>. Press :white_check_mark: to confirm. Ignore this message otherwise`).catch(r => { if (r.message == 'Cannot send messages to this user') this.dylanBotCommands.send(`<@!${u.id}> tried to react with <${botSettings.emote.Vial}> but their DMs are private`) });
             let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, dmReactionFilter);
 
             await DirectMessage.react("✅");
             await dmReactionCollector.on("collect", (r, u) => {
                 if (this.vials.length > 2 || this.vials.includes(u)) return;
                 this.vials.push(u);
-                dm.send(`The location for this run has been set to \`${this.location}\`, get there and confirm vial with ${this.message.member.nickname}`);
+                u.send(`The location for this run has been set to \`${this.location}\`, get there and confirm vial with ${this.message.member.nickname}`);
                 if (this.leaderEmbed.fields[1].value == `None yet!`) {
                     this.leaderEmbed.fields[1].value = `<${botSettings.emote.Vial}>: <@!${u.id}>`;
                 } else this.leaderEmbed.fields[1].value += `\n<${botSettings.emote.Vial}>: ${`<@!${u.id}>`}`
@@ -543,16 +539,14 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
             }
         }, 60000)
         try {
-            let dm = await u.createDM().catch(this.dylanBotCommands.send(`<@!${u.id}> tried to react with <${botSettings.emote.Plane}> but their DMs are private`));
-            let DirectMessage = await dm.send(`You reacted as <${botSettings.emote.Plane}>. Press :white_check_mark: to confirm. Ignore this message otherwise`).catch(this.dylanBotCommands.send(`<@!${u.id}> tried to react with <${botSettings.emote.Plane}> but their DMs are private`));
-
+            let DirectMessage = await u.send(`You reacted as <${botSettings.emote.Plane}>. Press :white_check_mark: to confirm. Ignore this message otherwise`).catch(r => { if (r.message == 'Cannot send messages to this user') this.dylanBotCommands.send(`<@!${u.id}> tried to react with <${botSettings.emote.Plane}> but their DMs are private`) });
             let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, dmReactionFilter);
 
             await DirectMessage.react("✅");
             await dmReactionCollector.on("collect", (r, u) => {
                 if (this.rushers.length > 2 || this.rushers.includes(u)) return;
                 this.rushers.push(u);
-                dm.send(`The location for this run has been set to \`${this.location}\`, get there asap`);
+                u.send(`The location for this run has been set to \`${this.location}\`, get there asap`);
                 if (this.leaderEmbed.fields[1].value == `None yet!`) {
                     this.leaderEmbed.fields[1].value = `<${botSettings.emote.Plane}>: <@!${u.id}>`;
                 } else this.leaderEmbed.fields[1].value += `\n<${botSettings.emote.Plane}>: ${`<@!${u.id}>`}`;
@@ -578,8 +572,7 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
             }
         }, 60000)
         try {
-            let dm = await u.createDM(this.dylanBotCommands.send(`<@!${u.id}> tried to react with <${botSettings.emote.Mystic}> but their DMs are private`));
-            let DirectMessage = await dm.send(`You reacted as <${botSettings.emote.Mystic}>. If your mystic is 8/8 and you have an 85 magic heal pet, then press :white_check_mark: to confirm. Ignore this message otherwise`).catch(this.dylanBotCommands.send(`<@!${u.id}> tried to react with <${botSettings.emote.Mystic}> but their DMs are private`));
+            let DirectMessage = await u.send(`You reacted as <${botSettings.emote.Mystic}>. If your mystic is 8/8 and you have an 85 magic heal pet, then press :white_check_mark: to confirm. Ignore this message otherwise`).catch(r => { if (r.message == 'Cannot send messages to this user') this.dylanBotCommands.send(`<@!${u.id}> tried to react with <${botSettings.emote.Mystic}> but their DMs are private`) });
             let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, dmReactionFilter);
             await DirectMessage.react("✅");
             await dmReactionCollector.on("collect", async (r, u) => {
@@ -590,7 +583,7 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
                     if (c.class == 'Mystic' && c.stats == '8/8') {
                         found = true;
                         this.mystics.push(u)
-                        dm.send(`The location for this run has been set to \`${this.location}\`, get there asap`);
+                        u.send(`The location for this run has been set to \`${this.location}\`, get there asap`);
                         if (this.leaderEmbed.fields[3].value == `None yet!`) {
                             this.leaderEmbed.fields[3].value = `<${botSettings.emote.Mystic}>: <@!${u.id}>`;
                         } else this.leaderEmbed.fields[3].value += `\n<${botSettings.emote.Mystic}>: ${`<@!${u.id}>`}`
@@ -602,12 +595,12 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
                     }
                 })
                 if (!found) {
-                    let prompt = await dm.send(`I could not find any 8/8 mystics under \`${this.message.guild.members.cache.get(u.id).nickname.replace(/[^a-z|]/gi, '').split('|')[0]}\`. React with :white_check_mark: if you do have an 8/8 mystic on another account`)
+                    let prompt = await u.send(`I could not find any 8/8 mystics under \`${this.message.guild.members.cache.get(u.id).nickname.replace(/[^a-z|]/gi, '').split('|')[0]}\`. React with :white_check_mark: if you do have an 8/8 mystic on another account`)
                     let reactionCollector = new Discord.ReactionCollector(prompt, dmReactionFilter);
                     await prompt.react('✅')
                     reactionCollector.on('collect', (r, u) => {
                         this.mystics.push(u)
-                        dm.send(`The location for this run has been set to \`${this.location}\`, get there asap`);
+                        u.send(`The location for this run has been set to \`${this.location}\`, get there asap`);
                         if (this.leaderEmbed.fields[3].value == `None yet!`) {
                             this.leaderEmbed.fields[3].value = `<${botSettings.emote.Mystic}>: <@!${u.id}>`;
                         } else this.leaderEmbed.fields[3].value += `\n<${botSettings.emote.Mystic}>: ${`<@!${u.id}>`}`
@@ -635,15 +628,14 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
             }
         }, 60000)
         try {
-            let dm = await u.createDM().catch(this.dylanBotCommands.send(`<@!${u.id}> tried to react with <${botSettings.emote.Brain}> but their DMs are private`));
-            let DirectMessage = await dm.send(`You reacted as <${botSettings.emote.Brain}>. Press :white_check_mark: to confirm. Ignore this message otherwise`).catch(this.dylanBotCommands.send(`<@!${u.id}> tried to react with <${botSettings.emote.Brain}> but their DMs are private`));
+            let DirectMessage = await u.send(`You reacted as <${botSettings.emote.Brain}>. Press :white_check_mark: to confirm. Ignore this message otherwise`).catch(r => { if (r.message == 'Cannot send messages to this user') this.dylanBotCommands.send(`<@!${u.id}> tried to react with <${botSettings.emote.Brain}> but their DMs are private`) });
 
             let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, dmReactionFilter);
             await DirectMessage.react("✅");
             await dmReactionCollector.on("collect", (r, u) => {
                 if (this.brains.length > 2 || this.brains.includes(u)) return;
                 this.brains.push(u);
-                dm.send(`The location for this run has been set to \`${this.location}\`, get there asap`);
+                u.send(`The location for this run has been set to \`${this.location}\`, get there asap`);
                 if (this.leaderEmbed.fields[2].value == `None yet!`) {
                     this.leaderEmbed.fields[2].value = `<${botSettings.emote.Brain}>: <@!${u.id}>`;
                 } else this.leaderEmbed.fields[2].value += `\n<${botSettings.emote.Brain}>: ${`<@!${u.id}>`}`
