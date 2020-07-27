@@ -159,7 +159,7 @@ bot.on("ready", async () => {
     }, 60000);
     //suspension check
     bot.setInterval(() => {
-        db.query(`SELECT * FROM suspensions WHERE suspended = '1'`, async (err, rows) => {
+        db.query(`SELECT * FROM suspensions WHERE suspended = true AND perma = false`, async (err, rows) => {
             if (err) ErrorLogger.log(err, bot)
             for (let i in rows) {
                 if (Date.now() > parseInt(rows[i].uTime)) {
@@ -168,14 +168,11 @@ bot.on("ready", async () => {
                     const rolesString = rows[i].roles;
                     let roles = []
                     const guild = bot.guilds.cache.get(guildId);
-                    const reason = rows[i].reason
                     const member = guild.members.cache.get(rows[i].id);
+                    if (!member) db.query(`UPDATE suspensions SET suspended = false WHERE id = '${rows[i].id}'`)
                     rolesString.split(' ').forEach(r => { if (r !== '') roles.push(r) })
                     try {
-                        await member.edit({
-                            roles: roles
-                        })
-                            .catch(er => ErrorLogger.log(er, bot))
+                        await member.edit({ roles: roles }).catch(er => ErrorLogger.log(er, bot))
                         try {
                             let messages = await bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').messages.fetch({ limit: 100 })
                             let m = messages.get(proofLogID)
@@ -194,10 +191,8 @@ bot.on("ready", async () => {
                             bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').send(`<@!${rows[i].id}> has been unsuspended automatically`)
                         }
                         finally {
-                            console.log(`UPDATE suspensions SET suspended = 0 WHERE id = '${rows[i].id}'`)
-                            await db.query(`UPDATE suspensions SET suspended = 0 WHERE id = '${rows[i].id}'`)
+                            await db.query(`UPDATE suspensions SET suspended = false WHERE id = '${rows[i].id}'`)
                         }
-
                     } catch (er) {
                         ErrorLogger.log(er, bot)
                     }
@@ -223,7 +218,6 @@ bot.on("ready", async () => {
     }, 60000)
     bot.guilds.cache.each(g => {
         if (!emojiServers.includes(g.id)) {
-            vi.send(`${g.name}, ${g.id}`)
             vibotChannels.update(g, bot).catch(er => { })
             if (bot.settings[g.id].backend.modmail) modmail.update(g, bot, db).catch(er => { })
             if (bot.settings[g.id].backend.vetverification) vetVerification.init(g, bot, db).catch(er => { })
@@ -231,8 +225,10 @@ bot.on("ready", async () => {
     })
     const currentWeekReset = cron.job('0 0 * * SUN', () => {
         bot.guilds.cache.each(g => {
-            if (bot.settings[g.id].backend.currentweek) currentWeek.newWeek(g, bot, db);
-            if (bot.settings[g.id].backend.eventcurrentweek) ecurrentWeek.newWeek(g, bot, db)
+            if (!emojiServers.includes(g.id)) {
+                if (bot.settings[g.id].backend.currentweek) currentWeek.newWeek(g, bot, db);
+                if (bot.settings[g.id].backend.eventcurrentweek) ecurrentWeek.newWeek(g, bot, db)
+            }
         }, null, true, null, null, false)
     })
 });
@@ -241,13 +237,25 @@ bot.on('error', err => {
     ErrorLogger.log(err, bot)
 })
 
-bot.on('guildMemberRemove', async member => {
-    db.query(`SELECT suspended FROM suspensions WHERE id = '${member.id}'`, (err, rows) => {
+bot.on('guildMemberAdd', member => {
+    db.query(`SELECT suspended FROM suspensions WHERE id = '${member.id}' AND suspended = true`, (err, rows) => {
+        if (rows.length !== 0) {
+            member.roles.add(bot.settings[member.guild.id].roles.tempsuspended)
+            let modlog = member.guild.channels.cache.get(bot.settings[member.guild.id].channels.modlogs)
+            if (!modlog) return ErrorLogger.log(new Error(`mod log not found in ${member.guild.id}`), bot)
+            modlog.send(`${member} rejoined server after leaving while suspended. Giving suspended role back.`)
+        }
+    })
+})
+
+bot.on('guildMemberRemove', member => {
+    db.query(`SELECT suspended FROM suspensions WHERE id = '${member.id}' AND suspended = true`, (err, rows) => {
         if (err) ErrorLogger.log(err, bot)
         if (rows.length !== 0) {
             let modlog = member.guild.channels.cache.get(bot.settings[member.guild.id].channels.modlogs)
             if (!modlog) return ErrorLogger.log(new Error(`mod log not found in ${member.guild.id}`), bot)
             modlog.send(`${member} is attempting to dodge a suspension by leaving the server`)
+            db.query(`UPDATE suspension SET suspended = false WHERE id = '${member.id}'`)
         }
     })
 })
@@ -255,10 +263,11 @@ bot.on('guildMemberRemove', async member => {
 process.on('uncaughtException', err => {
     ErrorLogger.log(err, bot);
     console.log(err);
-    process.exit(1)
 })
 process.on('unhandledRejection', err => {
     if (err.message == 'Target user is not connected to voice.') return;
+    if (err.message == 'Cannot send messages to this user') return
+    if (err.message == 'Unknown Message') return
     ErrorLogger.log(err, bot);
     console.log(err);
 })

@@ -507,7 +507,7 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
             }
         }, 60000)
         try {
-            let DirectMessage = await y.send(`You reacted as <${botSettings.emote.Vial}>. Press :white_check_mark: to confirm. Ignore this message otherwise`).catch(r => { if (r.message == 'Cannot send messages to this user') this.dylanBotCommands.send(`<@!${u.id}> tried to react with <${botSettings.emote.Vial}> but their DMs are private`) });
+            let DirectMessage = await u.send(`You reacted as <${botSettings.emote.Vial}>. Press :white_check_mark: to confirm. Ignore this message otherwise`).catch(r => { if (r.message == 'Cannot send messages to this user') this.dylanBotCommands.send(`<@!${u.id}> tried to react with <${botSettings.emote.Vial}> but their DMs are private`) });
             let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, dmReactionFilter);
 
             await DirectMessage.react("✅");

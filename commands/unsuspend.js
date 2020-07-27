@@ -1,6 +1,7 @@
 const fs = module.require('fs')
 const Discord = require('discord.js')
 const ErrorLogger = require('../logError')
+const permaSuspend = require('./permaSuspend')
 
 module.exports = {
     name: 'unsuspend',
@@ -11,21 +12,16 @@ module.exports = {
         let settings = bot.settings[message.guild.id]
         var raider = args.shift();
         var reason = '';
-        for (i = 0; i < args.length; i++) {
-            reason = reason.concat(args[i]) + ' ';
-        }
+        for (i = 0; i < args.length; i++) reason = reason.concat(args[i]) + ' ';
+
         let member = message.mentions.members.first()
         if (!member) member = message.guild.members.cache.get(raider)
         if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(raider.toLowerCase()));
-        if (reason == '') { reason = 'None provided' }
-        if (member == null) {
-            message.channel.send("User not found, please try again");
-            return;
-        }
-        if (!member.roles.cache.has(settings.roles.tempsuspended)) {
-            message.channel.send("User is not suspended")
-            return;
-        }
+        if (!member) return message.channel.send('I could not find ' + raider)
+        if (reason == '') reason = 'None'
+        if (member == null) return message.channel.send("User not found, please try again");
+        if (member.roles.cache.has(settings.roles.permasuspended)) return unPerma()
+        if (!member.roles.cache.has(settings.roles.tempsuspended)) return message.channel.send("User is not suspended")
 
         db.query(`SELECT * FROM suspensions WHERE id = '${member.id}' AND suspended = '1'`, async (err, rows) => {
             if (err) ErrorLogger.log(err, bot)
@@ -52,7 +48,6 @@ module.exports = {
                 let roles = []
                 const guild = bot.guilds.cache.get(guildId);
                 const member = guild.members.cache.get(rows[0].id);
-                const reason = rows[0].reason
                 rolesString.split(' ').forEach(r => { if (r != '') roles.push(r) })
                 try {
                     await member.edit({
@@ -76,5 +71,18 @@ module.exports = {
                 }
             }
         })
+        function unPerma() {
+            db.query(`SELECT * FROM suspensions WHERE perma = true AND suspended = true AND id = '${member.id}'`, (err, rows) => {
+                if (rows.length == 0) return message.channel.send(`I do not have any records of ${member} being perma suspended`)
+                let rolesString = rows[0].roles;
+                let roles = []
+                rolesString.split(' ').forEach(r => { if (r != '') roles.push(r) })
+                let suspendLog = message.guild.channels.cache.get(settings.channels.suspendlog)
+                suspendLog.send(`${member} unsuspended`)
+                member.edit({ roles: roles })
+                db.query(`UPDATE suspensions SET suspended = false WHERE id = '${member.id}'`)
+                message.channel.send(`${member} has been unsuspended`)
+            })
+        }
     }
 }

@@ -33,22 +33,16 @@ module.exports = {
                 .setColor(message.guild.roles.cache.get(settings.roles.tempsuspended).hexColor)
                 .setTitle('Current Logged Suspensions')
                 .setDescription('None')
-            for (let i in bot.suspensions) {
-                let sus = bot.suspensions[i]
-                let guild = bot.guilds.cache.get(sus.guild)
-                let member = guild.members.cache.get(i)
-                let desc = (`__Suspension case for ${member}__\`${member.nickname}\`\nReason: \`${sus.reason.trim()}\`\nSuspended by: <@!${sus.by}>\n`)
-                console.log(desc)
-                if (embed.description == 'None') { embed.setDescription(desc) }
-                else {
-                    if (embed.description.length + desc.length > 2048) {
-                        message.channel.send(embed)
-                        embed.setDescription('')
-                    }
-                    embed.setDescription(desc)
+            db.query(`SELECT * FROM suspensions WHERE suspended = true`, (err, rows) => {
+                for (let i in rows) {
+                    let sus = bot.suspensions[i]
+                    let guild = bot.guilds.cache.get(sus.guild)
+                    let member = guild.members.cache.get(i)
+                    let desc = (`__Suspension case for ${member}__\`${member.nickname}\`\nReason: \`${sus.reason.trim()}\`\nSuspended by: <@!${sus.by}>\n`)
+                    fitStringIntoEmbed(embed, string, message.channel)
                 }
-            }
-            message.channel.send(embed)
+                message.channel.send(embed)
+            })
         }
     }
 }

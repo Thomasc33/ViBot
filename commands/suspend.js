@@ -85,7 +85,7 @@ module.exports = {
                                 if (message.content.charAt(0) == 'y') {
                                     db.query(`UPDATE suspensions SET suspended = 0 WHERE id = '${member.id}'`)
                                     message.channel.send('Overwriting suspension...');
-                                    vetBanProcess()
+                                    vetBanProcess(true)
                                     collector.stop();
                                 } else if (message.content.carAt(0) == 'n') {
                                     collector.stop()
@@ -98,9 +98,9 @@ module.exports = {
                         } else return message.channel.send('Suspension was not made through ViBot. Please attempt to overwrite the suspension through another bot')
                     })
                 } else {
-                    vetBanProcess()
+                    vetBanProcess(false)
                 }
-                async function vetBanProcess() {
+                async function vetBanProcess(overwrite) {
                     let embed = new Discord.MessageEmbed()
                         .setColor('#ff0000')
                         .setTitle('Suspension Information')
@@ -112,25 +112,29 @@ module.exports = {
                         .setFooter(`Unsuspending at `)
                         .setTimestamp(Date.now() + time);
 
-
-                    let userRolesString = '', userRoles = []
-                    member.roles.cache.each(r => {
-                        if (!r.managed) {
-                            userRoles.push(r.id)
-                            userRolesString = userRolesString.concat(`${r.id} `)
-                        }
-                        if (embed.fields[3].value == 'None!') {
-                            embed.fields[3].value = `<@&${r.id}>`
-                        } else {
-                            embed.fields[3].value += `, <@&${r.id}>`
-                        }
-                    })
-                    messageId = await suspensionLog.send(embed);
-                    await member.roles.remove(userRoles)
-                    setTimeout(() => { member.roles.add(suspendedRole.id); }, 1000)
-
-                    db.query(`INSERT INTO suspensions (id, guildid, suspended, uTime, reason, modid, roles, logmessage) VALUES ('${member.id}', '${message.guild.id}', true, '${Date.now() + time}', '${reason}', '${message.author.id}', '${userRolesString}', '${messageId.id}');`)
-
+                    if (overwrite) {
+                        db.query(`UPDATE suspensions SET uTime = ${Date.now() + time} WHERE id = '${member.id}' AND suspended = true`)
+                        embed.fields[3].value = `Overwritten suspensions. Roles the same as prior suspension`
+                        suspensionLog.send(embed).then(member.user.send(embed))
+                    } else {
+                        let userRolesString = '', userRoles = []
+                        member.roles.cache.each(r => {
+                            if (!r.managed) {
+                                userRoles.push(r.id)
+                                userRolesString = userRolesString.concat(`${r.id} `)
+                            }
+                            if (embed.fields[3].value == 'None!') {
+                                embed.fields[3].value = `<@&${r.id}>`
+                            } else {
+                                embed.fields[3].value += `, <@&${r.id}>`
+                            }
+                        })
+                        messageId = await suspensionLog.send(embed);
+                        await member.roles.remove(userRoles)
+                        setTimeout(() => { member.roles.add(suspendedRole.id); }, 1000)
+                        await member.user.send(embed)
+                        db.query(`INSERT INTO suspensions (id, guildid, suspended, uTime, reason, modid, roles, logmessage) VALUES ('${member.id}', '${message.guild.id}', true, '${Date.now() + time}', '${reason}', '${message.author.id}', '${userRolesString}', '${messageId.id}');`)
+                    }
                     message.channel.send(`${member} has been suspended`)
                 }
 

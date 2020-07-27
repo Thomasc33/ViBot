@@ -18,10 +18,7 @@ module.exports = {
     async execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
         var channel = message.member.voice.channel
-        if (channel == null) {
-            message.channel.send('Channel not found. Make sure you are in a channel, then try again');
-            return;
-        }
+        if (channel == null) return message.channel.send('Channel not found. Make sure you are in a channel, then try again');
         let parseStatusEmbed = new Discord.MessageEmbed()
             .setColor(`#00ff00`)
             .setTitle('Parse Status')
@@ -114,6 +111,9 @@ module.exports = {
         parseStatusEmbed.fields[1].value = `Crasher Parse Completed. See Below. Beginning Character Parse`
         await parseStatusMessage.edit(parseStatusEmbed)
 
+        if (bot.afkChecks[channel.id]) {
+            message.channel.send(`/tell ${message.guild.members.cache.get(bot.afkChecks[channel.id]).nickname} Can you kick the following people? **Don't copy paste names from kicklist. It may DC you**`)
+        }
         //post in crasher-list
         let key = null
         if (message.member.voice.channel && bot.afkChecks[message.member.voice.channel.id] && bot.afkChecks[message.member.voice.channel.id].key) key = bot.afkChecks[message.member.voice.channel.id].key
