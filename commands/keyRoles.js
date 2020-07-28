@@ -5,7 +5,7 @@ const botSettings = require('../settings.json')
 module.exports = {
     name: 'keyroles',
     description: 'Makes sure everyone that should have a key popper role does',
-    role: 'Security',
+    role: 'security',
     args: 'None | <check> <user/all>',
     execute(message, args, bot, db) {
         const settings = bot.settings[message.guild.id]

@@ -8,8 +8,9 @@ module.exports = {
     name: 'headcount',
     description: 'Puts a headcount in a raid status channel',
     alias: ['hc'],
+    requiredArgs: 1,
     args: '<c/v/fsv/event>',
-    role: 'Event Organizer',
+    role: 'eventrl',
     async execute(message, args, bott) {
         let settings = bott.settings[message.guild.id]
         if (!(message.channel.parent.name.toLowerCase() === 'raiding' || message.channel.parent.name.toLowerCase() === 'veteran raiding' || message.channel.parent.name.toLowerCase() === 'events')) {

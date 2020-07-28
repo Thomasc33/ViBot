@@ -4,7 +4,8 @@ module.exports = {
     name: 'manualvetverify',
     description: 'Adds Veteran Raider Role to user',
     args: '<id/mention>',
-    role: 'Security',
+    requiredArgs: 1,
+    role: 'security',
     alias: ['mvv'],
     execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]

@@ -5,7 +5,7 @@ module.exports = {
     name: 'modmailblacklist',
     alias: ['mmbl', 'mbl', 'modmailblacklisted'],
     args: '<add/remove> <member>',
-    role: 'Officer',
+    role: 'officer',
     async execute(message, args, bot, db) {
         if (args.length == 0) {
             let blackListedEmbed = new Discord.MessageEmbed()

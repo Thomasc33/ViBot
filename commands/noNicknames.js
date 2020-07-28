@@ -2,7 +2,7 @@ const Discord = require('discord.js')
 module.exports = {
     name: 'nonicknames',
     description: 'Lists all verified raiders that dont have a nickname',
-    role: 'Security',
+    role: 'security',
     alias: ['nn'],
     notes: 'Only usable in mod-bot-commands',
     execute(message, args, bot) {

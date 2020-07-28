@@ -6,8 +6,9 @@ module.exports = {
     name: 'permasuspend',
     description: 'Permanently suspends a user',
     args: '<user> <reason>',
+    requiredArgs: 1,
     alias: ['psuspend'],
-    role: 'Security',
+    role: 'security',
     async execute(message, args, bot, db) {
         let member = message.mentions.members.first()
         if (member == null) member = message.guild.members.cache.get(args[0])

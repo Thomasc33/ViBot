@@ -4,7 +4,7 @@ module.exports = {
     name: 'stats',
     description: 'Gives users stats',
     args: '(user)',
-    role: 'Verified Raider',
+    role: 'raider',
     dms: true,
     async execute(message, args, bot, db) {
         if (args.length == 0) var member = message.author

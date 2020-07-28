@@ -5,7 +5,8 @@ module.exports = {
     name: 'kick',
     description: 'Kicks user from server and logs it',
     args: '<id/mention> <reason>',
-    role: 'Security',
+    requiredArgs: 1,
+    role: 'security',
     execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
         if (args.length == 0) return;

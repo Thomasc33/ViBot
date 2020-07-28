@@ -6,7 +6,7 @@ module.exports = {
     description: 'Changes the location of the current run',
     alias: ['oldloc'],
     args: '<location>',
-    role: 'Almost Raid Leader',
+    role: 'almostrl',
     execute(message, args, bot) {
         var isVet = false;
         if (!(message.channel.parent.name.toLowerCase() === 'raiding' || message.channel.parent.name.toLowerCase() === 'veteran raiding' || message.channel.parent.name.toLowerCase() === 'events'))

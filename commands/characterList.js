@@ -6,7 +6,7 @@ module.exports = {
     args: '<ign>',
     alias: ['cl'],
     description: 'Gives character information for a user',
-    role: 'Almost Raid Leader',
+    role: 'almostrl',
     dms: true,
     async execute(message, args, bot, db) {
         let ign = args[0]

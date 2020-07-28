@@ -7,7 +7,7 @@ const client = new vision.ImageAnnotatorClient(botSettings.gcloudOptions);
 module.exports = {
     name: 'bazaarparse',
     description: 'Parses people in bazaar to find people entering location early',
-    role: 'Almost Raid Leader',
+    role: 'almostrl',
     alias: ['bp', 'bpm'],
     args: '<image>',
     async execute(message, args, bot) {

@@ -6,7 +6,8 @@ module.exports = {
     description: 'Adds the username of an alt to a user and logs it',
     alias: ['aa'],
     args: '<id/mention> <alt name> (proof)',
-    role: 'Security',
+    requiredArgs: 2,
+    role: 'security',
     async execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
         var member = message.mentions.members.first()

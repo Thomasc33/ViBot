@@ -5,7 +5,8 @@ module.exports = {
     alias: ['uv'],
     description: 'Adds popped vial to user',
     args: '<user>',
-    role: 'Almost Raid Leader',
+    requiredArgs: 1,
+    role: 'almostrl',
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         let member = message.mentions.members.first()

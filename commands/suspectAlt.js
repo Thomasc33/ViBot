@@ -4,7 +4,8 @@ module.exports = {
     name: 'suspectalt',
     alias: ['suspect', 'sa'],
     description: 'Adds a ? infront of someones name',
-    role: 'Security',
+    role: 'security',
+    requiredArgs: 1,
     args: '<id/mention>',
     async execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]

@@ -4,7 +4,7 @@ const points = require('./points')
 module.exports = {
     name: 'test',
     description: 'Holds testing code',
-    role: 'Developer',
+    role: 'developer',
     async execute(message, args, bot, db) {
         return
     }

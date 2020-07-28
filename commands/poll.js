@@ -6,7 +6,8 @@ module.exports = {
     name: 'poll',
     description: 'Puts a poll in a raid status channel',
     args: '<\`c/v\` -or- \`us/eu\`>',
-    role: 'Almost Raid Leader',
+    requiredArgs: 1,
+    role: 'almostrl',
     async execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
         if (!(message.channel.parent.name.toLowerCase() === 'raiding' || message.channel.parent.name.toLowerCase() === 'veteran raiding' || message.channel.parent.name.toLowerCase() === 'events')) {

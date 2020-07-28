@@ -3,7 +3,7 @@ const Discord = require('discord.js')
 module.exports = {
     name: 'russianroulette',
     alias: ['rr'],
-    role: 'Security',
+    role: 'security',
     description: 'Begins russian roulette',
     async execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]

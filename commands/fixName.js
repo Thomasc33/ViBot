@@ -3,7 +3,8 @@ const botSettings = require(`../settings.json`)
 module.exports = {
     name: 'fixname',
     alias: ['fn'],
-    role: 'Almost Raid Leader',
+    role: 'almostrl',
+    requiredArgs: 1,
     description: 'Fixes the name of the raiding channel',
     args: '<channel>',
     execute(message, args, bot) {

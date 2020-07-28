@@ -6,7 +6,7 @@ module.exports = {
     description: 'Gives list of commands available or the specifics of a command',
     args: '(Command Name)',
     alias: ['help'],
-    role: 'Verified Raider',
+    role: 'raider',
     execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
         if (args.length != 0) {

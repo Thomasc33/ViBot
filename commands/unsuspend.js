@@ -7,7 +7,8 @@ module.exports = {
     name: 'unsuspend',
     description: 'Manually unsuspends user',
     args: '<ign> (reason)',
-    role: 'Raid Leader',
+    requiredArgs: 1,
+    role: 'rl',
     execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         var raider = args.shift();

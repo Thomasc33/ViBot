@@ -5,19 +5,16 @@ module.exports = {
     name: 'pop',
     description: 'Logs key pops',
     args: '<lh/event> <user> (Count)',
-    role: 'Almost Raid Leader',
+    requiredArgs: 2,
+    role: 'almostrl',
     async execute(message, args, bot, db) {
         var count = 1
         if (args.length < 2) return;
-        else {
-            if (args[args.length - 1].replace(/^\d{1,2}$/, '') == '') {
-                count = args[args.length - 1]
-            }
-            var user = message.mentions.members.first()
-            if (user == undefined) user = message.guild.members.cache.get(args[1])
-            if (user == undefined) user = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[1].toLowerCase()));
-            if (user == undefined) { message.channel.send('User not found'); return; }
-        }
+        var user = message.mentions.members.first()
+        if (user == undefined) user = message.guild.members.cache.get(args[1])
+        if (user == undefined) user = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[1].toLowerCase()));
+        if (user == undefined) { message.channel.send('User not found'); return; }
+
         if (args[0].toLowerCase() == 'lh' || args[0].toLowerCase() == 'losthalls') {
             message.channel.send(`Are you sure you want to log ${count} lost halls pops for ${user.nickname}? (Y/N)`)
             let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 10000 });

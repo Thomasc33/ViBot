@@ -2,9 +2,10 @@ const Discord = require('discord.js')
 
 module.exports = {
     name: 'warn',
-    role: 'Almost Raid Leader',
+    role: 'almostrl',
     description: 'Warns a user for a given reason',
     args: '<user> <reason>',
+    requiredArgs: 1,
     async execute(message, args, bot, db) {
         if (args.length < 2) return;
         let member = message.mentions.members.first()

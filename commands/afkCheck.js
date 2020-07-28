@@ -19,8 +19,9 @@ var bot;
 module.exports = {
     name: 'afk',
     description: 'The new version of the afk check',
+    requiredArgs: 1,
     args: '<c/v/fsv> <location>',
-    role: 'Almost Raid Leader',
+    role: 'almostrl',
     async execute(message, args, bott, db) {
         let settings = bott.settings[message.guild.id]
         if (args.length == 0) return;

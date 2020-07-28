@@ -6,8 +6,9 @@ module.exports = {
     name: 'location',
     description: 'Changes the location of the current run',
     alias: ['loc'],
+    requiredArgs: 1,
     args: '<location>',
-    role: 'Event Organizer',
+    role: 'eventrl',
     execute(message, args, bot) {
         let isVet = false;
         if (!(message.channel.parent.name.toLowerCase() === 'raiding' || message.channel.parent.name.toLowerCase() === 'veteran raiding' || message.channel.parent.name.toLowerCase() === 'events'))

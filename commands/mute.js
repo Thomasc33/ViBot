@@ -6,8 +6,9 @@ module.exports = {
     name: 'mute',
     description: 'Gives user the muted role',
     args: '<member> <time> <time type> (Reason)',
-    role: 'Security',
-    notes: 'Timed feature coming soon:tm:',
+    role: 'security',
+    requiredArgs: 1,
+    notes: 'Timed feature here:tm:',
     async execute(message, args, bot) {
         if (args.length == 0) return;
         let settings = bot.settings[message.guild.id]

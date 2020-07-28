@@ -2,8 +2,9 @@ const Discord = require('discord.js')
 module.exports = {
     name: 'manualverify',
     description: 'Manually verifies a user',
-    role: 'Security',
+    role: 'security',
     alias: ['mv'],
+    requiredArgs: 2,
     args: '<id/mention> <ign>',
     async execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]

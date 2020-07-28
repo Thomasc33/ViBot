@@ -17,7 +17,7 @@ const points = ['earlylocation', 'perrun', 'nitromultiplier', 'keypop', 'vialpop
 module.exports = {
     name: 'setup',
     description: 'set names of stuff',
-    role: '(Admin)',
+    role: 'moderator',
     async execute(message, args, bot, db) {
         if (args.length == 0) {
             let setupEmbed = new Discord.MessageEmbed()

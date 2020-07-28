@@ -6,7 +6,8 @@ module.exports = {
     alias: ['removewarn'],
     description: 'Removes warn from user',
     args: '<user> <warn number>',
-    role: 'Security',
+    requiredArgs: 1,
+    role: 'security',
     async execute(message, args, bot, db) {
         if (args.length < 2) message.channel.send('Command Entered incorrectly. Please try again')
         let member = message.mentions.members.first()

@@ -8,7 +8,7 @@ var watchedMessages = []
 module.exports = {
     name: 'vibotchannels',
     description: 'update',
-    role: 'Developer',
+    role: 'developer',
     async execute(message, args, bot, db) {
         if (args[0].toLowerCase() == 'update') this.update(message.guild, bot)
     },

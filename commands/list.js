@@ -5,9 +5,9 @@ module.exports = {
     name: 'list',
     description: 'Lists all suspected alts, or members with a specific role',
     args: '<sa/role>',
-    role: 'Security',
+    requiredArgs: 1,
+    role: 'security',
     async execute(message, args, bot) {
-        if (args.length == 0) return;
         switch (args[0]) {
             case 'sa':
                 let sa = ' '

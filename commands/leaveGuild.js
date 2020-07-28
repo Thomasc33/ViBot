@@ -2,7 +2,7 @@ const Discord = require('discord.js')
 
 module.exports = {
     name: 'leaveguild',
-    role: '(Admin)',
+    role: 'moderator',
     async execute(message, args, bot) {
         let guild = bot.guilds.cache.get(args[0])
         let fancyEmbed = new Discord.MessageEmbed()

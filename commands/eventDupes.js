@@ -3,7 +3,7 @@ const Discord = require('discord.js')
 module.exports = {
     name: 'eventdupes',
     description: 'Displays all users who have both Event Bois and Verified Raider',
-    role: 'Security',
+    role: 'security',
     async execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
         let eventbois = message.guild.roles.cache.get(settings.roles.eventraider)

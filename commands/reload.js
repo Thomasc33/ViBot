@@ -1,7 +1,7 @@
 const fs = require('fs')
 module.exports = {
     name: 'reload',
-    role: 'Moderator',
+    role: 'moderator',
     description: 'Updates a command without restarting bot',
     execute(message, args, bot) {
         if (!args.length) return message.channel.send(`Please provide a command to reload`);

@@ -4,7 +4,7 @@ const ErrorLogger = require('../logError')
 module.exports = {
     name: 'suspends',
     description: 'Shows all suspends that the bot is currently tracking',
-    role: 'Security',
+    role: 'security',
     args: '(user)',
     alias: ['suspensions'],
     async execute(message, args, bot, db) {

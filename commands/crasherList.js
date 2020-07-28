@@ -6,8 +6,9 @@ const ErrorLogger = require('../logError')
 module.exports = {
     name: 'crasherlist',
     description: 'Crasher List Related Commands',
-    role: 'Officer',
+    role: 'officer',
     args: '<send/update/add/remove/preview>',
+    requiredArgs: 1,
     execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
         if (args.length < 1) return message.channel.send('Please provide an argument')

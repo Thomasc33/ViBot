@@ -1,7 +1,7 @@
 module.exports = {
     name: 'restart',
     description: 'Restarts the bot',
-    role: 'Moderator',
+    role: 'moderator',
     execute(message, args, bot) {
         process.exit()
     }

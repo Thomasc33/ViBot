@@ -6,7 +6,8 @@ module.exports = {
     description: 'Changes the name of a user and logs it automatically',
     alias: ['cn'],
     args: '<User id/mention> <new name> (proof)',
-    role: 'Security',
+    requiredArgs: 2,
+    role: 'security',
     execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
         if (args.length == 0) return;

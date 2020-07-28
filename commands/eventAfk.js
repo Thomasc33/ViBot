@@ -12,7 +12,8 @@ module.exports = {
     name: 'eventafk',
     description: 'Starts a new style afk check for event dungeons',
     args: '<dungeon> [Location]',
-    role: 'Event Organizer',
+    requiredArgs: 1,
+    role: 'eventrl',
     alias: ['eafk'],
     async execute(message, args, bott) {
         let settings = bott.settings[message.guild.id]
@@ -328,7 +329,7 @@ function createChannel(message, bot) {
             .setDescription('Whenever the run is over. React with the ❌ to delete the channel. View the timestamp for more information')
             .setFooter(channel.id)
             .setTimestamp()
-        let m = await vibotChannels.send(`${message.member}`,embed).catch(er => ErrorLogger.log(er))
+        let m = await vibotChannels.send(`${message.member}`, embed).catch(er => ErrorLogger.log(er))
         m.react('❌').catch(er => { })
         setTimeout(() => { Channels.update(message.guild, bot) }, 10000)
         resolve(channel)

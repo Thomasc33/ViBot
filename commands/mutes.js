@@ -3,7 +3,7 @@ const Discord = require('discord.js')
 module.exports = {
     name: 'mutes',
     description: 'prints all muted members of the server',
-    role: 'Security',
+    role: 'security',
     async execute(message, args, bot) {
         let embed = new Discord.MessageEmbed()
             .setTitle('Muted members in your server')

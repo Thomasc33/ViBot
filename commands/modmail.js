@@ -4,7 +4,7 @@ var watchedModMails = []
 module.exports = {
     name: 'modmail',
     description: 'Mod Mail Handler',
-    role: 'Moderator',
+    role: 'moderator',
     args: '<update>',
     async execute(message, args, bot, db) {
         switch (args[0].toLowerCase()) {

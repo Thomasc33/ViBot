@@ -14,8 +14,9 @@ module.exports = {
     name: 'oldafk',
     alias: ['ofk', 'oafk'],
     description: 'Old Style Afk Check',
+    requiredArgs: 2,
     args: '<channel> <c/v/fsv> <location>',
-    role: 'Almost Raid Leader',
+    role: 'almostrl',
     execute(message, args, bott, db) {
         let settings = bott.settings[message.guild.id]
         bot = bott
@@ -774,7 +775,7 @@ To end the AFK check as a leader, react to ❌`)
             let query = `UPDATE users SET `
             if (this.run == 1) query = query.concat('cultRuns = cultRuns + 1 WHERE ')
             else query = query.concat('voidRuns = voidRuns + 1 WHERE ')
-            this.channel.members.each(m => query = query.concat(`id = '${m.id}' OR `))
+            this.voiceChannel.members.each(m => query = query.concat(`id = '${m.id}' OR `))
             query = query.substring(0, query.length - 4)
             this.db.query(query, err => {
                 if (err) ErrorLogger.log(err, bot)

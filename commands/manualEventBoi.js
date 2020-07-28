@@ -4,8 +4,9 @@ module.exports = {
     name: 'manualeventboi',
     description: 'Gives user event boi role',
     args: '<id/mention> <ign> (proof)',
+    requiredArgs: 2,
     alias: ['meb'],
-    role: 'Security',
+    role: 'security',
     async execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
         const suspendedRole = message.guild.roles.cache.get(settings.roles.permasuspended)

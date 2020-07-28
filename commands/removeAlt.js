@@ -4,7 +4,8 @@ module.exports = {
     name: 'removealt',
     description: 'Removes an alt from a user',
     args: '<user> (reason)',
-    role: 'Security',
+    requiredArgs: 1,
+    role: 'security',
     alias: ['ra'],
     async execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]

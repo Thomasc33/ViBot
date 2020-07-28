@@ -4,7 +4,7 @@ const Discord = require('discord.js')
 module.exports = {
     name: 'events',
     description: 'Shows all current enabled event run types',
-    role: 'Event Organizer',
+    role: 'eventrl',
     execute(message, args, bot) {
         let embed = new Discord.MessageEmbed()
             .setColor('#ff0000')

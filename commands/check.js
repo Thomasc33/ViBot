@@ -2,7 +2,7 @@ const Discord = require('discord.js')
 
 module.exports = {
     name: 'check',
-    role: 'Security',
+    role: 'security',
     description: 'Performs several checks on stuff in the server',
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]

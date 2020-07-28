@@ -1,8 +1,9 @@
 module.exports = {
     name: 'commend',
-    role: 'Raid Leader',
+    role: 'rl',
     args: '<user> <rusher>',
     notes: 'rusher',
+    requiredArgs: 2,
     description: 'Gives user a role',
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]

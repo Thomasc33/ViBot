@@ -6,7 +6,8 @@ module.exports = {
     description: 'Unlocks voice channels',
     alias: ['ul'],
     args: '<channel>',
-    role: 'Event Organizer',
+    requiredArgs: 1,
+    role: 'eventrl',
     async execute(message, args, bott) {
         let settings = bott.settings[message.guild.id]
         if (args[0] > botSettings.voiceChannelCount) return;

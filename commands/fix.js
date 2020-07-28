@@ -3,8 +3,9 @@ const Discord = require('discord.js')
 module.exports = {
     name: 'fix',
     args: '<unlogged/dupes>',
+    requiredArgs:1,
     description: 'Fixes logging issues with bot',
-    role: 'Moderator',
+    role: 'moderator',
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         if (args[0].toLowerCase() == 'unlogged') {

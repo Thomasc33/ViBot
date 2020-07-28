@@ -2,7 +2,7 @@ const Discord = require('discord.js')
 module.exports = {
     name: 'eventcurrentweek',
     description: 'Updates the current week stats or force starts the next week',
-    role: 'Developer',
+    role: 'developer',
     async execute(message, args, bot, db) {
         if (args.length == 0) {
             this.sendEmbed(message.channel, db, bot)

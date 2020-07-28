@@ -4,7 +4,8 @@ module.exports = {
     name: 'getfeedback',
     description: 'Fetches all mentions of the user in customer feedback',
     args: '<user mention/id>',
-    role: 'Raid Leader',
+    requiredArgs: 1,
+    role: 'rl',
     alias: ['gfb'],
     async execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
@@ -28,6 +29,18 @@ module.exports = {
             message.channel.send("Error occured and details have been sent to Vi")
             ErrorLogger.log(er, bot)
         }
+    },
+    async getFeedback(member, guild, bot) {
+        let settings = bot.settings[member.guild.id]
+        let feedbackChannel = guild.channels.cache.get(settings.channels.rlfeedback)
+        let messages = await getMessages(feedbackChannel, 500)
+        let mentions = []
+        messages.forEach(m => {
+            if (m.mentions.users.get(member.id)) {
+                mentions.push(m.url)
+            }
+        })
+        return mentions
     }
 }
 async function getMessages(channel, limit) {

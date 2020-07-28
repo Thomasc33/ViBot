@@ -14,7 +14,7 @@ module.exports = {
     alias: ['pm'],
     args: '<image>',
     notes: 'Image can either be a link, or an embeded image',
-    role: 'Almost Raid Leader',
+    role: 'almostrl',
     async execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
         var channel = message.member.voice.channel
@@ -112,7 +112,13 @@ module.exports = {
         await parseStatusMessage.edit(parseStatusEmbed)
 
         if (bot.afkChecks[channel.id]) {
-            message.channel.send(`/tell ${message.guild.members.cache.get(bot.afkChecks[channel.id]).nickname} Can you kick the following people? **Don't copy paste names from kicklist. It may DC you**`)
+            let id = bot.afkChecks[channel.id].key
+            if (id) {
+                let member = message.guild.members.cache.get(id)
+                if (member) {
+                    message.channel.send(`/tell ${member.nickname} Can you kick the following people? **Don't copy paste names from kicklist. It may DC you**`)
+                }
+            }
         }
         //post in crasher-list
         let key = null

@@ -8,11 +8,9 @@ var embedMessage, bot
 
 module.exports = {
     name: 'vetverification',
-    role: 'Moderator',
+    role: 'moderator',
     description: 'createmessage',
     execute(message, args, bot, db) {
-        message.channel.send('Temporarily Disabled')
-        return;
         switch (args[0]) {
             case 'createmessage':
                 this.createMessage(message, bot, db)

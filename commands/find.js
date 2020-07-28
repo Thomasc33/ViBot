@@ -5,7 +5,8 @@ module.exports = {
     name: "find",
     description: "Finds users from a nickname",
     args: '[Users]',
-    role: 'Almost Raid Leader',
+    requiredArgs: 1,
+    role: 'almostrl',
     execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
         if (args.length == 0) return;

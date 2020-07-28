@@ -1,7 +1,7 @@
 module.exports = {
     name: 'memes',
     alias: ['phd', 'xbox', 'cwinner', 'eury', 'nefiah', 'abysm', 'drunkdevil', 'shiba'],
-    role: 'Almost Raid Leader',
+    role: 'almostrl',
     async execute(message, args, bot) {
         switch (message.content.split(/ +/)[0].replace(/[^a-z]/gi, '').toLowerCase()) {
             case 'phd':

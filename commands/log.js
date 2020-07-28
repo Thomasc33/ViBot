@@ -6,7 +6,8 @@ module.exports = {
     name: 'log',
     description: 'Logs runs',
     args: '<c/v/e> [mention for assists] (#)',
-    role: 'Event Organizer',
+    requiredArgs: 1,
+    role: 'eventrl',
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         var embed = new Discord.MessageEmbed()

@@ -4,7 +4,7 @@ const botSettings = require('../settings.json')
 module.exports = {
     name: 'points',
     description: 'Displays how many points a user has',
-    role: 'Verified Raider',
+    role: 'raider',
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         if (message.member.roles.highest.position < message.guild.roles.cache.get(settings.roles.eventrl).position) {

@@ -6,7 +6,8 @@ module.exports = {
     name: 'vetban',
     description: 'Gives user vet banned role',
     args: '[in-game names] <time> <time type d/m/s/w/y> <reason>',
-    role: 'Veteran Raid Leader',
+    requiredArgs: 3,
+    role: 'vetrl',
     async execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
         const vetBanRole = message.guild.roles.cache.get(settings.roles.vetban)

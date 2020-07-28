@@ -6,7 +6,8 @@ module.exports = {
     description: 'Locks voice channel',
     alias: ['rc', 'resetchannel'],
     args: '<channel>',
-    role: 'Event Organizer',
+    requiredArgs: 1,
+    role: 'eventrl',
     async execute(message, args, bott) {
         if (args.length == 0) return;
         let settings = bott.settings[message.guild.id]

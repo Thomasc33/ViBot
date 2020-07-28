@@ -4,7 +4,8 @@ const ErrorLogger = require('../logError')
 module.exports = {
     name: 'warns',
     description: 'Displays all warns for a user',
-    role: 'Almost Raid Leader',
+    role: 'almostrl',
+    requiredArgs: 1,
     args: '<user>',
     async execute(message, args, bot, db) {
         let member = message.mentions.members.first()

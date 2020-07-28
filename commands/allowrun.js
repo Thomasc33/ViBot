@@ -5,7 +5,7 @@ const EventAFK = require('./eventAfk')
 module.exports = {
     name: 'allowrun',
     description: 'Manually allows runs in case bot gets stuck',
-    role: 'Event Organizer',
+    role: 'eventrl',
     execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
         if (message.channel.parent.name.toLowerCase() === 'raiding') {

@@ -35,11 +35,10 @@ bot.on('message', message => {
     if (commandName.replace(/[^a-z]/gi, '') == '') return
     const command = bot.commands.get(commandName) || bot.commands.find(cmd => cmd.alias && cmd.alias.includes(commandName))
     if (!command) return message.channel.send('Command doesnt exist, check \`commands\` and try again');
+    if (message.member.roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role]).position && message.author.id !== '277636691227836419') return;
+    if (command.requiredArgs && command.requiredArgs > args.length) return message.channel.send(`Expected ${command.requiredArgs} arguements, only got ${args.length}`)
     try {
-        if (message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.find(r => r.name === command.role).position && message.author.id !== '277636691227836419') return;
-    } catch (er) { ErrorLogger.log(er, bot) }
-    try {
-        command.execute(message, args, bot, db);
+        command.execute(message, args, bot, db)
     } catch (er) {
         ErrorLogger.log(er, bot)
         message.channel.send("Issue executing the command, check \`;commands\` and try again");
@@ -169,7 +168,7 @@ bot.on("ready", async () => {
                     let roles = []
                     const guild = bot.guilds.cache.get(guildId);
                     const member = guild.members.cache.get(rows[i].id);
-                    if (!member) db.query(`UPDATE suspensions SET suspended = false WHERE id = '${rows[i].id}'`)
+                    if (!member) return db.query(`UPDATE suspensions SET suspended = false WHERE id = '${rows[i].id}'`)
                     rolesString.split(' ').forEach(r => { if (r !== '') roles.push(r) })
                     try {
                         await member.edit({ roles: roles }).catch(er => ErrorLogger.log(er, bot))

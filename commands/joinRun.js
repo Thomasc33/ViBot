@@ -4,7 +4,7 @@ module.exports = {
     name: 'joinrun',
     alias: ['join'],
     description: 'Join back into the VC of a run incase you get disconnected',
-    role: 'Verified Raider',
+    role: 'raider',
     dms: true,
     async execute(message, args, bot, db) {
         this.findChannel(message, bot, message.guild)

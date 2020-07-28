@@ -3,9 +3,10 @@ const logTypes = ['keypops', 'eventpops', 'cultsLead', 'voidsLead', 'assists', '
 
 module.exports = {
     name: 'changelog',
-    role: 'Head Raid Leader',
+    role: 'headrl',
     description: 'Changes logs',
     args: '<user> <add/remove/set> <log type> <#>',
+    requiredArgs: 4,
     notes: logTypes.toString(),
     async execute(message, args, bot, db) {
         if (args.length < 4) return

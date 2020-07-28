@@ -6,7 +6,8 @@ module.exports = {
     name: 'unmute',
     description: 'Removes muted role from user',
     args: '<ign/mention/id>',
-    role: 'Security',
+    requiredArgs: 1,
+    role: 'security',
     async execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
         var member = message.mentions.members.first()

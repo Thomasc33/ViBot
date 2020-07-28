@@ -3,7 +3,8 @@ const Discord = require('discord.js')
 module.exports = {
     name: 'rectify',
     description: 'Removes the ? infront of peoples names',
-    role: 'Security',
+    role: 'security',
+    requiredArgs: 1,
     args: '<id/mention>',
     async execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
