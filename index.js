@@ -65,7 +65,7 @@ async function dmHandler(message) {
             let guild = await getGuild(message).catch(er => cancelled = true)
             logCommand(guild)
             if (!cancelled) {
-                if (guild.members.cache.get(message.author.id).roles.highest.position < guild.roles.cache.find(r => r.name === command.role).position && message.author.id !== '277636691227836419') {
+                if (guild.members.cache.get(message.author.id).roles.highest.position < guild.roles.cache.get(bot.settings[guild.id].roles[command.role]).position && message.author.id !== '277636691227836419') {
                     message.channel.send('You do not have permissions to use this command')
                 } else command.dmExecution(message, args, bot, db, guild)
             }

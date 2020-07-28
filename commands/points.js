@@ -66,15 +66,15 @@ module.exports = {
             })
         })
     },
-    buyEarlyLocaton(user, db) {
+    buyEarlyLocaton(user, db, settings) {
         return new Promise((resolve, reject) => {
             db.query(`SELECT points FROM users WHERE id = '${user.id}'`, (err, rows) => {
                 if (err) return reject(err)
                 if (rows.length == 0) return reject('User not in DB')
-                if (rows[0].points < botSettings.points.earlyLocationCost) return reject(`Only has ${rows[0].points}/${botSettings.points.earlyLocationCost} points`)
+                if (rows[0].points < settings.points.earlylocation) return reject(`Only has ${rows[0].points}/${settings.points.earlylocation} points`)
                 db.query(`UPDATE users SET points = points - 20 WHERE id = '${user.id}'`, err => {
                     if (err) return reject(err)
-                    resolve(`${rows[0].points - botSettings.points.earlyLocationCost}`)
+                    resolve(`${rows[0].points - settings.points.earlylocation}`)
                 })
             })
         })

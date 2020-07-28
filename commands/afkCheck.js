@@ -695,8 +695,8 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
         this.db.query(`SELECT points FROM users WHERE id = '${u.id}'`, async (err, rows) => {
             if (err) return
             if (rows.length == 0) return this.db.query(`INSERT INTO users (id) VALUES('${u.id}')`)
-            if (rows[0].points < botSettings.points.earlyLocationCost) return
-            pointEmbed.setDescription(`You currently have \`${rows[0].points}\` points\nEarly location costs \`${botSettings.points.earlyLocationCost}\``)
+            if (rows[0].points < this.settings.points.earlylocation) return
+            pointEmbed.setDescription(`You currently have \`${rows[0].points}\` points\nEarly location costs \`${this.settings.points.earlylocation}\``)
             let dms = await u.createDM().catch()
             let m = await dms.send(pointEmbed).catch(er => this.dylanBotCommands.send(`<@!${u.id}> tried to react with 🎟️ but their DMs are private`))
             let reactionCollector = new Discord.ReactionCollector(m, (r, u) => !u.bot && (r.emoji.name == '❌' || r.emoji.name == '✅'))
@@ -704,9 +704,9 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
                 if (r.emoji.name == '❌') m.delete()
                 else if (r.emoji.name == '✅') {
                     let er, success = true
-                    let leftOver = await points.buyEarlyLocaton(u, this.db).catch(r => { er = r; success = false })
+                    let leftOver = await points.buyEarlyLocaton(u, this.db, this.settings).catch(r => { er = r; success = false })
                     if (success) {
-                        await dms.send(`The location for this run has been set to \`${this.location}\`\nYou now have \`${leftOver}\` points left over`)(er => this.dylanBotCommands.send(`<@!${u.id}> tried to react with 🎟️ but their DMs are private`))
+                        await dms.send(`The location for this run has been set to \`${this.location}\`\nYou now have \`${leftOver}\` points left over`).catch(er => this.dylanBotCommands.send(`<@!${u.id}> tried to react with 🎟️ but their DMs are private`))
                         if (this.leaderEmbed.fields[index].value == 'None yet!') this.leaderEmbed.fields[index].value = `<@!${u.id}>`
                         else this.leaderEmbed.fields[index].value += `, <@!${u.id}>`
                         this.earlyLocation.push(u)

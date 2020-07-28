@@ -2,7 +2,6 @@
     "701483950559985705": {
         "name": "Dev Halls",
         "roles": {
-            "moderator": "it got rate limitied again",
             "officer": "701483950589214806",
             "headrl": "701483950589214807",
             "vetrl": "701483950589214802",
@@ -25,7 +24,8 @@
             "topkey": "701483950564049010",
             "bottomkey": "701483950564049009",
             "developer": "701483950589214808",
-            "almostrl": "701483950564049016"
+            "almostrl": "701483950564049016",
+            "moderator": "701483950597734400"
         },
         "channels": {
             "modmail": "701483950798929995",
@@ -79,7 +79,7 @@
             "eventcurrentweek": false,
             "verification": false,
             "vetverification": false,
-            "points": false
+            "points": true
         },
         "numerical": {
             "afktime": 360,
