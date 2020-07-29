@@ -32,7 +32,7 @@ module.exports = {
                     let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 10000 });
                     collector.on('collect', message => {
                         if (message.content.charAt(0) == 'y') {
-                            db.query(`UPDATE suspensions SET suspended = 0 WHERE id = '${member.id}'`)
+                            db.query(`UPDATE suspensions SET suspended = 0, perma = true WHERE id = '${member.id}'`)
                             message.channel.send('Overwriting suspension...');
                             suspend(true)
                             collector.stop();
