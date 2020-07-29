@@ -33,7 +33,7 @@ module.exports = {
                     try {
                         if (m.content.toLowerCase().charAt(0) == 'y') {
                             const suspendedRole = message.guild.roles.cache.get(settings.roles.tempsuspended);
-                            const raiderRole = message.guild.roles.cache.get(settings.roles.permasuspended);
+                            const raiderRole = message.guild.roles.cache.get(settings.roles.raider);
                             member.roles.remove(suspendedRole)
                                 .then(member.roles.add(raiderRole));
                             message.channel.send("User unsuspended successfully");

@@ -13,24 +13,13 @@ module.exports = {
         const sbvRole = message.guild.roles.cache.get(settings.roles.tempsuspended)
         const eventRole = message.guild.roles.cache.get(settings.roles.eventraider)
         var member = message.mentions.members.first()
-        if (member == null) {
-            member = message.guild.members.cache.get(args[0]);
-        }
-        if (member == null) {
-            message.channel.send("User not found")
-            return;
-        }
-        if (member.roles.cache.has(suspendedRole.id) || member.roles.cache.has(sbvRole.id)) {
-            message.channel.send("User is suspended")
-            return;
-        }
-        if (!member.roles.cache.has(eventRole.id)) {
-            message.channel.send('User does not have event boi')
-            return;
-        }
+        if (member == null) member = message.guild.members.cache.get(args[0]);
+        if (member == null) return message.channel.send("User not found")
+        if (member.roles.cache.has(suspendedRole.id) || member.roles.cache.has(sbvRole.id)) return message.channel.send("User is suspended")
+        if (!member.roles.cache.has(eventRole.id)) return message.channel.send('User does not have event boi')
         await member.roles.remove(eventRole.id)
         let image;
-        if (message.attachments.first() != null) image = message.attachments.first().proxyURL
+        if (message.attachments.first()) image = message.attachments.first().proxyURL
         if (image == null) image = args[1]
         let embed = new Discord.MessageEmbed()
             .setTitle('Event Boi Removed')
@@ -40,11 +29,11 @@ module.exports = {
             .setTimestamp(Date.now());
         try {
             if (validURL(image)) embed.setImage(image)
-            message.guild.channels.cache.find(c => c.name === settings.modlog).send(embed);
+            message.guild.channels.cache.get(settings.channels.modlogs).send(embed);
             message.channel.send(`Event Boi has been removed from ${member}`)
         } catch (er) {
             message.channel.send('There was an issue attaching the image. However, Event Boi was still removed')
-            message.guild.channels.cache.find(c => c.name === settings.modlog).send(embed);
+            message.guild.channels.cache.get(settings.channels.modlogs).send(embed);
         }
         function validURL(str) {
             var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol

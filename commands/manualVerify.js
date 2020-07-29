@@ -10,20 +10,14 @@ module.exports = {
         let settings = bot.settings[message.guild.id]
         const suspendedRole = message.guild.roles.cache.get(settings.roles.permasuspended)
         const sbvRole = message.guild.roles.cache.get(settings.roles.tempsuspended)
+        const eventBoi = message.guild.roles.cache.get(settings.roles.eventraider)
         const raiderRole = message.guild.roles.cache.get(settings.roles.raider)
         var member = message.mentions.members.first()
-        if (member == null) {
-            member = message.guild.members.cache.get(args[0]);
-        }
-        if (member == null) {
-            message.channel.send("User not found")
-            return;
-        }
-        if (member.roles.cache.has(suspendedRole.id) || member.roles.cache.has(sbvRole.id)) {
-            message.channel.send("User is suspended")
-            return;
-        }
+        if (member == null) member = message.guild.members.cache.get(args[0]);
+        if (member == null) return message.channel.send("User not found")
+        if (member.roles.cache.has(suspendedRole.id) || member.roles.cache.has(sbvRole.id)) return message.channel.send("User is suspended")
         await member.roles.add(raiderRole)
+        if (member.roles.cache.has(settings.roles.eventraider)) await member.roles.remove(settings.roles.eventraider)
         let tag = member.user.tag.substring(0, member.user.tag.length - 5)
         let nick = ''
         if (tag == args[1]) {
