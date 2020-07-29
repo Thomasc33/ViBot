@@ -264,9 +264,11 @@ process.on('uncaughtException', err => {
     console.log(err);
 })
 process.on('unhandledRejection', err => {
-    if (err.message == 'Target user is not connected to voice.') return;
-    if (err.message == 'Cannot send messages to this user') return
-    if (err.message == 'Unknown Message') return
+    if (err) {
+        if (err.message == 'Target user is not connected to voice.') return;
+        if (err.message == 'Cannot send messages to this user') return
+        if (err.message == 'Unknown Message') return
+    }
     ErrorLogger.log(err, bot);
     console.log(err);
 })

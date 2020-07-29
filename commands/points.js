@@ -22,7 +22,7 @@ module.exports = {
                     if (args[2] && args[2].replace(/[^0-9]/g, '') == args[2]) {
                         count = args[2]
                     }
-                    db.query(`UPDATE users SET points = points + ${count}`)
+                    db.query(`UPDATE users SET points = points + ${count} WHERE id = '${member.id}'`)
                     message.channel.send(`${member.nickname} was given ${count} points`)
                     break;
                 case 'remove':
@@ -34,18 +34,19 @@ module.exports = {
                     if (args[2] && args[2].replace(/[^0-9]/g, '') == args[2]) {
                         countt = args[2]
                     }
-                    db.query(`UPDATE users SET points = points - ${countt}`)
+                    db.query(`UPDATE users SET points = points - ${countt} WHERE id = '${memberr.id}'`)
                     message.channel.send(`${countt} points were taken away from ${memberr.nickname}`)
                     break;
                 default:
                     let member1 = message.mentions.members.first()
                     if (!member1) member1 = message.guild.members.cache.get(args[0])
-                    if (!member1) member1 = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
+                    if (!member1) member1 = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[1].toLowerCase()));
+                    if (!member) return message.channel.send(`${args[1]} is not a valid user`)
                     await message.member.send(await this.getPointEmbed(member1, db))
                     break;
             }
         } else {
-            if (args.length == 0) await message.member.send(await this.getPointEmbed(message.member))
+            if (args.length == 0) await message.member.send(await this.getPointEmbed(message.member), db)
             else {
                 let member = message.mentions.members.first()
                 if (!member) member = message.guild.members.cache.get(args[0])

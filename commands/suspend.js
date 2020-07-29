@@ -88,7 +88,7 @@ module.exports = {
                                     message.channel.send('Overwriting suspension...');
                                     vetBanProcess(true)
                                     collector.stop();
-                                } else if (message.content.carAt(0) == 'n') {
+                                } else if (message.content.charAt(0) == 'n') {
                                     collector.stop()
                                     return;
                                 } else {

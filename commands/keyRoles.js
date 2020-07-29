@@ -53,6 +53,7 @@ module.exports = {
         let settings = bot.settings[member.guild.id]
         db.query(`SELECT keypops FROM users WHERE id = '${member.id}'`, (err, rows) => {
             if (err) ErrorLogger.log(err, bot)
+            if (!rows[0].keypops) return
             if (rows[0].keypops >= 15) if (!member.roles.cache.has(settings.roles.bottomkey)) member.roles.add(settings.roles.bottomkey)
             if (rows[0].keypops >= 50) if (!member.roles.cache.has(settings.roles.topkey)) member.roles.add(settings.roles.topkey)
         })
