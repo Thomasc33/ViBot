@@ -37,6 +37,7 @@ module.exports = {
     async watchMessage(message, bot, settings) {
         let m = message
         let embed = m.embeds[0]
+        if (watchedMessages.includes(embed.footer)) return
         watchedMessages.push(embed.footer)
         let channel = message.guild.channels.cache.get(embed.footer.text)
         if (channel == null) return m.delete()

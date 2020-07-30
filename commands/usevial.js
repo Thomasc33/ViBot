@@ -19,6 +19,8 @@ module.exports = {
                 if (member.roles.cache.has(settings.roles.nitro)) var points = settings.points.vialpop * settings.points.nitromultiplier
                 else var points = settings.points.vialpop
                 db.query(`UPDATE users SET vialUsed = ${parseInt(rows[0].vialUsed) + 1}, points = points + ${points} WHERE id = '${member.id}'`)
+            } else {
+                db.query(`UPDATE users SET vialUsed = ${parseInt(rows[0].vialUsed) + 1} WHERE id = '${member.id}'`)
             }
             message.channel.send(`Vial logged. They now have ${parseInt(rows[0].vialUsed) + 1} vials popped`)
             message.guild.channels.cache.get(settings.channels.viallog).send(`Vial added to ${member} (${member.nickname}), logged by ${message.member} (${parseInt(rows[0].vialUsed) + 1} total pops)`)

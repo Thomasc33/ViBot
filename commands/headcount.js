@@ -20,7 +20,7 @@ module.exports = {
         var textChannel;
         if (message.channel.parent.name.toLowerCase() === 'veteran raiding') textChannel = message.guild.channels.cache.get(settings.channels.vetstatus)
         else if (message.channel.parent.name.toLowerCase() === 'raiding') textChannel = message.guild.channels.cache.get(settings.channels.raidstatus)
-        else if (message.channel.parent.name.toLowerCase() === 'events') textChannel = message.guild.channels.cache.find(settings.channels.eventstatus)
+        else if (message.channel.parent.name.toLowerCase() === 'events') textChannel = message.guild.channels.cache.get(settings.channels.eventstatus)
 
         if (message.channel.parent.name.toLowerCase() !== 'events') {
             switch (args[0].charAt(0).toLowerCase()) {

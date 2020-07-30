@@ -1,6 +1,5 @@
 const Discord = require('discord.js');
 const ErrorLogger = require('../logError')
-const RealmeyeScrape = require('../realmEyeScrape')
 const vision = require('@google-cloud/vision');
 const realmEyeScrape = require('../realmEyeScrape');
 const charStats = require('../charStats.json')
@@ -26,11 +25,8 @@ module.exports = {
             .addField('Status', 'Gathering image')
         let parseStatusMessage = await message.channel.send(parseStatusEmbed)
         var image;
-        if (message.attachments.size == 0) {
-            image = args[0];
-        } else {
-            image = await message.attachments.first().proxyURL;
-        }
+        if (message.attachments.size == 0) image = args[0];
+        else image = await message.attachments.first().proxyURL;
         if (image == null) {
             parseStatusEmbed.setColor('#ff0000')
                 .fields[1].value = 'Error Getting Image'
@@ -61,6 +57,7 @@ module.exports = {
         var crashers = []
         var otherChannel = []
         var findA = []
+        let allowedCrashers = []
         var kickList = '/kick'
         voiceUsers = channel.members.array();
         for (let i in raiders) {
@@ -72,11 +69,11 @@ module.exports = {
                 kickList = kickList.concat(` ${player}`)
             } else if (!voiceUsers.includes(member)) {
                 if (member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.almostrl).position) continue;
-                if (member.voice.channel) {
-                    otherChannel.push(`${member}: ${member.voice.channel}`);
-                } else {
-                    crashers.unshift(`<@!${member.id}>`);
+                if (bot.afkChecks[channel.id]) {
+                    if (bot.afkChecks[channel.id].raiders.includes(member.id)) allowedCrashers.push(member)
                 }
+                if (member.voice.channel) otherChannel.push(`${member}: ${member.voice.channel}`);
+                else crashers.unshift(`<@!${member.id}>`);
                 kickList = kickList.concat(` ${player}`)
                 findA.push(player)
             }
@@ -107,6 +104,7 @@ module.exports = {
                 { name: 'Find Command', value: `\`\`\`${find}\`\`\`` },
                 { name: 'Kick List', value: `\`\`\`${kickList}\`\`\`` }
             )
+        if (bot.afkChecks[channel.id]) embed.addField(`Were in VC`, `The following can do \`;join\`:\n${allowedCrashers.map(u => `${u} `)}`)
         await message.channel.send(embed);
         parseStatusEmbed.fields[1].value = `Crasher Parse Completed. See Below. Beginning Character Parse`
         await parseStatusMessage.edit(parseStatusEmbed)

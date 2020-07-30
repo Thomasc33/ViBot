@@ -15,11 +15,11 @@ module.exports = {
     async findChannel(message, bot, guild) {
         let runsIn = []
         for (let i in bot.afkChecks) {
-            if (bot.afkChecks[i].raiders.includes(message.author.id)) {
+            if (bot.afkChecks[i].raiders.includes(message.author.id) || bot.afkChecks[i].earlyLocation.includes(message.author.id)) {
                 runsIn.push(i)
             }
         }
-        if (runsIn.length == 0) { message.channel.send('I could not find any runs that you were a part of.') }
+        if (runsIn.length == 0) { message.channel.send('I could not find any runs that you were a part of. If you were not in the voice channel when the afk check ended, you should leave the run before you get suspended.') }
         else if (runsIn.length == 1) { this.moveIn(guild.members.cache.get(message.author.id), runsIn[0]).catch(er => message.channel.send('Join lounge, then try this command again')) }
         else {
             let runEmbed = new Discord.MessageEmbed()
@@ -28,6 +28,7 @@ module.exports = {
                 .setFooter('Please join lounge before selecting an option')
                 .setDescription('None!')
             for (let i in runsIn) {
+                if (!guild.channels.cache.get(runsIn[i])) continue
                 fitStringIntoEmbed(runEmbed, `**${parseInt(i) + 1}:** ${guild.channels.cache.get(runsIn[i]).name}\n*${Math.round((Date.now() - bot.afkChecks[runsIn[i]].time) / 60000)} minutes ago*\n`, message.channel)
             }
             let joinEmbedMessage = await message.channel.send(runEmbed)
