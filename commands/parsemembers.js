@@ -80,6 +80,7 @@ module.exports = {
         }
         for (let i in voiceUsers) {
             if (voiceUsers[i].roles.highest.position >= message.guild.roles.cache.get(settings.roles.almostrl).position) continue;
+            if (!voiceUsers[i].nickname) continue
             let nick = voiceUsers[i].nickname.toLowerCase().replace(/[^a-z|]/gi, '')
             if (!raiders.includes(nick)) {
                 alts.push(`<@!${voiceUsers[i].id}>`);

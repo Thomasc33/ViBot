@@ -830,22 +830,24 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
         let biggerEmbed = false
         let biggestEmbed = false
         raiders.forEach(m => {
-            if (bigEmbed) historyEmbed.fields[5].value += `, <@!${m}>`
-            else if (biggerEmbed) historyEmbed.fields[6].value += `, <@!${m}>`
-            else if (biggestEmbed) historyEmbed.fields[7].value += `, <@!${m}>`
-            else {
-                if (historyEmbed.fields[4].value == `None!`) historyEmbed.fields[4].value = `<@!${m}>`
-                else if (historyEmbed.fields[4].value.length >= 1000) {
-                    if (bigEmbed) {
-                        biggerEmbed = true;
-                        historyEmbed.addField('-', `, <@!${m}>`)
-                    } else if (biggerEmbed) {
-                        biggestEmbed = true;
-                        historyEmbed.addField('-', `, <@!${m}>`)
-                    } else {
-                        bigEmbed = true;
-                        historyEmbed.addField('-', `, <@!${m}>`)
-                    }
+            if (bigEmbed) {
+                if (historyEmbed.fields[5].value.length >= 1000) {
+                    biggerEmbed = true;
+                    historyEmbed.addField('-', `, <@!${m}>`)
+                }
+                else historyEmbed.fields[5].value += `, <@!${m}>`
+            } else if (biggerEmbed) {
+                if (historyEmbed.fields[6].value.length >= 1000) {
+                    biggestEmbed = true;
+                    historyEmbed.addField('-', `, <@!${m}>`)
+                }
+                else historyEmbed.fields[6].value += `, <@!${m}>`
+            } else if (biggestEmbed) {
+                historyEmbed.fields[7].value += `, <@!${m}>`
+            } else {
+                if (historyEmbed.fields[4].value.length >= 1000) {
+                    bigEmbed = true;
+                    historyEmbed.addField('-', `, <@!${m}>`)
                 }
                 else historyEmbed.fields[4].value += `, <@!${m}>`
             }

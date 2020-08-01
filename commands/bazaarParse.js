@@ -14,6 +14,7 @@ module.exports = {
         let settings = bot.settings[message.guild.id]
         let channel = message.member.voice.channel
         if (!channel) return message.channel.send('Make sure you are in a voice channel before parsing')
+        if (!bot.afkChecks[channel.id]) return message.channel.send(`Please wait for the afk check to end before bazaarparsing`)
         let EarlyLocation = bot.afkChecks[channel.id].earlyLocation
         if (!EarlyLocation) return message.channel.send('I do not have any logs of runs for the channel you are currently in. Bazaar parse is only compatable with afk checks made by me.')
         let parseStatusEmbed = new Discord.MessageEmbed()
