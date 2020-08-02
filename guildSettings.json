@@ -58,7 +58,8 @@
             "eventchannels": "721884595947307038",
             "vetchannels": "721880245321465936",
             "runlogs": "701483952233250866",
-            "dmcommands": "701483950798929996"
+            "dmcommands": "701483950798929996",
+            "veriactive": "701483951331606582"
         },
         "voice": {
             "raidingtemplate": "717947391755681902",
@@ -77,7 +78,7 @@
             "modmail": true,
             "currentweek": true,
             "eventcurrentweek": false,
-            "verification": false,
+            "verification": true,
             "vetverification": false,
             "points": true
         },

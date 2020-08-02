@@ -26,7 +26,7 @@ module.exports = {
                 if (member.roles.cache.has(rusher.id)) return message.channel.send(`${member} already has \`${rusher.name}\``)
                 let modlog = message.guild.channels.cache.get(settings.channels.modlogs)
                 await modlog.send(`\`${rusher.name}\` added to ${member} per the request of ${message.member}`)
-                members.roles.add(rusher.id)
+                member.roles.add(rusher.id)
                 db.query(`UPDATE users SET isRusher = true WHERE id = '${member.id}'`)
                 break;
             default:

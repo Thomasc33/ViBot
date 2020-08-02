@@ -4,6 +4,7 @@ const botSettings = require('../settings.json')
 module.exports = {
     name: 'points',
     description: 'Displays how many points a user has',
+    args: 'None | EO+ <user> | HRL+ <add/remove> <user>',
     role: 'raider',
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
@@ -11,7 +12,7 @@ module.exports = {
             await message.member.send(await this.getPointEmbed(message.member, db))
             message.react('✅')
         } else if (message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.headrl).position || message.member.id == '277636691227836419') {
-            if (args.length == 0) return await message.member.send(await this.getPointEmbed(message.member, db))
+            if (args.length == 0) return await message.member.send(await this.getPointEmbed(message.member, db)).then(message.react('✅'))
             switch (args[0].toLowerCase()) {
                 case 'add':
                     let member = message.mentions.members.first()
@@ -40,17 +41,18 @@ module.exports = {
                 default:
                     let member1 = message.mentions.members.first()
                     if (!member1) member1 = message.guild.members.cache.get(args[0])
-                    if (!member1) member1 = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[1].toLowerCase()));
-                    if (!member) return message.channel.send(`${args[1]} is not a valid user`)
+                    if (!member1) member1 = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
+                    if (!member1) return message.channel.send(`${args[1]} is not a valid user`)
                     await message.member.send(await this.getPointEmbed(member1, db))
                     break;
             }
         } else {
-            if (args.length == 0) await message.member.send(await this.getPointEmbed(message.member), db)
+            if (args.length == 0) await message.member.send(await this.getPointEmbed(message.member, db))
             else {
                 let member = message.mentions.members.first()
                 if (!member) member = message.guild.members.cache.get(args[0])
                 if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
+                if(!member) return message.channel.send(`${member} not found`)
                 await message.member.send(await this.getPointEmbed(member, db))
             }
             message.react('✅')

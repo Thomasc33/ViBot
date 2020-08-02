@@ -878,38 +878,38 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
             if (this.key) {
                 let points = this.settings.points.keypop
                 if (this.message.guild.members.cache.get(this.key.id).roles.cache.has(this.nitroBooster.id)) points = points * this.settings.points.nitromultiplier
-                this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${this.key.id}'`)
+                await this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${this.key.id}'`)
             }
             //vial point logging
             if (this.vials.length > 0) {
-                this.vials.forEach(u => {
+                this.vials.forEach(async u => {
                     let points = this.settings.points.vialpop
                     if (this.message.guild.members.cache.get(u.id).roles.cache.has(this.nitroBooster.id)) points = points * this.settings.points.nitromultiplier
-                    this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u.id}'`)
+                    await this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u.id}'`)
                 })
             }
             //rusher point logging
             if (this.vials.length > 0) {
-                this.vials.forEach(u => {
+                this.vials.forEach(async u => {
                     let points = this.settings.points.rushing
                     if (this.message.guild.members.cache.get(u.id).roles.cache.has(this.nitroBooster.id)) points = points * this.settings.points.nitromultiplier
-                    this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u.id}'`)
+                    await this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u.id}'`)
                 })
             }
             //mystic point logging
             if (this.vials.length > 0) {
-                this.vials.forEach(u => {
+                this.vials.forEach(async u => {
                     let points = this.settings.points.mystic
                     if (this.message.guild.members.cache.get(u.id).roles.cache.has(this.nitroBooster.id)) points = points * this.settings.points.nitromultiplier
-                    this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u.id}'`)
+                    await this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u.id}'`)
                 })
             }
             //brain point logging
             if (this.vials.length > 0) {
-                this.vials.forEach(u => {
+                this.vials.forEach(async u => {
                     let points = this.settings.points.brain
                     if (this.message.guild.members.cache.get(u.id).roles.cache.has(this.nitroBooster.id)) points = points * this.settings.points.nitromultiplier
-                    this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u.id}'`)
+                    await this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u.id}'`)
                 })
             }
         }
@@ -931,7 +931,7 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
                     let nitros = []
                     this.channel.members.each(m => {
                         if (m.roles.cache.has(this.nitroBooster.id)) nitros.push(m)
-                        else regular.push(u)
+                        else regular.push(m)
                     })
                     //regular raiders point logging
                     let regularQuery = `UPDATE users SET points = points + ${this.settings.points.perrun} WHERE `

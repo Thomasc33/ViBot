@@ -24,23 +24,20 @@ module.exports = {
     },
     async sendModMail(message, guild, bot, db) {
         let settings = bot.settings[guild.id]
-        db.query(`SELECT * FROM users WHERE id = '${message.author.id}'`, async function (err, rows) {
-            if (err) throw err;
-            if (rows == [] || rows[0].modMailBlacklisted == 0) {
-                message.react('📧')
-                message.channel.send('Message has been sent to mod-mail. If this was a mistake, don\'t worry')
-                let embed = new Discord.MessageEmbed()
-                    .setColor('#ff0000')
-                    .setAuthor(message.author.tag, message.author.avatarURL())
-                    .setDescription(`<@!${message.author.id}> send the bot: "${message.content}"`)
-                    .setFooter(`User ID: ${message.author.id} MSG ID: ${message.id}`)
-                    .setTimestamp()
-                let modMailChannel = guild.channels.cache.get(settings.channels.modmail)
-                let embedMessage = await modMailChannel.send(embed).catch(er => ErrorLogger.log(er, bot))
-                await embedMessage.react('🔑')
-                setTimeout(() => module.exports.watchMessage(embedMessage, db), 1000)
-            }
-        })
+        if (await checkBlacklist(message.author, db)) return
+        message.react('📧')
+        message.channel.send('Message has been sent to mod-mail. If this was a mistake, don\'t worry')
+        let embed = new Discord.MessageEmbed()
+            .setColor('#ff0000')
+            .setAuthor(message.author.tag, message.author.avatarURL())
+            .setDescription(`<@!${message.author.id}> send the bot: "${message.content}"`)
+            .setFooter(`User ID: ${message.author.id} MSG ID: ${message.id}`)
+            .setTimestamp()
+        let modMailChannel = guild.channels.cache.get(settings.channels.modmail)
+        let embedMessage = await modMailChannel.send(embed).catch(er => ErrorLogger.log(er, bot))
+        await embedMessage.react('🔑')
+        setTimeout(() => module.exports.watchMessage(embedMessage, db), 1000)
+
     },
     async watchMessage(message, db) {
         watchedModMails.push(message.id)
@@ -120,7 +117,7 @@ module.exports = {
                         keyCollector.stop()
                         return;
                     case '🔨':
-                        db.query(`UPDATE users SET modMailBlacklisted = true WHERE id = '${raider.id}'`)
+                        db.query(`INSERT INTO modmailblacklist (id) VALUES ('${raider.id}')`)
                         await m.reactions.removeAll()
                         await m.react('🔨')
                         keyCollector.stop()
@@ -140,6 +137,24 @@ module.exports = {
             if (!collected) await m.react('🔒')
         })
     }
+}
+
+async function checkBlacklist(member, db) {
+    return new Promise(async (res, rej) => {
+        db.query(`SELECT * FROM modmailblacklist WHERE id = '${member.id}'`, (err, rows) => {
+            if (rows.length == 0) {
+                db.query(`SELECT modMailBlacklisted FROM users WHERE id = '${member.id}'`, (err, rows) => {
+                    if (rows.length == 0) {
+                        res(false)
+                    } else if (rows[0].modMailBlacklisted == 1) {
+                        res(true)
+                    }
+                })
+            } else {
+                res(true)
+            }
+        })
+    })
 }
 
 const keyFilter = (r, u) => !u.bot && r.emoji.name === '🔑'

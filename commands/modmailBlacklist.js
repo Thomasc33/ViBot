@@ -4,24 +4,24 @@ const ErrorLogger = require('../logError')
 module.exports = {
     name: 'modmailblacklist',
     alias: ['mmbl', 'mbl', 'modmailblacklisted'],
-    args: '<add/remove> <member>',
+    args: 'None | <member> | <add/remove> <member>',
     role: 'officer',
     async execute(message, args, bot, db) {
         if (args.length == 0) {
             let blackListedEmbed = new Discord.MessageEmbed()
                 .setTitle('Blacklisted Modmail Users')
                 .setDescription('None!')
-            db.query(`SELECT id FROM users WHERE modMailBlacklisted = true`, (err, rows) => {
+            db.query(`SELECT * FROM modmailblacklist`, (err, rows) => {
                 if (err) ErrorLogger.log(err, bot)
-                for (let i in rows) fitStringIntoEmbed(blackListedEmbed, `<@!${rows[i]}>`, message.channel)
+                for (let i in rows) fitStringIntoEmbed(blackListedEmbed, `<@!${rows[i].id}>`, message.channel)
             })
         } else if (args.length == 1) {
             let member = message.mentions.members.first()
             if (member == null) member = message.guild.members.cache.get(args[0])
             if (member == null) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
             if (member == null) { message.channel.send('User not found'); return; }
-            db.query(`SELECT modMailBlacklisted FROM users WHERE id = '${member.id}'`, (err, rows) => {
-                if (rows[0].modMailBlacklisted == 0) message.channel.send(`${member} is not mod mail blacklisted right now`)
+            db.query(`SELECT * FROM modmailblacklist WHERE id = '${member.id}'`, (err, rows) => {
+                if (rows.length == 0) message.channel.send(`${member} is not mod mail blacklisted right now`)
                 else message.channel.send(`${member} is mod mail blacklisted`)
             })
         } else {
@@ -35,10 +35,17 @@ module.exports = {
             if (member == null) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[1].toLowerCase()));
             if (member == null) { message.channel.send('User not found'); return; }
 
-            db.query(`UPDATE users SET modMailBlacklisted = ${blacklisted} WHERE id = '${member.id}'`, (err, rows) => {
-                if(err) ErrorLogger.log(err, bot)
-                message.react('✅')
-            })
+            if (blacklisted) {
+                db.query(`INSERT INTO modmailblacklist (id) VALUES ('${member.id}')`, (err, rows) => {
+                    if (err) ErrorLogger.log(err, bot)
+                    message.react('✅')
+                })
+            } else {
+                db.query(`DELETE FROM modmailblacklist WHERE id = '${member.id}'`, (err, rows) => {
+                    if (err) ErrorLogger.log(err, bot)
+                    message.react('✅')
+                })
+            }
         }
     }
 }

@@ -56,7 +56,7 @@ module.exports = {
         else {
             let messages = await modMailChannel.messages.fetch({ limit: 100 })
             messages.each(m => {
-                if (m.reactions.cache.has('🔑')) {
+                if (m.reactions.cache.has('🔑') && m.author.id == bot.user.id) {
                     if (checkEmbed.fields[3].value == 'None!') checkEmbed.fields[3].value = `[Module](${m.url})`
                     else checkEmbed.fields[3].value += `, [Module](${m.url})`
                 }

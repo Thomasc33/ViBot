@@ -97,27 +97,84 @@ module.exports = {
                 }
             }
             request(options, function (err, resp, html) {
-                if (!html) return reject({ message: 'No body' })
+                if (!html) return reject('No Body')
                 const $ = cheerio.load(html);
                 var ign = $('.col-md-12').find("h1").text()
-                let dungeonCompletes = []
-                rows = $(".table.table-striped.main-achievements").find("tr")
-                for (var i = 1; i < rows.length; i++) {
-                    try {
-                        let row = rows[i]
-                        dungeonCompletes.push({
-                            type: $(row).children('td:nth-child(2)').text().replace(/[0-9]/g, ''),
-                            total: $(row).children('td:nth-child(3)').text().replace(/[^0-9]/g, ''),
-                            max: $(row).children('td:nth-child(4)').text().replace(/[^0-9]/g, ''),
-                            average: $(row).children('td:nth-child(5)').text().replace(/[^0-9.]/g, ''),
-                            min: $(row).children('td:nth-child(6)').text().replace(/[^0-9]/g, ''),
-                        })
-                    } catch (er) { continue }
+                if (ign == '') reject('User not found')
+                //summary
+                try {
+                    let rows = $(".summary").find("tr")
+                    for (var i = 0; i < rows.length; i++) {
+                        try {
+                            let row = rows[i]
+                            var title = $(row).children("td:nth-child(1)").text();
+                            var text = $(row).children("td:nth-child(2)").text();
+                            switch (title) {
+                                case 'Characters':
+                                    var chars = text
+                                case 'Skins':
+                                    var skins = text.split(/ +/)[0];
+                                case 'Fame':
+                                    var fame = text.split(/ +/)[0];
+                                case 'Exp':
+                                    var exp = text.split(/ +/)[0];
+                                case 'Rank':
+                                    var rank = text.split(/ +/)[0];
+                                case 'Account Fame':
+                                    var acc_fame = text.split(/ +/)[0];
+                                case 'Guild':
+                                    var guild = text;
+                                case 'Guild Rank':
+                                    var gRank = text;
+                                case 'Created':
+                                    var created = text;
+                                case 'First seen':
+                                    var created = text
+                                case 'Last seen':
+                                    var lastSeen = text;
+                                default:
+                                    continue;
+                            }
+                        } catch (er) { continue }
+                    }
+                    let desc = [$('.line1.description-line').text(), $('.line2.description-line').text(), $('.line3.description-line').text()]
+                    let deathRows = $("table.table-striped.tablesorter.maxed-stats-by-class").find('tfoot').find('tr')[0].children
+                    let deaths = []
+                    for (var i = 1; i < deathRows.length; i++) deaths.push(deathRows[i].children[0].data)
+                    let dungeonCompletes = []
+                    rows = $(".table.table-striped.main-achievements").find("tr")
+                    for (var i = 1; i < rows.length; i++) {
+                        try {
+                            let row = rows[i]
+                            dungeonCompletes.push({
+                                type: $(row).children('td:nth-child(2)').text().replace(/[0-9]/g, ''),
+                                total: $(row).children('td:nth-child(3)').text().replace(/[^0-9]/g, ''),
+                                max: $(row).children('td:nth-child(4)').text().replace(/[^0-9]/g, ''),
+                                average: $(row).children('td:nth-child(5)').text().replace(/[^0-9.]/g, ''),
+                                min: $(row).children('td:nth-child(6)').text().replace(/[^0-9]/g, ''),
+                            })
+                        } catch (er) { continue }
+                    }
+                    let userInfo = {
+                        ign: ign,
+                        chars: chars,
+                        skins: skins,
+                        fame: fame,
+                        exp: exp,
+                        rank: rank,
+                        acc_fame: acc_fame,
+                        guild: guild,
+                        gRank: gRank,
+                        created: created,
+                        lastSeen: lastSeen,
+                        desc: desc,
+                        deaths: deaths,
+                        achievements: dungeonCompletes
+                    }
+                    resolve(userInfo)
+                } catch (er) {
+                    reject(`Privated Info`)
                 }
-                let userInfo = {
-                    achievements: dungeonCompletes
-                }
-                resolve(userInfo)
             })
         })
     }

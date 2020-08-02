@@ -14,6 +14,7 @@ bot.settings = require('./guildSettings.json')
 const ErrorLogger = require(`./logError`)
 const vibotChannels = require('./commands/vibotChannels')
 const vetVerification = require('./commands/vetVerification')
+const verification = require('./commands/verification')
 const currentWeek = require('./commands/currentWeek')
 const ecurrentWeek = require('./commands/eventCurrentWeek')
 const stats = require('./commands/stats')
@@ -47,6 +48,7 @@ bot.on('message', message => {
 
 async function dmHandler(message) {
     if (message.author.bot) return;
+    if (verification.checkActive(message.author.id)) return
     let cancelled = false;
     let statsTypos = ['stats', 'satts', 'stat', 'status', 'sats', 'stata', 'stts']
     if (statsTypos.includes(message.content.replace(/[^a-z0-9]/gi, ''))) {
@@ -117,7 +119,7 @@ bot.on("ready", async () => {
     console.log(`Bot loaded: ${bot.user.username}`);
     let vi = await bot.users.fetch(`277636691227836419`)
     vi.send('Bot Starting Back Up')
-    bot.user.setActivity(`bruh`);
+    bot.user.setActivity(`verifications??`);
     //generate default settings
     bot.guilds.cache.each(g => {
         if (!emojiServers.includes(g.id)) {
@@ -133,6 +135,7 @@ bot.on("ready", async () => {
             const banBy = bot.vetBans[i].by;
             const proofLogID = bot.vetBans[i].logMessage;
             const guild = bot.guilds.cache.get(guildId);
+            const settings = bot.settings[guild.id]
             const member = guild.members.cache.get(i);
             const vetBanRole = guild.roles.cache.find(r => r.name === 'Banned Veteran Raider');
             const vetRaiderRole = guild.roles.cache.find(r => r.name === 'Veteran Raider');
@@ -144,10 +147,10 @@ bot.on("ready", async () => {
                     fs.writeFile('./vetBans.json', JSON.stringify(bot.vetBans, null, 4), function (err) {
                         if (err) throw err;
 
-                        let embed = bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').messages.cache.get(proofLogID).embeds.shift();
+                        let embed = bot.guilds.cache.get(guildId).channels.cache.get(settings.channels.suspendlog).messages.fetch(proofLogID).embeds.shift();
                         embed.setColor('#00ff00')
                             .setFooter('Unsuspended at');
-                        bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').messages.cache.get(proofLogID).edit(embed);
+                        bot.guilds.cache.get(guildId).channels.cache.get(settings.channels.suspendlog).messages.fetche(proofLogID).edit(embed);
                     })
                 }
             } catch (er) {
@@ -215,13 +218,16 @@ bot.on("ready", async () => {
             }
         }
     }, 60000)
+    //initialize components (eg. modmail, verification)
     bot.guilds.cache.each(g => {
         if (!emojiServers.includes(g.id)) {
             vibotChannels.update(g, bot).catch(er => { })
             if (bot.settings[g.id].backend.modmail) modmail.update(g, bot, db).catch(er => { })
+            if (bot.settings[g.id].backend.verification) verification.init(g, bot, db).catch(er => { })
             if (bot.settings[g.id].backend.vetverification) vetVerification.init(g, bot, db).catch(er => { })
         }
     })
+    //reset currentweek
     const currentWeekReset = cron.job('0 0 * * SUN', () => {
         bot.guilds.cache.each(g => {
             if (!emojiServers.includes(g.id)) {
