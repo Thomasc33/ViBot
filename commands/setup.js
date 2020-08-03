@@ -12,7 +12,7 @@ const numerical = ['afktime', 'eventafktime', 'nitrocount', 'nitrocooldown', 'to
 const runreqs = ['weapon', 'ability', 'armor', 'ring']
 const autoveri = ['fame', 'stars', 'realmage', 'discordage', 'deathcount']
 const vetverireqs = ['maxed', 'meleemaxed', 'runs']
-const points = ['earlylocation', 'perrun', 'nitromultiplier', 'keypop', 'vialpop', 'rushing', 'brain', 'mystic']
+const points = ['earlylocation', 'perrun', 'nitromultiplier', 'keypop', 'vialpop', 'rushing', 'brain', 'mystic', 'eventkey']
 
 module.exports = {
     name: 'setup',
@@ -326,5 +326,6 @@ function getDefaultPointValue(name) {
         case 'rushing': return 1;
         case 'brain': return 1;
         case 'mystic': return 1;
+        case 'eventkey': return 2;
     }
 }
