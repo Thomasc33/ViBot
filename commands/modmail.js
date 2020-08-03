@@ -142,14 +142,9 @@ module.exports = {
 async function checkBlacklist(member, db) {
     return new Promise(async (res, rej) => {
         db.query(`SELECT * FROM modmailblacklist WHERE id = '${member.id}'`, (err, rows) => {
+            if (err) return rej(err)
             if (rows.length == 0) {
-                db.query(`SELECT modMailBlacklisted FROM users WHERE id = '${member.id}'`, (err, rows) => {
-                    if (rows.length == 0) {
-                        res(false)
-                    } else if (rows[0].modMailBlacklisted == 1) {
-                        res(true)
-                    }
-                })
+                res(false)
             } else {
                 res(true)
             }
