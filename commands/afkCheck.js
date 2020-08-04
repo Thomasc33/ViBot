@@ -906,6 +906,12 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
             }
         }
 
+        //log key
+        if (this.key) {
+            this.db.query(`UPDATE users SET keypops = keypops + 1 WHERE id = '${this.key.id}'`)
+            keyRoles.checkUser(this.message.guild.members.cache.get(this.key.id), bot, this.db)
+        }
+
         //log run 1 minute after afk check
         setTimeout(() => {
             if (this.channel.members.size != 0) {
@@ -926,22 +932,20 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
                         else regular.push(m)
                     })
                     //regular raiders point logging
-                    let regularQuery = `UPDATE users SET points = points + ${this.settings.points.perrun} WHERE `
-                    regular.forEach(m => regularQuery = regularQuery.concat(`id = '${m.id}' OR `))
-                    regularQuery = regularQuery.substring(0, regularQuery.length - 4)
-                    this.db.query(regularQuery, err => { if (err) ErrorLogger.log(err, bot) })
-                    //nitro raiders point logging
-                    let nitroQuery = `UPDATE users SET points = points + ${this.settings.points.perrun * this.settings.points.nitromultiplier} WHERE `
-                    regular.forEach(m => nitroQuery = nitroQuery.concat(`id = '${m.id}' OR `))
-                    nitroQuery = nitroQuery.substring(0, nitroQuery.length - 4)
-                    this.db.query(nitroQuery, err => { if (err) ErrorLogger.log(err, bot) })
+                    if (this.settings.points.perrun != 0) {
+                        let regularQuery = `UPDATE users SET points = points + ${this.settings.points.perrun} WHERE `
+                        regular.forEach(m => regularQuery = regularQuery.concat(`id = '${m.id}' OR `))
+                        regularQuery = regularQuery.substring(0, regularQuery.length - 4)
+                        this.db.query(regularQuery, err => { if (err) ErrorLogger.log(err, bot) })
+                        //nitro raiders point logging
+                        let nitroQuery = `UPDATE users SET points = points + ${this.settings.points.perrun * this.settings.points.nitromultiplier} WHERE `
+                        nitros.forEach(m => nitroQuery = nitroQuery.concat(`id = '${m.id}' OR `))
+                        nitroQuery = nitroQuery.substring(0, nitroQuery.length - 4)
+                        this.db.query(nitroQuery, err => { if (err) ErrorLogger.log(err, bot) })
+                    }
                 }
             }
-            if (this.key) {
-                this.db.query(`UPDATE users SET keypops = keypops + 1 WHERE id = '${this.key.id}'`)
-                keyRoles.checkUser(this.message.guild.members.cache.get(this.key.id), bot, this.db)
-            }
-        }, 1000)
+        }, 60000)
     }
     async abortAfk() {
         this.mainReactionCollector.stop();
