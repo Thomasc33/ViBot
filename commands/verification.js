@@ -107,6 +107,7 @@ module.exports = {
         //update every 30 seconds
         function update() {
             if (time >= 0) return cancelVerification(0)
+            if (!embed || !LoggingEmbed) return
             time -= 30
             let min = Math.floor(time / 60)
             let seconds = time % 60

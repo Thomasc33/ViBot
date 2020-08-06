@@ -20,7 +20,7 @@ const ecurrentWeek = require('./commands/eventCurrentWeek')
 const stats = require('./commands/stats')
 const modmail = require('./commands/modmail')
 const setup = require('./commands/setup')
-const emojiServers = ['738506334521131074', '738504422396788798', '719905601131511850', '719905712507191358', '719930605101383780', '719905684816396359', '719905777363714078', '720260310014885919', '720260593696768061', '720259966505844818', '719905506054897737', '720260132633706577', '719934329857376289', '720260221720592394', '720260562390351972', '720260005487575050', '719905949409869835', '720260467049758781', '720260436875935827', '719905747986677760', '720260079131164692', '719932430126940332', '719905565035200573', '719905806082113546', '722999001460244491', '720260272488710165', '722999622372556871', '720260194596290650', '720260499312476253', '720259927318331513', '722999694212726858', '722999033387548812', '720260531901956166', '720260398103920670', '719905651337461820']
+const emojiServers = ['739623118833713214', '738506334521131074', '738504422396788798', '719905601131511850', '719905712507191358', '719930605101383780', '719905684816396359', '719905777363714078', '720260310014885919', '720260593696768061', '720259966505844818', '719905506054897737', '720260132633706577', '719934329857376289', '720260221720592394', '720260562390351972', '720260005487575050', '719905949409869835', '720260467049758781', '720260436875935827', '719905747986677760', '720260079131164692', '719932430126940332', '719905565035200573', '719905806082113546', '722999001460244491', '720260272488710165', '722999622372556871', '720260194596290650', '720260499312476253', '720259927318331513', '722999694212726858', '722999033387548812', '720260531901956166', '720260398103920670', '719905651337461820']
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
 for (const file of commandFiles) {
@@ -181,10 +181,10 @@ bot.on("ready", async () => {
                                 member.edit({ roles: roles }).catch(er => ErrorLogger.log(er, bot))
                         }, 5000)
                         try {
-                            let messages = await bot.guilds.cache.get(guildId).channels.cache.get(settings.channels.suspendlogs).messages.fetch({ limit: 100 })
+                            let messages = await guild.channels.cache.get(settings.channels.suspendlog).messages.fetch({ limit: 100 })
                             let m = messages.get(proofLogID)
                             if (!m) {
-                                guild.channels.cache.get(settings.channels.suspendlogs).send(`<@!${rows[i].id}> has been unsuspended automatically`)
+                                guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${rows[i].id}> has been unsuspended automatically`)
                             } else {
                                 let embed = m.embeds.shift();
                                 embed.setColor('#00ff00')
@@ -195,7 +195,7 @@ bot.on("ready", async () => {
                             }
                         }
                         catch (er) {
-                            bot.guilds.cache.get(guildId).channels.cache.get(settings.channels.suspendlogs).send(`<@!${rows[i].id}> has been unsuspended automatically`)
+                            guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${rows[i].id}> has been unsuspended automatically`)
                         }
                         finally {
                             await db.query(`UPDATE suspensions SET suspended = false WHERE id = '${rows[i].id}'`)

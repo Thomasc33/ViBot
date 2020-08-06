@@ -10,7 +10,7 @@ module.exports = {
         let settings = bot.settings[message.guild.id]
         if (args[0].toLowerCase() == 'list') {
             db.query(`SELECT * FROM veriblacklist`, async (err, rows) => {
-                if (err) ErrorLogger.log(err)
+                if (err) ErrorLogger.log(err, bot)
                 let embed = new Discord.MessageEmbed()
                     .setTitle(`Expelled / Veriblacklisted users`)
                     .setDescription('None!')
