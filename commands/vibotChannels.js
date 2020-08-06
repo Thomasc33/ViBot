@@ -41,13 +41,14 @@ module.exports = {
         watchedMessages.push(embed.footer)
         let channel = message.guild.channels.cache.get(embed.footer.text)
         if (channel == null) return m.delete()
+        let channelName = channel.name
         let reactionCollector = new Discord.ReactionCollector(m, xFilter)
         reactionCollector.on('collect', async (r, u) => {
-            if (m.mentions.members.size == 0) remove()
+            reactionCollector.stop()
+            if (!m.mentions.members) remove()
             if (u.id == m.mentions.members.first().id) remove()
             else {
                 await m.reactions.removeAll()
-                reactionCollector.stop()
                 await m.react('✅')
                 await m.react('❌')
                 let confirmReactionCollector = new Discord.ReactionCollector(m, (r, uu) => (r.emoji.name === '✅' || r.emoji.name === '❌') && u.id == uu.id)
@@ -74,8 +75,9 @@ module.exports = {
                         })
                     }
                 }
-                message.guild.channels.cache.get(settings.channels.history).send(`${channel.name} deleted by <@!${u.id}>`)
-                await channel.delete()
+                message.guild.channels.cache.get(settings.channels.history).send(`${channelName} deleted by <@!${u.id}>`)
+                if (!channel) return
+                await channel.delete().catch(er => { })
                 await m.delete()
             }
         })

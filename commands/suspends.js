@@ -11,9 +11,9 @@ module.exports = {
         let settings = bot.settings[message.guild.id]
         if (args.length > 0) {
             let member = message.mentions.members.first()
-            if (member == null) member = message.guild.members.cache.get(args[0])
-            if (member == null) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
-            if (member == null) { message.channel.send('User not found'); return; }
+            if (!member) member = message.guild.members.cache.get(args[0])
+            if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
+            if (!member) return message.channel.send('User not found');
 
             db.query(`SELECT * FROM suspensions WHERE id = '${member.id}'`, async (err, rows) => {
                 if (rows.length == 0) return message.channel.send('User has no suspends logged under me')
@@ -35,7 +35,7 @@ module.exports = {
                 .setDescription('None')
             db.query(`SELECT * FROM suspensions WHERE suspended = true`, (err, rows) => {
                 for (let i in rows) {
-                    let sus = bot.rows[i]
+                    let sus = rows[i]
                     let guild = bot.guilds.cache.get(sus.guild)
                     let member = guild.members.cache.get(sus.id)
                     let desc = (`__Suspension case for ${member}__\`${member.nickname}\`\nReason: \`${sus.reason.trim()}\`\nSuspended by: <@!${sus.by}>\n`)

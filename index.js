@@ -166,6 +166,7 @@ bot.on("ready", async () => {
             for (let i in rows) {
                 if (Date.now() > parseInt(rows[i].uTime)) {
                     const guildId = rows[i].guildid;
+                    let settings = bot.settings[guildId]
                     const proofLogID = rows[i].logmessage;
                     const rolesString = rows[i].roles;
                     let roles = []
@@ -175,11 +176,15 @@ bot.on("ready", async () => {
                     rolesString.split(' ').forEach(r => { if (r !== '') roles.push(r) })
                     try {
                         await member.edit({ roles: roles }).catch(er => ErrorLogger.log(er, bot))
+                        setTimeout(() => {
+                            if (member.roles.cache.has(settings.roles.tempsuspended))
+                                member.edit({ roles: roles }).catch(er => ErrorLogger.log(er, bot))
+                        }, 5000)
                         try {
                             let messages = await bot.guilds.cache.get(guildId).channels.cache.get(settings.channels.suspendlogs).messages.fetch({ limit: 100 })
                             let m = messages.get(proofLogID)
                             if (!m) {
-                                guild.channels.cache.find(c => c.name === 'suspend-log').send(`<@!${rows[i].id}> has been unsuspended automatically`)
+                                guild.channels.cache.get(settings.channels.suspendlogs).send(`<@!${rows[i].id}> has been unsuspended automatically`)
                             } else {
                                 let embed = m.embeds.shift();
                                 embed.setColor('#00ff00')
@@ -190,7 +195,7 @@ bot.on("ready", async () => {
                             }
                         }
                         catch (er) {
-                            bot.guilds.cache.get(guildId).channels.cache.find(c => c.name === 'suspend-log').send(`<@!${rows[i].id}> has been unsuspended automatically`)
+                            bot.guilds.cache.get(guildId).channels.cache.get(settings.channels.suspendlogs).send(`<@!${rows[i].id}> has been unsuspended automatically`)
                         }
                         finally {
                             await db.query(`UPDATE suspensions SET suspended = false WHERE id = '${rows[i].id}'`)
@@ -274,6 +279,7 @@ process.on('unhandledRejection', err => {
         if (err.message == 'Target user is not connected to voice.') return;
         if (err.message == 'Cannot send messages to this user') return
         if (err.message == 'Unknown Message') return
+        if (err.message == 'Unknown Channel') return
     }
     ErrorLogger.log(err, bot);
     console.log(err);

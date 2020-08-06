@@ -28,7 +28,7 @@ module.exports = {
         if (!member) member = guild.members.cache.get(args[0])
         if (!member) member = guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
         let embed = await this.getStatsEmbed(member.id, guild, db).catch(er => {
-            message.channel.send('User has not been logged yet. Database is updated every 24-48 hours')
+            message.channel.send('User has not been logged yet. People are logged after they complete their first run')
         })
         if (embed) {
             message.author.send(embed)
@@ -38,8 +38,8 @@ module.exports = {
     async getStatsEmbed(id, guild, db) {
         return new Promise((resolve, reject) => {
             db.query(`SELECT * FROM users WHERE id = '${id}'`, (err, rows) => {
-                if (err) { reject(); return; }
-                if (rows.length == 0) { reject('No user found'); return; }
+                if (err) return reject()
+                if (rows.length == 0) return reject('No user found');
                 let guildMember = guild.members.cache.get(id)
                 let embed = new Discord.MessageEmbed()
                     .setColor('#015c21')
@@ -63,7 +63,10 @@ module.exports = {
                     
                     <${botSettings.emote.Vial}>__**Vials**__<${botSettings.emote.Vial}>
                     Dropped: ${rows[0].vialStored}
-                    Used: ${rows[0].vialUsed}`)
+                    Used: ${rows[0].vialUsed}
+                    
+                    🎟️__**Points**__🎟️
+                    Points: ${rows[0].points}`)
                 if (guildMember) embed.setThumbnail(guildMember.user.avatarURL())
                 resolve(embed)
             })

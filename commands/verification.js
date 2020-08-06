@@ -63,11 +63,15 @@ module.exports = {
         let veripending = guild.channels.cache.get(settings.channels.manualverification)
         let verilog = guild.channels.cache.get(settings.channels.verificationlog)
         if (!veriactive || !veripending || !verilog) return ErrorLogger.log(new Error(`ID For a verificiation channel is missing`), bot)
+        let time = 900 //15 minutes = 900 seconds
+        let timer = bot.setInterval(update, 30000)
+
         //check to see if they are currently under review and veri-blacklist
         if (active.includes(u.id)) return
         if (watching.includes(u.id)) return u.send(`You are currently under manual verification. If you do not hear back within 48 hours, please DM me again to contact modmail`).catch(er => { })
-        if (await checkBlackList(u.id, db)) return u.send(`You were are currently blacklisted from verifying. Please DM me to contact mod-mail and find out why`)
+        if (await checkBlackList(u.id, db)) return u.send(`You are currently blacklisted from verifying. Please DM me to contact mod-mail and find out why`)
         active.push(u.id)
+
         //log that they are attempting to verify
         let LoggingEmbed = new Discord.MessageEmbed()
             .setColor('#00ff00')
@@ -77,18 +81,77 @@ module.exports = {
         if (u.avatarURL()) LoggingEmbed.author.iconURL = u.avatarURL()
         verilog.send(LoggingEmbed)
         let activeMessage = await veriactive.send(LoggingEmbed)
+
         //dm user
         let embed = new Discord.MessageEmbed()
             .setColor('#015c21')
             .setTitle(`<${botSettings.emote.hallsPortal}> You verification status! <${botSettings.emote.hallsPortal}>`)
-            .setDescription(`__**You have not been verified yet! Please follow the instructions below**__\n\n**Please enter your in game name** Enter it actually how it is spelled in game (Ex. \`Vi\`).\nCapitalization doesn't matter`)
+            .setDescription(`__**You have not been verified yet! Please follow the instructions below**__\n\n**Please enter your in game name** Enter it actually how it is spelled in game (Ex. \`Vi\`).\nCapitalization doesn't matter\n\n*React with ❌ at anytime to cancel*`)
+            .setFooter(`There is a 15 minute timer that updates every 30 seconds...`)
         let dms = await u.createDM()
         let embedMessage = await dms.send(embed)
+
+        //abort collector
+        let abortCollector = new Discord.ReactionCollector(embedMessage, (r, u) => !u.bot && r.emoji.name == '❌')
+        let reactionCollectors = [], checkingIGN = false
+        abortCollector.on('collect', async (r, u) => {
+            if (r.emoji.name != '❌') return; //not needed, but just in case :)
+            if (checkingIGN) return
+            for (let i in reactionCollectors) {
+                reactionCollectors[i].stop()
+            }
+            cancelVerification(1)
+        })
+        embedMessage.react('❌')
+
+        //update every 30 seconds
+        function update() {
+            if (time >= 0) return cancelVerification(0)
+            time -= 30
+            let min = Math.floor(time / 60)
+            let seconds = time % 60
+            embed.setFooter(`Time remaining: ${min} minutes ${seconds} seconds`)
+            embedMessage.edit(embed)
+            LoggingEmbed.setFooter(`Their verification has ${min} minutes and ${seconds} seconds left`)
+            activeMessage.edit(LoggingEmbed)
+        }
+
+        //cancels verification
+        async function cancelVerification(reason) {
+            //0=timeout,1=aborted,2=blacklisted ign,3=dupe
+            switch (reason) {
+                case 0:
+                    LoggingEmbed.setDescription(`<@!${u.id}> verification timed out`)
+                    embed.setDescription(`Verification Timed Out`)
+                    break;
+                case 1:
+                    LoggingEmbed.setDescription(`<@!${u.id}> cancelled their verification`)
+                    embed.setDescription(`Verification aborted`)
+                    break;
+                case 2:
+                    LoggingEmbed.setDescription(`<@!${u.id}> cancelled their verification`)
+                    embed.setDescription(`You are currently blacklisted from verifying. Please DM me to contact mod-mail and find out why`)
+                    break;
+                case 3:
+                    LoggingEmbed.setDescription(`<@!${u.id}> cancelled their verification`)
+                    embed.setDescription(`There is already a member verified under ${ign}. If this is an error, please DM me to get in contact with mod-mail`)
+                    break;
+            }
+            embed.footer = null
+            LoggingEmbed.setColor(`#ff0000`)
+            activeMessage.delete()
+            verilog.send(LoggingEmbed)
+            active.splice(active.indexOf(u.id), 1)
+            embedMessage.edit(embed)
+            bot.clearInterval(timer)
+        }
+
         //get users ign
         let ign = await getIgn()
         async function getIgn() {
             return new Promise(async (resolve, reject) => {
                 let ignCollector = new Discord.MessageCollector(dms, m => !m.author.bot)
+                reactionCollectors.push(ignCollector)
                 ignCollector.on("collect", async m => {
                     if (m.content.split(/ +/).length > 1) {
                         embed.setDescription(`Please enter only your IGN.\nTry again`)
@@ -99,17 +162,17 @@ module.exports = {
                             embed.setDescription(`Please only enter letters.\nTry again`)
                             embedMessage.edit(embed)
                         } else {
-                            embed.setDescription(`Are you sure you wish to verify as: \`${ign}\``)
+                            embed.setDescription(`Are you sure you wish to verify as: \`${ign}\`\n`)
                             embedMessage.edit(embed)
                             embedMessage.react('✅')
                                 .then(embedMessage.react('❌'))
+                            checkingIGN = true
                             let confirmReactionCollector = new Discord.ReactionCollector(embedMessage, (r, u) => !u.bot && (r.emoji.name == '✅' || r.emoji.name == '❌'))
                             confirmReactionCollector.on('collect', async (r, u) => {
                                 if (r.emoji.name == '✅') {
-                                    embed.setDescription(`You have chosen to verify under: \`${ign}\``)
-                                    embedMessage.edit(embed)
                                     resolve(ign)
                                     ignCollector.stop()
+                                    checkingIGN = false
                                 } else {
                                     embed.setDescription(`__**You have not been verified yet! Please follow the instructions below**__\n\n**Please enter your in game name** Enter it actually how it is spelled in game (Ex. \`Vi\`).\n`)
                                     embedMessage.edit(embed)
@@ -122,16 +185,13 @@ module.exports = {
             })
         }
 
+        //check blacklist for ign
+        if (await checkBlackList(ign, db)) return cancelVerification(2)
+
         //verify name isnt in server yet
         let dupes = guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(ign.toLowerCase()));
         if (dupes) {
-            LoggingEmbed.setDescription(`<@!${u.id}> attempted to verify under ${ign}, however, ${ign} is already in the server`)
-            LoggingEmbed.setColor(`#ff0000`)
-            activeMessage.delete()
-            verilog.send(LoggingEmbed)
-            embed.setDescription(`There is already a member verified under ${ign}. If this is an error, please DM me to get in contact with mod-mail`)
-            active.splice(active.indexOf(u.id), 1)
-            return embedMessage.edit(embed)
+            return cancelVerification(3)
         } else {
             LoggingEmbed.setDescription(`<@!${u.id}> is attempting to verify under ${ign}`)
             verilog.send(LoggingEmbed)
@@ -143,10 +203,12 @@ module.exports = {
         embed.setDescription(`You have chosen to verify under: \`${ign}\`\n\nPlease add the following code into your realmeye description:\n\`\`\`${vericode}\`\`\`\nRe-react to the ✅ when it is done`)
         embedMessage.edit(embed)
         let veriCodeReactionCollector = new Discord.ReactionCollector(embedMessage, (r, u) => !u.bot && r.emoji.name == '✅')
+        reactionCollectors.push(veriCodeReactionCollector)
         veriCodeReactionCollector.on('collect', async (r, u) => {
             //check realmeye description for vericode
             let userInfo = await realmEyeScrape.getGraveyardSummary(ign).catch(er => {
-                embed.setDescription(`There was an error checking your realmeye page. Please make sure it is unprivated then try verifying again`)
+                ErrorLogger.log(er, bot)
+                embed.setDescription(`There was an error checking your realmeye page. Please make sure everything except last known location is public, then try verifying again`)
                 embedMessage.edit(embed)
                 LoggingEmbed.setDescription(`<@!${u.id}> Needs to unprivate parts of their realmeye to verify`)
                 LoggingEmbed.setColor('#ff0000')
@@ -205,8 +267,10 @@ module.exports = {
 
         //manual verify
         async function manualVerify(reasons, data) {
+            bot.clearInterval(timer)
             embed.setDescription(`There was an issue with your profile and you have been marked for review. Please allow up to 48 hours to hear back.`)
-            embed.setColor('#ff0000')
+                .setColor('#ff0000')
+                .footer = null
             embedMessage.edit(embed)
             activeMessage.delete()
             active.splice(active.indexOf(u.id), 1)
