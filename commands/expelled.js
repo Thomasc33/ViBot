@@ -44,11 +44,11 @@ module.exports = {
 function fitStringIntoEmbed(embed, string, channel) {
     if (embed.description == 'None!') {
         embed.setDescription(string)
-    } else if (embed.description.length + string.length >= 2048) {
+    } else if (embed.description.length + `, ${string}`.length >= 2048) {
         if (embed.fields.length == 0) {
             embed.addField('-', string)
-        } else if (embed.fields[embed.fields.length - 1].value.length + string.length >= 1024) {
-            if (embed.length + string.length + 1 >= 6000) {
+        } else if (embed.fields[embed.fields.length - 1].value.length + `, ${string}`.length >= 1024) {
+            if (embed.length + `, ${string}`.length >= 6000) {
                 channel.send(embed)
                 embed.setDescription('None!')
                 embed.fields = []
@@ -56,7 +56,7 @@ function fitStringIntoEmbed(embed, string, channel) {
                 embed.addField('-', string)
             }
         } else {
-            if (embed.length + string.length >= 6000) {
+            if (embed.length + `, ${string}`.length >= 6000) {
                 channel.send(embed)
                 embed.setDescription('None!')
                 embed.fields = []

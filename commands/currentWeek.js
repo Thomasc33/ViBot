@@ -65,16 +65,16 @@ module.exports = {
                 embeds.push(new Discord.MessageEmbed(embed))
                 function fitStringIntoEmbed(embed, string) {
                     if (embed.description == 'None!') embed.setDescription(string)
-                    else if (embed.description.length + string.length >= 2048) {//change to 2048
+                    else if (embed.description.length + `\n${string}`.length >= 2048) {//change to 2048
                         if (embed.fields.length == 0) embed.addField('-', string)
-                        else if (embed.fields[embed.fields.length - 1].value.length + string.length >= 1024) { //change to 1024
-                            if (embed.length + string.length + 1 >= 6000) {//change back to 6k
+                        else if (embed.fields[embed.fields.length - 1].value.length + `\n${string}`.length >= 1024) { //change to 1024
+                            if (embed.length + `\n${string}`.length >= 6000) {//change back to 6k
                                 embeds.push(new Discord.MessageEmbed(embed))
                                 embed.setDescription('None!')
                                 embed.fields = []
                             } else embed.addField('-', string)
                         } else {
-                            if (embed.length + string.length >= 6000) { //change back to 6k
+                            if (embed.length + `\n${string}`.length >= 6000) { //change back to 6k
                                 embeds.push(new Discord.MessageEmbed(embed))
                                 embed.setDescription('None!')
                                 embed.fields = []
