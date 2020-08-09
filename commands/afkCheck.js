@@ -267,9 +267,9 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
         this.minutes = Math.floor(this.time / 60);
         this.seconds = this.time % 60;
         this.embedMessage = new Discord.MessageEmbed()
-            .setColor('#8c00ff')
+            .setColor('#2f075c')
             .setAuthor(`Void Started by ${this.message.member.nickname} in ${this.channel.name}`)
-            .setDescription(`To join, **connect to the raiding channel by clicking its name and react with** <${botSettings.emote.voidd}>
+            .setDescription(`To join, **connect to the raiding channel by clicking its name**
 If you have a key or vial, react with <${botSettings.emote.LostHallsKey}> or <${botSettings.emote.Vial}>
 To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.TomeofPurification}> <${botSettings.emote.MarbleSeal}>
 If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.emote.shard}> to get into VC`)
@@ -289,7 +289,7 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
         voidReact(this.afkCheckEmbed, this.settings);
 
         this.leaderEmbed = new Discord.MessageEmbed()
-            .setColor('#8c00ff')
+            .setColor('#2f075c')
             .setTitle(`AFK Check control panel for \`${this.channel.name}\``)
             .setFooter(`❌ to abort. 🔑 for fake key react`)
             .addFields(
@@ -360,9 +360,9 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
         this.minutes = Math.floor(this.time / 60);
         this.seconds = this.time % 60;
         this.embedMessage = new Discord.MessageEmbed()
-            .setColor('#8c00ff')
+            .setColor('#2f075c')
             .setAuthor(`Fullskip Void Started by ${this.message.member.nickname} in ${this.channel.name}`)
-            .setDescription(`To join, **connect to the raiding channel by clicking its name and react with** <${botSettings.emote.SkipBoi}>
+            .setDescription(`To join, **connect to the raiding channel by clicking its name**
 If you have a key or vial, react with <${botSettings.emote.LostHallsKey}> or <${botSettings.emote.Vial}>
 To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.TomeofPurification}> <${botSettings.emote.MarbleSeal}>
 If you have 85+ MHeal and a 8/8 Mystic, react with <${botSettings.emote.Mystic}>
@@ -384,7 +384,7 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
         fsvReact(this.afkCheckEmbed, this.settings);
 
         this.leaderEmbed = new Discord.MessageEmbed()
-            .setColor('#8c00ff')
+            .setColor('#2f075c')
             .setTitle(`AFK Check control panel for \`${this.channel.name}\``)
             .setFooter(`❌ to abort. 🔑 for fake key react`)
             .addFields(
@@ -692,11 +692,17 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
             .setFooter(`React with ✅ to confirm, or ❌ to cancel`)
         if (u.avatarURL()) pointEmbed.setAuthor('Please Confirm Point Usage', u.avatarURL())
         else pointEmbed.setAuthor('Please Confirm Point Usage')
+        let earlyLocationCost
+        switch (this.run) {
+            case 1: earlyLocationCost = this.settings.points.cultlocation; break;
+            case 2: earlyLocationCost = this.settings.points.voidlocation; break;
+            case 3: earlyLocationCost = this.settings.points.fsvlocation; break;
+        }
         this.db.query(`SELECT points FROM users WHERE id = '${u.id}'`, async (err, rows) => {
             if (err) return
             if (rows.length == 0) return this.db.query(`INSERT INTO users (id) VALUES('${u.id}')`)
-            if (rows[0].points < this.settings.points.earlylocation) return
-            pointEmbed.setDescription(`You currently have \`${rows[0].points}\` points\nEarly location costs \`${this.settings.points.earlylocation}\``)
+            if (rows[0].points < earlyLocationCost) return
+            pointEmbed.setDescription(`You currently have \`${rows[0].points}\` points\nEarly location costs \`${earlyLocationCost}\``)
             let dms = await u.createDM().catch()
             let m = await dms.send(pointEmbed).catch(er => this.dylanBotCommands.send(`<@!${u.id}> tried to react with 🎟️ but their DMs are private`))
             let reactionCollector = new Discord.ReactionCollector(m, (r, u) => !u.bot && (r.emoji.name == '❌' || r.emoji.name == '✅'))
@@ -704,7 +710,7 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
                 if (r.emoji.name == '❌') m.delete()
                 else if (r.emoji.name == '✅') {
                     let er, success = true
-                    let leftOver = await points.buyEarlyLocaton(u, this.db, this.settings).catch(r => { er = r; success = false })
+                    let leftOver = await points.buyEarlyLocaton(u, this.db, earlyLocationCost, this.run, bot, this.message.guild).catch(r => { er = r; success = false })
                     if (success) {
                         await dms.send(`The location for this run has been set to \`${this.location}\`\nYou now have \`${leftOver}\` points left over`).catch(er => this.dylanBotCommands.send(`<@!${u.id}> tried to react with 🎟️ but their DMs are private`))
                         if (this.leaderEmbed.fields[index].value == 'None yet!') this.leaderEmbed.fields[index].value = `<@!${u.id}>`
@@ -714,7 +720,7 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
                         await this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                         await m.delete()
                     }
-                    else dms.send(`There was an issue using the points: \`${er}\``)(er => this.dylanBotCommands.send(`<@!${u.id}> tried to react with 🎟️ but their DMs are private`))
+                    else dms.send(`There was an issue using the points: \`${er}\``).catch(er => this.dylanBotCommands.send(`<@!${u.id}> tried to react with 🎟️ but their DMs are private`))
                 }
             })
             await m.react('✅')

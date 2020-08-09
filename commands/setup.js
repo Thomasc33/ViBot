@@ -4,7 +4,7 @@ const roles = ['moderator', 'officer', 'headrl', 'vetrl', 'security', 'fullskip'
     'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'topkey', 'bottomkey']
 const channels = ['modmail', 'verification', 'manualverification', 'vetverification', 'manualvetverification', 'verificationlog', 'activeverification', 'modlogs', 'history', 'suspendlog',
     'viallog', 'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel', 'raidstatus', 'eventstatus',
-    'vetstatus', 'raidcommands', 'eventcommands', 'vetcommands', 'raidingchannels', 'eventchannels', 'vetchannels', 'runlogs', 'dmcommands', 'veriactive']
+    'vetstatus', 'raidcommands', 'eventcommands', 'vetcommands', 'raidingchannels', 'eventchannels', 'vetchannels', 'runlogs', 'dmcommands', 'veriactive', 'pointlogging']
 const voice = ['raidingtemplate', 'eventtemplate', 'vettemplate', 'lounge', 'vetlounge', 'eventlounge', 'afk']
 const voiceprefixes = ['raidingprefix', 'vetprefix']
 const backend = ['modmail', 'currentweek', 'eventcurrentweek', 'verification', 'vetverification', 'points']
@@ -12,7 +12,7 @@ const numerical = ['afktime', 'eventafktime', 'nitrocount', 'nitrocooldown', 'to
 const runreqs = ['weapon', 'ability', 'armor', 'ring']
 const autoveri = ['fame', 'stars', 'realmage', 'discordage', 'deathcount']
 const vetverireqs = ['maxed', 'meleemaxed', 'runs']
-const points = ['earlylocation', 'perrun', 'nitromultiplier', 'keypop', 'vialpop', 'rushing', 'brain', 'mystic', 'eventkey']
+const points = ['earlylocation', 'perrun', 'nitromultiplier', 'keypop', 'vialpop', 'rushing', 'brain', 'mystic', 'eventkey', 'cultlocation', 'voidlocation', 'fsvlocation']
 
 module.exports = {
     name: 'setup',
@@ -185,7 +185,7 @@ module.exports = {
         }
         for (let i in points) {
             let r = points[i]
-            if (!bot.settings[guild.id].points[r]) {
+            if (!bot.settings[guild.id].points[r] && bot.settings[guild.id].points[r] != 0) {
                 bot.settings[guild.id].points[r] = getDefaultPointValue(r)
             }
         }
@@ -256,6 +256,7 @@ function getDefaultChannelName(name) {
         case 'runlogs': return 'dylanbot-info';
         case 'dmcommands': return 'history-reacts';
         case 'veriactive': return 'veri-active';
+        case 'pointlogging': return 'point-history';
     }
 }
 
@@ -327,5 +328,8 @@ function getDefaultPointValue(name) {
         case 'brain': return 1;
         case 'mystic': return 1;
         case 'eventkey': return 2;
+        case 'cultlocation': return 20;
+        case 'voidlocation': return 25;
+        case 'fsvlocation': return 30;
     }
 }

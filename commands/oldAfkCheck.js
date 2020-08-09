@@ -272,7 +272,7 @@ class afk {
         this.seconds = this.time % 60;
         this.pingingMessage = `@here \`Void\` started by ${this.message.member} in \`\`${this.voiceChannel.name}\``;
         this.embedMessage = new Discord.MessageEmbed()
-            .setColor('#8c00ff')
+            .setColor('#2f075c')
             .setAuthor(`Void Started by ${this.message.member.nickname} in ${this.voiceChannel.name}`, `${this.message.author.avatarURL()}`)
             .setDescription(`To join, **connect to the raiding channel by clicking its name and react with** <${botSettings.emote.voidd}>
 If you have a key or vial, react with <${botSettings.emote.LostHallsKey}> or <${botSettings.emote.Vial}>
@@ -291,7 +291,7 @@ To end the AFK check as a leader, react to ❌`)
 
         //bot-info message
         this.leaderEmbed = new Discord.MessageEmbed()
-            .setColor('#8c00ff')
+            .setColor('#2f075c')
             .setTitle(`AFK Check control panel for \`${this.voiceChannel.name}\``)
             .addFields(
                 { name: `Our current key`, value: `None yet!` },
@@ -377,7 +377,7 @@ To end the AFK check as a leader, react to ❌`)
         this.seconds = this.time % 60;
         this.pingingMessage = `@here \`Fullskip Void\` started by ${this.message.member} in \`${this.voiceChannel.name}\``;
         this.embedMessage = new Discord.MessageEmbed()
-            .setColor('#8c00ff')
+            .setColor('#2f075c')
             .setAuthor(`Fullskip Void Started by ${this.message.member.nickname} in ${this.voiceChannel.name}`, `${this.message.author.avatarURL()}`)
             .setDescription(`To join, **connect to the raiding channel by clicking its name and react with** <${botSettings.emote.SkipBoi}>
         If you have a key or vial, react with <${botSettings.emote.LostHallsKey}> or <${botSettings.emote.Vial}>
@@ -398,7 +398,7 @@ To end the AFK check as a leader, react to ❌`)
 
         //bot-info message
         this.leaderEmbed = new Discord.MessageEmbed()
-            .setColor('#8c00ff')
+            .setColor('#2f075c')
             .setTitle(`AFK Check control panel for \`${this.voiceChannel.name}\``)
             .addFields(
                 { name: `Our current key`, value: `None yet!` },

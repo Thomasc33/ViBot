@@ -63,8 +63,6 @@ module.exports = {
         let veripending = guild.channels.cache.get(settings.channels.manualverification)
         let verilog = guild.channels.cache.get(settings.channels.verificationlog)
         if (!veriactive || !veripending || !verilog) return ErrorLogger.log(new Error(`ID For a verificiation channel is missing`), bot)
-        let time = 900 //15 minutes = 900 seconds
-        let timer = bot.setInterval(update, 30000)
 
         //check to see if they are currently under review and veri-blacklist
         if (active.includes(u.id)) return
@@ -105,6 +103,8 @@ module.exports = {
         embedMessage.react('❌')
 
         //update every 30 seconds
+        let time = 900 //15 minutes = 900 seconds
+        let timer = bot.setInterval(update, 30000)
         function update() {
             if (time <= 0) return cancelVerification(0)
             if (!embed || !LoggingEmbed) return

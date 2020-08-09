@@ -1,5 +1,6 @@
 const Discord = require('discord.js')
 const botSettings = require('../settings.json')
+const pointLogger = require('../lib/pointLogger')
 
 module.exports = {
     name: 'points',
@@ -52,7 +53,7 @@ module.exports = {
                 let member = message.mentions.members.first()
                 if (!member) member = message.guild.members.cache.get(args[0])
                 if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
-                if(!member) return message.channel.send(`${member} not found`)
+                if (!member) return message.channel.send(`${member} not found`)
                 await message.member.send(await this.getPointEmbed(member, db))
             }
             message.react('✅')
@@ -69,15 +70,16 @@ module.exports = {
             })
         })
     },
-    buyEarlyLocaton(user, db, settings) {
+    buyEarlyLocaton(user, db, cost, runType, bot, guild) { //1 = cult, 2 = void, 3 = fsv
         return new Promise((resolve, reject) => {
             db.query(`SELECT points FROM users WHERE id = '${user.id}'`, (err, rows) => {
                 if (err) return reject(err)
                 if (rows.length == 0) return reject('User not in DB')
-                if (rows[0].points < settings.points.earlylocation) return reject(`Only has ${rows[0].points}/${settings.points.earlylocation} points`)
-                db.query(`UPDATE users SET points = points - 20 WHERE id = '${user.id}'`, err => {
+                if (rows[0].points < cost) return reject(`Only has ${rows[0].points}/${cost} points`)
+                db.query(`UPDATE users SET points = points - ${cost} WHERE id = '${user.id}'`, err => {
                     if (err) return reject(err)
-                    resolve(`${rows[0].points - settings.points.earlylocation}`)
+                    resolve(`${rows[0].points - cost}`)
+                    pointLogger.earlyLocation(user, runType, guild, cost, bot)
                 })
             })
         })

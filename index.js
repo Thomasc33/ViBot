@@ -119,7 +119,7 @@ bot.on("ready", async () => {
     console.log(`Bot loaded: ${bot.user.username}`);
     let vi = await bot.users.fetch(`277636691227836419`)
     vi.send('Bot Starting Back Up')
-    bot.user.setActivity(`verifications??`);
+    bot.user.setActivity(`with your points`);
     //generate default settings
     bot.guilds.cache.each(g => {
         if (!emojiServers.includes(g.id)) {
