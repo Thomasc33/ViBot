@@ -8,7 +8,7 @@ module.exports = {
     args: '<user in game name> (reason)',
     requiredArgs: 1,
     role: 'vetrl',
-    execute(message, args, bot) {
+    execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         var raider = args.shift();
         var reason = '';
@@ -16,67 +16,43 @@ module.exports = {
             reason = reason.concat(args[i]) + ' ';
         }
         let member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(raider.toLowerCase()));
-
-        if (member == null) {
-            message.channel.send("User not found, please try again");
-            return;
-        }
-        let found = false;
-        for (let i in bot.vetBans) {
-            if (i == member.id) {
-                found = true;
-                const time = bot.vetBans[i].time;
-                const guildId = bot.vetBans[i].guild;
-                const Initialreason = bot.vetBans[i].reason;
-                const banBy = bot.vetBans[i].by;
-                const proofLogID = bot.vetBans[i].logMessage;
-                const guild = bot.guilds.cache.get(guildId);
-                const member = guild.members.cache.get(i);
-                const vetBanRole = guild.roles.cache.get(settings.roles.vetban);
-                const vetRaiderRole = guild.roles.cache.get(settings.roles.vetraider);
-                try {
-                    unban()
-                    async function unban() {
-                        member.roles.remove(vetBanRole)
-                            .then(member.roles.add(vetRaiderRole));
-                        delete bot.vetBans[i];
-                        fs.writeFileSync('./vetBans.json', JSON.stringify(bot.vetBans, null, 7), function (err) {
-                            if (err) throw err;
-
-                            let embed = bot.guilds.cache.get(guildId).channels.cache.get(settings.channels.suspendlog).messages.cache.get(proofLogID).embeds.shift();
-                            embed.setColor('#00ff00')
-                                .setDescription(embed.description.concat(`\nUnsuspended manually by <@!${message.author.id}>`))
-                                .setFooter('Unsuspended at')
-                                .setTimestamp(Date.now())
-                                .addField('Reason for unsuspension', reason)
-                            bot.guilds.cache.get(guildId).channels.cache.get(settings.channels.suspendlog).messages.cache.get(proofLogID).edit(embed);
-
+        if (!member) return message.channel.send("User not found, please try again");
+        if (!member.roles.cache.has(settings.roles.vetban)) return message.channel.send(`${member} is not vetbanned`)
+        db.query(`SELECT * FROM vetbans WHERE id = ${member.id} AND suspended = true`, async (err, rows) => {
+            if (err) ErrorLogger.log(err, bot)
+            if (rows.length != 0) {
+                const proofLogID = rows[0].logmessage;
+                member.roles.remove(settings.roles.vetban)
+                    .then(member.roles.add(settings.roles.vetraider));
+                db.query(`UPDATE vetbans SET suspended = false WHERE id = '${member.id}'`)
+                let logMessage = await message.guild.channels.cache.get(settings.channels.suspendlog).messages.fetch(proofLogID)
+                if (logMessage) {
+                    let embed = logMessage.embeds.shift();
+                    embed.setColor('#00ff00')
+                        .setDescription(embed.description.concat(`\nUn-vet-banned automatically`))
+                        .setFooter('Unsuspended at')
+                        .setTimestamp(Date.now())
+                    logMessage.edit(embed);
+                } else {
+                    message.guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${rows[0].id}> has been un-vet-banned automatically`)
+                }
+                message.channel.send("User unbanned successfully");
+            } else {
+                message.channel.send(`This user was not vet banned by ${bot.user}. Would you still like to unban then? Y/N`)
+                let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 10000 });
+                collector.on('collect', m => {
+                    collector.stop()
+                    try {
+                        if (m.content.toLowerCase().charAt(0) == 'y') {
+                            member.roles.remove(settings.roles.vetban)
+                                .then(member.roles.add(settings.roles.vetraider));
                             message.channel.send("User unbanned successfully");
-                        })
+                        }
+                    } catch (er) {
+                        ErrorLogger.log(er, bot)
                     }
-                } catch (er) {
-                    message.channel.send("There was an issue removing the suspension. Try again.")
-                    ErrorLogger.log(er, bot)
-                    continue;
-                }
+                });
             }
-        }
-        if (!found) {
-            message.channel.send(`This user was not vet banned by ${bot.user}. Would you still like to unban then? Y/N`)
-            let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 10000 });
-            collector.on('collect', m => {
-                try {
-                    if (m.content.toLowerCase().charAt(0) == 'y') {
-                        const vetBanRole = message.guild.roles.cache.get(settings.roles.vetban);
-                        const vetRaiderRole = message.guild.roles.cache.get(settings.roles.vetraider);
-                        member.roles.remove(vetBanRole)
-                            .then(member.roles.add(vetRaiderRole));
-                        message.channel.send("User unbanned successfully");
-                    }
-                } catch (er) {
-                    ErrorLogger.log(er, bot)
-                }
-            });
-        }
+        })
     }
 }

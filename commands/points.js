@@ -79,7 +79,7 @@ module.exports = {
                 db.query(`UPDATE users SET points = points - ${cost} WHERE id = '${user.id}'`, err => {
                     if (err) return reject(err)
                     resolve(`${rows[0].points - cost}`)
-                    pointLogger.earlyLocation(user, runType, guild, cost, bot)
+                    pointLogger.earlyLocation(user, runType, guild, cost, bot, rows[0].points - cost)
                 })
             })
         })

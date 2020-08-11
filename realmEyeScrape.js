@@ -1,5 +1,6 @@
 const cheerio = require('cheerio')
 const request = require('request')
+const botSettings = require('./settings.json')
 module.exports = {
     getUserInfo(ign) {
         return new Promise((resolve, reject) => {
@@ -9,11 +10,12 @@ module.exports = {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36'
                 }
             }
+            //let req = request.defaults({proxy: `http://${botSettings.proxy.user}:${botSettings.proxy.password}@${botSettings.proxy.host}:${botSettings.proxy.port}`});
             request(options, function (err, resp, html) {
                 if (!html) return reject({ message: 'No body' })
                 const $ = cheerio.load(html);
                 var ign = $('.col-md-12').find("h1").text()
-                if (ign == '') reject('User not found')
+                if (ign == '') return reject('User not found')
                 //summary
                 let rows = $(".summary").find("tr")
                 for (var i = 0; i < rows.length; i++) {
@@ -100,7 +102,7 @@ module.exports = {
                 if (!html) return reject('No Body')
                 const $ = cheerio.load(html);
                 var ign = $('.col-md-12').find("h1").text()
-                if (ign == '') reject('User not found')
+                if (ign == '') return reject('User not found')
                 //summary
                 try {
                     let rows = $(".summary").find("tr")
@@ -173,7 +175,7 @@ module.exports = {
                     }
                     resolve(userInfo)
                 } catch (er) {
-                    reject(`Privated Info`)
+                    return reject(`Privated Info`)
                 }
             })
         })

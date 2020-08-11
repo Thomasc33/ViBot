@@ -11,14 +11,14 @@ module.exports = {
     async execute(message, args, bot, db) {
         let ign = args[0]
         if (!ign || ign.replace(/[^a-zA-Z]/g, '') !== ign || ign.length > 10) return message.channel.send('Username invalid')
-        let embed = await this.getEmbed(ign, bot).catch(er => { message.channel.send('User is either not found, or their profile is private') })
+        let embed = await this.getEmbed(ign, bot).catch(er => { message.channel.send(`User is either not found, or their profile is private`) })
         if (!embed) return;
         message.channel.send(embed)
     },
     async dmExecution(message, args, bot, db, guild) {
         let ign = args[0]
         if (!ign || ign.replace(/[^a-zA-Z]/g, '') !== ign || ign.length > 10) return message.channel.send('Username invalid')
-        let embed = await this.getEmbed(ign, bot).catch(er => { message.channel.send('User is either not found, or their profile is private') })
+        let embed = await this.getEmbed(ign, bot).catch(er => { message.channel.send(`User is either not found, or their profile is private`) })
         if (!embed) return;
         message.channel.send(embed)
     },
@@ -26,7 +26,7 @@ module.exports = {
         return new Promise(async function (resolve, reject) {
             let charInfo = await realmEyeScrape.getUserInfo(ign)
                 .catch(er => {
-                    reject(er)
+                    return reject(er)
                 })
             let embed = new Discord.MessageEmbed()
                 .setColor('#0000ff')

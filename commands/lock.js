@@ -21,7 +21,7 @@ module.exports = {
         } else if (message.channel.parent.name.toLowerCase() === 'events') {
             var channel = message.guild.channels.cache.find(c => c.type == 'category' && c.name == 'Events').children.find(c => c.name.includes(args[0]) && !c.name.includes('Realm Clearing'))
             var verifiedRaiderRole = await message.guild.roles.cache.get(settings.roles.raider);
-        } else return message.channel.send("Try again, but in dylanbot-commands or veteran-bot-commands")
+        } else return message.channel.send("Try again, but in a proper category")
         bot = bott
         if (!channel) return message.channel.send(`Channel ${args[0]} was not found`)
         if (!verifiedRaiderRole) return message.channel.send('Raider role was not found')

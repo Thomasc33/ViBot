@@ -128,37 +128,50 @@ bot.on("ready", async () => {
     })
     //vetban check
     bot.setInterval(() => {
-        for (let i in bot.vetBans) {
-            const time = parseInt(bot.vetBans[i].time);
-            const guildId = bot.vetBans[i].guild;
-            const reason = bot.vetBans[i].reason;
-            const banBy = bot.vetBans[i].by;
-            const proofLogID = bot.vetBans[i].logMessage;
-            const guild = bot.guilds.cache.get(guildId);
-            const settings = bot.settings[guild.id]
-            const member = guild.members.cache.get(i);
-            const vetBanRole = guild.roles.cache.find(r => r.name === 'Banned Veteran Raider');
-            const vetRaiderRole = guild.roles.cache.find(r => r.name === 'Veteran Raider');
-            try {
-                if (Date.now() > time) {
-                    member.roles.remove(vetBanRole)
-                        .then(member.roles.add(vetRaiderRole));
-                    delete bot.vetBans[i];
-                    fs.writeFile('./vetBans.json', JSON.stringify(bot.vetBans, null, 4), function (err) {
-                        if (err) throw err;
-
-                        let embed = bot.guilds.cache.get(guildId).channels.cache.get(settings.channels.suspendlog).messages.fetch(proofLogID).embeds.shift();
-                        embed.setColor('#00ff00')
-                            .setFooter('Unsuspended at');
-                        bot.guilds.cache.get(guildId).channels.cache.get(settings.channels.suspendlog).messages.fetche(proofLogID).edit(embed);
-                    })
+        db.query(`SELECT * FROM vetbans WHERE suspended = true`, async (err, rows) => {
+            if (err) ErrorLogger.log(err, bot)
+            for (let i in rows) {
+                if (Date.now() > parseInt(rows[i].uTime)) {
+                    const guildId = rows[i].guildid;
+                    let settings = bot.settings[guildId]
+                    const guild = bot.guilds.cache.get(guildId);
+                    const proofLogID = rows[i].logmessage;
+                    const member = guild.members.cache.get(rows[i].id);
+                    if (!member) return db.query(`UPDATE vetbans SET suspended = false WHERE id = '${rows[i].id}'`)
+                    try {
+                        await member.roles.remove(settings.roles.vetban)
+                        setTimeout(() => { member.roles.add(settings.roles.vetraider); }, 1000)
+                        setTimeout(() => {
+                            if (!member.roles.cache.has(settings.roles.vetraider))
+                                member.roles.add(settings.roles.vetraider).catch(er => ErrorLogger.log(er, bot))
+                        }, 5000)
+                        try {
+                            let messages = await guild.channels.cache.get(settings.channels.suspendlog).messages.fetch({ limit: 100 })
+                            let m = messages.get(proofLogID)
+                            if (!m) {
+                                guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${rows[i].id}> has been un-vet-banned automatically`)
+                            } else {
+                                let embed = m.embeds.shift();
+                                embed.setColor('#00ff00')
+                                    .setDescription(embed.description.concat(`\nUn-vet-banned automatically`))
+                                    .setFooter('Unsuspended at')
+                                    .setTimestamp(Date.now())
+                                m.edit(embed)
+                            }
+                        }
+                        catch (er) {
+                            guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${rows[i].id}> has been un-vet-banned automatically`)
+                        }
+                        finally {
+                            await db.query(`UPDATE vetbans SET suspended = false WHERE id = '${rows[i].id}'`)
+                        }
+                    } catch (er) {
+                        ErrorLogger.log(er, bot)
+                    }
                 }
-            } catch (er) {
-                ErrorLogger.log(er, bot)
-                continue;
             }
-        }
-    }, 60000);
+        })
+    }, 120000);
     //suspension check
     bot.setInterval(() => {
         db.query(`SELECT * FROM suspensions WHERE suspended = true AND perma = false`, async (err, rows) => {
@@ -209,20 +222,25 @@ bot.on("ready", async () => {
     }, 60000);
     //mute check
     bot.setInterval(() => {
-        for (let i in bot.mutes) {
-            const time = parseInt(bot.mutes[i].time);
-            const guild = bot.guilds.cache.get(bot.mutes[i].guild);
-            const member = guild.members.cache.get(i);
-            const muteRole = guild.roles.cache.get(bot.settings[guild.id].roles.muted)
-            if (Date.now() > time) {
-                member.roles.remove(muteRole).catch(er => ErrorLogger.log(er, bot))
-                delete bot.mutes[i];
-                fs.writeFile('./mutes.json', JSON.stringify(bot.mutes, null, 4), function (err) {
-                    if (err) ErrorLogger.log(err, bot);
-                })
+        db.query(`SELECT * FROM mutes WHERE muted = true`, async (err, rows) => {
+            if (err) ErrorLogger.log(err, bot)
+            for (let i in rows) {
+                if (Date.now() > parseInt(rows[i].uTime)) {
+                    const guildId = rows[i].guildid;
+                    let settings = bot.settings[guildId]
+                    const guild = bot.guilds.cache.get(guildId);
+                    const member = guild.members.cache.get(rows[i].id);
+                    if (!member) return db.query(`UPDATE mutes SET muted = false WHERE id = '${rows[i].id}'`)
+                    try {
+                        await member.roles.remove(settings.roles.muted)
+                        await db.query(`UPDATE mutes SET muted = false WHERE id = '${rows[i].id}'`)
+                    } catch (er) {
+                        ErrorLogger.log(er, bot)
+                    }
+                }
             }
-        }
-    }, 60000)
+        })
+    }, 61000);
     //initialize components (eg. modmail, verification)
     bot.guilds.cache.each(g => {
         if (!emojiServers.includes(g.id)) {
@@ -239,8 +257,8 @@ bot.on("ready", async () => {
                 if (bot.settings[g.id].backend.currentweek) currentWeek.newWeek(g, bot, db);
                 if (bot.settings[g.id].backend.eventcurrentweek) ecurrentWeek.newWeek(g, bot, db)
             }
-        }, null, true, null, null, false)
-    })
+        })
+    }, null, true, null, null, false)
 });
 
 bot.on('error', err => {
@@ -271,8 +289,10 @@ bot.on('guildMemberRemove', member => {
 })
 
 process.on('uncaughtException', err => {
+    if (!err) return
     ErrorLogger.log(err, bot);
     console.log(err);
+    if (err.fatal) process.exit(1)
 })
 process.on('unhandledRejection', err => {
     if (err) {

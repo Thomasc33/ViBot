@@ -62,7 +62,8 @@ module.exports = {
         let veriactive = guild.channels.cache.get(settings.channels.veriactive)
         let veripending = guild.channels.cache.get(settings.channels.manualverification)
         let verilog = guild.channels.cache.get(settings.channels.verificationlog)
-        if (!veriactive || !veripending || !verilog) return ErrorLogger.log(new Error(`ID For a verificiation channel is missing`), bot)
+        let veriattempts = guild.channels.cache.get(settings.channels.veriattempts)
+        if (!veriactive || !veripending || !verilog || !veriattempts) return ErrorLogger.log(new Error(`ID For a verificiation channel is missing`), bot)
 
         //check to see if they are currently under review and veri-blacklist
         if (active.includes(u.id)) return
@@ -77,7 +78,7 @@ module.exports = {
             .setDescription(`<@!${u.id}> has started the verification process`)
             .setFooter(`ID: ${u.id}`)
         if (u.avatarURL()) LoggingEmbed.author.iconURL = u.avatarURL()
-        verilog.send(LoggingEmbed)
+        veriattempts.send(LoggingEmbed)
         let activeMessage = await veriactive.send(LoggingEmbed)
 
         //dm user
@@ -141,7 +142,7 @@ module.exports = {
             embed.footer = null
             LoggingEmbed.setColor(`#ff0000`)
             activeMessage.delete()
-            verilog.send(LoggingEmbed)
+            veriattempts.send(LoggingEmbed)
             active.splice(active.indexOf(u.id), 1)
             embedMessage.edit(embed)
             bot.clearInterval(timer)
@@ -195,7 +196,7 @@ module.exports = {
             return cancelVerification(3)
         } else {
             LoggingEmbed.setDescription(`<@!${u.id}> is attempting to verify under ${ign}`)
-            verilog.send(LoggingEmbed)
+            veriattempts.send(LoggingEmbed)
             activeMessage.edit(LoggingEmbed)
         }
 
@@ -214,7 +215,7 @@ module.exports = {
                 LoggingEmbed.setDescription(`<@!${u.id}> Needs to unprivate parts of their realmeye to verify`)
                 LoggingEmbed.setColor('#ff0000')
                 activeMessage.edit(LoggingEmbed)
-                verilog.send(LoggingEmbed)
+                veriattempts.send(LoggingEmbed)
                 return;
             })
             if (!userInfo) return
@@ -228,7 +229,7 @@ module.exports = {
                 LoggingEmbed.setDescription(`<@!${u.id}> tried to verify, but their veri-code was not in their realmeye description`)
                 LoggingEmbed.setColor('#ffff00')
                 activeMessage.edit(LoggingEmbed)
-                verilog.send(LoggingEmbed)
+                veriattempts.send(LoggingEmbed)
             } else {
                 //if code matches, check against requirements
                 LoggingEmbed.setColor(`#00ff00`)
@@ -240,7 +241,7 @@ module.exports = {
                 })
                 //fame
                 if (parseInt(userInfo.fame) < settings.autoveri.fame) denyReason.push({
-                    reason: 'Star Count',
+                    reason: 'Fame Count',
                     stat: `${userInfo.fame}/${settings.autoveri.fame}`
                 })
                 //discord account age
@@ -276,7 +277,7 @@ module.exports = {
             activeMessage.delete()
             active.splice(active.indexOf(u.id), 1)
             LoggingEmbed.setDescription(`<@!${u.id}> Attempted to verify, however, they had issues with their profile and are now under manual review`)
-            verilog.send(LoggingEmbed)
+            veriattempts.send(LoggingEmbed)
             let manualEmbed = new Discord.MessageEmbed()
                 .setAuthor(u.tag, u.avatarURL())
                 .setColor('#ff0000')
@@ -321,11 +322,14 @@ module.exports = {
             } else nick = ign
             await member.setNickname(nick)
             setTimeout(() => { member.roles.add(settings.roles.raider) }, 1000)
-            db.query(`INSERT INTO users (id) VALUES ('${u.id}')`)
+            db.query(`INSERT INTO users (id) VALUES ('${u.id}')`, err => {
+                if (err) return
+            })
             embed.setDescription('Welcome to the server. You have been verified')
             embedMessage.edit(embed)
             LoggingEmbed.setDescription(`<@!${u.id}> has successfully verified under ${ign}`)
-            verilog.send(logEmbed)
+            verilog.send(LoggingEmbed)
+            veriattempts.send(LoggingEmbed)
             activeMessage.delete()
             active.splice(active.indexOf(u.id), 1)
         }

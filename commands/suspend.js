@@ -71,6 +71,7 @@ module.exports = {
                 reason = reason.concat(args[i]) + ' ';
             }
             if (reason == "") reason = "None"
+            reason = reason.replace(`'`, '`')
             toBan.forEach(u => {
                 let member = message.guild.members.cache.get(u)
                 if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(u.toLowerCase()));
@@ -84,7 +85,6 @@ module.exports = {
                             let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 10000 });
                             collector.on('collect', message => {
                                 if (message.content.charAt(0) == 'y') {
-                                    db.query(`UPDATE suspensions SET suspended = 0 WHERE id = '${member.id}'`)
                                     message.channel.send('Overwriting suspension...');
                                     vetBanProcess(true)
                                     collector.stop();

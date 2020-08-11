@@ -10,8 +10,7 @@ module.exports = {
     async execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
         if (!(message.channel.parent.name.toLowerCase() === 'raiding' || message.channel.parent.name.toLowerCase() === 'veteran raiding' || message.channel.parent.name.toLowerCase() === 'events')) {
-            message.channel.send("Try again in a correct category");
-            return;
+            return message.channel.send("Try again in a correct category");
         }
         if (message.channel.parent.name.toLowerCase() === 'veteran raiding') {
             let lounge = message.guild.channels.cache.get(settings.channels.vetlounge);
