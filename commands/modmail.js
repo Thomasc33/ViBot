@@ -11,6 +11,9 @@ module.exports = {
             case 'update':
                 this.update(message.guild, bot, db)
                 break;
+            case 'sendinfo':
+                this.sendInfo(message)
+                break;
         }
     },
     async update(guild, bot, db) {
@@ -136,6 +139,13 @@ module.exports = {
             if (!collected) await m.react('🔨')
             if (!collected) await m.react('🔒')
         })
+    },
+    async sendInfo(message) {
+        let embed = new Discord.MessageEmbed()
+            .setTitle(`Mod Mail`)
+            .setColor(`#0000ff`)
+            .setDescription(`**DM me (the bot) to send feedback directly to the mod team!**\n\nI am here to pass along any questions, comments, or concerns you may have about anything in the server directly to the mod team (Security+)\n\n*Any feedback on RL's is not visible by RL's*\n*Rules found in #rules still apply in modmail. Breaking them may result in being banned from the server or being blacklisted from sending further modmail*`)
+        message.guild.channels.cache.get(message.client.settings[message.guild.id].channels.modmailinfo).send(embed)
     }
 }
 

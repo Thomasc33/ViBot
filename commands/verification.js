@@ -387,7 +387,8 @@ module.exports = {
                     message.react('💯')
                     //set embed color to green
                     embed.setColor('#00ff00')
-                    embed.setDescription(`Verified by ${reactor}`)
+                    embed.setFooter(`Accepted by "${reactor}"`)
+                    embed.setTimestamp()
                     message.edit(embed)
                     //log in veri-log
                     message.guild.channels.cache.get(settings.channels.verificationlog).send(`${member} was manually verified by ${reactor}`)

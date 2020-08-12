@@ -84,11 +84,16 @@ async function dmHandler(message) {
             let reactionCollector = new Discord.ReactionCollector(confirmModMailMessage, (r, u) => u.id == message.author.id && (r.emoji.name == '✅' || r.emoji.name == '❌'))
             reactionCollector.on('collect', async (r, u) => {
                 reactionCollector.stop()
-                let guild = await getGuild(message).catch(er => { cancelled = true })
-                if (!cancelled) {
-                    if (r.emoji.name == '✅') modmail.sendModMail(message, guild, bot, db)
+                if (r.emoji.name == '✅') {
+                    let guild = await getGuild(message).catch(er => { cancelled = true })
+                    if (!cancelled) {
+                        if (r.emoji.name == '✅') modmail.sendModMail(message, guild, bot, db)
+                        confirmModMailMessage.delete()
+                    }
+                } else {
                     confirmModMailMessage.delete()
                 }
+
             })
             confirmModMailMessage.react('✅')
                 .then(confirmModMailMessage.react('❌'))
@@ -261,10 +266,6 @@ bot.on("ready", async () => {
     }, null, true, null, null, false)
 });
 
-bot.on('error', err => {
-    ErrorLogger.log(err, bot)
-})
-
 bot.on('guildMemberAdd', member => {
     db.query(`SELECT suspended FROM suspensions WHERE id = '${member.id}' AND suspended = true`, (err, rows) => {
         if (rows.length !== 0) {
@@ -300,7 +301,7 @@ process.on('unhandledRejection', err => {
         if (err.message == 'Cannot send messages to this user') return
         if (err.message == 'Unknown Message') return
         if (err.message == 'Unknown Channel') return
-    }
+    } else return
     ErrorLogger.log(err, bot);
     console.log(err);
 })

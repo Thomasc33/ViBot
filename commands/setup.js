@@ -4,7 +4,7 @@ const roles = ['moderator', 'officer', 'headrl', 'vetrl', 'security', 'fullskip'
     'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'topkey', 'bottomkey']
 const channels = ['modmail', 'verification', 'manualverification', 'vetverification', 'manualvetverification', 'verificationlog', 'activeverification', 'modlogs', 'history', 'suspendlog',
     'viallog', 'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel', 'raidstatus', 'eventstatus',
-    'vetstatus', 'raidcommands', 'eventcommands', 'vetcommands', 'raidingchannels', 'eventchannels', 'vetchannels', 'runlogs', 'dmcommands', 'veriactive', 'pointlogging', 'veriattempts']
+    'vetstatus', 'raidcommands', 'eventcommands', 'vetcommands', 'raidingchannels', 'eventchannels', 'vetchannels', 'runlogs', 'dmcommands', 'veriactive', 'pointlogging', 'veriattempts', 'modmailinfo']
 const voice = ['raidingtemplate', 'eventtemplate', 'vettemplate', 'lounge', 'vetlounge', 'eventlounge', 'afk']
 const voiceprefixes = ['raidingprefix', 'vetprefix']
 const backend = ['modmail', 'currentweek', 'eventcurrentweek', 'verification', 'vetverification', 'points']
@@ -258,6 +258,7 @@ function getDefaultChannelName(name) {
         case 'veriactive': return 'veri-active';
         case 'pointlogging': return 'point-history';
         case 'veriattempts': return 'veri-attempts';
+        case 'modmailinfo': return 'mod-mail';
     }
 }
 
