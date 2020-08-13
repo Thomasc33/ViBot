@@ -5,7 +5,7 @@ var ErrorChannel
 module.exports = {
     name: 'logError',
     async log(error, bot) {
-        if (!error) return
+        if (!error || error == undefined) return
         if (!bot) return
         console.log(error)
         if (!ControlPanelGuild) ControlPanelGuild = bot.guilds.cache.get('739623118833713214')

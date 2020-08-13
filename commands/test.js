@@ -6,6 +6,9 @@ module.exports = {
     description: 'Holds testing code',
     role: 'developer',
     async execute(message, args, bot, db) {
-        return
+        let embed = new Discord.MessageEmbed()
+        .setAuthor(message.member, message.author.avatarURL())
+        .setFooter('4️⃣')
+        message.channel.send(embed)
     }
 }

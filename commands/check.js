@@ -36,12 +36,12 @@ module.exports = {
             if (checkEmbed.fields[1].value == 'None!') checkEmbed.fields[1].value = `<@!${dupesArray[i]}>`
             else checkEmbed.fields[1].value += `, <@!${dupesArray[i]}>`
         }
-        //pending vet verification
-        let veriPendingVet = message.guild.channels.cache.get(settings.channels.manualvetverification)
+        //pending verifications
+        let veriPending = message.guild.channels.cache.get(settings.channels.manualverification)
         checkEmbed.addField('Pending Veteran Verification', 'None!')
-        if (!veriPendingVet) checkEmbed.fields[2].value = 'Error finding channel'
+        if (!veriPending) checkEmbed.fields[2].value = 'Error finding channel'
         else {
-            let messages = await veriPendingVet.messages.fetch({ limit: 100 })
+            let messages = await veriPending.messages.fetch({ limit: 100 })
             messages.each(m => {
                 if (m.reactions.cache.has('🔑')) {
                     if (checkEmbed.fields[2].value == 'None!') checkEmbed.fields[2].value = `[Module](${m.url})`
@@ -49,16 +49,29 @@ module.exports = {
                 }
             })
         }
+        //pending vet verification
+        let veriPendingVet = message.guild.channels.cache.get(settings.channels.manualvetverification)
+        checkEmbed.addField('Pending Veteran Verification', 'None!')
+        if (!veriPendingVet) checkEmbed.fields[3].value = 'Error finding channel'
+        else {
+            let messages = await veriPendingVet.messages.fetch({ limit: 100 })
+            messages.each(m => {
+                if (m.reactions.cache.has('🔑')) {
+                    if (checkEmbed.fields[3].value == 'None!') checkEmbed.fields[3].value = `[Module](${m.url})`
+                    else checkEmbed.fields[3].value += `, [Module](${m.url})`
+                }
+            })
+        }
         //pending mod mail
         let modMailChannel = message.guild.channels.cache.get(settings.channels.modmail)
         checkEmbed.addField('Pending ModMail', 'None!')
-        if (!modMailChannel) checkEmbed.fields[3].value = 'Error finding channel'
+        if (!modMailChannel) checkEmbed.fields[4].value = 'Error finding channel'
         else {
             let messages = await modMailChannel.messages.fetch({ limit: 100 })
             messages.each(m => {
                 if (m.reactions.cache.has('🔑') && m.author.id == bot.user.id) {
-                    if (checkEmbed.fields[3].value == 'None!') checkEmbed.fields[3].value = `[Module](${m.url})`
-                    else checkEmbed.fields[3].value += `, [Module](${m.url})`
+                    if (checkEmbed.fields[4].value == 'None!') checkEmbed.fields[4].value = `[Module](${m.url})`
+                    else checkEmbed.fields[4].value += `, [Module](${m.url})`
                 }
             })
         }
@@ -72,8 +85,8 @@ module.exports = {
         })
         checkEmbed.addField('No Nicknames', 'None!')
         for (let i in nn) {
-            if (checkEmbed.fields[4].value == 'None!') checkEmbed.fields[4].value = `${nn[i]}`
-            else checkEmbed.fields[4].value += `, ${nn[i]}`
+            if (checkEmbed.fields[5].value == 'None!') checkEmbed.fields[5].value = `${nn[i]}`
+            else checkEmbed.fields[5].value += `, ${nn[i]}`
         }
         for (let i in checkEmbed.fields) {
             if (checkEmbed.fields[i].value.length >= 1024) {
@@ -98,7 +111,7 @@ function fitStringIntoEmbed(embed, string, channel) {
         if (embed.fields.length == 0) {
             embed.addField('-', string)
         } else if (embed.fields[embed.fields.length - 1].value.length + `, ${string}`.length >= 1024) {
-            if (embed.length + `, ${string}`.length  >= 6000) {
+            if (embed.length + `, ${string}`.length >= 6000) {
                 channel.send(embed)
                 embed.setDescription('None!')
                 embed.fields = []

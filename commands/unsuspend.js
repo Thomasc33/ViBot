@@ -20,7 +20,7 @@ module.exports = {
         if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(raider.toLowerCase()));
         if (!member) return message.channel.send('I could not find ' + raider)
         if (reason == '') reason = 'None'
-        if (member == null) return message.channel.send("User not found, please try again");
+        if (!member) return message.channel.send("User not found, please try again");
         if (member.roles.cache.has(settings.roles.permasuspended)) return unPerma()
         if (!member.roles.cache.has(settings.roles.tempsuspended)) return message.channel.send("User is not suspended")
 
@@ -73,16 +73,31 @@ module.exports = {
             }
         })
         function unPerma() {
+            if (member.roles.cache.highest.position < message.guild.roles.cache.get(settings.roles.security).position || message.author.id !== '277636691227836419') return
             db.query(`SELECT * FROM suspensions WHERE perma = true AND suspended = true AND id = '${member.id}'`, (err, rows) => {
-                if (rows.length == 0) return message.channel.send(`I do not have any records of ${member} being perma suspended`)
-                let rolesString = rows[0].roles;
-                let roles = []
-                rolesString.split(' ').forEach(r => { if (r != '') roles.push(r) })
-                let suspendLog = message.guild.channels.cache.get(settings.channels.suspendlog)
-                suspendLog.send(`${member} unsuspended`)
-                member.edit({ roles: roles })
-                db.query(`UPDATE suspensions SET suspended = false WHERE id = '${member.id}'`)
-                message.channel.send(`${member} has been unsuspended`)
+                if (rows.length == 0) {
+                    let confirm = await message.channel.send(`I do not have any records of ${member} being perma suspended. Would you like to remove suspended, and add raider back?`)
+                    confirm.react('✅')
+                        .then(confirm.react('❌'))
+                    let reactionCollector = new Discord.ReactionCollector(confirm, (r, u) => u.id = message.author.id && (r.emoji.name == '❌' || r.emoji.name == '✅'), { time: 60000 })
+                    reactionCollector.on('end', (c, r) => { confirm.delete() })
+                    reactionCollector.on('collect', (r, u) => {
+                        reactionCollector.stop()
+                        if (r.emoji.name == '✅') {
+                            member.edit({ roles: [settings.roles.raider] })
+                                .then(message.channel.send(`${member} has been unsuspended`))
+                                .then(message.guild.channels.cache.get(settings.channels.suspendlog).send(`${member} unsuspended`))
+                        }
+                    })
+                } else {
+                    let rolesString = rows[0].roles;
+                    let roles = []
+                    rolesString.split(' ').forEach(r => { if (r != '') roles.push(r) })
+                    message.guild.channels.cache.get(settings.channels.suspendlog).send(`${member} unsuspended`)
+                    member.edit({ roles: roles })
+                    db.query(`UPDATE suspensions SET suspended = false WHERE id = '${member.id}'`)
+                    message.channel.send(`${member} has been unsuspended`)
+                }
             })
         }
     }

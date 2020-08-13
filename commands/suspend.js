@@ -81,12 +81,12 @@ module.exports = {
                 if (member.roles.cache.has(suspendedRole.id)) {
                     db.query(`SELECT * FROM suspensions WHERE id = '${member.id}' AND suspended = true`, async (err, rows) => {
                         if (rows.length != 0) {
-                            message.channel.send(member.nickname.concat(' is already suspended. Reply __**Y**__es to overwrite. *This is not recommended if they are suspended by dylanbot'));
+                            message.channel.send(member.nickname.concat(' is already suspended. Reply __**Y**__es to overwrite.'));
                             let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 10000 });
                             collector.on('collect', message => {
                                 if (message.content.charAt(0) == 'y') {
                                     message.channel.send('Overwriting suspension...');
-                                    vetBanProcess(true)
+                                    suspendProcess(true)
                                     collector.stop();
                                 } else if (message.content.charAt(0) == 'n') {
                                     collector.stop()
@@ -99,9 +99,9 @@ module.exports = {
                         } else return message.channel.send('Suspension was not made through ViBot. Please attempt to overwrite the suspension through another bot')
                     })
                 } else {
-                    vetBanProcess(false)
+                    suspendProcess(false)
                 }
-                async function vetBanProcess(overwrite) {
+                async function suspendProcess(overwrite) {
                     let embed = new Discord.MessageEmbed()
                         .setColor('#ff0000')
                         .setTitle('Suspension Information')
@@ -112,7 +112,6 @@ module.exports = {
                         .addField(`Roles`, 'None!')
                         .setFooter(`Unsuspending at `)
                         .setTimestamp(Date.now() + time);
-
                     if (overwrite) {
                         db.query(`UPDATE suspensions SET uTime = ${Date.now() + time} WHERE id = '${member.id}' AND suspended = true`)
                         embed.fields[3].value = `Overwritten suspensions. Roles the same as prior suspension`

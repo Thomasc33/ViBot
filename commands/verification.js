@@ -279,10 +279,8 @@ module.exports = {
             LoggingEmbed.setDescription(`<@!${u.id}> Attempted to verify, however, they had issues with their profile and are now under manual review`)
             veriattempts.send(LoggingEmbed)
             let manualEmbed = new Discord.MessageEmbed()
-                .setAuthor(u.tag, u.avatarURL())
-                .setColor('#ff0000')
-                .setTitle(`${u.tag} tried to verify as: ${ign}`)
-                .setURL(`https://www.realmeye.com/player/${ign}`)
+                .setAuthor(`${u.tag} is attempting to verify as: ${ign}`, u.avatarURL())
+                .setDescription(`<@!${u.id}> : [Realmeye Link](https://www.realmeye.com/player/${ign})`)
                 .addFields(
                     { name: 'Rank', value: `${data.rank}`, inline: true },
                     { name: 'Guild', value: `${data.guild}`, inline: true },
@@ -387,7 +385,7 @@ module.exports = {
                     message.react('💯')
                     //set embed color to green
                     embed.setColor('#00ff00')
-                    embed.setFooter(`Accepted by "${reactor}"`)
+                    embed.setFooter(`Accepted by "${reactor.nickname}"`)
                     embed.setTimestamp()
                     message.edit(embed)
                     //log in veri-log
@@ -472,11 +470,15 @@ module.exports = {
                         function denyMessage(e) {
                             //set embed color to red, add wave emote
                             embed.setColor(`#ff0000`)
-                            embed.setDescription(`Denied using ${e} by ${reactor}`)
+                            embed.setFooter(`Denied using ${e} by ${reactor.nickname}`)
                             message.edit(embed)
                             message.react('👋')
                             //send to verilog
-                            message.guild.channels.cache.get(settings.channels.verificationlog).send(`${member} was denied by ${reactor} using ${e}`)
+                            let denyEmbed = new Discord.MessageEmbed()
+                                .setColor(`#ff0000`)
+                                .setDescription(`${member} was denied by ${reactor} using ${e}`)
+                                .setTimestamp()
+                            message.guild.channels.cache.get(settings.channels.verificationlog).send(denyEmbed)
                             //remove from watching embed
                             watching.splice(watching.indexOf(u.id), 1)
                         }
