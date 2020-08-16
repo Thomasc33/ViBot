@@ -38,7 +38,7 @@ module.exports = {
         }
         //pending verifications
         let veriPending = message.guild.channels.cache.get(settings.channels.manualverification)
-        checkEmbed.addField('Pending Veteran Verification', 'None!')
+        checkEmbed.addField('Pending Verifications', 'None!')
         if (!veriPending) checkEmbed.fields[2].value = 'Error finding channel'
         else {
             let messages = await veriPending.messages.fetch({ limit: 100 })

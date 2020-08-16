@@ -11,12 +11,10 @@ module.exports = {
     requiredArgs: 1,
     async execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
-        if (message.channel.name === 'dylanbot-commands') { isVet = false; }
-        else if (message.channel.name === 'veteran-bot-commands') { isVet = true; }
-        else {
-            message.channel.send("Try again, but in dylanbot-commands or veteran-bot-commands");
-            return;
-        }
+        if (message.channel.parent.name.toLowerCase() === 'raiding') isVet = false;
+        else if (message.channel.name === 'veteran raiding') isVet = true;
+        else return message.channel.send("Try again, but in dylanbot-commands or veteran-bot-commands");
+
         var voiceChannel = message.member.voice.channel
         if (voiceChannel == null) { message.channel.send("Channel not found. Make sure you are in a VC"); return; }
         if (isVet) var raidStatus = message.guild.channels.cache.get(settings.channels.vetstatus)

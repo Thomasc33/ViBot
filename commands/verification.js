@@ -350,7 +350,7 @@ module.exports = {
             message.guild.channels.cache.get(settings.channels.verificationlog).send(`<@!${embed.footer.text}> Left server while under manual review`)
             return message.delete()
         }
-        let desc = embed.title.split(/ +/)
+        let desc = embed.author.name.split(/ +/)
         let ign = desc[desc.length - 1]
         //start key reaction collector
         if (!message.reactions.cache.has('🔑')) message.react('🔑')
