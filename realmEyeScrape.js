@@ -105,6 +105,7 @@ module.exports = {
                 if (ign == '') return reject('User not found')
                 //summary
                 try {
+                    let chars, skins, fame, exp, rank, acc_fame, guild, gRank, created, lastSeen
                     let rows = $(".summary").find("tr")
                     for (var i = 0; i < rows.length; i++) {
                         try {
@@ -113,27 +114,27 @@ module.exports = {
                             var text = $(row).children("td:nth-child(2)").text();
                             switch (title) {
                                 case 'Characters':
-                                    var chars = text
+                                    chars = text
                                 case 'Skins':
-                                    var skins = text.split(/ +/)[0];
+                                    skins = text.split(/ +/)[0];
                                 case 'Fame':
-                                    var fame = text.split(/ +/)[0];
+                                    fame = text.split(/ +/)[0];
                                 case 'Exp':
-                                    var exp = text.split(/ +/)[0];
+                                    exp = text.split(/ +/)[0];
                                 case 'Rank':
-                                    var rank = text.split(/ +/)[0];
+                                    rank = text.split(/ +/)[0];
                                 case 'Account Fame':
-                                    var acc_fame = text.split(/ +/)[0];
+                                    acc_fame = text.split(/ +/)[0];
                                 case 'Guild':
-                                    var guild = text;
+                                    guild = text;
                                 case 'Guild Rank':
-                                    var gRank = text;
+                                    gRank = text;
                                 case 'Created':
-                                    var created = text;
+                                    created = text;
                                 case 'First seen':
-                                    var created = text
+                                    created = text
                                 case 'Last seen':
-                                    var lastSeen = text;
+                                    lastSeen = text;
                                 default:
                                     continue;
                             }

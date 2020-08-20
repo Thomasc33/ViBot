@@ -53,6 +53,7 @@ module.exports = {
         if (embed == undefined) return;
         let modMailMessageID = embed.footer.text.split(/ +/g)[5]
         let raider = guild.members.cache.get(embed.footer.text.split(/ +/g)[2])
+        if (!raider) return
         let dms = await raider.user.createDM()
         let modMailMessage = await dms.messages.fetch(modMailMessageID)
         let keyCollector = new Discord.ReactionCollector(m, keyFilter)

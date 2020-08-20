@@ -26,7 +26,7 @@ module.exports = {
         if (args.length < 2) return message.channel.send("Command entered incorrectly -> ;ofk <channel #> <c/v/fsv> <location>");
         //checks for active run
         if (isVet && activeVetRun) return message.channel.send("There is already a run active. If this is an error, do \`;allowoldrun\`");
-        else if (activeRun == true) return message.channel.send("There is already a run active. If this is an error, do \`;allowoldrun\`");
+        else if (!isVet && activeRun) return message.channel.send("There is already a run active. If this is an error, do \`;allowoldrun\`");
         let run = 0;
         switch (args[1].charAt(0).toLowerCase()) {
             case 'c':
@@ -124,7 +124,6 @@ class afk {
         this.brains = []
         this.brainCount = 0;
         this.time = settings.numerical.afktime
-        this.voiceChannel
         this.postTime = 20;
         this.earlyLocation = [];
         this.raider = [];
@@ -495,7 +494,7 @@ To end the AFK check as a leader, react to ❌`)
         this.time = this.time - 5;
         if (this.time == 0) {
             this.endedBy = bot.user;
-            this.endAFK();
+            this.postAfk();
             return;
         }
         this.minutes = Math.floor(this.time / 60);
@@ -771,16 +770,141 @@ To end the AFK check as a leader, react to ❌`)
         if (this.isVet) activeVetRun = false;
         else activeRun = false;
 
-        setTimeout(() => {
-            let query = `UPDATE users SET `
-            if (this.run == 1) query = query.concat('cultRuns = cultRuns + 1 WHERE ')
-            else query = query.concat('voidRuns = voidRuns + 1 WHERE ')
-            this.voiceChannel.members.each(m => query = query.concat(`id = '${m.id}' OR `))
-            query = query.substring(0, query.length - 4)
-            this.db.query(query, err => {
-                if (err) ErrorLogger.log(err, bot)
+        //send embed to history
+        let raiders = []
+        this.voiceChannel.members.array().forEach(m => raiders.push(m.id))
+        let historyEmbed = new Discord.MessageEmbed()
+            .setColor(this.embedMessage.hexColor)
+            .setTitle(this.embedMessage.author.name)
+            .addField('Leader', `${this.message.member}`)
+            .addField('Ended by', `${this.endedBy}`)
+            .addField('Key', 'None!')
+            .addField('Early Location', 'None!')
+            .addField('Raiders', 'None!')
+        if (this.key) historyEmbed.fields[2].value = `<@!${this.key.id}>`
+        this.earlyLocation.forEach(m => {
+            if (historyEmbed.fields[3].value == `None!`) historyEmbed.fields[3].value = `<@!${m.id}>`
+            else historyEmbed.fields[3].value += `, <@!${m.id}>`
+        })
+        let bigEmbed = false
+        let biggerEmbed = false
+        let biggestEmbed = false
+        raiders.forEach(m => {
+            if (bigEmbed) {
+                if (historyEmbed.fields[5].value.length >= 1000) {
+                    biggerEmbed = true;
+                    historyEmbed.addField('-', `, <@!${m}>`)
+                }
+                else historyEmbed.fields[5].value += `, <@!${m}>`
+            } else if (biggerEmbed) {
+                if (historyEmbed.fields[6].value.length >= 1000) {
+                    biggestEmbed = true;
+                    historyEmbed.addField('-', `, <@!${m}>`)
+                }
+                else historyEmbed.fields[6].value += `, <@!${m}>`
+            } else if (biggestEmbed) {
+                historyEmbed.fields[7].value += `, <@!${m}>`
+            } else {
+                if (historyEmbed.fields[4].value.length >= 1000) {
+                    bigEmbed = true;
+                    historyEmbed.addField('-', `, <@!${m}>`)
+                }
+                else historyEmbed.fields[4].value += `, <@!${m}>`
+            }
+        })
+        this.message.guild.channels.cache.get(this.settings.channels.history).send(historyEmbed)
+        this.message.guild.channels.cache.get(this.settings.channels.runlogs).send(historyEmbed)
+
+        //make sure everyone in run is in db
+        if (this.channel.members) {
+            let loggingQuery = `SELECT id FROM users WHERE `
+            this.channel.members.each(m => { loggingQuery += `id = '${m.id}' OR ` })
+            loggingQuery = loggingQuery.substring(0, loggingQuery.length - 4)
+            this.db.query(loggingQuery, (err, rows) => {
+                if (err) return
+                let dbIds = []
+                for (let i in rows) dbIds.push(rows[i].id)
+                if (rows.length < this.channel.members.size) {
+                    let unlogged = this.channel.members.keyArray().filter(e => !dbIds.includes(e))
+                    for (let i in unlogged) {
+                        this.db.query(`INSERT INTO users (id) VALUES('${unlogged[i]}')`)
+                    }
+                }
             })
-            if (this.key != null) this.db.query(`UPDATE users SET keypops = keypops + 1 WHERE id = '${this.key.id}'`)
+        }
+
+        if (this.settings.backend.points) {
+            //key point logging
+            if (this.key) {
+                let points = this.settings.points.keypop
+                if (this.message.guild.members.cache.get(this.key.id).roles.cache.has(this.nitroBooster.id)) points = points * this.settings.points.nitromultiplier
+                await this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${this.key.id}'`)
+            }
+            //rusher point logging
+            if (this.rushers.length > 0) {
+                this.rushers.forEach(async u => {
+                    let points = this.settings.points.rushing
+                    if (this.message.guild.members.cache.get(u.id).roles.cache.has(this.nitroBooster.id)) points = points * this.settings.points.nitromultiplier
+                    await this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u.id}'`)
+                })
+            }
+            //mystic point logging
+            if (this.mystics.length > 0) {
+                this.mystics.forEach(async u => {
+                    let points = this.settings.points.mystic
+                    if (this.message.guild.members.cache.get(u.id).roles.cache.has(this.nitroBooster.id)) points = points * this.settings.points.nitromultiplier
+                    await this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u.id}'`)
+                })
+            }
+            //brain point logging
+            if (this.brains.length > 0) {
+                this.brains.forEach(async u => {
+                    let points = this.settings.points.brain
+                    if (this.message.guild.members.cache.get(u.id).roles.cache.has(this.nitroBooster.id)) points = points * this.settings.points.nitromultiplier
+                    await this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u.id}'`)
+                })
+            }
+        }
+
+        //log key
+        if (this.key) {
+            this.db.query(`UPDATE users SET keypops = keypops + 1 WHERE id = '${this.key.id}'`)
+            keyRoles.checkUser(this.message.guild.members.cache.get(this.key.id), bot, this.db)
+        }
+
+        //log run 1 minute after afk check
+        setTimeout(() => {
+            if (this.channel.members.size != 0) {
+                let query = `UPDATE users SET `
+                if (this.run == 1) query = query.concat('cultRuns = cultRuns + 1 WHERE ')
+                else query = query.concat('voidRuns = voidRuns + 1 WHERE ')
+                this.channel.members.each(m => query = query.concat(`id = '${m.id}' OR `))
+                query = query.substring(0, query.length - 4)
+                this.db.query(query, err => {
+                    if (err) ErrorLogger.log(err, bot)
+                })
+                if (this.settings.backend.points) {
+                    //give points to everyone in run
+                    let regular = []
+                    let nitros = []
+                    this.channel.members.each(m => {
+                        if (m.roles.cache.has(this.nitroBooster.id)) nitros.push(m)
+                        else regular.push(m)
+                    })
+                    //regular raiders point logging
+                    if (this.settings.points.perrun != 0) {
+                        let regularQuery = `UPDATE users SET points = points + ${this.settings.points.perrun} WHERE `
+                        regular.forEach(m => regularQuery = regularQuery.concat(`id = '${m.id}' OR `))
+                        regularQuery = regularQuery.substring(0, regularQuery.length - 4)
+                        this.db.query(regularQuery, err => { if (err) ErrorLogger.log(err, bot) })
+                        //nitro raiders point logging
+                        let nitroQuery = `UPDATE users SET points = points + ${this.settings.points.perrun * this.settings.points.nitromultiplier} WHERE `
+                        nitros.forEach(m => nitroQuery = nitroQuery.concat(`id = '${m.id}' OR `))
+                        nitroQuery = nitroQuery.substring(0, nitroQuery.length - 4)
+                        this.db.query(nitroQuery, err => { if (err) ErrorLogger.log(err, bot) })
+                    }
+                }
+            }
         }, 60000)
     }
     async abortAfk() {

@@ -190,7 +190,10 @@ bot.on("ready", async () => {
                     let roles = []
                     const guild = bot.guilds.cache.get(guildId);
                     const member = guild.members.cache.get(rows[i].id);
-                    if (!member) return db.query(`UPDATE suspensions SET suspended = false WHERE id = '${rows[i].id}'`)
+                    if (!member) {
+                        guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${rows[i].id}> has been unsuspended automatically. However, they are not in the server`)
+                        return db.query(`UPDATE suspensions SET suspended = false WHERE id = '${rows[i].id}'`)
+                    }
                     rolesString.split(' ').forEach(r => { if (r !== '') roles.push(r) })
                     try {
                         await member.edit({ roles: roles }).catch(er => ErrorLogger.log(er, bot))
@@ -270,9 +273,10 @@ bot.on('guildMemberAdd', member => {
     db.query(`SELECT suspended FROM suspensions WHERE id = '${member.id}' AND suspended = true`, (err, rows) => {
         if (rows.length !== 0) {
             member.roles.add(bot.settings[member.guild.id].roles.tempsuspended)
+            if (rows[0].ignOnLeave) member.setNickname(rows[0].ignOnLeave)
             let modlog = member.guild.channels.cache.get(bot.settings[member.guild.id].channels.modlogs)
             if (!modlog) return ErrorLogger.log(new Error(`mod log not found in ${member.guild.id}`), bot)
-            modlog.send(`${member} rejoined server after leaving while suspended. Giving suspended role back.`)
+            modlog.send(`${member} rejoined server after leaving while suspended. Giving suspended role and nickname back.`)
         }
     })
 })
@@ -284,7 +288,7 @@ bot.on('guildMemberRemove', member => {
             let modlog = member.guild.channels.cache.get(bot.settings[member.guild.id].channels.modlogs)
             if (!modlog) return ErrorLogger.log(new Error(`mod log not found in ${member.guild.id}`), bot)
             modlog.send(`${member} is attempting to dodge a suspension by leaving the server`)
-            db.query(`UPDATE suspension SET suspended = false WHERE id = '${member.id}'`)
+            db.query(`UPDATE suspensions SET ignOnLeave = '${member.nicknam}' WHERE id = '${member.id}' AND suspended = true`)
         }
     })
 })
@@ -295,6 +299,7 @@ process.on('uncaughtException', err => {
     console.log(err);
     if (err.fatal) process.exit(1)
 })
+
 process.on('unhandledRejection', err => {
     if (err) {
         if (err.message == 'Target user is not connected to voice.') return;

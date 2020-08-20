@@ -34,7 +34,10 @@ module.exports = {
             if (!args[1]) return message.channel.send(`Please specify a user`)
             args.shift()
             for (let i in args) {
-                db.query(`DELETE FROM veriblacklist WHERE id = '${args[i]}'`)
+                db.query(`SELECT * FROM veriblacklist WHERE id = '${args[i]}'`, (err, rows) => {
+                    if (rows.length == 0) message.channel.send(`${args[i]} is not blacklisted`)
+                    else db.query(`DELETE FROM veriblacklist WHERE id = '${args[i]}'`)
+                })
             }
             message.react('✅')
         } else return message.channel.send(`Command entered incorrectly. Please try again`)

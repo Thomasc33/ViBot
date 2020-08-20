@@ -131,11 +131,11 @@ module.exports = {
                     embed.setDescription(`Verification aborted`)
                     break;
                 case 2:
-                    LoggingEmbed.setDescription(`<@!${u.id}> cancelled their verification`)
+                    LoggingEmbed.setDescription(`<@!${u.id}> was auto-denied because ${ign} is blacklisted`)
                     embed.setDescription(`You are currently blacklisted from verifying. Please DM me to contact mod-mail and find out why`)
                     break;
                 case 3:
-                    LoggingEmbed.setDescription(`<@!${u.id}> cancelled their verification`)
+                    LoggingEmbed.setDescription(`<@!${u.id}> was auto-denied because ${ign} already exists in the server`)
                     embed.setDescription(`There is already a member verified under ${ign}. If this is an error, please DM me to get in contact with mod-mail`)
                     break;
             }
@@ -325,7 +325,7 @@ module.exports = {
             })
             embed.setDescription('Welcome to the server. You have been verified')
             embedMessage.edit(embed)
-            LoggingEmbed.setDescription(`<@!${u.id}> has successfully verified under ${ign}`)
+            LoggingEmbed.setDescription(`<@!${u.id}> has successfully verified under [${ign}](https://www.realmeye.com/player/${ign})`)
             verilog.send(LoggingEmbed)
             veriattempts.send(LoggingEmbed)
             activeMessage.delete()
@@ -426,7 +426,7 @@ module.exports = {
                         //1
                         else if (r.emoji.name === '1️⃣') {
                             //add to expelled
-                            db.query(`INSERT INTO veriblacklist (id, modid) VALUES ('${member.id}', '${reactor.id}')`)
+                            db.query(`INSERT INTO veriblacklist (id, modid) VALUES ('${member.id}', '${reactor.id}'),('${ign.toLowerCase()}', '${reactor.id}')`)
                             //dm user, tell to appeal to reactor
                             member.user.send(`You were denied from verifying in \`${message.guild.name}\`. Please contact ${reactor} \`${reactor.user.tag}\` to appeal`)
                             //set embed color to red, add wave emote
@@ -496,7 +496,7 @@ module.exports = {
 
 async function checkBlackList(id, db) {
     return new Promise(async (resolve, reject) => {
-        db.query(`SELECT * FROM veriblacklist WHERE id = '${id}'`, async (err, rows) => {
+        db.query(`SELECT * FROM veriblacklist WHERE id = '${id.toLowerCase()}'`, async (err, rows) => {
             if (err) reject(err)
             if (rows.length != 0) resolve(true)
             else resolve(false)

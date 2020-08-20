@@ -54,7 +54,7 @@ module.exports = {
                     setupEmbed.setTitle(`${arrayName} Menu`)
                         .setDescription(`\`\`\`Please select what you wish to edit`)
                     for (let i in array) {
-                        setupEmbed.description += `\n${parseInt(i) + 1}: ${array[i]}`
+                        setupEmbed.description += `\n${parseInt(i) + 1}: ${array[i]} '${bot.settings[message.guild.id][arrayName][array[i]]}'`
                     }
                     setupEmbed.description += `\n\`\`\``
                     await setupMessage.edit(setupEmbed)
@@ -94,7 +94,8 @@ module.exports = {
                                     }
                                     fs.writeFileSync('./guildSettings.json', JSON.stringify(bot.settings, null, 4), err => message.channel.send(err))
                                     setupEmbed.setDescription(change)
-                                    setupEmbed.setTitle(`Changes Made`)
+                                        .setTitle(`Changes Made`)
+                                        .setFooter(`Setup completed`)
                                     await setupMessage.edit(setupEmbed)
                                     await message.react('✅')
                                     await mes.delete()

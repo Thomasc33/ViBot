@@ -21,12 +21,17 @@ module.exports = {
             let vi = await bot.users.fetch(`277636691227836419`)
             return vi.send(`Erorr Channel guild not found`)
         }
-        let embed = new Discord.MessageEmbed()
-            .setColor('#ff0000')
-            .setTitle('Error')
-            .addField('Type', error.name)
-            .addField('Message', `\`\`\`${error.message}\`\`\``)
-            .setTimestamp()
-        ErrorChannel.send(`\`\`\`${error.stack}\`\`\``, embed)
+        if (error.name && error.message) {
+            let embed = new Discord.MessageEmbed()
+                .setColor('#ff0000')
+                .setTitle('Error')
+                .addField('Type', error.name)
+                .addField('Message', `\`\`\`${error.message}\`\`\``)
+                .setTimestamp()
+            ErrorChannel.send(`\`\`\`${error.stack}\`\`\``, embed)
+        } else {
+            ErrorChannel.send(error)
+        }
+
     }
 }
