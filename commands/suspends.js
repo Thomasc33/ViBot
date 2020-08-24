@@ -32,14 +32,14 @@ module.exports = {
             let embed = new Discord.MessageEmbed()
                 .setColor(message.guild.roles.cache.get(settings.roles.tempsuspended).hexColor)
                 .setTitle('Current Logged Suspensions')
-                .setDescription('None')
+                .setDescription('None!')
             db.query(`SELECT * FROM suspensions WHERE suspended = true`, (err, rows) => {
                 for (let i in rows) {
                     let sus = rows[i]
                     let guild = bot.guilds.cache.get(sus.guild)
                     let member = guild.members.cache.get(sus.id)
                     let desc = (`__Suspension case for ${member}__\`${member.nickname}\`\nReason: \`${sus.reason.trim()}\`\nSuspended by: <@!${sus.by}>\n`)
-                    fitStringIntoEmbed(embed, string, message.channel)
+                    fitStringIntoEmbed(embed, desc, message.channel)
                 }
                 message.channel.send(embed)
             })

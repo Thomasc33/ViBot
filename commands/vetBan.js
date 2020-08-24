@@ -73,8 +73,10 @@ module.exports = {
             toBan.forEach(u => {
                 let member = message.guild.members.cache.get(u)
                 if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(u.toLowerCase()));
+                if (!member) member = message.guild.members.cache.get(u.replace(/[<>@!]/gi, ''))
                 if (!member) return message.channel.send(`${u} not found, please try again`);
                 if (member.roles.highest.position >= message.member.roles.highest.position) return message.channel.send(`${member} has a role greater than or equal to you and cannot be vetbanned`);
+                if (member.roles.cache.has(settings.roles.vetraider)) return message.channel.send(`${member} is does not have veteran raider role`)
                 if (member.roles.cache.has(vetBanRole.id)) {
                     db.query(`SELECT * FROM vetbans WHERE id = '${member.id}' AND suspended = true`, async (err, rows) => {
                         if (rows.length != 0) {

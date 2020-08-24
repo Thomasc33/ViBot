@@ -7,24 +7,24 @@ module.exports = {
     args: '[Users]',
     requiredArgs: 1,
     role: 'almostrl',
-    execute(message, args, bot) {
+    execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         if (args.length == 0) return;
         var suspendedButVerifed = message.guild.roles.cache.get(settings.roles.tempsuspended)
         var suspendedRole = message.guild.roles.cache.get(settings.roles.permasuspended)
         var notFoundString = ''
+        let expelled = []
         //combines users into an array
         for (let i in args) {
-            let u = '';
-            u = args[i];
-
+            let u = args[i];
+            db.query(`SELECT * FROM veriblacklist WHERE id = '${u}'`, (err, rows) => {
+                if (rows.length > 0) expelled.push(u)
+            })
             var member = message.guild.members.cache.get(u)
-            if (member == null) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(u.toLowerCase()));
-
-            if (member == null) {
+            if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(u.toLowerCase()));
+            if (!member) {
                 if (notFoundString == '') notFoundString = `${u}`
-                else notFoundString = notFoundString.concat(`${u}, `)
-
+                else notFoundString = notFoundString.concat(`, ${u}`)
             } else {
                 var embed = new Discord.MessageEmbed()
                     .setColor('#00ff00')
@@ -54,6 +54,17 @@ module.exports = {
                 .setTitle('Users not found:')
                 .setDescription(notFoundString);
             message.channel.send(embed)
+        }
+        if (expelled.length > 0) {
+            let expelledString = ''
+            for (let i in expelled) {
+                if (expelledString == '') expelledString = expelled[i]
+                else expelledString += `, ${expelled[i]}`
+            }
+            let expelledEmbed = new Discord.MessageEmbed()
+                .setColor(`#ff0000`)
+                .setTitle(`The following users are expelled`)
+                .setDescription(expelledString)
         }
     }
 }

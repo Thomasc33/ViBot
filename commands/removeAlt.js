@@ -7,7 +7,7 @@ module.exports = {
     requiredArgs: 1,
     role: 'security',
     alias: ['ra'],
-    async execute(message, args, bot) {
+    async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         let member = message.mentions.members.first()
         if (!member) member = message.guild.members.cache.get(args[0])
@@ -58,13 +58,14 @@ module.exports = {
                         else newname += ` | ${names[i]}`
                 }
                 await member.setNickname(newname)
+                db.query(`INSERT INTO veriblacklist (id, modid) VALUES ('${names[choice]}', '${message.author.id}')`)
                 let embed = new Discord.MessageEmbed()
                     .setTitle('Alt Removed')
                     .setColor('#fefefe')
                     .setDescription(member)
                     .addField('Main', member.nickname, true)
                     .addField('Alt Removed', names[choice], true)
-                    .addField('Removed By', `<@!${message.author.id}>`)
+                    .addField('Removed By', `<@!${message.author.id}> `)
                     .setTimestamp(Date.now());
                 let reason = ''
                 for (let i = 1; i < args.length; i++) reason += args[i]

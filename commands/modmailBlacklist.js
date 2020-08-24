@@ -14,12 +14,13 @@ module.exports = {
             db.query(`SELECT * FROM modmailblacklist`, (err, rows) => {
                 if (err) ErrorLogger.log(err, bot)
                 for (let i in rows) fitStringIntoEmbed(blackListedEmbed, `<@!${rows[i].id}>`, message.channel)
+                message.channel.send(blackListedEmbed)
             })
         } else if (args.length == 1) {
             let member = message.mentions.members.first()
-            if (member == null) member = message.guild.members.cache.get(args[0])
-            if (member == null) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
-            if (member == null) { message.channel.send('User not found'); return; }
+            if (!member) member = message.guild.members.cache.get(args[0])
+            if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
+            if (!member) return message.channel.send('User not found')
             db.query(`SELECT * FROM modmailblacklist WHERE id = '${member.id}'`, (err, rows) => {
                 if (rows.length == 0) message.channel.send(`${member} is not mod mail blacklisted right now`)
                 else message.channel.send(`${member} is mod mail blacklisted`)
@@ -31,20 +32,27 @@ module.exports = {
             else return message.channel.send('Please specify whether you with to add or remove from blacklist')
 
             let member = message.mentions.members.first()
-            if (member == null) member = message.guild.members.cache.get(args[1])
-            if (member == null) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[1].toLowerCase()));
-            if (member == null) { message.channel.send('User not found'); return; }
+            if (!member) member = message.guild.members.cache.get(args[1])
+            if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[1].toLowerCase()));
+            if (!member) return message.channel.send('User not found')
 
             if (blacklisted) {
-                db.query(`INSERT INTO modmailblacklist (id) VALUES ('${member.id}')`, (err, rows) => {
-                    if (err) ErrorLogger.log(err, bot)
-                    message.react('✅')
+                db.query(`SELECT * FROM modmailblacklist WHERE id = '${member.id}'`, (err, rows) => {
+                    if (rows.length != 0) return message.channel.send(`${member} is already blacklisted`)
+                    db.query(`INSERT INTO modmailblacklist (id) VALUES ('${member.id}')`, (err, rows) => {
+                        if (err) ErrorLogger.log(err, bot)
+                        message.react('✅')
+                    })
                 })
             } else {
-                db.query(`DELETE FROM modmailblacklist WHERE id = '${member.id}'`, (err, rows) => {
-                    if (err) ErrorLogger.log(err, bot)
-                    message.react('✅')
+                db.query(`SELECT * FROM modmailblacklist WHERE id = '${member.id}'`, (err, rows) => {
+                    if (rows.length == 0) return message.channel.send(`${member} is not blacklisted`)
+                    db.query(`DELETE FROM modmailblacklist WHERE id = '${member.id}'`, (err, rows) => {
+                        if (err) ErrorLogger.log(err, bot)
+                        message.react('✅')
+                    })
                 })
+
             }
         }
     }

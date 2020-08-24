@@ -11,7 +11,7 @@ module.exports = {
         const settings = bot.settings[message.guild.id]
         if (args.length == 0) {
             let keyCountEmbed = new Discord.MessageEmbed()
-                .setDescription(`<@&${settings.topkey}>: ${settings.numerical.topkey} Pops\n<@&${settings.roles.bottomkey}>: ${settings.numerical.bottomkey} Pops`)
+                .setDescription(`<@&${settings.roles.topkey}>: ${settings.numerical.topkey} Pops\n<@&${settings.roles.bottomkey}>: ${settings.numerical.bottomkey} Pops`)
                 .setColor('#ff0000')
             message.channel.send(keyCountEmbed)
         } else {
@@ -20,11 +20,12 @@ module.exports = {
                     this.checkAll(message.guild, bot, db)
                 } else {
                     let member = message.mentions.members.first()
-                    if (member == null) member = message.guild.members.cache.get(args[1])
-                    if (member == null) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[1].toLowerCase()));
-                    if (member == null) return message.channel.send('User not found')
+                    if (!member) member = message.guild.members.cache.get(args[1])
+                    if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[1].toLowerCase()));
+                    if (!member) return message.channel.send('User not found')
                     this.checkUser(member, bot, db)
                 }
+                message.react('✅')
             } else {
                 message.channel.send(`Check syntax and try again`)
             }

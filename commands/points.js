@@ -7,6 +7,7 @@ module.exports = {
     description: 'Displays how many points a user has',
     args: 'None | EO+ <user> | HRL+ <add/remove> <user>',
     role: 'raider',
+    dms: true,
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         if (message.member.roles.highest.position < message.guild.roles.cache.get(settings.roles.eventrl).position) {
@@ -58,6 +59,9 @@ module.exports = {
             }
             message.react('✅')
         }
+    },
+    async dmExecution(message, args, bot, db, guild) {
+        return message.channel.send(await this.getPointEmbed(message.author, db))
     },
     getPointEmbed(member, db) {
         return new Promise((resolve, reject) => {

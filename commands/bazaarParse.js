@@ -60,7 +60,7 @@ module.exports = {
                 })
             }
             if (!found) {
-                supposedToBeThere.push(m)
+                if (m.id !== message.author.id) supposedToBeThere.push(m)
             }
         }
         for (let i in players) {

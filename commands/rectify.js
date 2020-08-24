@@ -4,6 +4,7 @@ module.exports = {
     name: 'rectify',
     description: 'Removes the ? infront of peoples names',
     role: 'security',
+    alias: ['r'],
     requiredArgs: 1,
     args: '<id/mention>',
     async execute(message, args, bot) {

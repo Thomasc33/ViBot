@@ -389,7 +389,10 @@ module.exports = {
                     embed.setTimestamp()
                     message.edit(embed)
                     //log in veri-log
-                    message.guild.channels.cache.get(settings.channels.verificationlog).send(`${member} was manually verified by ${reactor}`)
+                    let veriEmbed = new Discord.MessageEmbed()
+                        .setColor('#00ff00')
+                        .setDescription(`${member} was manually verified by ${reactor}`)
+                    message.guild.channels.cache.get(settings.channels.verificationlog).send(veriEmbed)
                     //set nickname
                     let tag = member.user.tag.substring(0, member.user.tag.length - 5)
                     let nick = ''

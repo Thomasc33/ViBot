@@ -23,7 +23,7 @@ module.exports = {
                 db.query(`UPDATE users SET vialUsed = ${parseInt(rows[0].vialUsed) + 1} WHERE id = '${member.id}'`)
             }
             message.channel.send(`Vial logged. They now have ${parseInt(rows[0].vialUsed) + 1} vials popped`)
-            message.guild.channels.cache.get(settings.channels.viallog).send(`Vial added to ${member} (${member.nickname}), logged by ${message.member} (${parseInt(rows[0].vialUsed) + 1} total pops)`)
+            message.guild.channels.cache.get(settings.channels.viallog).send(`Vial pop added to ${member} (${member.nickname}), logged by ${message.member} (${parseInt(rows[0].vialUsed) + 1} total pops)`)
         })
     }
 }

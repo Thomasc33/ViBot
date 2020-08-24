@@ -18,13 +18,14 @@ module.exports = {
         let member = message.mentions.members.first()
         if (!member) member = message.guild.members.cache.get(raider)
         if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(raider.toLowerCase()));
+        if (!member) member = message.guild.members.cache.get(u.replace(/[<>@!]/gi, ''))
         if (!member) return message.channel.send('I could not find ' + raider)
         if (reason == '') reason = 'None'
         if (!member) return message.channel.send("User not found, please try again");
         if (member.roles.cache.has(settings.roles.permasuspended)) return unPerma()
         if (!member.roles.cache.has(settings.roles.tempsuspended)) return message.channel.send("User is not suspended")
 
-        db.query(`SELECT * FROM suspensions WHERE id = '${member.id}' AND suspended = '1'`, async (err, rows) => {
+        db.query(`SELECT * FROM suspensions WHERE id = '${member.id}' AND suspended = true`, async (err, rows) => {
             if (err) ErrorLogger.log(err, bot)
             if (rows && rows.length == 0) {
                 message.channel.send(`This user was not suspended by ${bot.user}. Would you still like to unsuspend them (removes suspended and gives raider role back)? Y/N`)

@@ -11,6 +11,12 @@
         "password": "Poiewq20021313$",
         "database": "testinghalls"
     },
+    "proxy": {
+        "host": "46.166.186.197",
+        "port": 1080,
+        "user": "x0012017",
+        "password": "mzMNRu2t9B"
+    },
     "lootInfo": {
         "whites": [
             "Sword of the Colossus",

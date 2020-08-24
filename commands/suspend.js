@@ -5,7 +5,7 @@ const ErrorLogger = require('../logError')
 module.exports = {
     name: 'suspend',
     description: 'Suspends user',
-    args: '[in-game names] <time> <time type d/m/s/w/y> <reason>',
+    args: '[users] <time> <time type d/m/s/w/y> <reason>',
     requiredArgs: 3,
     role: 'rl',
     async execute(message, args, bot, db) {
@@ -33,37 +33,16 @@ module.exports = {
             var timeTypeString;
 
             switch (timeType.toLowerCase()) {
-                case 'd':
-                    time *= 86400000;
-                    timeTypeString = 'day(s)';
-                    break;
-                case 'm':
-                    time *= 60000;
-                    timeTypeString = 'minutes';
-                    break;
-                case 's':
-                    time *= 1000;
-                    timeTypeString = 'second(s)';
-                    break;
-                case 'w':
-                    time *= 604800000;
-                    timeTypeString = 'week(s)';
-                    break;
-                case 'y':
-                    time *= 31536000000;
-                    timeTypeString = 'year(s)';
-                    break;
-                case 'h':
-                    time *= 3600000;
-                    timeTypeString = 'hour(s)';
-                    break;
-                default:
-                    message.channel.send("Please enter a valid time type __**d**__ay, __**m**__inute, __**h**__our, __**s**__econd, __**w**__eek, __**y**__ear");
-                    return;
+                case 'd': time *= 86400000; timeTypeString = 'day(s)'; break;
+                case 'm': time *= 60000; timeTypeString = 'minute(s)'; break;
+                case 's': time *= 1000; timeTypeString = 'second(s)'; break;
+                case 'w': time *= 604800000; timeTypeString = 'week(s)'; break;
+                case 'y': time *= 31536000000; timeTypeString = 'year(s)'; break;
+                case 'h': time *= 3600000; timeTypeString = 'hour(s)'; break;
+                default: return message.channel.send("Please enter a valid time type __**d**__ay, __**m**__inute, __**h**__our, __**s**__econd, __**w**__eek, __**y**__ear");
             }
         } catch (er) {
-            message.channel.send("Invalid time given. Please try again");
-            return;
+            return message.channel.send("Invalid time given. Please try again");
         }
         try {
             var reason = "";
@@ -75,7 +54,8 @@ module.exports = {
             toBan.forEach(u => {
                 let member = message.guild.members.cache.get(u)
                 if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(u.toLowerCase()));
-                if (member == null) return message.channel.send(`${u} not found, please try again`);
+                if (!member) member = message.guild.members.cache.get(u.replace(/[<>@!]/gi, ''))
+                if (!member) return message.channel.send(`${u} not found, please try again`);
                 if (member.roles.highest.position >= message.member.roles.highest.position) return message.channel.send(`${member} has a role greater than or equal to you and cannot be muted`);
                 if (member.roles.cache.has(pSuspendRole.id)) return message.channel.send('User is perma suspended already, no need to suspend again')
                 if (member.roles.cache.has(suspendedRole.id)) {
@@ -113,7 +93,7 @@ module.exports = {
                         .setFooter(`Unsuspending at `)
                         .setTimestamp(Date.now() + time);
                     if (overwrite) {
-                        db.query(`UPDATE suspensions SET uTime = ${Date.now() + time} WHERE id = '${member.id}' AND suspended = true`)
+                        db.query(`UPDATE suspensions SET uTime = '${Date.now() + time}' WHERE id = '${member.id}' AND suspended = true`)
                         embed.fields[3].value = `Overwritten suspensions. Roles the same as prior suspension`
                         suspensionLog.send(embed).then(member.user.send(embed))
                     } else {

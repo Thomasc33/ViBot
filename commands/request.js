@@ -9,14 +9,15 @@ module.exports = {
     role: 'almostrl',
     args: '<key/vial/brian/mystic/rusher> [Location]',
     requiredArgs: 1,
-    async execute(message, args, bot) {
+    async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
+        let isVet
         if (message.channel.parent.name.toLowerCase() === 'raiding') isVet = false;
         else if (message.channel.name === 'veteran raiding') isVet = true;
-        else return message.channel.send("Try again, but in dylanbot-commands or veteran-bot-commands");
+        else return message.channel.send("Try again, but in a correct section");
 
         var voiceChannel = message.member.voice.channel
-        if (voiceChannel == null) { message.channel.send("Channel not found. Make sure you are in a VC"); return; }
+        if (!voiceChannel) return message.channel.send("Channel not found. Make sure you are in a VC")
         if (isVet) var raidStatus = message.guild.channels.cache.get(settings.channels.vetstatus)
         else var raidStatus = message.guild.channels.cache.get(settings.channels.raidstatus)
         var location = "";
@@ -24,10 +25,7 @@ module.exports = {
             location = location.concat(args[i]) + ' ';
         }
         location = location.trim();
-        if (location == '') {
-            message.channel.send("Add a location and try again")
-            return;
-        }
+        if (location == '') return message.channel.send("Add a location and try again")
         var requestMessage = await raidStatus.send('@here')
         let embed = new Discord.MessageEmbed()
             .setAuthor(`Requested by ${message.member.nickname} in ${voiceChannel.name}`, `${message.author.avatarURL()}`)
@@ -67,6 +65,9 @@ module.exports = {
                 requestMessage.react(botSettings.emoteIDs.brain)
                 var ReactionFilter = (r, u) => r.emoji.id === botSettings.emoteIDs.brain && !u.bot;
                 break;
+            default:
+                message.channel.send(`Request type unrecognized`)
+                return;
         }
         requestMessage.edit(embed)
         var reactionCollector = new Discord.ReactionCollector(requestMessage, ReactionFilter);
@@ -123,6 +124,7 @@ module.exports = {
                 requestMessage.edit('', embed);
                 reactionCollector.stop();
                 dmReactionCollector.stop();
+                db.query(`UPDATE users SET points = points + ${settings.points.keypop} WHERE id = ${u.id}`, err => { if (err) ErrorLogger.log(err) })
             });
         }
         async function confirmVial(u, r) {
@@ -154,6 +156,7 @@ module.exports = {
                     requestMessage.edit('', embed);
                     reactionCollector.stop();
                     dmReactionCollector.stop();
+                    db.query(`UPDATE users SET points = points + ${settings.points.vialpop} WHERE id = ${u.id}`, err => { if (err) ErrorLogger.log(err) })
                 });
             } catch (er) {
                 console.log(`Couldn't pm someone, pm's are private`);
@@ -186,6 +189,7 @@ module.exports = {
                     requestMessage.edit('', embed);
                     reactionCollector.stop();
                     dmReactionCollector.stop();
+                    db.query(`UPDATE users SET points = points + ${settings.points.rushing} WHERE id = ${u.id}`, err => { if (err) ErrorLogger.log(err) })
                 });
             } catch (er) {
                 console.log(`Couldn't pm someone, pm's are private`);
@@ -219,6 +223,8 @@ module.exports = {
                     requestMessage.edit('', embed);
                     reactionCollector.stop();
                     dmReactionCollector.stop();
+
+                    db.query(`UPDATE users SET points = points + ${settings.points.mystic} WHERE id = ${u.id}`, err => { if (err) ErrorLogger.log(err) })
                 });
             } catch (er) {
                 console.log(`Couldn't pm someone, pm's are private`);
@@ -254,6 +260,7 @@ module.exports = {
                     requestMessage.edit('', embed);
                     reactionCollector.stop();
                     dmReactionCollector.stop();
+                    db.query(`UPDATE users SET points = points + ${settings.points.brain} WHERE id = ${u.id}`, err => { if (err) ErrorLogger.log(err) })
                 });
             } catch (er) {
                 console.log(er)

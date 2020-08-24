@@ -5,23 +5,19 @@ module.exports = {
     name: 'addalt',
     description: 'Adds the username of an alt to a user and logs it',
     alias: ['aa'],
-    args: '<id/mention> <alt name> (proof)',
-    requiredArgs: 2,
+    args: '<id/mention> <alt name> <image>',
+    requiredArgs: 3,
     role: 'security',
-    async execute(message, args, bot) {
+    async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         var member = message.mentions.members.first()
-        if (member == null) {
-            member = message.guild.members.cache.get(args.shift());
-        } else { args.shift() }
+        if (!member) member = message.guild.members.cache.get(args.shift());
+        else { args.shift() }
         const altName = args.shift();
-        var proof = ' ';
-        for (i = 2; i < args.length; i++) {
-            proof = proof.concat(args[i]) + ' ';
-        }
-        if (message.attachments.size != 0) {
-            proof = proof.concat(` ${message.attachments.first().proxyURL}`)
-        }
+        let dupeName = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(altName.toLowerCase()));
+        if (dupeName) return message.channel.send(`${dupeName} already has the name ${altName}`)
+        let image = message.attachments.first()
+        if (!image) image = args[2]
         let confirmMessage = await message.channel.send(`Are you sure you want to add the alt ${altName} to ${member}? Y/N`);
         let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 10000 });
         collector.on('collect', async m => {
@@ -35,13 +31,12 @@ module.exports = {
                         .addField('New Alt', altName, true)
                         .addField('Added By', `<@!${message.author.id}>`)
                         .setTimestamp(Date.now());
+                    if (validURL(image)) embed.setImage(image)
                     await message.guild.channels.cache.get(settings.channels.modlogs).send(embed);
-                    if (proof != ' ') {
-                        await message.guild.channels.cache.get(settings.channels.modlogs).send(proof);
-                    }
                     collector.stop();
                     message.react('✅')
                     confirmMessage.delete()
+                    db.query(`DELETE FROM veriblacklist WHERE id = '${altName}'`)
                 } else {
                     message.channel.send('Response not recognized. Please try suspending again');
                     collector.stop();
@@ -53,4 +48,14 @@ module.exports = {
         })
 
     }
+}
+
+function validURL(str) {
+    var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+        '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+        '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+        '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+    return !!pattern.test(str);
 }

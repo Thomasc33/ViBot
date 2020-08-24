@@ -6,7 +6,6 @@ const ErrorLogger = require('../logError')
 const Channels = require('./vibotChannels')
 const realmEyeScrape = require('../realmEyeScrape');
 const points = require('./points');
-const KeyRoles = require('./keyRoles');
 const keyRoles = require('./keyRoles');
 
 //globals
@@ -27,8 +26,8 @@ module.exports = {
         if (args.length == 0) return;
         bot = bott
         if (message.channel.id === settings.channels.raidcommands) var isVet = false;
-        else if (message.channel.name === settings.channels.vetcommands) var isVet = true;
-        else return message.channel.send(`Try again, but in <@#${settings.channels.raidcommands}> or <@#${settings.channels.vetcommands}>`);
+        else if (message.channel.id === settings.channels.vetcommands) var isVet = true;
+        else return message.channel.send(`Try again, but in <#${settings.channels.raidcommands}> or <#${settings.channels.vetcommands}>`);
         if (args.length < 2) return message.channel.send(`Command entered incorrectly -> ${botSettings.prefix}${this.name} ${this.args}`);
         if (isVet && activeVetRun) return message.channel.send(`There is already a run active. If this is an error, do \`;allowrun\``);
         else if (activeRun) return message.channel.send(`There is already a run active. If this is an error, do \`;allowrun\``);
@@ -42,7 +41,7 @@ module.exports = {
         for (i = 1; i < args.length; i++) location = location.concat(args[i]) + ' ';
         location = location.trim();
         if (location.length >= 1024) return message.channel.send('Location must be below 1024 characters, try again');
-        let channel = await createChannel(isVet, message, run)
+        let channel = await createChannel(isVet, message, run, location)
             .catch(er => { ErrorLogger.log(er, bot); return message.channel.send('There was an issue creating the channel. Please try again') })
         if (isVet) currentVet = new afk(run, location, message, isVet, db, channel, settings);
         else currentReg = new afk(run, location, message, isVet, db, channel, settings);
@@ -1036,7 +1035,7 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
         }
     }
 }
-async function createChannel(isVet, message, run) {
+async function createChannel(isVet, message, run, location) {
     let settings = bot.settings[message.guild.id]
     return new Promise(async (res, rej) => {
         //channel creation
@@ -1066,10 +1065,12 @@ async function createChannel(isVet, message, run) {
 
         //Embed to remove
         let embed = new Discord.MessageEmbed()
-            .setTitle(`${message.member.nickname}'s Run`)
             .setDescription('Whenever the run is over. React with the ❌ to delete the channel. View the timestamp for more information')
             .setFooter(channel.id)
             .setTimestamp()
+        if (run == 1) { embed.setTitle(`${message.member.nickname}'s Cult Run`).setColor('#ff0000').setDescription(embed.description.concat(`\nLocation: \`${location}\``)) }
+        if (run == 2) { embed.setTitle(`${message.member.nickname}'s Void Run`).setColor('#2f075c').setDescription(embed.description.concat(`\nLocation: \`${location}\``)) }
+        if (run == 3) { embed.setTitle(`${message.member.nickname}'s Fullskip Void Run`).setColor('#2f075c').setDescription(embed.description.concat(`\nLocation: \`${location}\``)) }
         let m = await vibotChannels.send(`${message.member}`, embed)
         await m.react('❌')
         setTimeout(() => { Channels.watchMessage(m, bot, settings) }, 5000)

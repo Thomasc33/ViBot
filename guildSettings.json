@@ -59,7 +59,10 @@
             "vetchannels": "721880245321465936",
             "runlogs": "701483952233250866",
             "dmcommands": "701483950798929996",
-            "veriactive": "701483951331606582"
+            "veriactive": "701483951331606582",
+            "pointlogging": "742123684344496260",
+            "veriattempts": "701483951331606583",
+            "modmailinfo": "701483951168159812"
         },
         "voice": {
             "raidingtemplate": "717947391755681902",
@@ -77,7 +80,7 @@
         "backend": {
             "modmail": true,
             "currentweek": true,
-            "eventcurrentweek": false,
+            "eventcurrentweek": true,
             "verification": true,
             "vetverification": false,
             "points": true
@@ -110,13 +113,17 @@
         },
         "points": {
             "earlylocation": 20,
-            "perrun": 1,
+            "perrun": 0,
             "nitromultiplier": 2,
             "keypop": 20,
             "vialpop": 3,
             "rushing": 1,
             "brain": 1,
-            "mystic": 1
+            "mystic": 1,
+            "eventkey": 2,
+            "cultlocation": 20,
+            "voidlocation": 25,
+            "fsvlocation": 30
         }
     }
 }

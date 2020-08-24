@@ -11,9 +11,9 @@ module.exports = {
     role: 'security',
     async execute(message, args, bot, db) {
         let member = message.mentions.members.first()
-        if (member == null) member = message.guild.members.cache.get(args[0])
-        if (member == null) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
-        if (member == null) return message.channel.send('User not found')
+        if (!member) member = message.guild.members.cache.get(args[0])
+        if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
+        if (!member) return message.channel.send('User not found')
 
         let settings = bot.settings[message.guild.id]
         const suspendedRole = message.guild.roles.cache.get(settings.roles.tempsuspended)
@@ -50,11 +50,26 @@ module.exports = {
             suspend(false)
         }
         async function suspend(overwrite) {
+            let embed = new Discord.MessageEmbed()
+                .setColor('#ff0000')
+                .setTitle('Suspension Information')
+                .setDescription(`The suspension is permanent`)
+                .addField(`User Information \`${member.nickname}\``, `<@!${member.id}> (Tag: ${member.user.tag})`, true)
+                .addField(`Mod Information \`${message.guild.members.cache.get(message.author.id).nickname}\``, `<@!${message.author.id}> (Tag: ${message.author.tag})`, true)
+                .addField(`Reason:`, reason)
+                .addField(`Roles`, 'None!')
+                .setFooter(`Unsuspending at `)
+                .setTimestamp(Date.now() + time);
             let userRolesString = '', userRoles = []
             member.roles.cache.each(r => {
                 if (!r.managed) {
                     userRoles.push(r.id)
                     userRolesString = userRolesString.concat(`${r.id} `)
+                }
+                if (embed.fields[3].value == 'None!') {
+                    embed.fields[3].value = `<@&${r.id}>`
+                } else {
+                    embed.fields[3].value += `, <@&${r.id}>`
                 }
             })
             await member.roles.remove(userRoles)
@@ -62,6 +77,7 @@ module.exports = {
             if (overwrite) db.query(`UPDATE suspensions SET perma = true, uTime = '0', modid = '${message.member.id}' WHERE id = '${member.id}' AND suspended = true`)
             else db.query(`INSERT INTO suspensions (id, guildid, suspended, uTime, reason, modid, roles, logmessage, perma) VALUES ('${member.id}', '${message.guild.id}', true, '0', '${reason}', '${message.author.id}', '${userRolesString}', 'n/a', true);`)
             message.channel.send(`${member} has been permanently suspended`)
+            message.guild.channels.cache.get(settings.channels.suspendlog).send(embed)
         }
     }
 }

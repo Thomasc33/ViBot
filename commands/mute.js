@@ -14,6 +14,7 @@ module.exports = {
         var member = message.mentions.members.first()
         if (!member) member = message.guild.members.cache.get(args[0]);
         if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
+        if (!member) member = message.guild.members.cache.get(u.replace(/[<>@!]/gi, ''))
         if (!member) { message.channel.send('User not found. Please try again'); return; }
         if (member.roles.highest.position >= message.member.roles.highest.position) return message.channel.send(`${member} has a role greater than or equal to you and cannot be muted`);
         let muted = settings.roles.muted
@@ -54,6 +55,7 @@ module.exports = {
         db.query(`INSERT INTO mutes (id, guildid, muted, reason, modid, uTime) VALUES ('${member.id}', '${message.guild.id}', true, '${reason}','${message.author.id}', '${Date.now() + time}')`, err => {
             member.roles.add(muted).catch(er => ErrorLogger.log(er, bot))
             message.channel.send(`${member} has been muted`)
+            member.user.send(`You have been muted on \`${message.guild.name}\` by <@!${message.author.id}> \`${message.author.tag}\``)
         })
     }
 }
