@@ -6,7 +6,7 @@ module.exports = {
     description: 'Changes the name of a user and logs it automatically',
     alias: ['cn'],
     args: '<User id/mention> <new name> <proof>',
-    requiredArgs: 3,
+    requiredArgs: 2,
     role: 'security',
     execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
@@ -16,13 +16,10 @@ module.exports = {
             member = message.guild.members.cache.get(args.shift());
         } else { args.shift() }
         const altName = args.shift();
-        var proof = ' ';
-        for (i = 0; i < args.length; i++) {
-            proof = proof.concat(args[i]) + ' ';
-        }
-        if (message.attachments.size != 0) {
-            proof = proof.concat(` ${message.attachments.first().proxyURL}`)
-        }
+        let image = message.attachments.first().proxyURL
+        if (!image) image = args[2]
+        if (!image) return message.channel.send(`Please provide an image`)
+        if (!validURL(image)) return message.channel.send(`Error attaching the image. Please try again`)
         message.channel.send(`Are you sure you want to change <@!${member.id}> to ${altName}? Y/N`);
         let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 10000 });
         collector.on('collect', m => {
@@ -36,12 +33,10 @@ module.exports = {
                         .addField('Old Name', member.nickname, true)
                         .addField('New Name', altName, true)
                         .addField('Change By', `<@!${m.author.id}>`)
-                        .setTimestamp(Date.now());
+                        .setTimestamp(Date.now())
+                        .setImage(image)
                     message.guild.channels.cache.get(settings.channels.modlogs).send(embed);
-                    if (proof != ' ') {
-                        message.guild.channels.cache.get(settings.channels.modlogs).send(proof);
-                    }
-                    message.channel.send('Done!');
+                    message.react('✅')
                     collector.stop()
                 } else {
                     message.channel.send('Response not recognized. Please try again');

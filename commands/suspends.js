@@ -36,9 +36,10 @@ module.exports = {
             db.query(`SELECT * FROM suspensions WHERE suspended = true`, (err, rows) => {
                 for (let i in rows) {
                     let sus = rows[i]
-                    let guild = bot.guilds.cache.get(sus.guild)
+                    let guild = bot.guilds.cache.get(sus.guildid)
+                    if (!guild) { console.log(sus.guild); continue; }
                     let member = guild.members.cache.get(sus.id)
-                    let desc = (`__Suspension case for ${member}__\`${member.nickname}\`\nReason: \`${sus.reason.trim()}\`\nSuspended by: <@!${sus.by}>\n`)
+                    let desc = (`__Suspension case for ${member}__\`${member.nickname}\`\nReason: \`${sus.reason.trim()}\`\nSuspended by: <@!${sus.modid}>\n`)
                     fitStringIntoEmbed(embed, desc, message.channel)
                 }
                 message.channel.send(embed)

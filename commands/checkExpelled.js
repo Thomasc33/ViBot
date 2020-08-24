@@ -2,7 +2,7 @@ const Discord = require('discord.js')
 
 module.exports = {
     name: 'checkexpelled',
-    args: 'security',
+    role: 'security',
     description: 'Checks expelled list for verified people',
     async execute(message, args, bot, db) {
         let members = await getList(db)

@@ -74,7 +74,7 @@ module.exports = {
             }
         })
         function unPerma() {
-            if (member.roles.cache.highest.position < message.guild.roles.cache.get(settings.roles.security).position || message.author.id !== '277636691227836419') return
+            if (member.roles.highest.position < message.guild.roles.cache.get(settings.roles.security).position && message.author.id !== '277636691227836419') return
             db.query(`SELECT * FROM suspensions WHERE perma = true AND suspended = true AND id = '${member.id}'`, async (err, rows) => {
                 if (rows.length == 0) {
                     let confirm = await message.channel.send(`I do not have any records of ${member} being perma suspended. Would you like to remove suspended, and add raider back?`)

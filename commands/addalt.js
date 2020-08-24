@@ -6,7 +6,7 @@ module.exports = {
     description: 'Adds the username of an alt to a user and logs it',
     alias: ['aa'],
     args: '<id/mention> <alt name> <image>',
-    requiredArgs: 3,
+    requiredArgs: 2,
     role: 'security',
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
@@ -16,8 +16,10 @@ module.exports = {
         const altName = args.shift();
         let dupeName = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(altName.toLowerCase()));
         if (dupeName) return message.channel.send(`${dupeName} already has the name ${altName}`)
-        let image = message.attachments.first()
+        let image = message.attachments.first().proxyURL
         if (!image) image = args[2]
+        if (!image) return message.channel.send(`Please provide an image`)
+        if (!validURL(image)) return message.channel.send(`Error attaching the image. Please try again`)
         let confirmMessage = await message.channel.send(`Are you sure you want to add the alt ${altName} to ${member}? Y/N`);
         let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 10000 });
         collector.on('collect', async m => {
@@ -30,8 +32,8 @@ module.exports = {
                         .addField('Main', member.nickname, true)
                         .addField('New Alt', altName, true)
                         .addField('Added By', `<@!${message.author.id}>`)
-                        .setTimestamp(Date.now());
-                    if (validURL(image)) embed.setImage(image)
+                        .setTimestamp(Date.now())
+                        .setImage(image)
                     await message.guild.channels.cache.get(settings.channels.modlogs).send(embed);
                     collector.stop();
                     message.react('✅')

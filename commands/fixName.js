@@ -18,7 +18,7 @@ module.exports = {
                 .setName(`${settings.voiceprefixes.vetprefix}${args[0]}`).catch(r => { })
         } else if (message.channel.parent.name.toLowerCase() === 'events') {
             let channel = message.guild.channels.cache.find(c => c.type == 'category' && c.name == 'Events').children.find(c => c.name.includes(args[0]) && !c.name.includes('Realm Clearing'))
-            channel.setName(channel.name.substring(0, channel.name.indexOf(args[0]))).catch(r => { })
+            channel.setName(channel.name.substring(0, channel.name.indexOf(args[0]) + 1)).catch(r => { })
         } else return message.channel.send(`Please try again in ${message.guild.channels.cache.get(settings.channels.raidcommands)} or ${message.guild.channels.cache.get(settings.channels.vetcommands)}`);
         message.react('✅')
     }

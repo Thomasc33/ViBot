@@ -58,8 +58,7 @@ module.exports = {
                 .addField(`Mod Information \`${message.guild.members.cache.get(message.author.id).nickname}\``, `<@!${message.author.id}> (Tag: ${message.author.tag})`, true)
                 .addField(`Reason:`, reason)
                 .addField(`Roles`, 'None!')
-                .setFooter(`Unsuspending at `)
-                .setTimestamp(Date.now() + time);
+                .setTimestamp(Date.now());
             let userRolesString = '', userRoles = []
             member.roles.cache.each(r => {
                 if (!r.managed) {
@@ -72,8 +71,7 @@ module.exports = {
                     embed.fields[3].value += `, <@&${r.id}>`
                 }
             })
-            await member.roles.remove(userRoles)
-            setTimeout(() => { member.roles.add(pSuspendRole.id); }, 1000)
+            await member.edit({ roles: [pSuspendRole] })
             if (overwrite) db.query(`UPDATE suspensions SET perma = true, uTime = '0', modid = '${message.member.id}' WHERE id = '${member.id}' AND suspended = true`)
             else db.query(`INSERT INTO suspensions (id, guildid, suspended, uTime, reason, modid, roles, logmessage, perma) VALUES ('${member.id}', '${message.guild.id}', true, '0', '${reason}', '${message.author.id}', '${userRolesString}', 'n/a', true);`)
             message.channel.send(`${member} has been permanently suspended`)
