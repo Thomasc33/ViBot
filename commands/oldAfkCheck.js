@@ -2,6 +2,7 @@
 const botSettings = require('../settings.json');
 const Discord = require('discord.js');
 const ErrorLogger = require('../logError')
+const keyRoles = require('./keyRoles');
 
 //globals
 var activeVetRun = false;
