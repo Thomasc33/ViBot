@@ -15,7 +15,7 @@ module.exports = {
         if (!member) member = message.guild.members.cache.get(args[0]);
         if (!member) return message.channel.send("User not found")
         if (member.roles.cache.has(suspendedRole.id) || member.roles.cache.has(sbvRole.id)) return message.channel.send("User is suspended")
-        if(member.roles.cache.has(raiderRole.id)) return message.channel.send('User is already verified')
+        if (member.roles.cache.has(raiderRole.id)) return message.channel.send('User is already verified')
         await member.roles.add(raiderRole)
         if (member.roles.cache.has(settings.roles.eventraider)) await member.roles.remove(settings.roles.eventraider)
         let tag = member.user.tag.substring(0, member.user.tag.length - 5)
@@ -35,5 +35,6 @@ module.exports = {
             .setTimestamp(Date.now());
         message.guild.channels.cache.get(settings.channels.modlogs).send(embed);
         message.channel.send(`${member} has been given ${raiderRole}`)
+        member.user.send(`You have been verified on \`${message.guild.name}\`. Please head over to rules, faq, and raiding-rules channels to familiarize yourself with the server. Happy raiding`)
     }
 }

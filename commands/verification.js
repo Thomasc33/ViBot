@@ -84,7 +84,7 @@ module.exports = {
         //dm user
         let embed = new Discord.MessageEmbed()
             .setColor('#015c21')
-            .setTitle(`<${botSettings.emote.hallsPortal}> You verification status! <${botSettings.emote.hallsPortal}>`)
+            .setTitle(`<${botSettings.emote.hallsPortal}> Your verification status! <${botSettings.emote.hallsPortal}>`)
             .setDescription(`__**You have not been verified yet! Please follow the instructions below**__\n\n**Please enter your in game name** Enter it actually how it is spelled in game (Ex. \`Vi\`).\nCapitalization doesn't matter\n\n*React with ❌ at anytime to cancel*`)
             .setFooter(`There is a 15 minute timer that updates every 30 seconds...`)
         let dms = await u.createDM()
@@ -209,16 +209,28 @@ module.exports = {
         veriCodeReactionCollector.on('collect', async (r, u) => {
             //check realmeye description for vericode
             let userInfo = await realmEyeScrape.getGraveyardSummary(ign).catch(er => {
-                ErrorLogger.log(er, bot)
-                embed.setDescription(`There was an error checking your realmeye page. Please make sure everything except last known location is public, then try verifying again`)
-                embedMessage.edit(embed)
-                LoggingEmbed.setDescription(`<@!${u.id}> Needs to unprivate parts of their realmeye to verify`)
-                LoggingEmbed.setColor('#ff0000')
-                activeMessage.edit(LoggingEmbed)
-                veriattempts.send(LoggingEmbed)
-                return;
+                //ErrorLogger.log(er, bot)
+                if (er == 'Unloaded Graveyard') {
+                    embed.setDescription(`Your graveyard is not loaded on realmeye or it is privated. If you are sure it is set to public then go to your graveyard and click on the button that says:\n\`Click here if you think that some of your deceased heros are still missing!\`\nOnce you are done, re-react with the ✅`)
+                    embedMessage.edit(embed)
+                    LoggingEmbed.setDescription(`<@!${u.id}> Needs to load in their graveyard on their realmeye page *clicking the button*`)
+                    LoggingEmbed.setColor('#ff0000')
+                    activeMessage.edit(LoggingEmbed)
+                    veriattempts.send(LoggingEmbed)
+                    return;
+                } else {
+                    embed.setDescription(`There was an error checking your realmeye page. Please make sure everything except last known location is public, then re-react with the ✅`)
+                    embedMessage.edit(embed)
+                    LoggingEmbed.setDescription(`<@!${u.id}> Needs to unprivate parts of their realmeye to verify`)
+                    LoggingEmbed.setColor('#ff0000')
+                    activeMessage.edit(LoggingEmbed)
+                    veriattempts.send(LoggingEmbed)
+                    return;
+                }
+
             })
             if (!userInfo) return
+            LoggingEmbed.setColor('#00ff00')
             let found = false;
             for (let i in userInfo.desc) {
                 if (userInfo.desc[i].includes(vericode)) found = true
@@ -270,7 +282,7 @@ module.exports = {
         //manual verify
         async function manualVerify(reasons, data) {
             bot.clearInterval(timer)
-            embed.setDescription(`There was an issue with your profile and you have been marked for review. Please allow up to 48 hours to hear back.`)
+            embed.setDescription(`Your account is now under manual review, please do not attempt to verify again. If your account has not been reviewed within the next 48 hours, please contact the staff __**through modmail**__ **by sending me a message.** Please **DO NOT** contact a staff member directly about being verified unless you are told to do so.`)
                 .setColor('#ff0000')
                 .footer = null
             embedMessage.edit(embed)
@@ -323,7 +335,7 @@ module.exports = {
             db.query(`INSERT INTO users (id) VALUES ('${u.id}')`, err => {
                 if (err) return
             })
-            embed.setDescription('Welcome to the server. You have been verified')
+            embed.setDescription('Welcome to the server. You have been verified. Please head over to rules, faq, and raiding-rules channels to familiarize yourself with the server. Happy raiding')
             embedMessage.edit(embed)
             LoggingEmbed.setDescription(`<@!${u.id}> has successfully verified under [${ign}](https://www.realmeye.com/player/${ign})`)
             verilog.send(LoggingEmbed)

@@ -28,6 +28,7 @@ module.exports = {
         if (message.channel.id === settings.channels.raidcommands) var isVet = false;
         else if (message.channel.id === settings.channels.vetcommands) var isVet = true;
         else return message.channel.send(`Try again, but in <#${settings.channels.raidcommands}> or <#${settings.channels.vetcommands}>`);
+        if (isVet) if (message.member.roles.highest.position < message.guild.roles.cache.get(settings.roles.vetrl).position) return message.channel.send(`Only Veteran Raid Leaders can start vet runs`)
         if (args.length < 2) return message.channel.send(`Command entered incorrectly -> ${botSettings.prefix}${this.name} ${this.args}`);
         if (isVet && activeVetRun) return message.channel.send(`There is already a run active. If this is an error, do \`;allowrun\``);
         else if (activeRun) return message.channel.send(`There is already a run active. If this is an error, do \`;allowrun\``);

@@ -288,7 +288,10 @@ bot.on('guildMemberRemove', member => {
             let modlog = member.guild.channels.cache.get(bot.settings[member.guild.id].channels.modlogs)
             if (!modlog) return ErrorLogger.log(new Error(`mod log not found in ${member.guild.id}`), bot)
             modlog.send(`${member} is attempting to dodge a suspension by leaving the server`)
-            db.query(`UPDATE suspensions SET ignOnLeave = '${member.nicknam}' WHERE id = '${member.id}' AND suspended = true`)
+            db.query(`UPDATE suspensions SET ignOnLeave = '${member.nickname}' WHERE id = '${member.id}' AND suspended = true`)
+            member.nickname.replace(/[^a-z|]/gi, '').split('|').forEach(n => {
+                db.query(`INSERT INTO veriblacklist (id, modid) VALUES ('${n}', 'Left Server While Suspended')`)
+            })
         }
     })
 })

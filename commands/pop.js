@@ -6,7 +6,7 @@ module.exports = {
     description: 'Logs key pops',
     args: '<lh/event> <user> (count)',
     requiredArgs: 2,
-    role: 'almostrl',
+    role: 'eventrl',
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         var count = 1

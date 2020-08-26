@@ -141,14 +141,18 @@ module.exports = {
                         } catch (er) { continue }
                     }
                     let desc = [$('.line1.description-line').text(), $('.line2.description-line').text(), $('.line3.description-line').text()]
-                    let deathRows = $("table.table-striped.tablesorter.maxed-stats-by-class").find('tfoot').find('tr')[0].children
+                    let deathRows
+                    try { deathRows = $("table.table-striped.tablesorter.maxed-stats-by-class").find('tfoot').find('tr')[0].children }
+                    catch (er) { return reject(`Unloaded Graveyard`) }
+                    if (!deathRows) return reject(`Unloaded Graveyard`)
                     let deaths = []
                     for (var i = 1; i < deathRows.length; i++) deaths.push(deathRows[i].children[0].data)
                     let dungeonCompletes = []
-                    rows = $(".table.table-striped.main-achievements").find("tr")
-                    for (var i = 1; i < rows.length; i++) {
+                    let dungeonrows = $(".table.table-striped.main-achievements").find("tr")
+                    if (!dungeonrows) return reject(`Unloaded Graveyard`)
+                    for (var i = 1; i < dungeonrows.length; i++) {
                         try {
-                            let row = rows[i]
+                            let row = dungeonrows[i]
                             dungeonCompletes.push({
                                 type: $(row).children('td:nth-child(2)').text().replace(/[0-9]/g, ''),
                                 total: $(row).children('td:nth-child(3)').text().replace(/[^0-9]/g, ''),
