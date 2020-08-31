@@ -15,13 +15,15 @@ module.exports = {
         let reason = ''
         for (let i = 1; i < args.length; i++) reason = reason.concat(` ${args[i]}`)
         if (reason == '') return message.channel.send('Please provide a reason')
-        db.query(`INSERT INTO warns VALUES ('${member.user.id}', '${message.author.id}', '${reason}'); SELECT * FROM warns WHERE id = '${member.user.id}'`, (err, rows) => {
+        db.query(`INSERT INTO warns VALUES ('${member.user.id}', '${message.author.id}', '${reason}')`, (err, rows) => {
             let warnEmbed = new Discord.MessageEmbed()
                 .setColor('#ff0000')
                 .setTitle(`Warning Issued on the Server: ${message.guild.name}`)
                 .setDescription(`__Moderator:__ <@!${message.author.id}> (${message.member.nickname})\n__Reason:__ ${reason}`)
             member.send(warnEmbed)
-            message.channel.send(`${member.nickname} warned successfully. This is their \`${rows.length}\` warning`)
+            db.query(`SELECT * FROM warns WHERE id = '${member.user.id}'`, (err, rows) => {
+                message.channel.send(`${member.nickname} warned successfully. This is their \`${rows.length}\` warning`)
+            })
         })
     }
 }

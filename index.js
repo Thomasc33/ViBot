@@ -266,7 +266,7 @@ bot.on("ready", async () => {
                 if (bot.settings[g.id].backend.eventcurrentweek) ecurrentWeek.newWeek(g, bot, db)
             }
         })
-    }, null, true, null, null, false)
+    }, null, true, 'America/New_York', null, false)
 });
 
 bot.on('guildMemberAdd', member => {
