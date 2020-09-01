@@ -1,7 +1,7 @@
 const Discord = require('discord.js')
 const crasherList = require('../crasherList.json')
 const fs = require('fs')
-const ErrorLogger = require('../logError')
+const ErrorLogger = require('../lib/logError')
 
 module.exports = {
     name: 'crasherlist',

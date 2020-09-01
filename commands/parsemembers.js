@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-const ErrorLogger = require('../logError')
+const ErrorLogger = require('../lib/logError')
 const vision = require('@google-cloud/vision');
 const realmEyeScrape = require('../realmEyeScrape');
 const charStats = require('../charStats.json')

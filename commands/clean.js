@@ -1,5 +1,5 @@
 const botSettings = require('../settings.json');
-const ErrorLogger = require('../logError')
+const ErrorLogger = require('../lib/logError')
 
 module.exports = {
     name: 'clean',

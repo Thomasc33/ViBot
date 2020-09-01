@@ -1,6 +1,6 @@
 const Discord = require('discord.js')
 const botSettings = require('../settings.json')
-const ErrorLogger = require('../logError')
+const ErrorLogger = require('../lib/logError')
 const realmEyeScrape = require('../realmEyeScrape')
 const charList = require('./characterList')
 

@@ -1,6 +1,6 @@
 const fs = require('fs');
 const Discord = require('discord.js');
-const ErrorLogger = require('../logError')
+const ErrorLogger = require('../lib/logError')
 
 module.exports = {
     name: 'vetban',

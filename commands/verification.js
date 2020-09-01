@@ -1,5 +1,5 @@
 const Discord = require('discord.js')
-const ErrorLogger = require('../logError')
+const ErrorLogger = require('../lib/logError')
 const botSettings = require('../settings.json')
 const realmEyeScrape = require('../realmEyeScrape')
 

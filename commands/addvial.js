@@ -1,4 +1,4 @@
-const ErrorLogger = require('../logError')
+const ErrorLogger = require('../lib/logError')
 
 module.exports = {
     name: 'addvial',

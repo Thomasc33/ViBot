@@ -11,7 +11,8 @@ bot.crasherList = require('./crasherList.json')
 bot.mutes = require('./mutes.json')
 bot.afkChecks = require('./afkChecks.json')
 bot.settings = require('./guildSettings.json')
-const ErrorLogger = require(`./logError`)
+const ErrorLogger = require(`./lib/logError`)
+const CommandLogger = require('./lib/logCommand')
 const vibotChannels = require('./commands/vibotChannels')
 const vetVerification = require('./commands/vetVerification')
 const verification = require('./commands/verification')
@@ -40,6 +41,7 @@ bot.on('message', message => {
     if (command.requiredArgs && command.requiredArgs > args.length) return message.channel.send(`Command Entered incorrecty. \`${botSettings.prefix}${command.name} ${command.args}\``)
     try {
         command.execute(message, args, bot, db)
+        CommandLogger.log(message, bot)
     } catch (er) {
         ErrorLogger.log(er, bot)
         message.channel.send("Issue executing the command, check \`;commands\` and try again");
@@ -67,7 +69,7 @@ async function dmHandler(message) {
             let guild = await getGuild(message).catch(er => cancelled = true)
             logCommand(guild)
             if (!cancelled) {
-                if (message.member.roles.highest.position < guild.roles.cache.get(bot.settings[guild.id].roles[command.role]).position && message.author.id !== '277636691227836419') {
+                if (guild.members.cache.get(message.author.id).roles.highest.position < guild.roles.cache.get(bot.settings[guild.id].roles[command.role]).position && message.author.id !== '277636691227836419') {
                     message.channel.send('You do not have permissions to use this command')
                 } else command.dmExecution(message, args, bot, db, guild)
             }

@@ -1,6 +1,6 @@
 const Discord = require('discord.js')
 const getFeedback = require('./getFeedback')
-const ErrorLogger = require('../logError')
+const ErrorLogger = require('../lib/logError')
 
 module.exports = {
     name: 'vote',

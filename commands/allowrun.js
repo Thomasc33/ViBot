@@ -1,5 +1,5 @@
 const afk = require('./afkCheck');
-const ErrorLogger = require('../logError')
+const ErrorLogger = require('../lib/logError')
 const EventAFK = require('./eventAfk')
 
 module.exports = {

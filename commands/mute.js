@@ -1,5 +1,5 @@
 const Discord = require('discord.js')
-const ErrorLogger = require('../logError')
+const ErrorLogger = require('../lib/logError')
 const fs = require('fs')
 
 module.exports = {

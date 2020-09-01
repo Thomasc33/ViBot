@@ -1,6 +1,6 @@
 const fs = module.require('fs')
 const Discord = require('discord.js')
-const ErrorLogger = require('../logError')
+const ErrorLogger = require('../lib/logError')
 const permaSuspend = require('./permaSuspend')
 
 module.exports = {

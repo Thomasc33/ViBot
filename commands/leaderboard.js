@@ -1,6 +1,6 @@
 const Discord = require('discord.js')
 const leaderBoardTypes = ['keypops', 'eventpops', 'runs', 'runs lead', 'vialUsed', 'solocult', 'runesused', 'points']
-const ErrorLogger = require('../logError')
+const ErrorLogger = require('../lib/logError')
 
 module.exports = {
     name: 'leaderboard',

@@ -1,5 +1,5 @@
 const afkCheck = require('./oldAfkCheck.js');
-const ErrorLogger = require('../logError')
+const ErrorLogger = require('../lib/logError')
 
 module.exports = {
     name: 'oldlocation',

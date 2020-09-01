@@ -1,7 +1,7 @@
 const Discord = require('discord.js')
 const fs = require('fs')
 const botSettings = require('../settings.json')
-const ErrorLogger = require('../logError')
+const ErrorLogger = require('../lib/logError')
 const vibotChannel = require('./vibotChannels.js')
 var watchedMessages = []
 
