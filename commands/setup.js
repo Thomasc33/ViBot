@@ -4,8 +4,9 @@ const roles = ['moderator', 'officer', 'headrl', 'vetrl', 'security', 'fullskip'
     'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'topkey', 'bottomkey']
 const channels = ['modmail', 'verification', 'manualverification', 'vetverification', 'manualvetverification', 'verificationlog', 'activeverification', 'modlogs', 'history', 'suspendlog',
     'viallog', 'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel', 'raidstatus', 'eventstatus',
-    'vetstatus', 'raidcommands', 'eventcommands', 'vetcommands', 'raidingchannels', 'eventchannels', 'vetchannels', 'runlogs', 'dmcommands', 'veriactive', 'pointlogging', 'veriattempts', 'modmailinfo']
-const voice = ['raidingtemplate', 'eventtemplate', 'vettemplate', 'lounge', 'vetlounge', 'eventlounge', 'afk']
+    'vetstatus', 'raidcommands', 'eventcommands', 'vetcommands', 'raidingchannels', 'eventchannels', 'vetchannels', 'runlogs', 'dmcommands', 'veriactive', 'pointlogging', 'veriattempts',
+     'modmailinfo']
+const voice = ['raidingtemplate', 'eventtemplate', 'vettemplate', 'veteventtemplate', 'lounge', 'vetlounge', 'eventlounge', 'afk']
 const voiceprefixes = ['raidingprefix', 'vetprefix']
 const backend = ['modmail', 'currentweek', 'eventcurrentweek', 'verification', 'vetverification', 'points']
 const numerical = ['afktime', 'eventafktime', 'nitrocount', 'nitrocooldown', 'topkey', 'bottomkey']
@@ -272,6 +273,7 @@ function getDefaultVoiceName(name) {
         case 'vetlounge': return 'Veteran Lounge';
         case 'eventlounge': return 'Event Lounge';
         case 'afk': return 'afk'
+        case 'veteventtemplate': return 'Vet Event Template'
     }
 }
 
