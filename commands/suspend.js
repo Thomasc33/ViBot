@@ -64,11 +64,11 @@ module.exports = {
                             message.channel.send(member.nickname.concat(' is already suspended. Reply __**Y**__es to overwrite.'));
                             let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 10000 });
                             collector.on('collect', message => {
-                                if (message.content.charAt(0) == 'y') {
+                                if (message.content.charAt(0).toLowerCase() == 'y') {
                                     message.channel.send('Overwriting suspension...');
                                     suspendProcess(true)
                                     collector.stop();
-                                } else if (message.content.charAt(0) == 'n') {
+                                } else if (message.content.charAt(0).toLowerCase() == 'n') {
                                     collector.stop()
                                     return;
                                 } else {

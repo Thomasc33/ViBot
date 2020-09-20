@@ -31,7 +31,7 @@ for (const file of commandFiles) {
 
 bot.on('message', message => {
     if (message.channel.type === 'dm') return dmHandler(message)
-    if (!message.content.startsWith(prefix) || message.author.bot) return;
+    if (!message.content.startsWith(prefix) || message.author.bot) return autoMod(message);
     const args = message.content.slice(prefix.length).split(/ +/);
     const commandName = args.shift().toLowerCase()
     if (commandName.replace(/[^a-z]/gi, '') == '') return
@@ -69,7 +69,7 @@ async function dmHandler(message) {
             let guild = await getGuild(message).catch(er => cancelled = true)
             logCommand(guild)
             if (!cancelled) {
-                if (guild.members.cache.get(message.author.id).roles.highest.position < guild.roles.cache.get(bot.settings[guild.id].roles[command.role]).position && message.author.id !== '277636691227836419') {
+                if (message.member.roles.highest.position < guild.roles.cache.get(bot.settings[guild.id].roles[command.role]).position && message.author.id !== '277636691227836419') {
                     message.channel.send('You do not have permissions to use this command')
                 } else command.dmExecution(message, args, bot, db, guild)
             }
@@ -110,6 +110,27 @@ async function dmHandler(message) {
             .setTimestamp()
         if (message.author.avatarURL()) logEmbed.author.iconURL = message.author.avatarURL()
         guild.channels.cache.get(bot.settings[guild.id].channels.dmcommands).send(logEmbed)
+    }
+}
+
+async function autoMod(message) {
+    let settings = bot.settings[message.guild.id]
+    if (!settings) return;
+    if (message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.trialrl).position) return
+    if (message.mentions.roles.size != 0) mute('Pinging Roles', 2);
+    function mute(reason, time) {
+        //time: 1=1 hour, 2=1 day
+        let timeString, timeValue;
+        if (time == 1) { timeString = '1 Hour'; timeValue = 3600000 }
+        else if (time == 2) { timeString = '1 Day'; timeValue = 86400000 }
+        message.member.roles.add(settings.roles.muted)
+            .then(db.query(`INSERT INTO mutes (id, guildid, muted, reason, modid, uTime) VALUES ('${message.author.id}', '${message.guild.id}', true, '${reason}','${bot.user.id}', '${Date.now() + timeValue}')`))
+            .then(message.author.send(`You have been muted in \`${message.guild.name}\` for \`${reason}\`. This will last for \`${timeString}\``))
+            .then(() => {
+                let modlog = message.guild.channels.cache.get(settings.channels.modlog)
+                if (!modlog) return ErrorLogger.log(new Error('Mod log not found for automod'), bot)
+                modlog.send(`${message.member} was muted for \`${timeString}\` for \`${reason}\``)
+            })
     }
 }
 

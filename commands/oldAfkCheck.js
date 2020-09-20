@@ -17,7 +17,7 @@ module.exports = {
     description: 'Old Style Afk Check',
     requiredArgs: 2,
     args: '<channel> <c/v/fsv> <location>',
-    role: 'almostrl',
+    role: 'vetrl',
     execute(message, args, bott, db) {
         let settings = bott.settings[message.guild.id]
         bot = bott

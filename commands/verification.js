@@ -264,7 +264,7 @@ module.exports = {
                 let days = userInfo.created.split(/ +/)
                 let daysValid = false
                 for (let i in days) { if (parseInt(days[i].replace(/[^0-9]/g, '')) >= settings.autoveri.realmage) daysValid = true }
-                if (!(userInfo.created.includes('years') || daysValid)) denyReason.push({
+                if (!(userInfo.created.includes('year') || daysValid)) denyReason.push({
                     reason: 'Realm Account Age'
                 })
                 //death count

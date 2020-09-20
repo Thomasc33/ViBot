@@ -136,7 +136,7 @@ module.exports = {
                 if (line == '') line = 'No role specific commands'
                 commandPanel.addField('Moderator+', `\`\`\`css\n${line}\`\`\``)
             }
-            if (message.member.roles.cache.has(message.guild.roles.cache.get(settings.roles.developer))) {
+            if (message.member.roles.cache.has(settings.roles.developer)) {
                 let line = ''
                 bot.commands.each(c => {
                     if (c.role == 'developer') {

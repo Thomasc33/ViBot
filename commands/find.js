@@ -65,6 +65,7 @@ module.exports = {
                 .setColor(`#ff0000`)
                 .setTitle(`The following users are expelled`)
                 .setDescription(expelledString)
+            message.channel.send(expelledEmbed)
         }
     }
 }

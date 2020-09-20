@@ -4,7 +4,7 @@ const ErrorLogger = require('../lib/logError')
 module.exports = {
     name: 'allowoldrun',
     description: 'Manually allows runs in case bot gets stuck',
-    role: 'almostrl',
+    role: 'vetrl',
     execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
         if (message.channel.parent.name.toLowerCase() === 'raiding') afk.allowRun(false);

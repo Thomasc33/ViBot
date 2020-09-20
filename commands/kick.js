@@ -44,7 +44,6 @@ module.exports = {
                 }
                 await message.react("✅")
             }
-
         })
     }
 }

@@ -5,7 +5,7 @@ module.exports = {
     description: 'Posts avatar of user provided',
     args: '(user)',
     alias: ['ava'],
-    role: 'almostrl',
+    role: 'eventrl',
     execute(message, args, bot) {
         let member = null
         if (args.length == 0) member = message.member
