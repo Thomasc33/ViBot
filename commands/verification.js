@@ -195,7 +195,7 @@ module.exports = {
         if (dupes) {
             return cancelVerification(3)
         } else {
-            LoggingEmbed.setDescription(`<@!${u.id}> is attempting to verify under ${ign}`)
+            LoggingEmbed.setDescription(`<@!${u.id}> is attempting to verify under [${ign}](https://www.realmeye.com/player/${ign})`)
             veriattempts.send(LoggingEmbed)
             activeMessage.edit(LoggingEmbed)
         }

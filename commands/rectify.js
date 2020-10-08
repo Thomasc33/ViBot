@@ -10,12 +10,18 @@ module.exports = {
     async execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
         var user = message.guild.members.cache.get(args[0]);
-        if (user == null) user = message.mentions.members.first()
-        if (user == null) {
-            message.channel.send('User not found. Try again')
-            return;
-        }
-        await user.setNickname(user.nickname.replace(/[-?]/g, ''))
+        if (!user) user = message.mentions.members.first()
+        if (!user) return message.channel.send('User not found. Try again')
+        let newName = user.nickname.replace(/[-?]/g, '');
+        let tag = user.user.tag.substring(0, user.user.tag.length - 5)
+        let nick = ''
+        if (tag == newName) {
+            nick = newName.toLowerCase()
+            if (tag == nick) {
+                nick = nick.charAt(0).toUpperCase() + nick.substring(1, nick.length)
+            }
+        } else nick = newName
+        await user.setNickname(newName)
         let embed = new Discord.MessageEmbed()
             .setTitle('User Rectified')
             .setDescription(user)

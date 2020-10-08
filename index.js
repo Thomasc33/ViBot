@@ -30,8 +30,9 @@ for (const file of commandFiles) {
 }
 
 bot.on('message', message => {
-    if (message.channel.type === 'dm') return dmHandler(message)
-    if (!message.content.startsWith(prefix) || message.author.bot) return autoMod(message);
+    if (message.channel.type === 'dm') return dmHandler(message);
+    if (message.author.bot) return;
+    if (!message.content.startsWith(prefix)) return autoMod(message);
     const args = message.content.slice(prefix.length).split(/ +/);
     const commandName = args.shift().toLowerCase()
     if (commandName.replace(/[^a-z]/gi, '') == '') return
@@ -69,7 +70,8 @@ async function dmHandler(message) {
             let guild = await getGuild(message).catch(er => cancelled = true)
             logCommand(guild)
             if (!cancelled) {
-                if (message.member.roles.highest.position < guild.roles.cache.get(bot.settings[guild.id].roles[command.role]).position && message.author.id !== '277636691227836419') {
+                let member = guild.members.cache.get(message.author.id)
+                if (member.roles.highest.position < guild.roles.cache.get(bot.settings[guild.id].roles[command.role]).position && message.author.id !== '277636691227836419') {
                     message.channel.send('You do not have permissions to use this command')
                 } else command.dmExecution(message, args, bot, db, guild)
             }
@@ -116,7 +118,7 @@ async function dmHandler(message) {
 async function autoMod(message) {
     let settings = bot.settings[message.guild.id]
     if (!settings) return;
-    if (message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.trialrl).position) return
+    if (!message.member.roles.highest || message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.trialrl).position) return
     if (message.mentions.roles.size != 0) mute('Pinging Roles', 2);
     function mute(reason, time) {
         //time: 1=1 hour, 2=1 day
@@ -148,10 +150,20 @@ bot.on("ready", async () => {
     let vi = await bot.users.fetch(`277636691227836419`)
     vi.send('Bot Starting Back Up')
     bot.user.setActivity(`with your points`);
+    //to hide dev server
+    if (bot.user.id == botSettings.prodBotId) emojiServers.push('701483950559985705');
     //generate default settings
     bot.guilds.cache.each(g => {
         if (!emojiServers.includes(g.id)) {
             setup.autoSetup(g, bot)
+        }
+    })
+    //purge veri-active
+    bot.guilds.cache.each(g => {
+        if (!emojiServers.includes(g.id)) {
+            let veriActive = g.channels.cache.get(bot.settings[g.id].channels.veriactive)
+            if (!veriActive) return;
+            veriActive.bulkDelete(100).catch(er => { })
         }
     })
     //vetban check
@@ -300,6 +312,14 @@ bot.on('guildMemberAdd', member => {
             let modlog = member.guild.channels.cache.get(bot.settings[member.guild.id].channels.modlogs)
             if (!modlog) return ErrorLogger.log(new Error(`mod log not found in ${member.guild.id}`), bot)
             modlog.send(`${member} rejoined server after leaving while suspended. Giving suspended role and nickname back.`)
+        }
+    })
+    db.query(`SELECT muted FROM mutes WHERE id = '${member.id}' AND muted = true`, (err, rows) => {
+        if (rows.length !== 0) {
+            member.roles.add(bot.settings[member.guild.id].roles.muted)
+            let modlog = member.guild.channels.cache.get(bot.settings[member.guild.id].channels.modlogs)
+            if (!modlog) return ErrorLogger.log(new Error(`mod log not found in ${member.guild.id}`), bot)
+            modlog.send(`${member} rejoined server after leaving while muted. Giving muted role back.`)
         }
     })
 })

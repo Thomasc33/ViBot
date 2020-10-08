@@ -22,7 +22,7 @@ module.exports = {
                 .setDescription(`__Moderator:__ <@!${message.author.id}> (${message.member.nickname})\n__Reason:__ ${reason}`)
             member.send(warnEmbed)
             db.query(`SELECT * FROM warns WHERE id = '${member.user.id}'`, (err, rows) => {
-                message.channel.send(`${member.nickname} warned successfully. This is their \`${rows.length}\` warning`)
+                message.channel.send(`${member.nickname} warned successfully. This is their \`${parseInt(rows.length) + 1}\` warning`)
             })
         })
     }

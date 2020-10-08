@@ -56,7 +56,7 @@ module.exports = {
                 if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(u.toLowerCase()));
                 if (!member) member = message.guild.members.cache.get(u.replace(/[<>@!]/gi, ''))
                 if (!member) return message.channel.send(`${u} not found, please try again`);
-                if (member.roles.highest.position >= message.member.roles.highest.position) return message.channel.send(`${member} has a role greater than or equal to you and cannot be muted`);
+                if (member.roles.highest.position >= message.member.roles.highest.position) return message.channel.send(`${member} has a role greater than or equal to you and cannot be suspended`);
                 if (member.roles.cache.has(pSuspendRole.id)) return message.channel.send('User is perma suspended already, no need to suspend again')
                 if (member.roles.cache.has(suspendedRole.id)) {
                     db.query(`SELECT * FROM suspensions WHERE id = '${member.id}' AND suspended = true`, async (err, rows) => {

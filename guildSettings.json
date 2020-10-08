@@ -71,7 +71,8 @@
             "lounge": "701483952413605944",
             "vetlounge": "701483951687991342",
             "eventlounge": "701483952782966849",
-            "afk": "701483952590028844"
+            "afk": "701483952590028844",
+            "veteventtemplate": "751630124071256125"
         },
         "voiceprefixes": {
             "raidingprefix": "Backup Raiding-",
