@@ -7,6 +7,7 @@ const Channels = require('./vibotChannels')
 const realmEyeScrape = require('../realmEyeScrape');
 const points = require('./points');
 const keyRoles = require('./keyRoles');
+const { group } = require('console');
 
 //globals
 var activeVetRun = false;
@@ -36,6 +37,7 @@ module.exports = {
             case 'c': var run = 1; break;
             case 'v': var run = 2; break;
             case 'f': var run = 3; break;
+            case 'x': var run = 4; break;
             default: return message.channel.send(`Command entered incorrectly -> ${botSettings.prefix}${this.name} ${this.args}`);
         }
         let location = "";
@@ -130,6 +132,9 @@ class afk {
             case 3: //full skip
                 runType = 'Fullskip Void'
                 break;
+            case 4:
+                runType = 'Split Cult'
+                break;
             default: return;
         }
         switch (this.location.substring(0, 2)) {
@@ -155,6 +160,9 @@ class afk {
                 break;
             case 3: //full skip
                 this.fsv()
+                break;
+            case 4:
+                this.cult()
                 break;
             default: return;
         }
@@ -765,6 +773,9 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
         clearInterval(this.moveInTimer);
         clearInterval(this.timer);
 
+        //generate split groups
+        if (this.run == 4) this.splitLogic()
+
         //lock channel
         await this.channel.updateOverwrite(this.verifiedRaiderRole.id, { CONNECT: false, VIEW_CHANNEL: true })
         if (!this.isVet) {
@@ -794,25 +805,56 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
         for (let i in this.earlyLocation) earlyLocationIDS.push(this.earlyLocation[i].id)
         let raiders = []
         this.channel.members.array().forEach(m => raiders.push(m.id))
-        if (this.key) {
-            bot.afkChecks[this.channel.id] = {
+        if (this.run == 4) {
+            if (this.key) {
+                bot.afkChecks[this.channel.id] = {
+                    isVet: this.isVet,
+                    location: this.location,
+                    key: this.key.id,
+                    leader: this.message.author.id,
+                    earlyLocation: earlyLocationIDS,
+                    raiders: raiders,
+                    time: Date.now(),
+                    runType: this.run,
+                    split: true,
+                    mainGroup: this.mainGroup,
+                    splitGroup: this.splitGroup,
+                    splitChannel: 'na'
+                }
+            } else bot.afkChecks[this.channel.id] = {
                 isVet: this.isVet,
                 location: this.location,
-                key: this.key.id,
+                leader: this.message.author.id,
+                earlyLocation: earlyLocationIDS,
+                raiders: raiders,
+                time: Date.now(),
+                runType: this.run,
+                split: true,
+                mainGroup: this.mainGroup,
+                splitGroup: this.splitGroup,
+                splitChannel: 'na'
+            }
+        } else {
+            if (this.key) {
+                bot.afkChecks[this.channel.id] = {
+                    isVet: this.isVet,
+                    location: this.location,
+                    key: this.key.id,
+                    leader: this.message.author.id,
+                    earlyLocation: earlyLocationIDS,
+                    raiders: raiders,
+                    time: Date.now(),
+                    runType: this.run
+                }
+            } else bot.afkChecks[this.channel.id] = {
+                isVet: this.isVet,
+                location: this.location,
                 leader: this.message.author.id,
                 earlyLocation: earlyLocationIDS,
                 raiders: raiders,
                 time: Date.now(),
                 runType: this.run
             }
-        } else bot.afkChecks[this.channel.id] = {
-            isVet: this.isVet,
-            location: this.location,
-            leader: this.message.author.id,
-            earlyLocation: earlyLocationIDS,
-            raiders: raiders,
-            time: Date.now(),
-            runType: this.run
         }
         fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => {
             if (err) ErrorLogger.log(err, bot)
@@ -1002,6 +1044,41 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
         if (this.isVet) activeVetRun = false;
         else activeRun = false;
     }
+    async splitLogic() {
+        this.mainGroup = []
+        this.splitGroup = []
+        let vc = this.channel.members.array()
+        //assign knights to alternating groups
+        //laterTM
+        //assign rl to main group
+        this.mainGroup.push(this.message.author.id)
+        //assign another rl to or
+        for (let i = 0; i < vc.length; i++) {
+            let id = vc[i].id
+            if (this.mainGroup.includes(id) || this.splitGroup.includes(id)) continue;
+            if (i % 2 == 0) this.mainGroup.push(id)
+            else this.splitGroup.push(id)
+        }
+        let groupEmbed = new Discord.MessageEmbed()
+            .setAuthor(`Split Groups for ${this.channel.name}`)
+            .addField('Main', 'None!')
+            .addField('Split', 'None!')
+        if (this.message.author.avatarURL()) groupEmbed.author.iconURL = this.message.author.avatarURL()
+        for (let i in this.mainGroup) {
+            console.log(i)
+            let nick = this.message.guild.members.cache.get(this.mainGroup[i]).nickname
+            if (!nick) nick = `<@!${this.mainGroup[i]}>`
+            if (groupEmbed.fields[0].value == 'None!') groupEmbed.fields[0].value = `${nick}`
+            else groupEmbed.fields[0].value += `\n${nick}`
+        }
+        for (let i in this.splitGroup) {
+            let nick = this.message.guild.members.cache.get(this.splitGroup[i]).nickname
+            if (!nick) nick = `<@!${this.splitGroup[i]}>`
+            if (groupEmbed.fields[1].value == 'None!') groupEmbed.fields[1].value = `${nick}`
+            else groupEmbed.fields[1].value += `\n${nick}`
+        }
+        this.raidStatus.send(groupEmbed)
+    }
     async changeLoc(locationn) {
         this.location = locationn;
 
@@ -1060,6 +1137,7 @@ async function createChannel(isVet, message, run, location) {
         if (run == 1) { await channel.setName(`${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s Cult`) }
         if (run == 2) { await channel.setName(`${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s Void`) }
         if (run == 3) { await channel.setName(`${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s Full-Skip Void`) }
+        if (run == 4) { await channel.setName(`${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s Split Cult`) }
 
         //allows raiders to view
         channel.updateOverwrite(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
@@ -1072,6 +1150,7 @@ async function createChannel(isVet, message, run, location) {
         if (run == 1) { embed.setTitle(`${message.member.nickname}'s Cult Run`).setColor('#ff0000').setDescription(embed.description.concat(`\nLocation: \`${location}\``)) }
         if (run == 2) { embed.setTitle(`${message.member.nickname}'s Void Run`).setColor('#2f075c').setDescription(embed.description.concat(`\nLocation: \`${location}\``)) }
         if (run == 3) { embed.setTitle(`${message.member.nickname}'s Fullskip Void Run`).setColor('#2f075c').setDescription(embed.description.concat(`\nLocation: \`${location}\``)) }
+        if (run == 4) { embed.setTitle(`${message.member.nickname}'s Split Cult Run`).setColor('#ff0000').setDescription(embed.description.concat(`\nLocation: \`${location}\``)) }
         let m = await vibotChannels.send(`${message.member}`, embed)
         await m.react('❌')
         setTimeout(() => { Channels.watchMessage(m, bot, settings) }, 5000)
