@@ -16,14 +16,17 @@ module.exports = {
     alias: ['ofk', 'oafk'],
     description: 'Old Style Afk Check',
     requiredArgs: 2,
-    args: '<channel> <c/v/fsv> <location>',
+    args: '(vc cap) <channel> <c/v/fsv> <location>',
     role: 'vetrl',
     execute(message, args, bott, db) {
         let settings = bott.settings[message.guild.id]
         bot = bott
+        let vcCap = 50;
+        if (!isNaN(args[0]) && parseInt(args[0]) > 10) vcCap = parseInt(args.shift());
+        if (vcCap == NaN) return message.channel.send(`Invalid VC Cap`);
         if (message.channel.parent.name.toLowerCase() === 'raiding') var isVet = false;
         else if (message.channel.parent.name.toLowerCase() === 'veteran raiding') var isVet = true;
-        else return message.channel.send("Try again, but in dylanbot-commands or veteran-bot-commands");
+        else return message.channel.send("Try again, but in raidbot-commands or veteran-bot-commands");
         if (args.length < 2) return message.channel.send("Command entered incorrectly -> ;ofk <channel #> <c/v/fsv> <location>");
         //checks for active run
         if (isVet && activeVetRun) return message.channel.send("There is already a run active. If this is an error, do \`;allowoldrun\`");
@@ -49,10 +52,10 @@ module.exports = {
         if (location == '') location = 'None!'
         if (location.length >= 1024) return message.channel.send('Location must be below 1024 characters, try again');
         if (isVet) {
-            currentVet = new afk(args[0], run, location, message, isVet, db, settings);
+            currentVet = new afk(args[0], run, location, message, isVet, db, settings, vcCap);
             currentVet.start();
         } else {
-            currentReg = new afk(args[0], run, location, message, isVet, db, settings);
+            currentReg = new afk(args[0], run, location, message, isVet, db, settings, vcCap);
             currentReg.start();
         }
     },
@@ -84,7 +87,7 @@ module.exports = {
 }
 
 class afk {
-    constructor(channel, run, location, message, isVet, db, settings) {
+    constructor(channel, run, location, message, isVet, db, settings, vcCap) {
         this.settings = settings
         this.channel = channel;
         this.run = run;
@@ -128,10 +131,11 @@ class afk {
         this.postTime = 20;
         this.earlyLocation = [];
         this.raider = [];
+        this.vcCap = vcCap
     }
     async start() {
         if (this.channel == null) return this.message.channel.send("Could not find channel correctly, please try again");
-        await unlockChannel(this.verifiedRaiderRole, this.voiceChannel, this.channel, this.isVet, this.settings)
+        await unlockChannel(this.verifiedRaiderRole, this.voiceChannel, this.channel, this.isVet, this.settings, this.vcCap)
 
         //begin afk check
         switch (this.run) {
@@ -1008,16 +1012,16 @@ async function fsvReact(message) {
         .then(message.react('❌'))
         .catch(err => console.log(err));
 }
-async function unlockChannel(raiderRole, voiceChannel, voiceChannelNumber, isVet, settings) {
+async function unlockChannel(raiderRole, voiceChannel, voiceChannelNumber, isVet, settings, vcCap) {
     if (isVet) {
         await voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(r => console.log(r));
         await voiceChannel.setName(`${settings.voiceprefixes.vetprefix}${voiceChannelNumber} <-- Join!`).catch(r => console.log(r));
-        await voiceChannel.setUserLimit(0).catch(r => console.log(r));
+        await voiceChannel.setUserLimit(vcCap).catch(r => console.log(r));
     }
     if (!isVet) {
         await voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(r => console.log(r));
         await voiceChannel.setName(`${settings.voiceprefixes.raidingprefix}${voiceChannelNumber} <-- Join!`).catch(r => console.log(r));
-        await voiceChannel.setUserLimit(0).catch(r => console.log(r));
+        await voiceChannel.setUserLimit(vcCap).catch(r => console.log(r));
     }
     return;
 }
@@ -1025,12 +1029,12 @@ async function lockChannel(raiderRole, voiceChannel, voiceChannelNumber, isVet, 
     if (isVet) {
         await voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(r => console.log(r));
         await voiceChannel.setName(`${settings.voiceprefixes.vetprefix}${voiceChannelNumber}`).catch(r => console.log(r));
-        await voiceChannel.setUserLimit(99).catch(r => console.log(r));
+        //await voiceChannel.setUserLimit(99).catch(r => console.log(r));
     }
     if (!isVet) {
         await voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(r => console.log(r));
         await voiceChannel.setName(`${settings.voiceprefixes.raidingprefix}${voiceChannelNumber}`).catch(r => console.log(r));
-        await voiceChannel.setUserLimit(99).catch(r => console.log(r));
+        //await voiceChannel.setUserLimit(99).catch(r => console.log(r));
     }
     return;
 }

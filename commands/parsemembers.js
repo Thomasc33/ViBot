@@ -17,7 +17,7 @@ module.exports = {
     async execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
         var channel = message.member.voice.channel
-        if (channel == null) return message.channel.send('Channel not found. Make sure you are in a channel, then try again');
+        if (!channel) return message.channel.send('Channel not found. Make sure you are in a channel, then try again');
         let parseStatusEmbed = new Discord.MessageEmbed()
             .setColor(`#00ff00`)
             .setTitle('Parse Status')
@@ -27,7 +27,7 @@ module.exports = {
         var image;
         if (message.attachments.size == 0) image = args[0];
         else image = await message.attachments.first().proxyURL;
-        if (image == null) {
+        if (!image) {
             parseStatusEmbed.setColor('#ff0000')
                 .fields[1].value = 'Error Getting Image'
             await parseStatusMessage.edit(parseStatusEmbed)
@@ -60,6 +60,14 @@ module.exports = {
         let allowedCrashers = []
         var kickList = '/kick'
         voiceUsers = channel.members.array();
+        //check split channel
+        if (bot.afkChecks[channel.id] && bot.afkChecks[channel.id].split && bot.afkChecks[channel.id].splitChannel) {
+            let splitChannel = message.guild.channels.cache.get(bot.afkChecks[channel.id].splitChannel)
+            if (splitChannel) {
+                let splitUsers = splitChannel.members.array()
+                for (let i in splitUsers) voiceUsers.push(splitUsers[i])
+            }
+        }
         for (let i in raiders) {
             let player = raiders[i];
             if (player == '') continue;

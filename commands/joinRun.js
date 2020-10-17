@@ -20,7 +20,7 @@ module.exports = {
             }
         }
         if (runsIn.length == 0) { message.channel.send('I could not find any runs that you were a part of. If you were not in the voice channel when the afk check ended, you should leave the run before you get suspended.') }
-        else if (runsIn.length == 1) { this.moveIn(guild.members.cache.get(message.author.id), runsIn[0]).catch(er => message.channel.send('Join lounge, then try this command again')) }
+        else if (runsIn.length == 1) { this.moveIn(guild.members.cache.get(message.author.id), runsIn[0], bot).catch(er => message.channel.send('Join lounge, then try this command again')) }
         else {
             let runEmbed = new Discord.MessageEmbed()
                 .setColor('#ff0000')
@@ -48,7 +48,7 @@ module.exports = {
                         let retryMessage = await message.channel.send(`\`${m.content}\` is not a valid number. Please try again or type \`cancel\` to cancel`)
                         setTimeout(() => retryMessage.delete(), 5000)
                     } else {
-                        this.moveIn(guild.members.cache.get(message.author.id), runId)
+                        this.moveIn(guild.members.cache.get(message.author.id), runId, bot)
                         joinEmbedMessage.delete()
                         runMessageCollector.stop()
                         message.react('✅')
@@ -57,9 +57,27 @@ module.exports = {
             })
         }
     },
-    async moveIn(member, runId) {
-        if (member.voice.channel) member.voice.setChannel(runId, 'joinrun').catch(er => member.send('Please connect to lounge and try again'))
-        else member.send('Please connect to lounge and try again')
+    async moveIn(member, runId, bot) {
+        if (bot.afkChecks[runId].split) {
+            let afkCheck = bot.afkChecks[runId]
+            if (afkCheck.mainGroup.includes(member.id)) {
+                if (member.voice.channel) member.voice.setChannel(runId, 'joinrun').catch(er => member.send('Please connect to lounge and try again'))
+                else member.send('Please connect to lounge and try again')
+            } else {
+                let splitChannelID = afkCheck.splitChannel
+                if (splitChannelID == 'na') {
+                    if (member.voice.channel) member.voice.setChannel(runID, 'joinrun').catch(er => member.send('Please connect to lounge and try again'))
+                    else member.send('Please connect to lounge and try again')
+                } else {
+                    if (member.voice.channel) member.voice.setChannel(splitChannel, 'joinrun').catch(er => member.send('Please connect to lounge and try again'))
+                    else member.send('Please connect to lounge and try again')
+                }
+            }
+        } else {
+            if (member.voice.channel) member.voice.setChannel(runId, 'joinrun').catch(er => member.send('Please connect to lounge and try again'))
+            else member.send('Please connect to lounge and try again')
+        }
+
     }
 }
 

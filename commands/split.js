@@ -7,15 +7,15 @@ module.exports = {
     async execute(message, args, bot, db) {
         if (!message.member.voice.channel) return message.channel.send('Please join a VC')
         if (!bot.afkChecks[message.member.voice.channel.id] || !bot.afkChecks[message.member.voice.channel.id].split) return message.channel.send('Unable to split your channel')
-        const mainGroup = bot.afkChecks[message.member.voice.channel.id].mainGroup
         const splitGroup = bot.afkChecks[message.member.voice.channel.id].splitGroup
-        let splitChannel = await createChannel(bot.afkChecks[message.member.voice.channel.id].isVet, message, bot)
+        let splitChannel = message.guild.channels.cache.get(bot.afkChecks[message.member.voice.channel.id].splitChannel)
+        if (!splitChannel) splitChannel = await createChannel(bot.afkChecks[message.member.voice.channel.id].isVet, message, bot)
         bot.afkChecks[message.member.voice.channel.id].splitChannel = splitChannel.id
         await message.member.voice.setChannel(splitChannel.id)
         for (let i in splitGroup) {
             let member = message.guild.members.cache.get(splitGroup[i])
             if (!member || !member.voice.channel) continue
-            await member.voice.setChannel(splitChannel.id).catch(er => {})
+            await member.voice.setChannel(splitChannel.id).catch(er => { })
         }
     }
 }

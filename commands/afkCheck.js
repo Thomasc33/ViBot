@@ -7,7 +7,9 @@ const Channels = require('./vibotChannels')
 const realmEyeScrape = require('../realmEyeScrape');
 const points = require('./points');
 const keyRoles = require('./keyRoles');
-const { group } = require('console');
+const restart = require('./restart')
+const EventEmitter = require('events').EventEmitter;
+var emitter = new EventEmitter()
 
 //globals
 var activeVetRun = false;
@@ -22,6 +24,7 @@ module.exports = {
     requiredArgs: 1,
     args: '<c/v/fsv> <location>',
     role: 'almostrl',
+    emitter: emitter,
     async execute(message, args, bott, db) {
         let settings = bott.settings[message.guild.id]
         if (args.length == 0) return;
@@ -72,6 +75,10 @@ module.exports = {
     allowRun(isVet) {
         if (isVet) activeVetRun = false;
         else activeRun = false;
+    },
+    checkRuns(isVet) {
+        if (isVet) return activeVetRun;
+        else return activeRun;
     }
 }
 
@@ -116,6 +123,9 @@ class afk {
         this.postTime = 20;
         this.earlyLocation = [];
         this.raider = [];
+        this.knights = [];
+        this.warriors = [];
+        this.pallies = [];
         this.sendMessage();
     }
 
@@ -220,6 +230,10 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
                 if (this.key != null) return;
                 this.confirmKey(u, r);
             }
+            if (r.emoji.id === botSettings.emoteIDs.Knight) this.knights.push(u.id)
+            if (r.emoji.id === botSettings.emoteIDs.Warrior) this.warriors.push(u.id)
+            if (r.emoji.id === botSettings.emoteIDs.Paladin) this.pallies.push(u.id)
+
             //rusher
             if (r.emoji.id === botSettings.emoteIDs.Plane) {
                 if (!reactor.roles.cache.has(this.officialRusher.id)) {
@@ -961,7 +975,9 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
         }
 
         //log run 1 minute after afk check
-        setTimeout(() => {
+        if (restart.restarting) log()
+        else setTimeout(log, 60000)
+        function log() {
             if (this.channel.members.size != 0) {
                 let query = `UPDATE users SET `
                 if (this.run == 1) query = query.concat('cultRuns = cultRuns + 1 WHERE ')
@@ -993,7 +1009,10 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
                     }
                 }
             }
-        }, 60000)
+        }
+
+        //mark afk check as over
+        emitter.emit('Ended', isVet)
     }
     async abortAfk() {
         this.mainReactionCollector.stop();
@@ -1043,19 +1062,46 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
 
         if (this.isVet) activeVetRun = false;
         else activeRun = false;
+        emitter.emit('Ended', this.isVet)
     }
     async splitLogic() {
         this.mainGroup = []
         this.splitGroup = []
-        let vc = this.channel.members.array()
+        let vc = [];
+        this.channel.members.each(m => { vc.push(m.id) })
         //assign knights to alternating groups
-        //laterTM
+        for (let i = 0; i < this.knights.length; i++) {
+            let id = this.knights[i].id
+            if (this.mainGroup.includes(id) || this.splitGroup.includes(id)) continue
+            if (i % 2 == 0) this.mainGroup.push(id)
+            else this.splitGroup.push(id)
+            let index = vc.indexOf(id)
+            if (index > -1) vc.splice(index, 1)
+        }
+        for (let i = 0; i < this.warriors.length; i++) {
+            let id = this.warriors[i].id
+            if (this.mainGroup.includes(id) || this.splitGroup.includes(id)) continue
+            if (i % 2 == 0) this.mainGroup.push(id)
+            else this.splitGroup.push(id)
+            let index = vc.indexOf(id)
+            if (index > -1) vc.splice(index, 1)
+        }
+        for (let i = 0; i < this.pallies.length; i++) {
+            let id = this.pallies[i].id
+            if (this.mainGroup.includes(id) || this.splitGroup.includes(id)) continue
+            if (i % 2 == 0) this.mainGroup.push(id)
+            else this.splitGroup.push(id)
+            let index = vc.indexOf(id)
+            if (index > -1) vc.splice(index, 1)
+        }
         //assign rl to main group
         this.mainGroup.push(this.message.author.id)
-        //assign another rl to or
+        let index = vc.indexOf(this.message.author.id)
+        if (index > -1) vc.splice(index, 1)
+        //assign groups
         for (let i = 0; i < vc.length; i++) {
-            let id = vc[i].id
-            if (this.mainGroup.includes(id) || this.splitGroup.includes(id)) continue;
+            let id = vc[i]
+            if (this.mainGroup.includes(id) || this.splitGroup.includes(id)) continue
             if (i % 2 == 0) this.mainGroup.push(id)
             else this.splitGroup.push(id)
         }
@@ -1205,6 +1251,6 @@ async function fsvReact(message, settings) {
 //reaction filters
 const keyXFilter = (r, u) => (r.emoji.name === '❌' || r.emoji.name === '🔑') && !u.bot;
 const dmReactionFilter = (r, u) => r.emoji.name === '✅' && !u.bot;
-const cultFilter = (r, u) => r.emoji.id === botSettings.emoteIDs.LostHallsKey || r.emoji.id === botSettings.emoteIDs.Plane || r.emoji.id === botSettings.emoteIDs.shard || r.emoji.name === '❌' || r.emoji.name === '🎟️'
+const cultFilter = (r, u) => r.emoji.id === botSettings.emoteIDs.LostHallsKey || r.emoji.id === botSettings.emoteIDs.Plane || r.emoji.id === botSettings.emoteIDs.shard || r.emoji.name === '❌' || r.emoji.name === '🎟️' || r.emoji.id == botSettings.emoteIDs.Knight || r.emoji.id == botSettings.emoteIDs.Warrior || r.emoji.id == botSettings.emoteIDs.Paladin
 const voidFilter = (r, u) => r.emoji.id === botSettings.emoteIDs.LostHallsKey || r.emoji.id === botSettings.emoteIDs.Vial || r.emoji.id === botSettings.emoteIDs.shard || r.emoji.name === '❌' || r.emoji.name === '🎟️'
 const fsvFilter = (r, u) => r.emoji.id === botSettings.emoteIDs.LostHallsKey || r.emoji.id === botSettings.emoteIDs.Vial || r.emoji.id === botSettings.emoteIDs.shard || r.emoji.id === botSettings.emoteIDs.mystic || r.emoji.id === botSettings.emoteIDs.brain || r.emoji.name === '❌' || r.emoji.name === '🎟️'
