@@ -62,7 +62,7 @@ class afk {
         this.location = location
         this.time = settings.numerical.eventafktime
         if (isVet) {
-            this.raider = this.message.guild.roles.cache.get(settings.roles.raider)
+            this.raider = this.message.guild.roles.cache.get(settings.roles.vetraider)
             this.eventStatus = this.message.guild.channels.cache.get(this.settings.channels.vetstatus)
         } else {
             this.raider = this.message.guild.roles.cache.get(settings.roles.raider)

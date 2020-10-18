@@ -86,6 +86,16 @@ module.exports = {
                 if (line == '') line = 'No role specific commands'
                 commandPanel.addField('Raid Leader+', `\`\`\`css\n${line}\`\`\``)
             }
+            if (message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.fullskip).position) {
+                let line = ''
+                bot.commands.each(c => {
+                    if (c.role == 'fullskip') {
+                        line = line.concat(`;${c.name} `)
+                    }
+                })
+                if (line == '') line = 'No role specific commands'
+                commandPanel.addField('Full-Skip+', `\`\`\`css\n${line}\`\`\``)
+            }
             if (message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.vetrl).position) {
                 let line = ''
                 bot.commands.each(c => {

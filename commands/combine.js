@@ -2,7 +2,7 @@ const split = require("./split")
 
 module.exports = {
     name: 'combine',
-    role: 'vetrl',
+    role: 'fullskip',
     description: 'Combines the channels after a split',
     async execute(message, args, bot){
         let channel = message.member.voice.channel

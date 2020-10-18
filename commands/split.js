@@ -3,7 +3,7 @@ const Channels = require('./vibotChannels')
 module.exports = {
     name: 'split',
     description: 'Splits the group in a split type run',
-    role: 'vetrl',
+    role: 'fullskip',
     async execute(message, args, bot, db) {
         if (!message.member.voice.channel) return message.channel.send('Please join a VC')
         if (!bot.afkChecks[message.member.voice.channel.id] || !bot.afkChecks[message.member.voice.channel.id].split) return message.channel.send('Unable to split your channel')
