@@ -2,6 +2,9 @@
     "key": "NzAxMTk2NTI5NTE5Njg5Nzkw.XuL0jA.G7WH6qH2cVnurSHABDjy2dnac1s",
     "prefix": ";",
     "prodBotId": "589996847083290629",
+    "botId": "701196529519689790",
+    "botSecret" : "eWyB5L1FkraexM1VQSE5HI5W1QhgQD7U",
+    "api": false,
     "gcloudOptions": {
         "keyFilename": "C:/Program Files (x86)/Google/Cloud SDK/vibotparsingkeyjs.json",
         "projectId": "vibot-275815"

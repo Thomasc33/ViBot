@@ -24,6 +24,14 @@ const setup = require('./commands/setup')
 const restarting = require('./commands/restart')
 const emojiServers = ['739623118833713214', '738506334521131074', '738504422396788798', '719905601131511850', '719905712507191358', '719930605101383780', '719905684816396359', '719905777363714078', '720260310014885919', '720260593696768061', '720259966505844818', '719905506054897737', '720260132633706577', '719934329857376289', '720260221720592394', '720260562390351972', '720260005487575050', '719905949409869835', '720260467049758781', '720260436875935827', '719905747986677760', '720260079131164692', '719932430126940332', '719905565035200573', '719905806082113546', '722999001460244491', '720260272488710165', '722999622372556871', '720260194596290650', '720260499312476253', '720259927318331513', '722999694212726858', '722999033387548812', '720260531901956166', '720260398103920670', '719905651337461820']
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+const express = require('express')
+const bodyParser = require('body-parser')
+const rateLimit = require('express-rate-limit')
+const cookieParser = require('cookie-parser')
+const router = express.Router()
+const app = express();
+const path = require('path')
+var CLIENT_ID, CLIENT_SECRET
 
 for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
@@ -34,13 +42,13 @@ bot.on('message', message => {
     if (message.channel.type === 'dm') return dmHandler(message);
     if (message.author.bot) return;
     if (!message.content.startsWith(prefix)) return autoMod(message);
-    if(restarting.restarting) return message.channel.send('Cannot execute command as a restart is pending')
+    if (restarting.restarting) return message.channel.send('Cannot execute command as a restart is pending')
     const args = message.content.slice(prefix.length).split(/ +/);
     const commandName = args.shift().toLowerCase()
     if (commandName.replace(/[^a-z]/gi, '') == '') return
     const command = bot.commands.get(commandName) || bot.commands.find(cmd => cmd.alias && cmd.alias.includes(commandName))
     if (!command) return message.channel.send('Command doesnt exist, check \`commands\` and try again');
-    if (message.member.roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role]).position && message.author.id !== '277636691227836419') return;
+    if (message.member.roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role]).position && (message.author.id !== '277636691227836419' && message.author.id !== '298989767369031684')) return;
     if (command.requiredArgs && command.requiredArgs > args.length) return message.channel.send(`Command Entered incorrecty. \`${botSettings.prefix}${command.name} ${command.args}\``)
     try {
         command.execute(message, args, bot, db)
@@ -148,6 +156,7 @@ db.connect(err => {
 })
 
 bot.on("ready", async () => {
+    CLIENT_ID = bot.user.id
     console.log(`Bot loaded: ${bot.user.username}`);
     let vi = await bot.users.fetch(`277636691227836419`)
     vi.send('Bot Starting Back Up')
@@ -464,4 +473,178 @@ function fitStringIntoEmbed(embed, string, channel) {
     } else {
         embed.setDescription(embed.description.concat(`\n${string}`))
     }
+}
+
+if (botSettings.api) {
+    app.use(bodyParser.urlencoded({ extended: true }));
+    app.use(bodyParser.json());
+    app.use(cookieParser())
+
+    const apiLimit = rateLimit({
+        windowMs: 1 * 60 * 1000,
+        max: 20
+    })
+    app.use('/api/', apiLimit)
+
+    router.get('/', function (req, res) {
+        res.json({ message: 'hooray! welcome to our api!' });
+    });
+
+    router.get('/user/id/:uid', (req, res) => {
+        if (!db) {
+            res.status(401)
+            res.json({ code: 401, message: 'DB Not Initiated' })
+        }
+        let id = req.params.uid
+        if (!id || id == '' || isNaN(id)) {
+            res.status(402)
+            res.json({ code: 402, message: 'UID Invalid' })
+        }
+        db.query(`SELECT * FROM users WHERE id = '${id}'`, (err, rows) => {
+            if (err) return ErrorLogger.log(err, bot)
+            if (!rows || rows.length == 0) {
+                res.status(403)
+                res.json({ code: 403, message: 'User not found' })
+                return
+            }
+            let data = {
+                id: rows[0].id,
+                eventruns: rows[0].eventruns,
+                keypops: rows[0].keypops,
+                eventpops: rows[0].eventpops,
+                cultsLead: rows[0].cultsLead,
+                voidsLead: rows[0].voidsLead,
+                assists: rows[0].assists,
+                currentweekCult: rows[0].currentweekCult,
+                currentweekVoid: rows[0].currentweekVoid,
+                currentweekAssists: rows[0].currentweekAssists,
+                solocult: rows[0].solocult,
+                vialStored: rows[0].vialStored,
+                vialUsed: rows[0].vialUsed,
+                cultRuns: rows[0].cultRuns,
+                voidRuns: rows[0].voidRuns,
+                isVet: rows[0].isVet,
+                eventsLead: rows[0].eventsLead,
+                currentweekEvents: rows[0].currentweekEvents,
+                o3runs: rows[0].o3runs,
+                o3leads: rows[0].o3leads,
+                points: rows[0].points,
+                lastnitrouse: rows[0].lastnitrouse,
+                runesused: rows[0].runesused,
+                currentweeko3: rows[0].currentweeko3,
+                assistso3: rows[0].assistso3,
+                currentweekAssistso3: rows[0].currentweekAssistso3,
+                isRusher: rows[0].isRusher,
+                veriBlacklisted: rows[0].veriBlacklisted
+            }
+            res.json(data)
+        })
+    })
+
+    router.get('/user/nick/:uid/:guild', (req, res) => {
+        if (!bot) {
+            res.status(400)
+            return res.json(JSON.stringify('Bot not instantiated'))
+        }
+        if (!db) {
+            res.status(401)
+            return res.json(JSON.stringify('DB not initiated'))
+        }
+        let guildid = req.params.guild
+        if (!guildid || isNaN(guildid) || guildid == '') {
+            res.status(402)
+            return res.json({ code: 402, message: 'Guild ID Invalid' })
+        }
+        let uid = req.params.uid
+        if (!uid || uid == '') {
+            res.status(402)
+            return res.json({ code: 402, message: 'UID Invalid' })
+        }
+        let guild = bot.guilds.cache.get(guildid)
+        if (!guild) {
+            res.status(403)
+            return res.json({ code: 403, message: 'Guild Not Found' })
+        }
+        let member = guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(uid.toLowerCase()));
+        if (!member) {
+            res.status(403)
+            return res.json({ code: 403, message: 'User not found' })
+        }
+        db.query(`SELECT * FROM users WHERE id = '${member.id}'`, (err, rows) => {
+            if (err) return ErrorLogger.log(err, bot)
+            if (!rows || rows.length == 0) {
+                res.status(403)
+                res.json({ code: 403, message: 'User not found' })
+                return
+            }
+            let data = {
+                id: rows[0].id,
+                eventruns: rows[0].eventruns,
+                keypops: rows[0].keypops,
+                eventpops: rows[0].eventpops,
+                cultsLead: rows[0].cultsLead,
+                voidsLead: rows[0].voidsLead,
+                assists: rows[0].assists,
+                currentweekCult: rows[0].currentweekCult,
+                currentweekVoid: rows[0].currentweekVoid,
+                currentweekAssists: rows[0].currentweekAssists,
+                solocult: rows[0].solocult,
+                vialStored: rows[0].vialStored,
+                vialUsed: rows[0].vialUsed,
+                cultRuns: rows[0].cultRuns,
+                voidRuns: rows[0].voidRuns,
+                isVet: rows[0].isVet,
+                eventsLead: rows[0].eventsLead,
+                currentweekEvents: rows[0].currentweekEvents,
+                o3runs: rows[0].o3runs,
+                o3leads: rows[0].o3leads,
+                points: rows[0].points,
+                lastnitrouse: rows[0].lastnitrouse,
+                runesused: rows[0].runesused,
+                currentweeko3: rows[0].currentweeko3,
+                assistso3: rows[0].assistso3,
+                currentweekAssistso3: rows[0].currentweekAssistso3,
+                isRusher: rows[0].isRusher,
+                veriBlacklisted: rows[0].veriBlacklisted
+            }
+            res.json(data)
+        })
+    })
+
+    app.get('/', (req, res) => {
+        if (req.cookies.accessToken) {
+            res.status(200).sendFile(path.join(__dirname, 'index.html'))
+        } else {
+            res.status(200).sendFile(path.join(__dirname, 'login.html'))
+        }
+    })
+
+    app.get('/clearcookies', (req, res) => {
+        res.clearCookie('accessToken')
+            .clearCookie('tokenType')
+            .status(200)
+            .sendFile(path.join(__dirname, 'login.html'))
+    })
+
+    app.use('/api', router)
+    app.use('/o/discord', require('./api/discord'))
+    app.use((err, req, res, next) => {
+        switch (err.message) {
+            case 'NoCodeProvided':
+                return res.status(400).send({
+                    status: 'ERROR',
+                    error: err.message,
+                });
+            default:
+                return res.status(500).send({
+                    status: 'ERROR',
+                    error: err.message,
+                });
+        }
+    });
+
+    let port = 3000 //move to settings soon:tm:
+    app.listen(port, () => {
+        console.log(`running on port ${port}`)
+    })
 }
