@@ -25,6 +25,13 @@ module.exports = {
     args: '<c/v/fsv> <location>',
     role: 'almostrl',
     emitter: emitter,
+    /**
+     * 
+     * @param {Discord.Message} message 
+     * @param {String[]} args 
+     * @param {Discord.Client} bott 
+     * @param {import('mysql').Connection} db 
+     */
     async execute(message, args, bott, db) {
         let settings = bott.settings[message.guild.id]
         if (args.length == 0) return;
@@ -975,44 +982,44 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
         }
 
         //log run 1 minute after afk check
-        if (restart.restarting) log()
-        else setTimeout(log, 60000)
-        function log() {
-            if (this.channel.members.size != 0) {
+        if (restart.restarting) log(this)
+        else setTimeout(log, 60000, this)
+        function log(afkCheck) {
+            if (afkCheck.channel && afkCheck.channel.members.size != 0) {
                 let query = `UPDATE users SET `
-                if (this.run == 1) query = query.concat('cultRuns = cultRuns + 1 WHERE ')
+                if (afkCheck.run == 1) query = query.concat('cultRuns = cultRuns + 1 WHERE ')
                 else query = query.concat('voidRuns = voidRuns + 1 WHERE ')
-                this.channel.members.each(m => query = query.concat(`id = '${m.id}' OR `))
+                afkCheck.channel.members.each(m => query = query.concat(`id = '${m.id}' OR `))
                 query = query.substring(0, query.length - 4)
-                this.db.query(query, err => {
+                afkCheck.db.query(query, err => {
                     if (err) ErrorLogger.log(err, bot)
                 })
-                if (this.settings.backend.points) {
+                if (afkCheck.settings.backend.points) {
                     //give points to everyone in run
                     let regular = []
                     let nitros = []
-                    this.channel.members.each(m => {
-                        if (m.roles.cache.has(this.nitroBooster.id)) nitros.push(m)
+                    afkCheck.channel.members.each(m => {
+                        if (m.roles.cache.has(afkCheck.nitroBooster.id)) nitros.push(m)
                         else regular.push(m)
                     })
                     //regular raiders point logging
-                    if (this.settings.points.perrun != 0) {
-                        let regularQuery = `UPDATE users SET points = points + ${this.settings.points.perrun} WHERE `
+                    if (afkCheck.settings.points.perrun != 0) {
+                        let regularQuery = `UPDATE users SET points = points + ${afkCheck.settings.points.perrun} WHERE `
                         regular.forEach(m => regularQuery = regularQuery.concat(`id = '${m.id}' OR `))
                         regularQuery = regularQuery.substring(0, regularQuery.length - 4)
-                        this.db.query(regularQuery, err => { if (err) ErrorLogger.log(err, bot) })
+                        afkCheck.db.query(regularQuery, err => { if (err) ErrorLogger.log(err, bot) })
                         //nitro raiders point logging
-                        let nitroQuery = `UPDATE users SET points = points + ${this.settings.points.perrun * this.settings.points.nitromultiplier} WHERE `
+                        let nitroQuery = `UPDATE users SET points = points + ${afkCheck.settings.points.perrun * afkCheck.settings.points.nitromultiplier} WHERE `
                         nitros.forEach(m => nitroQuery = nitroQuery.concat(`id = '${m.id}' OR `))
                         nitroQuery = nitroQuery.substring(0, nitroQuery.length - 4)
-                        this.db.query(nitroQuery, err => { if (err) ErrorLogger.log(err, bot) })
+                        afkCheck.db.query(nitroQuery, err => { if (err) ErrorLogger.log(err, bot) })
                     }
                 }
             }
         }
 
         //mark afk check as over
-        emitter.emit('Ended', isVet)
+        emitter.emit('Ended', this.isVet)
     }
     async abortAfk() {
         this.mainReactionCollector.stop();
@@ -1111,7 +1118,6 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
             .addField('Split', 'None!')
         if (this.message.author.avatarURL()) groupEmbed.author.iconURL = this.message.author.avatarURL()
         for (let i in this.mainGroup) {
-            console.log(i)
             let nick = this.message.guild.members.cache.get(this.mainGroup[i]).nickname
             if (!nick) nick = `<@!${this.mainGroup[i]}>`
             if (groupEmbed.fields[0].value == 'None!') groupEmbed.fields[0].value = `${nick}`
