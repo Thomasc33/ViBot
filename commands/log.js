@@ -22,6 +22,7 @@ module.exports = {
             if (args[0].toLowerCase().charAt(0) == 'v') {
                 db.query(`SELECT * FROM users WHERE id = '${message.author.id}'`, (err, rows) => {
                     if (err) throw err;
+                    if(rows.length == 0) return message.channel.send('You are not logged in DB')
                     db.query(`UPDATE users SET voidsLead = ${parseInt(rows[0].voidsLead) + parseInt(count)}, currentweekVoid = ${parseInt(rows[0].currentweekVoid) + parseInt(count)} WHERE id = '${message.author.id}'`)
                     message.channel.send(`Run logged for ${message.member.nickname}. Current week: ${parseInt(rows[0].currentweekCult)} cult, ${parseInt(rows[0].currentweekVoid) + parseInt(count)} void, and ${parseInt(rows[0].currentweekAssists)} assists`)
                 })
@@ -30,6 +31,7 @@ module.exports = {
             } else if (args[0].toLowerCase().charAt(0) == 'c') {
                 db.query(`SELECT * FROM users WHERE id = '${message.author.id}'`, (err, rows) => {
                     if (err) throw err;
+                    if(rows.length == 0) return message.channel.send('You are not logged in DB')
                     db.query(`UPDATE users SET cultsLead = ${parseInt(rows[0].cultsLead) + parseInt(count)}, currentweekCult = ${parseInt(rows[0].currentweekCult) + parseInt(count)} WHERE id = '${message.author.id}'`)
                     message.channel.send(`Run logged for ${message.member.nickname}. Current week: ${parseInt(rows[0].currentweekCult) + parseInt(count)} cult, ${parseInt(rows[0].currentweekVoid)} void, and ${parseInt(rows[0].currentweekAssists)} assists`)
                 })
@@ -51,6 +53,7 @@ module.exports = {
                         await confirmMessage.delete()
                         db.query(`SELECT * FROM users WHERE id = '${message.author.id}'`, (err, rows) => {
                             if (err) throw err;
+                            if(rows.length == 0) return message.channel.send('You are not logged in DB')
                             db.query(`UPDATE users SET eventsLead = ${parseInt(rows[0].eventsLead) + parseInt(count)}, currentweekEvents = ${parseInt(rows[0].currentweekEvents) + parseInt(count)} WHERE id = '${message.author.id}'`)
                             message.channel.send(`Run logged for ${message.member.nickname}. Current week: ${parseInt(rows[0].currentweekEvents) + parseInt(count)}`)
                         })
