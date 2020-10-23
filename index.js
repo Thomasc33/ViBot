@@ -31,6 +31,7 @@ const cookieParser = require('cookie-parser')
 const router = express.Router()
 const app = express();
 const path = require('path')
+const cors = require('cors')
 var CLIENT_ID, CLIENT_SECRET
 
 for (const file of commandFiles) {
@@ -479,6 +480,7 @@ if (botSettings.api) {
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(bodyParser.json());
     app.use(cookieParser())
+    app.use(cors())
 
     const apiLimit = rateLimit({
         windowMs: 1 * 60 * 1000,
@@ -643,7 +645,7 @@ if (botSettings.api) {
         }
     });
 
-    let port = 3000 //move to settings soon:tm:
+    let port = 3001 //move to settings soon:tm:
     app.listen(port, () => {
         console.log(`running on port ${port}`)
     })
