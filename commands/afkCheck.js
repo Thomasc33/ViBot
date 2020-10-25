@@ -811,7 +811,8 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
             .setDescription(`This afk check has been ended.\nIf you get disconnected during the run, **JOIN LOUNGE** *then* DM me \`join\` to get back in`)
             .setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
 
-        this.leaderEmbed.setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
+        this.leaderEmbed.setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname} at`)
+            .setTimestamp();
         this.afkCheckEmbed.edit('', this.embedMessage).catch(er => ErrorLogger.log(er, bot))
             .then(this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot)))
             .then(this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot)))
@@ -1033,7 +1034,8 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
 
         this.embedMessage.setDescription(`This afk check has been aborted`)
             .setFooter(`The afk check has been aborted by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
-        this.leaderEmbed.setFooter(`The afk check has been aborted by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
+        this.leaderEmbed.setFooter(`The afk check has been aborted by ${this.message.guild.members.cache.get(this.endedBy.id).nickname} at`)
+            .setTimestamp();
 
         this.afkCheckEmbed.edit('', this.embedMessage).catch(er => ErrorLogger.log(er, bot))
         this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot))
@@ -1117,15 +1119,21 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
             .addField('Main', 'None!')
             .addField('Split', 'None!')
         if (this.message.author.avatarURL()) groupEmbed.author.iconURL = this.message.author.avatarURL()
+        console.log(this.mainGroup)
+        console.log(this.splitGroup)
         for (let i in this.mainGroup) {
-            let nick = this.message.guild.members.cache.get(this.mainGroup[i]).nickname
-            if (!nick) nick = `<@!${this.mainGroup[i]}>`
+            let member = this.message.guild.members.cache.get(this.mainGroup[i])
+            let nick
+            if (!member) nick = `<@!${this.mainGroup[i]}>`
+            else nick = member.nickname
             if (groupEmbed.fields[0].value == 'None!') groupEmbed.fields[0].value = `${nick}`
             else groupEmbed.fields[0].value += `\n${nick}`
         }
         for (let i in this.splitGroup) {
-            let nick = this.message.guild.members.cache.get(this.splitGroup[i]).nickname
-            if (!nick) nick = `<@!${this.splitGroup[i]}>`
+            let member = this.message.guild.members.cache.get(this.splitGroup[i])
+            let nick
+            if (!member) nick = `<@!${this.splitGroup[i]}>`
+            else nick = member.nickname
             if (groupEmbed.fields[1].value == 'None!') groupEmbed.fields[1].value = `${nick}`
             else groupEmbed.fields[1].value += `\n${nick}`
         }

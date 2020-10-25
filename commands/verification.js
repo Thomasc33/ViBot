@@ -421,6 +421,8 @@ module.exports = {
                     member.user.send(`You have been successfully verified in \`${message.guild.name}\`. Welcome! AFK-Checks work a little big different here, so make sure to read through the FAQ to learn more`)
                     //remove from watching embed
                     watching.splice(watching.indexOf(u.id), 1)
+                    //remove them from expelled list
+                    db.query(`DELETE FROM veriblacklist WHERE id = '${member.id}' OR id = '${ign}'`).catch(er => { })
                 }
                 //x
                 else if (r.emoji.name === '❌') {

@@ -29,6 +29,7 @@ module.exports = {
         for (i = 1; i < args.length; i++) location = location.concat(args[i]) + ' ';
         location = location.trim();
         if (location.length >= 1024) return message.channel.send('Location must be below 1024 characters, try again');
+        if(location = '') location = 'None!'
         if (activeRun) return message.channel.send("There is already an active run");
         bot = bott
         let channel = await createChannel(message, bott, isVet).catch(er => { return message.channel.send(er) })

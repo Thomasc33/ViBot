@@ -1,4 +1,7 @@
 const Discord = require('discord.js')
+const FalseSuspends = require('./falseSuspensions')
+const EventDupes = require('./eventDupes')
+const eventDupes = require('./eventDupes')
 
 module.exports = {
     name: 'check',
@@ -101,6 +104,8 @@ module.exports = {
             }
         }
         checkMessage.edit('', checkEmbed)
+        FalseSuspends.execute(message, args, bot, db)
+        eventDupes.execute(message, args, bot, db)
     }
 }
 

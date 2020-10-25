@@ -7,19 +7,16 @@ module.exports = {
     args: '[Users]',
     requiredArgs: 1,
     role: 'almostrl',
-    execute(message, args, bot, db) {
+    async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         if (args.length == 0) return;
         var suspendedButVerifed = message.guild.roles.cache.get(settings.roles.tempsuspended)
         var suspendedRole = message.guild.roles.cache.get(settings.roles.permasuspended)
         var notFoundString = ''
-        let expelled = []
+        let expelled = await checkBlackList(args, db)
         //combines users into an array
         for (let i in args) {
             let u = args[i];
-            db.query(`SELECT * FROM veriblacklist WHERE id = '${u}'`, (err, rows) => {
-                if (rows.length > 0) expelled.push(u)
-            })
             var member = message.guild.members.cache.get(u)
             if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(u.toLowerCase()));
             if (!member) {
@@ -68,4 +65,21 @@ module.exports = {
             message.channel.send(expelledEmbed)
         }
     }
+}
+
+async function checkBlackList(args, db) {
+    return new Promise(async (res, rej) => {
+        let expelled = []
+        let promises = []
+        for (let i in args) {
+            promises.push(new Promise((res, rej) => {
+                db.query(`SELECT * FROM veriblacklist WHERE id = '${args[i]}'`, (err, rows) => {
+                    if (rows.length != 0) expelled.push(args[i])
+                    res()
+                })
+            }))
+        }
+        await Promise.all(promises)
+        res(expelled)
+    })
 }
