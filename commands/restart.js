@@ -5,26 +5,24 @@ module.exports = {
     description: 'Restarts the bot',
     role: 'moderator',
     restarting: false,
-    execute(message, args, bot) {
+    async execute(message, args, bot) {
         if (args.length != 0 && args[0].toLowerCase() == 'force') process.exit()
         else module.exports.restarting = true;
         message.channel.send('Restart Queued')
-        let vetCheck = new Promise(async (res, rej) => {
-            if (afkChecks.checkRuns(true)) {
-                let emitter = afkChecks.emitter
-                emitter.on('Ended', isVet => {
-                    if (isVet) res()
+        let Promises = []
+
+        //afk checks
+        let activeRuns = await afkChecks.checkRuns()
+        let afkChecksEmitter = afkChecks.emitter
+        for (let i of activeRuns) {
+            Promises.push(new Promise((res, rej) => {
+                afkChecksEmitter.on('Ended', channelID => {
+                    if (channelID == i) res()
                 })
-            } else res()
-        })
-        let regCheck = new Promise(async (res, rej) => {
-            if (afkChecks.checkRuns(false)) {
-                let emitter = afkChecks.emitter
-                emitter.on('Ended', isVet => {
-                    if (!isVet) res()
-                })
-            } else res()
-        })
-        Promise.all([vetCheck, regCheck]).then(() => { process.exit() })
+            }))
+        }
+        console.log(Promises)
+        if (Promises.length == 0) {console.log('test');process.exit()}
+        await Promise.all(Promises).then(() => { process.exit() })
     }
 }

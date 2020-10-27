@@ -7,6 +7,7 @@ module.exports = {
     description: 'Manually allows runs in case bot gets stuck',
     role: 'eventrl',
     execute(message, args, bot) {
+        return
         let settings = bot.settings[message.guild.id]
         if (message.channel.parent.name.toLowerCase() === 'raiding') {
             afk.allowRun(false);

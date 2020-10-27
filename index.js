@@ -43,16 +43,16 @@ bot.on('message', message => {
     if (message.channel.type === 'dm') return dmHandler(message);
     if (message.author.bot) return;
     if (!message.content.startsWith(prefix)) return autoMod(message);
-    if (restarting.restarting) return message.channel.send('Cannot execute command as a restart is pending')
     const args = message.content.slice(prefix.length).split(/ +/);
     const commandName = args.shift().toLowerCase()
     if (commandName.replace(/[^a-z]/gi, '') == '') return
+    if (restarting.restarting && commandName !== 'restart') return message.channel.send('Cannot execute command as a restart is pending')
     const command = bot.commands.get(commandName) || bot.commands.find(cmd => cmd.alias && cmd.alias.includes(commandName))
     if (!command) return message.channel.send('Command doesnt exist, check \`commands\` and try again');
     if (message.member.roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role]).position && (message.author.id !== '277636691227836419' && message.author.id !== '298989767369031684')) return;
     if (command.requiredArgs && command.requiredArgs > args.length) return message.channel.send(`Command Entered incorrecty. \`${botSettings.prefix}${command.name} ${command.args}\``)
     try {
-        command.execute(message, args, bot, db)
+        command.execute(message, args, bot, db, tokenDB)
         CommandLogger.log(message, bot)
     } catch (er) {
         ErrorLogger.log(er, bot)
@@ -150,18 +150,22 @@ async function autoMod(message) {
 bot.login(botSettings.key);
 
 var db = mysql.createConnection(botSettings.dbInfo)
+var tokenDB = mysql.createConnection(botSettings.tokenDBInfo)
 
 db.connect(err => {
     if (err) throw err;
     console.log('Connected to database')
 })
 
+tokenDB.connect(err => {
+    if (err) throw err;
+    console.log('Connected to token database')
+})
+
 bot.on("ready", async () => {
     CLIENT_ID = bot.user.id
     console.log(`Bot loaded: ${bot.user.username}`);
-    let vi = await bot.users.fetch(`277636691227836419`)
-    vi.send('Bot Starting Back Up')
-    bot.user.setActivity(`with your points`);
+    bot.user.setActivity(`Soon™`);
     //to hide dev server
     if (bot.user.id == botSettings.prodBotId) emojiServers.push('701483950559985705');
     //generate default settings

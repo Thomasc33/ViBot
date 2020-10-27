@@ -40,12 +40,12 @@ module.exports = {
         if (watchedMessages.includes(embed.footer)) return
         watchedMessages.push(embed.footer)
         let channel = message.guild.channels.cache.get(embed.footer.text)
-        if (channel == null) return m.delete()
+        if (!channel) return m.delete()
         let channelName = channel.name
         let reactionCollector = new Discord.ReactionCollector(m, xFilter)
         reactionCollector.on('collect', async (r, u) => {
             reactionCollector.stop()
-            if (!m.mentions.members) remove()
+            if (!m.mentions.members.first()) return remove()
             if (u.id == m.mentions.members.first().id) remove()
             else {
                 await m.reactions.removeAll()

@@ -4,7 +4,8 @@
     "prodBotId": "589996847083290629",
     "botId": "701196529519689790",
     "botSecret" : "eWyB5L1FkraexM1VQSE5HI5W1QhgQD7U",
-    "api": false,
+    "api": true,
+    "earlyLocationCooldown": 7200000,
     "gcloudOptions": {
         "keyFilename": "C:/Program Files (x86)/Google/Cloud SDK/vibotparsingkeyjs.json",
         "projectId": "vibot-275815"
@@ -14,6 +15,12 @@
         "user": "DevComputer",
         "password": "Poiewq20021313$",
         "database": "testinghalls"
+    },
+    "tokenDBInfo": {
+        "host": "75.88.242.11",
+        "user": "DevComputer",
+        "password": "Poiewq20021313$",
+        "database": "supporters"
     },
     "proxy": {
         "host": "46.166.186.197",

@@ -18,7 +18,7 @@ module.exports = {
         let member = message.mentions.members.first()
         if (!member) member = message.guild.members.cache.get(raider)
         if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(raider.toLowerCase()));
-        if (!member) member = message.guild.members.cache.get(u.replace(/[<>@!]/gi, ''))
+        if (!member) member = message.guild.members.cache.get(raider.replace(/[<>@!]/gi, ''))
         if (!member) return message.channel.send('I could not find ' + raider)
         if (reason == '') reason = 'None'
         if (!member) return message.channel.send("User not found, please try again");

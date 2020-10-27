@@ -10,17 +10,17 @@ module.exports = {
     args: '<location>',
     role: 'eventrl',
     execute(message, args, bot) {
-        let isVet = false;
-        if (!(message.channel.parent.name.toLowerCase() === 'raiding' || message.channel.parent.name.toLowerCase() === 'veteran raiding' || message.channel.parent.name.toLowerCase() === 'events'))
-            return message.channel.send("Try again in a correct category");
-        if (message.channel.parent.name.toLowerCase() === 'veteran raiding') isVet = true;
+        let channel = message.member.voice.channelID
+        if (!channel) return message.channel.send('Please join a voice channel to change location')
         let location = "";
         for (i = 0; i < args.length; i++) location = location.concat(args[i]) + ' ';
         location = location.trim();
         if (location.length >= 1024) return message.channel.send('Location must be below 1024 characters, try again');
         if (location == '') return;
-        if (message.channel.parent.name.toLowerCase() === 'events') EventAFK.changeLocation(location)
-        else afkCheck.changeLocation(location, isVet, message.channel);
+        if (message.channel.parent.name.toLowerCase() === 'events') return EventAFK.changeLocation(location)
+        let res = afkCheck.changeLocation(location, channel)
+        if (res) message.channel.send(res)
+        else message.react('✅');
 
     }
 }

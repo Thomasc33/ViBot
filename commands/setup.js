@@ -8,7 +8,7 @@ const channels = ['modmail', 'verification', 'manualverification', 'vetverificat
      'modmailinfo']
 const voice = ['raidingtemplate', 'eventtemplate', 'vettemplate', 'veteventtemplate', 'lounge', 'vetlounge', 'eventlounge', 'afk']
 const voiceprefixes = ['raidingprefix', 'vetprefix']
-const backend = ['modmail', 'currentweek', 'eventcurrentweek', 'verification', 'vetverification', 'points']
+const backend = ['modmail', 'currentweek', 'eventcurrentweek', 'verification', 'vetverification', 'points', 'supporter']
 const numerical = ['afktime', 'eventafktime', 'nitrocount', 'nitrocooldown', 'topkey', 'bottomkey']
 const runreqs = ['weapon', 'ability', 'armor', 'ring']
 const autoveri = ['fame', 'stars', 'realmage', 'discordage', 'deathcount']
