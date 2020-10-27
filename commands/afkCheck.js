@@ -233,6 +233,9 @@ class afkCheck {
         if (this.afkInfo.reqsImageUrl) this.mainEmbed.setImage(this.afkInfo.reqsImageUrl)
         this.raidStatusMessage.edit(this.mainEmbed)
 
+        //unlock channel
+        this.channel.updateOverwrite(this.verifiedRaiderRole.id, { CONNECT: true, VIEW_CHANNEL: true })
+
         //create reaction collector
         this.raidStatusReactionCollector = new Discord.ReactionCollector(this.raidStatusMessage, (r, u) => !u.bot)
         this.raidStatusReactionCollector.on('collect', (r, u) => this.reactionHandler(r, u))
@@ -358,11 +361,11 @@ class afkCheck {
                 //key, vial, other
                 switch (type) {
                     case 'key':
-                        if (afk.keys.length > limit || afk.keys.includes(u.id)) return false; else return true;
+                        if (afk.keys.length >= limit || afk.keys.includes(u.id)) return false; else return true;
                     case 'vial':
-                        if (afk.vials.length > limit || afk.vials.includes(u.id)) return false; else return true;
+                        if (afk.vials.length >= limit || afk.vials.includes(u.id)) return false; else return true;
                     default:
-                        if (afk.reactables[type].users.length > limit || afk.reactables[type].users.includes(u.id)) return false; else return true;
+                        if (afk.reactables[type].users.length >= limit || afk.reactables[type].users.includes(u.id)) return false; else return true;
                 }
             }
         } catch (er) { console.log(er) }
