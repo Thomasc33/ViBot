@@ -197,9 +197,9 @@ class afkCheck {
                 break;
         }
         if (this.afkInfo.startDelay > 0) {
-            this.raidStatusMessage = await this.raidStatus.send(`@ here \`${this.afkInfo.runName}\`${flag ? ` (${flag})` : ''} will begin in ${Math.round(this.afkInfo.startDelay / 1000)} seconds. Be prepared to join \`${this.channel.name}\``)
+            this.raidStatusMessage = await this.raidStatus.send(`@here \`${this.afkInfo.runName}\`${flag ? ` (${flag})` : ''} will begin in ${Math.round(this.afkInfo.startDelay / 1000)} seconds. Be prepared to join \`${this.channel.name}\``)
         } else {
-            this.raidStatusMessage = await this.raidStatus.send(`@ here \`${this.afkInfo.runName}\`${flag ? ` (${flag})` : ''} is beginning now. Please join ${this.channel.name}`)
+            this.raidStatusMessage = await this.raidStatus.send(`@here \`${this.afkInfo.runName}\`${flag ? ` (${flag})` : ''} is beginning now. Please join ${this.channel.name}`)
             this.start()
         }
     }
