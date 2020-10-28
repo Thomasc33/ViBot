@@ -260,14 +260,19 @@ class afkCheck {
         else if (r.emoji.id === '752368122551337061') return this.supporterUse(u, this.leaderEmbed.fields.length - 2)
         else if (r.emoji.name === '🎟️') return this.pointsUse(u, this.leaderEmbed.fields.length - 2)
         else if (r.emoji.name === '❌') {
-            if (this.guild.members.cache.get(u.id).roles.highest > this.staffRole.position) {
+            console.log(this.staffRole.position)
+            console.log(this.guild.members.cache.get(u.id).roles.highest.position)
+            if (this.guild.members.cache.get(u.id).roles.highest.position > this.staffRole.position) {
                 this.endedBy = u;
                 return this.postAfk(u, this.leaderEmbed.fields.length - 2)
             }
         }
         else for (let i in this.afkInfo.earlyLocationReacts) {
             let react = this.afkInfo.earlyLocationReacts[i]
-            if (react.emoteID == r.emoji.id) this.confirmSelection(u, r, +i + +1, react.shortName)
+            if (react.emoteID == r.emoji.id) {
+                if (react.requiredRole && !this.guild.members.cache.get(u.id).roles.cache.has(this.guild.roles.cache.get(this.settings.roles[react.requiredRole]))) return
+                this.confirmSelection(u, r, +i + +1, react.shortName)
+            }
         }
         if (r.emoji.name.toLowerCase() == 'knight') this.knights.push(u)
         else if (r.emoji.name.toLowerCase() == 'warrior') this.warriors.push(u)

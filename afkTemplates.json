@@ -19,7 +19,8 @@
                 "emoteID": "720404844187353099",
                 "pointsGiven": 2,
                 "limit": 3,
-                "shortName": "rusher"
+                "shortName": "rusher",
+                "requiredRole": "rusher"
             },
             {
                 "emoteID": "723019533597802507",
