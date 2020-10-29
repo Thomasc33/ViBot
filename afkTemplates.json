@@ -169,5 +169,54 @@
             "color": "#ff0000",
             "description": "To join, **connect to the raiding channel by clicking its name**\nIf you have a key react with <:LostHallsKey:701491230260985877>\nTo indicate your class or gear choices, react with <:Warrior:723018431489900595> <:Paladin:723018431296831539> <:Knight:723018431598952498> <:Wizard:723018431573655643> <:UTMarbleSeal:720401067086446672> <:UTTomeoftheMushroomTribes:720404621331267697> \nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:720404844187353099>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC"
         }
+    },
+    "224586856342224898": {
+        "runType": "Void",
+        "runName": "Fast Void",
+        "symbol": "a",
+        "reqsImageUrl": "https://cdn.discordapp.com/attachments/556931967497666570/763912364528762880/vet_reqs.png",
+        "keyEmoteID": "701491230260985877",
+        "vialEmoteID": "701491230567039018",
+        "isSplit": false,
+        "newChannel": true,
+        "vialReact": true,
+        "postAfkCheck": false,
+        "startDelay": 10000,
+        "vcCap": 25,
+        "timeLimit": 360,
+        "keyCount": 1,
+        "earlyLocationCost": 25,
+        "earlyLocationReacts": [
+            {
+                "emoteID": "723018431275859969",
+                "pointsGiven": 2,
+                "limit": 3,
+                "shortName": "mystic"
+            },
+            {
+                "emoteID": "720263764309704704",
+                "pointsGiven": 2,
+                "limit": 3,
+                "shortName": "brain"
+            },
+            {
+                "emoteID": "723019533597802507",
+                "pointsGiven": 1,
+                "limit": 1,
+                "shortName": "armorbreak"
+            }
+        ],
+        "reacts": [
+            "723018431489900595",
+            "723018431296831539",
+            "723018431598952498",
+            "723018431573655643",
+            "720401067086446672",
+            "720404621331267697"
+        ],
+        "embed": {
+            "color": "#2f075c",
+            "description": "come join fast voids meet reqs and bring mystics/tricksters"
+        }
     }
 }
