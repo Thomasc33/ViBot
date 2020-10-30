@@ -260,9 +260,7 @@ class afkCheck {
         else if (r.emoji.id === '752368122551337061') return this.supporterUse(u, this.leaderEmbed.fields.length - 2)
         else if (r.emoji.name === '🎟️') return this.pointsUse(u, this.leaderEmbed.fields.length - 2)
         else if (r.emoji.name === '❌') {
-            console.log(this.staffRole.position)
-            console.log(this.guild.members.cache.get(u.id).roles.highest.position)
-            if (this.guild.members.cache.get(u.id).roles.highest.position > this.staffRole.position) {
+            if (this.guild.members.cache.get(u.id).roles.highest.position >= this.staffRole.position) {
                 this.endedBy = u;
                 return this.postAfk(u, this.leaderEmbed.fields.length - 2)
             }
