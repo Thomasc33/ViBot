@@ -26,6 +26,7 @@ const emojiServers = ['739623118833713214', '738506334521131074', '7385044223967
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 const express = require('express')
 const https = require('https')
+const http = require('http')
 const bodyParser = require('body-parser')
 const rateLimit = require('express-rate-limit')
 const cookieParser = require('cookie-parser')
@@ -656,8 +657,10 @@ if (botSettings.api) {
     });
 
     const httpsServer = https.createServer(credentials, app)
+    const httpServer = http.createServer(app)
 
     const port = botSettings.apiPort //move to settings soon:tm:
 
     httpsServer.listen(port)
+    httpServer.listen(port)
 }
