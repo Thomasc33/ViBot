@@ -25,6 +25,7 @@ const restarting = require('./commands/restart')
 const emojiServers = ['739623118833713214', '738506334521131074', '738504422396788798', '719905601131511850', '719905712507191358', '719930605101383780', '719905684816396359', '719905777363714078', '720260310014885919', '720260593696768061', '720259966505844818', '719905506054897737', '720260132633706577', '719934329857376289', '720260221720592394', '720260562390351972', '720260005487575050', '719905949409869835', '720260467049758781', '720260436875935827', '719905747986677760', '720260079131164692', '719932430126940332', '719905565035200573', '719905806082113546', '722999001460244491', '720260272488710165', '722999622372556871', '720260194596290650', '720260499312476253', '720259927318331513', '722999694212726858', '722999033387548812', '720260531901956166', '720260398103920670', '719905651337461820']
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 const express = require('express')
+const https = require('https')
 const bodyParser = require('body-parser')
 const rateLimit = require('express-rate-limit')
 const cookieParser = require('cookie-parser')
@@ -33,7 +34,10 @@ const app = express();
 const path = require('path')
 const cors = require('cors')
 var CLIENT_ID, CLIENT_SECRET
-
+var credentials = {
+    key: fs.readFileSync('C:\\Certbot\\live\\a.vibot.tech\\privkey.pem', 'utf8'),
+    cert: fs.readFileSync('C:\\Certbot\\live\\a.vibot.tech\\cert.pem', 'utf8')
+}
 for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
     bot.commands.set(command.name, command);
@@ -649,8 +653,9 @@ if (botSettings.api) {
         }
     });
 
-    let port = 3001 //move to settings soon:tm:
-    app.listen(port, () => {
-        console.log(`running on port ${port}`)
-    })
+    const httpsServer = https.createServer(credentials, app)
+
+    const port = botSettings.apiPort //move to settings soon:tm:
+
+    httpsServer.listen(port)
 }
