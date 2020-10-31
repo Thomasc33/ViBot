@@ -170,6 +170,8 @@ bot.on("ready", async () => {
     CLIENT_ID = bot.user.id
     console.log(`Bot loaded: ${bot.user.username}`);
     bot.user.setActivity(`Soon™`);
+	let vi = await bot.users.fetch(`277636691227836419`)
+    vi.send('Halls Bot Starting Back Up')
     //to hide dev server
     if (bot.user.id == botSettings.prodBotId) emojiServers.push('701483950559985705');
     //generate default settings
