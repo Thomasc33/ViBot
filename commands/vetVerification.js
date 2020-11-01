@@ -23,11 +23,11 @@ module.exports = {
     async createMessage(message, bot, db) {
         let settings = bot.settings[message.guild.id]
         let vetVeriChannel = message.guild.channels.cache.get(settings.channels.vetverification)
-        if (vetVeriChannel == null) return message.channel.send(`Vet Verification channel not found`)
+        if (!vetVeriChannel) return message.channel.send(`Vet Verification channel not found`)
         let vetVeriEmbed = new Discord.MessageEmbed()
             .setTitle('Veteran Verification for Lost Halls')
             .addField('How to', 'React with the :white_check_mark: to get the role.\nMake sure to make your graveyard and character list public on realmeye before reacting\nAlso run the command ;stats and -stats and see if you have a total of 100 runs completed.')
-            .addField('Requirements', '-2 8/8 Characters\n-1 8/8 Melee Character\n-100 Completed Lost Halls')
+            .addField('Requirements', '-2 8/8 Characters\n-1 8/8 Melee Character\n-100 Completed Voids')
         embedMessage = await vetVeriChannel.send(vetVeriEmbed)
         embedMessage.react('✅')
         this.init(message.guild, bot, db)
@@ -35,7 +35,7 @@ module.exports = {
     async init(guild, bott, db) {
         bot = bott
         let settings = bott.settings[guild.id]
-        if (embedMessage == undefined) {
+        if (!embedMessage) {
             let vetVeriChannel = guild.channels.cache.get(settings.channels.vetverification)
             if (vetVeriChannel == null) return;
             let messages = await vetVeriChannel.messages.fetch({ limit: 1 })
@@ -54,7 +54,7 @@ module.exports = {
         let veriLog = guild.channels.cache.get(settings.channels.verificationlog)
         let veriPending = guild.channels.cache.get(settings.channels.manualvetverification)
         let ign = member.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|')[0]
-        if (member == null) return;
+        if (!member) return;
         if (watching.includes(u.id)) return
         if (member.roles.cache.has(vetRaider)) return;
         let loggedRuns = 0
@@ -62,7 +62,6 @@ module.exports = {
         db.query(`SELECT * FROM users WHERE id = '${u.id}'`, (err, rows) => {
             if (err) ErrorLogger.log(err, bot)
             if (rows.length == 0) return
-            loggedRuns += parseInt(rows[0].cultRuns)
             loggedRuns += parseInt(rows[0].voidRuns)
             isVet = rows[0].isVet
         })
@@ -83,7 +82,7 @@ module.exports = {
         let graveyard = await realmEyeScrape.getGraveyardSummary(ign)
         for (let i in graveyard.achievements) {
             let achievement = graveyard.achievements[i]
-            if (achievement.type == 'Lost Halls completed' || achievement.type == 'Voids completed' || achievement.type == 'Cultist Hideouts completed') {
+            if (achievement.type == 'Voids completed') {
                 realmEyeRuns += parseInt(achievement.total)
             }
         }

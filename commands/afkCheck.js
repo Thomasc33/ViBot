@@ -269,7 +269,7 @@ class afkCheck {
             let react = this.afkInfo.earlyLocationReacts[i]
             if (react.emoteID == r.emoji.id) {
                 if (react.requiredRole && !this.guild.members.cache.get(u.id).roles.cache.has(this.guild.roles.cache.get(this.settings.roles[react.requiredRole]))) return
-                this.confirmSelection(u, r, +i + +1, react.shortName)
+                this.confirmSelection(u, r, +i + +1, react.shortName, react.limit)
             }
         }
         if (r.emoji.name.toLowerCase() == 'knight') this.knights.push(u)
@@ -809,6 +809,12 @@ class afkCheck {
     }
 }
 
+/**
+ * 
+ * @param {*} runInfo 
+ * @param {Discord.Message} message 
+ * @param {Discord.Client} bot 
+ */
 async function createChannel(runInfo, message, bot) {
     let settings = bot.settings[message.guild.id]
     return new Promise(async (res, rej) => {
@@ -828,9 +834,10 @@ async function createChannel(runInfo, message, bot) {
         if (!template) return rej(`Template channel not found`)
         let channel = await template.clone({
             name: `${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s ${runInfo.runType}`,
-            parent: message.guild.channels.cache.filter(c => c.type == 'category').find(c => c.name.toLowerCase() === parent).id,
-            userLimit: runInfo.vcCap
+            parent: message.guild.channels.cache.filter(c => c.type == 'category').find(c => c.name.toLowerCase() === parent).id
         }).then(c => c.setPosition(0))
+            .then(c => c.setUserLimit(runInfo.vcCap))
+
 
         await message.member.voice.setChannel(channel).catch(er => { })
 
