@@ -31,10 +31,6 @@ module.exports = {
         //clear out runs array
         destroyInactiveRuns();
 
-        //check for vcCap
-        let vcCap = 50;
-        if (!isNaN(args[0]) && parseInt(args[0]) > 10) vcCap = parseInt(args.shift());
-
         //Check Run Type
         let afkTemplates = require('../afkTemplates.json')
         let runType = null;
@@ -61,7 +57,6 @@ module.exports = {
         //create afkInfo from templates
 
         let runInfo = { ...runType }
-        runInfo.vcCap = vcCap;
 
         //isVet
         let isVet = false
@@ -162,7 +157,7 @@ class afkCheck {
         if (this.afkInfo.isVet) this.verifiedRaiderRole = this.guild.roles.cache.get(this.settings.roles.vetraider)
         else this.verifiedRaiderRole = this.guild.roles.cache.get(this.settings.roles.raider)
         this.staffRole = guild.roles.cache.get(this.settings.roles.almostrl)
-        this.afkChannel = guild.channels.cache.get(this.settings.voice.afk)
+        this.afkChannel = guild.channels.cache.find(c => c.name === 'afk')
         this.runInfoChannel = guild.channels.cache.get(this.settings.channels.runlogs)
         this.officialRusher = guild.roles.cache.get(this.settings.roles.rusher)
         this.nitroBooster = guild.roles.cache.get(this.settings.roles.nitro)
@@ -534,7 +529,7 @@ class afkCheck {
         //lock channel
         await this.channel.updateOverwrite(this.verifiedRaiderRole.id, { CONNECT: false, VIEW_CHANNEL: true })
         if (this.afkInfo.newChannel && !this.isVet) {
-            setTimeout(() => this.channel.setPosition(this.afkChannel.position), 1000)
+            this.channel.setPosition(this.afkChannel.position)
         }
 
         //update embeds/messages
@@ -838,10 +833,9 @@ async function createChannel(runInfo, message, bot) {
         if (!template) return rej(`Template channel not found`)
         let channel = await template.clone({
             name: `${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s ${runInfo.runType}`,
-            parent: message.guild.channels.cache.filter(c => c.type == 'category').find(c => c.name.toLowerCase() === parent).id
+            parent: message.guild.channels.cache.filter(c => c.type == 'category').find(c => c.name.toLowerCase() === parent).id,
+            userLimit: runInfo.vcCap
         }).then(c => c.setPosition(0))
-            .then(c => c.setUserLimit(runInfo.vcCap))
-
 
         await message.member.voice.setChannel(channel).catch(er => { })
 
