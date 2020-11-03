@@ -79,7 +79,7 @@ module.exports = {
         runInfo.location = location.trim();
 
         //set guildid
-        runInfo.guild = message.guild;
+        runInfo.guild = message.guild.id;
 
         //get/set channel
         let channel = null;
@@ -183,6 +183,18 @@ class afkCheck {
         this.knights = []
         this.warriors = []
         this.pallies = []
+        this.bot.afkChecks[this.channel.id] = {
+            isVet: this.isVet,
+            location: this.afkInfo.location,
+            //keys: [],
+            leader: this.message.author.id,
+            //earlyLocation: earlyLocationIDS,
+            //raiders: raiders,
+            time: Date.now(),
+            runType: this.afkInfo,
+            active: true
+        }
+        fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot) })
         this.sendMessage()
     }
 
@@ -540,16 +552,10 @@ class afkCheck {
         for (let i in this.earlyLocation) earlyLocationIDS.push(this.earlyLocation[i].id)
         let raiders = []
         this.channel.members.array().forEach(m => raiders.push(m.id))
-        this.bot.afkChecks[this.channel.id] = {
-            isVet: this.isVet,
-            location: this.afkInfo.location,
-            keys: [],
-            leader: this.message.author.id,
-            earlyLocation: earlyLocationIDS,
-            raiders: raiders,
-            time: Date.now(),
-            runType: this.run,
-        }
+        this.bot.afkChecks[this.channel.id].keys = []
+        this.bot.afkChecks[this.channel.id].earlyLocation = earlyLocationIDS
+        this.bot.afkChecks[this.channel.id].raiders = raiders
+        this.bot.afkChecks[this.channel.id].active = false
         if (this.keys.length > 0) for (let u in this.keys) this.bot.afkChecks[this.channel.id].keys.push(u)
         if (this.afkInfo.isSplit) {
             this.bot.afkChecks[this.channel.id].split = true
@@ -557,9 +563,7 @@ class afkCheck {
             this.bot.afkChecks[this.channel.id].mainGroup = this.splitGroup
             this.bot.afkChecks[this.channel.id].splitChannel = 'na'
         }
-        fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => {
-            if (err) ErrorLogger.log(err, this.bot)
-        })
+        fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot) })
 
         //send embed to history
         let historyEmbed = new Discord.MessageEmbed()
@@ -682,7 +686,7 @@ class afkCheck {
         }
 
         //mark afk check as over
-        emitter.emit('Ended', this.channel.id)
+        setTimeout(() => { emitter.emit('Ended', this.channel.id) }, 2000);
 
         this.active = false;
     }

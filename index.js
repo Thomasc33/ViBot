@@ -26,7 +26,6 @@ const emojiServers = ['739623118833713214', '738506334521131074', '7385044223967
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 const express = require('express')
 const https = require('https')
-const http = require('http')
 const bodyParser = require('body-parser')
 const rateLimit = require('express-rate-limit')
 const cookieParser = require('cookie-parser')
@@ -35,10 +34,7 @@ const app = express();
 const path = require('path')
 const cors = require('cors')
 var CLIENT_ID, CLIENT_SECRET
-var credentials = {
-    key: fs.readFileSync('C:\\Certbot\\live\\a.vibot.tech\\privkey.pem', 'utf8'),
-    cert: fs.readFileSync('C:\\Certbot\\live\\a.vibot.tech\\cert.pem', 'utf8')
-}
+
 for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
     bot.commands.set(command.name, command);
@@ -488,6 +484,11 @@ function fitStringIntoEmbed(embed, string, channel) {
 }
 
 if (botSettings.api) {
+    var credentials = {
+        key: fs.readFileSync('./privkey.pem', 'utf8'),
+        cert: fs.readFileSync('./cert.pem', 'utf8')
+    }
+
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(bodyParser.json());
     app.use(cookieParser())
@@ -624,6 +625,10 @@ if (botSettings.api) {
         })
     })
 
+    router.get('/afkchecks', (req, res) => {
+        res.json(bot.afkChecks)
+    })
+
     app.get('/', (req, res) => {
         if (req.cookies.accessToken) {
             res.status(200).sendFile(path.join(__dirname, 'index.html'))
@@ -657,10 +662,8 @@ if (botSettings.api) {
     });
 
     const httpsServer = https.createServer(credentials, app)
-    const httpServer = http.createServer(app)
 
     const port = botSettings.apiPort //move to settings soon:tm:
 
     httpsServer.listen(port)
-    httpServer.listen(port)
 }
