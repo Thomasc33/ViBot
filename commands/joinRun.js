@@ -15,7 +15,7 @@ module.exports = {
     async findChannel(message, bot, guild) {
         let runsIn = []
         for (let i in bot.afkChecks) {
-            if (bot.afkChecks[i].raiders.includes(message.author.id) || bot.afkChecks[i].earlyLocation.includes(message.author.id)) {
+            if (bot.afkChecks[i].raiders && bot.afkChecks[i].earlyLocation && (bot.afkChecks[i].raiders.includes(message.author.id) || bot.afkChecks[i].earlyLocation.includes(message.author.id))) {
                 runsIn.push(i)
             }
         }
