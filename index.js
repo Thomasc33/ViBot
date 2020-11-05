@@ -158,16 +158,26 @@ db.connect(err => {
     console.log('Connected to database')
 })
 
+db.on('error', err => {
+    if (err.code == 'PROTOCOL_CONNECTION_LOST') db = mysql.createConnection(botSettings.dbInfo)
+    else ErrorLogger.log(err, bot)
+})
+
 tokenDB.connect(err => {
     if (err) throw err;
     console.log('Connected to token database')
+})
+
+tokenDB.on('error', err => {
+    if (err.code == 'PROTOCOL_CONNECTION_LOST') tokenDB = mysql.createConnection(botSettings.tokenDBInfo)
+    else ErrorLogger.log(err, bot)
 })
 
 bot.on("ready", async () => {
     CLIENT_ID = bot.user.id
     console.log(`Bot loaded: ${bot.user.username}`);
     bot.user.setActivity(`Soon™`);
-	let vi = await bot.users.fetch(`277636691227836419`)
+    let vi = await bot.users.fetch(`277636691227836419`)
     vi.send('Halls Bot Starting Back Up')
     //to hide dev server
     if (bot.user.id == botSettings.prodBotId) emojiServers.push('701483950559985705');
