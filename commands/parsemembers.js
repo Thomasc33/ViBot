@@ -139,7 +139,6 @@ module.exports = {
             .setTitle('Character Parse')
         for (let i in players) {
             if (players[i] == '') continue;
-            console.log('parsing ' + players[i])
             try {
                 var characterInfo = await realmEyeScrape.getUserInfo(players[i])
             } catch (er) { unreachable.push(players[i]) }
