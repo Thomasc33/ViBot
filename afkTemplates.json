@@ -100,7 +100,11 @@
                 "emoteID": "723018431275859969",
                 "pointsGiven": 2,
                 "limit": 3,
-                "shortName": "mystic"
+                "shortName": "mystic",
+                "checkRealmEye": {
+                    "class": "mystic",
+                    "ofEight": "8"
+                }
             },
             {
                 "emoteID": "720263764309704704",

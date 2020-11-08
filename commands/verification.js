@@ -268,7 +268,6 @@ module.exports = {
                     reason: 'Realm Account Age'
                 })
                 //death count
-                console.log(parseInt(userInfo.deaths[userInfo.deaths.length - 1]))
                 if (parseInt(userInfo.deaths[userInfo.deaths.length - 1]) < settings.autoveri.deathcount) denyReason.push({
                     reason: 'Death Count',
                     stat: `${userInfo.deaths[userInfo.deaths.length - 1]}/${settings.autoveri.deathcount}`

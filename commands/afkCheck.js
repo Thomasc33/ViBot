@@ -133,6 +133,8 @@ class afkCheck {
      * @param {Number} afkInfo.vcCap
      * @param {Number} afkInfo.timeLimit
      * @param {String[]} afkInfo.earlyLocationReacts
+     * @param {String} afkInfo.earlyLocationReacts.class
+     * @param {String} afkInfo.earlyLocationReacts.ofEight
      * @param {String[]} afkInfo.reacts
      * @param {Discord.MessageEmbed} afkInfo.embed
      * @param {Discord.Client} bot 
@@ -330,42 +332,75 @@ class afkCheck {
         let emote = r.emoji
         try {
             if (!checkType(this)) return
-            let DirectMessage = await u.send(`You reacted as ${emote}. Press :white_check_mark: to confirm. Ignore this message otherwise`).catch(r => { if (r.message == 'Cannot send messages to this user') this.commandChannel.send(`<@!${u.id}> tried to react with <${emote}> but their DMs are private`) });
+            let reactInfo
+            for (let r of this.afkInfo.earlyLocationReacts) {
+                if (type == r.shortName) reactInfo = r;
+            }
+            let m
+            if (reactInfo && reactInfo.checkRealmEye) m = `You reacted as ${emote}. If you have a(n) ${reactInfo.checkRealmEye.class} that is ${reactInfo.checkRealmEye.ofEight}/8, press :white_check_mark: to confirm your reaction. Otherwise ignore this message`
+            else m = `You reacted as ${emote}. Press :white_check_mark: to confirm. Ignore this message otherwise`
+            let DirectMessage = await u.send(m).catch(r => { if (r.message == 'Cannot send messages to this user') this.commandChannel.send(`<@!${u.id}> tried to react with <${emote}> but their DMs are private`) });
             let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, (r, u) => !u.bot);
 
             await DirectMessage.react("✅");
-            await dmReactionCollector.on("collect", (r, u) => {
+            await dmReactionCollector.on("collect", async (r, u) => {
                 //check type
                 if (!checkType(this)) return clearInterval(endAfter);
-                //set into type
-                setType(this)
-                function setType(afk) {
-                    //key, vial, other
-                    switch (type.toLowerCase()) {
-                        case 'key':
-                            afk.keys.push(u.id)
-                            break;
-                        case 'vial':
-                            afk.vials.push(u.id)
-                            break;
-                        default:
-                            afk.reactables[type].users.push(u.id)
-                            break;
+
+                //check realmeye if applicable
+                if (reactInfo && reactInfo.checkRealmEye) {
+                    let found = false;
+                    let characters = await realmEyeScrape.getUserInfo(this.message.guild.members.cache.get(u.id).nickname.replace(/[^a-z|]/gi, '').split('|')[0]).catch(er => found = true)
+                    if (characters.characters) characters.characters.forEach(c => {
+                        if (!found && (c.class == 'Mystic' && c.stats == '8/8')) {
+                            found = true;
+                        }
+                    })
+                    if (!found) {
+                        let prompt = await u.send(`I could not find any 8/8 mystics under \`${this.message.guild.members.cache.get(u.id).nickname.replace(/[^a-z|]/gi, '').split('|')[0]}\`. React with :white_check_mark: if you do have an 8/8 mystic on another account`)
+                        let reactionCollector = new Discord.ReactionCollector(prompt, (r, u) => !u.bot);
+                        await prompt.react('✅')
+                        reactionCollector.on('collect', (r, u) => {
+                            if (r.emoji.name == '✅')
+                                sendLocation(this)
+                        })
+                    } else sendLocation(this)
+                } else sendLocation(this)
+                /**
+                 * 
+                 * @param {afkCheck} afk 
+                 */
+                function sendLocation(afk) {
+                    //set into type
+                    setType(afk)
+                    function setType(afk) {
+                        //key, vial, other
+                        switch (type.toLowerCase()) {
+                            case 'key':
+                                afk.keys.push(u.id)
+                                break;
+                            case 'vial':
+                                afk.vials.push(u.id)
+                                break;
+                            default:
+                                afk.reactables[type].users.push(u.id)
+                                break;
+                        }
+                        afk.earlyLocation.push(u);
                     }
-                    afk.earlyLocation.push(u);
+                    //give location
+                    u.send(`The location for this run has been set to \`${afk.afkInfo.location}\`, get there ASAP!`);
+                    //add to leader embed
+                    if (afk.afkInfo.vialReact && !(type == 'key' || type == 'vial')) index++;
+                    if (afk.leaderEmbed.fields[index].value == `None!`) {
+                        afk.leaderEmbed.fields[index].value = `${emote}: <@!${u.id}>`;
+                    } else afk.leaderEmbed.fields[index].value += `\n${emote}: ${`<@!${u.id}>`}`
+                    afk.leaderEmbedMessage.edit(afk.leaderEmbed).catch(er => ErrorLogger.log(er, afk.bot));
+                    afk.runInfoMessage.edit(afk.leaderEmbed).catch(er => ErrorLogger.log(er, afk.bot));
+                    //end collectors
+                    clearInterval(endAfter);
+                    dmReactionCollector.stop();
                 }
-                //give location
-                u.send(`The location for this run has been set to \`${this.afkInfo.location}\`, get there ASAP!`);
-                //add to leader embed
-                if (this.afkInfo.vialReact && !(type == 'key' || type == 'vial')) index++;
-                if (this.leaderEmbed.fields[index].value == `None!`) {
-                    this.leaderEmbed.fields[index].value = `${emote}: <@!${u.id}>`;
-                } else this.leaderEmbed.fields[index].value += `\n${emote}: ${`<@!${u.id}>`}`
-                this.leaderEmbedMessage.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, this.bot));
-                this.runInfoMessage.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, this.bot));
-                //end collectors
-                clearInterval(endAfter);
-                dmReactionCollector.stop();
             });
             function checkType(afk) { //true = spot open
                 //key, vial, other
