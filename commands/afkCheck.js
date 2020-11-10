@@ -206,7 +206,10 @@ class afkCheck {
                 break;
         }
         if (this.afkInfo.startDelay > 0) {
-            this.raidStatusMessage = await this.raidStatus.send(`@here \`${this.afkInfo.runName}\`${flag ? ` (${flag})` : ''} will begin in ${Math.round(this.afkInfo.startDelay / 1000)} seconds. Be prepared to join \`${this.channel.name}\``)
+            let embed = new Discord.MessageEmbed()
+                .setColor(this.afkInfo.embed.color)
+                .setDescription(`A \`${this.afkInfo.runName}\`${flag ? `in (${flag})` : ''} will begin in ${Math.round(this.afkInfo.startDelay / 1000)} seconds. Be prepared to join \`${this.channel.name}\``)
+            this.raidStatusMessage = await this.raidStatus.send(`@here ${this.afkInfo.runName}${flag ? ` (${flag})` : ''}`, embed)
         } else {
             this.raidStatusMessage = await this.raidStatus.send(`@here \`${this.afkInfo.runName}\`${flag ? ` (${flag})` : ''} is beginning now. Please join ${this.channel.name}`)
             this.start()
@@ -336,10 +339,7 @@ class afkCheck {
             for (let r of this.afkInfo.earlyLocationReacts) {
                 if (type == r.shortName) reactInfo = r;
             }
-            let m
-            if (reactInfo && reactInfo.checkRealmEye) m = `You reacted as ${emote}. If you have a(n) ${reactInfo.checkRealmEye.class} that is ${reactInfo.checkRealmEye.ofEight}/8, press :white_check_mark: to confirm your reaction. Otherwise ignore this message`
-            else m = `You reacted as ${emote}. Press :white_check_mark: to confirm. Ignore this message otherwise`
-            let DirectMessage = await u.send(m).catch(r => { if (r.message == 'Cannot send messages to this user') this.commandChannel.send(`<@!${u.id}> tried to react with <${emote}> but their DMs are private`) });
+            let DirectMessage = await u.send(`You reacted as ${emote}.${(reactInfo && reactInfo.checkRealmEye) ? ` If you have a(n) ${reactInfo.checkRealmEye.class} that is ${reactInfo.checkRealmEye.ofEight}/8${reactInfo.checkRealmEye.orb ? ` and has a tier ${reactInfo.checkRealmEye.orb} orb` : ''}` : ''},${(reactInfo && reactInfo.checkRealmeye && reactInfo.checkRealmEye.mheal) ? ` and a pet with at least ${reactInfo.checkRealmEye.mheal} mheal,` : ``} press :white_check_mark: to confirm your reaction. Otherwise ignore this message`).catch(r => { if (r.message == 'Cannot send messages to this user') this.commandChannel.send(`<@!${u.id}> tried to react with <${emote}> but their DMs are private`) });
             let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, (r, u) => !u.bot);
 
             await DirectMessage.react("✅");

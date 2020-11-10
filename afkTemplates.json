@@ -103,7 +103,9 @@
                 "shortName": "mystic",
                 "checkRealmEye": {
                     "class": "mystic",
-                    "ofEight": "8"
+                    "ofEight": "8",
+                    "mheal": "85",
+                    "orb": "2"
                 }
             },
             {
