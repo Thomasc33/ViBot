@@ -115,7 +115,7 @@ module.exports = {
             embed.setFooter(`Time remaining: ${min} minutes ${seconds} seconds`)
             embedMessage.edit(embed)
             LoggingEmbed.setFooter(`Their verification has ${min} minutes and ${seconds} seconds left`)
-            activeMessage.edit(LoggingEmbed)
+            activeMessage.edit(LoggingEmbed).catch(er => { })
         }
 
         //cancels verification
@@ -197,7 +197,7 @@ module.exports = {
         } else {
             LoggingEmbed.setDescription(`<@!${u.id}> is attempting to verify under [${ign}](https://www.realmeye.com/player/${ign})`)
             veriattempts.send(LoggingEmbed)
-            activeMessage.edit(LoggingEmbed)
+            activeMessage.edit(LoggingEmbed).catch(er => { })
         }
 
         //generate and give vericode
@@ -215,7 +215,7 @@ module.exports = {
                     embedMessage.edit(embed)
                     LoggingEmbed.setDescription(`<@!${u.id}> Needs to load in their graveyard on their realmeye page *clicking the button*`)
                     LoggingEmbed.setColor('#ff0000')
-                    activeMessage.edit(LoggingEmbed)
+                    activeMessage.edit(LoggingEmbed).catch(er => { })
                     veriattempts.send(LoggingEmbed)
                     return;
                 } else {
@@ -421,7 +421,7 @@ module.exports = {
                     //remove from watching embed
                     watching.splice(watching.indexOf(u.id), 1)
                     //remove them from expelled list
-                    db.query(`DELETE FROM veriblacklist WHERE id = '${member.id}' OR id = '${ign}'`).catch(er => { })
+                    db.query(`DELETE FROM veriblacklist WHERE id = '${member.id}' OR id = '${ign}'`)
                 }
                 //x
                 else if (r.emoji.name === '❌') {
