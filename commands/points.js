@@ -74,7 +74,7 @@ module.exports = {
             })
         })
     },
-    buyEarlyLocaton(user, db, cost, runType, bot, guild) { //1 = cult, 2 = void, 3 = fsv
+    buyEarlyLocaton(user, db, cost, runInfo, bot, guild) {
         return new Promise((resolve, reject) => {
             db.query(`SELECT points FROM users WHERE id = '${user.id}'`, (err, rows) => {
                 if (err) return reject(err)
@@ -83,7 +83,7 @@ module.exports = {
                 db.query(`UPDATE users SET points = points - ${cost} WHERE id = '${user.id}'`, err => {
                     if (err) return reject(err)
                     resolve(`${rows[0].points - cost}`)
-                    pointLogger.earlyLocation(user, runType, guild, cost, bot, rows[0].points - cost)
+                    pointLogger.earlyLocation(user, runInfo, guild, cost, bot, rows[0].points - cost)
                 })
             })
         })

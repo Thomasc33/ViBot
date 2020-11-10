@@ -474,7 +474,7 @@ class afkCheck {
                 if (r.emoji.name == '❌') m.delete()
                 else if (r.emoji.name == '✅') {
                     let er, success = true
-                    let leftOver = await points.buyEarlyLocaton(u, this.db, earlyLocationCost, this.run, this.bot, this.message.guild).catch(r => { er = r; success = false })
+                    let leftOver = await points.buyEarlyLocaton(u, this.db, earlyLocationCost, this.afkInfo, this.bot, this.message.guild).catch(r => { er = r; success = false })
                     if (success) {
                         await dms.send(`The location for this run has been set to \`${this.afkInfo.location}\`\nYou now have \`${leftOver}\` points left over`).catch(er => this.commandChannel.send(`<@!${u.id}> tried to react with 🎟️ but their DMs are private`))
                         if (this.leaderEmbed.fields[index].value == 'None!') this.leaderEmbed.fields[index].value = `<@!${u.id}>`
