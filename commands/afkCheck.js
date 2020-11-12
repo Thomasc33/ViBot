@@ -183,7 +183,7 @@ class afkCheck {
         this.bot.afkChecks[this.channel.id] = {
             timeLeft:this.time,
             isVet: this.isVet,
-            location: this.afkInfo.location,
+            //location: this.afkInfo.location, disabled until it is needed
             //keys: [],
             leader: this.message.author.id,
             leaderNick: this.message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0],
