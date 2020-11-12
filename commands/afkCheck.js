@@ -684,8 +684,8 @@ class afkCheck {
         function log(afkCheck) {
             if (afkCheck.channel && afkCheck.channel.members.size != 0) {
                 let query = `UPDATE users SET `
-                if (afkCheck.run == 1) query = query.concat('cultRuns = cultRuns + 1 WHERE ')
-                else query = query.concat('voidRuns = voidRuns + 1 WHERE ')
+                if (afkCheck.afkInfo.vialReact) query = query.concat('voidRuns = voidRuns + 1 WHERE ')
+                else query = query.concat('cultRuns = cultRuns + 1 WHERE ')
                 afkCheck.channel.members.each(m => query = query.concat(`id = '${m.id}' OR `))
                 query = query.substring(0, query.length - 4)
                 afkCheck.db.query(query, err => {
