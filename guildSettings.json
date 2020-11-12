@@ -84,8 +84,7 @@
             "eventcurrentweek": true,
             "verification": true,
             "vetverification": false,
-            "points": true,
-            "supporter": false
+            "points": true
         },
         "numerical": {
             "afktime": 360,
@@ -341,7 +340,8 @@
             "eventcurrentweek": true,
             "verification": true,
             "vetverification": true,
-            "points": true
+            "points": true,
+            "supporter": false
         },
         "numerical": {
             "afktime": 360,
