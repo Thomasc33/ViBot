@@ -506,7 +506,7 @@ if (botSettings.api) {
 
     const apiLimit = rateLimit({
         windowMs: 1 * 10 * 1000,
-        max: 10
+        max: 20
     })
     app.use('/api/', apiLimit)
 
