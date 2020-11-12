@@ -196,6 +196,7 @@ class afkCheck {
         }
         fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot) })
         this.sendMessage()
+        this.updateVC = await setInterval(() => this.updateVCNumber(), 500);
     }
 
     async sendMessage() {
@@ -225,6 +226,7 @@ class afkCheck {
             .setColor(this.afkInfo.embed.color)
             .setTitle(`${this.message.member.nickname}'s ${this.afkInfo.runName}`)
             .addField('Our current keys', 'None!')
+            .setFooter('React with ❌ to abort')
         if (this.afkInfo.vialReact) this.leaderEmbed.addField('Our current vials', 'None!')
         this.afkInfo.earlyLocationReacts.forEach(r => this.leaderEmbed.addField(`Our current ${r.shortName}`, 'None!'))
         this.leaderEmbed.addField('Location', this.afkInfo.location)
@@ -532,7 +534,10 @@ class afkCheck {
         this.raidStatusMessage.edit(this.mainEmbed)
         this.bot.afkChecks[this.channel.id].timeLeft = this.time;
         this.bot.afkChecks[this.channel.id].vcSize = this.channel.members.size;
-        fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot) })
+    }
+
+    async updateVCNumber () {
+        this.bot.afkChecks[this.channel.id].vcSize = this.channel.members.size;
     }
 
     async moveIn() {
@@ -557,6 +562,7 @@ class afkCheck {
         this.leaderReactionCollector.stop();
         clearInterval(this.moveInTimer);
         clearInterval(this.timer);
+        clearInterval(this.updateVC)
 
         if (!this.afkInfo.postAfkCheck) return this.endAfk();
         //ill implement later
@@ -733,6 +739,7 @@ class afkCheck {
         this.leaderReactionCollector.stop();
         clearInterval(this.moveInTimer);
         clearInterval(this.timer);
+        clearInterval(this.updateVC)
 
         await this.channel.updateOverwrite(this.verifiedRaiderRole.id, { CONNECT: false, VIEW_CHANNEL: false })
         setTimeout(() => this.channel.setPosition(this.channel.parent.children.filter(c => c.type == 'voice').size - 1), 1000)
