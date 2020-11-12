@@ -196,7 +196,6 @@ class afkCheck {
         }
         fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot) })
         this.sendMessage()
-        this.updateVC = await setInterval(() => this.updateVCNumber(), 500);
     }
 
     async sendMessage() {
@@ -263,6 +262,7 @@ class afkCheck {
         //start timers
         this.moveInTimer = await setInterval(() => this.moveIn(), 10000);
         this.timer = await setInterval(() => this.timerInterval(), 5000);
+        this.updateVC = await setInterval(() => this.updateVCNumber(), 500);
     }
 
     /**
