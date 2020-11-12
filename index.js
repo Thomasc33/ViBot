@@ -505,8 +505,8 @@ if (botSettings.api) {
     app.use(cors())
 
     const apiLimit = rateLimit({
-        windowMs: 1 * 60 * 1000,
-        max: 20
+        windowMs: 1 * 10 * 1000,
+        max: 10
     })
     app.use('/api/', apiLimit)
 

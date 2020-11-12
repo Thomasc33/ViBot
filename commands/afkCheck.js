@@ -592,6 +592,7 @@ class afkCheck {
         this.bot.afkChecks[this.channel.id].earlyLocation = earlyLocationIDS
         this.bot.afkChecks[this.channel.id].raiders = raiders
         this.bot.afkChecks[this.channel.id].active = false
+        this.bot.afkChecks[this.channel.id].endedAt = Date.now()
         if (this.keys.length > 0) for (let u in this.keys) this.bot.afkChecks[this.channel.id].keys.push(u)
         if (this.afkInfo.isSplit) {
             this.bot.afkChecks[this.channel.id].split = true
