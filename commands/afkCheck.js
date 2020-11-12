@@ -181,15 +181,18 @@ class afkCheck {
         this.warriors = []
         this.pallies = []
         this.bot.afkChecks[this.channel.id] = {
+            timeLeft:this.time,
             isVet: this.isVet,
             location: this.afkInfo.location,
             //keys: [],
             leader: this.message.author.id,
+            leaderNick: this.message.member.nickname.replace(/[a-z|]/gi, '').split('|')[0],
             //earlyLocation: earlyLocationIDS,
             //raiders: raiders,
             time: Date.now(),
             runType: this.afkInfo,
-            active: true
+            active: true,
+            vcSize: this.channel.members.size,
         }
         fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot) })
         this.sendMessage()
@@ -524,9 +527,15 @@ class afkCheck {
             this.postAfk();
             return;
         }
-        //if (!this.mainEmbed) return;
+        if (!this.mainEmbed) return;
         this.mainEmbed.setFooter(`Time Remaining: ${Math.floor(this.time / 60)} minutes and ${this.time % 60} seconds`);
         this.raidStatusMessage.edit(this.mainEmbed)
+        this.bot.afkChecks[this.channel.id] = {
+            timeLeft:this.time,
+            vcSize: this.channel.members.size,
+        }
+        fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot) })
+        
     }
 
     async moveIn() {
