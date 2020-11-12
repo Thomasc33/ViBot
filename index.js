@@ -636,12 +636,7 @@ if (botSettings.api) {
     })
 
     router.get('/afkchecks', (req, res) => {
-		let afkChecks = []
-		for(let i in bot.afkChecks){
-			afkChecks.push(bot.afkChecks[i]);
-			bot.afkChecks[i].channel = i;
-		}
-        res.json({afks: afkChecks})
+        res.json(bot.afkChecks)
     })
 
     app.get('/', (req, res) => {
