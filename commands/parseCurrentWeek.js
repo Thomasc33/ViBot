@@ -41,7 +41,7 @@ module.exports = {
                 let parses = 0, nonSecParses = 0
                 let embed = new Discord.MessageEmbed()
                     .setColor('#00ff00')
-                    .setTitle('This weeks current logged runs!')
+                    .setTitle('This weeks current logged parses!')
                     .setDescription('None!')
                 rows.sort((a, b) => (parseInt(a.currentweekparses) < parseInt(b.currentweekparse)) ? 1 : -1)
                 let index = 0
@@ -49,14 +49,15 @@ module.exports = {
                 for (let i in rows) {
                     let member = channel.guild.members.cache.get(rows[i].id)
                     if (!member) continue
-                    if (member.roles.highest.id == settings.roles.security || member.roles.highest.id == settings.roles.officer) { nonSecParses += rows[i].currentweekparses; continue }
-                    let string = `**[${index + 1}]** <@!${rows[i].id}>:\nParses: \`${rows[i].currentweekparses}`
+                    if (!member.roles.cache.has(settings.roles.security) && !member.roles.cache.has(settings.roles.officer)) { nonSecParses += rows[i].currentweekparses; continue }
+                    let string = `**[${index + 1}]** <@!${rows[i].id}>:\nParses: \`${rows[i].currentweekparses}\``
                     parses += rows[i].currentweekparses
                     fitStringIntoEmbed(embed, string)
                     logged.push(rows[i].id)
                     index++;
                 }
                 await channel.guild.members.cache.filter(m => m.roles.cache.has(settings.roles.security) || m.roles.cache.has(settings.roles.officer)).each(m => {
+                    console.log(m.id)
                     if (!logged.includes(m.id)) {
                         let string = `<@!${m.id}> has not parsed this week`
                         fitStringIntoEmbed(embed, string)
