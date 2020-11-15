@@ -57,7 +57,6 @@ module.exports = {
                     index++;
                 }
                 await channel.guild.members.cache.filter(m => m.roles.cache.has(settings.roles.security) || m.roles.cache.has(settings.roles.officer)).each(m => {
-                    console.log(m.id)
                     if (!logged.includes(m.id)) {
                         let string = `<@!${m.id}> has not parsed this week`
                         fitStringIntoEmbed(embed, string)
