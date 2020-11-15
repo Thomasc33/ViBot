@@ -47,7 +47,7 @@ module.exports = {
                 let index = 0
                 let embeds = []
                 for (let i in rows) {
-                    let member = message.guild.members.cache.get(rows[i].id)
+                    let member = channel.guild.members.cache.get(rows[i].id)
                     if (!member.roles.cache.has(settings.roles.security) || !member.roles.cache.has(settings.roles.officer)) { nonSecParses += rows[i].currentweekparses; continue }
                     let string = `**[${index + 1}]** <@!${rows[i].id}>:\nParses: \`${rows[i].currentweekparses}`
                     parses += rows[i].currentweekparses
