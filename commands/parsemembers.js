@@ -268,7 +268,7 @@ module.exports = {
         parseStatusEmbed.fields[1].value = 'Parse Completed'
         await parseStatusMessage.edit(parseStatusEmbed)
 
-        db.query(`UPDATE users SET parses = parses + 1 AND currentweekparses = currentweekparses + 1 WHERE id = '${message.author.id}'`)
+        db.query(`UPDATE users SET parses = parses + 1, currentweekparses = currentweekparses + 1 WHERE id = '${message.author.id}'`)
         ParseCurrentWeek.update(message.guild, db, bot)
     }
 }
