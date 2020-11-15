@@ -5,10 +5,10 @@ const roles = ['moderator', 'officer', 'headrl', 'vetrl', 'security', 'fullskip'
 const channels = ['modmail', 'verification', 'manualverification', 'vetverification', 'manualvetverification', 'verificationlog', 'activeverification', 'modlogs', 'history', 'suspendlog',
     'viallog', 'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel', 'raidstatus', 'eventstatus',
     'vetstatus', 'raidcommands', 'eventcommands', 'vetcommands', 'raidingchannels', 'eventchannels', 'vetchannels', 'runlogs', 'dmcommands', 'veriactive', 'pointlogging', 'veriattempts',
-     'modmailinfo']
+     'modmailinfo', 'parsecurrentweek', 'pastparseweeks']
 const voice = ['raidingtemplate', 'eventtemplate', 'vettemplate', 'veteventtemplate', 'lounge', 'vetlounge', 'eventlounge', 'afk']
 const voiceprefixes = ['raidingprefix', 'vetprefix']
-const backend = ['modmail', 'currentweek', 'eventcurrentweek', 'verification', 'vetverification', 'points', 'supporter']
+const backend = ['modmail', 'currentweek', 'eventcurrentweek', 'parsecurrentweek', 'verification', 'vetverification', 'points', 'supporter']
 const numerical = ['afktime', 'eventafktime', 'nitrocount', 'nitrocooldown', 'topkey', 'bottomkey']
 const runreqs = ['weapon', 'ability', 'armor', 'ring']
 const autoveri = ['fame', 'stars', 'realmage', 'discordage', 'deathcount']
@@ -261,6 +261,8 @@ function getDefaultChannelName(name) {
         case 'pointlogging': return 'point-history';
         case 'veriattempts': return 'veri-attempts';
         case 'modmailinfo': return 'mod-mail';
+        case 'parsecurrentweek': return 'mod-current-week';
+        case 'pastparseweeks': return 'mod-parse-history';
     }
 }
 

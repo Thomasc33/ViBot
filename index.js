@@ -18,6 +18,7 @@ const vetVerification = require('./commands/vetVerification')
 const verification = require('./commands/verification')
 const currentWeek = require('./commands/currentWeek')
 const ecurrentWeek = require('./commands/eventCurrentWeek')
+const pcurrentWeek = require('./commands/parseCurrentWeek')
 const stats = require('./commands/stats')
 const modmail = require('./commands/modmail')
 const setup = require('./commands/setup')
@@ -328,6 +329,7 @@ bot.on("ready", async () => {
             if (!emojiServers.includes(g.id)) {
                 if (bot.settings[g.id].backend.currentweek) currentWeek.newWeek(g, bot, db);
                 if (bot.settings[g.id].backend.eventcurrentweek) ecurrentWeek.newWeek(g, bot, db)
+                if (bot.settings[g.id].backend.parsecurrentweek) pcurrentWeek.newWeek(g, bot, db)
             }
         })
     }, null, true, 'America/New_York', null, false)

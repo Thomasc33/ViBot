@@ -54,6 +54,7 @@ module.exports = {
                     Void: ${rows[0].voidRuns}
                     Solo cults: ${rows[0].solocult}
                     Other: ${rows[0].eventruns}
+                    ${rows[0].parses ? 'Parses: ' + rows[0].parses : ''}
                     
                     <${botSettings.emote.hallsPortal}>__**Runs Led**__<${botSettings.emote.hallsPortal}>
                     Cult: ${rows[0].cultsLead}

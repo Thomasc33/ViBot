@@ -4,6 +4,7 @@ const vision = require('@google-cloud/vision');
 const realmEyeScrape = require('../realmEyeScrape');
 const charStats = require('../charStats.json')
 const botSettings = require('../settings.json')
+const ParseCurrentWeek = require('./parseCurrentWeek')
 const client = new vision.ImageAnnotatorClient(botSettings.gcloudOptions);
 
 
@@ -14,7 +15,7 @@ module.exports = {
     args: '<image>',
     notes: 'Image can either be a link, or an embeded image',
     role: 'almostrl',
-    async execute(message, args, bot) {
+    async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         var channel = message.member.voice.channel
         if (!channel) return message.channel.send('Channel not found. Make sure you are in a channel, then try again');
@@ -266,6 +267,9 @@ module.exports = {
         await message.channel.send(unreachableEmbed)
         parseStatusEmbed.fields[1].value = 'Parse Completed'
         await parseStatusMessage.edit(parseStatusEmbed)
+
+        db.query(`UPDATE users SET parses = parses + 1 AND currentweekparses = currentweekparses + 1 WHERE id = '${message.author.id}'`)
+        ParseCurrentWeek.update(message.guild, db, bot)
     }
 }
 
