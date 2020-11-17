@@ -5,6 +5,7 @@ var channels = []
 
 module.exports = {
     name: 'channel',
+    alias: ['channels'],
     role: 'eventrl',
     description: 'Create a channel that stays open and is able to be edited. Useful for simply started a long lasting channel for run types where afk checks don\'t make sense. *Default cap is 50*',
     args: '<create/open/close/rename/log/setcap> (data)',
