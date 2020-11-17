@@ -200,6 +200,7 @@ class afkCheck {
                 this.verifiedRaiderRole = this.guild.roles.cache.get(this.settings.roles.raider)
                 this.eventBoi = this.guild.roles.cache.get(this.settings.roles.eventraider)
             }
+            this.staffRole = guild.roles.cache.get(this.settings.roles.eventrl)
         } else {
             if (this.afkInfo.isVet) this.raidStatus = this.guild.channels.cache.get(this.settings.channels.vetstatus)
             else this.raidStatus = this.guild.channels.cache.get(this.settings.channels.raidstatus)
@@ -207,8 +208,8 @@ class afkCheck {
             else this.commandChannel = this.guild.channels.cache.get(this.settings.channels.raidcommands)
             if (this.afkInfo.isVet) this.verifiedRaiderRole = this.guild.roles.cache.get(this.settings.roles.vetraider)
             else this.verifiedRaiderRole = this.guild.roles.cache.get(this.settings.roles.raider)
+            this.staffRole = guild.roles.cache.get(this.settings.roles.almostrl)
         }
-        this.staffRole = guild.roles.cache.get(this.settings.roles.almostrl)
         this.afkChannel = guild.channels.cache.find(c => c.name === 'afk')
         this.runInfoChannel = guild.channels.cache.get(this.settings.channels.runlogs)
         this.officialRusher = guild.roles.cache.get(this.settings.roles.rusher)
