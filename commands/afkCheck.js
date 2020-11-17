@@ -7,7 +7,8 @@ const realmEyeScrape = require('../realmEyeScrape');
 const points = require('./points');
 const keyRoles = require('./keyRoles');
 const restart = require('./restart')
-const EventEmitter = require('events').EventEmitter;
+const EventEmitter = require('events').EventEmitter
+const Events = require('../events.json')
 var emitter = new EventEmitter()
 
 var runs = [] //{channel: id, afk: afk instance}
@@ -27,7 +28,7 @@ module.exports = {
      * @param {import('mysql').Connection} db 
      * @param {import('mysql').Connection} tokenDB 
      */
-    async execute(message, args, bot, db, tokenDB) {
+    async execute(message, args, bot, db, tokenDB, event) {
         //clear out runs array
         destroyInactiveRuns();
 
@@ -61,6 +62,41 @@ module.exports = {
         //isVet
         let isVet = false
         if (message.channel.parent.name.toLowerCase().includes('veteran')) isVet = true;
+        runInfo.isVet = isVet;
+
+        //set Raid Leader
+        runInfo.raidLeader = message.author.id;
+
+        //get/set location
+        let location = ''
+        for (i = 1; i < args.length; i++) location = location.concat(args[i]) + ' ';
+        if (location.length >= 1024) return message.channel.send('Location must be below 1024 characters, try again');
+        if (location == '') location = 'None'
+        runInfo.location = location.trim();
+
+        //set guildid
+        runInfo.guild = message.guild.id;
+
+        //get/set channel
+        let channel = null;
+        if (runInfo.newChannel) channel = await createChannel(runInfo, message, bot)
+        else channel = message.member.voice.channel;
+        if (!channel) return message.channel.send(`Unable to create/find the channel you are in`)
+        else runInfo.channel = channel.id;
+
+        //begin afk check
+        let afkModule = new afkCheck(runInfo, bot, db, message.guild, channel, message, tokenDB)
+        runs.push({ channel: channel.id, afk: afkModule })
+        if (runInfo.startDelay > 0) setTimeout(begin, runInfo.startDelay, afkModule)
+    },
+    async eventAfkExecute(message, args, bot, db, tokenDB, event, isVet) {
+        //clear out runs array
+        destroyInactiveRuns();
+
+        //copy event template
+        let runInfo = { ...event }
+
+        //isVet
         runInfo.isVet = isVet;
 
         //set Raid Leader
@@ -125,6 +161,8 @@ class afkCheck {
      * @param {String} afkInfo.keyEmoteID
      * @param {String} afkInfo.vialEmoteID
      * @param {Boolean} afkInfo.isVet
+     * @param {Boolean} afkInfo.twoPhase
+     * @param {Boolean} afkInfo.isEvent
      * @param {Boolean} afkInfo.isSplit
      * @param {Boolean} afkInfo.newChannel
      * @param {Boolean} afkInfo.vialReact
@@ -152,12 +190,24 @@ class afkCheck {
         this.channel = channel;
         this.message = message;
         this.tokenDB = tokenDB
-        if (this.afkInfo.isVet) this.raidStatus = this.guild.channels.cache.get(this.settings.channels.vetstatus)
-        else this.raidStatus = this.guild.channels.cache.get(this.settings.channels.raidstatus)
-        if (this.afkInfo.isVet) this.commandChannel = this.guild.channels.cache.get(this.settings.channels.vetcommands)
-        else this.commandChannel = this.guild.channels.cache.get(this.settings.channels.raidcommands)
-        if (this.afkInfo.isVet) this.verifiedRaiderRole = this.guild.roles.cache.get(this.settings.roles.vetraider)
-        else this.verifiedRaiderRole = this.guild.roles.cache.get(this.settings.roles.raider)
+        if (this.afkInfo.isEvent) {
+            if (this.afkInfo.isVet) this.raidStatus = this.guild.channels.cache.get(this.settings.channels.vetstatus)
+            else this.raidStatus = this.guild.channels.cache.get(this.settings.channels.eventstatus)
+            if (this.afkInfo.isVet) this.commandChannel = this.guild.channels.cache.get(this.settings.channels.vetcommands)
+            else this.commandChannel = this.guild.channels.cache.get(this.settings.channels.eventcommands)
+            if (this.afkInfo.isVet) this.verifiedRaiderRole = this.guild.roles.cache.get(this.settings.roles.vetraider)
+            else {
+                this.verifiedRaiderRole = this.guild.roles.cache.get(this.settings.roles.raider)
+                this.eventBoi = this.guild.roles.cache.get(this.settings.roles.eventraider)
+            }
+        } else {
+            if (this.afkInfo.isVet) this.raidStatus = this.guild.channels.cache.get(this.settings.channels.vetstatus)
+            else this.raidStatus = this.guild.channels.cache.get(this.settings.channels.raidstatus)
+            if (this.afkInfo.isVet) this.commandChannel = this.guild.channels.cache.get(this.settings.channels.vetcommands)
+            else this.commandChannel = this.guild.channels.cache.get(this.settings.channels.raidcommands)
+            if (this.afkInfo.isVet) this.verifiedRaiderRole = this.guild.roles.cache.get(this.settings.roles.vetraider)
+            else this.verifiedRaiderRole = this.guild.roles.cache.get(this.settings.roles.raider)
+        }
         this.staffRole = guild.roles.cache.get(this.settings.roles.almostrl)
         this.afkChannel = guild.channels.cache.find(c => c.name === 'afk')
         this.runInfoChannel = guild.channels.cache.get(this.settings.channels.runlogs)
@@ -181,7 +231,7 @@ class afkCheck {
         this.warriors = []
         this.pallies = []
         this.bot.afkChecks[this.channel.id] = {
-            timeLeft:this.time,
+            timeLeft: this.time,
             isVet: this.isVet,
             //location: this.afkInfo.location, disabled until it is needed
             //keys: [],
@@ -211,10 +261,10 @@ class afkCheck {
         if (this.afkInfo.startDelay > 0) {
             let embed = new Discord.MessageEmbed()
                 .setColor(this.afkInfo.embed.color)
-                .setDescription(`A \`${this.afkInfo.runName}\`${flag ? `in (${flag})` : ''} will begin in ${Math.round(this.afkInfo.startDelay / 1000)} seconds. Be prepared to join \`${this.channel.name}\``)
-            this.raidStatusMessage = await this.raidStatus.send(`@here ${this.afkInfo.runName}${flag ? ` (${flag})` : ''}`, embed)
+                .setDescription(`A \`${this.afkInfo.runName}\`${flag ? `in (${flag})` : ''} will begin in ${Math.round(this.afkInfo.startDelay / 1000)} seconds. ${this.afkInfo.twoPhase ? `Only reactables will be moved in at first. After everything is confirmed, the channel will open up.` : `Be prepared to join \`${this.channel.name}\``}`)
+            this.raidStatusMessage = await this.raidStatus.send(`@here ${this.afkInfo.runName}${flag ? ` (${flag})` : ''}. ${this.afkInfo.twoPhase ? `Only reactables will be moved in at first. After everything is confirmed, the channel will open up.` : null}`, embed)
         } else {
-            this.raidStatusMessage = await this.raidStatus.send(`@here \`${this.afkInfo.runName}\`${flag ? ` (${flag})` : ''} is beginning now. Please join ${this.channel.name}`)
+            this.raidStatusMessage = await this.raidStatus.send(`@here \`${this.afkInfo.runName}\`${flag ? ` (${flag})` : ''} is beginning now. ${this.afkInfo.twoPhase ? `Only reactables will be moved in at first. After everything is confirmed, the channel will open up.` : `Please join ${this.channel.name}`}`)
             this.start()
         }
     }
@@ -225,7 +275,7 @@ class afkCheck {
             .setColor(this.afkInfo.embed.color)
             .setTitle(`${this.message.member.nickname}'s ${this.afkInfo.runName}`)
             .addField('Our current keys', 'None!')
-            .setFooter('React with ❌ to abort')
+            .setFooter(`React with ❌ to abort${this.afkInfo.twoPhase ? ', React with ✅ to open the channel' : ''}`)
         if (this.afkInfo.vialReact) this.leaderEmbed.addField('Our current vials', 'None!')
         this.afkInfo.earlyLocationReacts.forEach(r => this.leaderEmbed.addField(`Our current ${r.shortName}`, 'None!'))
         this.leaderEmbed.addField('Location', this.afkInfo.location)
@@ -234,6 +284,7 @@ class afkCheck {
         this.leaderEmbedMessage = await this.commandChannel.send(this.leaderEmbed)
         this.runInfoMessage = await this.runInfoChannel.send(this.leaderEmbed)
         this.leaderEmbedMessage.react('❌')
+        if (this.afkInfo.twoPhase) this.leaderEmbedMessage.react('✅')
 
         //add x and x-collector to leader embed
         this.leaderReactionCollector = new Discord.ReactionCollector(this.leaderEmbedMessage, (r, u) => !u.bot)
@@ -250,7 +301,10 @@ class afkCheck {
         this.raidStatusMessage.edit(this.mainEmbed)
 
         //unlock channel
-        this.channel.updateOverwrite(this.verifiedRaiderRole.id, { CONNECT: true, VIEW_CHANNEL: true })
+        if (!this.afkInfo.twoPhase) {
+            this.channel.updateOverwrite(this.verifiedRaiderRole.id, { CONNECT: true, VIEW_CHANNEL: true })
+            if (this.eventBoi) this.channel.updateOverwrite(this.eventBoi.id, { CONNECT: true, VIEW_CHANNEL: true })
+        }
 
         //create reaction collector
         this.raidStatusReactionCollector = new Discord.ReactionCollector(this.raidStatusMessage, (r, u) => !u.bot)
@@ -303,6 +357,18 @@ class afkCheck {
         if (r.emoji.name === '❌') {
             this.endedBy = u;
             this.abortAfk()
+        } else if (r.emoji.name === '✅') {
+            if (this.afkInfo.twoPhase) {
+                this.leaderEmbed.footer.text = `React with ❌ to abort, Channel is opening...`
+                this.leaderEmbedMessage.edit(this.leaderEmbed)
+                let tempM = await this.raidStatus.send(`Channel will open in 5 seconds...`)
+                setTimeout(async (afk) => {
+                    await tempM.edit(`${afk.channel.name} is open!`)
+                    await this.channel.updateOverwrite(this.verifiedRaiderRole.id, { CONNECT: true, VIEW_CHANNEL: true })
+                    if (this.eventBoi) await this.channel.updateOverwrite(this.eventBoi.id, { CONNECT: true, VIEW_CHANNEL: true })
+                    setTimeout(tempM.delete(), 15000)
+                }, 5000, [this])
+            }
         }
     }
 
@@ -536,7 +602,7 @@ class afkCheck {
         this.bot.afkChecks[this.channel.id].vcSize = this.channel.members.size;
     }
 
-    async updateVCNumber () {
+    async updateVCNumber() {
         this.bot.afkChecks[this.channel.id].vcSize = this.channel.members.size;
     }
 
@@ -575,6 +641,7 @@ class afkCheck {
 
         //lock channel
         await this.channel.updateOverwrite(this.verifiedRaiderRole.id, { CONNECT: false, VIEW_CHANNEL: true })
+        if (this.eventBoi) await this.channel.updateOverwrite(this.eventBoi.id, { CONNECT: false, VIEW_CHANNEL: true })
         if (this.afkInfo.newChannel && !this.isVet) {
             this.channel.setPosition(this.afkChannel.position)
         }
@@ -742,6 +809,7 @@ class afkCheck {
         clearInterval(this.updateVC)
 
         await this.channel.updateOverwrite(this.verifiedRaiderRole.id, { CONNECT: false, VIEW_CHANNEL: false })
+        if (this.eventBoi) await this.channel.updateOverwrite(this.eventBoi.id, { CONNECT: false, VIEW_CHANNEL: false })
         setTimeout(() => this.channel.setPosition(this.channel.parent.children.filter(c => c.type == 'voice').size - 1), 1000)
 
         this.mainEmbed.setDescription(`This afk check has been aborted`)
@@ -759,7 +827,6 @@ class afkCheck {
         this.channel.members.array().forEach(m => raiders.push(m.id))
         this.bot.afkChecks[this.channel.id] = {
             isVet: this.isVet,
-            location: this.afkInfo.location,
             leader: this.message.author.id,
             earlyLocation: earlyLocationIDS,
             raiders: raiders,
@@ -867,7 +934,14 @@ async function createChannel(runInfo, message, bot) {
     let settings = bot.settings[message.guild.id]
     return new Promise(async (res, rej) => {
         //channel creation
-        if (runInfo.isVet) {
+        if (runInfo.isEvent) {
+            var parent = 'events';
+            var template = message.guild.channels.cache.get(settings.voice.eventtemplate)
+            var raider = message.guild.roles.cache.get(settings.roles.raider)
+            var eventBoi = message.guild.roles.cache.get(settings.roles.eventraider)
+            var vibotChannels = message.guild.channels.cache.get(settings.channels.eventchannels)
+        }
+        else if (runInfo.isVet) {
             var parent = 'veteran raiding';
             var template = message.guild.channels.cache.get(settings.voice.vettemplate)
             var raider = message.guild.roles.cache.get(settings.roles.vetraider)
@@ -890,6 +964,7 @@ async function createChannel(runInfo, message, bot) {
 
         //allows raiders to view
         channel.updateOverwrite(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+        if (eventBoi) channel.updateOverwrite(eventBoi.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
 
         //Embed to remove
         let embed = new Discord.MessageEmbed()
