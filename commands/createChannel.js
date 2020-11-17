@@ -10,7 +10,7 @@ module.exports = {
     role: 'eventrl',
     description: 'Create a channel that stays open and is able to be edited. Useful for simply started a long lasting channel for run types where afk checks don\'t make sense. *Default cap is 50*',
     args: '<create/open/close/rename/log/setcap> (data)',
-    notes: '`;create <name>` creates new channel\n`;open` unlocks the channel\n`;close` locks the channel\n`;rename <new name>` renames the channel\n`;log` (c/ve) logs a dungeon complete for everyone in vc *c/v/e required for channels in vet section only*\n`;setcap <#>` sets the vc cap',
+    notes: '`create <name>` creates new channel\n`open` unlocks the channel\n`close` locks the channel\n`rename <new name>` renames the channel\n`log` (c/ve) logs a dungeon complete for everyone in vc *c/v/e required for channels in vet section only*\n`setcap <#>` sets the vc cap',
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         switch (args[0].toLowerCase()) {
