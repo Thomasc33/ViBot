@@ -64,9 +64,8 @@ module.exports = {
                         runType: name,
                         runName: name,
                         embed: {
-                            color: '#eeeeee'
+                            color: '#3a74fc'
                         },
-                        "font-color": "#111111"
                     }
                 }
                 bot.afkChecks[channel.id] = afkInfo
@@ -82,7 +81,7 @@ module.exports = {
                         var eventBoi = message.guild.roles.cache.get(settings.roles.eventraider)
                         var raider = message.guild.roles.cache.get(settings.roles.raider)
                     } else {
-                        var raider = message.guild.roles.cache.get(settings.roles.veteranraider)
+                        var raider = message.guild.roles.cache.get(settings.roles.vetraider)
                     }
 
                     channel.channel.updateOverwrite(raider.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
@@ -108,7 +107,7 @@ module.exports = {
                         var eventBoi = message.guild.roles.cache.get(settings.roles.eventraider)
                         var raider = message.guild.roles.cache.get(settings.roles.raider)
                     } else {
-                        var raider = message.guild.roles.cache.get(settings.roles.veteranraider)
+                        var raider = message.guild.roles.cache.get(settings.roles.vetraider)
                     }
 
                     channel.channel.updateOverwrite(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))

@@ -285,6 +285,7 @@ class afkCheck {
         this.runInfoMessage = await this.runInfoChannel.send(this.leaderEmbed)
         this.leaderEmbedMessage.react('❌')
         if (this.afkInfo.twoPhase) this.leaderEmbedMessage.react('✅')
+        this.bot.afkChecks[this.channel.id].url = this.message.url
 
         //add x and x-collector to leader embed
         this.leaderReactionCollector = new Discord.ReactionCollector(this.leaderEmbedMessage, (r, u) => !u.bot)
