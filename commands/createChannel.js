@@ -78,8 +78,12 @@ module.exports = {
                     if (!channel) return
 
                     //unlock the channel (event boi for events :^))
-                    if (channel.channel.parent.name.toLowerCase() == 'events') var eventBoi = message.guild.roles.cache.get(settings.roles.eventraider)
-                    let raider = message.guild.roles.cache.get(settings.roles.raider)
+                    if (channel.channel.parent.name.toLowerCase() == 'events') {
+                        var eventBoi = message.guild.roles.cache.get(settings.roles.eventraider)
+                        var raider = message.guild.roles.cache.get(settings.roles.raider)
+                    } else {
+                        var raider = message.guild.roles.cache.get(settings.roles.veteranraider)
+                    }
 
                     channel.channel.updateOverwrite(raider.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
                         .then(eventBoi ? channel.channel.updateOverwrite(eventBoi.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)) : null)
@@ -100,11 +104,15 @@ module.exports = {
                     if (!channel) return
 
                     //lock the channel (event boi for events :^))
-                    if (channel.channel.parent.name.toLowerCase() == 'events') var eventBoi = message.guild.roles.cache.get(settings.roles.eventraider)
-                    let raider = message.guild.roles.cache.get(settings.roles.raider)
+                    if (channel.channel.parent.name.toLowerCase() == 'events') {
+                        var eventBoi = message.guild.roles.cache.get(settings.roles.eventraider)
+                        var raider = message.guild.roles.cache.get(settings.roles.raider)
+                    } else {
+                        var raider = message.guild.roles.cache.get(settings.roles.veteranraider)
+                    }
 
                     channel.channel.updateOverwrite(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
-                        .then(channel.channel.updateOverwrite(eventBoi.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)))
+                        .then(eventBoi ? channel.channel.updateOverwrite(eventBoi.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)) : null)
 
                     //edit message in raid status
                     channel.embed.fields[0].value = '**Closed**'
