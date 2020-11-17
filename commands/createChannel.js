@@ -70,7 +70,7 @@ module.exports = {
                     }
                 }
                 bot.afkChecks[channel.id] = afkInfo
-                fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot) })
+                fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot) })
                 return;
             case 'open':
                 function open() {
@@ -94,7 +94,7 @@ module.exports = {
 
                     bot.afkChecks[channel.channelID].active = true;
                     bot.afkChecks[channel.channelID].started = Date.now();
-                    fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot) })
+                    fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot) })
                 }
                 open()
                 break;
@@ -119,7 +119,7 @@ module.exports = {
                     channel.message.edit(channel.embed)
                     bot.afkChecks[channel.channelID].active = false;
                     bot.afkChecks[channel.channelID].endedAt = Date.now();
-                    fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot) })
+                    fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot) })
                 }
                 close()
                 break;
@@ -145,7 +145,7 @@ module.exports = {
 
                     bot.afkChecks[channel.channelID].runType.runType = name;
                     bot.afkChecks[channel.channelID].runType.runName = name;
-                    fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot) })
+                    fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot) })
                 }
                 rename()
                 break;
@@ -174,7 +174,7 @@ module.exports = {
                     channel.channel.members.each(m => query = query.concat(`id = '${m.id}' OR `))
                     query = query.substring(0, query.length - 4)
                     db.query(query, err => {
-                        if (err) ErrorLogger.log(err, this.bot)
+                        if (err) ErrorLogger.log(err, bot)
                         message.react('✅')
                     })
                 }
