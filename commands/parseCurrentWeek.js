@@ -43,7 +43,7 @@ module.exports = {
                     .setColor('#00ff00')
                     .setTitle('This weeks current logged parses!')
                     .setDescription('None!')
-                rows.sort((a, b) => (parseInt(a.currentweekparses) < parseInt(b.currentweekparse)) ? 1 : -1)
+                await rows.sort((a, b) => (parseInt(a.currentweekparses) < parseInt(b.currentweekparses)) ? 1 : -1)
                 let index = 0
                 let embeds = []
                 for (let i in rows) {
@@ -56,7 +56,7 @@ module.exports = {
                     logged.push(rows[i].id)
                     index++;
                 }
-                await channel.guild.members.cache.filter(m => m.roles.cache.has(settings.roles.security) || m.roles.cache.has(settings.roles.officer)).each(m => {
+                await channel.guild.members.cache.filter(m => m.roles.highest.position == channel.guild.roles.cache.get(settings.roles.security).position || m.roles.highest.position == channel.guild.roles.cache.get(settings.roles.officer).position).each(m => {
                     if (!logged.includes(m.id)) {
                         let string = `<@!${m.id}> has not parsed this week`
                         fitStringIntoEmbed(embed, string)
