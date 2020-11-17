@@ -1,5 +1,5 @@
 const Discord = require('discord.js')
-const logTypes = ['keypops', 'eventpops', 'cultsLead', 'voidsLead', 'assists', 'solocult', 'vialStored', 'vialUsed', 'cultRuns', 'voidRuns', 'eventsLead']
+const logTypes = ['keypops', 'eventpops', 'cultsLead', 'voidsLead', 'assists', 'solocult', 'vialStored', 'vialUsed', 'cultRuns', 'voidRuns', 'eventsLead', 'parses']
 
 module.exports = {
     name: 'changelog',
@@ -57,7 +57,7 @@ module.exports = {
             if (r.emoji.name == '✅') {
                 confirmReactionCollector.stop()
                 await confirmMessage.delete()
-                if (operator != 's' && (logTypes[logIndex] == `cultsLead` || logTypes[logIndex] == `voidsLead` || logTypes[logIndex] == `assists`)) {
+                if (operator != 's' && (logTypes[logIndex] == `cultsLead` || logTypes[logIndex] == `voidsLead` || logTypes[logIndex] == `assists` || logTypes[logIndex] == `parses`)) {
                     let currentWeekConfirmEmbed = new Discord.MessageEmbed()
                         .setTitle('Confirm Action')
                         .setDescription('Do you also want to add/remove this from currentweek?')
@@ -80,6 +80,9 @@ module.exports = {
                                     break;
                                 case 'assists':
                                     currentWeekName = `currentweekAssists`
+                                    break;
+                                case 'parses':
+                                    currentWeekName = `currentweekparses`
                                     break;
                             }
                             if (operator == 'a') currentWeekQuery += `${currentWeekName} = ${currentWeekName} + ${count} `
