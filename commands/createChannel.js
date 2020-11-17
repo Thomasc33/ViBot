@@ -1,5 +1,6 @@
 const ChannelsCommand = require('./vibotChannels')
 const Discord = require('discord.js')
+const fs = require('fs')
 
 var channels = []
 
@@ -69,6 +70,7 @@ module.exports = {
                     }
                 }
                 bot.afkChecks[channel.id] = afkInfo
+                fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot) })
                 return;
             case 'open':
                 function open() {
@@ -88,6 +90,7 @@ module.exports = {
 
                     bot.afkChecks[channel.channelID].active = true;
                     bot.afkChecks[channel.channelID].started = Date.now();
+                    fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot) })
                 }
                 open()
                 break;
@@ -108,6 +111,7 @@ module.exports = {
                     channel.message.edit(channel.embed)
                     bot.afkChecks[channel.channelID].active = false;
                     bot.afkChecks[channel.channelID].endedAt = Date.now();
+                    fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot) })
                 }
                 close()
                 break;
@@ -133,6 +137,7 @@ module.exports = {
 
                     bot.afkChecks[channel.channelID].runType.runType = name;
                     bot.afkChecks[channel.channelID].runType.runName = name;
+                    fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot) })
                 }
                 rename()
                 break;
