@@ -366,10 +366,10 @@ class afkCheck {
                 let tempM = await this.raidStatus.send(`Channel will open in 5 seconds...`)
                 setTimeout(async (afk) => {
                     await tempM.edit(`${afk.channel.name} is open!`)
-                    await this.channel.updateOverwrite(this.verifiedRaiderRole.id, { CONNECT: true, VIEW_CHANNEL: true })
-                    if (this.eventBoi) await this.channel.updateOverwrite(this.eventBoi.id, { CONNECT: true, VIEW_CHANNEL: true })
-                    setTimeout(tempM.delete(), 15000)
-                }, 5000, [this])
+                    await afk.channel.updateOverwrite(afk.verifiedRaiderRole.id, { CONNECT: true, VIEW_CHANNEL: true })
+                    if (afk.eventBoi) await afk.channel.updateOverwrite(afk.eventBoi.id, { CONNECT: true, VIEW_CHANNEL: true })
+                }, 5000, this)
+                setTimeout(async tempM => tempM.delete(), 20000, tempM)
             }
         }
     }
