@@ -67,6 +67,7 @@ module.exports = {
                             color: '#3a74fc'
                         },
                     },
+                    url: m.url,
                     endedAt: Date.now()
                 }
                 bot.afkChecks[channel.id] = afkInfo
