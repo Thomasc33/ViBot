@@ -26,7 +26,7 @@ module.exports = {
 
 async function getList(db) {
     return new Promise((res, rej) => {
-        db.query(`SELECT * veriblacklist`, (err, rows) => {
+        db.query(`SELECT * FROM veriblacklist`, (err, rows) => {
             if (err) return rej(err)
             res(rows)
         })

@@ -14,7 +14,7 @@
         "vcCap": 50,
         "timeLimit": 360,
         "keyCount": 1,
-        "earlyLocationCost": 30,
+        "earlyLocationCost": 20,
         "earlyLocationReacts": [
             {
                 "emoteID": "720404844187353099",
@@ -60,7 +60,7 @@
         "vcCap": 45,
         "timeLimit": 360,
         "keyCount": 1,
-        "earlyLocationCost": 30,
+        "earlyLocationCost": 25,
         "earlyLocationReacts": [
             {
                 "emoteID": "723019533597802507",

@@ -76,24 +76,42 @@ module.exports = {
                     let channel = getChannel(message)
                     if (!channel) return
 
-                    //unlock the channel (event boi for events :^))
-                    if (channel.channel.parent.name.toLowerCase() == 'events') {
-                        var eventBoi = message.guild.roles.cache.get(settings.roles.eventraider)
-                        var raider = message.guild.roles.cache.get(settings.roles.raider)
-                    } else {
-                        var raider = message.guild.roles.cache.get(settings.roles.vetraider)
+                    //10 second timer
+                    let iteration = 0;
+                    let timer = bot.setInterval(unlockInterval, 5000)
+                    async function unlockInterval() {
+                        switch (iteration) {
+                            case 0:
+                                channel.message.edit(`@here Channel will open in 10 seconds...`)
+                                break;
+                            case 1:
+                                channel.message.edit(`@here Channel will open in 5 seconds...`)
+                                break;
+                            case 2:
+                                clearInterval(timer)
+                                //unlock the channel (event boi for events :^))
+                                if (channel.channel.parent.name.toLowerCase() == 'events') {
+                                    var eventBoi = message.guild.roles.cache.get(settings.roles.eventraider)
+                                    var raider = message.guild.roles.cache.get(settings.roles.raider)
+                                } else {
+                                    var raider = message.guild.roles.cache.get(settings.roles.vetraider)
+                                }
+
+                                channel.channel.updateOverwrite(raider.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+                                    .then(eventBoi ? channel.channel.updateOverwrite(eventBoi.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)) : null)
+
+                                //edit message in raid status
+                                channel.embed.fields[0].value = '**Open**'
+                                channel.message.edit('@here', channel.embed)
+
+                                bot.afkChecks[channel.channelID].active = true;
+                                bot.afkChecks[channel.channelID].started = Date.now();
+                                fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot) })
+                                break;
+                        }
+                        iteration++;
+
                     }
-
-                    channel.channel.updateOverwrite(raider.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
-                        .then(eventBoi ? channel.channel.updateOverwrite(eventBoi.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)) : null)
-
-                    //edit message in raid status
-                    channel.embed.fields[0].value = '**Open**'
-                    channel.message.edit(channel.embed)
-
-                    bot.afkChecks[channel.channelID].active = true;
-                    bot.afkChecks[channel.channelID].started = Date.now();
-                    fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot) })
                 }
                 open()
                 break;
@@ -115,7 +133,7 @@ module.exports = {
 
                     //edit message in raid status
                     channel.embed.fields[0].value = '**Closed**'
-                    channel.message.edit(channel.embed)
+                    channel.message.edit('', channel.embed)
                     bot.afkChecks[channel.channelID].active = false;
                     bot.afkChecks[channel.channelID].endedAt = Date.now();
                     fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot) })

@@ -62,7 +62,9 @@
             "veriactive": "701483951331606582",
             "pointlogging": "742123684344496260",
             "veriattempts": "701483951331606583",
-            "modmailinfo": "701483951168159812"
+            "modmailinfo": "701483951168159812",
+            "parsecurrentweek": "701483950966833205",
+            "pastparseweeks": null
         },
         "voice": {
             "raidingtemplate": "717947391755681902",
@@ -84,7 +86,9 @@
             "eventcurrentweek": true,
             "verification": true,
             "vetverification": false,
-            "points": true
+            "points": true,
+            "parsecurrentweek": false,
+            "supporter": false
         },
         "numerical": {
             "afktime": 360,

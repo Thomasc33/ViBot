@@ -3,7 +3,7 @@ const Discord = require('discord.js')
 module.exports = {
     name: 'rectify',
     description: 'Removes the ? infront of peoples names',
-    role: 'security',
+    role: 'officer',
     alias: ['r'],
     requiredArgs: 1,
     args: '<id/mention>',
