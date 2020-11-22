@@ -604,6 +604,7 @@ if (botSettings.api) {
                 return
             }
             let data = {
+                nick: member.nickname,
                 id: rows[0].id,
                 eventruns: rows[0].eventruns,
                 keypops: rows[0].keypops,

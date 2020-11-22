@@ -66,7 +66,8 @@ module.exports = {
                         embed: {
                             color: '#3a74fc'
                         },
-                    }
+                    },
+                    endedAt: Date.now()
                 }
                 bot.afkChecks[channel.id] = afkInfo
                 fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot) })
