@@ -7,7 +7,7 @@ module.exports = {
     description: 'In the event someone fake reacts, simply use this command and a message will be sent to raid-status/vet-status where a new raider can react and get sent location',
     alias: ['rq'],
     role: 'almostrl',
-    args: '<key/vial/brian/mystic/rusher> [Location]',
+    args: '<key/vial/brain/mystic/rusher> [Location]',
     requiredArgs: 1,
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]

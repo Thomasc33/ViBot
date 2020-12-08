@@ -9,6 +9,7 @@ const keyRoles = require('./keyRoles');
 const restart = require('./restart')
 const EventEmitter = require('events').EventEmitter
 const Events = require('../events.json')
+const pointLogger = require('../lib/pointLogger')
 var emitter = new EventEmitter()
 
 var runs = [] //{channel: id, afk: afk instance}
@@ -370,6 +371,7 @@ class afkCheck {
                     if (afk.eventBoi) await afk.channel.updateOverwrite(afk.eventBoi.id, { CONNECT: true, VIEW_CHANNEL: true })
                 }, 5000, this)
                 setTimeout(async tempM => tempM.delete(), 20000, tempM)
+                for (let i of this.afkInfo.reacts) await this.raidStatusMessage.react(i)
             }
         }
     }
@@ -378,7 +380,7 @@ class afkCheck {
         await this.raidStatusMessage.react(this.afkInfo.keyEmoteID)
         if (this.afkInfo.vialReact) await this.raidStatusMessage.react(this.afkInfo.vialEmoteID)
         for (let i of this.afkInfo.earlyLocationReacts) await this.raidStatusMessage.react(i.emoteID)
-        for (let i of this.afkInfo.reacts) await this.raidStatusMessage.react(i)
+        if (!this.afkInfo.twoPhase) for (let i of this.afkInfo.reacts) await this.raidStatusMessage.react(i)
         await this.raidStatusMessage.react('701491230349066261')
         if (this.settings.backend.supporter) await this.raidStatusMessage.react('752368122551337061')
         await this.raidStatusMessage.react('🎟️')
@@ -739,20 +741,33 @@ class afkCheck {
             })
         }
 
+        let pointsLog = []
+
         if (this.settings.backend.points) {
             //key point logging
             for (let u of this.keys) {
                 let points = this.settings.points.keypop
                 if (this.guild.members.cache.get(u).roles.cache.has(this.nitroBooster.id)) points = points * this.settings.points.nitromultiplier
                 await this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u}'`)
+                pointsLog.push({
+                    uid: u,
+                    points: points,
+                    reason: 'Popping Key',
+                })
             }
             for (let r in this.reactables) {
                 if (this.reactables[r].users) this.reactables[r].users.forEach(u => {
                     let points = +this.reactables[r].points
                     if (this.message.guild.members.cache.get(u).roles.cache.has(this.nitroBooster.id)) points = +points * +this.settings.points.nitromultiplier
                     this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u}'`)
+                    pointsLog.push({
+                        uid: u,
+                        points: points,
+                        reason: r,
+                    })
                 })
             }
+            pointLogger.pointLogging(pointsLog, this.message.guild, this.bot, this.mainEmbed)
         }
 
         //log key
@@ -772,7 +787,7 @@ class afkCheck {
                 afkCheck.channel.members.each(m => query = query.concat(`id = '${m.id}' OR `))
                 query = query.substring(0, query.length - 4)
                 afkCheck.db.query(query, err => {
-                    if (err) ErrorLogger.log(err, this.bot)
+                    if (err) ErrorLogger.log(err, afkCheck.bot)
                 })
                 if (afkCheck.settings.backend.points) {
                     //give points to everyone in run
@@ -785,14 +800,14 @@ class afkCheck {
                     //regular raiders point logging
                     if (afkCheck.settings.points.perrun != 0) {
                         let regularQuery = `UPDATE users SET points = points + ${afkCheck.settings.points.perrun} WHERE `
-                        regular.forEach(m => regularQuery = regularQuery.concat(`id = '${m.id}' OR `))
+                        regular.forEach(m => { regularQuery = regularQuery.concat(`id = '${m.id}' OR `) })
                         regularQuery = regularQuery.substring(0, regularQuery.length - 4)
-                        afkCheck.db.query(regularQuery, err => { if (err) ErrorLogger.log(err, this.bot) })
+                        afkCheck.db.query(regularQuery, err => { if (err) ErrorLogger.log(err, afkCheck.bot) })
                         //nitro raiders point logging
                         let nitroQuery = `UPDATE users SET points = points + ${afkCheck.settings.points.perrun * afkCheck.settings.points.nitromultiplier} WHERE `
                         nitros.forEach(m => nitroQuery = nitroQuery.concat(`id = '${m.id}' OR `))
                         nitroQuery = nitroQuery.substring(0, nitroQuery.length - 4)
-                        afkCheck.db.query(nitroQuery, err => { if (err) ErrorLogger.log(err, this.bot) })
+                        afkCheck.db.query(nitroQuery, err => { if (err) ErrorLogger.log(err, afkCheck.bot) })
                     }
                 }
             }

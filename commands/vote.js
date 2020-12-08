@@ -60,7 +60,7 @@ async function postVote(message, member, bot, db) {
         await m.react('✅')
         await m.react('😐')
         await m.react('❌')
-        if (voteType == 'Raid Leader' || voteType == 'Almost Raid Leader') {
+        if (voteType == 'Raid Leader') {
             m.react('👀')
         }
     })

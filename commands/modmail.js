@@ -50,7 +50,7 @@ module.exports = {
         let settings = bot.settings[guild.id]
         let modMailChannel = guild.channels.cache.get(settings.channels.modmail)
         let embed = m.embeds[0]
-        if (embed == undefined) return;
+        if (!embed) return;
         let modMailMessageID = embed.footer.text.split(/ +/g)[5]
         let raider = guild.members.cache.get(embed.footer.text.split(/ +/g)[2])
         if (!raider) return
