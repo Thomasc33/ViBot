@@ -1,14 +1,14 @@
 const fs = require('fs')
 const Discord = require('discord.js')
 const roles = ['moderator', 'officer', 'headrl', 'vetrl', 'security', 'fullskip', 'developer', 'rl', 'almostrl', 'trialrl', 'eventrl', 'rusher', 'nitro', 'lol', 'vetraider', 'raider', 'eventraider', 'muted',
-    'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'topkey', 'bottomkey']
+    'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'topkey', 'bottomkey', 'cultping', 'voidping']
 const channels = ['modmail', 'verification', 'manualverification', 'vetverification', 'manualvetverification', 'verificationlog', 'activeverification', 'modlogs', 'history', 'suspendlog',
     'viallog', 'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel', 'raidstatus', 'eventstatus',
     'vetstatus', 'raidcommands', 'eventcommands', 'vetcommands', 'raidingchannels', 'eventchannels', 'vetchannels', 'runlogs', 'dmcommands', 'veriactive', 'pointlogging', 'veriattempts',
-     'modmailinfo', 'parsecurrentweek', 'pastparseweeks']
+    'modmailinfo', 'parsecurrentweek', 'pastparseweeks', 'roleassignment']
 const voice = ['raidingtemplate', 'eventtemplate', 'vettemplate', 'veteventtemplate', 'lounge', 'vetlounge', 'eventlounge', 'afk']
 const voiceprefixes = ['raidingprefix', 'vetprefix']
-const backend = ['modmail', 'currentweek', 'eventcurrentweek', 'parsecurrentweek', 'verification', 'vetverification', 'points', 'supporter']
+const backend = ['modmail', 'currentweek', 'eventcurrentweek', 'parsecurrentweek', 'verification', 'vetverification', 'points', 'supporter', 'roleassignment']
 const numerical = ['afktime', 'eventafktime', 'nitrocount', 'nitrocooldown', 'topkey', 'bottomkey']
 const runreqs = ['weapon', 'ability', 'armor', 'ring']
 const autoveri = ['fame', 'stars', 'realmage', 'discordage', 'deathcount']
@@ -221,6 +221,8 @@ function getDefaultRoleName(name) {
         case 'tempkey': return 'Temporary Key Popper'
         case 'topkey': return 'Veteran Key Popper'
         case 'bottomkey': return 'Verified Key Popper'
+        case 'cultping': return 'Cult boi'
+        case 'voidping': return 'Void boi'
     }
 }
 
@@ -263,6 +265,7 @@ function getDefaultChannelName(name) {
         case 'modmailinfo': return 'mod-mail';
         case 'parsecurrentweek': return 'mod-current-week';
         case 'pastparseweeks': return 'mod-parse-history';
+        case 'roleassignment': return 'role-assignment';
     }
 }
 

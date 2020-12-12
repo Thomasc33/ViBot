@@ -19,6 +19,7 @@ const verification = require('./commands/verification')
 const currentWeek = require('./commands/currentWeek')
 const ecurrentWeek = require('./commands/eventCurrentWeek')
 const pcurrentWeek = require('./commands/parseCurrentWeek')
+const roleAssignment = require('./commands/roleAssignment')
 const stats = require('./commands/stats')
 const modmail = require('./commands/modmail')
 const setup = require('./commands/setup')
@@ -321,6 +322,7 @@ bot.on("ready", async () => {
             if (bot.settings[g.id].backend.modmail) modmail.update(g, bot, db).catch(er => { })
             if (bot.settings[g.id].backend.verification) verification.init(g, bot, db).catch(er => { })
             if (bot.settings[g.id].backend.vetverification) vetVerification.init(g, bot, db).catch(er => { })
+            if (bot.settings[g.id].backend.roleassignment) roleAssignment.init(g, bot).catch(er => { })
         }
     })
     //reset currentweek
