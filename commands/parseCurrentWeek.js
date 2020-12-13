@@ -23,7 +23,7 @@ module.exports = {
         let leaderLog = guild.channels.cache.get(settings.channels.pastparseweeks)
         if (leaderLog == null) return ErrorLogger.log(new Error('parse previous week not found'), bot)
         await this.sendEmbed(leaderLog, db, bot)
-        await db.query(`UPDATE users SET currentweekparses`)
+        await db.query(`UPDATE users SET currentweekparses = 0`)
         this.update(guild, db, bot)
     },
     async update(guild, db, bot) {
