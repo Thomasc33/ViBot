@@ -264,9 +264,9 @@ class afkCheck {
             let embed = new Discord.MessageEmbed()
                 .setColor(this.afkInfo.embed.color)
                 .setDescription(`A \`${this.afkInfo.runName}\`${flag ? `in (${flag})` : ''} will begin in ${Math.round(this.afkInfo.startDelay / 1000)} seconds. ${this.afkInfo.twoPhase ? `Only reactables will be moved in at first. After everything is confirmed, the channel will open up.` : `Be prepared to join \`${this.channel.name}\``}`)
-            this.raidStatusMessage = await this.raidStatus.send(`${this.settings.roles[this.afkInfo.pingRole] ? `<@&${this.settings.roles[this.afkInfo.pingRole]}>` : `@here`}, ${this.afkInfo.runName}${flag ? ` (${flag})` : ''}. ${this.afkInfo.twoPhase ? `Only reactables will be moved in at first. After everything is confirmed, the channel will open up.` : ''}`, embed)
+            this.raidStatusMessage = await this.raidStatus.send(`${this.settings.roles[this.afkInfo.pingRole] ? `<@&${this.settings.roles[this.afkInfo.pingRole]}> @here` : `@here`}, ${this.afkInfo.runName}${flag ? ` (${flag})` : ''}. ${this.afkInfo.twoPhase ? `Only reactables will be moved in at first. After everything is confirmed, the channel will open up.` : ''}`, embed)
         } else {
-            this.raidStatusMessage = await this.raidStatus.send(`${this.settings.roles[this.afkInfo.pingRole] ? `<@&${this.settings.roles[this.afkInfo.pingRole]}>` : `@here`}, \`${this.afkInfo.runName}\`${flag ? ` (${flag})` : ''} is beginning now. ${this.afkInfo.twoPhase ? `Only reactables will be moved in at first. After everything is confirmed, the channel will open up.` : `Please join ${this.channel.name}`}`)
+            this.raidStatusMessage = await this.raidStatus.send(`${this.settings.roles[this.afkInfo.pingRole] ? `<@&${this.settings.roles[this.afkInfo.pingRole]}> @here` : `@here`}, \`${this.afkInfo.runName}\`${flag ? ` (${flag})` : ''} is beginning now. ${this.afkInfo.twoPhase ? `Only reactables will be moved in at first. After everything is confirmed, the channel will open up.` : `Please join ${this.channel.name}`}`)
             this.start()
         }
     }
