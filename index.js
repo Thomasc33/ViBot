@@ -178,7 +178,7 @@ tokenDB.on('error', err => {
 bot.on("ready", async () => {
     CLIENT_ID = bot.user.id
     console.log(`Bot loaded: ${bot.user.username}`);
-    bot.user.setActivity(`Soon™`);
+    bot.user.setActivity(`vibot.tech <- Visit`);
     let vi = await bot.users.fetch(`277636691227836419`)
     vi.send('Halls Bot Starting Back Up')
     //to hide dev server
