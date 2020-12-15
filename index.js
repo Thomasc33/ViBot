@@ -86,8 +86,8 @@ async function dmHandler(message) {
             if (!cancelled) {
                 let member = guild.members.cache.get(message.author.id)
                 if (member.roles.highest.position < guild.roles.cache.get(bot.settings[guild.id].roles[command.role]).position && message.author.id !== '277636691227836419') {
-                    message.channel.send('You do not have permissions to use this command')
-                } else command.dmExecution(message, args, bot, db, guild)
+                    sendModMail();
+                } else command.dmExecution(message, args, bot, db, guild, tokenDB)
             }
         } else {
             message.channel.send('This command does not work in DM\'s. Please use this inside of a server')
