@@ -820,11 +820,11 @@ class afkCheck {
     }
 
     async abortAfk() {
-        this.raidStatusReactionCollector.stop();
-        this.leaderReactionCollector.stop();
-        clearInterval(this.moveInTimer);
-        clearInterval(this.timer);
-        clearInterval(this.updateVC)
+        if (this.raidStatusReactionCollector) this.raidStatusReactionCollector.stop();
+        if (this.leaderReactionCollector) this.leaderReactionCollector.stop();
+        if (this.moveInTimer) clearInterval(this.moveInTimer);
+        if (this.timer) clearInterval(this.timer);
+        if (this.updateVC) clearInterval(this.updateVC)
 
         await this.channel.updateOverwrite(this.verifiedRaiderRole.id, { CONNECT: false, VIEW_CHANNEL: false })
         if (this.eventBoi) await this.channel.updateOverwrite(this.eventBoi.id, { CONNECT: false, VIEW_CHANNEL: false })

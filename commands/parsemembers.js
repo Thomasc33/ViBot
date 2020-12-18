@@ -79,7 +79,7 @@ module.exports = {
             } else if (!voiceUsers.includes(member)) {
                 if (member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.almostrl).position) continue;
                 if (bot.afkChecks[channel.id]) {
-                    if (bot.afkChecks[channel.id].raiders.includes(member.id)) allowedCrashers.push(member)
+                    if (bot.afkChecks[channel.id].raiders && bot.afkChecks[channel.id].raiders.includes(member.id)) allowedCrashers.push(member)
                 }
                 if (member.voice.channel) otherChannel.push(`${member}: ${member.voice.channel}`);
                 else crashers.unshift(`<@!${member.id}>`);
