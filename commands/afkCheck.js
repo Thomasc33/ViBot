@@ -220,7 +220,8 @@ class afkCheck {
         this.nitro = []
         this.vials = []
         this.earlyLocation = []
-        this.raiders = [];
+        this.raiders = []
+        this.pointsUsers = []
         this.endedBy
         this.time = this.afkInfo.timeLimit
         this.postTime = 20;
@@ -534,6 +535,8 @@ class afkCheck {
 
     async pointsUse(u, index) {
         if (!this.settings.backend.points) return
+        let ticketLimit = this.settings.numerical.ticketlimit
+        if (this.pointsUsers.length >= ticketLimit) return;
         let pointEmbed = new Discord.MessageEmbed()
             .setColor('#ff0000')
             .setFooter(`React with ✅ to confirm, or ❌ to cancel`)
@@ -551,12 +554,14 @@ class afkCheck {
             reactionCollector.on('collect', async (r, u) => {
                 if (r.emoji.name == '❌') m.delete()
                 else if (r.emoji.name == '✅') {
+                    if (this.pointsUsers.length >= ticketLimit) return dms.send('Unfortunately too many people have used their points for this run. No points have been deducted.')
                     let er, success = true
                     let leftOver = await points.buyEarlyLocaton(u, this.db, earlyLocationCost, this.afkInfo, this.bot, this.message.guild).catch(r => { er = r; success = false })
                     if (success) {
                         await dms.send(`The location for this run has been set to \`${this.afkInfo.location}\`\nYou now have \`${leftOver}\` points left over`).catch(er => this.commandChannel.send(`<@!${u.id}> tried to react with 🎟️ but their DMs are private`))
                         if (this.leaderEmbed.fields[index].value == 'None!') this.leaderEmbed.fields[index].value = `<@!${u.id}>`
                         else this.leaderEmbed.fields[index].value += `, <@!${u.id}>`
+                        this.pointsUsers.push(u)
                         this.earlyLocation.push(u)
                         await this.leaderEmbedMessage.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                         await this.runInfoMessage.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
