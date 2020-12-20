@@ -468,7 +468,7 @@ class afkCheck {
                         afk.earlyLocation.push(u);
                     }
                     //give location
-                    u.send(`The location for this run has been set to \`${afk.afkInfo.location}\`, get there ASAP!`);
+                    u.send(`The location for this run has been set to \`${afk.afkInfo.location}\`, get there ASAP! Join lounge to be moved into the channel.`);
                     //add to leader embed
                     if (afk.afkInfo.vialReact && !(type == 'key' || type == 'vial')) index++;
                     if (afk.leaderEmbed.fields[index].value == `None!`) {
