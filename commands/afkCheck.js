@@ -447,6 +447,8 @@ class afkCheck {
                  * @param {afkCheck} afk 
                  */
                 function sendLocation(afk) {
+					//check for full
+					 if(!checkType(afk)) return
                     //set into type
                     setType(afk)
                     function setType(afk) {

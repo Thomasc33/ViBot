@@ -134,6 +134,7 @@ module.exports = {
         postInCrasherList(embed, message.guild.channels.cache.get(settings.channels.parsechannel), message.member, key)
 
         //character parse
+		if(settings.backend.realmeyescrape){
         let unreachable = []
         let characterParseEmbed = new Discord.MessageEmbed()
             .setColor('#00ff00')
@@ -265,6 +266,7 @@ module.exports = {
         }
         await message.channel.send(characterParseEmbed)
         await message.channel.send(unreachableEmbed)
+		}
         parseStatusEmbed.fields[1].value = 'Parse Completed'
         await parseStatusMessage.edit(parseStatusEmbed)
 
