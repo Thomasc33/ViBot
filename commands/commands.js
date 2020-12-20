@@ -23,7 +23,7 @@ module.exports = {
                 message.channel.send('Command doesnt exist, check \`commands\` and try again');
                 return;
             }
-            if (message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role]).position && message.author.id !== '277636691227836419') {
+            if ((message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role]).position && message.author.id !== '277636691227836419') || !bot.settings[message.guild.id].commands[command.name]) {
                 message.channel.send('Command doesnt exist, check \`commands\` and try again');
                 return;
             }
@@ -49,7 +49,7 @@ module.exports = {
             if (message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.raider).position) {
                 let line = ''
                 bot.commands.each(c => {
-                    if (c.role == 'raider') {
+                    if (c.role == 'raider' && bot.settings[message.guild.id].commands[c.name]) {
                         line = line.concat(`;${c.name} `)
                     }
                 })
@@ -59,7 +59,7 @@ module.exports = {
             if (message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.eventrl).position) {
                 let line = ''
                 bot.commands.each(c => {
-                    if (c.role == 'eventrl') {
+                    if (c.role == 'eventrl' && bot.settings[message.guild.id].commands[c.name]) {
                         line = line.concat(`;${c.name} `)
                     }
                 })
@@ -69,7 +69,7 @@ module.exports = {
             if (message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.almostrl).position) {
                 let line = ''
                 bot.commands.each(c => {
-                    if (c.role == 'almostrl') {
+                    if (c.role == 'almostrl' && bot.settings[message.guild.id].commands[c.name]) {
                         line = line.concat(`;${c.name} `)
                     }
                 })
@@ -79,7 +79,7 @@ module.exports = {
             if (message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.rl).position) {
                 let line = ''
                 bot.commands.each(c => {
-                    if (c.role == 'rl') {
+                    if (c.role == 'rl' && bot.settings[message.guild.id].commands[c.name]) {
                         line = line.concat(`;${c.name} `)
                     }
                 })
@@ -89,7 +89,7 @@ module.exports = {
             if (message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.fullskip).position) {
                 let line = ''
                 bot.commands.each(c => {
-                    if (c.role == 'fullskip') {
+                    if (c.role == 'fullskip' && bot.settings[message.guild.id].commands[c.name]) {
                         line = line.concat(`;${c.name} `)
                     }
                 })
@@ -99,7 +99,7 @@ module.exports = {
             if (message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.vetrl).position) {
                 let line = ''
                 bot.commands.each(c => {
-                    if (c.role == 'vetrl') {
+                    if (c.role == 'vetrl' && bot.settings[message.guild.id].commands[c.name]) {
                         line = line.concat(`;${c.name} `)
                     }
                 })
@@ -109,7 +109,7 @@ module.exports = {
             if (message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.security).position) {
                 let line = ''
                 bot.commands.each(c => {
-                    if (c.role == 'security') {
+                    if (c.role == 'security' && bot.settings[message.guild.id].commands[c.name]) {
                         line = line.concat(`;${c.name} `)
                     }
                 })
@@ -119,7 +119,7 @@ module.exports = {
             if (message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.headrl).position) {
                 let line = ''
                 bot.commands.each(c => {
-                    if (c.role == 'headrl') {
+                    if (c.role == 'headrl' && bot.settings[message.guild.id].commands[c.name]) {
                         line = line.concat(`;${c.name} `)
                     }
                 })
@@ -129,7 +129,7 @@ module.exports = {
             if (message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.officer).position) {
                 let line = ''
                 bot.commands.each(c => {
-                    if (c.role == 'officer') {
+                    if (c.role == 'officer' && bot.settings[message.guild.id].commands[c.name]) {
                         line = line.concat(`;${c.name} `)
                     }
                 })
@@ -139,7 +139,7 @@ module.exports = {
             if (message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.moderator).position) {
                 let line = ''
                 bot.commands.each(c => {
-                    if (c.role == 'moderator') {
+                    if (c.role == 'moderator' && bot.settings[message.guild.id].commands[c.name]) {
                         line = line.concat(`;${c.name} `)
                     }
                 })
@@ -149,7 +149,7 @@ module.exports = {
             if (message.member.roles.cache.has(settings.roles.developer)) {
                 let line = ''
                 bot.commands.each(c => {
-                    if (c.role == 'developer') {
+                    if (c.role == 'developer' && bot.settings[message.guild.id].commands[c.name]) {
                         line = line.concat(`;${c.name} `)
                     }
                 })

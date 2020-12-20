@@ -56,6 +56,13 @@ module.exports = {
         this.manualVerifyUpdate(guild, bot, db)
     },
     async verify(u, guild, bot, db) {
+        //check other servers for verification
+        let res = await this.reVerify(u, guild, bot, db) //true = verified, false = not verified
+        if (res) {
+            return
+        }
+
+
         //initial variables
         let settings = bot.settings[guild.id]
         let member = guild.members.cache.get(u.id);
@@ -503,9 +510,74 @@ module.exports = {
             })
         })
     },
+    async reVerify(u, guild, bot, db) {
+        return new Promise(async (res, rej) => {
+            //check to see if they are in other servers   
+            let emojiServers = require('../emojiServers.json')
+            let nicks = new Set()
+            bot.guilds.cache.each(g => {
+                if (emojiServers.includes(g.id)) return
+                let member = await g.members.cache.get(u.id)
+                if (member && member.nickname) member.nickname.replace(/[^a-z|]/gi, '').split('|').forEach(nick => { nicks.add(nick.toLowerCase()) })
+            })
+            if (nicks.size >= 0) res(false)
+
+            //ask which nick is their main
+            let embed = new Discord.MessageEmbed()
+                .setColor('#015c21')
+                .setTitle('Reverification')
+                .setDescription('You have verified with ViBot before. Would you like to reverify under one of the following names?')
+                .setFooter('React with one of the following numbers, or :x:')
+            let i = 0
+            nicks.forEach(nick => {
+                i++;
+                if (i > 9) return
+                embed.addField(numberToEmoji(i), nick, true)
+            })
+            let m = await u.send(embed)
+            let reactionCollector = new Discord.ReactionCollector(m, (r, u) => !u.bot)
+            reactionCollector.on('collect', async (r, u) => {
+                switch (r.emoji.name) {
+                    case '1️⃣': resolve(nick[0]); m.delete(); reactionCollector.stop(); break;
+                    case '2️⃣': resolve(nick[1]); m.delete(); reactionCollector.stop(); break;
+                    case '3️⃣': resolve(nick[2]); m.delete(); reactionCollector.stop(); break;
+                    case '4️⃣': resolve(nick[3]); m.delete(); reactionCollector.stop(); break;
+                    case '5️⃣': resolve(nick[4]); m.delete(); reactionCollector.stop(); break;
+                    case '6️⃣': resolve(nick[5]); m.delete(); reactionCollector.stop(); break;
+                    case '7️⃣': resolve(nick[6]); m.delete(); reactionCollector.stop(); break;
+                    case '8️⃣': resolve(nick[7]); m.delete(); reactionCollector.stop(); break;
+                    case '9️⃣': resolve(nick[8]); m.delete(); reactionCollector.stop(); break;
+                    case '🔟': resolve(nick[9]); m.delete(); reactionCollector.stop(); break;
+                    case '❌': res(false); m.delete(); reactionCollector.stop(); break;
+                    default:
+                        let retryMessage = await message.channel.send('There was an issue with the reaction. Please try again');
+                        setTimeout(() => { retryMessage.delete() }, 5000)
+                }
+            })
+            for (let j = 0; j < i; j++) {
+                m.react(numberToEmoji(j))
+            }
+            await m.react('❌')
+        })
+    },
     checkActive(id) {
         if (active.includes(id)) return true
         else return false
+    }
+}
+
+function numberToEmoji(i) {
+    switch (i) {
+        case 0: return ('1️⃣');
+        case 1: return ('2️⃣');
+        case 2: return ('3️⃣');
+        case 3: return ('4️⃣');
+        case 4: return ('5️⃣');
+        case 5: return ('6️⃣');
+        case 6: return ('7️⃣');
+        case 7: return ('8️⃣');
+        case 8: return ('9️⃣');
+        case 9: return ('🔟');
     }
 }
 
