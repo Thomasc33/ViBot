@@ -14,12 +14,16 @@ const runreqs = ['weapon', 'ability', 'armor', 'ring']
 const autoveri = ['fame', 'stars', 'realmage', 'discordage', 'deathcount']
 const vetverireqs = ['maxed', 'meleemaxed', 'runs']
 const points = ['earlylocation', 'perrun', 'nitromultiplier', 'keypop', 'vialpop', 'rushing', 'brain', 'mystic', 'eventkey', 'cultlocation', 'voidlocation', 'fsvlocation']
+var commands = []
+
+const menus = ['roles', 'channels', 'voice', 'voiceprefixes', 'backend', 'numerical', 'runreqs', 'autoveri', 'vetverireqs', 'points', 'commands']
 
 module.exports = {
     name: 'setup',
     description: 'set names of stuff',
     role: 'moderator',
     async execute(message, args, bot, db) {
+        if (!commands) commands = bot.commands.keyArray()
         if (args.length == 0) {
             let setupEmbed = new Discord.MessageEmbed()
                 .setTitle('Setup')
@@ -49,6 +53,7 @@ module.exports = {
                         case '8': menu(autoveri, 'autoveri', 'int'); break;
                         case '9': menu(vetverireqs, 'vetverireqs', 'int'); break;
                         case '10': menu(points, 'points', 'int'); break;
+                        case '11': menu(commands, 'commands', 'boolean'); break;
                     }
                 }
                 async function menu(array, arrayName, type) {
@@ -111,6 +116,7 @@ module.exports = {
         }
     },
     autoSetup(guild, bot) {
+        if (commands.length == 0) commands = bot.commands.keyArray()
         if (!bot.settings[guild.id]) {
             bot.settings[guild.id] = {
                 name: guild.name,
@@ -123,8 +129,12 @@ module.exports = {
                 runreqs: {},
                 autoveri: {},
                 vetverireqs: {},
-                points: {}
+                points: {},
+                commands: {}
             }
+        }
+        for (let i of menus) {
+            if (!bot.settings[guild.id][i]) bot.settings[guild.id][i] = {}
         }
         for (let i in roles) {
             let role = roles[i]
@@ -190,6 +200,9 @@ module.exports = {
             if (!bot.settings[guild.id].points[r] && bot.settings[guild.id].points[r] != 0) {
                 bot.settings[guild.id].points[r] = getDefaultPointValue(r)
             }
+        }
+        for (let i of commands) {
+            if (!bot.settings[guild.id].commands[i]) bot.settings[guild.id].commands[i] = true
         }
         fs.writeFileSync('./guildSettings.json', JSON.stringify(bot.settings, null, 4), err => message.channel.send(err))
     }

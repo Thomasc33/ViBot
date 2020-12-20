@@ -52,6 +52,7 @@ bot.on('message', message => {
     if (restarting.restarting && commandName !== 'restart') return message.channel.send('Cannot execute command as a restart is pending')
     const command = bot.commands.get(commandName) || bot.commands.find(cmd => cmd.alias && cmd.alias.includes(commandName))
     if (!command) return message.channel.send('Command doesnt exist, check \`commands\` and try again');
+    if (!bot.settings[message.guild.id].commands[command.name]) return message.channel.send('Command doesnt exist, check \`commands\` and try again');
     if (message.member.roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role]).position && (message.author.id !== '277636691227836419' && message.author.id !== '298989767369031684')) return;
     if (command.requiredArgs && command.requiredArgs > args.length) return message.channel.send(`Command Entered incorrecty. \`${botSettings.prefix}${command.name} ${command.args}\``)
     try {
