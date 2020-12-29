@@ -5,7 +5,7 @@ const eCurrentWeek = require('./eventCurrentWeek')
 module.exports = {
     name: 'log',
     description: 'Logs runs',
-    args: '<c/v/e> [mention for assists] (#)',
+    args: '<c/v/o/e> [mention for assists] (#)',
     requiredArgs: 1,
     role: 'eventrl',
     async execute(message, args, bot, db) {
@@ -22,7 +22,7 @@ module.exports = {
             if (args[0].toLowerCase().charAt(0) == 'v') {
                 db.query(`SELECT * FROM users WHERE id = '${message.author.id}'`, (err, rows) => {
                     if (err) throw err;
-                    if(rows.length == 0) return message.channel.send('You are not logged in DB')
+                    if (rows.length == 0) return message.channel.send('You are not logged in DB')
                     db.query(`UPDATE users SET voidsLead = ${parseInt(rows[0].voidsLead) + parseInt(count)}, currentweekVoid = ${parseInt(rows[0].currentweekVoid) + parseInt(count)} WHERE id = '${message.author.id}'`)
                     message.channel.send(`Run logged for ${message.member.nickname}. Current week: ${parseInt(rows[0].currentweekCult)} cult, ${parseInt(rows[0].currentweekVoid) + parseInt(count)} void, and ${parseInt(rows[0].currentweekAssists)} assists`)
                 })
@@ -31,13 +31,23 @@ module.exports = {
             } else if (args[0].toLowerCase().charAt(0) == 'c') {
                 db.query(`SELECT * FROM users WHERE id = '${message.author.id}'`, (err, rows) => {
                     if (err) throw err;
-                    if(rows.length == 0) return message.channel.send('You are not logged in DB')
+                    if (rows.length == 0) return message.channel.send('You are not logged in DB')
                     db.query(`UPDATE users SET cultsLead = ${parseInt(rows[0].cultsLead) + parseInt(count)}, currentweekCult = ${parseInt(rows[0].currentweekCult) + parseInt(count)} WHERE id = '${message.author.id}'`)
                     message.channel.send(`Run logged for ${message.member.nickname}. Current week: ${parseInt(rows[0].currentweekCult) + parseInt(count)} cult, ${parseInt(rows[0].currentweekVoid)} void, and ${parseInt(rows[0].currentweekAssists)} assists`)
                 })
                 embed.setColor('#ff0000')
                 desc = '`Cult` Run'
-            } else if (args[0].toLowerCase().charAt(0) == 'e') {
+            } else if (args[0].toLowerCase().charAt(0) == 'o') {
+                db.query(`SELECT * FROM users WHERE id = '${message.author.id}'`, (err, rows) => {
+                    if (err) throw err;
+                    if (rows.length == 0) return message.channel.send('You are not logged in DB')
+                    db.query(`UPDATE users SET o3leads = ${parseInt(rows[0].o3leads) + parseInt(count)}, currentweeko3 = ${parseInt(rows[0].currentweeko3) + parseInt(count)} WHERE id = '${message.author.id}'`)
+                    message.channel.send(`Run logged for ${message.member.nickname}. Current week: ${parseInt(rows[0].currentweeko3) + parseInt(count)} runs, and ${parseInt(rows[0].currentweekAssistso3)} assists`)
+                })
+                embed.setColor('#8c00ff')
+                desc = '`Oryx` Run'
+            }
+            else if (args[0].toLowerCase().charAt(0) == 'e') {
                 let confirmEmbed = new Discord.MessageEmbed()
                     .setColor('#ffff00')
                     .setTitle('Confirm')
@@ -53,7 +63,7 @@ module.exports = {
                         await confirmMessage.delete()
                         db.query(`SELECT * FROM users WHERE id = '${message.author.id}'`, (err, rows) => {
                             if (err) throw err;
-                            if(rows.length == 0) return message.channel.send('You are not logged in DB')
+                            if (rows.length == 0) return message.channel.send('You are not logged in DB')
                             db.query(`UPDATE users SET eventsLead = ${parseInt(rows[0].eventsLead) + parseInt(count)}, currentweekEvents = ${parseInt(rows[0].currentweekEvents) + parseInt(count)} WHERE id = '${message.author.id}'`)
                             message.channel.send(`Run logged for ${message.member.nickname}. Current week: ${parseInt(rows[0].currentweekEvents) + parseInt(count)}`)
                         })

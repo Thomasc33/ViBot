@@ -1,4 +1,35 @@
 const Discord = require('discord.js')
+const tables = [
+    { //halls
+        id: '343704644712923138',
+        runs: [
+            'currentweekCult',
+            'currentweekVoid'
+        ],
+        assists: [
+            'currentweekAssists'
+        ],
+    },
+    { //dev halls
+        id: '701483950559985705',
+        runs: [
+            'currentweekCult',
+            'currentweekVoid'
+        ],
+        assists: [
+            'currentweekAssists'
+        ],
+    },
+    { //o3
+        id: '708026927721480254',
+        runs: [
+            'currentweeko3'
+        ],
+        assists: [
+            'currentweekAssistso3'
+        ],
+    }
+]
 module.exports = {
     name: 'currentweek',
     description: 'Updates the current week stats or force starts the next week',
@@ -33,26 +64,49 @@ module.exports = {
     },
     async sendEmbed(channel, db, bot) {
         let settings = bot.settings[channel.guild.id]
+        let info
+        for (let i of tables) {
+            if (channel.guild.id == i.id) info = i
+        }
+        if (!info) return
         return new Promise(async function (resolve, reject) {
-            db.query(`SELECT * FROM users WHERE currentweekCult != 0 OR currentweekVoid != 0 OR currentweekAssists != 0`, async function (err, rows) {
+            let query1 = `SELECT * FROM users WHERE `
+            for (let i of info.runs) query1 += `${i} != 0 OR `
+            for (let i of info.assists) query1 += `${i} != 0 OR `
+            db.query(query1.substring(0, query1.length - 3), async function (err, rows) {
                 if (err) reject(err)
                 let logged = []
-                let runs = 0, cults = 0, voids = 0, assists = 0
+                let runs = 0
                 let embed = new Discord.MessageEmbed()
                     .setColor('#00ff00')
                     .setTitle('This weeks current logged runs!')
                     .setDescription('None!')
-                rows.sort((a, b) => (parseInt(a.currentweekCult) + parseInt(a.currentweekVoid) + parseInt(a.currentweekAssists) / 2 < parseInt(b.currentweekCult) + parseInt(b.currentweekVoid) + parseInt(b.currentweekAssists) / 2) ? 1 : -1)
+                rows.sort((a, b) => {
+                    let aTot = 0, bTot = 0;
+                    for (let i of info.runs) {
+                        aTot += a[i]
+                        bTot += b[i]
+                    }
+                    for (let i of info.assists) {
+                        aTot += a[i] / 2
+                        bTot += b[i] / 2
+                    }
+                    (aTot < bTot) ? 1 : -1
+                })
                 let index = 0
                 let embeds = []
-                for (let i in rows) {
-                    let string = `**[${index + 1}]** <@!${rows[i].id}>:\nRaids: \`${parseInt(rows[i].currentweekCult) + parseInt(rows[i].currentweekVoid) + parseInt(rows[i].currentweekAssists) / 2}\` (Void: ${rows[i].currentweekVoid}, Cult: ${rows[i].currentweekCult}, Assists: ${rows[i].currentweekAssists})`
-                    runs += rows[i].currentweekCult + rows[i].currentweekVoid
-                    cults += rows[i].currentweekCult
-                    voids += rows[i].currentweekVoid
-                    assists += rows[i].currentweekAssists
+                for (let i of rows) {
+                    let runTot = 0
+                    for (let j of info.runs) runTot += parseInt(i[j])
+                    for (let j of info.assists) runTot += parseInt(i[j]) / 2
+                    let string = `**[${index + 1}]** <@!${i.id}>:\nRaids: \`${runTot}\` (`
+                    for (let j of info.runs) string += `${j.replace('currentweek', '')}: ${i[j]}, `
+                    for (let j of info.assists) string += `${j.replace('currentweek', '')}: ${i[j]}, `
+                    string = string.substring(0, string.length - 2)
+                    string += ')'
+                    runs += runTot
                     fitStringIntoEmbed(embed, string)
-                    logged.push(rows[i].id)
+                    logged.push(i.id)
                     index++;
                 }
                 await channel.guild.members.cache.filter(m => m.roles.cache.has(settings.roles.almostrl) || m.roles.cache.has(settings.roles.rl)).each(m => {
@@ -61,7 +115,7 @@ module.exports = {
                         fitStringIntoEmbed(embed, string)
                     }
                 })
-                embed.setFooter(`${runs} Total Runs (${voids} Voids, ${cults} Cults, ${assists} Assists)`)
+                embed.setFooter(`${runs} Total Runs`)
                 embeds.push(new Discord.MessageEmbed(embed))
                 function fitStringIntoEmbed(embed, string) {
                     if (embed.description == 'None!') embed.setDescription(string)
