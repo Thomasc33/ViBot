@@ -29,7 +29,7 @@ module.exports = {
                 .setTitle('Setup')
                 .setColor('#54d1c2')
                 .setFooter(`Type 'cancel' to stop`)
-                .setDescription(`\`\`\`Please select what you wish to edit:\n1: roles\n2: channels\n3: voice\n4: voiceprefixes\n5: backend\n6: numerical\n7: runreqs\n8: autoveri\n9: vetverireqs\n10: points\`\`\``)
+                .setDescription(`\`\`\`Please select what you wish to edit:\n1: roles\n2: channels\n3: voice\n4: voiceprefixes\n5: backend\n6: numerical\n7: runreqs\n8: autoveri\n9: vetverireqs\n10: points\n11: commands\`\`\``)
             let setupMessage = await message.channel.send(setupEmbed)
             let mainMenu = new Discord.MessageCollector(message.channel, m => m.author.id == message.author.id)
             mainMenu.on('collect', async m => {
@@ -59,10 +59,19 @@ module.exports = {
                 async function menu(array, arrayName, type) {
                     setupEmbed.setTitle(`${arrayName} Menu`)
                         .setDescription(`\`\`\`Please select what you wish to edit`)
+                    let fieldIndex = 0;
                     for (let i in array) {
-                        setupEmbed.description += `\n${parseInt(i) + 1}: ${array[i]} '${bot.settings[message.guild.id][arrayName][array[i]]}'`
+                        let s = `\n${parseInt(i) + 1}: ${array[i]} '${bot.settings[message.guild.id][arrayName][array[i]]}'`
+                        if (setupEmbed.description.length + s.length + `\n\`\`\``.length >= 2048) {
+                            if (!setupEmbed.fields[fieldIndex]) setupEmbed.addField('-', `\`\`\`${s}`, false)
+                            else if (setupEmbed.fields[fieldIndex].value.length + s.length + `\n\`\`\``.length >= 1024) {
+                                fieldIndex++
+                                setupEmbed.addField('-', s, false)
+                            } else setupEmbed.fields[fieldIndex].value += s;
+                        } else setupEmbed.description += s
                     }
                     setupEmbed.description += `\n\`\`\``
+                    for (let i = 0; i < fieldIndex + 1; i++) setupEmbed.fields[i].value += '```'
                     await setupMessage.edit(setupEmbed)
                     let rolesMenu = new Discord.MessageCollector(message.channel, m => m.author.id == message.author.id)
                     rolesMenu.on('collect', async m => {
