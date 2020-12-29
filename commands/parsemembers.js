@@ -134,7 +134,7 @@ module.exports = {
         postInCrasherList(embed, message.guild.channels.cache.get(settings.channels.parsechannel), message.member, key)
 
         //character parse
-		if(settings.backend.realmeyescrape){
+
         let unreachable = []
         let characterParseEmbed = new Discord.MessageEmbed()
             .setColor('#00ff00')
@@ -159,29 +159,31 @@ module.exports = {
                     issueString += `\nNot level 20 (${character.level}/20)`
                 }
                 //check for max dex/attack
-                let statstot = character.statsTotal.replace(/[^0-9-,]/g, '').split(',')
-                let statsbonus = character.statsBonus.replace(/[^0-9-,]/g, '').split(',')
-                let statsArray = []
-                for (let i in statstot) {
-                    statsArray.push(parseInt(statstot[i]) - parseInt(statsbonus[i]))
-                }
-                let stats = {
-                    hp: statsArray[0],
-                    mp: statsArray[1],
-                    att: statsArray[2],
-                    def: statsArray[3],
-                    spd: statsArray[4],
-                    vit: statsArray[5],
-                    wis: statsArray[6],
-                    dex: statsArray[7],
-                }
-                if (stats.dex < maxStats.dex) {
-                    issue = true;
-                    issueString += `\nDex is not maxed (${stats.dex}/${maxStats.dex})`
-                }
-                if (stats.att < maxStats.att) {
-                    issue = true;
-                    issueString += `\nAttack is not maxed (${stats.att}/${maxStats.att})`
+                if (settings.backend.realmeyestats) {
+                    let statstot = character.statsTotal.replace(/[^0-9-,]/g, '').split(',')
+                    let statsbonus = character.statsBonus.replace(/[^0-9-,]/g, '').split(',')
+                    let statsArray = []
+                    for (let i in statstot) {
+                        statsArray.push(parseInt(statstot[i]) - parseInt(statsbonus[i]))
+                    }
+                    let stats = {
+                        hp: statsArray[0],
+                        mp: statsArray[1],
+                        att: statsArray[2],
+                        def: statsArray[3],
+                        spd: statsArray[4],
+                        vit: statsArray[5],
+                        wis: statsArray[6],
+                        dex: statsArray[7],
+                    }
+                    if (stats.dex < maxStats.dex) {
+                        issue = true;
+                        issueString += `\nDex is not maxed (${stats.dex}/${maxStats.dex})`
+                    }
+                    if (stats.att < maxStats.att) {
+                        issue = true;
+                        issueString += `\nAttack is not maxed (${stats.att}/${maxStats.att})`
+                    }
                 }
                 //check for gear reqs
                 //weapon
@@ -266,7 +268,7 @@ module.exports = {
         }
         await message.channel.send(characterParseEmbed)
         await message.channel.send(unreachableEmbed)
-		}
+
         parseStatusEmbed.fields[1].value = 'Parse Completed'
         await parseStatusMessage.edit(parseStatusEmbed)
 

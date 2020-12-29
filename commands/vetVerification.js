@@ -70,12 +70,14 @@ module.exports = {
         let maxedChars = 0;
         let meleeMaxed = 0;
         let realmEyeRuns = 0;
-        for (let i in userInfo.characters) {
-            let char = userInfo.characters[i]
-            if (char.stats == '8/8') {
-                maxedChars += 1;
-                if (char.class == 'Warrior' || char.class == 'Knight' || char.class == 'Paladin') {
-                    meleeMaxed += 1;
+        if (settings.backend.realmeyestats) {
+            for (let i in userInfo.characters) {
+                let char = userInfo.characters[i]
+                if (char.stats == '8/8') {
+                    maxedChars += 1;
+                    if (char.class == 'Warrior' || char.class == 'Knight' || char.class == 'Paladin') {
+                        meleeMaxed += 1;
+                    }
                 }
             }
         }

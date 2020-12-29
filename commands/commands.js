@@ -116,6 +116,16 @@ module.exports = {
                 if (line == '') line = 'No role specific commands'
                 commandPanel.addField('Security+', `\`\`\`css\n${line}\`\`\``)
             }
+            if (message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.headeventrl).position) {
+                let line = ''
+                bot.commands.each(c => {
+                    if (c.role == 'headeventrl' && bot.settings[message.guild.id].commands[c.name]) {
+                        line = line.concat(`;${c.name} `)
+                    }
+                })
+                if (line == '') line = 'No role specific commands'
+                commandPanel.addField('Head Event Organizer+', `\`\`\`css\n${line}\`\`\``)
+            }
             if (message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.headrl).position) {
                 let line = ''
                 bot.commands.each(c => {

@@ -1,7 +1,7 @@
 module.exports = {
     name: 'commend',
     role: 'rl',
-    args: '<user> <rusher>',
+    args: '<user> <rusher/mapmarker>',
     notes: 'rusher',
     requiredArgs: 2,
     description: 'Gives user a role',
@@ -22,12 +22,13 @@ module.exports = {
         //give role and log
         switch (type) {
             case 'r':
+            case 'm':
                 let rusher = message.guild.roles.cache.get(settings.roles.rusher)
                 if (member.roles.cache.has(rusher.id)) return message.channel.send(`${member} already has \`${rusher.name}\``)
                 let modlog = message.guild.channels.cache.get(settings.channels.modlogs)
                 await modlog.send(`\`${rusher.name}\` added to ${member} per the request of ${message.member}`)
                 member.roles.add(rusher.id)
-                db.query(`UPDATE users SET isRusher = true WHERE id = '${member.id}'`)
+                if (type == 'r') db.query(`UPDATE users SET isRusher = true WHERE id = '${member.id}'`)
                 break;
             default:
                 return message.channel.send(`${args[1]} is not a valid commendation type. Check \`;commands commend\` for a list of roles`)

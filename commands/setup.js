@@ -1,6 +1,6 @@
 const fs = require('fs')
 const Discord = require('discord.js')
-const roles = ['moderator', 'officer', 'headrl', 'vetrl', 'security', 'fullskip', 'developer', 'rl', 'almostrl', 'trialrl', 'eventrl', 'rusher', 'nitro', 'lol', 'vetraider', 'raider', 'eventraider', 'muted',
+const roles = ['moderator', 'officer', 'headrl', 'vetrl', 'security', 'fullskip', 'developer', 'rl', 'almostrl', 'trialrl', 'headeventrl', 'eventrl', 'rusher', 'nitro', 'lol', 'vetraider', 'raider', 'eventraider', 'muted',
     'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'topkey', 'bottomkey', 'cultping', 'voidping']
 const channels = ['modmail', 'verification', 'manualverification', 'vetverification', 'manualvetverification', 'verificationlog', 'activeverification', 'modlogs', 'history', 'suspendlog',
     'viallog', 'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel', 'raidstatus', 'eventstatus',
@@ -8,7 +8,7 @@ const channels = ['modmail', 'verification', 'manualverification', 'vetverificat
     'modmailinfo', 'parsecurrentweek', 'pastparseweeks', 'roleassignment']
 const voice = ['raidingtemplate', 'eventtemplate', 'vettemplate', 'veteventtemplate', 'lounge', 'vetlounge', 'eventlounge', 'afk']
 const voiceprefixes = ['raidingprefix', 'vetprefix']
-const backend = ['modmail', 'currentweek', 'eventcurrentweek', 'parsecurrentweek', 'verification', 'vetverification', 'points', 'supporter', 'roleassignment', 'realmeyescrape']
+const backend = ['modmail', 'currentweek', 'eventcurrentweek', 'parsecurrentweek', 'verification', 'vetverification', 'points', 'supporter', 'roleassignment', 'realmeyestats']
 const numerical = ['afktime', 'eventafktime', 'nitrocount', 'nitrocooldown', 'topkey', 'bottomkey', 'ticketlimit']
 const runreqs = ['weapon', 'ability', 'armor', 'ring']
 const autoveri = ['fame', 'stars', 'realmage', 'discordage', 'deathcount']
@@ -220,6 +220,7 @@ function getDefaultRoleName(name) {
         case 'rl': return 'Raid Leader'
         case 'almostrl': return 'Almost Raid Leader'
         case 'trialrl': return 'Trial Raid Leader'
+        case 'headeventrl': return 'Head Event Organizer'
         case 'eventrl': return 'Event Organizer'
         case 'rusher': return 'Official Rusher'
         case 'nitro': return 'Nitro Booster'
