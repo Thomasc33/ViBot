@@ -38,7 +38,7 @@ module.exports = {
         let vetVeriChannel = message.guild.channels.cache.get(settings.channels.vetverification)
         if (!vetVeriChannel) return message.channel.send(`Vet Verification channel not found`)
         let vetVeriEmbed = new Discord.MessageEmbed()
-            .setTitle(`Veteran Verification for ${message.guild.id}`)
+            .setTitle(`Veteran Verification for ${message.guild.name}`)
             .addField('How to', 'React with the :white_check_mark: to get the role.\nMake sure to make your graveyard and character list public on realmeye before reacting\nAlso run the command ;stats to see your current run total.')
             .addField('Requirements', `${(settings.vetverireqs.maxed) ? `-${settings.vetverireqs.maxed} 8/8 Characters\n` : ''}${(settings.vetverireqs.meleemaxed) ? `-${settings.vetverireqs.meleemaxed} 8/8 Melee Characters\n` : ''}${(settings.vetverireqs.runs) ? `-${settings.vetverireqs.runs} Completed Runs\n` : ''}`)
         embedMessage = await vetVeriChannel.send(vetVeriEmbed)
