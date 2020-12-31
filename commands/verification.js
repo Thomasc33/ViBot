@@ -523,8 +523,8 @@ module.exports = {
                 if (emojiServers.includes(g.id)) return
                 let member = await g.members.cache.get(u.id)
                 if (member && member.nickname) {
-                    let suspendedRole = member.roles.cache.filter(r => r.name.toLowerCase().includes('suspend'))
-                    if (suspendedRole) return suspended = true
+                    if (bot.settings[g.id] && bot.settings[g.id].roles.tempsuspended) if (member.roles.cache.has(bot.settings[g.id].roles.tempsuspended)) return suspended = true
+                    if (bot.settings[g.id] && bot.settings[g.id].roles.permasuspended) if (member.roles.cache.has(bot.settings[g.id].roles.permasuspended)) return suspended = true
                     let nick = member.nickname.replace(/[^a-z|]/gi, '').split('|')
                     for (let i of nick) nicks.push(i)
                 }
