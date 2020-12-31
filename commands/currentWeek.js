@@ -51,7 +51,7 @@ module.exports = {
     async newWeek(guild, bot, db) {
         let settings = bot.settings[guild.id]
         let leaderLog = guild.channels.cache.get(settings.channels.pastweeks)
-        if (leaderLog == null) { console.log('Channel not found'); return; }
+        if (!leaderLog) return console.log('Channel not found');
         await this.sendEmbed(leaderLog, db, bot)
         await db.query(`UPDATE users SET currentweekCult = 0, currentweekVoid = 0, currentweekAssists = 0`)
         this.update(guild, db, bot)

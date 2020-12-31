@@ -71,7 +71,7 @@ module.exports = {
                         } else setupEmbed.description += s
                     }
                     setupEmbed.description += `\n\`\`\``
-                    for (let i = 0; i < fieldIndex + 1; i++) setupEmbed.fields[i].value += '```'
+                    for (let i = 0; i < fieldIndex + 1; i++) if (setupEmbed.fields[i].value) setupEmbed.fields[i].value += '```'
                     await setupMessage.edit(setupEmbed)
                     let rolesMenu = new Discord.MessageCollector(message.channel, m => m.author.id == message.author.id)
                     rolesMenu.on('collect', async m => {
