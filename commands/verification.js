@@ -522,9 +522,9 @@ module.exports = {
             await bot.guilds.cache.each(async g => {
                 if (emojiServers.includes(g.id)) return
                 let member = await g.members.cache.get(u.id)
-                if (member && member.nickname) {
-                    if (bot.settings[g.id] && bot.settings[g.id].roles.tempsuspended) if (member.roles.cache.has(bot.settings[g.id].roles.tempsuspended)) return suspended = true
-                    if (bot.settings[g.id] && bot.settings[g.id].roles.permasuspended) if (member.roles.cache.has(bot.settings[g.id].roles.permasuspended)) return suspended = true
+                let settings = bot.settings[g.id]
+                if(!settings) return
+                if (member && member.nickname && member.roles.cache.has(settings.roles.raider)) {
                     let nick = member.nickname.replace(/[^a-z|]/gi, '').split('|')
                     for (let i of nick) nicks.push(i)
                 }
