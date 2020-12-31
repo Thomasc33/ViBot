@@ -3,6 +3,7 @@ const botSettings = require('../settings.json')
 const ErrorLogger = require('../lib/logError')
 const realmEyeScrape = require('../realmEyeScrape')
 const charList = require('./characterList')
+const lootInfo = require('../lootInfo.json')
 
 var watching = []
 var embedMessage, bot
@@ -11,12 +12,14 @@ const dungeons = {
     '708026927721480254': {
         realmeyestring: null,
         dbnames: ['o3runs'],
-        dbisvet: 'isVet'
+        dbisvet: 'iso3Vet',
+        lootInfo: 'o3'
     },
     '343704644712923138': {
         realmeyestring: ['Voids completed'],
         dbnames: ['voidRuns'],
-        dbisvet: 'iso3Vet'
+        dbisvet: 'isVet',
+        lootInfo: 'halls'
     }
 }
 
@@ -116,29 +119,29 @@ module.exports = {
             let t14Weapons = 0;
             let t14Armors = 0;
             let STs = 0;
-            for (let i in userInfo.characters) {
+            if (dungeons[guild.id].lootInfo && lootInfo[dungeons[guild.id].lootInfo]) for (let i in userInfo.characters) {
                 let char = userInfo.characters[i]
                 //weapon
                 if (char.weapon) {
                     if (char.weapon.includes('T14')) t14Weapons++;
-                    else if (botSettings.lootInfo.whites.includes(char.weapon.substring(0, char.weapon.lastIndexOf(' ')))) whites++;
-                    else if (botSettings.lootInfo.STs.includes(char.weapon.substring(0, char.weapon.lastIndexOf(' ')))) STs++;
+                    else if (lootInfo[dungeons[guild.id].lootInfo].whites.includes(char.weapon.substring(0, char.weapon.lastIndexOf(' ')))) whites++;
+                    else if (lootInfo[dungeons[guild.id].lootInfo].STs.includes(char.weapon.substring(0, char.weapon.lastIndexOf(' ')))) STs++;
                 }
                 //ability
                 if (char.ability) {
-                    if (botSettings.lootInfo.whites.includes(char.ability.substring(0, char.ability.lastIndexOf(' ')))) whites++;
-                    else if (botSettings.lootInfo.STs.includes(char.ability.substring(0, char.ability.lastIndexOf(' ')))) STs++;
+                    if (lootInfo[dungeons[guild.id].lootInfo].whites.includes(char.ability.substring(0, char.ability.lastIndexOf(' ')))) whites++;
+                    else if (lootInfo[dungeons[guild.id].lootInfo].STs.includes(char.ability.substring(0, char.ability.lastIndexOf(' ')))) STs++;
                 }
                 //armor
                 if (char.armor) {
                     if (char.armor.includes('T14')) t14Armors++;
-                    else if (botSettings.lootInfo.whites.includes(char.armor.substring(0, char.armor.lastIndexOf(' ')))) whites++;
-                    else if (botSettings.lootInfo.STs.includes(char.armor.substring(0, char.armor.lastIndexOf(' ')))) STs++;
+                    else if (lootInfo[dungeons[guild.id].lootInfo].whites.includes(char.armor.substring(0, char.armor.lastIndexOf(' ')))) whites++;
+                    else if (lootInfo[dungeons[guild.id].lootInfo].STs.includes(char.armor.substring(0, char.armor.lastIndexOf(' ')))) STs++;
                 }
                 //ring
                 if (char.ring) {
-                    if (botSettings.lootInfo.whites.includes(char.ring.substring(0, char.ring.lastIndexOf(' ')))) whites++;
-                    else if (botSettings.lootInfo.STs.includes(char.ring.substring(0, char.ring.lastIndexOf(' ')))) STs++;
+                    if (lootInfo[dungeons[guild.id].lootInfo].whites.includes(char.ring.substring(0, char.ring.lastIndexOf(' ')))) whites++;
+                    else if (lootInfo[dungeons[guild.id].lootInfo].STs.includes(char.ring.substring(0, char.ring.lastIndexOf(' ')))) STs++;
                 }
 
             }
@@ -148,7 +151,7 @@ module.exports = {
                 .addField('Bot-Logged Runs:', `${loggedRuns}`)
                 .addField('Realmeye Logged Runs:', `${realmEyeRuns}`)
                 .addField('Maxed Characters:', `Total: ${maxedChars} | Melee: ${meleeMaxed}`)
-                .addField('Halls Gear:', `Whites: ${whites} | T14 Weapons: ${t14Weapons} | T14 Armors: ${t14Armors} | STs: ${STs}`)
+                .addField('Dungeon Specific Gear:', `Whites: ${whites} | T14 Weapons: ${t14Weapons} | T14 Armors: ${t14Armors} | STs: ${STs}`)
                 .addField('Problems:', ' ')
                 .setFooter(u.id)
                 .setTimestamp()

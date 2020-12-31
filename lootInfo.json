@@ -1,0 +1,55 @@
+{
+    "o3": {
+        "whites": [
+            "Divinity",
+            "Oryx's Escutcheon",
+            "Gladiator Guard",
+            "Exalted God's Horn",
+            "Superior",
+            "Chancellor's Cranium",
+            "Genesis Spell",
+            "Diplomatic Robe",
+            "Avarice",
+            "Gambler's Fate",
+            "Collector's Monocle",
+            "Turncoat Cape",
+            "Lumiaire",
+            "Divine Coronation",
+            "Chaotic Scripture",
+            "Vesture of Duality",
+            "Enforcer",
+            "Ballistic Star",
+            "Centaur's Shielding",
+            "Battalion Banner"
+        ],
+        "STs": [
+            "Heavenly Halo",
+            "Harmonious Harp",
+            "Angel's Fanfare",
+            "Wings of Sanctity"
+        ]
+    },
+    "halls": {
+        "whites": [
+            "Sword of the Colossus",
+            "Marble Seal",
+            "Breastplate of New Life",
+            "Magical Lodestone",
+            "Bow of the Void",
+            "Quiver of the Shadows",
+            "Armor of Nil",
+            "Sourcestone",
+            "Staff of Unholy Sacrifice",
+            "Skull of Corrupted Souls",
+            "Ritual Robe",
+            "Bloodshed Ring",
+            "Omnipotence Ring"
+        ],
+        "STs": [
+            "Carved Golem Remains",
+            "Brain of the Golem",
+            "Golem Garments",
+            "Rusty Cuffs"
+        ]
+    }
+}

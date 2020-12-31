@@ -518,17 +518,20 @@ module.exports = {
             //check to see if they are in other servers   
             let emojiServers = require('../emojiServers.json')
             let nicks = []
+            let suspended = false
             await bot.guilds.cache.each(async g => {
                 if (emojiServers.includes(g.id)) return
                 let member = await g.members.cache.get(u.id)
                 if (member && member.nickname) {
+                    let suspendedRole = member.roles.cache.filter(r => r.name.toLowerCase().includes('suspend'))
+                    if (suspendedRole) return suspended = true
                     let nick = member.nickname.replace(/[^a-z|]/gi, '').split('|')
                     for (let i of nick) nicks.push(i)
                 }
             })
+            if (suspended) return res(false)
             if (nicks.length <= 0) return res(false)
             let uniqueNames = [... new Set(nicks)]
-            console.log(uniqueNames)
 
             //ask which nick is their main
             let embed = new Discord.MessageEmbed()

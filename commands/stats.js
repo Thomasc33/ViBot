@@ -1,5 +1,6 @@
 const Discord = require('discord.js')
 const botSettings = require('../settings.json')
+const axios = require('axios')
 module.exports = {
     name: 'stats',
     description: 'Gives users stats',
@@ -37,11 +38,39 @@ module.exports = {
     },
     async getStatsEmbed(id, guild, db) {
         return new Promise((resolve, reject) => {
-            db.query(`SELECT * FROM users WHERE id = '${id}'`, (err, rows) => {
+            db.query(`SELECT * FROM users WHERE id = '${id}'`, async (err, rows) => {
                 if (err) return reject()
                 if (rows.length == 0) return reject('No user found');
                 let guildMember = guild.members.cache.get(id)
                 let embed = new Discord.MessageEmbed()
+                if (guild.id == '708026927721480254') {
+                    await this.updateO3Runs(id, guild, db)
+                    embed.setColor('#015c21')
+                        .setDescription(`<${botSettings.emote.o3}> __**Stats for**__ <@!${id}> <${botSettings.emote.o3}>
+                    *This includes stats from Pub Halls*
+
+                    🔑 __**Keys Popped**__ 🔑
+                    Halls: ${rows[0].keypops}
+                    Other: ${rows[0].eventpops}
+                    
+                    <${botSettings.emote.o3}>__**Runs Done**__<${botSettings.emote.o3}>
+                    Cult: ${rows[0].cultRuns}
+                    Void: ${rows[0].voidRuns}
+                    Oryx Three: ${rows[0].o3runs}
+                    
+                    <${botSettings.emote.o3}>__**Runs Led**__<${botSettings.emote.o3}>
+                    Oryx Three: ${rows[0].cultsLead}
+                    Realm Clearing: ${rows[0].o3leads}
+                    Assists: ${rows[0].assists}
+                    Oryx Assists: ${rows[0].assistso3}
+
+                    <${botSettings.emote.HelmRune}>__**Runes**__<${botSettings.emote.SwordRune}>
+                    Runes Popped: ${rows[0].runesused} 
+                    
+                    🎟️__**Points**__🎟️
+                    Points: ${rows[0].points}`)
+                }
+                else embed
                     .setColor('#015c21')
                     .setDescription(`<${botSettings.emote.hallsPortal}> __**Stats for**__ <@!${id}> <${botSettings.emote.hallsPortal}>
                     
@@ -70,6 +99,17 @@ module.exports = {
                     Points: ${rows[0].points}`)
                 if (guildMember) embed.setThumbnail(guildMember.user.avatarURL())
                 resolve(embed)
+            })
+        })
+    },
+    async updateO3Runs(id, guild, db) {
+        return new Promise(async (res, rej) => {
+            let ign = guild.members.cache.get(id).nickname.replace(/[^a-z|]/gi, '').split('|')[0]
+            if (!ign) return res();
+            let resu = await axios.post(`https://api.losthalls.org/getProfile`, { ign: ign })
+            if (!resu || resu.data.satus == 203 || !resu.data.profile.oryx3.participation.completions) return res();
+            db.query(`UPDATE users SET o3runs = ${resu.data.profile.oryx3.participation.completions} WHERE id = '${id}'`, (err, rows) => {
+                return res();
             })
         })
     }
