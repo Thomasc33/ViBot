@@ -98,13 +98,13 @@ module.exports = {
                 for (let i of rows) {
                     let runTot = 0
                     for (let j of info.runs) runTot += parseInt(i[j])
+                    runs += runTot
                     for (let j of info.assists) runTot += parseInt(i[j]) / 2
                     let string = `**[${index + 1}]** <@!${i.id}>:\nRaids: \`${runTot}\` (`
                     for (let j of info.runs) string += `${j.replace('currentweek', '')}: ${i[j]}, `
                     for (let j of info.assists) string += `${j.replace('currentweek', '')}: ${i[j]}, `
                     string = string.substring(0, string.length - 2)
                     string += ')'
-                    runs += runTot
                     fitStringIntoEmbed(embed, string)
                     logged.push(i.id)
                     index++;
