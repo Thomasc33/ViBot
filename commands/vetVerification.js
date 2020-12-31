@@ -7,6 +7,19 @@ const charList = require('./characterList')
 var watching = []
 var embedMessage, bot
 
+const dungeons = {
+    '708026927721480254': {
+        realmeyestring: null,
+        dbnames: ['o3runs'],
+        dbisvet: 'isVet'
+    },
+    '343704644712923138': {
+        realmeyestring: ['Voids completed'],
+        dbnames: ['voidRuns'],
+        dbisvet: 'iso3Vet'
+    }
+}
+
 module.exports = {
     name: 'vetverification',
     role: 'moderator',
@@ -56,14 +69,14 @@ module.exports = {
         let ign = member.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|')[0]
         if (!member) return;
         if (watching.includes(u.id)) return
-        if (member.roles.cache.has(vetRaider)) return;
+        if (member.roles.cache.has(vetRaider)) return
         let loggedRuns = 0
         let isVet = false
         db.query(`SELECT * FROM users WHERE id = '${u.id}'`, (err, rows) => {
             if (err) ErrorLogger.log(err, bot)
             if (rows.length == 0) return
-            loggedRuns += parseInt(rows[0].voidRuns)
-            isVet = rows[0].isVet
+            if (dungeons[guild.id] && dungeons[guild.id].dbnames) for (let i of dungeons[guild.id].dbnames) if (rows[0][i]) loggedRuns += parseInt(rows[0][i])
+            if (dungeons[guild.id] && dungeons[guild.id].dbisvet) isVet = rows[0][dbisvet]
         })
         if (isVet) return member.roles.add(vetRaider)
         let userInfo = await realmEyeScrape.getUserInfo(ign)
@@ -75,17 +88,17 @@ module.exports = {
                 let char = userInfo.characters[i]
                 if (char.stats == '8/8') {
                     maxedChars += 1;
-                    if (char.class == 'Warrior' || char.class == 'Knight' || char.class == 'Paladin') {
-                        meleeMaxed += 1;
-                    }
+                    if (char.class == 'Warrior' || char.class == 'Knight' || char.class == 'Paladin') meleeMaxed += 1;
                 }
             }
         }
-        let graveyard = await realmEyeScrape.getGraveyardSummary(ign)
-        for (let i in graveyard.achievements) {
-            let achievement = graveyard.achievements[i]
-            if (achievement.type == 'Voids completed') {
-                realmEyeRuns += parseInt(achievement.total)
+        if (dungeons[guild.id] && dungeons[guild.id].realmeyestring) {
+            let graveyard = await realmEyeScrape.getGraveyardSummary(ign)
+            for (let i in graveyard.achievements) {
+                let achievement = graveyard.achievements[i]
+                if (dungeons[guild].realmeyestring.includes(achievement.type)) {
+                    realmEyeRuns += parseInt(achievement.total)
+                }
             }
         }
         let problems = []
@@ -96,7 +109,7 @@ module.exports = {
             //vet verify
             veriLog.send(`${member} (${member} has been given the Veteran Raider role automatically)`)
             await member.roles.add(vetRaider)
-            db.query(`UPDATE users SET voidsLead = true WHERE id = '${u.id}'`)
+            db.query(`UPDATE users SET isVet = true WHERE id = '${u.id}'`)
         } else {
             //manual verify
             let whites = 0;

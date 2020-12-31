@@ -6,6 +6,7 @@ const channels = ['modmail', 'verification', 'manualverification', 'vetverificat
     'viallog', 'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel', 'raidstatus', 'eventstatus',
     'vetstatus', 'raidcommands', 'eventcommands', 'vetcommands', 'raidingchannels', 'eventchannels', 'vetchannels', 'runlogs', 'dmcommands', 'veriactive', 'pointlogging', 'veriattempts',
     'modmailinfo', 'parsecurrentweek', 'pastparseweeks', 'roleassignment']
+const categories = ['raiding', 'veteran', 'event']
 const voice = ['raidingtemplate', 'eventtemplate', 'vettemplate', 'veteventtemplate', 'lounge', 'vetlounge', 'eventlounge', 'afk']
 const voiceprefixes = ['raidingprefix', 'vetprefix']
 const backend = ['modmail', 'currentweek', 'eventcurrentweek', 'parsecurrentweek', 'verification', 'vetverification', 'points', 'supporter', 'roleassignment', 'realmeyestats']
@@ -16,7 +17,7 @@ const vetverireqs = ['maxed', 'meleemaxed', 'runs']
 const points = ['earlylocation', 'perrun', 'nitromultiplier', 'keypop', 'vialpop', 'rushing', 'brain', 'mystic', 'eventkey', 'cultlocation', 'voidlocation', 'fsvlocation']
 var commands = []
 
-const menus = ['roles', 'channels', 'voice', 'voiceprefixes', 'backend', 'numerical', 'runreqs', 'autoveri', 'vetverireqs', 'points', 'commands']
+const menus = ['roles', 'channels', 'voice', 'voiceprefixes', 'backend', 'numerical', 'runreqs', 'autoveri', 'vetverireqs', 'points', 'commands', 'categories']
 
 module.exports = {
     name: 'setup',
@@ -29,7 +30,7 @@ module.exports = {
                 .setTitle('Setup')
                 .setColor('#54d1c2')
                 .setFooter(`Type 'cancel' to stop`)
-                .setDescription(`\`\`\`Please select what you wish to edit:\n1: roles\n2: channels\n3: voice\n4: voiceprefixes\n5: backend\n6: numerical\n7: runreqs\n8: autoveri\n9: vetverireqs\n10: points\n11: commands\`\`\``)
+                .setDescription(`\`\`\`Please select what you wish to edit:\n1: roles\n2: channels\n3: voice\n4: voiceprefixes\n5: backend\n6: numerical\n7: runreqs\n8: autoveri\n9: vetverireqs\n10: points\n11: commands\n12: categories\`\`\``)
             let setupMessage = await message.channel.send(setupEmbed)
             let mainMenu = new Discord.MessageCollector(message.channel, m => m.author.id == message.author.id)
             mainMenu.on('collect', async m => {
@@ -54,6 +55,7 @@ module.exports = {
                         case '9': menu(vetverireqs, 'vetverireqs', 'int'); break;
                         case '10': menu(points, 'points', 'int'); break;
                         case '11': menu(commands, 'commands', 'boolean'); break;
+                        case '12': menu(categories, 'categories', 'string'); break;
                     }
                 }
                 async function menu(array, arrayName, type) {
@@ -139,7 +141,8 @@ module.exports = {
                 autoveri: {},
                 vetverireqs: {},
                 points: {},
-                commands: {}
+                commands: {},
+                categories: {}
             }
         }
         for (let i of menus) {
@@ -212,6 +215,9 @@ module.exports = {
         }
         for (let i of commands) {
             if (!bot.settings[guild.id].commands[i]) bot.settings[guild.id].commands[i] = true
+        }
+        for (let i of categories) {
+            if (!bot.settings[guild.id].categories[i]) bot.settings[guild.id].categories[i] = getDefaultCategoryName(i)
         }
         fs.writeFileSync('./guildSettings.json', JSON.stringify(bot.settings, null, 4), err => message.channel.send(err))
     }
@@ -365,5 +371,13 @@ function getDefaultPointValue(name) {
         case 'cultlocation': return 20;
         case 'voidlocation': return 25;
         case 'fsvlocation': return 30;
+    }
+}
+
+function getDefaultCategoryName(name) {
+    switch (name) {
+        case 'raiding': return 'raiding';
+        case 'veteran': return 'veteran raiding'
+        case 'event': return 'events'
     }
 }
