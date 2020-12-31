@@ -91,7 +91,7 @@ module.exports = {
                         aTot += a[i] / 2
                         bTot += b[i] / 2
                     }
-                    (aTot < bTot) ? 1 : -1
+                    return (aTot < bTot) ? 1 : -1
                 })
                 let index = 0
                 let embeds = []
