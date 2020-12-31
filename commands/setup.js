@@ -185,25 +185,25 @@ module.exports = {
         }
         for (let i in numerical) {
             let n = numerical[i]
-            if (!bot.settings[guild.id].numerical[n]) {
+            if (!bot.settings[guild.id].numerical[n] && bot.settings[guild.id].numerical[n] != 0) {
                 bot.settings[guild.id].numerical[n] = getDefaultNumericalValue(n)
             }
         }
         for (let i in runreqs) {
             let r = runreqs[i]
-            if (!bot.settings[guild.id].runreqs[r]) {
+            if (!bot.settings[guild.id].runreqs[r] && bot.settings[guild.id].runreqs[r] != 0) {
                 bot.settings[guild.id].runreqs[r] = getDefaultRunReqs(r)
             }
         }
         for (let i in autoveri) {
             let r = autoveri[i]
-            if (!bot.settings[guild.id].autoveri[r]) {
+            if (!bot.settings[guild.id].autoveri[r] && bot.settings[guild.id].autoveri[r] != 0) {
                 bot.settings[guild.id].autoveri[r] = getDefaultAutoVeriReqs(r)
             }
         }
         for (let i in vetverireqs) {
             let r = vetverireqs[i]
-            if (!bot.settings[guild.id].vetverireqs[r]) {
+            if (!bot.settings[guild.id].vetverireqs[r] && bot.settings[guild.id].vetverireqs[r] != 0) {
                 bot.settings[guild.id].vetverireqs[r] = getDefaultVetReqs(r)
             }
         }
