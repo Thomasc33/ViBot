@@ -76,7 +76,7 @@ module.exports = {
             if (err) ErrorLogger.log(err, bot)
             if (rows.length == 0) return
             if (dungeons[guild.id] && dungeons[guild.id].dbnames) for (let i of dungeons[guild.id].dbnames) if (rows[0][i]) loggedRuns += parseInt(rows[0][i])
-            if (dungeons[guild.id] && dungeons[guild.id].dbisvet) isVet = rows[0][dbisvet]
+            if (dungeons[guild.id] && dungeons[guild.id].dbisvet) isVet = rows[0][dungeons[guild.id].dbisvet]
         })
         if (isVet) return member.roles.add(vetRaider)
         let userInfo = await realmEyeScrape.getUserInfo(ign)
