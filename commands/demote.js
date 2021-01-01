@@ -11,14 +11,9 @@ module.exports = {
         if (!member) member = message.guild.members.cache.get(args[0])
         if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
         if (!member) return message.channel.send('User not found')
-
-        for (let i of promoTypes) {
-            if (i.key == promoType) {
-                await member.roles.remove(settings.roles.lol)
-                    .then(member.roles.remove(settings.roles.eventrl))
-                    .catch(er => { })
-                await message.react('✅')
-            }
-        }
+        await member.roles.remove(settings.roles.lol)
+            .then(member.roles.remove(settings.roles.eventrl))
+            .catch(er => { })
+        await message.react('✅')
     }
 }
