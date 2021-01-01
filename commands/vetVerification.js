@@ -99,7 +99,7 @@ module.exports = {
             let graveyard = await realmEyeScrape.getGraveyardSummary(ign)
             for (let i in graveyard.achievements) {
                 let achievement = graveyard.achievements[i]
-                if (dungeons[guild].realmeyestring.includes(achievement.type)) {
+                if (dungeons[guild.id].realmeyestring.includes(achievement.type)) {
                     realmEyeRuns += parseInt(achievement.total)
                 }
             }
