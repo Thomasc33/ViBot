@@ -14,7 +14,7 @@ const numerical = ['afktime', 'eventafktime', 'nitrocount', 'nitrocooldown', 'to
 const runreqs = ['weapon', 'ability', 'armor', 'ring']
 const autoveri = ['fame', 'stars', 'realmage', 'discordage', 'deathcount']
 const vetverireqs = ['maxed', 'meleemaxed', 'runs']
-const points = ['earlylocation', 'perrun', 'nitromultiplier', 'keypop', 'vialpop', 'rushing', 'brain', 'mystic', 'eventkey', 'cultlocation', 'voidlocation', 'fsvlocation']
+const points = ['earlylocation', 'perrun', 'nitromultiplier', 'keypop', 'vialpop', 'rushing', 'brain', 'mystic', 'eventkey', 'cultlocation', 'voidlocation', 'fsvlocation', 'o3streaming', 'o3trickster', 'o3puri']
 var commands = []
 
 const menus = ['roles', 'channels', 'voice', 'voiceprefixes', 'backend', 'numerical', 'runreqs', 'autoveri', 'vetverireqs', 'points', 'commands', 'categories']
@@ -371,6 +371,9 @@ function getDefaultPointValue(name) {
         case 'cultlocation': return 20;
         case 'voidlocation': return 25;
         case 'fsvlocation': return 30;
+        case 'o3streaming': return 5;
+        case 'o3trickster': return 3;
+        case 'o3puri': return 3;
     }
 }
 
