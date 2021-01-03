@@ -50,10 +50,14 @@ module.exports = {
     },
     async newWeek(guild, bot, db) {
         let settings = bot.settings[guild.id]
+        let dungeon
+        for (let i of tables) if (i.id == guild.id) dungeon = i;
+        if (!dungeon) return
         let leaderLog = guild.channels.cache.get(settings.channels.pastweeks)
         if (!leaderLog) return console.log('Channel not found');
         await this.sendEmbed(leaderLog, db, bot)
-        await db.query(`UPDATE users SET currentweekCult = 0, currentweekVoid = 0, currentweekAssists = 0`)
+        let q = `UPDATE users SET ${dungeon.runs.map(t => `${t} = 0, `)}${dungeon.assists.map(t => `${t} = 0, `)}`
+        await db.query(q.substring(0, q.length - 2))
         this.update(guild, db, bot)
     },
     async update(guild, db, bot) {
