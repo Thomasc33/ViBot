@@ -3,6 +3,7 @@ const Discord = require('discord.js')
 const cron = require('cron')
 const mysql = require('mysql')
 const botSettings = require('./settings.json')
+const token = require('./botKey.json')
 const prefix = botSettings.prefix
 const bot = new Discord.Client()
 bot.commands = new Discord.Collection()
@@ -151,7 +152,7 @@ async function autoMod(message) {
     }
 }
 
-bot.login(botSettings.key);
+bot.login(token.key);
 
 var db = mysql.createConnection(botSettings.dbInfo)
 var tokenDB = mysql.createConnection(botSettings.tokenDBInfo)

@@ -135,7 +135,10 @@
             "eventkey": 2,
             "cultlocation": 20,
             "voidlocation": 25,
-            "fsvlocation": 30
+            "fsvlocation": 30,
+            "o3streaming": 5,
+            "o3trickster": 3,
+            "o3puri": 3
         },
         "commands": {
             "addalt": true,
@@ -238,7 +241,15 @@
             "vote": true,
             "warn": true,
             "warnremove": true,
-            "warns": true
+            "warns": true,
+            "addpoints": true,
+            "demote": true,
+            "undefined": true
+        },
+        "categories": {
+            "raiding": "raiding",
+            "veteran": "veteran raiding",
+            "event": "events"
         }
     },
     "343704644712923138": {

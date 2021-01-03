@@ -1,5 +1,4 @@
 {
-    "key": "NzAxMTk2NTI5NTE5Njg5Nzkw.XuL0jA.G7WH6qH2cVnurSHABDjy2dnac1s",
     "prefix": ";",
     "prodBotId": "589996847083290629",
     "botId": "701196529519689790",
@@ -22,35 +21,6 @@
         "user": "DevComputer",
         "password": "Poiewq20021313$",
         "database": "supporters"
-    },
-    "proxy": {
-        "host": "46.166.186.197",
-        "port": 1080,
-        "user": "x0012017",
-        "password": "mzMNRu2t9B"
-    },
-    "lootInfo": {
-        "whites": [
-            "Sword of the Colossus",
-            "Marble Seal",
-            "Breastplate of New Life",
-            "Magical Lodestone",
-            "Bow of the Void",
-            "Quiver of the Shadows",
-            "Armor of Nil",
-            "Sourcestone",
-            "Staff of Unholy Sacrifice",
-            "Skull of Corrupted Souls",
-            "Ritual Robe",
-            "Bloodshed Ring",
-            "Omnipotence Ring"
-        ],
-        "STs": [
-            "Carved Golem Remains",
-            "Brain of the Golem",
-            "Golem Garments",
-            "Rusty Cuffs"
-        ]
     },
     "emote": {
         "Warrior": ":Warrior:701491230395072522",
@@ -80,7 +50,8 @@
         "switch2": ":switch2:723018852853612614",
         "switchS": ":switchS:723018852929372270",
         "trickster": ":trickster:723018431275728918",
-        "hallsPortal": ":hallsPortal:716763303480786968"
+        "hallsPortal": ":hallsPortal:716763303480786968",
+        "o3": ":oryxThree:708043327706103858"
     },
     "emoteIDs": {
         "Warrior": "701491230395072522",

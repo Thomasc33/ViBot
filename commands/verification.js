@@ -518,18 +518,19 @@ module.exports = {
             //check to see if they are in other servers   
             let emojiServers = require('../emojiServers.json')
             let nicks = []
-            let suspended = false
             await bot.guilds.cache.each(async g => {
                 if (emojiServers.includes(g.id)) return
                 let member = await g.members.cache.get(u.id)
                 let settings = bot.settings[g.id]
-                if(!settings) return
+                if (!settings) return
                 if (member && member.nickname && member.roles.cache.has(settings.roles.raider)) {
                     let nick = member.nickname.replace(/[^a-z|]/gi, '').split('|')
-                    for (let i of nick) nicks.push(i)
+                    for (let i of nick) {
+                        if (guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(i.toLowerCase()))) continue;
+                        nicks.push(i)
+                    }
                 }
             })
-            if (suspended) return res(false)
             if (nicks.length <= 0) return res(false)
             let uniqueNames = [... new Set(nicks)]
 

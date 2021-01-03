@@ -88,13 +88,16 @@ module.exports = {
         }
         if (message.mentions.users && args[0].toLowerCase().charAt(0) !== 'e') {
             desc = desc.concat(`\n`)
+            let assistName = 'assists', weeklyAssistName = 'currentweekAssists';
+            if (args[0].toLowerCase().charAt(0) !== 'o') { assistName = 'assistso3'; weeklyAssistName = 'currentweekAssistso3' }
             message.mentions.members.each(u => {
                 if (u.id !== message.author.id) {
                     desc = desc + `${message.guild.members.cache.get(u.id)} `
                     db.query(`SELECT * FROM users WHERE id = '${u.id}'`, (err, rows) => {
                         if (err) throw err;
-                        db.query(`UPDATE users SET assists = ${parseInt(rows[0].assists) + parseInt(count)}, currentweekAssists = ${parseInt(rows[0].currentweekAssists) + parseInt(count)} WHERE id = '${u.id}'`)
-                        message.channel.send(`Run logged for ${u.nickname}. Current week: ${parseInt(rows[0].currentweekCult)} cult, ${parseInt(rows[0].currentweekVoid)} void, and ${parseInt(rows[0].currentweekAssists) + parseInt(count)} assists`)
+                        db.query(`UPDATE users SET ${assistName} = ${parseInt(rows[0][assistName]) + parseInt(count)}, ${weeklyAssistName} = ${parseInt(rows[0][weeklyAssistName]) + parseInt(count)} WHERE id = '${u.id}'`)
+                        if (args[0].toLowerCase().charAt(0) !== 'o') message.channel.send(`Run logged for ${u.nickname}. Current week: ${parseInt(rows[0].currentweeko3)} o3, ${parseInt(rows[0][weeklyAssistName]) + parseInt(count)} assists`)
+                        else message.channel.send(`Run logged for ${u.nickname}. Current week: ${parseInt(rows[0].currentweekCult)} cult, ${parseInt(rows[0].currentweekVoid)} void, and ${parseInt(rows[0][weeklyAssistName]) + parseInt(count)} assists`)
                     })
                 }
             })
