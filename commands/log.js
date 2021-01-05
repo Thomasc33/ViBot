@@ -1,6 +1,7 @@
 const Discord = require('discord.js')
 const CurrentWeek = require('./currentWeek')
 const eCurrentWeek = require('./eventCurrentWeek')
+const pCurrentWeek = require('./parseCurrentWeek')
 
 module.exports = {
     name: 'log',
@@ -117,6 +118,7 @@ module.exports = {
             message.guild.channels.cache.get(settings.channels.leadinglog).send(embed)
             if (settings.backend.currentweek) CurrentWeek.update(message.guild, db, bot)
             if (settings.backend.eventcurrentweek) eCurrentWeek.update(message.guild, db, bot)
+            if (settings.backend.parsecurrentweek) pCurrentWeek.update(message.guild, db, bot)
         }
     }
 }

@@ -19,6 +19,7 @@ module.exports = {
     name: 'parsecurrentweek',
     description: 'Updates the parse current week stats or force starts the next week',
     role: 'developer',
+    tables: tables,
     async execute(message, args, bot, db) {
         if (args.length == 0) {
             this.sendEmbed(message.channel, db, bot)
