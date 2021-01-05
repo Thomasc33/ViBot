@@ -46,6 +46,15 @@ module.exports = {
                 })
                 embed.setColor('#8c00ff')
                 desc = '`Oryx` Run'
+            } else if (args[0].toLowerCase().charAt(0) == 'p') {
+                db.query(`SELECT * FROM users WHERE id = '${message.author.id}'`, (err, rows) => {
+                    if (err) throw err;
+                    if (rows.length == 0) return message.channel.send('You are not logged in DB')
+                    db.query(`UPDATE users SET o3parses = ${parseInt(rows[0].o3parses) + parseInt(count)}, o3currentweekparses = ${parseInt(rows[0].o3currentweekparses) + parseInt(count)} WHERE id = '${message.author.id}'`)
+                    message.channel.send(`Parse logged for ${message.member.nickname}. Current week: ${parseInt(rows[0].o3currentweekparses) + parseInt(count)} parses`)
+                })
+                embed.setColor('#8c00ff')
+                desc = '`Oryx` Parse'
             }
             else if (args[0].toLowerCase().charAt(0) == 'e') {
                 let confirmEmbed = new Discord.MessageEmbed()
@@ -86,10 +95,10 @@ module.exports = {
             message.channel.send("Please specify a run type");
             return;
         }
-        if (message.mentions.users && args[0].toLowerCase().charAt(0) !== 'e') {
+        if (message.mentions.users && args[0].toLowerCase().charAt(0) !== 'e' || args[0].toLowerCase().charAt(0) !== 'p') {
             desc = desc.concat(`\n`)
             let assistName = 'assists', weeklyAssistName = 'currentweekAssists';
-            if (args[0].toLowerCase().charAt(0) !== 'o') { assistName = 'assistso3'; weeklyAssistName = 'currentweekAssistso3' }
+            if (args[0].toLowerCase().charAt(0) == 'o') { assistName = 'assistso3'; weeklyAssistName = 'currentweekAssistso3' }
             message.mentions.members.each(u => {
                 if (u.id !== message.author.id) {
                     desc = desc + `${message.guild.members.cache.get(u.id)} `

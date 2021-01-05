@@ -1,5 +1,20 @@
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
+
+const tables = [
+    {
+        id: '343704644712923138',
+        parsecurrentweek: 'currentweekparses',
+        parsetotal: 'o3parses'
+    },
+    {
+        id: '708026927721480254',
+        parsecurrentweek: 'o3currentweekparses',
+        parsetotal: 'o3parses'
+    }
+]
+
+
 module.exports = {
     name: 'parsecurrentweek',
     description: 'Updates the parse current week stats or force starts the next week',
@@ -21,9 +36,12 @@ module.exports = {
     async newWeek(guild, bot, db) {
         let settings = bot.settings[guild.id]
         let leaderLog = guild.channels.cache.get(settings.channels.pastparseweeks)
-        if (leaderLog == null) return ErrorLogger.log(new Error('parse previous week not found'), bot)
+        if (!leaderLog) return ErrorLogger.log(new Error('parse previous week not found'), bot)
+        let currentweekparsename
+        for (let i of tables) if (guild.id == i.id) currentweekparsename = i.parsecurrentweek
+        if (!currentweekparsename) return
         await this.sendEmbed(leaderLog, db, bot)
-        await db.query(`UPDATE users SET currentweekparses = 0`)
+        await db.query(`UPDATE users SET ${currentweekparsename} = 0`)
         this.update(guild, db, bot)
     },
     async update(guild, db, bot) {
@@ -34,8 +52,11 @@ module.exports = {
     },
     async sendEmbed(channel, db, bot) {
         let settings = bot.settings[channel.guild.id]
+        let currentweekparsename
+        for (let i of tables) if (channel.guild.id == i.id) currentweekparsename = i.parsecurrentweek
+        if (!currentweekparsename) return
         return new Promise(async function (resolve, reject) {
-            db.query(`SELECT * FROM users WHERE currentweekparses != 0`, async function (err, rows) {
+            db.query(`SELECT * FROM users WHERE ${currentweekparsename} != 0`, async function (err, rows) {
                 if (err) reject(err)
                 let logged = []
                 let parses = 0, nonSecParses = 0
@@ -43,15 +64,15 @@ module.exports = {
                     .setColor('#00ff00')
                     .setTitle('This weeks current logged parses!')
                     .setDescription('None!')
-                await rows.sort((a, b) => (parseInt(a.currentweekparses) < parseInt(b.currentweekparses)) ? 1 : -1)
+                await rows.sort((a, b) => (parseInt(a[currentweekparsename]) < parseInt(b[currentweekparsename])) ? 1 : -1)
                 let index = 0
                 let embeds = []
                 for (let i in rows) {
                     let member = channel.guild.members.cache.get(rows[i].id)
                     if (!member) continue
-                    if (!member.roles.cache.has(settings.roles.security) && !member.roles.cache.has(settings.roles.officer)) { nonSecParses += rows[i].currentweekparses; continue }
-                    let string = `**[${index + 1}]** <@!${rows[i].id}>:\nParses: \`${rows[i].currentweekparses}\``
-                    parses += rows[i].currentweekparses
+                    if (!member.roles.cache.has(settings.roles.security) && !member.roles.cache.has(settings.roles.officer)) { nonSecParses += rows[i][currentweekparsename]; continue }
+                    let string = `**[${index + 1}]** <@!${rows[i].id}>:\nParses: \`${rows[i][currentweekparsename]}\``
+                    parses += rows[i][currentweekparsename]
                     fitStringIntoEmbed(embed, string)
                     logged.push(rows[i].id)
                     index++;
