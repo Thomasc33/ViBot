@@ -105,7 +105,7 @@ module.exports = {
                     db.query(`SELECT * FROM users WHERE id = '${u.id}'`, (err, rows) => {
                         if (err) throw err;
                         db.query(`UPDATE users SET ${assistName} = ${parseInt(rows[0][assistName]) + parseInt(count)}, ${weeklyAssistName} = ${parseInt(rows[0][weeklyAssistName]) + parseInt(count)} WHERE id = '${u.id}'`)
-                        if (args[0].toLowerCase().charAt(0) !== 'o') message.channel.send(`Run logged for ${u.nickname}. Current week: ${parseInt(rows[0].currentweeko3)} o3, ${parseInt(rows[0][weeklyAssistName]) + parseInt(count)} assists`)
+                        if (args[0].toLowerCase().charAt(0) == 'o') message.channel.send(`Run logged for ${u.nickname}. Current week: ${parseInt(rows[0].currentweeko3)} o3, ${parseInt(rows[0][weeklyAssistName]) + parseInt(count)} assists`)
                         else message.channel.send(`Run logged for ${u.nickname}. Current week: ${parseInt(rows[0].currentweekCult)} cult, ${parseInt(rows[0].currentweekVoid)} void, and ${parseInt(rows[0][weeklyAssistName]) + parseInt(count)} assists`)
                     })
                 }
