@@ -272,10 +272,10 @@ module.exports = {
         parseStatusEmbed.fields[1].value = 'Parse Completed'
         await parseStatusMessage.edit(parseStatusEmbed)
 
-        let currentweekparsename
-        for (let i of tables) if (message.guild.id == i.id) currentweekparsename = i.parsecurrentweek
+        let currentweekparsename, parsetotalname
+        for (let i of ParseCurrentWeek.tables) if (message.guild.id == i.id) { currentweekparsename = i.parsecurrentweek; parsetotalname = i.parsetotal }
         if (!currentweekparsename) return
-        db.query(`UPDATE users SET parses = parses + 1, ${currentweekparsename} = ${currentweekparsename} + 1 WHERE id = '${message.author.id}'`)
+        db.query(`UPDATE users SET ${parsetotalname} = ${parsetotalname} + 1, ${currentweekparsename} = ${currentweekparsename} + 1 WHERE id = '${message.author.id}'`)
         ParseCurrentWeek.update(message.guild, db, bot)
     }
 }

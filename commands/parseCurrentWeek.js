@@ -5,7 +5,12 @@ const tables = [
     {
         id: '343704644712923138',
         parsecurrentweek: 'currentweekparses',
-        parsetotal: 'o3parses'
+        parsetotal: 'parses'
+    },
+    {
+        id: '701483950559985705',
+        parsecurrentweek: 'currentweekparses',
+        parsetotal: 'parses'
     },
     {
         id: '708026927721480254',
