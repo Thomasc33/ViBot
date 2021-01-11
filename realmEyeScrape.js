@@ -184,6 +184,90 @@ module.exports = {
                 }
             })
         })
-    }
+    },
+    getNameHistory(ign) {
+        return new Promise((resolve, reject) => {
+            let options = {
+                url: `https://www.realmeye.com/name-history-of-player/${ign}`,
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36'
+                }
+            }
+            request(options, function (err, resp, html) {
+                if (!html) return reject('No Body')
+                const $ = cheerio.load(html);
+                var ign = $('.col-md-12').find("h1").text()
+                if (ign == '') return reject('User not found')
+                //summary
+                try {
+                    let chars, skins, fame, exp, rank, acc_fame, guild, gRank, created, lastSeen
+                    let rows = $(".summary").find("tr")
+                    for (var i = 0; i < rows.length; i++) {
+                        try {
+                            let row = rows[i]
+                            var title = $(row).children("td:nth-child(1)").text();
+                            var text = $(row).children("td:nth-child(2)").text();
+                            switch (title) {
+                                case 'Characters':
+                                    chars = text
+                                case 'Skins':
+                                    skins = text.split(/ +/)[0];
+                                case 'Fame':
+                                    fame = text.split(/ +/)[0];
+                                case 'Exp':
+                                    exp = text.split(/ +/)[0];
+                                case 'Rank':
+                                    rank = text.split(/ +/)[0];
+                                case 'Account Fame':
+                                    acc_fame = text.split(/ +/)[0];
+                                case 'Guild':
+                                    guild = text;
+                                case 'Guild Rank':
+                                    gRank = text;
+                                case 'Created':
+                                    created = text;
+                                case 'First seen':
+                                    created = text
+                                case 'Last seen':
+                                    lastSeen = text;
+                                default:
+                                    continue;
+                            }
+                        } catch (er) { continue }
+                    }
+                    let desc = [$('.line1.description-line').text(), $('.line2.description-line').text(), $('.line3.description-line').text()]
 
+                    let pastNames = []
+                    try {
+                        let table = $("#f > tbody").toArray()
+                        if (table && table.length > 0) for (let i of table) {
+                            try {
+                                pastNames.push($(i).children('td:nth-child(0)').text().replace(/[0-9]/g, ''))
+                            } catch (er) { continue; }
+                        }
+                        else pastNames.push(ign)
+                    } catch (er) { return reject('Hidden name history') }
+
+                    let userInfo = {
+                        ign: ign,
+                        chars: chars,
+                        skins: skins,
+                        fame: fame,
+                        exp: exp,
+                        rank: rank,
+                        acc_fame: acc_fame,
+                        guild: guild,
+                        gRank: gRank,
+                        created: created,
+                        lastSeen: lastSeen,
+                        desc: desc,
+                        pastNames: pastNames
+                    }
+                    resolve(userInfo)
+                } catch (er) {
+                    return reject(`Privated Info`)
+                }
+            })
+        })
+    }
 }
