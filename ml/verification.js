@@ -1,6 +1,6 @@
 const tf = require('@tensorflow/tfjs-node')
 const fs = require('fs')
-const data = require('../verificationData.json')
+const data = require('../data/verificationData.json')
 const botSettings = require('../settings.json')
 
 function normalize(value, min, max) {

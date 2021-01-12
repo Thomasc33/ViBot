@@ -1,4 +1,4 @@
-const eventFile = require('../events.json')
+const eventFile = require('../data/events.json')
 const afkCheck = require('./afkCheck')
 const botSettings = require('../settings.json')
 

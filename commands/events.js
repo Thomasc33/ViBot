@@ -1,4 +1,4 @@
-const Events = require('../events.json')
+const Events = require('../data/events.json')
 const Discord = require('discord.js')
 
 module.exports = {

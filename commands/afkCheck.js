@@ -3,12 +3,12 @@ const botSettings = require('../settings.json')
 const Channels = require('./vibotChannels')
 const fs = require('fs')
 const ErrorLogger = require('../lib/logError')
-const realmEyeScrape = require('../realmEyeScrape');
+const realmEyeScrape = require('../lib/realmEyeScrape');
 const points = require('./points');
 const keyRoles = require('./keyRoles');
 const restart = require('./restart')
 const EventEmitter = require('events').EventEmitter
-const Events = require('../events.json')
+const Events = require('../data/events.json')
 const pointLogger = require('../lib/pointLogger')
 var emitter = new EventEmitter()
 
@@ -448,8 +448,8 @@ class afkCheck {
                  * @param {afkCheck} afk 
                  */
                 function sendLocation(afk) {
-					//check for full
-					 if(!checkType(afk)) return
+                    //check for full
+                    if (!checkType(afk)) return
                     //set into type
                     setType(afk)
                     function setType(afk) {

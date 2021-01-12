@@ -1,7 +1,7 @@
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
 const botSettings = require('../settings.json')
-const realmEyeScrape = require('../realmEyeScrape')
+const realmEyeScrape = require('../lib/realmEyeScrape')
 const VerificationML = require('../ml/verification')
 
 var verificationChannel
@@ -566,7 +566,7 @@ module.exports = {
     async reVerify(u, guild, bot, db) {
         return new Promise(async (res, rej) => {
             //check to see if they are in other servers   
-            let emojiServers = require('../emojiServers.json')
+            let emojiServers = require('../data/emojiServers.json')
             let nicks = []
             await bot.guilds.cache.each(async g => {
                 if (emojiServers.includes(g.id)) return

@@ -1,9 +1,9 @@
 const Discord = require('discord.js')
 const botSettings = require('../settings.json')
 const ErrorLogger = require('../lib/logError')
-const realmEyeScrape = require('../realmEyeScrape')
+const realmEyeScrape = require('../lib/realmEyeScrape')
 const charList = require('./characterList')
-const lootInfo = require('../lootInfo.json')
+const lootInfo = require('../data/lootInfo.json')
 
 var watching = []
 var embedMessage, bot

@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
 const botSettings = require('../settings.json');
 const ErrorLogger = require('../lib/logError')
-const eventFile = require('../events.json')
+const eventFile = require('../data/events.json')
 
 var bot
 module.exports = {

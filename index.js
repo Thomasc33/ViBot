@@ -7,9 +7,7 @@ const token = require('./botKey.json')
 const prefix = botSettings.prefix
 const bot = new Discord.Client()
 bot.commands = new Discord.Collection()
-bot.vetBans = require('./vetBans.json')
 bot.crasherList = require('./crasherList.json')
-bot.mutes = require('./mutes.json')
 bot.afkChecks = require('./afkChecks.json')
 bot.settings = require('./guildSettings.json')
 const ErrorLogger = require(`./lib/logError`)
@@ -25,7 +23,7 @@ const stats = require('./commands/stats')
 const modmail = require('./commands/modmail')
 const setup = require('./commands/setup')
 const restarting = require('./commands/restart')
-const emojiServers = require('./emojiServers.json')
+const emojiServers = require('./data/emojiServers.json')
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 const express = require('express')
 const https = require('https')
@@ -501,8 +499,8 @@ function fitStringIntoEmbed(embed, string, channel) {
 
 if (botSettings.api) {
     var credentials = {
-        key: fs.readFileSync('./privkey.pem', 'utf8'),
-        cert: fs.readFileSync('./cert.pem', 'utf8')
+        key: fs.readFileSync('./public/privkey.pem', 'utf8'),
+        cert: fs.readFileSync('./public/cert.pem', 'utf8')
     }
 
     app.use(bodyParser.urlencoded({ extended: true }));
@@ -648,9 +646,9 @@ if (botSettings.api) {
 
     app.get('/', (req, res) => {
         if (req.cookies.accessToken) {
-            res.status(200).sendFile(path.join(__dirname, 'index.html'))
+            res.status(200).sendFile(path.join(__dirname, 'public/index.html'))
         } else {
-            res.status(200).sendFile(path.join(__dirname, 'login.html'))
+            res.status(200).sendFile(path.join(__dirname, 'public/login.html'))
         }
     })
 
@@ -658,7 +656,7 @@ if (botSettings.api) {
         res.clearCookie('accessToken')
             .clearCookie('tokenType')
             .status(200)
-            .sendFile(path.join(__dirname, 'login.html'))
+            .sendFile(path.join(__dirname, 'public/login.html'))
     })
 
     app.use('/api', router)

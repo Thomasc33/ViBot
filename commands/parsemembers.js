@@ -1,8 +1,8 @@
 const Discord = require('discord.js');
 const ErrorLogger = require('../lib/logError')
 const vision = require('@google-cloud/vision');
-const realmEyeScrape = require('../realmEyeScrape');
-const charStats = require('../charStats.json')
+const realmEyeScrape = require('../lib/realmEyeScrape');
+const charStats = require('../data/charStats.json')
 const botSettings = require('../settings.json')
 const ParseCurrentWeek = require('./parseCurrentWeek')
 const client = new vision.ImageAnnotatorClient(botSettings.gcloudOptions);

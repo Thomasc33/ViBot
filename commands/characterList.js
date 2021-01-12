@@ -1,4 +1,4 @@
-const realmEyeScrape = require('../realmEyeScrape')
+const realmEyeScrape = require('../lib/realmEyeScrape')
 const Discord = require('discord.js')
 
 module.exports = {
