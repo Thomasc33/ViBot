@@ -82,12 +82,7 @@ else {
         loss: tf.losses.meanSquaredError
     })
 
-    train().then(async () => {
-        let predictions = model.predict(tf.tensor2d([[50, 1400, 500, 30, 6, 31]]))
-        predictions.print()
-        console.log('training complete')
-        console.log(predictions)
-    })
+    train().then(async () => {console.log('training complete')})
 }
 
 

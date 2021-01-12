@@ -10,6 +10,11 @@ var watching = []
 var active = []
 var embedMessage
 
+//data collection
+const fs = require('fs')
+const { data } = require('@tensorflow/tfjs-node')
+var autoVeris = []
+
 
 module.exports = {
     name: 'verification',
@@ -242,7 +247,7 @@ module.exports = {
             })
             if (!userInfo) return
             LoggingEmbed.setColor('#00ff00')
-            let found = false; 
+            let found = false;
             for (let i in userInfo.desc) {
                 if (userInfo.desc[i].includes(vericode)) found = true
             }
@@ -370,6 +375,32 @@ module.exports = {
             veriattempts.send(LoggingEmbed)
             activeMessage.delete()
             active.splice(active.indexOf(u.id), 1)
+
+            //data collection
+            let accountAgeValue = data.created
+            let accountAge
+            if (accountAgeValue.includes('year')) {
+                accountAge = parseInt(accountAgeValue.replace('~', '').replace('less than ', '').charAt(0)) * 365
+                let days = parseInt(accountAgeValue.substring(1, accountAgeValue.length).replace(/[^0-9]/gi, ''))
+                if (days !== NaN && days > 0 && days < 366) accountAge += days
+            } else if (accountAgeValue == '~ a day ago') {
+                accountAge = 1
+            } else if (accountAgeValue == 'hidden') console.log('bruh')
+            else {
+                let days = parseInt(accountAgeValue.substring(1, accountAgeValue.length).replace(/[^0-9]/gi, ''))
+                if (days !== NaN && days > 0 && days < 366) accountAge = days
+            }
+
+            autoVeris.push({
+                rank: data.rank,
+                fame: data.fame,
+                deaths: data.deaths[data.deaths.length - 1],
+                accountAge: accountAge,
+                characters: data.chars,
+                skins: data.skins,
+                verified: 1
+            })
+            fs.writeFileSync('./autoVeriData.json', JSON.stringify(autoVeris, null, 4), err => { if (err) console.log(err) })
         }
     },
     async manualVerifyUpdate(guild, bot, db) {
