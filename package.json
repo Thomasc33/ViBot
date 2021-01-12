@@ -5,6 +5,8 @@
   "main": "index.js",
   "dependencies": {
     "@google-cloud/vision": "^2.0.0",
+    "@tensorflow/tfjs-node": "^2.8.3",
+    "@tensorflow/tfjs-node-gpu": "^2.8.3",
     "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "btoa": "^1.2.1",
@@ -16,7 +18,6 @@
     "discord.js": "^12.2.0",
     "express": "^4.17.1",
     "express-rate-limit": "^5.1.3",
-    "mime": "^2.4.6",
     "mysql": "^2.18.1",
     "node-fetch": "^2.6.1",
     "path": "^0.12.7",

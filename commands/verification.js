@@ -2,6 +2,7 @@ const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
 const botSettings = require('../settings.json')
 const realmEyeScrape = require('../realmEyeScrape')
+const VerificationML = require('../ml/verification')
 
 var verificationChannel
 var verificationMessage
@@ -241,7 +242,7 @@ module.exports = {
             })
             if (!userInfo) return
             LoggingEmbed.setColor('#00ff00')
-            let found = false;
+            let found = false; 
             for (let i in userInfo.desc) {
                 if (userInfo.desc[i].includes(vericode)) found = true
             }
@@ -256,6 +257,11 @@ module.exports = {
                 //if code matches, check against requirements
                 LoggingEmbed.setColor(`#00ff00`)
                 let denyReason = [];
+
+                denyReason.push({
+                    reason: 'Bruh',
+                    stat: 'imagine being stupid'
+                })
                 //stars
                 if (parseInt(userInfo.rank) < settings.autoveri.stars) denyReason.push({
                     reason: 'Star Count',
@@ -299,6 +305,23 @@ module.exports = {
             active.splice(active.indexOf(u.id), 1)
             LoggingEmbed.setDescription(`<@!${u.id}> Attempted to verify, however, they had issues with their profile and are now under manual review`)
             veriattempts.send(LoggingEmbed)
+
+            let accountAgeValue = data.created
+            let accountAge
+            if (accountAgeValue.includes('year')) {
+                accountAge = parseInt(accountAgeValue.replace('~', '').replace('less than ', '').charAt(0)) * 365
+                let days = parseInt(accountAgeValue.substring(1, accountAgeValue.length).replace(/[^0-9]/gi, ''))
+                if (days !== NaN && days > 0 && days < 366) accountAge += days
+            } else if (accountAgeValue == '~ a day ago') {
+                accountAge = 1
+            } else if (accountAgeValue == 'hidden') console.log('bruh')
+            else {
+                let days = parseInt(accountAgeValue.substring(1, accountAgeValue.length).replace(/[^0-9]/gi, ''))
+                if (days !== NaN && days > 0 && days < 366) accountAge = days
+            }
+
+            let altDetectionScore
+            if (accountAge) altDetectionScore = await VerificationML.altDetection(data.rank, data.fame, data.deaths[data.deaths.length - 1], accountAge, data.chars, data.skins)
             let manualEmbed = new Discord.MessageEmbed()
                 .setAuthor(`${u.tag} is attempting to verify as: ${ign}`, u.avatarURL())
                 .setDescription(`<@!${u.id}> : [Realmeye Link](https://www.realmeye.com/player/${ign})`)
@@ -313,9 +336,10 @@ module.exports = {
                     { name: 'Last seen', value: `${data.player_last_seen}`, inline: true },
                     { name: 'Character Count', value: `${data.chars}`, inline: true },
                     { name: 'Skins', value: `${data.skins}`, inline: true },
+                    altDetectionScore ? { name: 'Main Account Probability', value: `${altDetectionScore * 100}%`, inline: true } : null,
                     { name: 'Discord account created', value: u.createdAt, inline: false },
                 )
-                .setFooter(u.id)
+                .setFooter(`${u.id}`)
             let reason = ''
             reasons.forEach(r => {
                 reason += `-${r.reason}`
