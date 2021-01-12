@@ -257,11 +257,6 @@ module.exports = {
                 //if code matches, check against requirements
                 LoggingEmbed.setColor(`#00ff00`)
                 let denyReason = [];
-
-                denyReason.push({
-                    reason: 'Bruh',
-                    stat: 'imagine being stupid'
-                })
                 //stars
                 if (parseInt(userInfo.rank) < settings.autoveri.stars) denyReason.push({
                     reason: 'Star Count',
