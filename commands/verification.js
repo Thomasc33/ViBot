@@ -282,7 +282,7 @@ module.exports = {
                     reason: 'Death Count',
                     stat: `${userInfo.deaths[userInfo.deaths.length - 1]}/${settings.autoveri.deathcount}`
                 })
-                if (denyReason.length == 0) autoVerify()
+                if (denyReason.length == 0) autoVerify(userInfo)
                 else manualVerify(denyReason, userInfo)
                 veriCodeReactionCollector.stop()
             }
@@ -350,7 +350,7 @@ module.exports = {
         }
 
         //autoverify
-        async function autoVerify() {
+        async function autoVerify(data) {
             let tag = member.user.tag.substring(0, member.user.tag.length - 5)
             let nick = ''
             if (tag == ign) {
@@ -373,6 +373,7 @@ module.exports = {
             active.splice(active.indexOf(u.id), 1)
 
             //data collection
+            if(!data) return
             let accountAgeValue = data.created
             let accountAge
             if (accountAgeValue.includes('year')) {
