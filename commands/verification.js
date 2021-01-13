@@ -3,6 +3,7 @@ const ErrorLogger = require('../lib/logError')
 const botSettings = require('../settings.json')
 const realmEyeScrape = require('../lib/realmEyeScrape')
 const VerificationML = require('../ml/verification')
+const TestAlt = require('./testAlt')
 
 var verificationChannel
 var verificationMessage
@@ -282,7 +283,7 @@ module.exports = {
                     reason: 'Death Count',
                     stat: `${userInfo.deaths[userInfo.deaths.length - 1]}/${settings.autoveri.deathcount}`
                 })
-                if (denyReason.length == 0) autoVerify(userInfo)
+                if (denyReason.length == 0) autoVerify()
                 else manualVerify(denyReason, userInfo)
                 veriCodeReactionCollector.stop()
             }
@@ -350,7 +351,7 @@ module.exports = {
         }
 
         //autoverify
-        async function autoVerify(data) {
+        async function autoVerify() {
             let tag = member.user.tag.substring(0, member.user.tag.length - 5)
             let nick = ''
             if (tag == ign) {
@@ -373,25 +374,7 @@ module.exports = {
             active.splice(active.indexOf(u.id), 1)
 
             //data collection
-            if(!data) return
-            let accountAgeValue = data.created
-            let accountAge
-            if (accountAgeValue.includes('year')) {
-                accountAge = parseInt(accountAgeValue.replace('~', '').replace('less than ', '').charAt(0)) * 365
-                let days = parseInt(accountAgeValue.substring(1, accountAgeValue.length).replace(/[^0-9]/gi, ''))
-                if (days !== NaN && days > 0 && days < 366) accountAge += days
-            } else if (accountAgeValue == '~ a day ago') {
-                accountAge = 1
-            } else if (accountAgeValue == 'hidden') console.log('bruh')
-            else {
-                let days = parseInt(accountAgeValue.substring(1, accountAgeValue.length).replace(/[^0-9]/gi, ''))
-                if (days !== NaN && days > 0 && days < 366) accountAge = days
-            }
-
-            let fameHistoryData = await realmEyeScrape.getFameHistory(ign)
-
-            if (accountAge && fameHistoryData.oneDay && fameHistoryData.oneWeek && fameHistoryData.lifeTime) await VerificationML.trainNewData(data.rank, data.fame, data.deaths[data.deaths.length - 1], accountAge, data.chars, data.skins, fameHistoryData.oneDay, fameHistoryData.oneWeek, fameHistoryData.lifeTime)
-
+            TestAlt.trainFromIGN(ign, 1)
         }
     },
     async manualVerifyUpdate(guild, bot, db) {
@@ -473,6 +456,9 @@ module.exports = {
                     watching.splice(watching.indexOf(u.id), 1)
                     //remove them from expelled list
                     db.query(`DELETE FROM veriblacklist WHERE id = '${member.id}' OR id = '${ign}'`)
+
+                    //train machine leaning model
+                    TestAlt.trainFromIGN(ign, 1)
                 }
                 //x
                 else if (r.emoji.name === '❌') {
@@ -548,6 +534,9 @@ module.exports = {
                             message.guild.channels.cache.get(settings.channels.verificationlog).send(denyEmbed)
                             //remove from watching embed
                             watching.splice(watching.indexOf(u.id), 1)
+
+                            //train from ign
+                            TestAlt.trainFromIGN(ign, 0)
                         }
                     })
                 }
