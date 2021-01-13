@@ -10,12 +10,6 @@ var watching = []
 var active = []
 var embedMessage
 
-//data collection
-const fs = require('fs')
-const { data } = require('@tensorflow/tfjs-node')
-var autoVeris = []
-
-
 module.exports = {
     name: 'verification',
     description: 'Verification Module',
@@ -320,8 +314,10 @@ module.exports = {
                 if (days !== NaN && days > 0 && days < 366) accountAge = days
             }
 
+            let fameHistoryData = await realmEyeScrape.getFameHistory(ign)
+
             let altDetectionScore
-            if (accountAge) altDetectionScore = await VerificationML.altDetection(data.rank, data.fame, data.deaths[data.deaths.length - 1], accountAge, data.chars, data.skins)
+            if (accountAge && fameHistoryData.oneDay && fameHistoryData.oneWeek && fameHistoryData.lifeTime) altDetectionScore = await VerificationML.altDetection(data.rank, data.fame, data.deaths[data.deaths.length - 1], accountAge, data.chars, data.skins, fameHistoryData.oneDay, fameHistoryData.oneWeek, fameHistoryData.lifeTime)
             let manualEmbed = new Discord.MessageEmbed()
                 .setAuthor(`${u.tag} is attempting to verify as: ${ign}`, u.avatarURL())
                 .setDescription(`<@!${u.id}> : [Realmeye Link](https://www.realmeye.com/player/${ign})`)
@@ -391,16 +387,10 @@ module.exports = {
                 if (days !== NaN && days > 0 && days < 366) accountAge = days
             }
 
-            autoVeris.push({
-                rank: data.rank,
-                fame: data.fame,
-                deaths: data.deaths[data.deaths.length - 1],
-                accountAge: accountAge,
-                characters: data.chars,
-                skins: data.skins,
-                verified: 1
-            })
-            fs.writeFileSync('./autoVeriData.json', JSON.stringify(autoVeris, null, 4), err => { if (err) console.log(err) })
+            let fameHistoryData = await realmEyeScrape.getFameHistory(ign)
+
+            if (accountAge && fameHistoryData.oneDay && fameHistoryData.oneWeek && fameHistoryData.lifeTime) await VerificationML.trainNewData(data.rank, data.fame, data.deaths[data.deaths.length - 1], accountAge, data.chars, data.skins, fameHistoryData.oneDay, fameHistoryData.oneWeek, fameHistoryData.lifeTime)
+
         }
     },
     async manualVerifyUpdate(guild, bot, db) {
