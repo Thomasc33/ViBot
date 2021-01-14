@@ -10,6 +10,7 @@ const restart = require('./restart')
 const EventEmitter = require('events').EventEmitter
 const Events = require('../data/events.json')
 const pointLogger = require('../lib/pointLogger')
+const patreonHelper = require('../lib/patreonHelper')
 var emitter = new EventEmitter()
 
 var runs = [] //{channel: id, afk: afk instance}
@@ -222,6 +223,7 @@ class afkCheck {
         this.earlyLocation = []
         this.raiders = []
         this.pointsUsers = []
+        this.supporters = []
         this.endedBy
         this.time = this.afkInfo.timeLimit
         this.postTime = 20;
@@ -578,25 +580,41 @@ class afkCheck {
     async supporterUse(u, index) {
         let reactor = this.message.guild.members.cache.get(u.id);
         if (this.earlyLocation.includes(u)) return reactor.send(`The location for this run has been set to \`${this.afkInfo.location}\``);
-        this.tokenDB.query(`SELECT * FROM tokens WHERE active = true AND user = '${u.id}'`, (err, rows) => {
-            if (err) ErrorLogger.log(err)
-            if (!rows || rows.length == 0) return u.send(`You are not currently a supporter. If you would like to learn more, reply with \`support\``)
-            if (rows[0].hasCooldown) {
-                if (!rows[0].lastuse) giveLocation(this, true)
-                else if (Date.now() - botSettings.earlyLocationCooldown > parseInt(rows[0].lastuse)) giveLocation(this, true)
-                else u.send(`Your early location use will be available again in \`${60 - Math.round((Date.now() - rows[0].lastuse) / 60000)}\` minutes`)
-            } else giveLocation(this, false)
-        })
+        let tier = await patreonHelper.getTier(u, this.bot, this.tokenDB)
+        if (this.supporters.length >= this.bot.settings[this.message.guild.id].numerical.supporterlimit) {
+            if ([0, 1, 2].includes(tier)) return u.send('Unfortunately, all spots for early location have been taken.')
+            else if (tiers == -1) return
+        }
+        switch (tier) {
+            case -1:
+                return;
+            case 0:
+                return giveLocation(this, null);
+            case 1:
+                return giveLocation(this, 2);
+            case 2:
+                return giveLocation(this, 4);
+            case 3:
+                this.simp = u
+                return giveLocation(this, null);
+            default:
+                return;
+        }
         function giveLocation(afkcheck, cooldown) {
             reactor.send(`The location for this run has been set to \`${afkcheck.afkInfo.location}\``);
             afkcheck.earlyLocation.push(u);
             reactor.voice.setChannel(afkcheck.channel.id).catch(er => { reactor.send('Please join any voice channel to get moved in') })
-            afkcheck.nitro.push(u)
+            afkcheck.supporters.push(u)
             if (afkcheck.leaderEmbed.fields[index].value == `None!`) afkcheck.leaderEmbed.fields[index].value = `<@!${u.id}> `;
             else afkcheck.leaderEmbed.fields[index].value += `, <@!${u.id}>`
             afkcheck.leaderEmbedMessage.edit(afkcheck.leaderEmbed).catch(er => ErrorLogger.log(er, this.bot));
             afkcheck.runInfoMessage.edit(afkcheck.leaderEmbed).catch(er => ErrorLogger.log(er, this.bot));
-            if (cooldown) afkcheck.tokenDB.query(`UPDATE tokens SET lastuse = '${Date.now()}' WHERE active = true AND user = '${u.id}'`)
+            if (cooldown) {
+                afkcheck.tokenDB.query(`SELECT * FROM patreon WHERE id = '${u.id}'`, (err, rows) => {
+                    if (rows.length == 0) afkcheck.tokenDB.query(`INSERT INTO patreon (id, lastuse) VALUES ('${u.id}', '${Date.now() + (3600000 * cooldown)}')`, (err, rows) => { })
+                    else afkcheck.tokenDB.query(`UPDATE patreon SET lastuse = '${Date.now() + (3600000 * cooldown)}' WHERE id = '${u.id}'`, (err, rows) => { })
+                })
+            }
         }
     }
 
@@ -659,7 +677,7 @@ class afkCheck {
         }
 
         //update embeds/messages
-        this.mainEmbed.setDescription(`This afk check has been ended.\n${this.keys.length > 0 ? `Thank you to ${this.keys.map(k => `<@!${k}> `)} for popping a <${botSettings.emote.LostHallsKey}> for us!\n` : ''}If you get disconnected during the run, **JOIN LOUNGE** *then* DM me \`join\` to get back in`)
+        this.mainEmbed.setDescription(`This afk check has been ended.\n${this.keys.length > 0 ? `Thank you to ${this.keys.map(k => `<@!${k}> `)} for popping a <${botSettings.emote.LostHallsKey}> for us!\n` : ''}${this.simp ? `Thank you to <@!${this.simp.id}> for being a ViBot SIMP` : null}If you get disconnected during the run, **JOIN LOUNGE** *then* DM me \`join\` to get back in`)
             .setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
         this.leaderEmbed.setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname} at`)
             .setTimestamp();

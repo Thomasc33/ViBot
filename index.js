@@ -42,24 +42,28 @@ for (const file of commandFiles) {
 }
 
 bot.on('message', message => {
-    if (message.channel.type === 'dm') return dmHandler(message);
-    if (message.author.bot) return;
-    if (!message.content.startsWith(prefix)) return autoMod(message);
-    const args = message.content.slice(prefix.length).split(/ +/);
-    const commandName = args.shift().toLowerCase()
-    if (commandName.replace(/[^a-z]/gi, '') == '') return
-    if (restarting.restarting && commandName !== 'restart') return message.channel.send('Cannot execute command as a restart is pending')
-    const command = bot.commands.get(commandName) || bot.commands.find(cmd => cmd.alias && cmd.alias.includes(commandName))
-    if (!command) return message.channel.send('Command doesnt exist, check \`commands\` and try again');
-    if (!bot.settings[message.guild.id].commands[command.name]) return message.channel.send('Command doesnt exist, check \`commands\` and try again');
-    if (message.member.roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role]).position && (message.author.id !== '277636691227836419' && message.author.id !== '298989767369031684')) return;
-    if (command.requiredArgs && command.requiredArgs > args.length) return message.channel.send(`Command Entered incorrecty. \`${botSettings.prefix}${command.name} ${command.args}\``)
     try {
-        command.execute(message, args, bot, db, tokenDB)
-        CommandLogger.log(message, bot)
+        if (message.channel.type === 'dm') return dmHandler(message);
+        if (message.author.bot) return;
+        if (!message.content.startsWith(prefix)) return autoMod(message);
+        const args = message.content.slice(prefix.length).split(/ +/);
+        const commandName = args.shift().toLowerCase()
+        if (commandName.replace(/[^a-z]/gi, '') == '') return
+        if (restarting.restarting && commandName !== 'restart') return message.channel.send('Cannot execute command as a restart is pending')
+        const command = bot.commands.get(commandName) || bot.commands.find(cmd => cmd.alias && cmd.alias.includes(commandName))
+        if (!command) return message.channel.send('Command doesnt exist, check \`commands\` and try again');
+        if (!bot.settings[message.guild.id].commands[command.name]) return message.channel.send('Command doesnt exist, check \`commands\` and try again');
+        if (message.member.roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role]).position && (message.author.id !== '277636691227836419' && message.author.id !== '298989767369031684')) return;
+        if (command.requiredArgs && command.requiredArgs > args.length) return message.channel.send(`Command Entered incorrecty. \`${botSettings.prefix}${command.name} ${command.args}\``)
+        try {
+            command.execute(message, args, bot, db, tokenDB)
+            CommandLogger.log(message, bot)
+        } catch (er) {
+            ErrorLogger.log(er, bot)
+            message.channel.send("Issue executing the command, check \`;commands\` and try again");
+        }
     } catch (er) {
         ErrorLogger.log(er, bot)
-        message.channel.send("Issue executing the command, check \`;commands\` and try again");
     }
 });
 

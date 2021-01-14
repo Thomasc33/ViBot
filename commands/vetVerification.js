@@ -202,7 +202,7 @@ module.exports = {
                         embed.setFooter(`Accepted by ${reactor.nickname}`)
                         await message.edit(embed)
                         await member.roles.add(vetRaider.id)
-                        db.query(`UPDATE users SET voidsLead = true WHERE id = '${u.id}'`)
+                        db.query(`UPDATE users SET isVet = true WHERE id = '${u.id}'`)
                         ManualVerificationCollector.stop()
                         keyCollector.stop()
                         removeFromArray(member.id)

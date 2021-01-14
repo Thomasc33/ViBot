@@ -9,9 +9,7 @@ module.exports = {
     requiredArgs: 1,
     async execute(message, args, bot, db) {
         let errored
-        let data = await realm.getGraveyardSummary(args[0]).catch(er => {
-            errored = true
-        })
+        let data = await realm.getGraveyardSummary(args[0]).catch(er => { errored = true })
         if (errored) return message.channel.send('Their graveyard history is privated')
 
         let accountAgeValue = data.created
