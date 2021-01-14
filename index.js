@@ -389,6 +389,7 @@ process.on('unhandledRejection', err => {
         if (err.message == 'Cannot send messages to this user') return
         if (err.message == 'Unknown Message') return
         if (err.message == 'Unknown Channel') return
+        if (err.message == 'The user aborted a request.') return
     } else return
     ErrorLogger.log(err, bot);
     console.log(err);
