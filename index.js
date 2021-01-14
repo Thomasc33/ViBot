@@ -10,6 +10,7 @@ bot.commands = new Discord.Collection()
 bot.crasherList = require('./crasherList.json')
 bot.afkChecks = require('./afkChecks.json')
 bot.settings = require('./guildSettings.json')
+const cooldowns = new Discord.Collection()
 const ErrorLogger = require(`./lib/logError`)
 const CommandLogger = require('./lib/logCommand')
 const vibotChannels = require('./commands/vibotChannels')
@@ -41,6 +42,7 @@ for (const file of commandFiles) {
     bot.commands.set(command.name, command);
 }
 
+
 bot.on('message', message => {
     try {
         if (message.channel.type === 'dm') return dmHandler(message);
@@ -55,6 +57,14 @@ bot.on('message', message => {
         if (!bot.settings[message.guild.id].commands[command.name]) return message.channel.send('Command doesnt exist, check \`commands\` and try again');
         if (message.member.roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role]).position && (message.author.id !== '277636691227836419' && message.author.id !== '298989767369031684')) return;
         if (command.requiredArgs && command.requiredArgs > args.length) return message.channel.send(`Command Entered incorrecty. \`${botSettings.prefix}${command.name} ${command.args}\``)
+        if (command.cooldown) {
+            if (cooldowns.get(command.name)) {
+                if (Date.now() + command.cooldown * 1000 < Date.now()) cooldowns.delete(command.name)
+                else return
+            }
+            else cooldowns.set(command.name, Date.now())
+            setTimeout(() => { cooldowns.delete(command.name) }, command.cooldown * 1000)
+        }
         try {
             command.execute(message, args, bot, db, tokenDB)
             CommandLogger.log(message, bot)

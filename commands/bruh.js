@@ -1,9 +1,9 @@
 module.exports = {
     name: 'bruh',
     description: 'Join your vc and say "bruh"',
+    cooldown: 60,
     role: 'developer',
     async execute(message, args, bot, db) {
-        if(message.author.id !== '277636691227836419') return
         let channel = message.guild.channels.cache.get(args[0]) || message.member.voice.channel
         if (!channel) return message.channel.send('Join a VC')
         let connection = await channel.join()
