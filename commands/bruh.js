@@ -9,6 +9,7 @@ module.exports = {
         connection.play('./bruh.mp3')
         await sleep(1500)
         connection.disconnect()
+        message.delete()
     }
 }
 
