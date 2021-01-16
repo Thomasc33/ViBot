@@ -451,7 +451,7 @@ module.exports = {
                     //give verified raider role
                     setTimeout(() => { member.roles.add(settings.roles.raider) }, 1000)
                     //dm user
-                    member.user.send(`You have been successfully verified in \`${message.guild.name}\`. Welcome! AFK-Checks work a little big different here, so make sure to read through the FAQ to learn more`)
+                    member.user.send(`You have been successfully verified in \`${message.guild.name}\`. Welcome! AFK-Checks work a little big different here, so make sure to read through the FAQ to learn more.${settings.backend.roleassignment ? ` To get pinged for specific afk checks, head over to <#${settings.channels.roleassignment}>` : null}`)
                     //remove from watching embed
                     watching.splice(watching.indexOf(u.id), 1)
                     //remove them from expelled list
