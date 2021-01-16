@@ -141,15 +141,17 @@ module.exports = {
                     } else embed.setDescription(embed.description.concat(`\n${string}`))
                 }
                 if (channel.id == settings.channels.currentweek) {
-                    let messages = await channel.messages.fetch({ limit: 20 })
-                    let messageArray = messages.array()
-                    if (messageArray.length != embeds.length) channel.bulkDelete(20);
-                    messages = await channel.messages.fetch({ limit: 20 })
-                    messageArray = messages.array()
-                    for (let i in embeds) {
-                        if (messageArray[i]) await messageArray[i].edit(embeds[embeds.length - (parseInt(i) + 1)])
-                        else channel.send(embeds[i])
-                    }
+                    try {
+                        let messages = await channel.messages.fetch({ limit: 3 })
+                        let messageArray = messages.array()
+                        if (messageArray.length != embeds.length) channel.bulkDelete(20);
+                        messages = await channel.messages.fetch({ limit: 3 })
+                        messageArray = messages.array()
+                        for (let i in embeds) {
+                            if (messageArray[i]) await messageArray[i].edit(embeds[embeds.length - (parseInt(i) + 1)])
+                            else channel.send(embeds[i])
+                        }
+                    } catch (er) { console.log(er) }
                 } else for (let i in embeds) await channel.send(embeds[i])
                 resolve(true)
             })

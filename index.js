@@ -690,6 +690,11 @@ if (botSettings.api) {
                 });
         }
     });
+    app.use((err, req, res) => {
+        console.log(req)
+    })
+
+
 
     const httpsServer = https.createServer(credentials, app)
 
