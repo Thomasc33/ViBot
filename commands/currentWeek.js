@@ -31,9 +31,7 @@ const tables = [
     }
 ]
 
-const CachedMessages = {
-
-}
+const CachedMessages = {}
 
 module.exports = {
     name: 'currentweek',
@@ -176,6 +174,5 @@ module.exports = {
                 resolve(true)
             })
         })
-    },
-    CachedMessages: CachedMessages
+    }
 }
