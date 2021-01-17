@@ -143,6 +143,7 @@ module.exports = {
                         }
                     } else embed.setDescription(embed.description.concat(`\n${string}`))
                 }
+                console.log(CachedMessages)
                 if (channel.id == settings.channels.currentweek) {
                     try {
                         if (CachedMessages[channel.guild.id] && CachedMessages[channel.guild.id].length > 0) {
@@ -166,11 +167,11 @@ module.exports = {
                         }
                         async function editMessages() {
                             for (let i in CachedMessages[channel.guild.id]) {
-                                await CachedMessages[channel.guild.id][i].edit(embeds[i])
+                                CachedMessages[channel.guild.id][i].edit(embeds[i])
                             }
                         }
                     } catch (er) { console.log(er) }
-                } else for (let i in embeds) await channel.send(embeds[i])
+                } else for (let i in embeds) channel.send(embeds[i])
                 resolve(true)
             })
         })
