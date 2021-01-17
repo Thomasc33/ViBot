@@ -7,7 +7,7 @@ module.exports = {
         let channel = message.guild.channels.cache.get(args[0]) || message.member.voice.channel
         if (!channel) return message.channel.send('Join a VC')
         let connection = await channel.join()
-        connection.play('./bruh.mp3')
+        connection.play('./data/bruh.mp3')
         await sleep(1500)
         connection.disconnect()
         message.delete()

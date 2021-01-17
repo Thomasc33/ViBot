@@ -525,7 +525,7 @@ if (botSettings.api) {
 
     const apiLimit = rateLimit({
         windowMs: 1 * 10 * 1000,
-        max: 20
+        max: 10
     })
     app.use('/api/', apiLimit)
 
@@ -657,21 +657,6 @@ if (botSettings.api) {
 
     router.get('/afkchecks', (req, res) => {
         res.json(bot.afkChecks)
-    })
-
-    app.get('/', (req, res) => {
-        if (req.cookies.accessToken) {
-            res.status(200).sendFile(path.join(__dirname, 'public/index.html'))
-        } else {
-            res.status(200).sendFile(path.join(__dirname, 'public/login.html'))
-        }
-    })
-
-    app.get('/clearcookies', (req, res) => {
-        res.clearCookie('accessToken')
-            .clearCookie('tokenType')
-            .status(200)
-            .sendFile(path.join(__dirname, 'public/login.html'))
     })
 
     app.use('/api', router)

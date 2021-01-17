@@ -21,8 +21,7 @@ module.exports = {
                 })
             }))
         }
-        console.log(Promises)
-        if (Promises.length == 0) {console.log('test');process.exit()}
+        if (Promises.length == 0) process.exit()
         await Promise.all(Promises).then(() => { process.exit() })
     }
 }

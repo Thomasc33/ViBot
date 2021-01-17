@@ -1118,8 +1118,6 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
             .addField('Main', 'None!')
             .addField('Split', 'None!')
         if (this.message.author.avatarURL()) groupEmbed.author.iconURL = this.message.author.avatarURL()
-        console.log(this.mainGroup)
-        console.log(this.splitGroup)
         for (let i in this.mainGroup) {
             let member = this.message.guild.members.cache.get(this.mainGroup[i])
             let nick

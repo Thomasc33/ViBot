@@ -224,11 +224,8 @@ module.exports = {
                 }
                 function removeFromArray(id) {
                     let index = watching.indexOf(id)
-                    console.log(index)
                     if (index > -1) {
-                        console.log(watching)
                         watching.splice(index, 1)
-                        console.log(watching)
                     }
                 }
             })

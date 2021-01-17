@@ -31,7 +31,6 @@ module.exports = {
                 for (let i of reacts) {
                     embed.addField(i.prettyName, i.react, true)
                 }
-                console.log(embed)
 
                 //get channel
                 let channel = message.guild.channels.cache.get(settings.channels.roleassignment)

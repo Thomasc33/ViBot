@@ -107,8 +107,6 @@ module.exports = {
                         for (let i in rows) {
                             let member = guild.members.cache.get(rows[i].id)
                             let desc = `<@!${rows[i].id}>`
-                            console.log(rows[i])
-                            console.log(rows[i].vialUsed)
                             if (member && member.nickname) desc += ` \`${member.nickname}\``
                             desc += `: \`${rows[i].vialUsed}\` Vials Used`
                             fitStringIntoEmbed(embed, desc, message.channel)

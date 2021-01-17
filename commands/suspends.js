@@ -37,7 +37,7 @@ module.exports = {
                 for (let i in rows) {
                     let sus = rows[i]
                     let guild = bot.guilds.cache.get(sus.guildid)
-                    if (!guild) { console.log(sus.guild); continue; }
+                    if (!guild) continue
                     let member = guild.members.cache.get(sus.id)
                     let desc = (`__Suspension case for ${member}__\`${member.nickname}\`\nReason: \`${sus.reason.trim()}\`\nSuspended by: <@!${sus.modid}>\n`)
                     fitStringIntoEmbed(embed, desc, message.channel)
