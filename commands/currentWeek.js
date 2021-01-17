@@ -147,7 +147,7 @@ module.exports = {
                 }
                 if (channel.id == settings.channels.currentweek) {
                     try {
-                        if (CachedMessages[channel.guild.id].length > 0) {
+                        if (CachedMessages[channel.guild.id] && CachedMessages[channel.guild.id].length > 0) {
                             if (embeds.length !== CachedMessages[channel.guild.id].length) resendMessages()
                             else editMessages()
                         } else gatherMessages()
