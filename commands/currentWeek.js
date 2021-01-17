@@ -146,10 +146,10 @@ module.exports = {
                 if (channel.id == settings.channels.currentweek) {
                     try {
                         if (CachedMessageArray.length > 0) {
-                            if (embeds.length !== CachedMessageArray.length) resendMessages(channel)
+                            if (embeds.length !== CachedMessageArray.length) resendMessages()
                             else editMessages()
-                        } else gatherMessages(channel)
-                        async function resendMessages(channel) {
+                        } else gatherMessages()
+                        async function resendMessages() {
                             await channel.bulkDelete(20)
                             CachedMessageArray = []
                             for (let i in embeds) {
@@ -157,14 +157,14 @@ module.exports = {
                                 CachedMessageArray.push(m)
                             }
                         }
-                        async function gatherMessages(channel) {
-                            let messages = await channel.message.fetch({ limit: 3 })
+                        async function gatherMessages() {
+                            let messages = await channel.messages.fetch({ limit: 3 })
                             let messageArray = messages.array()
-                            if (messageArray.length !== embeds.length) resendMessages(channel)
+                            if (messageArray.length !== embeds.length) resendMessages()
                             else for (let i of messageArray) { CachedMessageArray.push(i); editMessages(); }
                         }
                         async function editMessages() {
-                            for(let i in CachedMessageArray){
+                            for (let i in CachedMessageArray) {
                                 await CachedMessageArray[i].edit(embeds[i])
                             }
                         }
