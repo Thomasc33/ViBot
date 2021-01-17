@@ -30,6 +30,9 @@ const tables = [
         ],
     }
 ]
+
+var CachedMessageArray = []
+
 module.exports = {
     name: 'currentweek',
     description: 'Updates the current week stats or force starts the next week',
@@ -142,14 +145,28 @@ module.exports = {
                 }
                 if (channel.id == settings.channels.currentweek) {
                     try {
-                        let messages = await channel.messages.fetch({ limit: 3 })
-                        let messageArray = messages.array()
-                        if (messageArray.length != embeds.length) channel.bulkDelete(20);
-                        messages = await channel.messages.fetch({ limit: 3 })
-                        messageArray = messages.array()
-                        for (let i in embeds) {
-                            if (messageArray[i]) await messageArray[i].edit(embeds[embeds.length - (parseInt(i) + 1)])
-                            else channel.send(embeds[i])
+                        if (CachedMessageArray.length > 0) {
+                            if (embeds.length !== CachedMessageArray.length) resendMessages()
+                            else gatherMessages()
+                        } else gatherMessages()
+                        async function resendMessages() {
+                            await channel.bulkDelete(20)
+                            CachedMessageArray = []
+                            for (let i in embeds) {
+                                let m = await channel.send(embeds[i])
+                                CachedMessageArray.push(m)
+                            }
+                        }
+                        async function gatherMessages() {
+                            let messages = await channel.message.fetch({ limit: 3 })
+                            let messageArray = messages.array()
+                            if (messageArray.length !== embeds.length) resendMessages()
+                            else for (let i of messageArray) { CachedMessageArray.push(i); editMessages(); }
+                        }
+                        async function editMessages() {
+                            for(let i in CachedMessageArray){
+                                await CachedMessageArray[i].edit(embeds[i])
+                            }
                         }
                     } catch (er) { console.log(er) }
                 } else for (let i in embeds) await channel.send(embeds[i])
