@@ -84,11 +84,13 @@ module.exports = {
                     logged.push(rows[i].id)
                     index++;
                 }
-                await channel.guild.members.cache.filter(m => m.roles.highest.position == channel.guild.roles.cache.get(settings.roles.security).position || m.roles.highest.position == channel.guild.roles.cache.get(settings.roles.officer).position).each(m => {
-                    if (!logged.includes(m.id)) {
-                        let string = `<@!${m.id}> has not parsed this week`
-                        fitStringIntoEmbed(embed, string)
-                    }
+                await channel.guild.members.cache.filter(m => m.roles.cache.has(settings.roles.security)).each(m => {
+                    let highest = m.roles.highest
+                    if (highest.id == settings.roles.security || highest.id == settings.roles.officer)
+                        if (!logged.includes(m.id)) {
+                            let string = `<@!${m.id}> has not parsed this week`
+                            fitStringIntoEmbed(embed, string)
+                        }
                 })
                 embed.setFooter(`${parses} Total Parses, ${nonSecParses} From Non-Security+`)
                 embeds.push(new Discord.MessageEmbed(embed))
