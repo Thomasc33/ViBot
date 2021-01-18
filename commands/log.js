@@ -121,6 +121,7 @@ module.exports = {
             cont()
         }
         function cont() {
+            return
             embed.setDescription(desc)
             message.guild.channels.cache.get(settings.channels.leadinglog).send(embed)
             if (!toUpdate) return
