@@ -74,8 +74,10 @@ module.exports = {
                 .setTimestamp()
             let confirmMessage = await message.channel.send(confirmEmbed)
             let confirmCollector = new Discord.ReactionCollector(confirmMessage, (r, u) => !u.bot && u.id == message.author.id && (r.emoji.name === '✅' || r.emoji.name === '❌'))
-            confirmMessage.react('✅').then(confirmMessage.react('❌'))
+            confirmMessage.react('✅')
+            confirmMessage.react('❌')
             confirmCollector.on('collect', async function (r, u) {
+                if (u.bot) return
                 if (r.emoji.name === '✅') {
                     db.query(`SELECT * FROM users WHERE id = '${message.author.id}'`, (err, rows) => {
                         if (err) throw err;
@@ -94,7 +96,7 @@ module.exports = {
         } else return message.channel.send('Run type not recognized. Please try again');
 
 
-        if (message.mentions.users && args[0].toLowerCase().charAt(0) !== 'e' || args[0].toLowerCase().charAt(0) !== 'p') {
+        if (message.mentions.users && args[0].toLowerCase().charAt(0) !== 'e' && args[0].toLowerCase().charAt(0) !== 'p') {
             desc = desc.concat(`\n`)
             let assistName = 'assists', weeklyAssistName = 'currentweekAssists';
             if (args[0].toLowerCase().charAt(0) == 'o') { assistName = 'assistso3'; weeklyAssistName = 'currentweekAssistso3' }

@@ -61,6 +61,8 @@ module.exports = {
                 console.log("done fitting logged strings in embed")
                 console.log('logged length', logged.length)
                 console.log("about to add in rls who didnt log")
+                console.log(channel.guild.members.cache.filter(m => m.roles.highest.id == settings.roles.eventrl).size)
+                console.log("bruhh")
                 await channel.guild.members.cache.filter(m => m.roles.highest.id == settings.roles.eventrl).each(m => {
                     if (!logged.includes(m.id)) {
                         let string = `<@!${m.id}> has not logged any runs or been assisted this week`
