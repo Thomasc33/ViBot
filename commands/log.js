@@ -117,7 +117,6 @@ module.exports = {
                     })
                 }
             })
-            toUpdate = 2;
             cont()
         }
         function cont() {
