@@ -143,34 +143,34 @@ module.exports = {
                         }
                     } else embed.setDescription(embed.description.concat(`\n${string}`))
                 }
-                if (channel.id == settings.channels.currentweek) {
-                    try {
-                        if (CachedMessages[channel.guild.id] && CachedMessages[channel.guild.id].length > 0) {
-                            if (embeds.length !== CachedMessages[channel.guild.id].length) resendMessages()
-                            else editMessages()
-                        } else gatherMessages()
-                        async function resendMessages() {
-                            await channel.bulkDelete(20)
-                            if (CachedMessages[channel.guild.id]) CachedMessages[channel.guild.id] = []
-                            for (let i in embeds) {
-                                let m = await channel.send(embeds[i])
-                                CachedMessages[channel.guild.id].push(m)
-                            }
-                        }
-                        async function gatherMessages() {
-                            CachedMessages[channel.guild.id] = []
-                            let messages = await channel.messages.fetch({ limit: 3 })
-                            let messageArray = messages.array()
-                            if (messageArray.length !== embeds.length) resendMessages()
-                            else for (let i of messageArray) { CachedMessages[channel.guild.id].push(i); editMessages(); }
-                        }
-                        async function editMessages() {
-                            for (let i in CachedMessages[channel.guild.id]) {
-                                CachedMessages[channel.guild.id][i].edit(embeds[i])
-                            }
-                        }
-                    } catch (er) { console.log(er) }
-                } else for (let i in embeds) channel.send(embeds[i])
+                // if (channel.id == settings.channels.currentweek) {
+                //     try {
+                //         if (CachedMessages[channel.guild.id] && CachedMessages[channel.guild.id].length > 0) {
+                //             if (embeds.length !== CachedMessages[channel.guild.id].length) resendMessages()
+                //             else editMessages()
+                //         } else gatherMessages()
+                //         async function resendMessages() {
+                //             await channel.bulkDelete(20)
+                //             if (CachedMessages[channel.guild.id]) CachedMessages[channel.guild.id] = []
+                //             for (let i in embeds) {
+                //                 let m = await channel.send(embeds[i])
+                //                 CachedMessages[channel.guild.id].push(m)
+                //             }
+                //         }
+                //         async function gatherMessages() {
+                //             CachedMessages[channel.guild.id] = []
+                //             let messages = await channel.messages.fetch({ limit: 3 })
+                //             let messageArray = messages.array()
+                //             if (messageArray.length !== embeds.length) resendMessages()
+                //             else for (let i of messageArray) { CachedMessages[channel.guild.id].push(i); editMessages(); }
+                //         }
+                //         async function editMessages() {
+                //             for (let i in CachedMessages[channel.guild.id]) {
+                //                 CachedMessages[channel.guild.id][i].edit(embeds[i])
+                //             }
+                //         }
+                //     } catch (er) { console.log(er) }
+                // } else for (let i in embeds) channel.send(embeds[i])
                 resolve(true)
             })
         })
