@@ -95,245 +95,247 @@ Discord.Channel.prototype.nextInt = function NextInt(filter, requirementMessage,
 }
 const activeTemplateCreations = [];
 module.exports = {
-    name: 'createtemplate',
-    description: 'Create a new AFK template',
-    alias: ['ct', 'createt'],
-    args: '',
-    role: 'vetrl',
-    checkActive: (id) => activeTemplateCreations.includes(id),
-    /**
-     * Main Execution Function
-     * @param {Discord.Message} message 
-     * @param {String[]} args 
-     * @param {Discord.Client} bot 
-     * @param {import('mysql').Connection} db 
-     * @param {import('mysql').Connection} tokenDB 
-     */
-    async execute(message, args, bot, db, tokenDB, event) {
-        const author_id = message.author.id;
-        //Must start it in vet commands
-        if (message.channel.id != guildSettings[message.guild.id].channels.vetcommands) return;
-        if (activeTemplateCreations.includes(author_id))
-            return message.channel.send('You are already in the process of creating a raiding template.');
+        name: 'createtemplate',
+        description: 'Create a new AFK template',
+        alias: ['ct', 'createt'],
+        args: '',
+        role: 'vetrl',
+        checkActive: (id) => activeTemplateCreations.includes(id),
+        /**
+         * Main Execution Function
+         * @param {Discord.Message} message 
+         * @param {String[]} args 
+         * @param {Discord.Client} bot 
+         * @param {import('mysql').Connection} db 
+         * @param {import('mysql').Connection} tokenDB 
+         */
+        async execute(message, args, bot, db, tokenDB, event) {
+            const author_id = message.author.id;
+            //Must start it in vet commands
+            if (message.channel.id != guildSettings[message.guild.id].channels.vetcommands) return;
+            if (activeTemplateCreations.includes(author_id))
+                return message.channel.send('You are already in the process of creating a raiding template.');
 
-        message.delete();
+            message.delete();
 
-        activeTemplateCreations.push(author_id);
-        const embed = new Discord.MessageEmbed()
-            .setColor(`#bae1ff`)
-            .setTitle('Creating Veteran Raiding Template')
-            .setDescription('Which type of dungeon do you want to create a template for? Type cancel to cancel.');
-        const data = {};
-        const dm = await message.channel.send({ embed });
-        try {
-            //get run type
-            data.runType = (await dm.channel.next(null, null, author_id)).content;
-            embed.setDescription('What name do you want to give your run? Type cancel to cancel.')
-                .addField('Run Type', data.runType, true);
-            await dm.edit(embed);
+            activeTemplateCreations.push(author_id);
+            const embed = new Discord.MessageEmbed()
+                .setColor(`#bae1ff`)
+                .setTitle('Creating Veteran Raiding Template')
+                .setDescription('Which type of dungeon do you want to create a template for? Type cancel to cancel.');
+            const data = {};
+            const dm = await message.channel.send({ embed });
+            try {
+                //get run type
+                data.runType = (await dm.channel.next(null, null, author_id)).content;
+                embed.setDescription('What name do you want to give your run? Type cancel to cancel.')
+                    .addField('Run Type', data.runType, true);
+                await dm.edit(embed);
 
-            //get run name
-            data.runName = (await dm.channel.next(null, null, author_id)).content;
-            embed.setDescription('What symbol do you want for this template? Type cancel to cancel.')
-                .addField('Run Name', data.runName, true);
+                //get run name
+                data.runName = (await dm.channel.next(null, null, author_id)).content;
+                embed.setDescription('What symbol do you want for this template? Type cancel to cancel.')
+                    .addField('Run Name', data.runName, true);
 
-            //get run symbol
-            const unavailable = [];
-            for (const key in afkTemplates) {
-                if (afkTemplates[key].symbol)
-                    unavailable.push(afkTemplates[key].symbol);
-                else if (key == message.author.id) {
-                    for (const key2 in afkTemplates[key])
-                        unavailable.push(key2);
-                }
-            }
-            embed.addField('Unavailable Symbols', `\`\`\`${unavailable.join(', ')}\`\`\``);
-            await dm.edit(embed);
-            data.symbol = (await dm.channel.next((message) => message.content && !unavailable.includes(message.content[0]), 'Symbol already in use. Please use a different symbol.', author_id)).content[0].toLowerCase();
-            embed.fields.pop(); //remove unavailable symbols field
-
-            //get reqs images
-            embed.setDescription(`What image would you like to provide? (Type 'None' if you don't want one.) Type cancel to cancel.`)
-                .addField('Selected Symbol', data.symbol, true);
-            await dm.edit(embed);
-            const attachments = (await dm.channel.next(null, null, author_id)).attachments;
-            data.reqsImageUrl = '';
-            if (attachments && attachments.size)
-                embed.setImage(data.reqsImageUrl = attachments.first().proxyURL);
-            else
-                embed.addField('Image', 'None!', true);
-
-            //get split group
-            embed.setDescription('Is this a split group?');
-            await dm.edit(embed);
-            data.isSplit = await dm.confirm(author_id);
-            data.twoPhase = !data.isSplit;
-
-            //get channel style
-            embed.setDescription('Should this create a new channel?')
-                .addField('Is Split', data.isSplit ? 'yes' : 'no', true);
-            await dm.edit(embed);
-            data.newChannel = await dm.confirm(author_id);
-            if (!data.newChannel)
-                data.postAfkCheck = true;
-
-            //get vial react
-            embed.setDescription('Should this template have a vial react?')
-                .addField('Creates Channels', data.newChannel ? 'yes' : 'no', true);
-            await dm.edit(embed);
-            data.vialReact = await dm.confirm(author_id);
-
-            //get start delay
-            embed.setDescription('How much delay should the afk have before it starts? Please provide a number between 0 and 120 (in seconds). Type cancel to cancel.')
-                .addField('Has Vial React', data.vialReact ? 'yes' : 'no', true);
-            await dm.edit(embed);
-            data.startDelay = await dm.channel.nextInt(res => res > 0 && res <= 120, 'Please enter a time period between 0 and 120 seconds.', author_id);
-            const delaySeconds = data.startDelay % 60,
-                delayMinutes = (data.startDelay - delaySeconds) / 60;
-            embed.addField('Start Delay', (delayMinutes ? `${delayMinutes} minutes ` : '') + `${delaySeconds} seconds`, true);
-            data.startDelay *= 1000;
-
-            //get vc cap
-            embed.setDescription('How many users should the Voice Channel be capped to? Type cancel to cancel.');
-            await dm.edit(embed);
-            data.vcCap = await dm.channel.nextInt(res => res > 0, 'Please enter a number greater than 0.', author_id);
-
-            //get time limit
-            embed.setDescription('How long should the afk time limit be in seconds? Type cancel to cancel.')
-                .addField('Voice Channel Cap', `${data.vcCap}`, true);
-            await dm.edit(embed);
-            data.timeLimit = await dm.channel.nextInt(res => res > 0, 'Please enter a time period in seconds greater than 0.', author_id);
-            const limitSeconds = data.timeLimit % 60,
-                limitMinutes = (data.timeLimit - limitSeconds) / 60;
-            embed.addField('AFK Time Limit', (limitMinutes ? `${limitMinutes} minutes ` : '') + `${limitSeconds} seconds`, true);
-
-            //get key count
-            embed.setDescription('How many keys should be accepted? Type cancel to cancel.');
-            await dm.edit(embed);
-            data.keyCount = await dm.channel.nextInt(res => res > 0, 'Please enter a number of keys greater than 0.', author_id);
-
-            embed.setDescription('Should this afk ping Void Boi or Cult Boi?')
-                .addField('Key Count', `${data.keyCount}`, true);
-            await dm.edit(embed);
-
-            //get ping role
-            const guildRoles = guildSettings[message.guild.id].roles;
-            data.pingRole = await new Promise((resolve, reject) => {
-                const collector = dm.createReactionCollector((reaction, user) => user.id == author_id && (reaction.emoji.name == '❌' || [botSettings.emoteIDs.voidd, botSettings.emoteIDs.malus].includes(reaction.emoji.id)), { time: MAX_WAIT });
-                let resolved = false;
-                dm.react(botSettings.emote.voidd)
-                    .then(dm.react(botSettings.emote.malus))
-                    .then(dm.react('❌'));
-                collector.once('collect', (reaction) => {
-                    resolved = true;
-                    collector.stop();
-                    switch (reaction.emoji.id) {
-                        case botSettings.emoteIDs.voidd:
-                            return resolve('voidping');
-                        case botSettings.emoteIDs.malus:
-                            return resolve('cultping');
-                        default:
-                            return resolve('');
+                //get run symbol
+                const unavailable = [];
+                for (const key in afkTemplates) {
+                    if (afkTemplates[key].symbol)
+                        unavailable.push(afkTemplates[key].symbol);
+                    else if (key == message.author.id) {
+                        for (const key2 in afkTemplates[key])
+                            unavailable.push(key2);
                     }
-                });
-                collector.on('end', () => {
-                    if (!resolved)
-                        reject('Template creation timed out.');
-                });
-            });
-            dm.reactions.removeAll();
-            //get early location cost
-            console.log(data.pingRole, guildRoles[data.pingRole], message.guild.roles.cache.find((role) => role.id == guildRoles[data.pingRole]));
-            embed.setDescription('How much should early location cost in points? Type cancel to cancel.')
-                .addField('Ping Role', (message.guild.roles.cache.find((role) => role.id == guildRoles[data.pingRole]) || { name: data.pingRole || 'None!' }).name, true);
-            await dm.edit(embed);
-            data.earlyLocationCost = await dm.channel.nextInt(res => res >= 0, 'Please enter an amount of points greater than or equal to 0.', author_id);
+                }
+                embed.addField('Unavailable Symbols', `\`\`\`${unavailable.join(', ')}\`\`\``);
+                await dm.edit(embed);
+                data.symbol = (await dm.channel.next((message) => message.content && !unavailable.includes(message.content[0]), 'Symbol already in use. Please use a different symbol.', author_id)).content[0].toLowerCase();
+                embed.fields.pop(); //remove unavailable symbols field
 
-            //get early location reacts
-            embed.setDescription('Currently gathering template reactions.')
-                .addField('Early Location Cost', `${data.earlyLocationCost}`, true);
-            await dm.edit(embed);
+                //get reqs images
+                embed.setDescription(`What image would you like to provide? (Type 'None' if you don't want one.) Type cancel to cancel.`)
+                    .addField('Selected Symbol', data.symbol, true);
+                await dm.edit(embed);
+                const attachments = (await dm.channel.next(null, null, author_id)).attachments;
+                data.reqsImageUrl = '';
+                if (attachments && attachments.size)
+                    embed.setImage(data.reqsImageUrl = attachments.first().proxyURL);
+                else
+                    embed.addField('Image', 'None!', true);
 
-            const emojiInfo = new Discord.MessageEmbed().setDescription('React to this message with all early reactions. Any not accessible by me will be ignored. React to the ❌ to finish adding reactions.')
-            const emojiInfoMessage = await message.channel.send(emojiInfo);
+                //get split group
+                embed.setDescription('Is this a split group?');
+                await dm.edit(embed);
+                data.isSplit = await dm.confirm(author_id);
+                data.twoPhase = !data.isSplit;
 
-            function GetAllReactions() {
-                return new Promise(async(resolve) => {
-                    await emojiInfoMessage.react('❌');
-                    const collector = emojiInfoMessage.createReactionCollector((reaction, user) => user.id == author_id, { time: MAX_WAIT * 3 });
-                    collector.on('collect', (reaction) => {
-                        if (reaction.emoji.name === '❌')
-                            collector.stop();
+                //get channel style
+                embed.setDescription('Should this create a new channel?')
+                    .addField('Is Split', data.isSplit ? 'yes' : 'no', true);
+                await dm.edit(embed);
+                data.newChannel = await dm.confirm(author_id);
+                if (!data.newChannel)
+                    data.postAfkCheck = true;
+
+                //get vial react
+                embed.setDescription('Should this template have a vial react?')
+                    .addField('Creates Channels', data.newChannel ? 'yes' : 'no', true);
+                await dm.edit(embed);
+                data.vialReact = await dm.confirm(author_id);
+
+                //get start delay
+                embed.setDescription('How much delay should the afk have before it starts? Please provide a number between 0 and 120 (in seconds). Type cancel to cancel.')
+                    .addField('Has Vial React', data.vialReact ? 'yes' : 'no', true);
+                await dm.edit(embed);
+                data.startDelay = await dm.channel.nextInt(res => res > 0 && res <= 120, 'Please enter a time period between 0 and 120 seconds.', author_id);
+                const delaySeconds = data.startDelay % 60,
+                    delayMinutes = (data.startDelay - delaySeconds) / 60;
+                embed.addField('Start Delay', (delayMinutes ? `${delayMinutes} minutes ` : '') + `${delaySeconds} seconds`, true);
+                data.startDelay *= 1000;
+
+                //get vc cap
+                embed.setDescription('How many users should the Voice Channel be capped to? Type cancel to cancel.');
+                await dm.edit(embed);
+                data.vcCap = await dm.channel.nextInt(res => res > 0, 'Please enter a number greater than 0.', author_id);
+
+                //get time limit
+                embed.setDescription('How long should the afk time limit be in seconds? Type cancel to cancel.')
+                    .addField('Voice Channel Cap', `${data.vcCap}`, true);
+                await dm.edit(embed);
+                data.timeLimit = await dm.channel.nextInt(res => res > 0, 'Please enter a time period in seconds greater than 0.', author_id);
+                const limitSeconds = data.timeLimit % 60,
+                    limitMinutes = (data.timeLimit - limitSeconds) / 60;
+                embed.addField('AFK Time Limit', (limitMinutes ? `${limitMinutes} minutes ` : '') + `${limitSeconds} seconds`, true);
+
+                //get key count
+                embed.setDescription('How many keys should be accepted? Type cancel to cancel.');
+                await dm.edit(embed);
+                data.keyCount = await dm.channel.nextInt(res => res > 0, 'Please enter a number of keys greater than 0.', author_id);
+
+                embed.setDescription('Should this afk ping Void Boi or Cult Boi?')
+                    .addField('Key Count', `${data.keyCount}`, true);
+                await dm.edit(embed);
+
+                //get ping role
+                const guildRoles = guildSettings[message.guild.id].roles;
+                data.pingRole = await new Promise((resolve, reject) => {
+                    const collector = dm.createReactionCollector((reaction, user) => user.id == author_id && (reaction.emoji.name == '❌' || [botSettings.emoteIDs.voidd, botSettings.emoteIDs.malus].includes(reaction.emoji.id)), { time: MAX_WAIT });
+                    let resolved = false;
+                    dm.react(botSettings.emote.voidd)
+                        .then(dm.react(botSettings.emote.malus))
+                        .then(dm.react('❌'));
+                    collector.once('collect', (reaction) => {
+                        resolved = true;
+                        collector.stop();
+                        switch (reaction.emoji.id) {
+                            case botSettings.emoteIDs.voidd:
+                                return resolve('voidping');
+                            case botSettings.emoteIDs.malus:
+                                return resolve('cultping');
+                            default:
+                                return resolve('');
+                        }
                     });
-
-                    collector.on('end', (collected) => {
-                        const reacts = [...emojiInfoMessage.reactions.cache.array().map((reaction) => reaction.emoji).filter(emoji => message.client.emojis.cache.find((e) => e.id == emoji.id) && emoji.name !== '❌')];
-                        emojiInfoMessage.reactions.removeAll();
-                        resolve(reacts);
+                    collector.on('end', () => {
+                        if (!resolved)
+                            reject('Template creation timed out.');
                     });
                 });
-            }
+                dm.reactions.removeAll();
+                //get early location cost
+                console.log(data.pingRole, guildRoles[data.pingRole], message.guild.roles.cache.find((role) => role.id == guildRoles[data.pingRole]));
+                embed.setDescription('How much should early location cost in points? Type cancel to cancel.')
+                    .addField('Ping Role', (message.guild.roles.cache.find((role) => role.id == guildRoles[data.pingRole]) || { name: data.pingRole || 'None!' }).name, true);
+                await dm.edit(embed);
+                data.earlyLocationCost = await dm.channel.nextInt(res => res >= 0, 'Please enter an amount of points greater than or equal to 0.', author_id);
 
-            data.earlyLocationReacts = [];
-            const earlyReacts = (await GetAllReactions()).slice(0, 23);
-            for (const emoji of earlyReacts) {
-                const reaction = { emoteID: emoji.id };
-                emojiInfo.setDescription(`${emoji}: How many people should get early location?`);
-                await emojiInfoMessage.edit(emojiInfo);
-                reaction.limit = await emojiInfoMessage.channel.nextInt(res => res > 0, 'Please enter a number equal to or greater than 1.', author_id);
+                //get early location reacts
+                embed.setDescription('Currently gathering template reactions.')
+                    .addField('Early Location Cost', `${data.earlyLocationCost}`, true);
+                await dm.edit(embed);
 
-                emojiInfo.setDescription(`${emoji}: How many points should be given for this react?`);
-                await emojiInfoMessage.edit(emojiInfo);
-                reaction.pointsGiven = await emojiInfoMessage.channel.nextInt(res => res >= 0, 'Please enter a number equal to or greater than 0.', author_id);
+                const emojiInfo = new Discord.MessageEmbed().setDescription('React to this message with all early reactions. Any not accessible by me will be ignored. React to the ❌ to finish adding reactions.')
+                const emojiInfoMessage = await message.channel.send(emojiInfo);
 
-                emojiInfo.setDescription(`${emoji}: What is the short name of the react? No spaces allowed`);
-                await emojiInfoMessage.edit(emojiInfo);
-                reaction.shortName = (await emojiInfoMessage.channel.next(res => !/\s/.test(res), 'Please enter a value without spaces.', author_id)).content.toLowerCase();
+                function GetAllReactions() {
+                    return new Promise(async(resolve) => {
+                        await emojiInfoMessage.react('❌');
+                        const collector = emojiInfoMessage.createReactionCollector((reaction, user) => user.id == author_id, { time: MAX_WAIT * 3 });
+                        collector.on('collect', (reaction) => {
+                            if (reaction.emoji.name === '❌')
+                                collector.stop();
+                        });
 
-                /* Add check realmeye at some point
-                 * 
-                 * "checkRealmEye": {
-                 *    "class": "mystic",
-                 *    "ofEight": "8",
-                 *    "mheal": "85",
-                 *    "orb": "2"
-                 * }
-                 */
-                emojiInfo.setDescription(`${emoji}: Does this emoji have a required role?`);
-                await emojiInfoMessage.edit(emojiInfo);
-                if (await emojiInfoMessage.confirm(author_id)) {
-                    function GetRoleSelection() {
-                        return new Promise(async(resolve, reject) => {
-                            const rolesemojiInfo = new Discord.MessageEmbed()
-                                .setColor("#000000")
-                                .setAuthor("Roles List")
-                                .setDescription("Choose from the following roles which should be the required role:");
-                            const selections = [];
-                            let roleListText = '0: No Role\r\n';
-                            for (const rolename in guildRoles) {
-                                if (!guildRoles[rolename])
-                                    continue;
-
-                                const role = message.guild.roles.resolve(guildRoles[rolename]);
-                                if (!role)
-                                    continue;
-
-                                selections.push({ rolename, id: role.id, emote: `${role}` });
-                                roleListText += `${selections.length}: ${role.name}\r\n`;
-                            }
-                            rolesemojiInfo.addField('Roles', `\`\`\`${roleListText}\`\`\``);
-                            const rolesMessage = await emojiInfoMessage.channel.send(rolesemojiInfo);
-                            const selection_idx = await emojiInfoMessage.channel.nextInt(res => res >= 0 && res <= selections.length, `Please enter a value between 0 and ${selections.length}. Enter 0 for no role.`, author_id);
-                            rolesMessage.delete();
-                            resolve(selection_idx == 0 ? null : selections[selection_idx - 1].rolename);
-                        })
-                    }
-
-                    reaction.requiredRole = await GetRoleSelection();
+                        collector.on('end', (collected) => {
+                            const reacts = [...emojiInfoMessage.reactions.cache.array().map((reaction) => reaction.emoji).filter(emoji => message.client.emojis.cache.find((e) => e.id == emoji.id) && emoji.name !== '❌')];
+                            emojiInfoMessage.reactions.removeAll();
+                            resolve(reacts);
+                        });
+                    });
                 }
 
-                data.earlyLocationReacts.push(reaction);
-                emojiInfo.addField(`${emoji} ${reaction.shortName} ${emoji}`, `**Early React**\r\n\`\`\`Points Given: ${reaction.pointsGiven}\r\nReaction Limit: ${reaction.limit}${reaction.requiredRole? '\r\nRequired Role: ' + reaction.requiredRole : ''}\`\`\``)
+                data.earlyLocationReacts = [];
+                const earlyReacts = (await GetAllReactions()).slice(0, 23);
+                for (const emoji of earlyReacts) {
+                    const reaction = { emoteID: emoji.id };
+                    emojiInfo.setDescription(`${emoji}: How many people should get early location?`);
+                    await emojiInfoMessage.edit(emojiInfo);
+                    reaction.limit = await emojiInfoMessage.channel.nextInt(res => res > 0, 'Please enter a number equal to or greater than 1.', author_id);
+
+                    emojiInfo.setDescription(`${emoji}: How many points should be given for this react?`);
+                    await emojiInfoMessage.edit(emojiInfo);
+                    reaction.pointsGiven = await emojiInfoMessage.channel.nextInt(res => res >= 0, 'Please enter a number equal to or greater than 0.', author_id);
+
+                    emojiInfo.setDescription(`${emoji}: What is the short name of the react? No spaces allowed`);
+                    await emojiInfoMessage.edit(emojiInfo);
+                    reaction.shortName = (await emojiInfoMessage.channel.next(res => !/\s/.test(res), 'Please enter a value without spaces.', author_id)).content.toLowerCase();
+
+                    /* Add check realmeye at some point
+                     * 
+                     * "checkRealmEye": {
+                     *    "class": "mystic",
+                     *    "ofEight": "8",
+                     *    "mheal": "85",
+                     *    "orb": "2"
+                     * }
+                     */
+                    emojiInfo.setDescription(`${emoji}: Does this emoji have a required role?`);
+                    await emojiInfoMessage.edit(emojiInfo);
+                    if (await emojiInfoMessage.confirm(author_id)) {
+                        function GetRoleSelection() {
+                            return new Promise(async(resolve, reject) => {
+                                const rolesEmbed = new Discord.MessageEmbed()
+                                    .setColor("#000000")
+                                    .setAuthor("Roles List")
+                                    .setDescription("Choose from the following roles which should be the required role:");
+                                const selections = [];
+                                let roleListText = '0: No Role\r\n';
+                                for (const rolename in guildRoles) {
+                                    if (!guildRoles[rolename])
+                                        continue;
+
+                                    const role = message.guild.roles.resolve(guildRoles[rolename]);
+                                    if (!role)
+                                        continue;
+
+                                    selections.push({ rolename, id: role.id, role });
+                                    roleListText += `***${selections.length}***: ${role}\r\n\r\n`;
+                                }
+                                rolesEmbed.addField('Roles', `${roleListText}`);
+                                const rolesMessage = await emojiInfoMessage.channel.send(rolesEmbed);
+                                const selection_idx = await emojiInfoMessage.channel.nextInt(res => res >= 0 && res <= selections.length, `Please enter a value between 0 and ${selections.length}. Enter 0 for no role.`, author_id);
+                                rolesMessage.delete();
+                                resolve(selection_idx == 0 ? null : selections[selection_idx - 1]);
+                            })
+                        }
+
+                        reaction.requiredRole = await GetRoleSelection();
+                    }
+
+                    data.earlyLocationReacts.push(reaction);
+                    emojiInfo.addField(`${emoji} ${reaction.shortName} ${emoji}`, `*Early React*\r\nPoints Given: ${reaction.pointsGiven}\r\nReaction Limit: ${reaction.limit}${reaction.requiredRole? `\r\nRequired Role: ${reaction.requiredRole.role}` : ''}`)
+                if (reaction.requiredRole)
+                    reaction.requiredRole = reaction.requiredRole.rolename;
             }
 
             emojiInfo.setDescription('React to this message with all other reactions. Any not accessible by me will be ignored. React to the ❌ to finish adding reactions.')
