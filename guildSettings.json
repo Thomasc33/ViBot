@@ -247,7 +247,8 @@
             "warnremove": true,
             "warns": true,
             "bruh": true,
-            "testalt": true
+            "testalt": true,
+            "createtemplate": true
         },
         "categories": {
             "raiding": "raiding",

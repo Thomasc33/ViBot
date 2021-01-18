@@ -61,8 +61,7 @@ bot.on('message', message => {
             if (cooldowns.get(command.name)) {
                 if (Date.now() + command.cooldown * 1000 < Date.now()) cooldowns.delete(command.name)
                 else return
-            }
-            else cooldowns.set(command.name, Date.now())
+            } else cooldowns.set(command.name, Date.now())
             setTimeout(() => { cooldowns.delete(command.name) }, command.cooldown * 1000)
         }
         try {
@@ -114,7 +113,7 @@ async function dmHandler(message) {
                 .setDescription(`\`\`\`${message.content}\`\`\``)
             let confirmModMailMessage = await message.channel.send(confirmModMailEmbed)
             let reactionCollector = new Discord.ReactionCollector(confirmModMailMessage, (r, u) => u.id == message.author.id && (r.emoji.name == '✅' || r.emoji.name == '❌'))
-            reactionCollector.on('collect', async (r, u) => {
+            reactionCollector.on('collect', async(r, u) => {
                 reactionCollector.stop()
                 if (r.emoji.name == '✅') {
                     let guild = await getGuild(message).catch(er => { cancelled = true })
@@ -148,11 +147,17 @@ async function autoMod(message) {
     if (!settings) return;
     if (!message.member.roles.highest || message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.trialrl).position) return
     if (message.mentions.roles.size != 0) mute('Pinging Roles', 2);
+
     function mute(reason, time) {
         //time: 1=1 hour, 2=1 day
         let timeString, timeValue;
-        if (time == 1) { timeString = '1 Hour'; timeValue = 3600000 }
-        else if (time == 2) { timeString = '1 Day'; timeValue = 86400000 }
+        if (time == 1) {
+            timeString = '1 Hour';
+            timeValue = 3600000
+        } else if (time == 2) {
+            timeString = '1 Day';
+            timeValue = 86400000
+        }
         message.member.roles.add(settings.roles.muted)
             .then(db.query(`INSERT INTO mutes (id, guildid, muted, reason, modid, uTime) VALUES ('${message.author.id}', '${message.guild.id}', true, '${reason}','${bot.user.id}', '${Date.now() + timeValue}')`))
             .then(message.author.send(`You have been muted in \`${message.guild.name}\` for \`${reason}\`. This will last for \`${timeString}\``))
@@ -189,11 +194,12 @@ tokenDB.on('error', err => {
     else ErrorLogger.log(err, bot)
 })
 
-bot.on("ready", async () => {
+bot.on("ready", async() => {
     CLIENT_ID = bot.user.id
     console.log(`Bot loaded: ${bot.user.username}`);
     bot.user.setActivity(`vibot.tech <- Soft Launch`);
-    let vi = await bot.users.fetch(`277636691227836419`)
+    //if vibot-developer-id.json exists, use that developer, otherwise it's Vi
+    let vi = await bot.users.fetch(require('../vibot-developer-id') || `277636691227836419`)
     vi.send('Halls Bot Starting Back Up')
 
     //start api
@@ -214,13 +220,13 @@ bot.on("ready", async () => {
         if (!emojiServers.includes(g.id)) {
             let veriActive = g.channels.cache.get(bot.settings[g.id].channels.veriactive)
             if (!veriActive) return;
-            veriActive.bulkDelete(100).catch(er => { })
+            veriActive.bulkDelete(100).catch(er => {})
         }
     })
 
     //vetban check
     bot.setInterval(() => {
-        db.query(`SELECT * FROM vetbans WHERE suspended = true`, async (err, rows) => {
+        db.query(`SELECT * FROM vetbans WHERE suspended = true`, async(err, rows) => {
             if (err) ErrorLogger.log(err, bot)
             for (let i in rows) {
                 if (Date.now() > parseInt(rows[i].uTime)) {
@@ -250,11 +256,9 @@ bot.on("ready", async () => {
                                     .setTimestamp(Date.now())
                                 m.edit(embed)
                             }
-                        }
-                        catch (er) {
+                        } catch (er) {
                             guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${rows[i].id}> has been un-vet-banned automatically`)
-                        }
-                        finally {
+                        } finally {
                             await db.query(`UPDATE vetbans SET suspended = false WHERE id = '${rows[i].id}'`)
                         }
                     } catch (er) {
@@ -267,7 +271,7 @@ bot.on("ready", async () => {
 
     //suspension check
     bot.setInterval(() => {
-        db.query(`SELECT * FROM suspensions WHERE suspended = true AND perma = false`, async (err, rows) => {
+        db.query(`SELECT * FROM suspensions WHERE suspended = true AND perma = false`, async(err, rows) => {
             if (err) ErrorLogger.log(err, bot)
             for (let i in rows) {
                 if (Date.now() > parseInt(rows[i].uTime)) {
@@ -302,11 +306,9 @@ bot.on("ready", async () => {
                                     .setTimestamp(Date.now())
                                 m.edit(embed)
                             }
-                        }
-                        catch (er) {
+                        } catch (er) {
                             guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${rows[i].id}> has been unsuspended automatically`)
-                        }
-                        finally {
+                        } finally {
                             await db.query(`UPDATE suspensions SET suspended = false WHERE id = '${rows[i].id}'`)
                         }
                     } catch (er) {
@@ -319,7 +321,7 @@ bot.on("ready", async () => {
 
     //mute check
     bot.setInterval(() => {
-        db.query(`SELECT * FROM mutes WHERE muted = true`, async (err, rows) => {
+        db.query(`SELECT * FROM mutes WHERE muted = true`, async(err, rows) => {
             if (err) ErrorLogger.log(err, bot)
             for (let i in rows) {
                 if (Date.now() > parseInt(rows[i].uTime)) {
@@ -342,11 +344,11 @@ bot.on("ready", async () => {
     //initialize components (eg. modmail, verification)
     bot.guilds.cache.each(g => {
         if (!emojiServers.includes(g.id)) {
-            vibotChannels.update(g, bot).catch(er => { })
-            if (bot.settings[g.id].backend.modmail) modmail.update(g, bot, db).catch(er => { })
-            if (bot.settings[g.id].backend.verification) verification.init(g, bot, db).catch(er => { })
-            if (bot.settings[g.id].backend.vetverification) vetVerification.init(g, bot, db).catch(er => { })
-            if (bot.settings[g.id].backend.roleassignment) roleAssignment.init(g, bot).catch(er => { })
+            vibotChannels.update(g, bot).catch(er => {})
+            if (bot.settings[g.id].backend.modmail) modmail.update(g, bot, db).catch(er => {})
+            if (bot.settings[g.id].backend.verification) verification.init(g, bot, db).catch(er => {})
+            if (bot.settings[g.id].backend.vetverification) vetVerification.init(g, bot, db).catch(er => {})
+            if (bot.settings[g.id].backend.roleassignment) roleAssignment.init(g, bot).catch(er => {})
         }
     })
 
@@ -417,7 +419,7 @@ process.on('unhandledRejection', err => {
 })
 
 async function getGuild(message) {
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async(resolve, reject) => {
         let guilds = []
         bot.guilds.cache.each(g => {
             if (g.members.cache.has(message.author.id) && !emojiServers.includes(g.id)) {
@@ -457,19 +459,63 @@ async function getGuild(message) {
                 })
             } else {
                 let reactionCollector = new Discord.ReactionCollector(guildSelectionMessage, (r, u) => !u.bot)
-                reactionCollector.on('collect', async (r, u) => {
+                reactionCollector.on('collect', async(r, u) => {
                     switch (r.emoji.name) {
-                        case '1️⃣': resolve(guilds[0]); await guildSelectionMessage.delete(); reactionCollector.stop(); break;
-                        case '2️⃣': resolve(guilds[1]); await guildSelectionMessage.delete(); reactionCollector.stop(); break;
-                        case '3️⃣': resolve(guilds[2]); await guildSelectionMessage.delete(); reactionCollector.stop(); break;
-                        case '4️⃣': resolve(guilds[3]); await guildSelectionMessage.delete(); reactionCollector.stop(); break;
-                        case '5️⃣': resolve(guilds[4]); await guildSelectionMessage.delete(); reactionCollector.stop(); break;
-                        case '6️⃣': resolve(guilds[5]); await guildSelectionMessage.delete(); reactionCollector.stop(); break;
-                        case '7️⃣': resolve(guilds[6]); await guildSelectionMessage.delete(); reactionCollector.stop(); break;
-                        case '8️⃣': resolve(guilds[7]); await guildSelectionMessage.delete(); reactionCollector.stop(); break;
-                        case '9️⃣': resolve(guilds[8]); await guildSelectionMessage.delete(); reactionCollector.stop(); break;
-                        case '🔟': resolve(guilds[9]); await guildSelectionMessage.delete(); reactionCollector.stop(); break;
-                        case '❌': reject('User Cancelled'); await guildSelectionMessage.delete(); reactionCollector.stop(); break;
+                        case '1️⃣':
+                            resolve(guilds[0]);
+                            await guildSelectionMessage.delete();
+                            reactionCollector.stop();
+                            break;
+                        case '2️⃣':
+                            resolve(guilds[1]);
+                            await guildSelectionMessage.delete();
+                            reactionCollector.stop();
+                            break;
+                        case '3️⃣':
+                            resolve(guilds[2]);
+                            await guildSelectionMessage.delete();
+                            reactionCollector.stop();
+                            break;
+                        case '4️⃣':
+                            resolve(guilds[3]);
+                            await guildSelectionMessage.delete();
+                            reactionCollector.stop();
+                            break;
+                        case '5️⃣':
+                            resolve(guilds[4]);
+                            await guildSelectionMessage.delete();
+                            reactionCollector.stop();
+                            break;
+                        case '6️⃣':
+                            resolve(guilds[5]);
+                            await guildSelectionMessage.delete();
+                            reactionCollector.stop();
+                            break;
+                        case '7️⃣':
+                            resolve(guilds[6]);
+                            await guildSelectionMessage.delete();
+                            reactionCollector.stop();
+                            break;
+                        case '8️⃣':
+                            resolve(guilds[7]);
+                            await guildSelectionMessage.delete();
+                            reactionCollector.stop();
+                            break;
+                        case '9️⃣':
+                            resolve(guilds[8]);
+                            await guildSelectionMessage.delete();
+                            reactionCollector.stop();
+                            break;
+                        case '🔟':
+                            resolve(guilds[9]);
+                            await guildSelectionMessage.delete();
+                            reactionCollector.stop();
+                            break;
+                        case '❌':
+                            reject('User Cancelled');
+                            await guildSelectionMessage.delete();
+                            reactionCollector.stop();
+                            break;
                         default:
                             let retryMessage = await message.channel.send('There was an issue with the reaction. Please try again');
                             setTimeout(() => { retryMessage.delete() }, 5000)
@@ -477,16 +523,36 @@ async function getGuild(message) {
                 })
                 for (let i = 0; i < guilds.length; i++) {
                     switch (i) {
-                        case 0: await guildSelectionMessage.react('1️⃣'); break;
-                        case 1: await guildSelectionMessage.react('2️⃣'); break;
-                        case 2: await guildSelectionMessage.react('3️⃣'); break;
-                        case 3: await guildSelectionMessage.react('4️⃣'); break;
-                        case 4: await guildSelectionMessage.react('5️⃣'); break;
-                        case 5: await guildSelectionMessage.react('6️⃣'); break;
-                        case 6: await guildSelectionMessage.react('7️⃣'); break;
-                        case 7: await guildSelectionMessage.react('8️⃣'); break;
-                        case 8: await guildSelectionMessage.react('9️⃣'); break;
-                        case 9: await guildSelectionMessage.react('🔟'); break;
+                        case 0:
+                            await guildSelectionMessage.react('1️⃣');
+                            break;
+                        case 1:
+                            await guildSelectionMessage.react('2️⃣');
+                            break;
+                        case 2:
+                            await guildSelectionMessage.react('3️⃣');
+                            break;
+                        case 3:
+                            await guildSelectionMessage.react('4️⃣');
+                            break;
+                        case 4:
+                            await guildSelectionMessage.react('5️⃣');
+                            break;
+                        case 5:
+                            await guildSelectionMessage.react('6️⃣');
+                            break;
+                        case 6:
+                            await guildSelectionMessage.react('7️⃣');
+                            break;
+                        case 7:
+                            await guildSelectionMessage.react('8️⃣');
+                            break;
+                        case 8:
+                            await guildSelectionMessage.react('9️⃣');
+                            break;
+                        case 9:
+                            await guildSelectionMessage.react('🔟');
+                            break;
                     }
                 }
                 await guildSelectionMessage.react('❌')
@@ -541,7 +607,7 @@ function startAPI() {
         })
         app.use('/api/', apiLimit)
 
-        router.get('/', function (req, res) {
+        router.get('/', function(req, res) {
             res.json({ message: 'hooray! welcome to our api!' });
         });
 

@@ -16,8 +16,7 @@
         "timeLimit": 360,
         "keyCount": 1,
         "earlyLocationCost": 20,
-        "earlyLocationReacts": [
-            {
+        "earlyLocationReacts": [{
                 "emoteID": "720404844187353099",
                 "pointsGiven": 2,
                 "limit": 3,
@@ -43,7 +42,7 @@
             "color": "#ff0000",
             "description": "To join, **connect to the raiding channel by clicking its name**\nIf you have a key react with <:LostHallsKey:701491230260985877>\nTo indicate your class or gear choices, react with <:Warrior:723018431489900595> <:Paladin:723018431296831539> <:Knight:723018431598952498> <:Wizard:723018431573655643> <:UTMarbleSeal:720401067086446672> <:UTTomeoftheMushroomTribes:720404621331267697>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:720404844187353099>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC"
         },
-		"font-color": "#000000"
+        "font-color": "#000000"
     },
     "void": {
         "runType": "Void",
@@ -63,14 +62,12 @@
         "timeLimit": 360,
         "keyCount": 1,
         "earlyLocationCost": 25,
-        "earlyLocationReacts": [
-            {
-                "emoteID": "723019533597802507",
-                "pointsGiven": 1,
-                "limit": 1,
-                "shortName": "armorbreak"
-            }
-        ],
+        "earlyLocationReacts": [{
+            "emoteID": "723019533597802507",
+            "pointsGiven": 1,
+            "limit": 1,
+            "shortName": "armorbreak"
+        }],
         "reacts": [
             "723018431489900595",
             "723018431296831539",
@@ -83,7 +80,7 @@
             "color": "#2f075c",
             "description": "To join, **connect to the raiding channel by clicking its name**\nIf you have a key or a vial react with <:LostHallsKey:701491230260985877> or <:Vial:701491230567039018>\nTo indicate your class or gear choices, react with <:Warrior:723018431489900595> <:Paladin:723018431296831539> <:Knight:723018431598952498> <:Wizard:723018431573655643> <:UTMarbleSeal:720401067086446672> <:UTTomeoftheMushroomTribes:720404621331267697>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC"
         },
-		"font-color": "#eeeeee"
+        "font-color": "#eeeeee"
     },
     "fullSkipVoid": {
         "runType": "Full-Skip Void",
@@ -103,8 +100,7 @@
         "timeLimit": 360,
         "keyCount": 1,
         "earlyLocationCost": 30,
-        "earlyLocationReacts": [
-            {
+        "earlyLocationReacts": [{
                 "emoteID": "723018431275859969",
                 "pointsGiven": 2,
                 "limit": 3,
@@ -141,7 +137,7 @@
             "color": "#2f075c",
             "description": "To join, **connect to the raiding channel by clicking its name**\nIf you have a key or a vial react with <:LostHallsKey:701491230260985877> or <:Vial:701491230567039018>\nTo indicate your class or gear choices, react with <:Warrior:723018431489900595> <:Paladin:723018431296831539> <:Knight:723018431598952498> <:Wizard:723018431573655643> <:UTMarbleSeal:720401067086446672> <:UTTomeoftheMushroomTribes:720404621331267697>\nIf you are bringing an 8/8 mystic for the skip, react with <:Mystic:723018431275859969>\nIf you are bringing an 8/8 trickster with a Brain for the skip, react with <:STBrainoftheGolem:720263764309704704>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC"
         },
-		"font-color": "#eeeeee"
+        "font-color": "#eeeeee"
     },
     "splitCult": {
         "runType": "Split-Cult",
@@ -160,8 +156,7 @@
         "timeLimit": 360,
         "keyCount": 1,
         "earlyLocationCost": 30,
-        "earlyLocationReacts": [
-            {
+        "earlyLocationReacts": [{
                 "emoteID": "720404844187353099",
                 "pointsGiven": 2,
                 "limit": 3,
@@ -186,58 +181,162 @@
             "color": "#ff0000",
             "description": "To join, **connect to the raiding channel by clicking its name**\nIf you have a key react with <:LostHallsKey:701491230260985877>\nTo indicate your class or gear choices, react with <:Warrior:723018431489900595> <:Paladin:723018431296831539> <:Knight:723018431598952498> <:Wizard:723018431573655643> <:UTMarbleSeal:720401067086446672> <:UTTomeoftheMushroomTribes:720404621331267697> \nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:720404844187353099>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC"
         },
-		"font-color": "#000000"
+        "font-color": "#000000"
     },
     "224586856342224898": {
-        "runType": "Void",
-        "runName": "Fast Void",
-        "symbol": "a",
-        "reqsImageUrl": "https://cdn.discordapp.com/attachments/556931967497666570/763912364528762880/vet_reqs.png",
-        "keyEmoteID": "701491230260985877",
-        "vialEmoteID": "701491230567039018",
-        "pingRole": "voidping",
-        "isSplit": false,
-        "newChannel": true,
-        "vialReact": true,
-        "postAfkCheck": false,
-        "twoPhase": false,
-        "startDelay": 10000,
-        "vcCap": 25,
-        "timeLimit": 360,
-        "keyCount": 1,
-        "earlyLocationCost": 25,
-        "earlyLocationReacts": [
-            {
-                "emoteID": "723018431275859969",
-                "pointsGiven": 2,
-                "limit": 3,
-                "shortName": "mystic"
+        "a": {
+            "runType": "Void",
+            "runName": "Fast Void",
+            "symbol": "a",
+            "reqsImageUrl": "https://cdn.discordapp.com/attachments/556931967497666570/763912364528762880/vet_reqs.png",
+            "keyEmoteID": "701491230260985877",
+            "vialEmoteID": "701491230567039018",
+            "pingRole": "voidping",
+            "isSplit": false,
+            "newChannel": true,
+            "vialReact": true,
+            "postAfkCheck": false,
+            "twoPhase": false,
+            "startDelay": 10000,
+            "vcCap": 25,
+            "timeLimit": 360,
+            "keyCount": 1,
+            "earlyLocationCost": 25,
+            "earlyLocationReacts": [{
+                    "emoteID": "723018431275859969",
+                    "pointsGiven": 2,
+                    "limit": 3,
+                    "shortName": "mystic"
+                },
+                {
+                    "emoteID": "720263764309704704",
+                    "pointsGiven": 2,
+                    "limit": 3,
+                    "shortName": "brain"
+                },
+                {
+                    "emoteID": "723019533597802507",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "armorbreak"
+                }
+            ],
+            "reacts": [
+                "723018431489900595",
+                "723018431296831539",
+                "723018431598952498",
+                "723018431573655643",
+                "720401067086446672",
+                "720404621331267697"
+            ],
+            "embed": {
+                "color": "#2f075c",
+                "description": "come join fast voids meet reqs and bring mystics/tricksters"
             },
-            {
-                "emoteID": "720263764309704704",
-                "pointsGiven": 2,
-                "limit": 3,
-                "shortName": "brain"
+            "font-color": "#eeeeee"
+        }
+    },
+    "130850662522159104": {
+        "a": {
+            "runType": "Full-Skip Cult",
+            "runName": "Husky's Blazing Fast ⏩ Full-Skip Cults",
+            "symbol": "a",
+            "reqsImageUrl": "",
+            "isSplit": false,
+            "twoPhase": true,
+            "newChannel": true,
+            "vialReact": false,
+            "startDelay": 10000,
+            "vcCap": 30,
+            "timeLimit": 300,
+            "keyCount": 3,
+            "pingRole": "cultping",
+            "earlyLocationCost": 40,
+            "earlyLocationReacts": [{
+                    "emoteID": "701491229916921858",
+                    "limit": 3,
+                    "pointsGiven": 3,
+                    "shortName": "rusher",
+                    "requiredRole": "rusher"
+                },
+                {
+                    "emoteID": "701491230395072522",
+                    "limit": 4,
+                    "pointsGiven": 0,
+                    "shortName": "warrior"
+                }
+            ],
+            "reacts": [
+                "701491229925310575",
+                "714612460161859705",
+                "701491230306992219",
+                "702005463377641522"
+            ],
+            "embed": {
+                "color": "#0f0f0f",
+                "description": "Extreme fast 💯 cults ⏩"
             },
-            {
-                "emoteID": "723019533597802507",
-                "pointsGiven": 1,
-                "limit": 1,
-                "shortName": "armorbreak"
-            }
-        ],
-        "reacts": [
-            "723018431489900595",
-            "723018431296831539",
-            "723018431598952498",
-            "723018431573655643",
-            "720401067086446672",
-            "720404621331267697"
-        ],
-        "embed": {
-            "color": "#2f075c",
-            "description": "come join fast voids meet reqs and bring mystics/tricksters"
+            "font-color": "#f0f0f0"
         },
-		"font-color": "#eeeeee"
+        "b": {
+            "runType": "a",
+            "runName": "a",
+            "symbol": "b",
+            "reqsImageUrl": "https://media.discordapp.net/attachments/701483951687991341/800843329171357746/unknown.png",
+            "isSplit": false,
+            "twoPhase": true,
+            "newChannel": false,
+            "postAfkCheck": true,
+            "vialReact": false,
+            "startDelay": 1000,
+            "vcCap": 1,
+            "timeLimit": 1,
+            "keyCount": 1,
+            "pingRole": "voidping",
+            "earlyLocationCost": 1,
+            "earlyLocationReacts": [],
+            "reacts": [],
+            "embed": {
+                "color": "#000",
+                "description": "asdf"
+            },
+            "font-color": "#fff"
+        },
+        "d": {
+            "runType": "Speedy Vet PCaves",
+            "runName": "Super Fast Vet Caves go Brrrrr",
+            "symbol": "d",
+            "reqsImageUrl": "https://media.discordapp.net/attachments/701483951687991341/800844166946619502/O4kWd.png",
+            "isSplit": true,
+            "twoPhase": false,
+            "newChannel": true,
+            "vialReact": false,
+            "startDelay": 5000,
+            "vcCap": 120,
+            "timeLimit": 200,
+            "keyCount": 16,
+            "pingRole": "",
+            "earlyLocationCost": 80,
+            "earlyLocationReacts": [{
+                "emoteID": "701491229975773225",
+                "limit": 1,
+                "pointsGiven": 180,
+                "shortName": "brain",
+                "requiredRole": "headrl"
+            }],
+            "reacts": [
+                "701491230395072522",
+                "702005463377641522",
+                "701491229925310575",
+                "701491230172774442",
+                "701491230306992219",
+                "701491230332157972"
+            ],
+            "embed": {
+                "color": "#123456",
+                "description": "POGGERS PIRATE CAVES JOIN NOW"
+            },
+            "font-color": "#abcdef"
+        }
     }
 }
