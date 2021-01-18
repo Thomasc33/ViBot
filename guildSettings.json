@@ -103,7 +103,8 @@
             "nitrocooldown": 3600000,
             "topkey": 50,
             "bottomkey": 15,
-            "ticketlimit": 5
+            "ticketlimit": 5,
+            "supporterlimit": 5
         },
         "runreqs": {
             "weapon": 10,
@@ -244,7 +245,9 @@
             "vote": true,
             "warn": true,
             "warnremove": true,
-            "warns": true
+            "warns": true,
+            "bruh": true,
+            "testalt": true
         },
         "categories": {
             "raiding": "raiding",

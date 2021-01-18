@@ -76,7 +76,6 @@ module.exports = {
                 await confirmMessage.react('❌')
                 confirmCollector.on('collect', async function (r, u) {
                     if (r.emoji.name === '✅') {
-                        await confirmMessage.delete()
                         db.query(`SELECT * FROM users WHERE id = '${message.author.id}'`, (err, rows) => {
                             if (err) throw err;
                             if (rows.length == 0) return message.channel.send('You are not logged in DB')
@@ -85,24 +84,18 @@ module.exports = {
                         })
                         embed.setColor('#00FF00')
                         desc = '`Event` Run'
-                        confirmCollector.stop()
                         cont()
+                        confirmMessage.delete()
                     }
                     else if (r.emoji.name === '❌') {
-                        await confirmMessage.delete()
-                        confirmCollector.stop()
+                        confirmMessage.delete()
                         return;
                     }
                 })
                 toUpdate = 2;
-            } else {
-                message.channel.send('Run type not recognized. Please try again');
-                return;
-            }
-        } else {
-            message.channel.send("Please specify a run type");
-            return;
-        }
+            } else return message.channel.send('Run type not recognized. Please try again');
+        } else return message.channel.send("Please specify a run type");
+
         if (message.mentions.users && args[0].toLowerCase().charAt(0) !== 'e' || args[0].toLowerCase().charAt(0) !== 'p') {
             desc = desc.concat(`\n`)
             let assistName = 'assists', weeklyAssistName = 'currentweekAssists';
