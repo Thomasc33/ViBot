@@ -80,6 +80,7 @@ module.exports = {
                 }
                 if (channel.id == settings.channels.eventcurrentweek) {
                     try {
+                        console.log('ready to send messages')
                         if (CachedMessages[channel.guild.id] && CachedMessages[channel.guild.id].length > 0) {
                             if (embeds.length !== CachedMessages[channel.guild.id].length) resendMessages()
                             else editMessages()
@@ -103,9 +104,11 @@ module.exports = {
                             for (let i in CachedMessages[channel.guild.id]) {
                                 CachedMessages[channel.guild.id][i].edit(embeds[i])
                             }
+                            console.log('messages edited')
                         }
                     } catch (er) { console.log(er) }
                 } else for (let i in embeds) channel.send(embeds[i])
+                console.log('done')
                 resolve(true)
             })
         })
