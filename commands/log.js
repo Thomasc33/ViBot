@@ -11,6 +11,7 @@ module.exports = {
     role: 'eventrl',
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
+        let toUpdate
         var embed = new Discord.MessageEmbed()
             .setAuthor(message.member.nickname, message.author.avatarURL())
             .setColor('#015c21')
@@ -29,6 +30,7 @@ module.exports = {
                 })
                 embed.setColor('#8c00ff')
                 desc = '`Void` Run'
+                toUpdate = 1;
             } else if (args[0].toLowerCase().charAt(0) == 'c') {
                 db.query(`SELECT * FROM users WHERE id = '${message.author.id}'`, (err, rows) => {
                     if (err) throw err;
@@ -38,6 +40,7 @@ module.exports = {
                 })
                 embed.setColor('#ff0000')
                 desc = '`Cult` Run'
+                toUpdate = 1;
             } else if (args[0].toLowerCase().charAt(0) == 'o') {
                 db.query(`SELECT * FROM users WHERE id = '${message.author.id}'`, (err, rows) => {
                     if (err) throw err;
@@ -47,6 +50,7 @@ module.exports = {
                 })
                 embed.setColor('#8c00ff')
                 desc = '`Oryx` Run'
+                toUpdate = 1;
             } else if (args[0].toLowerCase().charAt(0) == 'p') {
                 db.query(`SELECT * FROM users WHERE id = '${message.author.id}'`, (err, rows) => {
                     if (err) throw err;
@@ -56,6 +60,7 @@ module.exports = {
                 })
                 embed.setColor('#8c00ff')
                 desc = '`Oryx` Parse'
+                toUpdate = 3;
             }
             else if (args[0].toLowerCase().charAt(0) == 'e') {
                 let confirmEmbed = new Discord.MessageEmbed()
@@ -88,6 +93,7 @@ module.exports = {
                         return;
                     }
                 })
+                toUpdate = 2;
             } else {
                 message.channel.send('Run type not recognized. Please try again');
                 return;
@@ -111,14 +117,16 @@ module.exports = {
                     })
                 }
             })
+            toUpdate = 2;
             cont()
         }
         function cont() {
             embed.setDescription(desc)
             message.guild.channels.cache.get(settings.channels.leadinglog).send(embed)
-            if (settings.backend.currentweek) CurrentWeek.update(message.guild, db, bot)
-            if (settings.backend.eventcurrentweek) eCurrentWeek.update(message.guild, db, bot)
-            if (settings.backend.parsecurrentweek) pCurrentWeek.update(message.guild, db, bot)
+            if (!toUpdate) return
+            if (toUpdate == 1 && settings.backend.currentweek) CurrentWeek.update(message.guild, db, bot)
+            if (toUpdate == 2 && settings.backend.eventcurrentweek) eCurrentWeek.update(message.guild, db, bot)
+            if (toUpdate == 3 && settings.backend.parsecurrentweek) pCurrentWeek.update(message.guild, db, bot)
         }
     }
 }

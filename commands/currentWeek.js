@@ -143,7 +143,6 @@ module.exports = {
                         }
                     } else embed.setDescription(embed.description.concat(`\n${string}`))
                 }
-                console.log(CachedMessages)
                 if (channel.id == settings.channels.currentweek) {
                     try {
                         if (CachedMessages[channel.guild.id] && CachedMessages[channel.guild.id].length > 0) {
