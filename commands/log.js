@@ -121,9 +121,9 @@ module.exports = {
             cont()
         }
         function cont() {
-            return
             embed.setDescription(desc)
             message.guild.channels.cache.get(settings.channels.leadinglog).send(embed)
+            return
             if (!toUpdate) return
             if (toUpdate == 1 && settings.backend.currentweek) CurrentWeek.update(message.guild, db, bot)
             if (toUpdate == 2 && settings.backend.eventcurrentweek) eCurrentWeek.update(message.guild, db, bot)
