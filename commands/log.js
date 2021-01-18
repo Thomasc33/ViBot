@@ -74,7 +74,7 @@ module.exports = {
                 .setTimestamp()
             let confirmMessage = await message.channel.send(confirmEmbed)
             let confirmCollector = new Discord.ReactionCollector(confirmMessage, (r, u) => !u.bot && u.id == message.author.id && (r.emoji.name === '✅' || r.emoji.name === '❌'))
-            confirmMessage.react('✅').then(m => { m.react('❌') })
+            confirmMessage.react('✅').then(confirmMessage.react('❌'))
             confirmCollector.on('collect', async function (r, u) {
                 if (r.emoji.name === '✅') {
                     db.query(`SELECT * FROM users WHERE id = '${message.author.id}'`, (err, rows) => {
