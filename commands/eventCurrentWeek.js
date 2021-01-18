@@ -63,11 +63,9 @@ module.exports = {
                 console.log("about to add in rls who didnt log")
                 console.log(channel.guild.members.cache.filter(m => m.roles.highest.id == settings.roles.eventrl).size)
                 console.log("bruhh")
-                await channel.guild.members.cache.filter(m => m.roles.highest.id == settings.roles.eventrl).each(m => {
-                    if (!logged.includes(m.id)) {
-                        let string = `<@!${m.id}> has not logged any runs or been assisted this week`
-                        fitStringIntoEmbed(embed, string)
-                    }
+                await channel.guild.members.cache.filter(m => m.roles.cache.has(settings.roles.eventrl)).each(m => {
+                    if (m.roles.highest.id == settings.roles.eventrl)
+                        if (!logged.includes(m.id)) fitStringIntoEmbed(embed, `<@!${m.id}> has not logged any runs or been assisted this week`)
                 })
                 console.log("dont adding rls stuff")
                 embeds.push(new Discord.MessageEmbed(embed))
