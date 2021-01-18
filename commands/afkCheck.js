@@ -1026,15 +1026,8 @@ async function createChannel(runInfo, message, bot) {
 
 async function getTemplate(message, afkTemplates, runType) {
     return new Promise(async (res, rej) => {
-        let templates = []
-        for (let i in afkTemplates) {
-            if (i == message.author.id) templates.push(afkTemplates[i])
-        }
-        if (templates.length == 0) rej('No templates for user')
-        for (let i in templates) {
-            if (templates[i].symbol.toLowerCase() == runType.toLowerCase()) return res(templates[i])
-        }
-        rej(`No templates found with the identifyer \`${runType}\``)
+        if (afkTemplates[message.author.id] && afkTemplates[message.author.id][runType.toLowerCase()]) return res(afkTemplates[message.author.id][runType.toLowerCase()])
+        else rej(`No templates for user under: ${runType}`)
     })
 }
 
