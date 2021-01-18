@@ -61,6 +61,7 @@ module.exports = {
                 embed.setColor('#8c00ff')
                 desc = '`Oryx` Parse'
                 toUpdate = 3;
+                cont()
             }
             else if (args[0].toLowerCase().charAt(0) == 'e') {
                 let confirmEmbed = new Discord.MessageEmbed()
@@ -123,9 +124,9 @@ module.exports = {
             embed.setDescription(desc)
             message.guild.channels.cache.get(settings.channels.leadinglog).send(embed)
             if (!toUpdate) return
-            if (toUpdate == 1 && settings.backend.currentweek) { console.log('currentweek'); CurrentWeek.update(message.guild, db, bot) }
-            if (toUpdate == 2 && settings.backend.eventcurrentweek) { console.log('ecurrentweek'); eCurrentWeek.update(message.guild, db, bot) }
-            if (toUpdate == 3 && settings.backend.parsecurrentweek) { console.log('pcurrentweek'); pCurrentWeek.update(message.guild, db, bot) }
+            if (toUpdate == 1 && settings.backend.currentweek) CurrentWeek.update(message.guild, db, bot)
+            if (toUpdate == 2 && settings.backend.eventcurrentweek) eCurrentWeek.update(message.guild, db, bot)
+            if (toUpdate == 3 && settings.backend.parsecurrentweek) pCurrentWeek.update(message.guild, db, bot)
         }
     }
 }

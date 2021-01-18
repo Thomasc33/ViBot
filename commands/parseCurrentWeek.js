@@ -134,11 +134,11 @@ module.exports = {
                         }
                         async function editMessages() {
                             for (let i in CachedMessages[channel.guild.id]) {
-                                await CachedMessages[channel.guild.id][i].edit(embeds[i])
+                                CachedMessages[channel.guild.id][i].edit(embeds[i])
                             }
                         }
                     } catch (er) { console.log(er) }
-                } else for (let i in embeds) await channel.send(embeds[i])
+                } else for (let i in embeds) channel.send(embeds[i])
                 resolve(true)
             })
         })
