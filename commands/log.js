@@ -123,11 +123,10 @@ module.exports = {
         function cont() {
             embed.setDescription(desc)
             message.guild.channels.cache.get(settings.channels.leadinglog).send(embed)
-            return
             if (!toUpdate) return
-            if (toUpdate == 1 && settings.backend.currentweek) CurrentWeek.update(message.guild, db, bot)
-            if (toUpdate == 2 && settings.backend.eventcurrentweek) eCurrentWeek.update(message.guild, db, bot)
-            if (toUpdate == 3 && settings.backend.parsecurrentweek) pCurrentWeek.update(message.guild, db, bot)
+            if (toUpdate == 1 && settings.backend.currentweek) { console.log('currentweek'); CurrentWeek.update(message.guild, db, bot) }
+            if (toUpdate == 2 && settings.backend.eventcurrentweek) { console.log('ecurrentweek'); eCurrentWeek.update(message.guild, db, bot) }
+            if (toUpdate == 3 && settings.backend.parsecurrentweek) { console.log('pcurrentweek'); pCurrentWeek.update(message.guild, db, bot) }
         }
     }
 }

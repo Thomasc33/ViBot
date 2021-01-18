@@ -67,6 +67,7 @@ module.exports = {
         let settings = bot.settings[guild.id]
         let currentweek = guild.channels.cache.get(settings.channels.currentweek)
         if (!currentweek) return;
+        console.log(70)
         this.sendEmbed(currentweek, db, bot)
     },
     async sendEmbed(channel, db, bot) {
@@ -76,11 +77,13 @@ module.exports = {
             if (channel.guild.id == i.id) info = i
         }
         if (!info) return
+        console.log(80)
         return new Promise(async function (resolve, reject) {
             let query1 = `SELECT * FROM users WHERE `
             for (let i of info.runs) query1 += `${i} != 0 OR `
             for (let i of info.assists) query1 += `${i} != 0 OR `
             db.query(query1.substring(0, query1.length - 3), async function (err, rows) {
+                console.log(86)
                 if (err) reject(err)
                 let logged = []
                 let runs = 0
@@ -116,6 +119,7 @@ module.exports = {
                     logged.push(i.id)
                     index++;
                 }
+                console.log(122)
                 await channel.guild.members.cache.filter(m => m.roles.cache.has(settings.roles.almostrl) || m.roles.cache.has(settings.roles.rl)).each(m => {
                     if (!logged.includes(m.id)) {
                         let string = `<@!${m.id}> has not logged any runs or been assisted this week`
@@ -124,6 +128,7 @@ module.exports = {
                 })
                 embed.setFooter(`${runs} Total Runs`)
                 embeds.push(new Discord.MessageEmbed(embed))
+                console.log(131)
                 function fitStringIntoEmbed(embed, string) {
                     if (embed.description == 'None!') embed.setDescription(string)
                     else if (embed.description.length + `\n${string}`.length >= 2048) {//change to 2048
@@ -145,11 +150,13 @@ module.exports = {
                 }
                 if (channel.id == settings.channels.currentweek) {
                     try {
+                        console.log(153)
                         if (CachedMessages[channel.guild.id] && CachedMessages[channel.guild.id].length > 0) {
                             if (embeds.length !== CachedMessages[channel.guild.id].length) resendMessages()
                             else editMessages()
                         } else gatherMessages()
                         async function resendMessages() {
+                            console.log(159)
                             await channel.bulkDelete(20)
                             if (CachedMessages[channel.guild.id]) CachedMessages[channel.guild.id] = []
                             for (let i in embeds) {
@@ -158,6 +165,7 @@ module.exports = {
                             }
                         }
                         async function gatherMessages() {
+                            console.log(168)
                             CachedMessages[channel.guild.id] = []
                             let messages = await channel.messages.fetch({ limit: 3 })
                             let messageArray = messages.array()
@@ -165,6 +173,7 @@ module.exports = {
                             else for (let i of messageArray) { CachedMessages[channel.guild.id].push(i); editMessages(); }
                         }
                         async function editMessages() {
+                            console.log(176)
                             for (let i in CachedMessages[channel.guild.id]) {
                                 CachedMessages[channel.guild.id][i].edit(embeds[i])
                             }
