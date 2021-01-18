@@ -35,29 +35,39 @@ module.exports = {
     },
     async sendEmbed(channel, db, bot) {
         let settings = bot.settings[channel.guild.id]
+        console.log("returning promise")
         return new Promise(async function (resolve, reject) {
+            console.log("calling db")
             db.query(`SELECT * FROM users WHERE currentweekEvents != 0`, async function (err, rows) {
                 if (err) reject(err)
+                console.log("db call done")
                 let logged = []
                 let embed = new Discord.MessageEmbed()
                     .setColor('#00ff00')
                     .setTitle('This weeks current logged runs!')
                     .setDescription('None!')
+                console.log('about to sort')
                 rows.sort((a, b) => (parseInt(a.currentweekEvents) < parseInt(b.currentweekEvents)) ? 1 : -1)
+                console.log("done sorting")
                 let index = 0
                 let embeds = []
-                for (let i in rows) {
-                    let string = `**[${index + 1}]** <@!${rows[i].id}>:\nMinutes Lead: \`${parseInt(rows[i].currentweekEvents) * 10}\``
+                console.log("about to fit logged strings in embed")
+                for (let i of rows) {
+                    let string = `**[${index + 1}]** <@!${i.id}>:\nMinutes Lead: \`${parseInt(i.currentweekEvents) * 10}\``
                     fitStringIntoEmbed(embed, string)
-                    logged.push(rows[i].id)
+                    logged.push(i.id)
                     index++;
                 }
+                console.log("done fitting logged strings in embed")
+                console.log('logged length', logged.length)
+                console.log("about to add in rls who didnt log")
                 await channel.guild.members.cache.filter(m => m.roles.highest.id == settings.roles.eventrl).each(m => {
                     if (!logged.includes(m.id)) {
                         let string = `<@!${m.id}> has not logged any runs or been assisted this week`
                         fitStringIntoEmbed(embed, string)
                     }
                 })
+                console.log("dont adding rls stuff")
                 embeds.push(new Discord.MessageEmbed(embed))
                 function fitStringIntoEmbed(embed, string) {
                     if (embed.description == 'None!') embed.setDescription(string)
@@ -86,21 +96,26 @@ module.exports = {
                             else editMessages()
                         } else gatherMessages()
                         async function resendMessages() {
+                            console.log("resending messages")
                             await channel.bulkDelete(20)
                             if (CachedMessages[channel.guild.id]) CachedMessages[channel.guild.id] = []
                             for (let i in embeds) {
                                 let m = await channel.send(embeds[i])
                                 CachedMessages[channel.guild.id].push(m)
                             }
+                            console.log("done resending messages")
                         }
                         async function gatherMessages() {
+                            console.log("gathering messages")
                             CachedMessages[channel.guild.id] = []
                             let messages = await channel.messages.fetch({ limit: 3 })
                             let messageArray = messages.array()
                             if (messageArray.length !== embeds.length) resendMessages()
                             else for (let i of messageArray) { CachedMessages[channel.guild.id].push(i); editMessages(); }
+                            console.log("done gathering messages")
                         }
                         async function editMessages() {
+                            console.log("editing messages")
                             for (let i in CachedMessages[channel.guild.id]) {
                                 CachedMessages[channel.guild.id][i].edit(embeds[i])
                             }
