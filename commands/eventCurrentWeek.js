@@ -22,7 +22,7 @@ module.exports = {
     async newWeek(guild, bot, db) {
         let settings = bot.settings[guild.id]
         let leaderLog = guild.channels.cache.get(settings.channels.eventpastweeks)
-        if (leaderLog == null) { console.log('Channel not found'); return; }
+        if (!leaderLog) return console.log('Channel not found')
         await this.sendEmbed(leaderLog, db, bot)
         await db.query(`UPDATE users SET currentweekEvents = 0`)
         this.update(guild, db, bot)
@@ -31,7 +31,6 @@ module.exports = {
         let settings = bot.settings[guild.id]
         let currentweek = guild.channels.cache.get(settings.channels.eventcurrentweek)
         if (!currentweek) return;
-        //await currentweek.bulkDelete(100);
         this.sendEmbed(currentweek, db, bot)
     },
     async sendEmbed(channel, db, bot) {
@@ -54,7 +53,7 @@ module.exports = {
                     index++;
                 }
                 await channel.guild.members.cache.filter(m => m.roles.highest.id == settings.roles.eventrl).each(m => {
-                    if (!rows.includes(m.id)) {
+                    if (!logged.includes(m.id)) {
                         let string = `<@!${m.id}> has not logged any runs or been assisted this week`
                         fitStringIntoEmbed(embed, string)
                     }
