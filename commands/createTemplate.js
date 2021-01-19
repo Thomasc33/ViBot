@@ -161,16 +161,18 @@ module.exports = {
                 //get run symbol
                 const unavailable = [];
                 for (const key in afkTemplates) {
-                    if (afkTemplates[key].symbol)
-                        unavailable.push(afkTemplates[key].symbol);
-                    else if (key == message.author.id) {
+                    if (afkTemplates[key].keyEmoteID) {
+                        unavailable.push(key.toLowerCase());
+                        if (!unavailable.includes(afkTemplates[key].symbol.toLowerCase()))
+                            unavailable.push(afkTemplates[key].symbol.toLowerCase());
+                    } else if (key == message.author.id) {
                         for (const key2 in afkTemplates[key])
-                            unavailable.push(key2);
+                            unavailable.push(key2.toLowerCase());
                     }
                 }
                 embed.addField('Unavailable Symbols', `\`\`\`${unavailable.join(', ')}\`\`\``);
                 await dm.edit(embed);
-                data.symbol = (await dm.channel.next((message) => message.content && !unavailable.some(u => u == message.content[0] || u == message.content), 'Symbol already in use. Please use a different symbol.', author_id)).content.toLowerCase();
+                data.symbol = (await dm.channel.next((message) => message.content && !unavailable.some(u => u[0] == message.content[0].toLowerCase()), 'Symbol already in use. Please use a different symbol.', author_id)).content.toLowerCase();
                 embed.fields.pop(); //remove unavailable symbols field
 
                 //get reqs images
@@ -191,7 +193,6 @@ module.exports = {
                 embed.setDescription('Is this a split group?');
                 await dm.edit(embed);
                 data.isSplit = await dm.confirm(author_id);
-                data.twoPhase = !data.isSplit;
 
                 //get channel style
                 embed.setDescription('Should this create a new channel?')
@@ -207,19 +208,25 @@ module.exports = {
                 data.vialReact = await dm.confirm(author_id);
 
                 //get start delay
-                embed.setDescription('How much delay should the afk have before it starts? Please provide a number between 0 and 120 (in seconds). Type cancel to cancel.')
-                    .addField('Has Vial React', data.vialReact ? 'yes' : 'no', true);
+                embed.addField('Has Vial React', data.vialReact ? 'yes' : 'no', true);
                 await dm.edit(embed);
-                data.startDelay = await dm.channel.nextInt(res => res >= 0 && res <= 120, 'Please enter a time period between 0 and 120 seconds.', author_id);
-                const delaySeconds = data.startDelay % 60,
-                    delayMinutes = (data.startDelay - delaySeconds) / 60;
-                embed.addField('Start Delay', (delayMinutes ? `${delayMinutes} minutes ` : '') + `${delaySeconds} seconds`, true);
-                data.startDelay *= 1000;
+
+                //get two phase
+                embed.setDescription('Should there be a locked phase before unlocking VC?');
+                await dm.edit(embed);
+                data.twoPhase = await dm.confirm(author_id);
+
+                //embed.setDescription('How much delay should the afk have before it starts? Please provide a number between 0 and 120 (in seconds). Type cancel to cancel.')
+                //data.startDelay = await dm.channel.nextInt(res => res >= 0 && res <= 120, 'Please enter a time period between 0 and 120 seconds.', author_id);
+                //const delaySeconds = data.startDelay % 60,
+                //    delayMinutes = (data.startDelay - delaySeconds) / 60;
+                //embed.addField('Start Delay', (delayMinutes ? `${delayMinutes} minutes ` : '') + `${delaySeconds} seconds`, true);
+                data.startDelay = 10000;
 
                 //get vc cap
-                embed.setDescription('How many users should the Voice Channel be capped to? Type cancel to cancel.');
+                embed.setDescription('How many users should the Voice Channel be capped to? The limit is 99. Type cancel to cancel.');
                 await dm.edit(embed);
-                data.vcCap = await dm.channel.nextInt(res => res > 0, 'Please enter a number greater than 0.', author_id);
+                data.vcCap = await dm.channel.nextInt(res => res > 0 && res < 100, 'Please enter a number greater than 0 and less than 99.', author_id);
 
                 //get time limit
                 embed.setDescription('How long should the afk time limit be in seconds? Type cancel to cancel.')
@@ -415,6 +422,7 @@ module.exports = {
                 afkTemplates[message.author.id] = {};
 
             afkTemplates[message.author.id][data.symbol] = data;
+            delete data.symbol;
             fs.writeFileSync(require.resolve('../afkTemplates.json'), JSON.stringify(afkTemplates, null, 4));
             embed.setTitle("Successfully Created Raiding Template")
                 .setColor("#00ff00")

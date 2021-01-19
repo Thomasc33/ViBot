@@ -16,8 +16,7 @@
         "timeLimit": 360,
         "keyCount": 1,
         "earlyLocationCost": 20,
-        "earlyLocationReacts": [
-            {
+        "earlyLocationReacts": [{
                 "emoteID": "720404844187353099",
                 "pointsGiven": 2,
                 "limit": 3,
@@ -63,14 +62,12 @@
         "timeLimit": 360,
         "keyCount": 1,
         "earlyLocationCost": 25,
-        "earlyLocationReacts": [
-            {
-                "emoteID": "723019533597802507",
-                "pointsGiven": 1,
-                "limit": 1,
-                "shortName": "armorbreak"
-            }
-        ],
+        "earlyLocationReacts": [{
+            "emoteID": "723019533597802507",
+            "pointsGiven": 1,
+            "limit": 1,
+            "shortName": "armorbreak"
+        }],
         "reacts": [
             "723018431489900595",
             "723018431296831539",
@@ -103,8 +100,7 @@
         "timeLimit": 360,
         "keyCount": 1,
         "earlyLocationCost": 30,
-        "earlyLocationReacts": [
-            {
+        "earlyLocationReacts": [{
                 "emoteID": "723018431275859969",
                 "pointsGiven": 2,
                 "limit": 3,
@@ -160,8 +156,7 @@
         "timeLimit": 360,
         "keyCount": 1,
         "earlyLocationCost": 30,
-        "earlyLocationReacts": [
-            {
+        "earlyLocationReacts": [{
                 "emoteID": "720404844187353099",
                 "pointsGiven": 2,
                 "limit": 3,
@@ -206,8 +201,7 @@
             "timeLimit": 360,
             "keyCount": 1,
             "earlyLocationCost": 25,
-            "earlyLocationReacts": [
-                {
+            "earlyLocationReacts": [{
                     "emoteID": "723018431275859969",
                     "pointsGiven": 2,
                     "limit": 3,
