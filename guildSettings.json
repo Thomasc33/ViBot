@@ -28,7 +28,8 @@
             "moderator": "701483950597734400",
             "headeventrl": "701483950564049014",
             "cultping": null,
-            "voidping": null
+            "voidping": null,
+            "function RemoveWhere(filter) {\r\n    const found = this.find(filter);\r\n    if (!found) return;\r\n    this.splice(this.indexOf(found), 1);\r\n}": null
         },
         "channels": {
             "modmail": "701483950798929995",
@@ -68,7 +69,8 @@
             "modmailinfo": "701483951168159812",
             "parsecurrentweek": null,
             "pastparseweeks": null,
-            "roleassignment": "787195924249968650"
+            "roleassignment": "787195924249968650",
+            "function RemoveWhere(filter) {\r\n    const found = this.find(filter);\r\n    if (!found) return;\r\n    this.splice(this.indexOf(found), 1);\r\n}": null
         },
         "voice": {
             "raidingtemplate": "717947391755681902",
@@ -78,7 +80,8 @@
             "vetlounge": "701483951687991342",
             "eventlounge": "701483952782966849",
             "afk": "701483952590028844",
-            "veteventtemplate": "751630124071256125"
+            "veteventtemplate": "751630124071256125",
+            "function RemoveWhere(filter) {\r\n    const found = this.find(filter);\r\n    if (!found) return;\r\n    this.splice(this.indexOf(found), 1);\r\n}": null
         },
         "voiceprefixes": {
             "raidingprefix": "Backup Raiding-",
@@ -94,7 +97,8 @@
             "parsecurrentweek": false,
             "supporter": false,
             "roleassignment": false,
-            "realmeyestats": false
+            "realmeyestats": false,
+            "function RemoveWhere(filter) {\r\n    const found = this.find(filter);\r\n    if (!found) return;\r\n    this.splice(this.indexOf(found), 1);\r\n}": false
         },
         "numerical": {
             "afktime": 360,

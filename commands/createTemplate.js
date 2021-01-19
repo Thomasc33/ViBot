@@ -4,7 +4,11 @@ const botSettings = require('../settings.json');
 const guildSettings = require('../guildSettings.json');
 const fs = require('fs');
 const MAX_WAIT = 60000;
-
+Array.prototype.remove = function RemoveWhere(filter) {
+    const found = this.find(filter);
+    if (!found) return;
+    this.splice(this.indexOf(found), 1);
+}
 Discord.Channel.prototype.next = function Next(filter, requirementMessage, author_id) {
     return new Promise((resolve, reject) => {
         const collector = this.createMessageCollector((message) => !message.author.bot && (author_id ? message.author.id == author_id : true), { time: MAX_WAIT });
@@ -15,6 +19,7 @@ Discord.Channel.prototype.next = function Next(filter, requirementMessage, autho
             if (message.content.toLowerCase() === 'cancel') {
                 collector.stop();
                 reject('Manually cancelled.');
+                return;
             }
 
             if (error)
@@ -112,7 +117,7 @@ module.exports = {
         alias: ['ct', 'createt'],
         args: '',
         role: 'vetrl',
-        checkActive: (id) => activeTemplateCreations.includes(id),
+        checkActive: (id) => activeTemplateCreations.find(t => t.author === id),
         /**
          * Main Execution Function
          * @param {Discord.Message} message 
@@ -125,12 +130,12 @@ module.exports = {
             const author_id = message.author.id;
             //Must start it in vet commands
             if (message.channel.id != guildSettings[message.guild.id].channels.vetcommands) return;
-            if (activeTemplateCreations.includes(author_id))
+            if (activeTemplateCreations.find(t => t.author == author_id))
                 return message.channel.send('You are already in the process of creating a raiding template.');
 
             message.delete();
 
-            activeTemplateCreations.push(author_id);
+            activeTemplateCreations.push({ channel: message.channel.id, author: author_id });
             const embed = new Discord.MessageEmbed()
                 .setColor(`#bae1ff`)
                 .setTitle('Creating Veteran Raiding Template')
@@ -339,7 +344,7 @@ module.exports = {
                                             continue;
 
                                         selections.push({ rolename, id: role.id, role });
-                                        roleList.push(`\r\n${selections.length}\r\n${role}`);
+                                        roleList.push(`\r\n${selections.length} ${role}`);
                                         if (roleList.length == 5) {
                                             rolesEmbed.addField('** **', `**${roleList.join('\r\n')}**`, true)
                                             roleList = [];
@@ -416,9 +421,9 @@ module.exports = {
             emojiInfoMessage.edit(emojiInfo);
             dm.edit(embed);
             bot.channels.resolve(guildSettings[message.guild.id].channels.history).send(embed).then(m => m.channel.send(emojiInfo));
-            activeTemplateCreations.splice(activeTemplateCreations.indexOf(message.author.id), 1);
+            activeTemplateCreations.remove(t => t.author == message.author.id); 
         } catch (error) {
-            activeTemplateCreations.splice(activeTemplateCreations.indexOf(message.author.id), 1);
+            activeTemplateCreations.remove(t => t.author == message.author.id); 
             console.log(error);
             embed.setTitle('Raiding Template Cancelled')
                 .setColor('#ff0000')
