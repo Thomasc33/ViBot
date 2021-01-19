@@ -60,6 +60,17 @@ Discord.Message.prototype.confirm = function ConfirmYesNo(author_id) {
     })
 }
 
+function isValidHttpUrl(string) {
+    let url;
+
+    try {
+        url = new URL(string);
+    } catch (_) {
+        return false;
+    }
+
+    return url.protocol === "http:" || url.protocol === "https:";
+}
 Discord.Channel.prototype.nextInt = function NextInt(filter, requirementMessage, author_id) {
     return new Promise((resolve, reject) => {
         const collector = this.createMessageCollector((message) => !message.author.bot && (author_id ? message.author.id == author_id : true) && (!isNaN(message.content) || message.content.toLowerCase() === 'cancel'), { time: MAX_WAIT });
@@ -70,6 +81,7 @@ Discord.Channel.prototype.nextInt = function NextInt(filter, requirementMessage,
             if (message.content.toLowerCase() === 'cancel') {
                 collector.stop();
                 reject('Manually cancelled.');
+                return;
             }
 
             if (error)
@@ -122,9 +134,13 @@ module.exports = {
             const embed = new Discord.MessageEmbed()
                 .setColor(`#bae1ff`)
                 .setTitle('Creating Veteran Raiding Template')
-                .setDescription('Which type of dungeon do you want to create a template for? Type cancel to cancel.');
-            const data = {};
+                .setAuthor(message.member.nickname, message.author.avatarURL())
+                .setDescription('Which type of dungeon do you want to create a template for? Type cancel to cancel.')
+                .setFooter(`UID: ${message.author.id} • Started at`)
+                .setTimestamp(new Date());
+            const data = { keyEmoteID: botSettings.emoteIDs.LostHallsKey, vialEmoteID: botSettings.emoteIDs.Vial };
             const dm = await message.channel.send({ embed });
+            let emojiInfoMessage;
             try {
                 //get run type
                 data.runType = (await dm.channel.next(null, null, author_id)).content;
@@ -149,17 +165,20 @@ module.exports = {
                 }
                 embed.addField('Unavailable Symbols', `\`\`\`${unavailable.join(', ')}\`\`\``);
                 await dm.edit(embed);
-                data.symbol = (await dm.channel.next((message) => message.content && !unavailable.includes(message.content[0]), 'Symbol already in use. Please use a different symbol.', author_id)).content[0].toLowerCase();
+                data.symbol = (await dm.channel.next((message) => message.content && !unavailable.some(u => u == message.content[0] || u == message.content), 'Symbol already in use. Please use a different symbol.', author_id)).content.toLowerCase();
                 embed.fields.pop(); //remove unavailable symbols field
 
                 //get reqs images
                 embed.setDescription(`What image would you like to provide? (Type 'None' if you don't want one.) Type cancel to cancel.`)
                     .addField('Selected Symbol', data.symbol, true);
                 await dm.edit(embed);
-                const attachments = (await dm.channel.next(null, null, author_id)).attachments;
+                const imageMsg = await dm.channel.next(null, null, author_id);
+                const attachments = (imageMsg).attachments;
                 data.reqsImageUrl = '';
                 if (attachments && attachments.size)
                     embed.setImage(data.reqsImageUrl = attachments.first().proxyURL);
+                else if (isValidHttpUrl(imageMsg.content))
+                    embed.setImage(data.reqsImageUrl = imageMsg.content);
                 else
                     embed.addField('Image', 'None!', true);
 
@@ -174,8 +193,7 @@ module.exports = {
                     .addField('Is Split', data.isSplit ? 'yes' : 'no', true);
                 await dm.edit(embed);
                 data.newChannel = await dm.confirm(author_id);
-                if (!data.newChannel)
-                    data.postAfkCheck = true;
+                data.postAfkCheck = !data.newChannel;
 
                 //get vial react
                 embed.setDescription('Should this template have a vial react?')
@@ -187,7 +205,7 @@ module.exports = {
                 embed.setDescription('How much delay should the afk have before it starts? Please provide a number between 0 and 120 (in seconds). Type cancel to cancel.')
                     .addField('Has Vial React', data.vialReact ? 'yes' : 'no', true);
                 await dm.edit(embed);
-                data.startDelay = await dm.channel.nextInt(res => res > 0 && res <= 120, 'Please enter a time period between 0 and 120 seconds.', author_id);
+                data.startDelay = await dm.channel.nextInt(res => res >= 0 && res <= 120, 'Please enter a time period between 0 and 120 seconds.', author_id);
                 const delaySeconds = data.startDelay % 60,
                     delayMinutes = (data.startDelay - delaySeconds) / 60;
                 embed.addField('Start Delay', (delayMinutes ? `${delayMinutes} minutes ` : '') + `${delaySeconds} seconds`, true);
@@ -242,20 +260,19 @@ module.exports = {
                     });
                 });
                 dm.reactions.removeAll();
+                embed.addField('Ping Role', (message.guild.roles.cache.find((role) => role.id == guildRoles[data.pingRole]) || { name: data.pingRole || 'None!' }).name, true);
                 //get early location cost
-                console.log(data.pingRole, guildRoles[data.pingRole], message.guild.roles.cache.find((role) => role.id == guildRoles[data.pingRole]));
-                embed.setDescription('How much should early location cost in points? Type cancel to cancel.')
-                    .addField('Ping Role', (message.guild.roles.cache.find((role) => role.id == guildRoles[data.pingRole]) || { name: data.pingRole || 'None!' }).name, true);
+                //embed.setDescription('How much should early location cost in points? Type cancel to cancel.')
                 await dm.edit(embed);
-                data.earlyLocationCost = await dm.channel.nextInt(res => res >= 0, 'Please enter an amount of points greater than or equal to 0.', author_id);
+                data.earlyLocationCost = 30; //await dm.channel.nextInt(res => res >= 0, 'Please enter an amount of points greater than or equal to 0.', author_id);
+                //embed.addField('Early Location Cost', `${data.earlyLocationCost}`, true);
 
                 //get early location reacts
-                embed.setDescription('Currently gathering template reactions.')
-                    .addField('Early Location Cost', `${data.earlyLocationCost}`, true);
+                embed.setDescription('Currently gathering template reactions.');
                 await dm.edit(embed);
 
                 const emojiInfo = new Discord.MessageEmbed().setDescription('React to this message with all early reactions. Any not accessible by me will be ignored. React to the ❌ to finish adding reactions.')
-                const emojiInfoMessage = await message.channel.send(emojiInfo);
+                emojiInfoMessage = await message.channel.send(emojiInfo);
 
                 function GetAllReactions() {
                     return new Promise(async(resolve) => {
@@ -282,9 +299,9 @@ module.exports = {
                     await emojiInfoMessage.edit(emojiInfo);
                     reaction.limit = await emojiInfoMessage.channel.nextInt(res => res > 0, 'Please enter a number equal to or greater than 1.', author_id);
 
-                    emojiInfo.setDescription(`${emoji}: How many points should be given for this react?`);
-                    await emojiInfoMessage.edit(emojiInfo);
-                    reaction.pointsGiven = await emojiInfoMessage.channel.nextInt(res => res >= 0, 'Please enter a number equal to or greater than 0.', author_id);
+                    // emojiInfo.setDescription(`${emoji}: How many points should be given for this react?`);
+                    // await emojiInfoMessage.edit(emojiInfo);
+                    reaction.pointsGiven = 0; //await emojiInfoMessage.channel.nextInt(res => res >= 0, 'Please enter a number equal to or greater than 0.', author_id);
 
                     emojiInfo.setDescription(`${emoji}: What is the short name of the react? No spaces allowed`);
                     await emojiInfoMessage.edit(emojiInfo);
@@ -304,28 +321,40 @@ module.exports = {
                     if (await emojiInfoMessage.confirm(author_id)) {
                         function GetRoleSelection() {
                             return new Promise(async(resolve, reject) => {
-                                const rolesEmbed = new Discord.MessageEmbed()
-                                    .setColor("#000000")
-                                    .setAuthor("Roles List")
-                                    .setDescription("Choose from the following roles which should be the required role:");
-                                const selections = [];
-                                let roleListText = '0: No Role\r\n';
-                                for (const rolename in guildRoles) {
-                                    if (!guildRoles[rolename])
-                                        continue;
+                                let rolesMessage;
+                                try {
+                                    const rolesEmbed = new Discord.MessageEmbed()
+                                        .setColor("#000000")
+                                        .setAuthor("Roles List")
+                                        .setDescription("Choose from the following roles which should be the required role:");
+                                    const selections = [];
+                                    let roleList = ['\r\n0\r\nNo Role'];
 
-                                    const role = message.guild.roles.resolve(guildRoles[rolename]);
-                                    if (!role)
-                                        continue;
+                                    for (const rolename in guildRoles) {
+                                        if (!guildRoles[rolename])
+                                            continue;
 
-                                    selections.push({ rolename, id: role.id, role });
-                                    roleListText += `***${selections.length}***: ${role}\r\n\r\n`;
+                                        const role = message.guild.roles.resolve(guildRoles[rolename]);
+                                        if (!role)
+                                            continue;
+
+                                        selections.push({ rolename, id: role.id, role });
+                                        roleList.push(`\r\n${selections.length}\r\n${role}`);
+                                        if (roleList.length == 5) {
+                                            rolesEmbed.addField('** **', `**${roleList.join('\r\n')}**`, true)
+                                            roleList = [];
+                                        }
+                                    }
+                                    if (roleList.length)
+                                        rolesEmbed.addField('** **', `**${roleList.join('\r\n')}**`, true)
+                                    rolesMessage = await emojiInfoMessage.channel.send(rolesEmbed);
+                                    const selection_idx = await emojiInfoMessage.channel.nextInt(res => res >= 0 && res <= selections.length, `Please enter a value between 0 and ${selections.length}. Enter 0 for no role.`, author_id);
+                                    rolesMessage.delete();
+                                    resolve(selection_idx == 0 ? null : selections[selection_idx - 1]);
+                                } catch (err) {
+                                    if (rolesMessage) rolesMessage.delete();
+                                    reject(err);
                                 }
-                                rolesEmbed.addField('Roles', `${roleListText}`);
-                                const rolesMessage = await emojiInfoMessage.channel.send(rolesEmbed);
-                                const selection_idx = await emojiInfoMessage.channel.nextInt(res => res >= 0 && res <= selections.length, `Please enter a value between 0 and ${selections.length}. Enter 0 for no role.`, author_id);
-                                rolesMessage.delete();
-                                resolve(selection_idx == 0 ? null : selections[selection_idx - 1]);
                             })
                         }
 
@@ -333,7 +362,7 @@ module.exports = {
                     }
 
                     data.earlyLocationReacts.push(reaction);
-                    emojiInfo.addField(`${emoji} ${reaction.shortName} ${emoji}`, `*Early React*\r\nPoints Given: ${reaction.pointsGiven}\r\nReaction Limit: ${reaction.limit}${reaction.requiredRole? `\r\nRequired Role: ${reaction.requiredRole.role}` : ''}`)
+                    emojiInfo.addField(`${emoji} ${reaction.shortName} ${emoji}`, `*Early React*\r\nPoints Given: ${reaction.pointsGiven}\r\nReaction Limit: ${reaction.limit}${reaction.requiredRole? `\r\nRequired Role:\r\n${reaction.requiredRole.role}` : ''}`, true)
                 if (reaction.requiredRole)
                     reaction.requiredRole = reaction.requiredRole.rolename;
             }
@@ -357,18 +386,18 @@ module.exports = {
             data.embed.color = (await dm.channel.next(({ content }) => /^#([a-f0-9]{3}|[a-f0-9]{6})$/i.test(content), 'Please give a hex color code in the form `#123abc`.', author_id)).content;
 
             embed.setDescription('What color would you like the text of the embed to be? Please give a hex color code in the form `#123abc`. Type cancel to cancel.')
-                .addField('Color', data.embed.color);
+                .addField('Color', data.embed.color, true);
             await dm.edit(embed);
             data["font-color"] = (await dm.channel.next(({ content }) => /^#([a-f0-9]{3}|[a-f0-9]{6})$/i.test(content), 'Please give a hex color code in the form `#123abc`.', author_id)).content;
 
             //get embed description
             embed.setDescription('What description do you want to use for your AFK check? Type cancel to cancel.')
-                .addField('Text Color', data["font-color"]);
+                .addField('Text Color', data["font-color"], true);
             await dm.edit(embed);
             data.embed.description = (await dm.channel.next(null, null, author_id)).content;
 
             embed.setDescription('Are you sure you want to create the following raiding template?')
-                .addField('Description', data.embed.description);
+                .addField('Description', data.embed.description, true);
             await dm.edit(embed);
             if (!await dm.confirm(author_id))
                 throw 'Manually cancelled.';
@@ -380,19 +409,31 @@ module.exports = {
             fs.writeFileSync(require.resolve('../afkTemplates.json'), JSON.stringify(afkTemplates));
             embed.setTitle("Successfully Created Raiding Template")
                 .setColor("#00ff00")
-                .setDescription("Successfully created the following raiding template:");
+                .setDescription("Successfully created the following raiding template:")
+                .setFooter(`UID: ${message.author.id} • Symbol: ${data.symbol} • Created at`)
+                .setTimestamp(new Date());;
             emojiInfo.setColor("#00ff00");
             emojiInfoMessage.edit(emojiInfo);
             dm.edit(embed);
-
+            bot.channels.resolve(guildSettings[message.guild.id].channels.history).send(embed).then(m => m.channel.send(emojiInfo));
             activeTemplateCreations.splice(activeTemplateCreations.indexOf(message.author.id), 1);
         } catch (error) {
             activeTemplateCreations.splice(activeTemplateCreations.indexOf(message.author.id), 1);
             console.log(error);
             embed.setTitle('Raiding Template Cancelled')
                 .setColor('#ff0000')
-                .setDescription(error.stack || error);
+                .setDescription(error.stack || error)
+                .setFooter(`UID: ${message.author.id} • Cancelled at`)
+                .setTimestamp(new Date());
             dm.edit(embed);
+            if (emojiInfoMessage)
+            {
+                emojiInfoMessage.embeds[0].setColor('#ff0000')
+                    .setFooter(`Cancelled at`)
+                    .setTimestamp(new Date())
+                    .setTitle('Raiding Template Cancelled');
+                emojiInfoMessage.edit(emojiInfoMessage.embeds[0]);
+            }
         }
     }
 };

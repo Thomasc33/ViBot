@@ -24,6 +24,7 @@ const stats = require('./commands/stats')
 const modmail = require('./commands/modmail')
 const setup = require('./commands/setup')
 const restarting = require('./commands/restart')
+const createTemplate = require('./commands/createTemplate')
 const emojiServers = require('./data/emojiServers.json')
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 const express = require('express')
@@ -47,6 +48,7 @@ bot.on('message', message => {
     try {
         if (message.channel.type === 'dm') return dmHandler(message);
         if (message.author.bot) return;
+        if (createTemplate.checkActive(message.author.id)) return;
         if (!message.content.startsWith(prefix)) return autoMod(message);
         const args = message.content.slice(prefix.length).split(/ +/);
         const commandName = args.shift().toLowerCase()
