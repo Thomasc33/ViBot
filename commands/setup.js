@@ -80,8 +80,8 @@ module.exports = {
                         let num = m.content
                         if (m.content.replace(/[^0-9]/g, '') != m.content) {
                             if (m.content = 'cancel') {
-                                await setupMessage.delete()
-                                await message.react('✅')
+                                setupMessage.delete()
+                                message.react('✅')
                                 rolesMenu.stop()
                             } else message.channel.send('Invalid number recieved. Please try again')
                         } else {
@@ -91,8 +91,8 @@ module.exports = {
                             let newRoleNameCollector = new Discord.MessageCollector(message.channel, m => m.author.id == message.author.id)
                             newRoleNameCollector.on('collect', async mes => {
                                 if (mes.content.toLowerCase() == 'cancel') {
-                                    await setupMessage.delete()
-                                    await message.react('✅')
+                                    setupMessage.delete()
+                                    message.react('✅')
                                     rolesMenu.stop()
                                 } else {
                                     let change = `\`\`\`${array[parseInt(num) - 1]}: ${bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]]} -> ${mes.content}\`\`\``
@@ -114,8 +114,8 @@ module.exports = {
                                         .setTitle(`Changes Made`)
                                         .setFooter(`Setup completed`)
                                     await setupMessage.edit(setupEmbed)
-                                    await message.react('✅')
-                                    await mes.delete()
+                                    message.react('✅')
+                                    mes.delete()
                                     newRoleNameCollector.stop()
                                 }
                             })

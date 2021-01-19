@@ -10,6 +10,7 @@ bot.commands = new Discord.Collection()
 bot.crasherList = require('./crasherList.json')
 bot.afkChecks = require('./afkChecks.json')
 bot.settings = require('./guildSettings.json')
+bot.serverWhiteList = require('./serverWhiteList.json')
 const cooldowns = new Discord.Collection()
 const ErrorLogger = require(`./lib/logError`)
 const CommandLogger = require('./lib/logCommand')
@@ -48,6 +49,7 @@ bot.on('message', message => {
     try {
         if (message.channel.type === 'dm') return dmHandler(message);
         if (message.author.bot) return;
+        if (!bot.serverWhiteList.includes(message.guild.id)) return
         if (createTemplate.checkActive(message.author.id) && message.channel.id === bot.settings[message.guild.id].channels.vetcommands) return;
         if (!message.content.startsWith(prefix)) return autoMod(message);
         const args = message.content.slice(prefix.length).split(/ +/);
@@ -115,7 +117,7 @@ async function dmHandler(message) {
                 .setDescription(`\`\`\`${message.content}\`\`\``)
             let confirmModMailMessage = await message.channel.send(confirmModMailEmbed)
             let reactionCollector = new Discord.ReactionCollector(confirmModMailMessage, (r, u) => u.id == message.author.id && (r.emoji.name == '✅' || r.emoji.name == '❌'))
-            reactionCollector.on('collect', async(r, u) => {
+            reactionCollector.on('collect', async (r, u) => {
                 reactionCollector.stop()
                 if (r.emoji.name == '✅') {
                     let guild = await getGuild(message).catch(er => { cancelled = true })
@@ -196,12 +198,11 @@ tokenDB.on('error', err => {
     else ErrorLogger.log(err, bot)
 })
 
-bot.on("ready", async() => {
+bot.on("ready", async () => {
     CLIENT_ID = bot.user.id
     console.log(`Bot loaded: ${bot.user.username}`);
-    bot.user.setActivity(`vibot.tech <- Soft Launch`);
-    //if vibot-developer-id.json exists, use that developer, otherwise it's Vi
-    let vi = await bot.users.fetch(require('../vibot-developer-id') || `277636691227836419`)
+    bot.user.setActivity(`vibot.tech <- Soft Launch`)
+    let vi = bot.users.cache.get(botSettings.developerId)
     vi.send('Halls Bot Starting Back Up')
 
     //start api
@@ -222,13 +223,13 @@ bot.on("ready", async() => {
         if (!emojiServers.includes(g.id)) {
             let veriActive = g.channels.cache.get(bot.settings[g.id].channels.veriactive)
             if (!veriActive) return;
-            veriActive.bulkDelete(100).catch(er => {})
+            veriActive.bulkDelete(100).catch(er => { })
         }
     })
 
     //vetban check
     bot.setInterval(() => {
-        db.query(`SELECT * FROM vetbans WHERE suspended = true`, async(err, rows) => {
+        db.query(`SELECT * FROM vetbans WHERE suspended = true`, async (err, rows) => {
             if (err) ErrorLogger.log(err, bot)
             for (let i in rows) {
                 if (Date.now() > parseInt(rows[i].uTime)) {
@@ -273,7 +274,7 @@ bot.on("ready", async() => {
 
     //suspension check
     bot.setInterval(() => {
-        db.query(`SELECT * FROM suspensions WHERE suspended = true AND perma = false`, async(err, rows) => {
+        db.query(`SELECT * FROM suspensions WHERE suspended = true AND perma = false`, async (err, rows) => {
             if (err) ErrorLogger.log(err, bot)
             for (let i in rows) {
                 if (Date.now() > parseInt(rows[i].uTime)) {
@@ -323,7 +324,7 @@ bot.on("ready", async() => {
 
     //mute check
     bot.setInterval(() => {
-        db.query(`SELECT * FROM mutes WHERE muted = true`, async(err, rows) => {
+        db.query(`SELECT * FROM mutes WHERE muted = true`, async (err, rows) => {
             if (err) ErrorLogger.log(err, bot)
             for (let i in rows) {
                 if (Date.now() > parseInt(rows[i].uTime)) {
@@ -346,11 +347,11 @@ bot.on("ready", async() => {
     //initialize components (eg. modmail, verification)
     bot.guilds.cache.each(g => {
         if (!emojiServers.includes(g.id)) {
-            vibotChannels.update(g, bot).catch(er => {})
-            if (bot.settings[g.id].backend.modmail) modmail.update(g, bot, db).catch(er => {})
-            if (bot.settings[g.id].backend.verification) verification.init(g, bot, db).catch(er => {})
-            if (bot.settings[g.id].backend.vetverification) vetVerification.init(g, bot, db).catch(er => {})
-            if (bot.settings[g.id].backend.roleassignment) roleAssignment.init(g, bot).catch(er => {})
+            vibotChannels.update(g, bot).catch(er => { })
+            if (bot.settings[g.id].backend.modmail) modmail.update(g, bot, db).catch(er => { })
+            if (bot.settings[g.id].backend.verification) verification.init(g, bot, db).catch(er => { })
+            if (bot.settings[g.id].backend.vetverification) vetVerification.init(g, bot, db).catch(er => { })
+            if (bot.settings[g.id].backend.roleassignment) roleAssignment.init(g, bot).catch(er => { })
         }
     })
 
@@ -421,7 +422,7 @@ process.on('unhandledRejection', err => {
 })
 
 async function getGuild(message) {
-    return new Promise(async(resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         let guilds = []
         bot.guilds.cache.each(g => {
             if (g.members.cache.has(message.author.id) && !emojiServers.includes(g.id)) {
@@ -461,7 +462,7 @@ async function getGuild(message) {
                 })
             } else {
                 let reactionCollector = new Discord.ReactionCollector(guildSelectionMessage, (r, u) => !u.bot)
-                reactionCollector.on('collect', async(r, u) => {
+                reactionCollector.on('collect', async (r, u) => {
                     switch (r.emoji.name) {
                         case '1️⃣':
                             resolve(guilds[0]);
@@ -609,7 +610,7 @@ function startAPI() {
         })
         app.use('/api/', apiLimit)
 
-        router.get('/', function(req, res) {
+        router.get('/', function (req, res) {
             res.json({ message: 'hooray! welcome to our api!' });
         });
 
