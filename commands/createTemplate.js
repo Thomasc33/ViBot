@@ -415,7 +415,7 @@ module.exports = {
                 afkTemplates[message.author.id] = {};
 
             afkTemplates[message.author.id][data.symbol] = data;
-            fs.writeFileSync(require.resolve('../afkTemplates.json'), JSON.stringify(afkTemplates));
+            fs.writeFileSync(require.resolve('../afkTemplates.json'), JSON.stringify(afkTemplates, null, 4));
             embed.setTitle("Successfully Created Raiding Template")
                 .setColor("#00ff00")
                 .setDescription("Successfully created the following raiding template:")
