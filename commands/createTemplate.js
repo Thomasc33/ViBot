@@ -276,7 +276,9 @@ module.exports = {
                 embed.setDescription('Currently gathering template reactions.');
                 await dm.edit(embed);
 
-                const emojiInfo = new Discord.MessageEmbed().setDescription('React to this message with all early reactions. Any not accessible by me will be ignored. React to the ❌ to finish adding reactions.')
+                const emojiInfo = new Discord.MessageEmbed()
+                    .setDescription('React to this message with all early reactions. Any not accessible by me will be ignored. React to the ❌ to finish adding reactions.')
+                    .setFooter(`TID: ${dm.id}`);
                 emojiInfoMessage = await message.channel.send(emojiInfo);
 
                 function GetAllReactions() {
@@ -402,7 +404,7 @@ module.exports = {
             data.embed.description = (await dm.channel.next(null, null, author_id)).content;
 
             embed.setDescription('Are you sure you want to create the following raiding template?')
-                .addField('Description', data.embed.description, true);
+                .addField('Description', data.embed.description);
             await dm.edit(embed);
             if (!await dm.confirm(author_id))
                 throw 'Manually cancelled.';
@@ -416,7 +418,7 @@ module.exports = {
                 .setColor("#00ff00")
                 .setDescription("Successfully created the following raiding template:")
                 .setFooter(`UID: ${message.author.id} • Symbol: ${data.symbol} • Created at`)
-                .setTimestamp(new Date());;
+                .setTimestamp(new Date());
             emojiInfo.setColor("#00ff00");
             emojiInfoMessage.edit(emojiInfo);
             dm.edit(embed);
@@ -434,7 +436,7 @@ module.exports = {
             if (emojiInfoMessage)
             {
                 emojiInfoMessage.embeds[0].setColor('#ff0000')
-                    .setFooter(`Cancelled at`)
+                    .setFooter(`TID: ${dm.id} • Cancelled at`)
                     .setTimestamp(new Date())
                     .setTitle('Raiding Template Cancelled');
                 emojiInfoMessage.edit(emojiInfoMessage.embeds[0]);
