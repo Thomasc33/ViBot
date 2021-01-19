@@ -4,10 +4,10 @@ const botSettings = require('../settings.json');
 const guildSettings = require('../guildSettings.json');
 const fs = require('fs');
 const MAX_WAIT = 60000;
-Array.prototype.remove = function RemoveWhere(filter) {
-    const found = this.find(filter);
+Array.remove = function RemoveWhere(arr, filter) {
+    const found = arr.find(filter);
     if (!found) return;
-    this.splice(this.indexOf(found), 1);
+    arr.splice(arr.indexOf(found), 1);
 }
 Discord.Channel.prototype.next = function Next(filter, requirementMessage, author_id) {
     return new Promise((resolve, reject) => {
@@ -421,9 +421,9 @@ module.exports = {
             emojiInfoMessage.edit(emojiInfo);
             dm.edit(embed);
             bot.channels.resolve(guildSettings[message.guild.id].channels.history).send(embed).then(m => m.channel.send(emojiInfo));
-            activeTemplateCreations.remove(t => t.author == message.author.id); 
+            Array.remove(activeTemplateCreations, t => t.author == message.author.id); 
         } catch (error) {
-            activeTemplateCreations.remove(t => t.author == message.author.id); 
+            Array.remove(activeTemplateCreations, t => t.author == message.author.id); 
             console.log(error);
             embed.setTitle('Raiding Template Cancelled')
                 .setColor('#ff0000')
