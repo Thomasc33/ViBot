@@ -48,7 +48,7 @@ bot.on('message', message => {
     try {
         if (message.channel.type === 'dm') return dmHandler(message);
         if (message.author.bot) return;
-        if (createTemplate.checkActive(message.author.id)) return;
+        if (createTemplate.checkActive(message.author.id) && message.channel.id === bot.settings[message.guild.id].channels.vetcommands) return;
         if (!message.content.startsWith(prefix)) return autoMod(message);
         const args = message.content.slice(prefix.length).split(/ +/);
         const commandName = args.shift().toLowerCase()
