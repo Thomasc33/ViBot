@@ -3,12 +3,13 @@ const afkTemplates = require('../afkTemplates.json');
 const botSettings = require('../settings.json');
 const guildSettings = require('../guildSettings.json');
 const fs = require('fs');
-const MAX_WAIT = 60000;
+const MAX_WAIT = 120000;
 Array.remove = function RemoveWhere(arr, filter) {
     const found = arr.find(filter);
     if (!found) return;
-    arr.splice(arr.indexOf(found), 1);
+    return arr.splice(arr.indexOf(found), 1)[0];
 }
+
 Discord.Channel.prototype.next = function Next(filter, requirementMessage, author_id) {
     return new Promise((resolve, reject) => {
         const collector = this.createMessageCollector((message) => !message.author.bot && (author_id ? message.author.id == author_id : true), { time: MAX_WAIT });
@@ -127,6 +128,7 @@ module.exports = {
          * @param {import('mysql').Connection} tokenDB 
          */
         async execute(message, args, bot, db, tokenDB, event) {
+
             const author_id = message.author.id;
             //Must start it in vet commands
             if (message.channel.id != guildSettings[message.guild.id].channels.vetcommands) return;
@@ -134,17 +136,43 @@ module.exports = {
                 return message.channel.send('You are already in the process of creating a raiding template.');
 
             message.delete();
+            let templateChannel = message.channel;
+            try {
+                const channel = await message.guild.channels.create(`${message.member.nickname}'s Template Channel`, {
+                    type: 'text',
+                    topic: 'Edit your veteran raiding template here',
+                    parent: message.channel.parent,
+                    position: message.channel.position + 1,
+                    reason: `For creating or editing the raiding template for ${message.member}`,
+                    permissionOverwrites: [{
+                            id: message.guild.roles.everyone.id,
+                            deny: ['VIEW_CHANNEL']
+                        },
+                        {
+                            id: message.author.id,
+                            allow: ['ADD_REACTIONS', 'SEND_MESSAGES', 'VIEW_CHANNEL', 'EMBED_LINKS', 'ATTACH_FILES', 'USE_EXTERNAL_EMOJIS']
+                        }, {
+                            id: bot.user,
+                            allow: ['ADD_REACTIONS', 'SEND_MESSAGES', 'VIEW_CHANNEL', 'EMBED_LINKS', 'ATTACH_FILES', 'USE_EXTERNAL_EMOJIS']
+                        }
+                    ]
+                });
+                templateChannel = channel;
+            } catch (err) {
+                message.channel.send(`There were issues creating template channel: ${err}. You may continue doing so in this channel.`);
+            }
 
-            activeTemplateCreations.push({ channel: message.channel.id, author: author_id });
+
+            activeTemplateCreations.push({ channel: templateChannel, author: author_id });
             const embed = new Discord.MessageEmbed()
                 .setColor(`#bae1ff`)
                 .setTitle('Creating Veteran Raiding Template')
-                .setAuthor(message.member.nickname, message.author.avatarURL())
-                .setDescription('Which type of dungeon do you want to create a template for? Type cancel to cancel.')
+                .setAuthor(`${message.member.nickname} (${message.author.tag})`, message.author.avatarURL())
+                .setDescription('What name do you want to give the VC? Type cancel to cancel.')
                 .setFooter(`UID: ${message.author.id} • Started at`)
                 .setTimestamp(new Date());
             const data = { keyEmoteID: botSettings.emoteIDs.LostHallsKey, vialEmoteID: botSettings.emoteIDs.Vial };
-            const dm = await message.channel.send({ embed });
+            const dm = await templateChannel.send(`${message.author}`, { embed });
             let emojiInfoMessage;
             try {
                 //get run type
@@ -196,19 +224,19 @@ module.exports = {
 
                 //get channel style
                 embed.setDescription('Should this create a new channel?')
-                    .addField('Is Split', data.isSplit ? 'yes' : 'no', true);
+                    .addField('Is Split', data.isSplit ? 'Yes' : 'No', true);
                 await dm.edit(embed);
                 data.newChannel = await dm.confirm(author_id);
                 data.postAfkCheck = !data.newChannel;
 
                 //get vial react
                 embed.setDescription('Should this template have a vial react?')
-                    .addField('Creates Channels', data.newChannel ? 'yes' : 'no', true);
+                    .addField('Creates Channels', data.newChannel ? 'Yes' : 'No', true);
                 await dm.edit(embed);
                 data.vialReact = await dm.confirm(author_id);
 
                 //get start delay
-                embed.addField('Has Vial React', data.vialReact ? 'yes' : 'no', true);
+                embed.addField('Has Vial React', data.vialReact ? 'Yes' : 'No', true);
                 await dm.edit(embed);
 
                 //get two phase
@@ -224,7 +252,8 @@ module.exports = {
                 data.startDelay = 10000;
 
                 //get vc cap
-                embed.setDescription('How many users should the Voice Channel be capped to? The limit is 99. Type cancel to cancel.');
+                embed.setDescription('How many users should the Voice Channel be capped to? The limit is 99. Type cancel to cancel.')
+                    .addField('Has Lock Phase', data.twoPhase ? 'Yes' : 'No');
                 await dm.edit(embed);
                 data.vcCap = await dm.channel.nextInt(res => res > 0 && res < 100, 'Please enter a number greater than 0 and less than 99.', author_id);
 
@@ -245,7 +274,6 @@ module.exports = {
                 embed.setDescription('Should this afk ping Void Boi or Cult Boi?')
                     .addField('Key Count', `${data.keyCount}`, true);
                 await dm.edit(embed);
-
                 //get ping role
                 const guildRoles = guildSettings[message.guild.id].roles;
                 data.pingRole = await new Promise((resolve, reject) => {
@@ -273,9 +301,30 @@ module.exports = {
                 });
                 dm.reactions.removeAll();
                 embed.addField('Ping Role', (message.guild.roles.cache.find((role) => role.id == guildRoles[data.pingRole]) || { name: data.pingRole || 'None!' }).name, true);
+                data.embed = {};
+
+                //get embed color
+                embed.setDescription('What color would you like the embed to be? Please give a hex color code in the form `#123abc`. Type cancel to cancel.');
+                await dm.edit(embed);
+                data.embed.color = (await dm.channel.next(({ content }) => /^#([a-f0-9]{3}|[a-f0-9]{6})$/i.test(content), 'Please give a hex color code in the form `#123abc`.', author_id)).content;
+
+                embed.setDescription('What color would you like the text of the embed to be? Please give a hex color code in the form `#123abc`. Type cancel to cancel.')
+                    .addField('Color', data.embed.color, true);
+                await dm.edit(embed);
+                data["font-color"] = (await dm.channel.next(({ content }) => /^#([a-f0-9]{3}|[a-f0-9]{6})$/i.test(content), 'Please give a hex color code in the form `#123abc`.', author_id)).content;
+
+                //get embed description
+                embed.setDescription('What description do you want to use for your AFK check? Type cancel to cancel.')
+                    .addField('Text Color', data["font-color"], true);
+                await dm.edit(embed);
+                data.embed.description = (await dm.channel.next(null, null, author_id)).content;
+                embed.addField('Description', data.embed.description);
+                await dm.edit(embed);
+
+
                 //get early location cost
                 //embed.setDescription('How much should early location cost in points? Type cancel to cancel.')
-                await dm.edit(embed);
+                //await dm.edit(embed);
                 data.earlyLocationCost = 30; //await dm.channel.nextInt(res => res >= 0, 'Please enter an amount of points greater than or equal to 0.', author_id);
                 //embed.addField('Early Location Cost', `${data.earlyLocationCost}`, true);
 
@@ -284,9 +333,9 @@ module.exports = {
                 await dm.edit(embed);
 
                 const emojiInfo = new Discord.MessageEmbed()
-                    .setDescription('React to this message with all early reactions. Any not accessible by me will be removed. React to the ❌ to finish adding reactions.')
+                    .setDescription(`React to this message with all early reactions. ${botSettings.emote.LostHallsKey} ${data.vialReact?'and :Vial: are':'is'} automatically added. Any not accessible by me will be removed. React to the ❌ to finish adding reactions.`)
                     .setFooter(`TID: ${dm.id}`);
-                emojiInfoMessage = await message.channel.send(emojiInfo);
+                emojiInfoMessage = await dm.channel.send(emojiInfo);
 
                 function GetAllReactions() {
                     return new Promise(async(resolve) => {
@@ -394,26 +443,9 @@ module.exports = {
 
             emojiInfo.setDescription(emojiInfo.fields.length ? 'Reactions for this raiding template:' : 'You have added no reactions for this template.');
             await emojiInfoMessage.edit(emojiInfo);
-            data.embed = {};
 
-            //get embed color
-            embed.setDescription('What color would you like the embed to be? Please give a hex color code in the form `#123abc`. Type cancel to cancel.');
-            await dm.edit(embed);
-            data.embed.color = (await dm.channel.next(({ content }) => /^#([a-f0-9]{3}|[a-f0-9]{6})$/i.test(content), 'Please give a hex color code in the form `#123abc`.', author_id)).content;
-
-            embed.setDescription('What color would you like the text of the embed to be? Please give a hex color code in the form `#123abc`. Type cancel to cancel.')
-                .addField('Color', data.embed.color, true);
-            await dm.edit(embed);
-            data["font-color"] = (await dm.channel.next(({ content }) => /^#([a-f0-9]{3}|[a-f0-9]{6})$/i.test(content), 'Please give a hex color code in the form `#123abc`.', author_id)).content;
-
-            //get embed description
-            embed.setDescription('What description do you want to use for your AFK check? Type cancel to cancel.')
-                .addField('Text Color', data["font-color"], true);
-            await dm.edit(embed);
-            data.embed.description = (await dm.channel.next(null, null, author_id)).content;
-
-            embed.setDescription('Are you sure you want to create the following raiding template?')
-                .addField('Description', data.embed.description);
+            embed.setDescription('Are you sure you want to create the following raiding template?\r\n__**Be aware there is currently no template editing after creation, once it\'s made it\'s made.**__')
+                
             await dm.edit(embed);
             if (!await dm.confirm(author_id))
                 throw 'Manually cancelled.';
@@ -421,36 +453,41 @@ module.exports = {
             if (!afkTemplates[message.author.id])
                 afkTemplates[message.author.id] = {};
 
-            afkTemplates[message.author.id][data.symbol] = data;
+            const symbol = data.symbol;
             delete data.symbol;
+            afkTemplates[message.author.id][symbol] = data;
             fs.writeFileSync(require.resolve('../afkTemplates.json'), JSON.stringify(afkTemplates, null, 4));
             embed.setTitle("Successfully Created Raiding Template")
                 .setColor("#00ff00")
                 .setDescription("Successfully created the following raiding template:")
-                .setFooter(`UID: ${message.author.id} • Symbol: ${data.symbol} • Created at`)
+                .setFooter(`UID: ${message.author.id} • ;afk ${symbol} • Created at`)
                 .setTimestamp(new Date());
             emojiInfo.setColor("#00ff00");
-            emojiInfoMessage.edit(emojiInfo);
-            dm.edit(embed);
+            message.author.send(embed).then(message.author.send(emojiInfo))
             bot.channels.resolve(guildSettings[message.guild.id].channels.history).send(embed).then(m => m.channel.send(emojiInfo));
-            Array.remove(activeTemplateCreations, t => t.author == message.author.id); 
+            let template = Array.remove(activeTemplateCreations, t => t.author == message.author.id); 
+            if (message.channel.id !== template.id)
+                template.channel.delete();
         } catch (error) {
-            Array.remove(activeTemplateCreations, t => t.author == message.author.id); 
-            console.log(error);
+            let template = Array.remove(activeTemplateCreations, t => t.author == message.author.id); 
+            if (message.channel.id !== template.id)
+                template.channel.delete();
+
             embed.setTitle('Raiding Template Cancelled')
                 .setColor('#ff0000')
                 .setDescription(error.stack || error)
                 .setFooter(`UID: ${message.author.id} • Cancelled at`)
                 .setTimestamp(new Date());
-            dm.edit(embed);
-            if (emojiInfoMessage)
-            {
-                emojiInfoMessage.embeds[0].setColor('#ff0000')
-                    .setFooter(`TID: ${dm.id} • Cancelled at`)
-                    .setTimestamp(new Date())
-                    .setTitle('Raiding Template Cancelled');
-                emojiInfoMessage.edit(emojiInfoMessage.embeds[0]);
-            }
+            message.author.send(embed).then(() => {
+                if (emojiInfoMessage)
+                {
+                    emojiInfoMessage.embeds[0].setColor('#ff0000')
+                        .setFooter(`TID: ${dm.id} • Cancelled at`)
+                        .setTimestamp(new Date())
+                        .setTitle('Raiding Template Cancelled');
+                    message.author.send(emojiInfoMessage.embeds[0]);
+                }
+            })
         }
     }
 };
