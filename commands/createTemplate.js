@@ -277,7 +277,7 @@ module.exports = {
                 await dm.edit(embed);
 
                 const emojiInfo = new Discord.MessageEmbed()
-                    .setDescription('React to this message with all early reactions. Any not accessible by me will be ignored. React to the ❌ to finish adding reactions.')
+                    .setDescription('React to this message with all early reactions. Any not accessible by me will be removed. React to the ❌ to finish adding reactions.')
                     .setFooter(`TID: ${dm.id}`);
                 emojiInfoMessage = await message.channel.send(emojiInfo);
 
@@ -286,12 +286,14 @@ module.exports = {
                         await emojiInfoMessage.react('❌');
                         const collector = emojiInfoMessage.createReactionCollector((reaction, user) => user.id == author_id, { time: MAX_WAIT * 3 });
                         collector.on('collect', (reaction) => {
+                            if (!bot.emojis.cache.get(reaction.emoji.id))
+                                if (reaction.emoji.name.replace(/[a-z0-9_]/gi, '') !== reaction.emoji.name) reaction.remove();
                             if (reaction.emoji.name === '❌')
                                 collector.stop();
                         });
 
                         collector.on('end', (collected) => {
-                            const reacts = [...emojiInfoMessage.reactions.cache.array().map((reaction) => reaction.emoji).filter(emoji => message.client.emojis.cache.find((e) => e.id == emoji.id) && emoji.name !== '❌')];
+                            const reacts = emojiInfoMessage.reactions.cache.array().map((reaction) => reaction.emoji).filter(emoji => emoji.name !== '❌');
                             emojiInfoMessage.reactions.removeAll();
                             resolve(reacts);
                         });
@@ -383,7 +385,7 @@ module.exports = {
             }
             await emojiInfoMessage.edit(emojiInfo);
 
-            emojiInfo.setDescription('Reactions for this raiding template');
+            emojiInfo.setDescription(emojiInfo.fields.length ? 'Reactions for this raiding template:' : 'You have added no reactions for this template.');
             await emojiInfoMessage.edit(emojiInfo);
             data.embed = {};
 
