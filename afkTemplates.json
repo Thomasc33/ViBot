@@ -16,7 +16,8 @@
         "timeLimit": 360,
         "keyCount": 1,
         "earlyLocationCost": 20,
-        "earlyLocationReacts": [{
+        "earlyLocationReacts": [
+            {
                 "emoteID": "720404844187353099",
                 "pointsGiven": 2,
                 "limit": 3,
@@ -62,12 +63,14 @@
         "timeLimit": 360,
         "keyCount": 1,
         "earlyLocationCost": 25,
-        "earlyLocationReacts": [{
-            "emoteID": "723019533597802507",
-            "pointsGiven": 1,
-            "limit": 1,
-            "shortName": "armorbreak"
-        }],
+        "earlyLocationReacts": [
+            {
+                "emoteID": "723019533597802507",
+                "pointsGiven": 1,
+                "limit": 1,
+                "shortName": "armorbreak"
+            }
+        ],
         "reacts": [
             "723018431489900595",
             "723018431296831539",
@@ -100,7 +103,8 @@
         "timeLimit": 360,
         "keyCount": 1,
         "earlyLocationCost": 30,
-        "earlyLocationReacts": [{
+        "earlyLocationReacts": [
+            {
                 "emoteID": "723018431275859969",
                 "pointsGiven": 2,
                 "limit": 3,
@@ -156,7 +160,8 @@
         "timeLimit": 360,
         "keyCount": 1,
         "earlyLocationCost": 30,
-        "earlyLocationReacts": [{
+        "earlyLocationReacts": [
+            {
                 "emoteID": "720404844187353099",
                 "pointsGiven": 2,
                 "limit": 3,
@@ -201,7 +206,8 @@
             "timeLimit": 360,
             "keyCount": 1,
             "earlyLocationCost": 25,
-            "earlyLocationReacts": [{
+            "earlyLocationReacts": [
+                {
                     "emoteID": "723018431275859969",
                     "pointsGiven": 2,
                     "limit": 3,
@@ -233,6 +239,79 @@
                 "description": "come join fast voids meet reqs and bring mystics/tricksters"
             },
             "font-color": "#eeeeee"
+        }
+    },
+    "258438742430187522": {
+        "pirate": {
+            "keyEmoteID": "701491230260985877",
+            "vialEmoteID": "701491230567039018",
+            "runType": "pirate cave",
+            "runName": "poggers pirate caves",
+            "reqsImageUrl": "",
+            "isSplit": false,
+            "newChannel": true,
+            "postAfkCheck": false,
+            "vialReact": false,
+            "twoPhase": false,
+            "startDelay": 10000,
+            "vcCap": 65,
+            "timeLimit": 300,
+            "keyCount": 10,
+            "pingRole": "",
+            "earlyLocationCost": 30,
+            "earlyLocationReacts": [],
+            "reacts": [],
+            "embed": {
+                "color": "#000000",
+                "description": "lets get this rum"
+            },
+            "font-color": "#000000"
+        }
+    },
+    "394892262993166337": {
+        "d": {
+            "keyEmoteID": "701491230260985877",
+            "vialEmoteID": "701491230567039018",
+            "runType": "Cult",
+            "runName": "Divinity Fullclear Cults",
+            "reqsImageUrl": "https://media.discordapp.net/attachments/556932682316120109/801148050063884328/7EAA7AA243D9BAC09B5CF1FBF023C01300FFA7A4.png",
+            "isSplit": false,
+            "newChannel": true,
+            "postAfkCheck": false,
+            "vialReact": false,
+            "twoPhase": true,
+            "startDelay": 10000,
+            "vcCap": 28,
+            "timeLimit": 300,
+            "keyCount": 2,
+            "pingRole": "cultping",
+            "earlyLocationCost": 30,
+            "earlyLocationReacts": [
+                {
+                    "emoteID": "799025530229751828",
+                    "limit": 20,
+                    "pointsGiven": 0,
+                    "shortName": "divinity"
+                },
+                {
+                    "emoteID": "643190028893421572",
+                    "limit": 1,
+                    "pointsGiven": 0,
+                    "shortName": "mystic"
+                },
+                {
+                    "emoteID": "643190028897615875",
+                    "limit": 1,
+                    "pointsGiven": 0,
+                    "shortName": "brain"
+                }
+            ],
+            "reacts": [],
+            "embed": {
+                "color": "#eb9215",
+                "description": "React to <:divinity:799025530229751828> if you have a Divinity\nReact to <:mystic:643190028893421572> if you have a Mystic with Aether Orb and 85+ Mheal\nReact to <:Brain:708043327395594290> if you have a brain Trickster with 85+ Mheal (and you know what you're doing)"
+            },
+            "font-color": "#ffffff"
         }
     }
 }
