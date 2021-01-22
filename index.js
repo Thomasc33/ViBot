@@ -342,11 +342,11 @@ bot.on("ready", async () => {
     //initialize components (eg. modmail, verification)
     bot.guilds.cache.each(g => {
         if (!emojiServers.includes(g.id)) {
-            vibotChannels.update(g, bot).catch(er => { })
-            if (bot.settings[g.id].backend.modmail) modmail.update(g, bot, db).catch(er => { })
-            if (bot.settings[g.id].backend.verification) verification.init(g, bot, db).catch(er => { })
-            if (bot.settings[g.id].backend.vetverification) vetVerification.init(g, bot, db).catch(er => { })
-            if (bot.settings[g.id].backend.roleassignment) roleAssignment.init(g, bot).catch(er => { })
+            vibotChannels.update(g, bot).catch(er => {})
+            if (bot.settings[g.id].backend.modmail) modmail.update(g, bot, db).catch(er => { ErrorLogger.log(er, bot); })
+            if (bot.settings[g.id].backend.verification) verification.init(g, bot, db).catch(er => { ErrorLogger.log(er, bot); })
+            if (bot.settings[g.id].backend.vetverification) vetVerification.init(g, bot, db).catch(er => { ErrorLogger.log(er, bot); })
+            if (bot.settings[g.id].backend.roleassignment) roleAssignment.init(g, bot).catch(er => { ErrorLogger.log(er, bot); })
         }
     })
 

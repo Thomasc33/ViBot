@@ -162,11 +162,16 @@ module.exports = {
                             let messages = await channel.messages.fetch({ limit: 3 })
                             let messageArray = messages.array()
                             if (messageArray.length !== embeds.length) resendMessages()
-                            else for (let i of messageArray) { CachedMessages[channel.guild.id].push(i); editMessages(); }
+                            else for (let i of messageArray) CachedMessages[channel.guild.id].push(i);
+                            editMessages();
                         }
                         async function editMessages() {
-                            for (let i in CachedMessages[channel.guild.id]) {
-                                CachedMessages[channel.guild.id][i].edit(embeds[i])
+                            for (let i of CachedMessages[channel.guild.id]) {
+                                if (embeds.length == 0) {
+                                    i.delete()
+                                    delete i
+                                }
+                                i.edit(embeds.shift())
                             }
                         }
                     } catch (er) { console.log(er) }
