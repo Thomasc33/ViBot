@@ -381,7 +381,7 @@ module.exports = {
         let settings = bot.settings[guild.id]
         let veriPending = guild.channels.cache.get(settings.channels.manualverification)
         let messages = await veriPending.messages.fetch({ limit: 100 })
-        messages.filter(m => m.reactions.cache.has('🔑')).each(m => {
+        messages.filter(m => m.reactions.cache.has('🔑') && m.author.id == bot.user.id).each(m => {
             this.watchMessage(m, bot, db)
         })
     },
