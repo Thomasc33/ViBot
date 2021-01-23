@@ -16,7 +16,7 @@ const logs = {
                 color: '#8c00ff',
                 desc: '`Void` Run',
                 toUpdate: 1,
-                toDisplay: ['currentweekCult', 'currentweekVoid', 'currentweekAssists']
+                toDisplay: ['currentweekCult', 'currentweekVoid', 'currentweekAssists', 'currentweekFeedback']
             },
             {
                 key: 'c',
@@ -28,7 +28,7 @@ const logs = {
                 color: '#ff0000',
                 desc: '`Cult` Run',
                 toUpdate: 1,
-                toDisplay: ['currentweekCult', 'currentweekVoid', 'currentweekAssists']
+                toDisplay: ['currentweekCult', 'currentweekVoid', 'currentweekAssists', 'currentweekFeedback']
             },
             {
                 key: 'f',
@@ -206,7 +206,7 @@ module.exports = {
                 if (err) return message.channel.send(`Error: ${err}`)
                 if (rows.length < 1) return message.channel.send('Current week stats could not be retrived. However, run was still logged')
 
-                message.channel.send(`Run Logged for ${message.member.nickname || `<@!${message.author.id}>`}. Current week: ${run.toDisplay.map(c => `\`${rows[0][c]}\` ${c}`)}`)
+                message.channel.send(`Run Logged for ${message.member.nickname || `<@!${message.author.id}>`}. Current week: ${run.toDisplay.map(c => ` \`${rows[0][c]}\` ${c.replace('currentweek', '')}`)}`)
                 embed.setColor(run.color)
                 desc = run.desc
                 toUpdate = run.toUpdate
@@ -220,11 +220,11 @@ module.exports = {
             message.mentions.members.each(m => {
                 promises.push(new Promise((res, rej) => {
                     if (m.id !== message.author.id) {
-                        desc = desc + `${message.guild.members.cache.get(m.id)} `
-                        db.query(`UPDATE users SET ${guildInfo.assist.main} = ${guildInfo.assist.main} + 1, ${guildInfo.assist.currentweek} = ${guildInfo.assist.currentweek} + 1 WHERE id = ${m.id}`, (err, rows) => {
+                        desc = desc + `<@!${m.id}> `
+                        db.query(`UPDATE users SET ${guildInfo.assist.main} = ${guildInfo.assist.main} + ${count}, ${guildInfo.assist.currentweek} = ${guildInfo.assist.currentweek} + ${count} WHERE id = ${m.id}`, (err, rows) => {
                             if (err) return res(null)
                             db.query(`SELECT ${guildInfo.assist.currentweek} FROM users WHERE id = '${m.id}'`, (err, rows) => {
-                                message.channel.send(`Assist Logged for ${message.member.nickname || `<@!${message.author.id}>`}. Current week: ${rows[0][guildInfo.assist.currentweek]} Assists`)
+                                message.channel.send(`Assist Logged for ${m.nickname || `<@!${m.id}>`}. Current week: ${rows[0][guildInfo.assist.currentweek]} Assists`)
                                 res(null)
                             })
                         })
