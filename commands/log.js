@@ -175,6 +175,7 @@ module.exports = {
         var embed = new Discord.MessageEmbed().setAuthor(message.member.nickname, message.author.avatarURL() || null)
         var count = 1;
         var desc = '`Successful` Run'
+        let promises = []
 
         //get log info
         let guildInfo = logs[message.guild.id]
@@ -198,27 +199,30 @@ module.exports = {
         if (!confirmed) return
 
         //send query
-        db.query(`UPDATE users SET ${run.main} = ${run.main} + ${count}, ${run.currentweek} = ${run.currentweek} + ${count} WHERE id = '${message.author.id}'`, (err, rows) => {
-            //return if any errors
-            if (err) return message.channel.send(`Error: ${err}`)
+        promises.push(new Promise(res => {
+            db.query(`UPDATE users SET ${run.main} = ${run.main} + ${count}, ${run.currentweek} = ${run.currentweek} + ${count} WHERE id = '${message.author.id}'`, (err, rows) => {
+                //return if any errors
+                if (err) { res(null); return message.channel.send(`Error: ${err}`) }
 
-            db.query(`SELECT * FROM users WHERE id = '${message.author.id}'`, (err, rows) => {
-                if (err) return message.channel.send(`Error: ${err}`)
-                if (rows.length < 1) return message.channel.send('Current week stats could not be retrived. However, run was still logged')
+                db.query(`SELECT * FROM users WHERE id = '${message.author.id}'`, (err, rows) => {
+                    if (err) { res(null); return message.channel.send(`Error: ${err}`) }
+                    if (rows.length < 1) { res(null); return message.channel.send('Current week stats could not be retrived. However, run was still logged') }
 
-                message.channel.send(`Run Logged for ${message.member.nickname || `<@!${message.author.id}>`}. Current week: ${run.toDisplay.map(c => ` \`${rows[0][c]}\` ${c.replace('currentweek', '')}`)}`)
-                embed.setColor(run.color)
-                desc = run.desc
-                toUpdate = run.toUpdate
+                    message.channel.send(`Run Logged for ${message.member.nickname || `<@!${message.author.id}>`}. Current week: ${run.toDisplay.map(c => ` \`${rows[0][c]}\` ${c.replace('currentweek', '')}`)}`)
+                    embed.setColor(run.color)
+                    desc = run.desc
+                    toUpdate = run.toUpdate
+                    res(null)
+                })
             })
-        })
+        }))
+
 
         //assists
-        let promises = []
         if (run.allowAssists && guildInfo.assist) {
             desc = desc.concat(`\n`)
             message.mentions.members.each(m => {
-                promises.push(new Promise((res, rej) => {
+                promises.push(new Promise(res => {
                     if (m.id !== message.author.id) {
                         desc = desc + `<@!${m.id}> `
                         db.query(`UPDATE users SET ${guildInfo.assist.main} = ${guildInfo.assist.main} + ${count}, ${guildInfo.assist.currentweek} = ${guildInfo.assist.currentweek} + ${count} WHERE id = ${m.id}`, (err, rows) => {

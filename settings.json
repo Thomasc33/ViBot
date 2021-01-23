@@ -15,13 +15,13 @@
         "projectId": "vibot-275815"
     },
     "dbInfo": {
-        "host": "75.88.242.11",
+        "host": "40.142.138.170",
         "user": "DevComputer",
         "password": "NiqiPId0R$V9E5v!Y1YyDN3H$y",
         "database": "testinghalls"
     },
     "tokenDBInfo": {
-        "host": "75.88.242.11",
+        "host": "40.142.138.170",
         "user": "DevComputer",
         "password": "NiqiPId0R$V9E5v!Y1YyDN3H$y",
         "database": "supporters"
