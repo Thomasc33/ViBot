@@ -156,7 +156,7 @@ module.exports = {
                             if (CachedMessages[channel.guild.id]) CachedMessages[channel.guild.id] = []
                             for (let i in embeds) {
                                 let m = await channel.send(embeds[i])
-                                CachedMessages[channel.guild.id].shift(m)
+                                CachedMessages[channel.guild.id].push(m)
                             }
                         }
                         async function gatherMessages() {
@@ -164,7 +164,7 @@ module.exports = {
                             let messages = await channel.messages.fetch({ limit: 3 })
                             let messageArray = messages.array()
                             if (messageArray.length !== embeds.length) resendMessages()
-                            else for (let i of messageArray) CachedMessages[channel.guild.id].shift(i);
+                            else for (let i of messageArray) CachedMessages[channel.guild.id].push(i);
                             editMessages();
                         }
                         async function editMessages() {
@@ -173,7 +173,7 @@ module.exports = {
                                     i.delete()
                                     delete i
                                 }
-                                i.edit(embeds.shift())
+                                i.edit(embeds.unshift())
                             }
                         }
                     } catch (er) { console.log(er) }
