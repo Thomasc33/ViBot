@@ -173,7 +173,7 @@ module.exports = {
                                     i.delete()
                                     delete i
                                 }
-                                i.edit(embeds.unshift())
+                                i.edit(embeds.pop())
                             }
                         }
                     } catch (er) { console.log(er) }
