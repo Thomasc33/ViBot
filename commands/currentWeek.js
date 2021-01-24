@@ -61,8 +61,8 @@ module.exports = {
         let leaderLog = guild.channels.cache.get(settings.channels.pastweeks)
         if (!leaderLog) return console.log('Channel not found');
         await this.sendEmbed(leaderLog, db, bot)
-        let q = `UPDATE users SET ${dungeon.runs.map(t => `${t} = 0, `)}${dungeon.assists.map(t => `${t} = 0, `)}`
-        await db.query(q.substring(0, q.length - 2))
+        let q = `UPDATE users SET ${dungeon.runs.join(' = 0, ')} = 0, ${dungeon.assists.join(' = 0, ')} = 0`
+        await db.query(q)
         this.update(guild, db, bot)
     },
     async update(guild, db, bot) {
