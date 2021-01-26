@@ -98,6 +98,7 @@ module.exports = {
         let ign
         if (res) {
             ign = res;
+
             return autoVerify()
         }
 
@@ -352,6 +353,7 @@ module.exports = {
 
         //autoverify
         async function autoVerify() {
+            if(!member) member = guild.members.cache.get(u.id)
             let tag = member.user.tag.substring(0, member.user.tag.length - 5)
             let nick = ''
             if (tag == ign) {

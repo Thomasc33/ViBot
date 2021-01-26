@@ -17,7 +17,7 @@ module.exports = {
             await this.clean(channel, lounge, message, settings)
         } else if (message.channel.parent.name.toLowerCase() === settings.categories.raiding) {
             let lounge = message.guild.channels.cache.get(settings.voice.lounge);
-            let channel = message.guild.channels.cache.find(c => c.name.includes(`${settings.voiceprefixes.raidprefix}${args[0]}`))
+            let channel = message.guild.channels.cache.find(c => c.name.includes(`${settings.voiceprefixes.raidingprefix}${args[0]}`))
             if (!channel || !lounge) return message.channel.send('I could not find one of the voice channels (channel or lounge)')
             await this.clean(channel, lounge, message, settings)
         } else if (message.channel.parent.name.toLowerCase() === settings.categories.raiding) {
