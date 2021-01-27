@@ -4,7 +4,7 @@ const botSettings = require('../settings.json');
 const guildSettings = require('../guildSettings.json');
 const eventTemplates = require('../data/events.json');
 const fs = require('fs');
-require('../lib/extensions.js');
+const ext = require('../lib/extensions.js');
 
 Array.remove = function RemoveWhere(arr, filter) {
     const found = arr.find(filter);
@@ -197,7 +197,7 @@ class AfkTemplate {
                 .setTitle('Key Selection')
                 .setColor('#dadada');
             const keySelection = await this.channel.then((c) => c.send(embed));
-            const collector = keySelection.createReactionCollector((reaction, user) => { reaction.me && user.id == this.author.id }, { time: MAX_WAIT });
+            const collector = keySelection.createReactionCollector((reaction, user) => { reaction.me && user.id == this.author.id }, { time: ext.MAX_WAIT });
             let resolved = false;
             collector.once('collect', (reaction, user) => {
                 resolved = true;
@@ -293,7 +293,7 @@ class AfkTemplate {
             const collector = await this.dm.then(d => d.createReactionCollector((reaction, user) => user.id == this.author.id &&
                 (reaction.emoji.name == '❌' || [botSettings.emoteIDs.voidd,
                     botSettings.emoteIDs.malus
-                ].includes(reaction.emoji.id)), { time: MAX_WAIT }));
+                ].includes(reaction.emoji.id)), { time: ext.MAX_WAIT }));
             let resolved = false;
             new Promise(async() => {
                 await this.dm.then(d => d.react(botSettings.emote.voidd));
@@ -472,16 +472,17 @@ module.exports = {
             await afk_template.updateReacts();
             let emoji;
             do {
-                afk_template.updateDM(`Are you sure you want to create this template? React with ✅ to confirm, ⚙️ to edit, or ❌ to cancel.`);
+                //afk_template.updateDM(`Are you sure you want to create this template? React with ✅ to confirm, ⚙️ to edit, or ❌ to cancel.`);
+                afk_template.updateDM(`Are you sure you want to create this template? React with ✅ to confirm or ❌ to cancel.`);
 
                 emoji = await new Promise(async(resolve, reject) => {
                     const dm = await afk_template.dm;
                     new Promise(async() => {
                         await dm.react('✅');
-                        await dm.react('⚙️');
+                        // await dm.react('⚙️');
                         await dm.react('❌');
                     })
-                    const collector = dm.createReactionCollector((reaction, user) => user.id == afk_template.author.id && ['✅', '⚙️', '❌'].includes(reaction.emoji.name), { time: MAX_WAIT });
+                    const collector = dm.createReactionCollector((reaction, user) => user.id == afk_template.author.id && ['✅', '⚙️', '❌'].includes(reaction.emoji.name), { time: ext.MAX_WAIT });
                     let resolved = false;
                     collector.once('collect', (reaction, user) => {
                         resolved = true;
@@ -506,7 +507,8 @@ module.exports = {
                         bot.channels.resolve(guildSettings[message.guild.id].channels.history).send(afk_template.embed).then(m => m.channel.send(afk_template.reactEmbed));
                         break;
                     case '⚙️':
-                        await afk_template.edit();
+                        //await afk_template.edit();
+                        afk_template.channel.then(ch => ch.send("This isn't supported yet, how do you know to react with it!!?!"));
                         break;
                     case '❌':
                         throw 'Manually cancelled.';
