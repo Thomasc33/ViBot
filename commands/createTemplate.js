@@ -2,68 +2,35 @@ const Discord = require('discord.js')
 const afkTemplates = require('../afkTemplates.json');
 const botSettings = require('../settings.json');
 const guildSettings = require('../guildSettings.json');
+const eventTemplates = require('../data/events.json');
 const fs = require('fs');
-const MAX_WAIT = 120000;
+require('../lib/extensions.js');
+
 Array.remove = function RemoveWhere(arr, filter) {
     const found = arr.find(filter);
     if (!found) return;
     return arr.splice(arr.indexOf(found), 1)[0];
 }
 
-Discord.Channel.prototype.next = function Next(filter, requirementMessage, author_id) {
-    return new Promise((resolve, reject) => {
-        const collector = this.createMessageCollector((message) => !message.author.bot && (author_id ? message.author.id == author_id : true), { time: MAX_WAIT });
-        let resolved = false;
-        let error;
-        collector.on('collect', async(message) => {
-            resolved = true;
-            if (message.content.toLowerCase() === 'cancel') {
-                collector.stop();
-                reject('Manually cancelled.');
-                return;
-            }
+function secondsToStr(sec) {
+    const limitSeconds = sec % 60,
+        limitMinutes = (sec - limitSeconds) / 60;
+    return (limitMinutes ? `${limitMinutes} minutes ` : '') + `${limitSeconds} seconds`;
+}
 
-            if (error)
-                error.then(err => err.delete());
+function timeFromTimeStr(str) {
+    const match = str.match(/^\s*((?<minutes>\d+)\s*m(in(ute)?s?)?)?\s*((?<seconds>\d+)\s*s(ec(ond)?s?)?)?/)
+    if (!match.groups.minutes && !match.groups.seconds) {
+        const min = parseInt(str);
+        if (isNaN(min))
+            return min;
 
-            const result = await message.delete();
-            if (filter && !filter(result)) {
-                resolved = false;
-                error = message.channel.send(`${result.content} is not a valid input.\r\n${requirementMessage}\r\nType cancel to cancel.`)
-                return;
-            }
-            collector.stop();
-            resolve(result);
-        })
-        collector.on('end', () => {
-            const err = 'Template creation timed out.';
-            err.stack = new Error().stack;
-            if (!resolved)
-                reject(err)
-        });
-    });
-};
-
-Discord.Message.prototype.confirm = function ConfirmYesNo(author_id) {
-    const filter = (reaction, user) => !user.bot && ['✅', '❌'].includes(reaction.emoji.name) && (author_id ? user.id == author_id : true);
-    return new Promise((resolve, reject) => {
-        const collector = this.createReactionCollector(filter, { time: MAX_WAIT });
-        this.react('✅').then(this.react('❌'));
-        let resolved = false;
-        collector.once('collect', async(reaction, user) => {
-            resolved = true;
-            collector.stop();
-            await this.reactions.removeAll();
-            resolve(reaction.emoji.name === '✅');
-        })
-        collector.on('end', async() => {
-            await this.reactions.removeAll();
-            const err = 'Template creation timed out.';
-            err.stackTrace = new Error().stack;
-            if (!resolved)
-                reject(err)
-        });
-    })
+        return { min, sec: 0, total: min * 60 };
+    }
+    const min = parseInt(match.groups.minutes || 0),
+        sec = parseInt(match.groups.seconds || 0),
+        total = min * 60 + sec;
+    return { min, sec, total };
 }
 
 function isValidHttpUrl(string) {
@@ -77,415 +44,495 @@ function isValidHttpUrl(string) {
 
     return url.protocol === "http:" || url.protocol === "https:";
 }
-Discord.Channel.prototype.nextInt = function NextInt(filter, requirementMessage, author_id) {
-    return new Promise((resolve, reject) => {
-        const collector = this.createMessageCollector((message) => !message.author.bot && (author_id ? message.author.id == author_id : true) && (!isNaN(message.content) || message.content.toLowerCase() === 'cancel'), { time: MAX_WAIT });
-        let resolved = false;
-        let error;
-        collector.on('collect', async(message) => {
-            resolved = true;
-            if (message.content.toLowerCase() === 'cancel') {
-                collector.stop();
-                reject('Manually cancelled.');
-                return;
-            }
+const yn = (b) => b ? 'Yes' : 'No';
 
-            if (error)
-                error.then(err => err.delete());
-            const result = parseInt((await message.delete()).content);
+class AfkTemplate {
+    constructor(original, bot, data, symbol) {
+        this.data = data || { earlyLocationReacts: [], reacts: [], embed: {}, keyEmoteID: "701491230260985877" };
+        if (!data)
+            this.brandnew = true;
+        this.symbol = symbol;
+        this.original = original;
+        this.author = this.original.author;
+        this.nickname = this.original.member.nickname.split('|')[0].trim();
+        this.embed = new Discord.MessageEmbed()
+            .setTitle('Raiding Template Editor')
+            .setColor('#82EEFD')
+            .setAuthor(`Editing ${this.nickname}'s Raiding Template`, this.author.avatarURL())
+            .setFooter(`UID: ${this.author.id}`)
+            .setImage(this.data.reqsImageUrl)
+            .setTimestamp(new Date());
+        this.reactEmbed = new Discord.MessageEmbed()
+            .setTitle('Reaction List')
+            .setColor('#82EEFD');
+        this.bot = bot;
+        this.guild = this.original.guild;
+    }
 
-            if (filter && !filter(result)) {
-                resolved = false;
-                error = message.channel.send(`${result} is not a valid input.\r\n${requirementMessage}\r\nType cancel to cancel.`);
-                return;
-            }
+    async build() {
+        await this.updateDM();
+    }
+    get fields() {
+        const f = [
+            { name: 'VC Name', value: this.data.runType || 'None!', inline: true },
+            { name: 'Run Name', value: this.data.runName || 'None!', inline: true },
+            { name: 'Key Type', value: `${this.bot.emojis.resolve(this.data.keyEmoteID || "701491230260985877")}`, inline: true },
+            { name: 'AFK Symbol', value: this.symbol || 'None!', inline: true }
+        ];
+        if (!this.data.reqsImageUrl)
+            f.push({ name: 'Image', value: 'None!', inline: true });
+        f.push({ name: 'Ping Role', value: this.data.pingRole || 'None!', inline: true }, { name: 'Split Group', value: yn(this.data.isSplit), inline: true }, { name: 'New Channel', value: yn(this.data.newChannel), inline: true }, { name: 'Needs Vial', value: yn(this.data.vialReact), inline: true }, { name: 'VC Lock Phase', value: yn(this.data.twoPhase), inline: true }, { name: 'VC Cap', value: this.data.vcCap || 1, inline: true }, { name: 'AFK Time Limit', value: secondsToStr(this.data.timeLimit || 360), inline: true }, { name: 'Key Reacts', value: this.data.keyCount || 1, inline: true }, { name: 'Embed Color', value: this.data.embed.color || '#2f075c', inline: true }, { name: 'Font Color', value: this.data['font-color'] || '#eeeeee', inline: true }, { name: 'Description', value: this.data.embed.description || 'None!', inline: false });
 
-            collector.stop();
-            resolve(result);
+        return f;
+    }
+    async preview(channel, requestor) {
+        const preview = new Discord.MessageEmbed()
+            .setDescription(this.data.description)
+            .setAuthor(`A ${this.data.runType} Has Been Started in ${this.author}'s ${this.data.runName}`, this.author.avatarURL())
+            .setImage(this.data.reqsImageUrl)
+            .setFooter(`Time Remaining: 1 minute`)
+            .setTimestamp(new Date());
+        const message = await channel.send('***This is a preview***\r\nReact to the ❌ to remove it. Preview will timeout automatically after 45 seconds', preview);
+        await message.react(this.data.keyEmoteID);
+        if (this.data.vialReact)
+            await message.react(this.data.vialEmoteID);
+        for (const react of this.data.earlyLocationReacts)
+            await message.react(react.emoteID);
+        await message.react('701491230349066261');
+        await message.react('🎟️');
+        await message.react('❌')
+        for (const react of this.data.reacts)
+            await message.react(react);
+        const collector = message.createReactionCollector((reaction, user) => user.id == requestor.id && reaction.emoji.name == '❌', { time: 45000 });
+        collector.once('collect', () => message.delete());
+        collector.once('end', () => message.deleted || message.delete());
+    }
+    get channel() {
+        if (this.dmChannel)
+            return this.dmChannel;
+
+        this.dmChannel = new Promise(res => res(this.original.channel));
+
+        try {
+            const channel = this.guild.channels.create(`${this.nickname}'s Template Channel`, {
+                type: 'text',
+                topic: 'Edit your veteran raiding template here',
+                parent: this.original.channel.parent,
+                position: this.original.channel.position - 1,
+                reason: `For creating or editing the raiding template for ${this.author}`,
+                permissionOverwrites: [{
+                        id: this.guild.roles.everyone.id,
+                        deny: ['VIEW_CHANNEL']
+                    },
+                    {
+                        id: this.author.id,
+                        allow: ['ADD_REACTIONS', 'SEND_MESSAGES', 'VIEW_CHANNEL', 'EMBED_LINKS', 'ATTACH_FILES', 'USE_EXTERNAL_EMOJIS']
+                    }, {
+                        id: this.bot.user,
+                        allow: ['ADD_REACTIONS', 'SEND_MESSAGES', 'VIEW_CHANNEL', 'EMBED_LINKS', 'ATTACH_FILES', 'USE_EXTERNAL_EMOJIS']
+                    }
+                ]
+            });
+            this.dmChannel = channel;
+        } catch (err) {
+            this.message.channel.send(`There were issues creating template channel: ${err}. You may continue doing so in this channel.`);
+        }
+        return this.dmChannel;
+    }
+    get dm() {
+        if (this.dmMessage)
+            return this.dmMessage;
+
+        return this.dmMessage = this.channel.then(c => c.send(this.embed));
+    }
+    async updateDM(description) {
+        this.embed.fields = this.fields;
+        if (description)
+            this.embed.setDescription(description);
+        await this.dm.then(d => d.edit(this.embed));
+    }
+    async updateReacts(description) {
+        if (description)
+            this.reactEmbed.setDescription(description);
+        this.reactEmbed
+            .setFooter(`UID: ${this.author.id} • MSG: ${await this.dm.then(d => d.id)}`)
+            .setAuthor(`${this.nickname}'s ${this.data.runType} Reactions`);
+        const fields = [];
+        for (const reaction of this.data.earlyLocationReacts) {
+            const emoji = this.bot.emojis.resolve(reaction.emoteID);
+            const role = this.guild.roles.resolve(guildSettings[this.guild.id].roles[reaction.requiredRole]);
+            fields.push({
+                name: `${emoji} ${reaction.shortName} ${emoji}`,
+                value: `*Early React*\r\nPoints Given: ${reaction.pointsGiven}\r\nReaction Limit: ${reaction.limit}${reaction.requiredRole? '\r\nRequired Role:\r\n': role}`
+            });
+        }
+        console.log(this.data.reacts);
+        fields.push({
+            name: `Non-early Reacts`,
+            value: this.data.reacts.map(r => this.bot.emojis.resolve(r)).join(' ') || 'None!'
         });
-        collector.on('end', () => {
-            const err = 'Template creation timed out.';
-            err.stackTrace = new Error().stack;
-            if (!resolved)
-                reject(err)
-        })
-    })
-}
-const activeTemplateCreations = [];
-module.exports = {
-        name: 'createtemplate',
-        description: 'Create a new AFK template',
-        alias: ['ct', 'createt'],
-        args: '',
-        role: 'vetrl',
-        checkActive: (id) => activeTemplateCreations.find(t => t.author === id),
-        /**
-         * Main Execution Function
-         * @param {Discord.Message} message 
-         * @param {String[]} args 
-         * @param {Discord.Client} bot 
-         * @param {import('mysql').Connection} db 
-         * @param {import('mysql').Connection} tokenDB 
-         */
-        async execute(message, args, bot, db, tokenDB, event) {
 
-            const author_id = message.author.id;
-            //Must start it in vet commands
-            if (message.channel.id != guildSettings[message.guild.id].channels.vetcommands) return;
-            if (activeTemplateCreations.find(t => t.author == author_id))
-                return message.channel.send('You are already in the process of creating a raiding template.');
+        this.reactEmbed.fields = fields;
+        await this.rm.then(r => r.edit(this.reactEmbed));
+    }
+    get rm() {
+        if (this.reactMessage)
+            return this.reactMessage;
 
-            message.delete();
-            let templateChannel = message.channel;
-            try {
-                const channel = await message.guild.channels.create(`${message.member.nickname}'s Template Channel`, {
-                    type: 'text',
-                    topic: 'Edit your veteran raiding template here',
-                    parent: message.channel.parent,
-                    position: message.channel.position + 1,
-                    reason: `For creating or editing the raiding template for ${message.member}`,
-                    permissionOverwrites: [{
-                            id: message.guild.roles.everyone.id,
-                            deny: ['VIEW_CHANNEL']
-                        },
-                        {
-                            id: message.author.id,
-                            allow: ['ADD_REACTIONS', 'SEND_MESSAGES', 'VIEW_CHANNEL', 'EMBED_LINKS', 'ATTACH_FILES', 'USE_EXTERNAL_EMOJIS']
-                        }, {
-                            id: bot.user,
-                            allow: ['ADD_REACTIONS', 'SEND_MESSAGES', 'VIEW_CHANNEL', 'EMBED_LINKS', 'ATTACH_FILES', 'USE_EXTERNAL_EMOJIS']
-                        }
-                    ]
-                });
-                templateChannel = channel;
-            } catch (err) {
-                message.channel.send(`There were issues creating template channel: ${err}. You may continue doing so in this channel.`);
-            }
-
-
-            activeTemplateCreations.push({ channel: templateChannel, author: author_id });
+        return this.reactMessage = this.channel.then((c) => c.send(this.reactEmbed));
+    }
+    async editRunType() {
+        await this.updateDM('**VC Name**: What name do you want to give the VC? Type cancel to cancel');
+        this.data.runType = (await this.channel.then(c => c.next(null, null, this.author.id))).content;
+    }
+    async editRunName() {
+        await this.updateDM('**Run Name**: What name do you want to give the run? Type cancel to cancel');
+        this.data.runName = (await this.channel.then(c => c.next(null, null, this.author.id))).content;
+    }
+    async editKeyType() {
+        await this.updateDM('**Key Type**: What type of key should this run use?');
+        const emoji = await new Promise(async(resolve, reject) => {
             const embed = new Discord.MessageEmbed()
-                .setColor(`#bae1ff`)
-                .setTitle('Creating Veteran Raiding Template')
-                .setAuthor(`${message.member.nickname} (${message.author.tag})`, message.author.avatarURL())
-                .setDescription('What name do you want to give the VC? Type cancel to cancel.')
-                .setFooter(`UID: ${message.author.id} • Started at`)
-                .setTimestamp(new Date());
-            const data = { keyEmoteID: botSettings.emoteIDs.LostHallsKey, vialEmoteID: botSettings.emoteIDs.Vial };
-            const dm = await templateChannel.send(`${message.author}`, { embed });
-            let emojiInfoMessage;
+                .setDescription('React with the key this run should accept. React with :x: to cancel')
+                .setTitle('Key Selection')
+                .setColor('#dadada');
+            const keySelection = await this.channel.then((c) => c.send(embed));
+            const collector = keySelection.createReactionCollector((reaction, user) => { reaction.me && user.id == this.author.id }, { time: MAX_WAIT });
+            let resolved = false;
+            collector.once('collect', (reaction, user) => {
+                resolved = true;
+                keySelection.delete();
+                if (reaction.emoji.name === '❌')
+                    reject('Manually cancelled.');
+                resolve(reaction.emoji);
+            });
+            collector.once('end', () => {
+                if (!keySelection.deleted)
+                    keySelection.delete();
+                if (!resolved) {
+                    reject('Key type selection timed out.')
+                }
+            })
+            await keySelection.react('❌');
+            await keySelection.react(botSettings.emoteIDs.LostHallsKey);
+            for (const event in eventTemplates)
+                keySelection.react(eventTemplates[event].keyEmojiId);
+        });
+        this.data.keyEmoteID = emoji.id;
+    }
+    async editSymbol() {
+        await this.updateDM('**Symbol**: What symbol do you want to use to start this afk check (aka. `;afk symbol`)? First letter must be unique. Type cancel to cancel');
+        const unavailable = [];
+
+        for (const key in afkTemplates) {
+            if (afkTemplates[key].keyEmoteID) {
+                unavailable.push(key.toLowerCase());
+                if (!unavailable.includes(afkTemplates[key].symbol.toLowerCase()))
+                    unavailable.push(afkTemplates[key].symbol.toLowerCase());
+            } else if (key == this.author.id) {
+                for (const key2 in afkTemplates[key])
+                    unavailable.push(key2.toLowerCase());
+            }
+        }
+
+        const embed = new Discord.MessageEmbed()
+            .setDescription(`\`\`\`${unavailable.join(', ')}\`\`\``)
+            .setAuthor('Unavailable symbols');
+        const msg = await (await this.channel).send(embed);
+        this.symbol = (await this.channel.then(c => c.next((message) => {
+            return message.content &&
+                !/\s+/.test(message.content) &&
+                !unavailable.some(u => u[0] == message.content[0].toLowerCase())
+        }, 'Symbol is either already in use or contains a space. Please use a different symbol. The first letter must be unique.', this.author.id))).content.toLowerCase();
+        msg.delete();
+    }
+    async editImage() {
+        await this.updateDM('**Image**: What image would you like to provide? You can either embed an image or provide an image link. If your input is neither, you will have no image. Type cancel to cancel');
+        const imageMsg = await this.channel.then(c => c.next(null, null, this.author.id));
+        const attachments = (imageMsg).attachments;
+        this.data.reqsImageUrl = '';
+        if (attachments && attachments.size)
+            this.data.reqsImageUrl = attachments.first().proxyURL;
+        else if (isValidHttpUrl(imageMsg.content))
+            this.data.reqsImageUrl = imageMsg.content;
+    }
+    async editSplitGroup() {
+        await this.updateDM('**Split Group**: Should this start a split group run?');
+        this.data.isSplit = await this.dm.then(d => d.confirm(this.author.id));
+    }
+    async editNewChannel() {
+        await this.updateDM('**New Channel**: Should this run create a new channel?');
+        this.data.newChannel = await this.dm.then(d => d.confirm(this.author.id));
+        this.data.postAfkCheck = !this.data.newChannel;
+    }
+    async editVialReact() {
+        await this.updateDM('**Vial React**: Should this provide a vial react?');
+        this.data.vialReact = await this.dm.then(d => d.confirm(this.author.id));
+    }
+    async editTwoPhase() {
+        await this.updateDM('**Locked Phase**: Should there be a locked phase before unlocking VC?');
+        this.data.twoPhase = await this.dm.then(d => d.confirm(this.author.id));
+    }
+    async editVCCap() {
+        await this.updateDM('**VC Cap**: How many users should the Voice Channel be capped to? This is limited to 99. Type cancel to cancel');
+        this.data.vcCap = await this.channel.then(c => c.nextInt(res => res > 0 && res < 100, 'Please enter a number between 1 and 99.', this.author.id));
+    }
+    async editTimeLimit() {
+        await this.updateDM('**AFK Time Limit**: How long should the afk time limit, in the format #min #sec? Type cancel to cancel');
+        let time;
+        await this.channel.then(c => c.next(res => !!(time = timeFromTimeStr(res.content)) && time.total, 'Please enter in the format #min #sec.', this.author.id));
+        this.data.timeLimit = time.total;
+    }
+    async editKeyCount() {
+        await this.updateDM('**Key Count**: How many key reacts should be accepted? Type cancel to cancel');
+        this.data.keyCount = await this.channel.then(c => c.nextInt(res => res > 0, 'Please enter a number of keys that\'s at least 1.', this.author.id));
+    }
+    async editPingRole() {
+        await this.updateDM(`**Ping Role**: Should this afk ping ${this.guild.roles.resolve(guildSettings[this.guild.id].roles.voidping)} or ${this.guild.roles.resolve(guildSettings[this.guild.id].roles.cultping)}?`);
+        this.data.pingRole = await new Promise(async(resolve, reject) => {
+            const collector = await this.dm.then(d => d.createReactionCollector((reaction, user) => user.id == this.author.id &&
+                (reaction.emoji.name == '❌' || [botSettings.emoteIDs.voidd,
+                    botSettings.emoteIDs.malus
+                ].includes(reaction.emoji.id)), { time: MAX_WAIT }));
+            let resolved = false;
+            new Promise(async() => {
+                await this.dm.then(d => d.react(botSettings.emote.voidd));
+                await this.dm.then(d => d.react(botSettings.emote.malus));
+                await this.dm.then(d => d.react('❌'));
+            })
+            collector.once('collect', async(reaction) => {
+                resolved = true;
+                collector.stop();
+                await this.dm.then(d => d.reactions.removeAll());
+                switch (reaction.emoji.id) {
+                    case botSettings.emoteIDs.voidd:
+                        return resolve('voidping');
+                    case botSettings.emoteIDs.malus:
+                        return resolve('cultping');
+                    default:
+                        return resolve('');
+                }
+            });
+            collector.on('end', () => {
+                if (!resolved)
+                    reject('Ping role selection timed out.');
+            });
+        });
+    }
+    async editEmbedColor() {
+        await this.updateDM('**Embed Color**: What color should the embed be? Please give a hex color code in the form `#123abc`. Type cancel to cancel');
+        this.data.embed.color = (await this.channel.then(c => c.next(({ content }) => /^#([a-f0-9]{3}|[a-f0-9]{6})$/i.test(content), 'Please give a hex color code in the form `#123abc`.', this.author.id))).content;
+    }
+    async editFontColor() {
+        await this.updateDM('**Font Color**: What color should the font be? Please give a hex color code in the form `#123abc`. Type cancel to cancel');
+        this.data['font-color'] = (await this.channel.then(c => c.next(({ content }) => /^#([a-f0-9]{3}|[a-f0-9]{6})$/i.test(content), 'Please give a hex color code in the form `#123abc`.', this.author.id))).content;
+    }
+    async editDescription() {
+        await this.updateDM('**Description**: What description would you like for your afk check? Type cancel to cancel');
+        this.data.embed.description = (await this.channel.then(c => c.next(null, null, this.author.id))).content;
+    }
+    async editEarlyReacts() {
+        this.updateReacts(`React to this message with all early reactions. ${this.bot.emojis.resolve(this.data.keyEmoteID)} ${this.data.vialReact?'and <'+botSettings.emote.Vial+'> are':'is'} automatically added. Any not accessible by me will be removed. React to the ❌ to finish adding reactions.`);
+
+        const earlyReacts = (await this.rm.then(r => r.getReactionBatch(this.author.id))).slice(0, 23);
+        for (const emoji of earlyReacts) {
+            const reaction = { emoteID: emoji.id, pointsGiven: 0 };
+            await this.rm.then(r => r.edit(this.reactEmbed.setDescription(`${emoji}: **How many people should get early location?**`)));
+            reaction.limit = await this.channel.then(c => c.nextInt(res => res > 0, 'Please enter a number equal to or greater than 1.', this.author.id));
+
+            this.rm.then(r => r.edit(this.reactEmbed.setDescription(`${emoji}: **What is the short name of the react?** No space allowed.`)));
+            reaction.shortName = (await this.channel.then(c => c.next(res => !/\s/.test(res), 'Please enter a value without spaces.', this.author.id))).content.toLowerCase();
+
+            await this.rm.then(r => r.edit(this.reactEmbed.setDescription(`${emoji}: **Does this emoji have a required role?**`)));
+            if (await this.rm.then(r => r.confirm(this.author.id)))
+                reaction.requiredRole = await this.getRoleSelection();
+
+            this.data.earlyLocationReacts.push(reaction);
+        }
+    }
+    async editReacts() {
+        this.updateReacts(`React to this message with all non-early reactions. Any not accessible by me will be removed. React to the ❌ to finish adding reactions.`);
+        this.data.reacts = (await this.rm.then(r => r.getReactionBatch(this.author.id))).map(c => c.id);
+    }
+    async getRoleSelection() {
+        return new Promise(async(resolve, reject) => {
+            let rolesMessage;
+            const guildRoles = guildSettings[this.guild.id].roles;
             try {
-                //get run type
-                data.runType = (await dm.channel.next(null, null, author_id)).content;
-                embed.setDescription('What name do you want to give your run? Type cancel to cancel.')
-                    .addField('Run Type', data.runType, true);
-                await dm.edit(embed);
+                const rolesEmbed = new Discord.MessageEmbed()
+                    .setColor("#000000")
+                    .setAuthor("Roles List")
+                    .setDescription("Choose from the following roles which should be the required role:");
+                const selections = [];
+                let roleList = ['\r\n0\r\nNo Role'];
 
-                //get run name
-                data.runName = (await dm.channel.next(null, null, author_id)).content;
-                embed.setDescription('What symbol do you want for this template? Type cancel to cancel.')
-                    .addField('Run Name', data.runName, true);
+                for (const rolename in guildRoles) {
+                    if (!guildRoles[rolename])
+                        continue;
 
-                //get run symbol
-                const unavailable = [];
-                for (const key in afkTemplates) {
-                    if (afkTemplates[key].keyEmoteID) {
-                        unavailable.push(key.toLowerCase());
-                        if (!unavailable.includes(afkTemplates[key].symbol.toLowerCase()))
-                            unavailable.push(afkTemplates[key].symbol.toLowerCase());
-                    } else if (key == message.author.id) {
-                        for (const key2 in afkTemplates[key])
-                            unavailable.push(key2.toLowerCase());
+                    const role = this.original.guild.roles.resolve(guildRoles[rolename]);
+                    if (!role)
+                        continue;
+
+                    selections.push(rolename);
+                    roleList.push(`\r\n${selections.length} ${role}`);
+                    if (roleList.length == 5) {
+                        rolesEmbed.addField('** **', `**${roleList.join('\r\n')}**`, true)
+                        roleList = [];
                     }
                 }
-                embed.addField('Unavailable Symbols', `\`\`\`${unavailable.join(', ')}\`\`\``);
-                await dm.edit(embed);
-                data.symbol = (await dm.channel.next((message) => message.content && !unavailable.some(u => u[0] == message.content[0].toLowerCase()), 'Symbol already in use. Please use a different symbol.', author_id)).content.toLowerCase();
-                embed.fields.pop(); //remove unavailable symbols field
 
-                //get reqs images
-                embed.setDescription(`What image would you like to provide? (Type 'None' if you don't want one.) Type cancel to cancel.`)
-                    .addField('Selected Symbol', data.symbol, true);
-                await dm.edit(embed);
-                const imageMsg = await dm.channel.next(null, null, author_id);
-                const attachments = (imageMsg).attachments;
-                data.reqsImageUrl = '';
-                if (attachments && attachments.size)
-                    embed.setImage(data.reqsImageUrl = attachments.first().proxyURL);
-                else if (isValidHttpUrl(imageMsg.content))
-                    embed.setImage(data.reqsImageUrl = imageMsg.content);
-                else
-                    embed.addField('Image', 'None!', true);
+                if (roleList.length)
+                    rolesEmbed.addField('** **', `**${roleList.join('\r\n')}**`, true)
 
-                //get split group
-                embed.setDescription('Is this a split group?');
-                await dm.edit(embed);
-                data.isSplit = await dm.confirm(author_id);
+                rolesMessage = await (await this.channel).send(rolesEmbed);
+                const selection_idx = await this.channel.then(c => c.nextInt(res => res >= 0 && res <= selections.length, `Please enter a value between 0 and ${selections.length}. Enter 0 for no role.`, this.author.id));
+                rolesMessage.delete();
+                resolve(selection_idx == 0 ? null : selections[selection_idx - 1]);
+            } catch (err) {
+                if (rolesMessage) rolesMessage.delete();
+                reject(err);
+            }
+        });
+    }
 
-                //get channel style
-                embed.setDescription('Should this create a new channel?')
-                    .addField('Is Split', data.isSplit ? 'Yes' : 'No', true);
-                await dm.edit(embed);
-                data.newChannel = await dm.confirm(author_id);
-                data.postAfkCheck = !data.newChannel;
+    async requestReactions() {
 
-                //get vial react
-                embed.setDescription('Should this template have a vial react?')
-                    .addField('Creates Channels', data.newChannel ? 'Yes' : 'No', true);
-                await dm.edit(embed);
-                data.vialReact = await dm.confirm(author_id);
+    }
 
-                //get start delay
-                embed.addField('Has Vial React', data.vialReact ? 'Yes' : 'No', true);
-                await dm.edit(embed);
+    save() {
+        return new Promise((resolve, reject) => {
+            if (!afkTemplates[this.author.id])
+                afkTemplates[this.author.id] = {};
+            afkTemplates[this.author.id][this.symbol] = this.data;
+            fs.writeFile(require.resolve('../afkTemplates.json'), JSON.stringify(afkTemplates, null, 4), (err) => {
+                if (err) {
+                    reject(err);
+                }
+                if (this.brandnew) {
+                    this.brandnew = false;
+                }
 
-                //get two phase
-                embed.setDescription('Should there be a locked phase before unlocking VC?');
-                await dm.edit(embed);
-                data.twoPhase = await dm.confirm(author_id);
+                resolve(this);
+            });
+        });
+    }
+    edit() {
 
-                //embed.setDescription('How much delay should the afk have before it starts? Please provide a number between 0 and 120 (in seconds). Type cancel to cancel.')
-                //data.startDelay = await dm.channel.nextInt(res => res >= 0 && res <= 120, 'Please enter a time period between 0 and 120 seconds.', author_id);
-                //const delaySeconds = data.startDelay % 60,
-                //    delayMinutes = (data.startDelay - delaySeconds) / 60;
-                //embed.addField('Start Delay', (delayMinutes ? `${delayMinutes} minutes ` : '') + `${delaySeconds} seconds`, true);
-                data.startDelay = 10000;
+    }
+}
 
-                //get vc cap
-                embed.setDescription('How many users should the Voice Channel be capped to? The limit is 99. Type cancel to cancel.')
-                    .addField('Has Lock Phase', data.twoPhase ? 'Yes' : 'No');
-                await dm.edit(embed);
-                data.vcCap = await dm.channel.nextInt(res => res > 0 && res < 100, 'Please enter a number greater than 0 and less than 99.', author_id);
+AfkTemplate.active = [];
+module.exports = {
+    name: 'createtemplate',
+    description: 'Create a new AFK template',
+    alias: ['ct', 'createt'],
+    args: '',
+    role: 'vetrl',
+    checkActive: (id) => AfkTemplate.active.find(t => t.author === id),
+    /**
+     * Main Execution Function
+     * @param {Discord.Message} message 
+     * @param {String[]} args 
+     * @param {Discord.Client} bot 
+     * @param {import('mysql').Connection} db 
+     * @param {import('mysql').Connection} tokenDB 
+     */
+    async execute(message, args, bot, db, tokenDB, event) {
+        //Must start it in vet commands
+        if (message.channel.id != guildSettings[message.guild.id].channels.vetcommands) return;
 
-                //get time limit
-                embed.setDescription('How long should the afk time limit be in seconds? Type cancel to cancel.')
-                    .addField('Voice Channel Cap', `${data.vcCap}`, true);
-                await dm.edit(embed);
-                data.timeLimit = await dm.channel.nextInt(res => res > 0, 'Please enter a time period in seconds greater than 0.', author_id);
-                const limitSeconds = data.timeLimit % 60,
-                    limitMinutes = (data.timeLimit - limitSeconds) / 60;
-                embed.addField('AFK Time Limit', (limitMinutes ? `${limitMinutes} minutes ` : '') + `${limitSeconds} seconds`, true);
+        if (AfkTemplate.active.find(t => t.author.id == message.author.id))
+            return message.channel.send('You are already in the process of creating a raiding template.');
 
-                //get key count
-                embed.setDescription('How many keys should be accepted? Type cancel to cancel.');
-                await dm.edit(embed);
-                data.keyCount = await dm.channel.nextInt(res => res > 0, 'Please enter a number of keys greater than 0.', author_id);
+        message.delete();
+        const afk_template = new AfkTemplate(message, bot);
+        AfkTemplate.active.push(afk_template);
+        try {
 
-                embed.setDescription('Should this afk ping Void Boi or Cult Boi?')
-                    .addField('Key Count', `${data.keyCount}`, true);
-                await dm.edit(embed);
-                //get ping role
-                const guildRoles = guildSettings[message.guild.id].roles;
-                data.pingRole = await new Promise((resolve, reject) => {
-                    const collector = dm.createReactionCollector((reaction, user) => user.id == author_id && (reaction.emoji.name == '❌' || [botSettings.emoteIDs.voidd, botSettings.emoteIDs.malus].includes(reaction.emoji.id)), { time: MAX_WAIT });
+            await afk_template.build();
+            await afk_template.editRunType();
+            await afk_template.editRunName();
+            await afk_template.editSymbol();
+            await afk_template.editImage();
+            await afk_template.editPingRole();
+            await afk_template.editSplitGroup();
+            await afk_template.editNewChannel();
+            await afk_template.editVialReact();
+            await afk_template.editTwoPhase();
+            await afk_template.editVCCap();
+            await afk_template.editTimeLimit();
+            await afk_template.editKeyCount();
+            await afk_template.editEmbedColor();
+            await afk_template.editFontColor();
+            await afk_template.editDescription();
+            await afk_template.updateDM();
+            await afk_template.editEarlyReacts();
+            await afk_template.editReacts();
+            await afk_template.updateReacts();
+            let emoji;
+            do {
+                afk_template.updateDM(`Are you sure you want to create this template? React with ✅ to confirm, ⚙️ to edit, or ❌ to cancel.`);
+
+                emoji = await new Promise(async(resolve, reject) => {
+                    const dm = await afk_template.dm;
+                    new Promise(async() => {
+                        await dm.react('✅');
+                        await dm.react('⚙️');
+                        await dm.react('❌');
+                    })
+                    const collector = dm.createReactionCollector((reaction, user) => user.id == afk_template.author.id && ['✅', '⚙️', '❌'].includes(reaction.emoji.name), { time: MAX_WAIT });
                     let resolved = false;
-                    dm.react(botSettings.emote.voidd)
-                        .then(dm.react(botSettings.emote.malus))
-                        .then(dm.react('❌'));
-                    collector.once('collect', (reaction) => {
+                    collector.once('collect', (reaction, user) => {
                         resolved = true;
-                        collector.stop();
-                        switch (reaction.emoji.id) {
-                            case botSettings.emoteIDs.voidd:
-                                return resolve('voidping');
-                            case botSettings.emoteIDs.malus:
-                                return resolve('cultping');
-                            default:
-                                return resolve('');
-                        }
+                        resolve(reaction.emoji.name);
                     });
-                    collector.on('end', () => {
+                    collector.once('end', () => {
                         if (!resolved)
-                            reject('Template creation timed out.');
-                    });
+                            reject('timed out');
+                    })
                 });
-                dm.reactions.removeAll();
-                embed.addField('Ping Role', (message.guild.roles.cache.find((role) => role.id == guildRoles[data.pingRole]) || { name: data.pingRole || 'None!' }).name, true);
-                data.embed = {};
 
-                //get embed color
-                embed.setDescription('What color would you like the embed to be? Please give a hex color code in the form `#123abc`. Type cancel to cancel.');
-                await dm.edit(embed);
-                data.embed.color = (await dm.channel.next(({ content }) => /^#([a-f0-9]{3}|[a-f0-9]{6})$/i.test(content), 'Please give a hex color code in the form `#123abc`.', author_id)).content;
-
-                embed.setDescription('What color would you like the text of the embed to be? Please give a hex color code in the form `#123abc`. Type cancel to cancel.')
-                    .addField('Color', data.embed.color, true);
-                await dm.edit(embed);
-                data["font-color"] = (await dm.channel.next(({ content }) => /^#([a-f0-9]{3}|[a-f0-9]{6})$/i.test(content), 'Please give a hex color code in the form `#123abc`.', author_id)).content;
-
-                //get embed description
-                embed.setDescription('What description do you want to use for your AFK check? Type cancel to cancel.')
-                    .addField('Text Color', data["font-color"], true);
-                await dm.edit(embed);
-                data.embed.description = (await dm.channel.next(null, null, author_id)).content;
-                embed.addField('Description', data.embed.description);
-                await dm.edit(embed);
-
-
-                //get early location cost
-                //embed.setDescription('How much should early location cost in points? Type cancel to cancel.')
-                //await dm.edit(embed);
-                data.earlyLocationCost = 30; //await dm.channel.nextInt(res => res >= 0, 'Please enter an amount of points greater than or equal to 0.', author_id);
-                //embed.addField('Early Location Cost', `${data.earlyLocationCost}`, true);
-
-                //get early location reacts
-                embed.setDescription('Currently gathering template reactions.');
-                await dm.edit(embed);
-
-                const emojiInfo = new Discord.MessageEmbed()
-                    .setDescription(`React to this message with all early reactions. ${botSettings.emote.LostHallsKey} ${data.vialReact?'and :Vial: are':'is'} automatically added. Any not accessible by me will be removed. React to the ❌ to finish adding reactions.`)
-                    .setFooter(`TID: ${dm.id}`);
-                emojiInfoMessage = await dm.channel.send(emojiInfo);
-
-                function GetAllReactions() {
-                    return new Promise(async(resolve) => {
-                        await emojiInfoMessage.react('❌');
-                        const collector = emojiInfoMessage.createReactionCollector((reaction, user) => user.id == author_id, { time: MAX_WAIT * 3 });
-                        collector.on('collect', (reaction) => {
-                            if (!bot.emojis.cache.get(reaction.emoji.id))
-                                if (reaction.emoji.name.replace(/[a-z0-9_]/gi, '') !== reaction.emoji.name) reaction.remove();
-                            if (reaction.emoji.name === '❌')
-                                collector.stop();
-                        });
-
-                        collector.on('end', (collected) => {
-                            const reacts = emojiInfoMessage.reactions.cache.array().map((reaction) => reaction.emoji).filter(emoji => emoji.name !== '❌');
-                            emojiInfoMessage.reactions.removeAll();
-                            resolve(reacts);
-                        });
-                    });
+                switch (emoji) {
+                    case '✅':
+                        await afk_template.save();
+                        afk_template.embed.setTitle("Successfully Created Raiding Template")
+                            .setColor("#00ff00")
+                            .setDescription("Successfully created the following raiding template:")
+                            .setFooter(`UID: ${message.author.id} • ;afk ${afk_template.symbol} • Created at`)
+                            .setTimestamp(new Date());
+                        afk_template.reactEmbed.setColor("#00ff00");
+                        message.author.send(afk_template.embed).then(() => message.author.send(afk_template.reactEmbed))
+                        bot.channels.resolve(guildSettings[message.guild.id].channels.history).send(afk_template.embed).then(m => m.channel.send(afk_template.reactEmbed));
+                        break;
+                    case '⚙️':
+                        await afk_template.edit();
+                        break;
+                    case '❌':
+                        throw 'Manually cancelled.';
                 }
-
-                data.earlyLocationReacts = [];
-                const earlyReacts = (await GetAllReactions()).slice(0, 23);
-                for (const emoji of earlyReacts) {
-                    const reaction = { emoteID: emoji.id };
-                    emojiInfo.setDescription(`${emoji}: How many people should get early location?`);
-                    await emojiInfoMessage.edit(emojiInfo);
-                    reaction.limit = await emojiInfoMessage.channel.nextInt(res => res > 0, 'Please enter a number equal to or greater than 1.', author_id);
-
-                    // emojiInfo.setDescription(`${emoji}: How many points should be given for this react?`);
-                    // await emojiInfoMessage.edit(emojiInfo);
-                    reaction.pointsGiven = 0; //await emojiInfoMessage.channel.nextInt(res => res >= 0, 'Please enter a number equal to or greater than 0.', author_id);
-
-                    emojiInfo.setDescription(`${emoji}: What is the short name of the react? No spaces allowed`);
-                    await emojiInfoMessage.edit(emojiInfo);
-                    reaction.shortName = (await emojiInfoMessage.channel.next(res => !/\s/.test(res), 'Please enter a value without spaces.', author_id)).content.toLowerCase();
-
-                    /* Add check realmeye at some point
-                     * 
-                     * "checkRealmEye": {
-                     *    "class": "mystic",
-                     *    "ofEight": "8",
-                     *    "mheal": "85",
-                     *    "orb": "2"
-                     * }
-                     */
-                    emojiInfo.setDescription(`${emoji}: Does this emoji have a required role?`);
-                    await emojiInfoMessage.edit(emojiInfo);
-                    if (await emojiInfoMessage.confirm(author_id)) {
-                        function GetRoleSelection() {
-                            return new Promise(async(resolve, reject) => {
-                                let rolesMessage;
-                                try {
-                                    const rolesEmbed = new Discord.MessageEmbed()
-                                        .setColor("#000000")
-                                        .setAuthor("Roles List")
-                                        .setDescription("Choose from the following roles which should be the required role:");
-                                    const selections = [];
-                                    let roleList = ['\r\n0\r\nNo Role'];
-
-                                    for (const rolename in guildRoles) {
-                                        if (!guildRoles[rolename])
-                                            continue;
-
-                                        const role = message.guild.roles.resolve(guildRoles[rolename]);
-                                        if (!role)
-                                            continue;
-
-                                        selections.push({ rolename, id: role.id, role });
-                                        roleList.push(`\r\n${selections.length} ${role}`);
-                                        if (roleList.length == 5) {
-                                            rolesEmbed.addField('** **', `**${roleList.join('\r\n')}**`, true)
-                                            roleList = [];
-                                        }
-                                    }
-                                    if (roleList.length)
-                                        rolesEmbed.addField('** **', `**${roleList.join('\r\n')}**`, true)
-                                    rolesMessage = await emojiInfoMessage.channel.send(rolesEmbed);
-                                    const selection_idx = await emojiInfoMessage.channel.nextInt(res => res >= 0 && res <= selections.length, `Please enter a value between 0 and ${selections.length}. Enter 0 for no role.`, author_id);
-                                    rolesMessage.delete();
-                                    resolve(selection_idx == 0 ? null : selections[selection_idx - 1]);
-                                } catch (err) {
-                                    if (rolesMessage) rolesMessage.delete();
-                                    reject(err);
-                                }
-                            })
-                        }
-
-                        reaction.requiredRole = await GetRoleSelection();
-                    }
-
-                    data.earlyLocationReacts.push(reaction);
-                    emojiInfo.addField(`${emoji} ${reaction.shortName} ${emoji}`, `*Early React*\r\nPoints Given: ${reaction.pointsGiven}\r\nReaction Limit: ${reaction.limit}${reaction.requiredRole? `\r\nRequired Role:\r\n${reaction.requiredRole.role}` : ''}`, true)
-                if (reaction.requiredRole)
-                    reaction.requiredRole = reaction.requiredRole.rolename;
-            }
-
-            emojiInfo.setDescription('React to this message with all other reactions. Any not accessible by me will be ignored. React to the ❌ to finish adding reactions.')
-            await emojiInfoMessage.edit(emojiInfo);
-            data.reacts = (await GetAllReactions());
-            if (data.reacts && data.reacts.length) {
-                emojiInfo.addField('Other Reactions', data.reacts.join(' '));
-                data.reacts = data.reacts.map(emoji => emoji.id);
-            }
-            await emojiInfoMessage.edit(emojiInfo);
-
-            emojiInfo.setDescription(emojiInfo.fields.length ? 'Reactions for this raiding template:' : 'You have added no reactions for this template.');
-            await emojiInfoMessage.edit(emojiInfo);
-
-            embed.setDescription('Are you sure you want to create the following raiding template?\r\n__**Be aware there is currently no template editing after creation, once it\'s made it\'s made.**__')
-                
-            await dm.edit(embed);
-            if (!await dm.confirm(author_id))
-                throw 'Manually cancelled.';
-
-            if (!afkTemplates[message.author.id])
-                afkTemplates[message.author.id] = {};
-
-            const symbol = data.symbol;
-            delete data.symbol;
-            afkTemplates[message.author.id][symbol] = data;
-            fs.writeFileSync(require.resolve('../afkTemplates.json'), JSON.stringify(afkTemplates, null, 4));
-            embed.setTitle("Successfully Created Raiding Template")
-                .setColor("#00ff00")
-                .setDescription("Successfully created the following raiding template:")
-                .setFooter(`UID: ${message.author.id} • ;afk ${symbol} • Created at`)
-                .setTimestamp(new Date());
-            emojiInfo.setColor("#00ff00");
-            message.author.send(embed).then(message.author.send(emojiInfo))
-            bot.channels.resolve(guildSettings[message.guild.id].channels.history).send(embed).then(m => m.channel.send(emojiInfo));
-            let template = Array.remove(activeTemplateCreations, t => t.author == message.author.id); 
-            if (message.channel.id !== template.id)
-                template.channel.delete();
+            } while (emoji === '⚙️');
+            Array.remove(AfkTemplate.active, afk => afk == afk_template);
+            if (afk_template.channel.id !== message.channel.id)
+                afk_template.channel.then(c => c.delete());
         } catch (error) {
-            let template = Array.remove(activeTemplateCreations, t => t.author == message.author.id); 
-            if (message.channel.id !== template.id)
-                template.channel.delete();
+            Array.remove(AfkTemplate.active, t => t.author.id == message.author.id);
+            if (message.channel.id !== afk_template.channel.then(c => c.id))
+                afk_template.channel.then(c => c.delete());
 
-            embed.setTitle('Raiding Template Cancelled')
+            afk_template.embed.setTitle('Raiding Template Cancelled')
                 .setColor('#ff0000')
                 .setDescription(error.stack || error)
                 .setFooter(`UID: ${message.author.id} • Cancelled at`)
                 .setTimestamp(new Date());
-            message.author.send(embed).then(() => {
-                if (emojiInfoMessage)
-                {
-                    emojiInfoMessage.embeds[0].setColor('#ff0000')
+            message.author.send(afk_template.embed).then(async() => {
+                if (afk_template.reactEmbed) {
+                    const dm = await afk_template.dm.then(d => d);
+                    afk_template.reactEmbed.setColor('#ff0000')
                         .setFooter(`TID: ${dm.id} • Cancelled at`)
                         .setTimestamp(new Date())
                         .setTitle('Raiding Template Cancelled');
-                    message.author.send(emojiInfoMessage.embeds[0]);
+                    message.author.send(afk_template.reactEmbed);
                 }
             })
         }

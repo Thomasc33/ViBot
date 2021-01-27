@@ -1,6 +1,7 @@
 const botSettings = require('../settings.json')
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
+const afkCheck = require('./afkCheck.js');
 
 module.exports = {
     name: 'request',
@@ -15,6 +16,11 @@ module.exports = {
         if (message.channel.parent.name.toLowerCase() === 'raiding') isVet = false;
         else if (message.channel.name === 'veteran raiding') isVet = true;
         else return message.channel.send("Try again, but in a correct section");
+
+        let afk = null;
+        for (const run of afkCheck.runs)
+            if (run.active && run.message.author.id == message.author.id)
+                afk = run;
 
         var voiceChannel = message.member.voice.channel
         if (!voiceChannel) return message.channel.send("Channel not found. Make sure you are in a VC")
@@ -77,7 +83,8 @@ module.exports = {
                 if (!recieved) {
                     confirmKey(u, r)
                 }
-            } if (r.emoji.id === botSettings.emoteIDs.Vial) {
+            }
+            if (r.emoji.id === botSettings.emoteIDs.Vial) {
                 if (!recieved) {
                     confirmVial(u, r)
                 }
@@ -101,10 +108,10 @@ module.exports = {
             }
         })
         async function confirmKey(u, r) {
-            let endAfter = setInterval(function () {
+            let endAfter = setInterval(function() {
                 try {
                     dmReactionCollector.stop()
-                } catch (er) { }
+                } catch (er) {}
                 clearInterval(endAfter);
                 return;
             }, 60000)
@@ -120,6 +127,9 @@ module.exports = {
                 message.channel.send(`<@!${u.id}> has been given location`)
                 let user = message.guild.members.cache.get(u.id)
                 user.edit({ channel: voiceChannel }).catch(er => message.channel.send("There was an issue moving them in. Most likely they aren't connect to a voice channel"));
+                if (afk && afk.leaderEmbed) {
+
+                }
                 embed.setDescription(`Thank you to ${user} for bringing a <${botSettings.emote.LostHallsKey}>`)
                 requestMessage.edit('', embed);
                 reactionCollector.stop();
@@ -128,7 +138,7 @@ module.exports = {
             });
         }
         async function confirmVial(u, r) {
-            let endAfter = setInterval(function () {
+            let endAfter = setInterval(function() {
                 try {
                     dmReactionCollector.stop();
                     clearInterval(endAfter);
@@ -163,7 +173,7 @@ module.exports = {
             }
         }
         async function confirmRush(u, r) {
-            let endAfter = setInterval(function () {
+            let endAfter = setInterval(function() {
                 try {
                     dmReactionCollector.stop();
                     clearInterval(endAfter);
@@ -196,7 +206,7 @@ module.exports = {
             }
         }
         async function confirmMystic(u, r) {
-            let endAfter = setInterval(function () {
+            let endAfter = setInterval(function() {
                 try {
                     dmReactionCollector.stop();
                     clearInterval(endAfter);
@@ -231,7 +241,7 @@ module.exports = {
             }
         }
         async function confirmBrain(u, r) {
-            let endAfter = setInterval(function () {
+            let endAfter = setInterval(function() {
                 try {
                     dmReactionCollector.stop();
                     dm.send('Reaction took too long to receive, or another key already confirmed. Re-react to try again');

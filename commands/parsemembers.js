@@ -9,112 +9,117 @@ const client = new vision.ImageAnnotatorClient(botSettings.gcloudOptions);
 
 
 module.exports = {
-    name: 'parsemembers',
-    description: 'Parse',
-    alias: ['pm'],
-    args: '<image>',
-    notes: 'Image can either be a link, or an embeded image',
-    role: 'almostrl',
-    async execute(message, args, bot, db) {
-        let settings = bot.settings[message.guild.id]
-        var channel = message.member.voice.channel
-        if (!channel) return message.channel.send('Channel not found. Make sure you are in a channel, then try again');
-        let parseStatusEmbed = new Discord.MessageEmbed()
-            .setColor(`#00ff00`)
-            .setTitle('Parse Status')
-            .addField('Parse By', `${message.member}`)
-            .addField('Status', 'Gathering image')
-        let parseStatusMessage = await message.channel.send(parseStatusEmbed)
-        var image;
-        if (message.attachments.size == 0) image = args[0];
-        else image = await message.attachments.first().proxyURL;
-        if (!image) {
-            parseStatusEmbed.setColor('#ff0000')
-                .fields[1].value = 'Error Getting Image'
-            await parseStatusMessage.edit(parseStatusEmbed)
-            return;
-        }
-        parseStatusEmbed.fields[1].value = 'Sending Image to Google'
-        await parseStatusMessage.edit(parseStatusEmbed)
-        try {
-            const [result] = await client.textDetection(image)
-            var players = result.fullTextAnnotation.text.replace(/[\n,]/g, " ").split(/ +/)
-            players.shift()
-            players.shift()
-            players.shift()
-        } catch (er) {
-            parseStatusEmbed.fields[1].value = `Error: \`${er.message}\``
-            await parseStatusMessage.edit(parseStatusEmbed)
-            return;
-        }
-        parseStatusEmbed.fields[1].value = 'Processing Data'
-        await parseStatusMessage.edit(parseStatusEmbed)
-        var raiders = []
-        for (let i in players) {
-            raiders.push(players[i].toLowerCase())
-        }
-        var voiceUsers = []
-        var alts = []
-        var crashers = []
-        var otherChannel = []
-        var findA = []
-        let allowedCrashers = []
-        var kickList = '/kick'
-        voiceUsers = channel.members.array();
-        //check split channel
-        if (bot.afkChecks[channel.id] && bot.afkChecks[channel.id].split && bot.afkChecks[channel.id].splitChannel) {
-            let splitChannel = message.guild.channels.cache.get(bot.afkChecks[channel.id].splitChannel)
-            if (splitChannel) {
-                let splitUsers = splitChannel.members.array()
-                for (let i in splitUsers) voiceUsers.push(splitUsers[i])
+        name: 'parsemembers',
+        description: 'Parse',
+        alias: ['pm'],
+        args: '<image>',
+        notes: 'Image can either be a link, or an embeded image',
+        role: 'almostrl',
+        async execute(message, args, bot, db) {
+            let settings = bot.settings[message.guild.id]
+            let channel = message.member.voice.channel
+
+            if (!channel && args.length && /^\d+$/.test(args[0])) //add ability to parse from a different channel with ;pm channelid <image>
+                channel = bot.channels.resolve(args.shift());
+
+            if (!channel) return message.channel.send('Channel not found. Make sure you are in a channel, then try again');
+
+            let parseStatusEmbed = new Discord.MessageEmbed()
+                .setColor(`#00ff00`)
+                .setTitle('Parse Status')
+                .addField('Parse By', `${message.member}`)
+                .addField('Status', 'Gathering image')
+            let parseStatusMessage = await message.channel.send(parseStatusEmbed)
+            let image;
+            if (message.attachments.size) image = await message.attachments.first().proxyURL;
+            else if (args.length) image = args[0]; //added check if args actually exists
+            if (!image) {
+                parseStatusEmbed.setColor('#ff0000')
+                    .fields[1].value = 'Error Getting Image'
+                await parseStatusMessage.edit(parseStatusEmbed)
+                return;
             }
-        }
-        for (let i in raiders) {
-            let player = raiders[i];
-            if (player == '') continue;
-            let member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(player.toLowerCase()));
-            if (member == null) {
-                crashers.push(player);
-                kickList = kickList.concat(` ${player}`)
-            } else if (!voiceUsers.includes(member)) {
-                if (member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.almostrl).position) continue;
-                if (bot.afkChecks[channel.id]) {
-                    if (bot.afkChecks[channel.id].raiders && bot.afkChecks[channel.id].raiders.includes(member.id)) allowedCrashers.push(member)
+            console.log(channel.name, image);
+            parseStatusEmbed.fields[1].value = 'Sending Image to Google'
+            await parseStatusMessage.edit(parseStatusEmbed)
+            try {
+                const [result] = await client.textDetection(image);
+                var players = result.fullTextAnnotation;
+                players = players.text.replace(/[\n,]/g, " ").split(/ +/)
+                players.shift()
+                players.shift()
+                players.shift()
+            } catch (er) {
+                parseStatusEmbed.fields[1].value = `Error: \`${er.message}\``
+                await parseStatusMessage.edit(parseStatusEmbed)
+                return;
+            }
+            parseStatusEmbed.fields[1].value = 'Processing Data'
+            await parseStatusMessage.edit(parseStatusEmbed)
+            var raiders = []
+            for (let i in players) {
+                raiders.push(players[i].toLowerCase())
+            }
+            var voiceUsers = []
+            var alts = []
+            var crashers = []
+            var otherChannel = []
+            var findA = []
+            let allowedCrashers = []
+            var kickList = '/kick'
+            voiceUsers = channel.members.array();
+            //check split channel
+            if (bot.afkChecks[channel.id] && bot.afkChecks[channel.id].split && bot.afkChecks[channel.id].splitChannel) {
+                let splitChannel = message.guild.channels.cache.get(bot.afkChecks[channel.id].splitChannel)
+                if (splitChannel) {
+                    let splitUsers = splitChannel.members.array()
+                    for (let i in splitUsers) voiceUsers.push(splitUsers[i])
                 }
-                if (member.voice.channel) otherChannel.push(`${member}: ${member.voice.channel}`);
-                else crashers.unshift(`<@!${member.id}>`);
-                kickList = kickList.concat(` ${player}`)
-                findA.push(player)
             }
-        }
-        for (let i in voiceUsers) {
-            if (voiceUsers[i].roles.highest.position >= message.guild.roles.cache.get(settings.roles.almostrl).position) continue;
-            if (!voiceUsers[i].nickname) continue
-            let nick = voiceUsers[i].nickname.toLowerCase().replace(/[^a-z|]/gi, '')
-            if (!raiders.includes(nick)) {
-                alts.push(`<@!${voiceUsers[i].id}>`);
+            for (let i in raiders) {
+                let player = raiders[i];
+                if (player == '') continue;
+                let member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(player.toLowerCase()));
+                if (member == null) {
+                    crashers.push(player);
+                    kickList = kickList.concat(` ${player}`)
+                } else if (!voiceUsers.includes(member)) {
+                    if (member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.almostrl).position) continue;
+                    if (bot.afkChecks[channel.id] && bot.afkChecks[channel.id].raiders) {
+                        if (bot.afkChecks[channel.id].raiders.includes(member.id)) allowedCrashers.push(member)
+
+                    }
+                    if (member.voice.channel) otherChannel.push(`${member}: ${member.voice.channel}`);
+                    else crashers.unshift(`<@!${member.id}>`);
+                    kickList = kickList.concat(` ${player}`)
+                    findA.push(player)
+                }
             }
-        }
-        var crashersS = ' ', altsS = ' ', movedS = ' ', find = `;find `
-        for (let i in crashers) { crashersS = crashersS.concat(crashers[i]) + ', ' }
-        for (let i in alts) { altsS = altsS.concat(alts[i]) + ', ' }
-        for (let i in otherChannel) { movedS = movedS.concat(otherChannel[i]) + '\n' }
-        for (let i in findA) { find = find.concat(findA[i]) + ' ' }
-        if (crashersS == ' ') { crashersS = 'None' }
-        if (altsS == ' ') { altsS = 'None' }
-        if (movedS == ' ') { movedS = 'None' }
-        let embed = new Discord.MessageEmbed()
-            .setTitle(`Parse for ${channel.name}`)
-            .setColor('#00ff00')
-            .setDescription(`There are ${crashers.length} crashers, ${alts.length} potential alts, and ${otherChannel.length} people in other channels`)
-            .addFields(
-                { name: 'Potential Alts', value: altsS },
-                { name: 'Other Channels', value: movedS },
-                { name: 'Crashers', value: crashersS },
-                { name: 'Find Command', value: `\`\`\`${find}\`\`\`` },
-                { name: 'Kick List', value: `\`\`\`${kickList}\`\`\`` }
-            )
-        if (bot.afkChecks[channel.id]) embed.addField(`Were in VC`, `The following can do \`;join\`:\n${allowedCrashers.map(u => `${u} `)}`)
+            for (let i in voiceUsers) {
+                if (voiceUsers[i].roles.highest.position >= message.guild.roles.cache.get(settings.roles.almostrl).position) continue;
+                if (!voiceUsers[i].nickname) continue
+                let nick = voiceUsers[i].nickname.toLowerCase().replace(/[^a-z|]/gi, '')
+                if (!raiders.includes(nick)) {
+                    alts.push(`<@!${voiceUsers[i].id}>`);
+                }
+            }
+            var crashersS = ' ',
+                altsS = ' ',
+                movedS = ' ',
+                find = `;find `
+            for (let i in crashers) { crashersS = crashersS.concat(crashers[i]) + ', ' }
+            for (let i in alts) { altsS = altsS.concat(alts[i]) + ', ' }
+            for (let i in otherChannel) { movedS = movedS.concat(otherChannel[i]) + '\n' }
+            for (let i in findA) { find = find.concat(findA[i]) + ' ' }
+            if (crashersS == ' ') { crashersS = 'None' }
+            if (altsS == ' ') { altsS = 'None' }
+            if (movedS == ' ') { movedS = 'None' }
+            let embed = new Discord.MessageEmbed()
+                .setTitle(`Parse for ${channel.name}`)
+                .setColor('#00ff00')
+                .setDescription(`There are ${crashers.length} crashers, ${alts.length} potential alts, and ${otherChannel.length} people in other channels`)
+                .addFields({ name: 'Potential Alts', value: altsS }, { name: 'Other Channels', value: movedS }, { name: 'Crashers', value: crashersS }, { name: 'Find Command', value: `\`\`\`${find}\`\`\`` }, { name: 'Kick List', value: `\`\`\`${kickList}\`\`\`` })
+            if (bot.afkChecks[channel.id]) embed.addField(`Were in VC`, `The following can do \`;join\`:\n${allowedCrashers.map(u => `${u} `)}`)
         await message.channel.send(embed);
         parseStatusEmbed.fields[1].value = `Crasher Parse Completed. See Below. Beginning Character Parse`
         await parseStatusMessage.edit(parseStatusEmbed)
@@ -143,7 +148,7 @@ module.exports = {
             if (players[i] == '') continue;
             try {
                 var characterInfo = await realmEyeScrape.getUserInfo(players[i])
-            } catch (er) { unreachable.push(players[i]) }
+            } catch (er) { unreachable.push(players[i]); continue } //Husky: Added continue so it wouldn't double log unreachable players by adding again on next line
             if (!characterInfo) { unreachable.push(players[i]); continue }
             if (!characterInfo.characters[0]) { unreachable.push(players[i]); continue }
             try {
@@ -255,6 +260,7 @@ module.exports = {
                 }
             } catch (er) {
                 console.log(er)
+                console.log(player);
                 unreachable.push(player)
             }
         }
