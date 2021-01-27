@@ -247,8 +247,7 @@
             "warnremove": true,
             "warns": true,
             "bruh": true,
-            "testalt": true,
-            "createtemplate": true
+            "testalt": true
         },
         "categories": {
             "raiding": "raiding",
@@ -514,7 +513,7 @@
             "earlylocation": 20,
             "perrun": 0,
             "nitromultiplier": 2,
-            "keypop": 20,
+            "keypop": 5,
             "vialpop": 3,
             "rushing": 1,
             "brain": 1,
@@ -633,7 +632,8 @@
             "addpoints": true,
             "undefined": true,
             "testalt": true,
-            "bruh": true
+            "bruh": true,
+            "createtemplate": true
         },
         "categories": {
             "raiding": "raiding",
@@ -1018,7 +1018,8 @@
             "addpoints": true,
             "undefined": true,
             "testalt": true,
-            "bruh": true
+            "bruh": true,
+            "createtemplate": true
         },
         "categories": {
             "raiding": "raiding",

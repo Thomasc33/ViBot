@@ -155,9 +155,13 @@ async function autoMod(message) {
     function mute(reason, time) {
         //time: 1=1 hour, 2=1 day
         let timeString, timeValue;
-        if (time == 1) { timeString = '1 Hour';
-            timeValue = 3600000 } else if (time == 2) { timeString = '1 Day';
-            timeValue = 86400000 }
+        if (time == 1) {
+            timeString = '1 Hour';
+            timeValue = 3600000
+        } else if (time == 2) {
+            timeString = '1 Day';
+            timeValue = 86400000
+        }
         message.member.roles.add(settings.roles.muted)
             .then(db.query(`INSERT INTO mutes (id, guildid, muted, reason, modid, uTime) VALUES ('${message.author.id}', '${message.guild.id}', true, '${reason}','${bot.user.id}', '${Date.now() + timeValue}')`))
             .then(message.author.send(`You have been muted in \`${message.guild.name}\` for \`${reason}\`. This will last for \`${timeString}\``))
@@ -344,9 +348,7 @@ bot.on("ready", async() => {
     bot.guilds.cache.each(g => {
         if (!emojiServers.includes(g.id)) {
             vibotChannels.update(g, bot).catch(er => {})
-            if (bot.settings[g.id].backend.modmail) modmail.update(g, bot, db).catch(er => {
-                ErrorLogger.log(er, bot);
-            })
+            if (bot.settings[g.id].backend.modmail) modmail.update(g, bot, db).catch(er => { ErrorLogger.log(er, bot); })
             if (bot.settings[g.id].backend.verification) verification.init(g, bot, db).catch(er => { ErrorLogger.log(er, bot); })
             if (bot.settings[g.id].backend.vetverification) vetVerification.init(g, bot, db).catch(er => { ErrorLogger.log(er, bot); })
             if (bot.settings[g.id].backend.roleassignment) roleAssignment.init(g, bot).catch(er => { ErrorLogger.log(er, bot); })
