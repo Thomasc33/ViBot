@@ -3,62 +3,61 @@ const afkCheck = require('./afkCheck')
 const botSettings = require('../settings.json')
 
 module.exports = {
-    name: 'eventafk',
-    description: 'Starts a new style afk check for event dungeons',
-    args: '<dungeon> [Location]',
-    requiredArgs: 1,
-    role: 'eventrl',
-    alias: ['eafk'],
-    async execute(message, args, bot, db, tokenDB) {
-        //settings
-        let settings = bot.settings[message.guild.id]
+        name: 'eventafk',
+        description: 'Starts a new style afk check for event dungeons',
+        args: '<dungeon> [Location]',
+        requiredArgs: 1,
+        role: 'eventrl',
+        alias: ['eafk'],
+        async execute(message, args, bot, db, tokenDB) {
+            //settings
+            let settings = bot.settings[message.guild.id]
 
-        //check for vet run
-        let isVet
-        if (message.channel.id == settings.channels.eventcommands) isVet = false
-        else if (message.channel.id == settings.channels.vetcommands) isVet = true
-        else return;
-        var eventType = args[0]
-        if (!eventFile[eventType]) return message.channel.send("Event type unrecognized. Check ;events and try again")
-        var event = eventFile[eventType]
-        if (!event.enabled) return message.channel.send(`${event.name} is currently disabled.`);
+            //check for vet run
+            let isVet
+            if (message.channel.id == settings.channels.eventcommands) isVet = false
+            else if (message.channel.id == settings.channels.vetcommands) isVet = true
+            else return;
+            var eventType = args[0]
+            if (!eventFile[eventType]) return message.channel.send("Event type unrecognized. Check ;events and try again")
+            var event = eventFile[eventType]
+            if (!event.enabled) return message.channel.send(`${event.name} is currently disabled.`);
 
-        //create template from event info
-        let eventTemplate = {
-            isEvent: true,
-            runType: event.name,
-            runName: event.name,
-            reqsImageUrl: "",
-            keyEmoteID: event.keyEmojiId,
-            vialEmoteID: event.portalEmojiId,
-            isSplit: false,
-            newChannel: true,
-            vialReact: false,
-            postAfkCheck: false,
-            startDelay: 5000,
-            vcCap: 50,
-            timeLimit: 180,
-            keyCount: 3,
-            earlyLocationCost: 15,
-            earlyLocationReacts: [
-                {
-                    "emoteID": "723018431275859969",
-                    "pointsGiven": 2,
-                    "limit": 3,
-                    "shortName": "mystic",
-                    "checkRealmEye": {
-                        "class": "mystic",
-                        "ofEight": "8",
-                        "mheal": "85",
-                        "orb": "2"
-                    }
-                },
+            //create template from event info
+            let eventTemplate = {
+                    isEvent: true,
+                    runType: event.name,
+                    runName: event.name,
+                    reqsImageUrl: "",
+                    keyEmoteID: event.keyEmojiId,
+                    vialEmoteID: event.portalEmojiId,
+                    isSplit: false,
+                    newChannel: true,
+                    vialReact: false,
+                    postAfkCheck: false,
+                    startDelay: 5000,
+                    vcCap: 50,
+                    timeLimit: 180,
+                    keyCount: 3,
+                    earlyLocationCost: 15,
+                    earlyLocationReacts: [{
+                            "emoteID": "723018431275859969",
+                            "pointsGiven": 2,
+                            "limit": 3,
+                            "shortName": "mystic",
+                            "checkRealmEye": {
+                                "class": "mystic",
+                                "ofEight": "8",
+                                "mheal": "85",
+                                "orb": "2"
+                            }
+                        },
 
-            ],
-            reacts: [],
-            embed: {
-                color: event.color,
-                description: `To join, **connect to the raiding channel by clicking its name**\nIf you have a key react with <${event.keyEmote}>\nTo indicate your class or gear choices, react with ${event.rushers ? `<${botSettings.emote.Plane}>` : ''} ${event.stun ? `<${botSettings.emote.Collo}>` : ''} ${event.ogmur ? `<${botSettings.emote.Ogmur}>` : ''} ${event.puri ? `<${botSettings.emote.TomeofPurification}>` : ''} ${event.mseal ? `<${botSettings.emote.MarbleSeal}>` : ''} ${event.brain ? `<${botSettings.emote.Brain}>` : ''} ${event.mystic ? `<${botSettings.emote.Mystic}>` : ''} ${event.paralyze ? `<${botSettings.emote.Paralyze}>` : ''}${event.slow ? `<${botSettings.emote.Slow}>` : ''} ${event.daze ? `<${botSettings.emote.Qot}>` : ''} ${event.curse ? `<${botSettings.emote.Curse}>` : ''} ${event.expose ? `<${botSettings.emote.Expose}>` : ''} ${event.warrior ? `<${botSettings.emote.Warrior}>` : ''} ${event.paladin ? `<${botSettings.emote.Paladin}>` : ''} ${event.bard ? `<${botSettings.emote.Bard}>` : ''} ${event.priest ? `<${botSettings.emote.Priest}>` : ''} ${event.trickster ? `<${botSettings.emote.trickster}>` : ''} ${event.knight ? `<${botSettings.emote.Knight}>` : ''}\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC`
+                    ],
+                    reacts: [],
+                    embed: {
+                        color: event.color,
+                        description: `To join, **connect to the raiding channel by clicking its name**\nIf you have a key react with <${event.keyEmote}>\nTo indicate your class or gear choices, react with ${event.rushers ? `<${botSettings.emote.Plane}>` : ''} ${event.stun ? `<${botSettings.emote.Collo}>` : ''} ${event.ogmur ? `<${botSettings.emote.Ogmur}>` : ''} ${event.fungal ? `<${botSettings.emote.UTTomeoftheMushroomTribes}>` : ''} ${event.mseal ? `<${botSettings.emote.MarbleSeal}>` : ''} ${event.brain ? `<${botSettings.emote.Brain}>` : ''} ${event.mystic ? `<${botSettings.emote.Mystic}>` : ''} ${event.paralyze ? `<${botSettings.emote.Paralyze}>` : ''}${event.slow ? `<${botSettings.emote.Slow}>` : ''} ${event.daze ? `<${botSettings.emote.Qot}>` : ''} ${event.curse ? `<${botSettings.emote.Curse}>` : ''} ${event.expose ? `<${botSettings.emote.Expose}>` : ''} ${event.warrior ? `<${botSettings.emote.Warrior}>` : ''} ${event.paladin ? `<${botSettings.emote.Paladin}>` : ''} ${event.bard ? `<${botSettings.emote.Bard}>` : ''} ${event.priest ? `<${botSettings.emote.Priest}>` : ''} ${event.trickster ? `<${botSettings.emote.trickster}>` : ''} ${event.knight ? `<${botSettings.emote.Knight}>` : ''}\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC`
             },
         }
         eventTemplate['font-color'] = '#eeeeee'
@@ -67,7 +66,7 @@ module.exports = {
         if (event.rushers) eventTemplate.reacts.push(botSettings.emoteIDs.Plane)
         if (event.stun) eventTemplate.reacts.push(botSettings.emoteIDs.Collo)
         if (event.ogmur) eventTemplate.reacts.push(botSettings.emoteIDs.Ogmur)
-        if (event.puri) eventTemplate.reacts.push(botSettings.emoteIDs.TomeofPurification)
+        if (event.fungal) eventTemplate.reacts.push(botSettings.emoteIDs.UTTomeoftheMushroomTribes)
         if (event.mseal) eventTemplate.reacts.push(botSettings.emoteIDs.MarbleSeal)
         if (event.brain) eventTemplate.reacts.push(botSettings.emoteIDs.brain)
         if (event.stasis) eventTemplate.reacts.push(botSettings.emoteIDs.mystic)

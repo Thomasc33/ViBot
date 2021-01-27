@@ -154,16 +154,16 @@ class afk {
         }
     }
     async cult() {
-        //Raid status message
-        this.minutes = Math.floor(this.time / 60);
-        this.seconds = this.time % 60;
-        this.pingingMessage = `@here \`Cult\` started by ${this.message.member} in \`${this.voiceChannel.name}\``;
-        this.embedMessage = new Discord.MessageEmbed()
-            .setColor('#ff0000')
-            .setAuthor(`Cult Started by ${this.message.member.nickname} in ${this.voiceChannel.name}`, `${this.message.author.avatarURL()}`)
-            .setDescription(`To join, **connect to the raiding channel by clicking its name and react with** <${botSettings.emote.malus}>
+            //Raid status message
+            this.minutes = Math.floor(this.time / 60);
+            this.seconds = this.time % 60;
+            this.pingingMessage = `@here \`Cult\` started by ${this.message.member} in \`${this.voiceChannel.name}\``;
+            this.embedMessage = new Discord.MessageEmbed()
+                .setColor('#ff0000')
+                .setAuthor(`Cult Started by ${this.message.member.nickname} in ${this.voiceChannel.name}`, `${this.message.author.avatarURL()}`)
+                .setDescription(`To join, **connect to the raiding channel by clicking its name and react with** <${botSettings.emote.malus}>
             If you have a key react with <${botSettings.emote.LostHallsKey}>
-            To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.TomeofPurification}> <${botSettings.emote.MarbleSeal}>
+            To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.UTTomeoftheMushroomTribes}> <${botSettings.emote.MarbleSeal}>
             If you plan on rushing, react with the <${botSettings.emote.Plane}>
             If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.emote.shard}>
             To end the AFK check as a leader, react to ❌`)
@@ -280,7 +280,7 @@ class afk {
             .setAuthor(`Void Started by ${this.message.member.nickname} in ${this.voiceChannel.name}`, `${this.message.author.avatarURL()}`)
             .setDescription(`To join, **connect to the raiding channel by clicking its name and react with** <${botSettings.emote.voidd}>
 If you have a key or vial, react with <${botSettings.emote.LostHallsKey}> or <${botSettings.emote.Vial}>
-To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.TomeofPurification}> <${botSettings.emote.MarbleSeal}>
+To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.UTTomeoftheMushroomTribes}> <${botSettings.emote.MarbleSeal}>
 If you are a ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.emote.shard}>
 To end the AFK check as a leader, react to ❌`)
             .setTimestamp()
@@ -385,7 +385,7 @@ To end the AFK check as a leader, react to ❌`)
             .setAuthor(`Fullskip Void Started by ${this.message.member.nickname} in ${this.voiceChannel.name}`, `${this.message.author.avatarURL()}`)
             .setDescription(`To join, **connect to the raiding channel by clicking its name and react with** <${botSettings.emote.SkipBoi}>
         If you have a key or vial, react with <${botSettings.emote.LostHallsKey}> or <${botSettings.emote.Vial}>
-        To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.TomeofPurification}> <${botSettings.emote.MarbleSeal}>
+        To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.UTTomeoftheMushroomTribes}> <${botSettings.emote.MarbleSeal}>
         If you have 80+ MHeal and a 8/8 Mystic, react with <${botSettings.emote.Mystic}>
         If you are an 8/8 trickster with a brain, react with <${botSettings.emote.Brain}>
         If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.emote.shard}>
@@ -977,7 +977,7 @@ async function cultReact(message) {
         .then(message.react(botSettings.emote.Warrior))
         .then(message.react(botSettings.emote.Paladin))
         .then(message.react(botSettings.emote.Knight))
-        .then(message.react(botSettings.emote.TomeofPurification))
+        .then(message.react(botSettings.emote.UTTomeoftheMushroomTribes))
         .then(message.react(botSettings.emote.MarbleSeal))
         .then(message.react(botSettings.emote.Plane))
         .then(message.react(botSettings.emote.shard))
@@ -991,7 +991,7 @@ async function voidReact(message) {
         .then(message.react(botSettings.emote.Warrior))
         .then(message.react(botSettings.emote.Paladin))
         .then(message.react(botSettings.emote.Knight))
-        .then(message.react(botSettings.emote.TomeofPurification))
+        .then(message.react(botSettings.emote.UTTomeoftheMushroomTribes))
         .then(message.react(botSettings.emote.MarbleSeal))
         .then(message.react(botSettings.emote.shard))
         .then(message.react('❌'))
@@ -1004,7 +1004,7 @@ async function fsvReact(message) {
         .then(message.react(botSettings.emote.Warrior))
         .then(message.react(botSettings.emote.Paladin))
         .then(message.react(botSettings.emote.Knight))
-        .then(message.react(botSettings.emote.TomeofPurification))
+        .then(message.react(botSettings.emote.UTTomeoftheMushroomTribes))
         .then(message.react(botSettings.emote.MarbleSeal))
         .then(message.react(botSettings.emote.Brain))
         .then(message.react(botSettings.emote.Mystic))

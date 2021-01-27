@@ -38,16 +38,26 @@ module.exports = {
         if (message.channel.id === settings.channels.raidcommands) var isVet = false;
         else if (message.channel.id === settings.channels.vetcommands) var isVet = true;
         else return message.channel.send(`Try again, but in <#${settings.channels.raidcommands}> or <#${settings.channels.vetcommands}>`);
-        if (isVet) if (message.member.roles.highest.position < message.guild.roles.cache.get(settings.roles.vetrl).position) return message.channel.send(`Only Veteran Raid Leaders can start vet runs`)
+        if (isVet)
+            if (message.member.roles.highest.position < message.guild.roles.cache.get(settings.roles.vetrl).position) return message.channel.send(`Only Veteran Raid Leaders can start vet runs`)
         if (args.length < 2) return message.channel.send(`Command entered incorrectly -> ${botSettings.prefix}${this.name} ${this.args}`);
         if (isVet && activeVetRun) return message.channel.send(`There is already a run active. If this is an error, do \`;allowrun\``);
         else if (activeRun) return message.channel.send(`There is already a run active. If this is an error, do \`;allowrun\``);
         switch (args[0].charAt(0).toLowerCase()) {
-            case 'c': var run = 1; break;
-            case 'v': var run = 2; break;
-            case 'f': var run = 3; break;
-            case 'x': var run = 4; break;
-            default: return message.channel.send(`Command entered incorrectly -> ${botSettings.prefix}${this.name} ${this.args}`);
+            case 'c':
+                var run = 1;
+                break;
+            case 'v':
+                var run = 2;
+                break;
+            case 'f':
+                var run = 3;
+                break;
+            case 'x':
+                var run = 4;
+                break;
+            default:
+                return message.channel.send(`Command entered incorrectly -> ${botSettings.prefix}${this.name} ${this.args}`);
         }
         let location = "";
         for (i = 1; i < args.length; i++) location = location.concat(args[i]) + ' ';
@@ -151,7 +161,8 @@ class afk {
             case 4:
                 runType = 'Split Cult'
                 break;
-            default: return;
+            default:
+                return;
         }
         switch (this.location.substring(0, 2)) {
             case 'us':
@@ -180,20 +191,21 @@ class afk {
             case 4:
                 this.cult()
                 break;
-            default: return;
+            default:
+                return;
         }
     }
 
     async cult() {
-        //Raid status message
-        this.minutes = Math.floor(this.time / 60);
-        this.seconds = this.time % 60;
-        this.embedMessage = new Discord.MessageEmbed()
-            .setColor('#ff0000')
-            .setAuthor(`Cult Started by ${this.message.member.nickname} in ${this.channel.name}`)
-            .setDescription(`To join, **connect to the raiding channel by clicking its name**
+            //Raid status message
+            this.minutes = Math.floor(this.time / 60);
+            this.seconds = this.time % 60;
+            this.embedMessage = new Discord.MessageEmbed()
+                .setColor('#ff0000')
+                .setAuthor(`Cult Started by ${this.message.member.nickname} in ${this.channel.name}`)
+                .setDescription(`To join, **connect to the raiding channel by clicking its name**
 If you have a key react with <${botSettings.emote.LostHallsKey}>
-To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.TomeofPurification}> <${botSettings.emote.MarbleSeal}>
+To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.UTTomeoftheMushroomTribes}> <${botSettings.emote.MarbleSeal}>
 If you plan on rushing, react with the <${botSettings.emote.Plane}>
 If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.emote.shard}> to get into VC`)
             .setTimestamp()
@@ -299,7 +311,7 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
             .setAuthor(`Void Started by ${this.message.member.nickname} in ${this.channel.name}`)
             .setDescription(`To join, **connect to the raiding channel by clicking its name**
 If you have a key or vial, react with <${botSettings.emote.LostHallsKey}> or <${botSettings.emote.Vial}>
-To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.TomeofPurification}> <${botSettings.emote.MarbleSeal}>
+To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.UTTomeoftheMushroomTribes}> <${botSettings.emote.MarbleSeal}>
 If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.emote.shard}> to get into VC`)
             .setTimestamp()
             .setFooter(`Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds`);
@@ -392,7 +404,7 @@ If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.
             .setAuthor(`Fullskip Void Started by ${this.message.member.nickname} in ${this.channel.name}`)
             .setDescription(`To join, **connect to the raiding channel by clicking its name**
 If you have a key or vial, react with <${botSettings.emote.LostHallsKey}> or <${botSettings.emote.Vial}>
-To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.TomeofPurification}> <${botSettings.emote.MarbleSeal}>
+To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.UTTomeoftheMushroomTribes}> <${botSettings.emote.MarbleSeal}>
 If you have 85+ MHeal and a 8/8 Mystic, react with <${botSettings.emote.Mystic}>
 If you are an 8/8 trickster with a brain, react with <${botSettings.emote.Brain}>
 If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.emote.shard}> to get into VC`)
