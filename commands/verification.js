@@ -326,7 +326,7 @@ module.exports = {
             } catch (err) { };
 
             let altDetectionScore
-            if (accountAge && fameHistoryData.oneDay && fameHistoryData.oneWeek && fameHistoryData.lifeTime) altDetectionScore = await VerificationML.altDetection(data.rank, data.fame, data.deaths[data.deaths.length - 1], accountAge, data.chars, data.skins, fameHistoryData.oneDay, fameHistoryData.oneWeek, fameHistoryData.lifeTime)
+            if (accountAge && fameHistoryData && fameHistoryData.oneDay && fameHistoryData.oneWeek && fameHistoryData.lifeTime) altDetectionScore = await VerificationML.altDetection(data.rank, data.fame, data.deaths[data.deaths.length - 1], accountAge, data.chars, data.skins, fameHistoryData.oneDay, fameHistoryData.oneWeek, fameHistoryData.lifeTime)
             let manualEmbed = new Discord.MessageEmbed()
                 .setAuthor(`${u.tag} is attempting to verify as: ${ign}`, u.avatarURL())
                 .setDescription(`<@!${u.id}> : [Realmeye Link](https://www.realmeye.com/player/${ign})`)
