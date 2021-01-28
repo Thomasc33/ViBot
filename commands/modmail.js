@@ -40,7 +40,7 @@ module.exports = {
         let embedMessage = await modMailChannel.send(embed).catch(er => ErrorLogger.log(er, bot))
         await embedMessage.react('🔑')
         setTimeout(() => module.exports.watchMessage(embedMessage, db), 1000)
-        if(message.attachments.first()) modMailChannel.send(message.attachments.first().proxyURL)
+        if (message.attachments.first()) modMailChannel.send(message.attachments.first().proxyURL)
     },
     async watchMessage(message, db) {
         watchedModMails.push(message.id)
@@ -75,7 +75,7 @@ module.exports = {
                         let responseCollector = new Discord.MessageCollector(modMailChannel, m => m.author.id === reactor.id)
                         responseCollector.on('collect', async function (mes) {
                             let response = mes.content.trim()
-                            if(response == '') return mes.channel.send(`Invalid response. Please provide text. If you attached an image, please copy the URL and send that`)
+                            if (response == '') return mes.channel.send(`Invalid response. Please provide text. If you attached an image, please copy the URL and send that`)
                             responseCollector.stop()
                             await mes.delete()
                             responseEmbed.setDescription(`__Are you sure you want to respond with the following?__\n${response}`)

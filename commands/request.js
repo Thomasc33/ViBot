@@ -108,10 +108,10 @@ module.exports = {
             }
         })
         async function confirmKey(u, r) {
-            let endAfter = setInterval(function() {
+            let endAfter = setInterval(function () {
                 try {
                     dmReactionCollector.stop()
-                } catch (er) {}
+                } catch (er) { }
                 clearInterval(endAfter);
                 return;
             }, 60000)
@@ -138,7 +138,7 @@ module.exports = {
             });
         }
         async function confirmVial(u, r) {
-            let endAfter = setInterval(function() {
+            let endAfter = setInterval(function () {
                 try {
                     dmReactionCollector.stop();
                     clearInterval(endAfter);
@@ -173,7 +173,7 @@ module.exports = {
             }
         }
         async function confirmRush(u, r) {
-            let endAfter = setInterval(function() {
+            let endAfter = setInterval(function () {
                 try {
                     dmReactionCollector.stop();
                     clearInterval(endAfter);
@@ -206,7 +206,7 @@ module.exports = {
             }
         }
         async function confirmMystic(u, r) {
-            let endAfter = setInterval(function() {
+            let endAfter = setInterval(function () {
                 try {
                     dmReactionCollector.stop();
                     clearInterval(endAfter);
@@ -241,7 +241,7 @@ module.exports = {
             }
         }
         async function confirmBrain(u, r) {
-            let endAfter = setInterval(function() {
+            let endAfter = setInterval(function () {
                 try {
                     dmReactionCollector.stop();
                     dm.send('Reaction took too long to receive, or another key already confirmed. Re-react to try again');

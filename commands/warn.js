@@ -17,8 +17,10 @@ module.exports = {
         if (reason == '') return message.channel.send('Please provide a reason')
         let errored = false
         await db.query(`INSERT INTO warns VALUES ('${member.user.id}', '${message.author.id}', ${db.escape(reason)})`, (err, rows) => {
-            if (err) { message.channel.send(`There was an error: ${err}`);
-                errored = true }
+            if (err) {
+                message.channel.send(`There was an error: ${err}`);
+                errored = true
+            }
             let warnEmbed = new Discord.MessageEmbed()
                 .setColor('#ff0000')
                 .setTitle(`Warning Issued on the Server: ${message.guild.name}`)

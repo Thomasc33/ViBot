@@ -197,13 +197,13 @@ class afk {
     }
 
     async cult() {
-            //Raid status message
-            this.minutes = Math.floor(this.time / 60);
-            this.seconds = this.time % 60;
-            this.embedMessage = new Discord.MessageEmbed()
-                .setColor('#ff0000')
-                .setAuthor(`Cult Started by ${this.message.member.nickname} in ${this.channel.name}`)
-                .setDescription(`To join, **connect to the raiding channel by clicking its name**
+        //Raid status message
+        this.minutes = Math.floor(this.time / 60);
+        this.seconds = this.time % 60;
+        this.embedMessage = new Discord.MessageEmbed()
+            .setColor('#ff0000')
+            .setAuthor(`Cult Started by ${this.message.member.nickname} in ${this.channel.name}`)
+            .setDescription(`To join, **connect to the raiding channel by clicking its name**
 If you have a key react with <${botSettings.emote.LostHallsKey}>
 To indicate your class or gear choices, react with <${botSettings.emote.Warrior}> <${botSettings.emote.Paladin}> <${botSettings.emote.Knight}> <${botSettings.emote.UTTomeoftheMushroomTribes}> <${botSettings.emote.MarbleSeal}>
 If you plan on rushing, react with the <${botSettings.emote.Plane}>

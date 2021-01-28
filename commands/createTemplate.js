@@ -121,16 +121,16 @@ class AfkTemplate {
                 position: this.original.channel.position - 1,
                 reason: `For creating or editing the raiding template for ${this.author}`,
                 permissionOverwrites: [{
-                        id: this.guild.roles.everyone.id,
-                        deny: ['VIEW_CHANNEL']
-                    },
-                    {
-                        id: this.author.id,
-                        allow: ['ADD_REACTIONS', 'SEND_MESSAGES', 'VIEW_CHANNEL', 'EMBED_LINKS', 'ATTACH_FILES', 'USE_EXTERNAL_EMOJIS']
-                    }, {
-                        id: this.bot.user,
-                        allow: ['ADD_REACTIONS', 'SEND_MESSAGES', 'VIEW_CHANNEL', 'EMBED_LINKS', 'ATTACH_FILES', 'USE_EXTERNAL_EMOJIS']
-                    }
+                    id: this.guild.roles.everyone.id,
+                    deny: ['VIEW_CHANNEL']
+                },
+                {
+                    id: this.author.id,
+                    allow: ['ADD_REACTIONS', 'SEND_MESSAGES', 'VIEW_CHANNEL', 'EMBED_LINKS', 'ATTACH_FILES', 'USE_EXTERNAL_EMOJIS']
+                }, {
+                    id: this.bot.user,
+                    allow: ['ADD_REACTIONS', 'SEND_MESSAGES', 'VIEW_CHANNEL', 'EMBED_LINKS', 'ATTACH_FILES', 'USE_EXTERNAL_EMOJIS']
+                }
                 ]
             });
             this.dmChannel = channel;
@@ -163,7 +163,7 @@ class AfkTemplate {
             const role = this.guild.roles.resolve(guildSettings[this.guild.id].roles[reaction.requiredRole]);
             fields.push({
                 name: `${emoji} ${reaction.shortName} ${emoji}`,
-                value: `*Early React*\r\nPoints Given: ${reaction.pointsGiven}\r\nReaction Limit: ${reaction.limit}${reaction.requiredRole? '\r\nRequired Role:\r\n': role}`
+                value: `*Early React*\r\nPoints Given: ${reaction.pointsGiven}\r\nReaction Limit: ${reaction.limit}${reaction.requiredRole ? '\r\nRequired Role:\r\n' : role}`
             });
         }
         console.log(this.data.reacts);
@@ -191,7 +191,7 @@ class AfkTemplate {
     }
     async editKeyType() {
         await this.updateDM('**Key Type**: What type of key should this run use?');
-        const emoji = await new Promise(async(resolve, reject) => {
+        const emoji = await new Promise(async (resolve, reject) => {
             const embed = new Discord.MessageEmbed()
                 .setDescription('React with the key this run should accept. React with :x: to cancel')
                 .setTitle('Key Selection')
@@ -289,18 +289,18 @@ class AfkTemplate {
     }
     async editPingRole() {
         await this.updateDM(`**Ping Role**: Should this afk ping ${this.guild.roles.resolve(guildSettings[this.guild.id].roles.voidping)} or ${this.guild.roles.resolve(guildSettings[this.guild.id].roles.cultping)}?`);
-        this.data.pingRole = await new Promise(async(resolve, reject) => {
+        this.data.pingRole = await new Promise(async (resolve, reject) => {
             const collector = await this.dm.then(d => d.createReactionCollector((reaction, user) => user.id == this.author.id &&
                 (reaction.emoji.name == '❌' || [botSettings.emoteIDs.voidd,
-                    botSettings.emoteIDs.malus
+                botSettings.emoteIDs.malus
                 ].includes(reaction.emoji.id)), { time: ext.MAX_WAIT }));
             let resolved = false;
-            new Promise(async() => {
+            new Promise(async () => {
                 await this.dm.then(d => d.react(botSettings.emote.voidd));
                 await this.dm.then(d => d.react(botSettings.emote.malus));
                 await this.dm.then(d => d.react('❌'));
             })
-            collector.once('collect', async(reaction) => {
+            collector.once('collect', async (reaction) => {
                 resolved = true;
                 collector.stop();
                 await this.dm.then(d => d.reactions.removeAll());
@@ -332,7 +332,7 @@ class AfkTemplate {
         this.data.embed.description = (await this.channel.then(c => c.next(null, null, this.author.id))).content;
     }
     async editEarlyReacts() {
-        this.updateReacts(`React to this message with all early reactions. ${this.bot.emojis.resolve(this.data.keyEmoteID)} ${this.data.vialReact?'and <'+botSettings.emote.Vial+'> are':'is'} automatically added. Any not accessible by me will be removed. React to the ❌ to finish adding reactions.`);
+        this.updateReacts(`React to this message with all early reactions. ${this.bot.emojis.resolve(this.data.keyEmoteID)} ${this.data.vialReact ? 'and <' + botSettings.emote.Vial + '> are' : 'is'} automatically added. Any not accessible by me will be removed. React to the ❌ to finish adding reactions.`);
 
         const earlyReacts = (await this.rm.then(r => r.getReactionBatch(this.author.id))).slice(0, 23);
         for (const emoji of earlyReacts) {
@@ -355,7 +355,7 @@ class AfkTemplate {
         this.data.reacts = (await this.rm.then(r => r.getReactionBatch(this.author.id))).map(c => c.id);
     }
     async getRoleSelection() {
-        return new Promise(async(resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             let rolesMessage;
             const guildRoles = guildSettings[this.guild.id].roles;
             try {
@@ -475,9 +475,9 @@ module.exports = {
                 //afk_template.updateDM(`Are you sure you want to create this template? React with ✅ to confirm, ⚙️ to edit, or ❌ to cancel.`);
                 afk_template.updateDM(`Are you sure you want to create this template? React with ✅ to confirm or ❌ to cancel.`);
 
-                emoji = await new Promise(async(resolve, reject) => {
+                emoji = await new Promise(async (resolve, reject) => {
                     const dm = await afk_template.dm;
-                    new Promise(async() => {
+                    new Promise(async () => {
                         await dm.react('✅');
                         // await dm.react('⚙️');
                         await dm.react('❌');
@@ -527,7 +527,7 @@ module.exports = {
                 .setDescription(error.stack || error)
                 .setFooter(`UID: ${message.author.id} • Cancelled at`)
                 .setTimestamp(new Date());
-            message.author.send(afk_template.embed).then(async() => {
+            message.author.send(afk_template.embed).then(async () => {
                 if (afk_template.reactEmbed) {
                     const dm = await afk_template.dm.then(d => d);
                     afk_template.reactEmbed.setColor('#ff0000')
