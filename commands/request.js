@@ -1,6 +1,7 @@
 const botSettings = require('../settings.json')
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
+const afkCheck = require('./afkCheck.js');
 
 module.exports = {
     name: 'request',
@@ -15,6 +16,11 @@ module.exports = {
         if (message.channel.parent.name.toLowerCase() === 'raiding') isVet = false;
         else if (message.channel.name === 'veteran raiding') isVet = true;
         else return message.channel.send("Try again, but in a correct section");
+
+        let afk = null;
+        for (const run of afkCheck.runs)
+            if (run.active && run.message.author.id == message.author.id)
+                afk = run;
 
         var voiceChannel = message.member.voice.channel
         if (!voiceChannel) return message.channel.send("Channel not found. Make sure you are in a VC")
@@ -77,7 +83,8 @@ module.exports = {
                 if (!recieved) {
                     confirmKey(u, r)
                 }
-            } if (r.emoji.id === botSettings.emoteIDs.Vial) {
+            }
+            if (r.emoji.id === botSettings.emoteIDs.Vial) {
                 if (!recieved) {
                     confirmVial(u, r)
                 }
@@ -120,6 +127,9 @@ module.exports = {
                 message.channel.send(`<@!${u.id}> has been given location`)
                 let user = message.guild.members.cache.get(u.id)
                 user.edit({ channel: voiceChannel }).catch(er => message.channel.send("There was an issue moving them in. Most likely they aren't connect to a voice channel"));
+                if (afk && afk.leaderEmbed) {
+
+                }
                 embed.setDescription(`Thank you to ${user} for bringing a <${botSettings.emote.LostHallsKey}>`)
                 requestMessage.edit('', embed);
                 reactionCollector.stop();

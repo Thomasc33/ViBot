@@ -98,7 +98,7 @@ class afk {
         if (this.event.rushers) this.embed.addField('Rushers', `<${botSettings.emote.Plane}>`, true)
         if (this.event.stun) this.embed.addField('Stun', `<${botSettings.emote.Collo}>`, true)
         if (this.event.ogmur) this.embed.addField('(P)ogmur', `<${botSettings.emote.Ogmur}>`, true)
-        if (this.event.puri) this.embed.addField('Puri', `<${botSettings.emote.TomeofPurification}>`, true)
+        if (this.event.fungal) this.embed.addField('Fungal Tome', `<${botSettings.emote.UTTomeoftheMushroomTribes}>`, true)
         if (this.event.mseal) this.embed.addField('Mseal', `<${botSettings.emote.MarbleSeal}>`, true)
         if (this.event.brain) this.embed.addField('Decoy', `<${botSettings.emote.Brain}>`, true)
         if (this.event.stasis) this.embed.addField('Mystic', `<${botSettings.emote.Mystic}>`, true)
@@ -134,10 +134,7 @@ class afk {
             .setColor(this.event.color)
             .setTitle(`<${this.event.portalEmote}> AFK Check control panel for \`${this.channel.name}\` <${this.event.portalEmote}>`)
             .setFooter(`To abort the afk check, react with ❌ below.`)
-            .addFields(
-                { name: `Our current keys`, value: `None yet!` },
-                { name: `Location of run`, value: `${this.location}` },
-            )
+            .addFields({ name: `Our current keys`, value: `None yet!` }, { name: `Location of run`, value: `${this.location}` },)
         this.afkControlPanelInfo = await this.message.guild.channels.cache.get(this.settings.channels.runlogs).send(this.leaderEmbed)
         this.afkControlPanelCommands = await this.message.guild.channels.cache.get(this.settings.channels.eventcommands).send(this.leaderEmbed)
         this.afkControlPanelCommands.react('❌')
@@ -185,7 +182,11 @@ class afk {
 
             await DirectMessage.react("✅");
             await dmReactionCollector.on("collect", (r, u) => {
-                if (this.keys.length + 1 > 2 || this.keys.includes(u)) { dmReactionCollector.stop(); clearInterval(endAfter); return; }
+                if (this.keys.length + 1 > 2 || this.keys.includes(u)) {
+                    dmReactionCollector.stop();
+                    clearInterval(endAfter);
+                    return;
+                }
                 this.keys.push(u);
                 dm.send(`The location for this run has been set to \`${this.location}\`, get there and confirm vial with ${this.message.member.nickname}`);
                 if (this.leaderEmbed.fields[0].value == `None yet!`) {
@@ -269,7 +270,7 @@ class afk {
         if (this.event.rushers) await this.pingMessage.react(botSettings.emoteIDs.Plane)
         if (this.event.stun) await this.pingMessage.react(botSettings.emoteIDs.Collo)
         if (this.event.ogmur) await this.pingMessage.react(botSettings.emoteIDs.Ogmur)
-        if (this.event.puri) await this.pingMessage.react(botSettings.emoteIDs.TomeofPurification)
+        if (this.event.fungal) await this.pingMessage.react(botSettings.emoteIDs.UTTomeoftheMushroomTribes)
         if (this.event.mseal) await this.pingMessage.react(botSettings.emoteIDs.MarbleSeal)
         if (this.event.brain) await this.pingMessage.react(botSettings.emoteIDs.brain)
         if (this.event.stasis) await this.pingMessage.react(botSettings.emoteIDs.mystic)

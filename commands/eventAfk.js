@@ -40,25 +40,24 @@ module.exports = {
             timeLimit: 180,
             keyCount: 3,
             earlyLocationCost: 15,
-            earlyLocationReacts: [
-                {
-                    "emoteID": "723018431275859969",
-                    "pointsGiven": 2,
-                    "limit": 3,
-                    "shortName": "mystic",
-                    "checkRealmEye": {
-                        "class": "mystic",
-                        "ofEight": "8",
-                        "mheal": "85",
-                        "orb": "2"
-                    }
-                },
+            earlyLocationReacts: [{
+                "emoteID": "723018431275859969",
+                "pointsGiven": 2,
+                "limit": 3,
+                "shortName": "mystic",
+                "checkRealmEye": {
+                    "class": "mystic",
+                    "ofEight": "8",
+                    "mheal": "85",
+                    "orb": "2"
+                }
+            },
 
             ],
             reacts: [],
             embed: {
                 color: event.color,
-                description: `To join, **connect to the raiding channel by clicking its name**\nIf you have a key react with <${event.keyEmote}>\nTo indicate your class or gear choices, react with ${event.rushers ? `<${botSettings.emote.Plane}>` : ''} ${event.stun ? `<${botSettings.emote.Collo}>` : ''} ${event.ogmur ? `<${botSettings.emote.Ogmur}>` : ''} ${event.puri ? `<${botSettings.emote.TomeofPurification}>` : ''} ${event.mseal ? `<${botSettings.emote.MarbleSeal}>` : ''} ${event.brain ? `<${botSettings.emote.Brain}>` : ''} ${event.mystic ? `<${botSettings.emote.Mystic}>` : ''} ${event.paralyze ? `<${botSettings.emote.Paralyze}>` : ''}${event.slow ? `<${botSettings.emote.Slow}>` : ''} ${event.daze ? `<${botSettings.emote.Qot}>` : ''} ${event.curse ? `<${botSettings.emote.Curse}>` : ''} ${event.expose ? `<${botSettings.emote.Expose}>` : ''} ${event.warrior ? `<${botSettings.emote.Warrior}>` : ''} ${event.paladin ? `<${botSettings.emote.Paladin}>` : ''} ${event.bard ? `<${botSettings.emote.Bard}>` : ''} ${event.priest ? `<${botSettings.emote.Priest}>` : ''} ${event.trickster ? `<${botSettings.emote.trickster}>` : ''} ${event.knight ? `<${botSettings.emote.Knight}>` : ''}\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC`
+                description: `To join, **connect to the raiding channel by clicking its name**\nIf you have a key react with <${event.keyEmote}>\nTo indicate your class or gear choices, react with ${event.rushers ? `<${botSettings.emote.Plane}>` : ''} ${event.stun ? `<${botSettings.emote.Collo}>` : ''} ${event.ogmur ? `<${botSettings.emote.Ogmur}>` : ''} ${event.fungal ? `<${botSettings.emote.UTTomeoftheMushroomTribes}>` : ''} ${event.mseal ? `<${botSettings.emote.MarbleSeal}>` : ''} ${event.brain ? `<${botSettings.emote.Brain}>` : ''} ${event.mystic ? `<${botSettings.emote.Mystic}>` : ''} ${event.paralyze ? `<${botSettings.emote.Paralyze}>` : ''}${event.slow ? `<${botSettings.emote.Slow}>` : ''} ${event.daze ? `<${botSettings.emote.Qot}>` : ''} ${event.curse ? `<${botSettings.emote.Curse}>` : ''} ${event.expose ? `<${botSettings.emote.Expose}>` : ''} ${event.warrior ? `<${botSettings.emote.Warrior}>` : ''} ${event.paladin ? `<${botSettings.emote.Paladin}>` : ''} ${event.bard ? `<${botSettings.emote.Bard}>` : ''} ${event.priest ? `<${botSettings.emote.Priest}>` : ''} ${event.trickster ? `<${botSettings.emote.trickster}>` : ''} ${event.knight ? `<${botSettings.emote.Knight}>` : ''}\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC`
             },
         }
         eventTemplate['font-color'] = '#eeeeee'
@@ -67,7 +66,7 @@ module.exports = {
         if (event.rushers) eventTemplate.reacts.push(botSettings.emoteIDs.Plane)
         if (event.stun) eventTemplate.reacts.push(botSettings.emoteIDs.Collo)
         if (event.ogmur) eventTemplate.reacts.push(botSettings.emoteIDs.Ogmur)
-        if (event.puri) eventTemplate.reacts.push(botSettings.emoteIDs.TomeofPurification)
+        if (event.fungal) eventTemplate.reacts.push(botSettings.emoteIDs.UTTomeoftheMushroomTribes)
         if (event.mseal) eventTemplate.reacts.push(botSettings.emoteIDs.MarbleSeal)
         if (event.brain) eventTemplate.reacts.push(botSettings.emoteIDs.brain)
         if (event.stasis) eventTemplate.reacts.push(botSettings.emoteIDs.mystic)

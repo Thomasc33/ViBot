@@ -155,8 +155,13 @@ async function autoMod(message) {
     function mute(reason, time) {
         //time: 1=1 hour, 2=1 day
         let timeString, timeValue;
-        if (time == 1) { timeString = '1 Hour'; timeValue = 3600000 }
-        else if (time == 2) { timeString = '1 Day'; timeValue = 86400000 }
+        if (time == 1) {
+            timeString = '1 Hour';
+            timeValue = 3600000
+        } else if (time == 2) {
+            timeString = '1 Day';
+            timeValue = 86400000
+        }
         message.member.roles.add(settings.roles.muted)
             .then(db.query(`INSERT INTO mutes (id, guildid, muted, reason, modid, uTime) VALUES ('${message.author.id}', '${message.guild.id}', true, '${reason}','${bot.user.id}', '${Date.now() + timeValue}')`))
             .then(message.author.send(`You have been muted in \`${message.guild.name}\` for \`${reason}\`. This will last for \`${timeString}\``))
@@ -457,32 +462,98 @@ async function getGuild(message) {
                 let reactionCollector = new Discord.ReactionCollector(guildSelectionMessage, (r, u) => !u.bot)
                 reactionCollector.on('collect', async (r, u) => {
                     switch (r.emoji.name) {
-                        case '1️⃣': resolve(guilds[0]); await guildSelectionMessage.delete(); reactionCollector.stop(); break;
-                        case '2️⃣': resolve(guilds[1]); await guildSelectionMessage.delete(); reactionCollector.stop(); break;
-                        case '3️⃣': resolve(guilds[2]); await guildSelectionMessage.delete(); reactionCollector.stop(); break;
-                        case '4️⃣': resolve(guilds[3]); await guildSelectionMessage.delete(); reactionCollector.stop(); break;
-                        case '5️⃣': resolve(guilds[4]); await guildSelectionMessage.delete(); reactionCollector.stop(); break;
-                        case '6️⃣': resolve(guilds[5]); await guildSelectionMessage.delete(); reactionCollector.stop(); break;
-                        case '7️⃣': resolve(guilds[6]); await guildSelectionMessage.delete(); reactionCollector.stop(); break;
-                        case '8️⃣': resolve(guilds[7]); await guildSelectionMessage.delete(); reactionCollector.stop(); break;
-                        case '9️⃣': resolve(guilds[8]); await guildSelectionMessage.delete(); reactionCollector.stop(); break;
-                        case '🔟': resolve(guilds[9]); await guildSelectionMessage.delete(); reactionCollector.stop(); break;
-                        case '❌': reject('User Cancelled'); await guildSelectionMessage.delete(); reactionCollector.stop(); break;
-                        default: let retryMessage = await message.channel.send('There was an issue with the reaction. Please try again'); setTimeout(() => { retryMessage.delete() }, 5000)
+                        case '1️⃣':
+                            resolve(guilds[0]);
+                            await guildSelectionMessage.delete();
+                            reactionCollector.stop();
+                            break;
+                        case '2️⃣':
+                            resolve(guilds[1]);
+                            await guildSelectionMessage.delete();
+                            reactionCollector.stop();
+                            break;
+                        case '3️⃣':
+                            resolve(guilds[2]);
+                            await guildSelectionMessage.delete();
+                            reactionCollector.stop();
+                            break;
+                        case '4️⃣':
+                            resolve(guilds[3]);
+                            await guildSelectionMessage.delete();
+                            reactionCollector.stop();
+                            break;
+                        case '5️⃣':
+                            resolve(guilds[4]);
+                            await guildSelectionMessage.delete();
+                            reactionCollector.stop();
+                            break;
+                        case '6️⃣':
+                            resolve(guilds[5]);
+                            await guildSelectionMessage.delete();
+                            reactionCollector.stop();
+                            break;
+                        case '7️⃣':
+                            resolve(guilds[6]);
+                            await guildSelectionMessage.delete();
+                            reactionCollector.stop();
+                            break;
+                        case '8️⃣':
+                            resolve(guilds[7]);
+                            await guildSelectionMessage.delete();
+                            reactionCollector.stop();
+                            break;
+                        case '9️⃣':
+                            resolve(guilds[8]);
+                            await guildSelectionMessage.delete();
+                            reactionCollector.stop();
+                            break;
+                        case '🔟':
+                            resolve(guilds[9]);
+                            await guildSelectionMessage.delete();
+                            reactionCollector.stop();
+                            break;
+                        case '❌':
+                            reject('User Cancelled');
+                            await guildSelectionMessage.delete();
+                            reactionCollector.stop();
+                            break;
+                        default:
+                            let retryMessage = await message.channel.send('There was an issue with the reaction. Please try again');
+                            setTimeout(() => { retryMessage.delete() }, 5000)
                     }
                 })
                 for (let i = 0; i < guilds.length; i++) {
                     switch (i) {
-                        case 0: await guildSelectionMessage.react('1️⃣'); break;
-                        case 1: await guildSelectionMessage.react('2️⃣'); break;
-                        case 2: await guildSelectionMessage.react('3️⃣'); break;
-                        case 3: await guildSelectionMessage.react('4️⃣'); break;
-                        case 4: await guildSelectionMessage.react('5️⃣'); break;
-                        case 5: await guildSelectionMessage.react('6️⃣'); break;
-                        case 6: await guildSelectionMessage.react('7️⃣'); break;
-                        case 7: await guildSelectionMessage.react('8️⃣'); break;
-                        case 8: await guildSelectionMessage.react('9️⃣'); break;
-                        case 9: await guildSelectionMessage.react('🔟'); break;
+                        case 0:
+                            await guildSelectionMessage.react('1️⃣');
+                            break;
+                        case 1:
+                            await guildSelectionMessage.react('2️⃣');
+                            break;
+                        case 2:
+                            await guildSelectionMessage.react('3️⃣');
+                            break;
+                        case 3:
+                            await guildSelectionMessage.react('4️⃣');
+                            break;
+                        case 4:
+                            await guildSelectionMessage.react('5️⃣');
+                            break;
+                        case 5:
+                            await guildSelectionMessage.react('6️⃣');
+                            break;
+                        case 6:
+                            await guildSelectionMessage.react('7️⃣');
+                            break;
+                        case 7:
+                            await guildSelectionMessage.react('8️⃣');
+                            break;
+                        case 8:
+                            await guildSelectionMessage.react('9️⃣');
+                            break;
+                        case 9:
+                            await guildSelectionMessage.react('🔟');
+                            break;
                     }
                 }
                 await guildSelectionMessage.react('❌')

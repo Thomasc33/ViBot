@@ -60,6 +60,9 @@ module.exports = {
         //initial variables
         let settings = bot.settings[guild.id]
         let member = guild.members.cache.get(u.id);
+        if (!member)
+            member = await guild.members.fetch({ user: u.id, force: true });
+
         let veriactive = guild.channels.cache.get(settings.channels.veriactive)
         let veripending = guild.channels.cache.get(settings.channels.manualverification)
         let verilog = guild.channels.cache.get(settings.channels.verificationlog)
@@ -104,7 +107,8 @@ module.exports = {
 
         //abort collector
         let abortCollector = new Discord.ReactionCollector(embedMessage, (r, u) => !u.bot && r.emoji.name == '❌')
-        let reactionCollectors = [], checkingIGN = false
+        let reactionCollectors = [],
+            checkingIGN = false
         abortCollector.on('collect', async (r, u) => {
             if (r.emoji.name != '❌') return; //not needed, but just in case :)
             if (checkingIGN) return
@@ -118,6 +122,7 @@ module.exports = {
         //update every 30 seconds
         let time = 900 //15 minutes = 900 seconds
         let timer = bot.setInterval(update, 30000)
+
         function update() {
             if (time <= 0) return cancelVerification(0)
             if (!embed || !LoggingEmbed) return
@@ -316,26 +321,18 @@ module.exports = {
                 if (days !== NaN && days > 0 && days < 366) accountAge = days
             }
 
-            let fameHistoryData = await realmEyeScrape.getFameHistory(ign)
+            let fameHistoryData = null;
+            try {
+                fameHistoryData = await realmEyeScrape.getFameHistory(ign)
+            } catch (err) { };
 
             let altDetectionScore
-            if (accountAge && fameHistoryData.oneDay && fameHistoryData.oneWeek && fameHistoryData.lifeTime) altDetectionScore = await VerificationML.altDetection(data.rank, data.fame, data.deaths[data.deaths.length - 1], accountAge, data.chars, data.skins, fameHistoryData.oneDay, fameHistoryData.oneWeek, fameHistoryData.lifeTime)
+            if (accountAge && fameHistoryData && fameHistoryData.oneDay && fameHistoryData.oneWeek && fameHistoryData.lifeTime) altDetectionScore = await VerificationML.altDetection(data.rank, data.fame, data.deaths[data.deaths.length - 1], accountAge, data.chars, data.skins, fameHistoryData.oneDay, fameHistoryData.oneWeek, fameHistoryData.lifeTime)
             let manualEmbed = new Discord.MessageEmbed()
                 .setAuthor(`${u.tag} is attempting to verify as: ${ign}`, u.avatarURL())
                 .setDescription(`<@!${u.id}> : [Realmeye Link](https://www.realmeye.com/player/${ign})`)
-                .addFields(
-                    { name: 'Rank', value: `${data.rank}`, inline: true },
-                    { name: 'Guild', value: `${data.guild}`, inline: true },
-                    { name: 'Guild Rank', value: `${data.guild_rank}`, inline: true },
-                    { name: 'Alive Fame', value: `${data.fame}`, inline: true },
-                    { name: 'Death Fame', value: `${data.account_fame}`, inline: true },
-                    { name: 'Deaths', value: `${data.deaths[data.deaths.length - 1]}`, inline: true },
-                    { name: 'Account Created', value: `${data.created}`, inline: true },
-                    { name: 'Last seen', value: `${data.player_last_seen}`, inline: true },
-                    { name: 'Character Count', value: `${data.chars}`, inline: true },
-                    { name: 'Skins', value: `${data.skins}`, inline: true },
-                    altDetectionScore ? { name: 'Main Account Probability', value: `${altDetectionScore * 100}%`, inline: true } : null,
-                    { name: 'Discord account created', value: u.createdAt, inline: false },
+                .addFields({ name: 'Rank', value: `${data.rank}`, inline: true }, { name: 'Guild', value: `${data.guild}`, inline: true }, { name: 'Guild Rank', value: `${data.guild_rank}`, inline: true }, { name: 'Alive Fame', value: `${data.fame}`, inline: true }, { name: 'Death Fame', value: `${data.account_fame}`, inline: true }, { name: 'Deaths', value: `${data.deaths[data.deaths.length - 1]}`, inline: true }, { name: 'Account Created', value: `${data.created}`, inline: true }, { name: 'Last seen', value: `${data.player_last_seen}`, inline: true }, { name: 'Character Count', value: `${data.chars}`, inline: true }, { name: 'Skins', value: `${data.skins}`, inline: true },
+                    altDetectionScore ? { name: 'Main Account Probability', value: `${altDetectionScore * 100}%`, inline: true } : null, { name: 'Discord account created', value: u.createdAt, inline: false },
                 )
                 .setFooter(`${u.id}`)
             let reason = ''

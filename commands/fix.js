@@ -3,7 +3,7 @@ const Discord = require('discord.js')
 module.exports = {
     name: 'fix',
     args: '<unlogged/dupes>',
-    requiredArgs:1,
+    requiredArgs: 1,
     description: 'Fixes logging issues with bot',
     role: 'moderator',
     async execute(message, args, bot, db) {

@@ -28,7 +28,7 @@ module.exports = {
                     collector.stop()
                     db.query(`SELECT * FROM users WHERE id = '${user.id}'`, (err, rows) => {
                         if (err) ErrorLogger.log(err, bot)
-                        if(rows.length == 0) return message.channel.send('User is not logged in the DB')
+                        if (rows.length == 0) return message.channel.send('User is not logged in the DB')
                         db.query(`UPDATE users SET keypops = ${parseInt(rows[0].keypops) + parseInt(count)} WHERE id = '${user.id}'`)
                         message.channel.send(`Key has been logged. ${user.nickname} now has ${parseInt(rows[0].keypops) + parseInt(count)} pops`)
                     })
@@ -49,7 +49,7 @@ module.exports = {
                     collector.stop()
                     db.query(`SELECT * FROM users WHERE id = '${user.id}'`, (err, rows) => {
                         if (err) ErrorLogger.log(err, bot)
-                        if(rows.length == 0) return message.channel.send('User is not logged in the DB')
+                        if (rows.length == 0) return message.channel.send('User is not logged in the DB')
                         db.query(`UPDATE users SET eventpops = ${parseInt(rows[0].eventpops) + parseInt(count)} WHERE id = '${user.id}'`)
                         message.channel.send(`Key has been logged. ${user.nickname} now has ${parseInt(rows[0].eventpops) + parseInt(count)} event pops`)
                     })

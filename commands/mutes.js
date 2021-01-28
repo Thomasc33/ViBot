@@ -25,7 +25,7 @@ function fitStringIntoEmbed(embed, string, channel) {
         if (embed.fields.length == 0) {
             embed.addField('-', string)
         } else if (embed.fields[embed.fields.length - 1].value.length + `\n${string}`.length >= 1024) {
-            if (embed.length + `\n${string}`.length  >= 6000) {
+            if (embed.length + `\n${string}`.length >= 6000) {
                 channel.send(embed)
                 embed.setDescription('None!')
                 embed.fields = []

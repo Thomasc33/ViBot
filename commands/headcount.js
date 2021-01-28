@@ -32,7 +32,7 @@ module.exports = {
                     React with <${botSettings.emote.LostHallsKey}> if you have a key and are willing to pop.
                     React with <${botSettings.emote.Plane}> if you plan on rushing.`)
                         .setTimestamp(Date.now());
-                    var embedMessage = await textChannel.send(`@here`, embed);
+                    var embedMessage = await textChannel.send(`${message.guild.roles.cache.get(settings.roles.cultping)} @here`, embed);
 
                     cultReact(embedMessage);
                     break;
@@ -44,7 +44,7 @@ module.exports = {
                 React with <${botSettings.emote.LostHallsKey}> if you have a key and are willing to pop.
                 React with <${botSettings.emote.Vial}> if you have a vial.`)
                         .setTimestamp(Date.now());
-                    var embedMessage = await textChannel.send(`@here`, embed);
+                    var embedMessage = await textChannel.send(`${message.guild.roles.cache.get(settings.roles.voidping)} @here`, embed);
 
                     voidReact(embedMessage);
                     break;
@@ -58,7 +58,7 @@ module.exports = {
                     React with <${botSettings.emote.Brain}> if you are a brain trickster.
                     React with <${botSettings.emote.Mystic}> if you are a mystic.`)
                         .setTimestamp(Date.now());
-                    var embedMessage = await textChannel.send(`@here`, embed);
+                    var embedMessage = await textChannel.send(`${message.guild.roles.cache.get(settings.roles.voidping)} @here`, embed);
 
                     fsvReact(embedMessage);
                     break;
@@ -77,6 +77,7 @@ module.exports = {
                 message.channel.send(`${event.name} is currently disabled.`);
                 return;
             }
+
             var embed = new Discord.MessageEmbed()
                 .setColor('#8c00ff')
                 .setTitle(`Headcount for ${event.name} started by ${message.guild.members.cache.get(message.author.id).nickname}`)
@@ -87,7 +88,7 @@ module.exports = {
             if (event.rushers) embed.addField('Rushers', `<${botSettings.emote.Plane}>`, true)
             if (event.stun) embed.addField('Stun', `<${botSettings.emote.Collo}>`, true)
             if (event.ogmur) embed.addField('(P)ogmur', `<${botSettings.emote.Ogmur}>`, true)
-            if (event.puri) embed.addField('Puri', `<${botSettings.emote.TomeofPurification}>`, true)
+            if (event.fungal) embed.addField('Fungal Tome', `<${botSettings.emote.UTTomeoftheMushroomTribes}>`, true)
             if (event.mseal) embed.addField('Mseal', `<${botSettings.emote.MarbleSeal}>`, true)
             if (event.brain) embed.addField('Decoy', `<${botSettings.emote.Brain}>`, true)
             if (event.stasis) embed.addField('Mystic', `<${botSettings.emote.Mystic}>`, true)
@@ -113,7 +114,7 @@ async function eventReact(pingMessage, event) {
     if (event.rushers) await pingMessage.react(botSettings.emoteIDs.Plane)
     if (event.stun) await pingMessage.react(botSettings.emoteIDs.Collo)
     if (event.ogmur) await pingMessage.react(botSettings.emoteIDs.Ogmur)
-    if (event.puri) await pingMessage.react(botSettings.emoteIDs.TomeofPurification)
+    if (event.fungal) await pingMessage.react(botSettings.emoteIDs.UTTomeoftheMushroomTribes)
     if (event.mseal) await pingMessage.react(botSettings.emoteIDs.MarbleSeal)
     if (event.brain) await pingMessage.react(botSettings.emoteIDs.brain)
     if (event.stasis) await pingMessage.react(botSettings.emoteIDs.mystic)
@@ -134,7 +135,7 @@ async function cultReact(message) {
         .then(message.react(botSettings.emote.Warrior))
         .then(message.react(botSettings.emote.Paladin))
         .then(message.react(botSettings.emote.Knight))
-        .then(message.react(botSettings.emote.TomeofPurification))
+        .then(message.react(botSettings.emote.UTTomeoftheMushroomTribes))
         .then(message.react(botSettings.emote.MarbleSeal))
         .then(message.react(botSettings.emote.Plane))
         .catch(er => ErrorLogger.log(er, bot));
@@ -146,7 +147,7 @@ async function voidReact(message) {
         .then(message.react(botSettings.emote.Warrior))
         .then(message.react(botSettings.emote.Paladin))
         .then(message.react(botSettings.emote.Knight))
-        .then(message.react(botSettings.emote.TomeofPurification))
+        .then(message.react(botSettings.emote.UTTomeoftheMushroomTribes))
         .then(message.react(botSettings.emote.MarbleSeal))
         .catch(er => ErrorLogger.log(er, bot));
 }
@@ -157,7 +158,7 @@ async function fsvReact(message) {
         .then(message.react(botSettings.emote.Warrior))
         .then(message.react(botSettings.emote.Paladin))
         .then(message.react(botSettings.emote.Knight))
-        .then(message.react(botSettings.emote.TomeofPurification))
+        .then(message.react(botSettings.emote.UTTomeoftheMushroomTribes))
         .then(message.react(botSettings.emote.MarbleSeal))
         .then(message.react(botSettings.emote.Brain))
         .then(message.react(botSettings.emote.Mystic))
