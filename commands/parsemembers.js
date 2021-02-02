@@ -19,8 +19,8 @@ module.exports = {
         let settings = bot.settings[message.guild.id]
         let channel = message.member.voice.channel
 
-        if (!channel && args.length && /^\d+$/.test(args[0])) //add ability to parse from a different channel with ;pm channelid <image>
-            channel = bot.channels.resolve(args.shift());
+        if (args.length && /^\d+$/.test(args[0])) //add ability to parse from a different channel with ;pm channelid <image>
+                channel = bot.channels.resolve(args.shift());
 
         if (!channel) return message.channel.send('Channel not found. Make sure you are in a channel, then try again');
 
