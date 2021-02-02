@@ -68,7 +68,7 @@ module.exports = {
             //if no image provided and there wasn't correct name history
             if (!historyName && !image)
                 return message.channel.send(`There was no image provided and they do not have an account listed within ${altName}'s name change history.`);
-        } catch (err) {}
+        } catch (err) { }
 
         //new name length greater than 32?
         if ([altName, ...names.slice(0, idx), ...names.slice(idx + 1)].join(' | ').length > 32)
@@ -84,7 +84,7 @@ module.exports = {
     }
 }
 
-const changeName = async(message, bot, settings, member, names, idx, altName, image, historyName, history) => {
+const changeName = async (message, bot, settings, member, names, idx, altName, image, historyName, history) => {
     const oldName = names[idx];
     names[idx] = altName;
     //if username is `Husky#1234` and ign is Husky, name change => husky, if name is huskY and ign is huskY, name change => husky
