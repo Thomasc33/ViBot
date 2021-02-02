@@ -30,6 +30,7 @@ module.exports = {
             .addField('Parse By', `${message.member}`)
             .addField('Status', 'Gathering image')
         let parseStatusMessage = await message.channel.send(parseStatusEmbed)
+        let started = Date.now()
         let image;
         if (message.attachments.size) image = await message.attachments.first().proxyURL;
         else if (args.length) image = args[0]; //added check if args actually exists
@@ -39,9 +40,8 @@ module.exports = {
             await parseStatusMessage.edit(parseStatusEmbed)
             return;
         }
-        console.log(channel.name, image);
         parseStatusEmbed.fields[1].value = 'Sending Image to Google'
-        await parseStatusMessage.edit(parseStatusEmbed)
+        parseStatusMessage.edit(parseStatusEmbed)
         try {
             const [result] = await client.textDetection(image);
             var players = result.fullTextAnnotation;
@@ -54,228 +54,240 @@ module.exports = {
             await parseStatusMessage.edit(parseStatusEmbed)
             return;
         }
-        parseStatusEmbed.fields[1].value = 'Processing Data'
-        await parseStatusMessage.edit(parseStatusEmbed)
-        var raiders = []
-        for (let i in players) {
-            raiders.push(players[i].toLowerCase())
-        }
-        var voiceUsers = []
-        var alts = []
-        var crashers = []
-        var otherChannel = []
-        var findA = []
-        let allowedCrashers = []
-        var kickList = '/kick'
-        voiceUsers = channel.members.array();
-        //check split channel
-        if (bot.afkChecks[channel.id] && bot.afkChecks[channel.id].split && bot.afkChecks[channel.id].splitChannel) {
-            let splitChannel = message.guild.channels.cache.get(bot.afkChecks[channel.id].splitChannel)
-            if (splitChannel) {
-                let splitUsers = splitChannel.members.array()
-                for (let i in splitUsers) voiceUsers.push(splitUsers[i])
-            }
-        }
-        for (let i in raiders) {
-            let player = raiders[i];
-            if (player == '') continue;
-            let member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(player.toLowerCase()));
-            if (member == null) {
-                crashers.push(player);
-                kickList = kickList.concat(` ${player}`)
-            } else if (!voiceUsers.includes(member)) {
-                if (member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.almostrl).position) continue;
-                if (bot.afkChecks[channel.id] && bot.afkChecks[channel.id].raiders) {
-                    if (bot.afkChecks[channel.id].raiders.includes(member.id)) allowedCrashers.push(member)
 
-                }
-                if (member.voice.channel) otherChannel.push(`${member}: ${member.voice.channel}`);
-                else crashers.unshift(`<@!${member.id}>`);
-                kickList = kickList.concat(` ${player}`)
-                findA.push(player)
+        async function crasherParse() {
+            parseStatusEmbed.fields[1].value = 'Processing Data'
+            await parseStatusMessage.edit(parseStatusEmbed)
+            var raiders = []
+            for (let i in players) {
+                raiders.push(players[i].toLowerCase())
             }
-        }
-        for (let i in voiceUsers) {
-            if (voiceUsers[i].roles.highest.position >= message.guild.roles.cache.get(settings.roles.almostrl).position) continue;
-            if (!voiceUsers[i].nickname) continue
-            let nick = voiceUsers[i].nickname.toLowerCase().replace(/[^a-z|]/gi, '')
-            if (!raiders.includes(nick)) {
-                alts.push(`<@!${voiceUsers[i].id}>`);
-            }
-        }
-        var crashersS = ' ',
-            altsS = ' ',
-            movedS = ' ',
-            find = `;find `
-        for (let i in crashers) { crashersS = crashersS.concat(crashers[i]) + ', ' }
-        for (let i in alts) { altsS = altsS.concat(alts[i]) + ', ' }
-        for (let i in otherChannel) { movedS = movedS.concat(otherChannel[i]) + '\n' }
-        for (let i in findA) { find = find.concat(findA[i]) + ' ' }
-        if (crashersS == ' ') { crashersS = 'None' }
-        if (altsS == ' ') { altsS = 'None' }
-        if (movedS == ' ') { movedS = 'None' }
-        let embed = new Discord.MessageEmbed()
-            .setTitle(`Parse for ${channel.name}`)
-            .setColor('#00ff00')
-            .setDescription(`There are ${crashers.length} crashers, ${alts.length} potential alts, and ${otherChannel.length} people in other channels`)
-            .addFields({ name: 'Potential Alts', value: altsS }, { name: 'Other Channels', value: movedS }, { name: 'Crashers', value: crashersS }, { name: 'Find Command', value: `\`\`\`${find}\`\`\`` }, { name: 'Kick List', value: `\`\`\`${kickList}\`\`\`` })
-        if (bot.afkChecks[channel.id]) embed.addField(`Were in VC`, `The following can do \`;join\`:\n${allowedCrashers.map(u => `${u} `)}`)
-        await message.channel.send(embed);
-        parseStatusEmbed.fields[1].value = `Crasher Parse Completed. See Below. Beginning Character Parse`
-        await parseStatusMessage.edit(parseStatusEmbed)
-
-        if (bot.afkChecks[channel.id]) {
-            let id = bot.afkChecks[channel.id].key
-            if (id) {
-                let member = message.guild.members.cache.get(id)
-                if (member) {
-                    message.channel.send(`/tell ${member.nickname} Can you kick the following people? **Don't copy paste names from kicklist. It may DC you**`)
+            var voiceUsers = []
+            var alts = []
+            var crashers = []
+            var otherChannel = []
+            var findA = []
+            let allowedCrashers = []
+            var kickList = '/kick'
+            voiceUsers = channel.members.array();
+            //check split channel
+            if (bot.afkChecks[channel.id] && bot.afkChecks[channel.id].split && bot.afkChecks[channel.id].splitChannel) {
+                let splitChannel = message.guild.channels.cache.get(bot.afkChecks[channel.id].splitChannel)
+                if (splitChannel) {
+                    let splitUsers = splitChannel.members.array()
+                    for (let i in splitUsers) voiceUsers.push(splitUsers[i])
                 }
             }
+            for (let i in raiders) {
+                let player = raiders[i];
+                if (player == '') continue;
+                let member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(player.toLowerCase()));
+                if (member == null) {
+                    crashers.push(player);
+                    kickList = kickList.concat(` ${player}`)
+                } else if (!voiceUsers.includes(member)) {
+                    if (member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.almostrl).position) continue;
+                    if (bot.afkChecks[channel.id] && bot.afkChecks[channel.id].raiders) {
+                        if (bot.afkChecks[channel.id].raiders.includes(member.id)) allowedCrashers.push(member)
+
+                    }
+                    if (member.voice.channel) otherChannel.push(`${member}: ${member.voice.channel}`);
+                    else crashers.unshift(`<@!${member.id}>`);
+                    kickList = kickList.concat(` ${player}`)
+                    findA.push(player)
+                }
+            }
+            for (let i in voiceUsers) {
+                if (voiceUsers[i].roles.highest.position >= message.guild.roles.cache.get(settings.roles.almostrl).position) continue;
+                if (!voiceUsers[i].nickname) continue
+                let nick = voiceUsers[i].nickname.toLowerCase().replace(/[^a-z|]/gi, '')
+                if (!raiders.includes(nick)) {
+                    alts.push(`<@!${voiceUsers[i].id}>`);
+                }
+            }
+            var crashersS = ' ',
+                altsS = ' ',
+                movedS = ' ',
+                find = `;find `
+            for (let i in crashers) { crashersS = crashersS.concat(crashers[i]) + ', ' }
+            for (let i in alts) { altsS = altsS.concat(alts[i]) + ', ' }
+            for (let i in otherChannel) { movedS = movedS.concat(otherChannel[i]) + '\n' }
+            for (let i in findA) { find = find.concat(findA[i]) + ' ' }
+            if (crashersS == ' ') { crashersS = 'None' }
+            if (altsS == ' ') { altsS = 'None' }
+            if (movedS == ' ') { movedS = 'None' }
+            let embed = new Discord.MessageEmbed()
+                .setTitle(`Parse for ${channel.name}`)
+                .setColor('#00ff00')
+                .setDescription(`There are ${crashers.length} crashers, ${alts.length} potential alts, and ${otherChannel.length} people in other channels`)
+                .addFields({ name: 'Potential Alts', value: altsS }, { name: 'Other Channels', value: movedS }, { name: 'Crashers', value: crashersS }, { name: 'Find Command', value: `\`\`\`${find}\`\`\`` }, { name: 'Kick List', value: `\`\`\`${kickList}\`\`\`` })
+            if (bot.afkChecks[channel.id]) embed.addField(`Were in VC`, `The following can do \`;join\`:\n${allowedCrashers.map(u => `${u} `)}`)
+            await message.channel.send(embed);
+            parseStatusEmbed.fields[1].value = `Crasher Parse Completed. See Below. Beginning Character Parse`
+            await parseStatusMessage.edit(parseStatusEmbed)
+
+            if (bot.afkChecks[channel.id]) {
+                let id = bot.afkChecks[channel.id].key
+                if (id) {
+                    let member = message.guild.members.cache.get(id)
+                    if (member) {
+                        message.channel.send(`/tell ${member.nickname} Can you kick the following people? **Don't copy paste names from kicklist. It may DC you**`)
+                    }
+                }
+            }
+            //post in crasher-list
+            let key = null
+            if (message.member.voice.channel && bot.afkChecks[message.member.voice.channel.id] && bot.afkChecks[message.member.voice.channel.id].key) key = bot.afkChecks[message.member.voice.channel.id].key
+            postInCrasherList(embed, message.guild.channels.cache.get(settings.channels.parsechannel), message.member, key)
         }
-        //post in crasher-list
-        let key = null
-        if (message.member.voice.channel && bot.afkChecks[message.member.voice.channel.id] && bot.afkChecks[message.member.voice.channel.id].key) key = bot.afkChecks[message.member.voice.channel.id].key
-        postInCrasherList(embed, message.guild.channels.cache.get(settings.channels.parsechannel), message.member, key)
-
-        //character parse
-
-        let unreachable = []
-        let characterParseEmbed = new Discord.MessageEmbed()
-            .setColor('#00ff00')
-            .setTitle('Character Parse')
-        for (let i in players) {
-            if (players[i] == '') continue;
-            try {
-                var characterInfo = await realmEyeScrape.getUserInfo(players[i])
-            } catch (er) { unreachable.push(players[i]); continue } //Husky: Added continue so it wouldn't double log unreachable players by adding again on next line
-            if (!characterInfo) { unreachable.push(players[i]); continue }
-            if (!characterInfo.characters[0]) { unreachable.push(players[i]); continue }
-            try {
-                if (characterInfo.characters[0].class.replace(/[^a-zA-Z]/g, '') != characterInfo.characters[0].class) { unreachable.push(players[i]); continue }
-                let maxStats = charStats[characterInfo.characters[0].class.toLowerCase()]
-                if (!maxStats) { console.log(message.channel.send(`Stats for ${characterInfo.characters[0].class} is missing`)); continue; }
-                let issue = false;
-                let character = characterInfo.characters[0]
-                let issueString = ''
-                //check for level 20
-                if (parseInt(character.level) != 20) {
-                    issue = true
-                    issueString += `\nNot level 20 (${character.level}/20)`
-                }
-                //check for max dex/attack
-                if (settings.backend.realmeyestats) {
-                    let statstot = character.statsTotal.replace(/[^0-9-,]/g, '').split(',')
-                    let statsbonus = character.statsBonus.replace(/[^0-9-,]/g, '').split(',')
-                    let statsArray = []
-                    for (let i in statstot) {
-                        statsArray.push(parseInt(statstot[i]) - parseInt(statsbonus[i]))
-                    }
-                    let stats = {
-                        hp: statsArray[0],
-                        mp: statsArray[1],
-                        att: statsArray[2],
-                        def: statsArray[3],
-                        spd: statsArray[4],
-                        vit: statsArray[5],
-                        wis: statsArray[6],
-                        dex: statsArray[7],
-                    }
-                    if (stats.dex < maxStats.dex) {
-                        issue = true;
-                        issueString += `\nDex is not maxed (${stats.dex}/${maxStats.dex})`
-                    }
-                    if (stats.att < maxStats.att) {
-                        issue = true;
-                        issueString += `\nAttack is not maxed (${stats.att}/${maxStats.att})`
-                    }
-                }
-                //check for gear reqs
-                //weapon
-                if (character.weapon) {
-                    let weaponTier = parseInt(character.weapon.split(/ +/).pop().replace('T', ''))
-                    if (weaponTier < settings.runreqs.weapon && weaponTier !== NaN) {
-                        issue = true;
-                        issueString += `\nWeapon tier is too low (T${weaponTier})`
-                    }
-                } else {
-                    issue = true;
-                    issueString += `Weapon is not equipped`
-                }
-                //ability
-                if (character.ability) {
-                    if (character.class.toLowerCase() != 'trickster' && character.class.toLowerCase() != 'mystic') {
-                        let abilityTier = parseInt(character.ability.split(/ +/).pop().replace('T', ''))
-                        if (abilityTier < settings.runreqs.ability && abilityTier !== NaN) {
-                            issue = true;
-                            issueString += `\nAbility tier is too low (T${abilityTier})`
+        async function characterParse() {
+            let unreachable = []
+            let characterParseEmbed = new Discord.MessageEmbed()
+                .setColor('#00ff00')
+                .setTitle('Character Parse')
+            let promises = []
+            for (let i in players) {
+                if (players[i] == '') continue;
+                promises.push(new Promise(async res => {
+                    realmEyeScrape.getUserInfo(players[i]).then(characterInfo => {
+                        function exit(console) {
+                            if (console) console.log(console)
+                            unreachable.push(players[i]);
+                            return res()
                         }
-                    }
-                } else {
-                    issue = true;
-                    issueString += `Ability is not equipped`
-                }
-                //armor
-                if (character.armor) {
-                    let armorTier = parseInt(character.armor.split(/ +/).pop().replace('T', ''))
-                    if (armorTier < settings.runreqs.armor && armorTier !== NaN) {
-                        issue = true;
-                        issueString += `\nArmor tier is too low (T${armorTier})`
-                    }
-                } else {
-                    issue = true;
-                    issueString += `Armor is not equipped`
-                }
-                //ring
-                if (character.ring) {
-                    let ringTier = parseInt(character.ring.split(/ +/).pop().replace('T', ''))
-                    if (ringTier < settings.runreqs.ring && ringTier !== NaN) {
-                        issue = true;
-                        issueString += `\nRing tier is too low (T${ringTier})`
-                    }
-                } else {
-                    issue = true;
-                    issueString += `Ring is not equipped`
-                }
-                if (issue) {
-                    let characterEmote = bot.emojis.cache.find(e => e.name == character.class)
-                    let weaponEmoji, abilityEmoji, armorEmoji, ringEmoji
-                    if (!character.weapon) weaponEmoji = 'None'
-                    else weaponEmoji = bot.emojis.cache.find(e => e.name.toLowerCase().replace(/[^a-z0-9]/g, '').includes(character.weapon.split(' ').slice(0, -1).join('').toLowerCase().replace(/[^a-z0-9]/g, '')))
-                    if (!character.ability) abilityEmoji = 'None'
-                    else abilityEmoji = bot.emojis.cache.find(e => e.name.toLowerCase().replace(/[^a-z0-9]/g, '').includes(character.ability.split(' ').slice(0, -1).join('').toLowerCase().replace(/[^a-z0-9]/g, '')))
-                    if (!character.armor) armorEmoji = 'None'
-                    else armorEmoji = bot.emojis.cache.find(e => e.name.toLowerCase().replace(/[^a-z0-9]/g, '').includes(character.armor.split(' ').slice(0, -1).join('').toLowerCase().replace(/[^a-z0-9]/g, '')))
-                    if (!character.ring) ringEmoji = 'None'
-                    else ringEmoji = bot.emojis.cache.find(e => e.name.toLowerCase().replace(/[^a-z0-9]/g, '').includes(character.ring.split(' ').slice(0, -1).join('').toLowerCase().replace(/[^a-z0-9]/g, '')))
-                    if (characterParseEmbed.fields.length >= 24 || characterParseEmbed.length + issueString.length + 50 > 6000) {
-                        await message.channel.send(characterParseEmbed)
-                        characterParseEmbed.fields = []
-                    }
-                    characterParseEmbed.addField(players[i], `[Link](https://www.realmeye.com/player/${players[i]}) | ${characterEmote} | LVL: \`${character.level}\` | Fame: \`${character.fame}\` | Stats: \`${character.stats}\` | ${weaponEmoji} ${abilityEmoji} ${armorEmoji} ${ringEmoji}${issueString}`)
-                    if (i % 5 == 0) {
-                        parseStatusEmbed.fields[1].value = `Parsing Characters (${i}/${players.length})`
-                        await parseStatusMessage.edit(parseStatusEmbed)
-                    }
-                }
-            } catch (er) {
-                console.log(er)
-                console.log(player);
-                unreachable.push(player)
+                        if (!characterInfo || !characterInfo.characters[0] || characterInfo.characters[0].class.replace(/[^a-zA-Z]/g, '') != characterInfo.characters[0].class) return exit()
+                        let maxStats = charStats[characterInfo.characters[0].class.toLowerCase()]
+                        if (!maxStats) return exit(`Stats for ${characterInfo.characters[0].class} is missing`)
+                        let issue = false;
+                        let character = characterInfo.characters[0]
+                        let issueString = ''
+                        //check for level 20
+                        if (parseInt(character.level) != 20) {
+                            issue = true
+                            issueString += `\nNot level 20 (${character.level}/20)`
+                        }
+                        //check for max dex/attack
+                        if (settings.backend.realmeyestats) {
+                            let statstot = character.statsTotal.replace(/[^0-9-,]/g, '').split(',')
+                            let statsbonus = character.statsBonus.replace(/[^0-9-,]/g, '').split(',')
+                            let statsArray = []
+                            for (let i in statstot) {
+                                statsArray.push(parseInt(statstot[i]) - parseInt(statsbonus[i]))
+                            }
+                            let stats = {
+                                hp: statsArray[0],
+                                mp: statsArray[1],
+                                att: statsArray[2],
+                                def: statsArray[3],
+                                spd: statsArray[4],
+                                vit: statsArray[5],
+                                wis: statsArray[6],
+                                dex: statsArray[7],
+                            }
+                            if (stats.dex < maxStats.dex) {
+                                issue = true;
+                                issueString += `\nDex is not maxed (${stats.dex}/${maxStats.dex})`
+                            }
+                            if (stats.att < maxStats.att) {
+                                issue = true;
+                                issueString += `\nAttack is not maxed (${stats.att}/${maxStats.att})`
+                            }
+                        }
+                        //check for gear reqs
+                        //weapon
+                        if (character.weapon) {
+                            let weaponTier = parseInt(character.weapon.split(/ +/).pop().replace('T', ''))
+                            if (weaponTier < settings.runreqs.weapon && weaponTier !== NaN) {
+                                issue = true;
+                                issueString += `\nWeapon tier is too low (T${weaponTier})`
+                            }
+                        } else {
+                            issue = true;
+                            issueString += `Weapon is not equipped`
+                        }
+                        //ability
+                        if (character.ability) {
+                            if (character.class.toLowerCase() != 'trickster' && character.class.toLowerCase() != 'mystic') {
+                                let abilityTier = parseInt(character.ability.split(/ +/).pop().replace('T', ''))
+                                if (abilityTier < settings.runreqs.ability && abilityTier !== NaN) {
+                                    issue = true;
+                                    issueString += `\nAbility tier is too low (T${abilityTier})`
+                                }
+                            }
+                        } else {
+                            issue = true;
+                            issueString += `Ability is not equipped`
+                        }
+                        //armor
+                        if (character.armor) {
+                            let armorTier = parseInt(character.armor.split(/ +/).pop().replace('T', ''))
+                            if (armorTier < settings.runreqs.armor && armorTier !== NaN) {
+                                issue = true;
+                                issueString += `\nArmor tier is too low (T${armorTier})`
+                            }
+                        } else {
+                            issue = true;
+                            issueString += `Armor is not equipped`
+                        }
+                        //ring
+                        if (character.ring) {
+                            let ringTier = parseInt(character.ring.split(/ +/).pop().replace('T', ''))
+                            if (ringTier < settings.runreqs.ring && ringTier !== NaN) {
+                                issue = true;
+                                issueString += `\nRing tier is too low (T${ringTier})`
+                            }
+                        } else {
+                            issue = true;
+                            issueString += `Ring is not equipped`
+                        }
+                        if (issue) {
+                            let characterEmote = bot.emojis.cache.find(e => e.name == character.class)
+                            let weaponEmoji, abilityEmoji, armorEmoji, ringEmoji
+                            if (!character.weapon) weaponEmoji = 'None'
+                            else weaponEmoji = bot.emojis.cache.find(e => e.name.toLowerCase().replace(/[^a-z0-9]/g, '').includes(character.weapon.split(' ').slice(0, -1).join('').toLowerCase().replace(/[^a-z0-9]/g, '')))
+                            if (!character.ability) abilityEmoji = 'None'
+                            else abilityEmoji = bot.emojis.cache.find(e => e.name.toLowerCase().replace(/[^a-z0-9]/g, '').includes(character.ability.split(' ').slice(0, -1).join('').toLowerCase().replace(/[^a-z0-9]/g, '')))
+                            if (!character.armor) armorEmoji = 'None'
+                            else armorEmoji = bot.emojis.cache.find(e => e.name.toLowerCase().replace(/[^a-z0-9]/g, '').includes(character.armor.split(' ').slice(0, -1).join('').toLowerCase().replace(/[^a-z0-9]/g, '')))
+                            if (!character.ring) ringEmoji = 'None'
+                            else ringEmoji = bot.emojis.cache.find(e => e.name.toLowerCase().replace(/[^a-z0-9]/g, '').includes(character.ring.split(' ').slice(0, -1).join('').toLowerCase().replace(/[^a-z0-9]/g, '')))
+                            if (characterParseEmbed.fields.length >= 24 || characterParseEmbed.length + issueString.length + 50 > 6000) {
+                                message.channel.send(characterParseEmbed)
+                                characterParseEmbed.fields = []
+                            }
+                            characterParseEmbed.addField(players[i], `[Link](https://www.realmeye.com/player/${players[i]}) | ${characterEmote} | LVL: \`${character.level}\` | Fame: \`${character.fame}\` | Stats: \`${character.stats}\` | ${weaponEmoji} ${abilityEmoji} ${armorEmoji} ${ringEmoji}${issueString}`)
+                            if (i % 5 == 0) {
+                                parseStatusEmbed.fields[1].value = `Parsing Characters (${i}/${players.length})`
+                                parseStatusMessage.edit(parseStatusEmbed)
+                            }
+                        }
+                        return res()
+                    }).catch(er => {
+                        unreachable.push(players[i])
+                        return res()
+                    })
+                }))
             }
+            await Promise.all(promises)
+            let unreachableEmbed = new Discord.MessageEmbed()
+                .setColor('#00ff00')
+                .setTitle('The following were unreachable')
+                .setDescription('None!')
+            for (let i in unreachable) {
+                if (unreachableEmbed.description == 'None!') unreachableEmbed.setDescription(`${unreachable[i]} `)
+                else unreachableEmbed.setDescription(unreachableEmbed.description.concat(`, ${unreachable[i]}`))
+            }
+            await message.channel.send(characterParseEmbed)
+            await message.channel.send(unreachableEmbed)
         }
-        let unreachableEmbed = new Discord.MessageEmbed()
-            .setColor('#00ff00')
-            .setTitle('The following were unreachable')
-            .setDescription('None!')
-        for (let i in unreachable) {
-            if (unreachableEmbed.description == 'None!') unreachableEmbed.setDescription(`${unreachable[i]} `)
-            else unreachableEmbed.setDescription(unreachableEmbed.description.concat(`, ${unreachable[i]}`))
-        }
-        await message.channel.send(characterParseEmbed)
-        await message.channel.send(unreachableEmbed)
 
-        parseStatusEmbed.fields[1].value = 'Parse Completed'
+        let parsePromises = []
+        parsePromises.push(crasherParse())
+        parsePromises.push(characterParse())
+
+        await Promise.all(parsePromises)
+
+        parseStatusEmbed.fields[1].value = `Parse Completed\nParse took ${(Date.now() - started) / 1000} seconds`
         await parseStatusMessage.edit(parseStatusEmbed)
 
         let currentweekparsename, parsetotalname
