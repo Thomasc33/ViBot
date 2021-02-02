@@ -2,7 +2,7 @@ const Discord = require('discord.js')
 
 module.exports = {
     name: 'joinrun',
-    alias: ['join'],
+    alias: ['join', 'drag'],
     description: 'Join back into the VC of a run incase you get disconnected',
     role: 'raider',
     dms: true,
