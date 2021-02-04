@@ -128,7 +128,7 @@ const logs = {
                 color: '#8c00ff',
                 desc: '`Oryx` Run',
                 toUpdate: 1,
-                toDisplay: ['currentweeko3']
+                toDisplay: ['currentweeko3', 'currentweekAssistso3', 'currentweeko3Feedback']
             },
             {
                 key: 'p',
@@ -153,7 +153,19 @@ const logs = {
                 desc: '`Event` run',
                 toUpdate: 2,
                 toDisplay: ['currentweekEvents']
-            }
+            },
+            {
+                key: 'f',
+                multiply: null,
+                allowAssists: false,
+                confirm: false,
+                main: 'o3feedback',
+                currentweek: 'currentweeko3Feedback',
+                color: '#8c00ff',
+                desc: '`Feedback`',
+                toUpdate: 1,
+                toDisplay: ['currentweeko3', 'currentweekAssistso3', 'currentweeko3Feedback']
+            },
         ],
         assist: {
             main: 'assistso3',

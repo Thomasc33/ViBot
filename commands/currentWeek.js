@@ -25,7 +25,8 @@ const tables = [
     { //o3
         id: '708026927721480254',
         runs: [
-            'currentweeko3'
+            'currentweeko3',
+            'currentweekAssistso3'
         ],
         assists: [
             'currentweekAssistso3'
