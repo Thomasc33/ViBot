@@ -7,26 +7,29 @@ module.exports = {
     args: '[IGN | mention | id]',
     async execute(message, args, bot, db) {
         const memberSearch = args.shift();
-        let member = message.guild.members.cache.get(memberSearch);
-        if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(memberSearch.toLowerCase()));
-        if (!member) member = message.guild.members.cache.get(memberSearch.replace(/\D/gi, ''))
+        let member;
+        if (memberSearch) {
+            member = message.guild.members.cache.get(memberSearch);
+            if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(memberSearch.toLowerCase()));
+            if (!member) member = message.guild.members.cache.get(memberSearch.replace(/\D/gi, ''))
+        }
+
         let embed = new Discord.MessageEmbed()
             .setAuthor(member ? `Mutes for ${member} in ${message.guild.name}` : `Muted members in ${message.guild.name}`)
             .setDescription(`None!`)
-
         if (!member) {
             db.query(`SELECT * FROM mutes WHERE muted = true AND guildid = ${message.guild.id}`, async(err, rows) => {
                 if (err) ErrorLogger.log(err, bot);
-                const members = message.guild.roles.cache.get(require('../guildSettings.json')[message.guild.id].roles.muted).members.cone();
-                if (!rows || !rows.length)
-                    return message.channel.send(embed);
-                for (const row of rows) {
-                    members.delete(row.id);
-                    fitStringIntoEmbed(embed, `${message.guild.members.cache.get(row.id)} : Until ${new Date(row.uTime).toDateString()}`, message.channel);
+                const members = message.guild.roles.cache.get(require('../guildSettings.json')[message.guild.id].roles.muted).members.clone();
+                if (rows && rows.length) {
+                    for (const row of rows) {
+                        members.delete(row.id);
+                        fitStringIntoEmbed(embed, `${message.guild.members.cache.get(row.id)} : Until ${new Date(row.uTime).toDateString()}`, message.channel);
+                    }
                 }
                 message.channel.send(embed)
-                embed.setAuthor(`Mutes in ${message.guild.name} not set by ${bot.user}`, message.channel);
-                members.forEach(m => fitStringIntoEmbed(embed, `${m}`));
+                embed.setAuthor(`Mutes in ${message.guild.name} not set by ${message.guild.members.cache.get(bot.user.id).nickname||bot.user.tag}`);
+                members.forEach(m => fitStringIntoEmbed(embed, `${m}`, message.channel));
                 message.channel.send(embed);
             })
         } else {
