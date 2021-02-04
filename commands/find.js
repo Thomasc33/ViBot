@@ -25,7 +25,7 @@ module.exports = {
             } else {
                 var embed = new Discord.MessageEmbed()
                     .setColor('#00ff00')
-                    .setDescription(`Server member found with the nickname ${u}: <@!${member.id}>`)
+                    .setDescription(`Search \`${u}\` matched \`${member.nickname||member.user.tag}\`: <@!${member.id}>`)
                     .addFields(
                         { name: 'Highest Role', value: `<@&${member.roles.highest.id}>`, inline: true },
                         { name: 'Suspended', value: `❌`, inline: true },
