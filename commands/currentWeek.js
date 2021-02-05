@@ -111,8 +111,8 @@ module.exports = {
                     runs += runTot
                     for (let j of info.assists) runTot += parseInt(i[j]) / 2
                     let string = `**[${index + 1}]** <@!${i.id}>:\nRaids: \`${runTot}\` (`
-                    for (let j of info.runs) string += `${cleanString(j)}: \`\`\`${i[j]}\`\`\`, `
-                    for (let j of info.assists) string += `${cleanString(j)}: \`\`\`${i[j]}\`\`\`, `
+                    for (let j of info.runs) string += `${cleanString(j)}: \`${i[j]}\`, `
+                    for (let j of info.assists) string += `${cleanString(j)}: \`${i[j]}\`, `
                     string = string.substring(0, string.length - 2)
                     string += ')'
                     fitStringIntoEmbed(embed, string)
