@@ -25,7 +25,8 @@ const tables = [
     { //o3
         id: '708026927721480254',
         runs: [
-            'currentweeko3'
+            'currentweeko3',
+            'currentweeko3Feedback'
         ],
         assists: [
             'currentweekAssistso3'
@@ -110,8 +111,8 @@ module.exports = {
                     runs += runTot
                     for (let j of info.assists) runTot += parseInt(i[j]) / 2
                     let string = `**[${index + 1}]** <@!${i.id}>:\nRaids: \`${runTot}\` (`
-                    for (let j of info.runs) string += `${j.replace('currentweek', '')}: ${i[j]}, `
-                    for (let j of info.assists) string += `${j.replace('currentweek', '')}: ${i[j]}, `
+                    for (let j of info.runs) string += `${cleanString(j)}: \`${i[j]}\`, `
+                    for (let j of info.assists) string += `${cleanString(j)}: \`${i[j]}\`, `
                     string = string.substring(0, string.length - 2)
                     string += ')'
                     fitStringIntoEmbed(embed, string)
@@ -164,7 +165,7 @@ module.exports = {
                             let messages = await channel.messages.fetch({ limit: 3 })
                             let messageArray = messages.array()
                             if (messageArray.length !== embeds.length) resendMessages()
-                            else{
+                            else {
                                 for (let i of messageArray) CachedMessages[channel.guild.id].push(i);
                                 editMessages();
                             }
@@ -183,5 +184,19 @@ module.exports = {
                 resolve(true)
             })
         })
+    }
+}
+
+
+function cleanString(str) {
+    switch (str) {
+        case 'currentweekCult': return 'Cults'
+        case 'currentweekVoid': return 'Voids'
+        case 'currentweekAssists': return 'Assists'
+        case 'currentweekFeedback': return 'Feedback'
+        case 'currentweeko3': return 'Oryx Runs'
+        case 'currentweeko3Feedback': return 'Feedback'
+        case 'currentweekAssistso3': return 'Assists'
+        default: return str.replace('currentweek', '')
     }
 }
