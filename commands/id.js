@@ -4,7 +4,7 @@ const ErrorLogger = require('../lib/logError')
 module.exports = {
     name: "id",
     description: "Gets user ID",
-    args: '[IGN | mention | ]',
+    args: '[IGN | mention | tag]',
     requiredArgs: 1,
     role: 'almostrl',
     async execute(message, args, bot, db) {
