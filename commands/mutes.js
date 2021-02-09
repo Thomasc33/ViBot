@@ -1,4 +1,5 @@
 const Discord = require('discord.js')
+const moment = require('moment');
 
 module.exports = {
     name: 'mutes',
@@ -15,7 +16,7 @@ module.exports = {
         }
 
         let embed = new Discord.MessageEmbed()
-            .setAuthor(member ? `Mutes for ${member} in ${message.guild.name}` : `Muted members in ${message.guild.name}`)
+            .setAuthor(member ? `Mutes for ${member.nickname||member.user.tag} in ${message.guild.name}` : `Muted members in ${message.guild.name}`)
             .setDescription(`None!`)
         if (!member) {
             db.query(`SELECT * FROM mutes WHERE muted = true AND guildid = ${message.guild.id}`, async(err, rows) => {
@@ -24,10 +25,12 @@ module.exports = {
                 if (rows && rows.length) {
                     for (const row of rows) {
                         members.delete(row.id);
-                        fitStringIntoEmbed(embed, `${message.guild.members.cache.get(row.id)} : Until ${new Date(row.uTime).toDateString()}`, message.channel);
+                        fitStringIntoEmbed(embed, `<@!${row.id}> by <@!${row.modid}> ending ${moment().to(new Date(parseInt(row.uTime)))}`, message.channel);
                     }
                 }
                 message.channel.send(embed)
+                embed.fields = [];
+                embed.setDescription('None!');
                 embed.setAuthor(`Mutes in ${message.guild.name} not set by ${message.guild.members.cache.get(bot.user.id).nickname||bot.user.tag}`);
                 members.forEach(m => fitStringIntoEmbed(embed, `${m}`, message.channel));
                 message.channel.send(embed);
@@ -39,9 +42,9 @@ module.exports = {
                     return message.channel.send(embed);
                 for (const row of rows) {
                     if (row.muted)
-                        fitStringIntoEmbed(embed, `**Until ${new Date(row.uTime).toDateString()}: ${row.reason}**`);
+                        fitStringIntoEmbed(embed, `**Ends ${moment().to(new Date(parseInt(row.uTime)))} by <@!${row.modid}>: ${row.reason}**`);
                     else
-                        fitStringIntoEmbed(embed, `Ended at ${new Date(row.uTime).toDateString()}: ${row.reason}`);
+                        fitStringIntoEmbed(embed, `Ended ${moment().to(new Date(parseInt(row.uTime)))} by <@!${row.modid}>: ${row.reason}`);
                 }
                 message.channel.send(embed);
             });

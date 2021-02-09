@@ -37,6 +37,11 @@ const router = express.Router()
 const app = express();
 const path = require('path')
 const cors = require('cors')
+
+const rootCas = require('ssl-root-cas').create();
+
+// fixes ALL https requests (whether using https directly or the request module)
+require('https').globalAgent.options.ca = rootCas;
 var CLIENT_ID, CLIENT_SECRET
 
 for (const file of commandFiles) {
@@ -90,6 +95,12 @@ async function dmHandler(message) {
         logCommand(guild)
         if (!cancelled) message.channel.send(await stats.getStatsEmbed(message.author.id, guild, db)
             .catch(er => { message.channel.send('You are not currently logged in the database. The database gets updated every 24-48 hours') }))
+    } else if (/^.?(pl[ea]{0,2}se?\s*)?(j[oi]{2}n|d[ra]{2}g\s*(me)?)(\s*pl[ea]{0,2}se?)?$/i.test(message.content)) {
+        let guild = await getGuild(message).catch(er => cancelled = true)
+        logCommand(guild)
+        if (!cancelled) {
+            require('./commands/joinRun').dmExecution(message, message.content.split(/\s+/), bot, db, guild, tokenDB);
+        }
     } else {
         if (message.content.replace(/[^0-9]/g, '') == message.content) return;
         let args = message.content.split(/ +/)
@@ -117,7 +128,7 @@ async function dmHandler(message) {
                 .setDescription(`\`\`\`${message.content}\`\`\``)
             let confirmModMailMessage = await message.channel.send(confirmModMailEmbed)
             let reactionCollector = new Discord.ReactionCollector(confirmModMailMessage, (r, u) => u.id == message.author.id && (r.emoji.name == '✅' || r.emoji.name == '❌'))
-            reactionCollector.on('collect', async (r, u) => {
+            reactionCollector.on('collect', async(r, u) => {
                 reactionCollector.stop()
                 if (r.emoji.name == '✅') {
                     let guild = await getGuild(message).catch(er => { cancelled = true })
@@ -178,10 +189,73 @@ bot.login(token.key);
 var db = mysql.createConnection(botSettings.dbInfo)
 var tokenDB = mysql.createConnection(botSettings.tokenDBInfo)
 
+const not_ready_yet = true;
+
 db.connect(err => {
-    if (err) throw err;
-    console.log('Connected to database')
+    if (err) ErrorLogger.log(err, bot);
+
+    console.log("Connected to database");
+
+    if (not_ready_yet)
+        return;
+
+    tryInitializeRushers();
 })
+
+const tryInitializeRushers = () => {
+    //db.query(`DROP TABLE rushers`); 
+    //if rusher table doesn't exist, initialize it with data from point logging channel
+    db.query(`CREATE TABLE IF NOT EXISTS rushers (id VARCHAR(32) NOT NULL, guildid VARCHAR(32) NOT NULL, time BIGINT DEFAULT 0, PRIMARY KEY (id, guildid))`, async(err, rows) => {
+        if (err) ErrorLogger.log(err, bot)
+
+        for (const guild_id in bot.settings) {
+            const settings = bot.settings[guild_id];
+
+            if (settings.backend.trackRushers) {
+
+                const guild = bot.guilds.cache.get(guild_id);
+                if (!guild)
+                    continue;
+                const role = guild.roles.cache.get(settings.roles.rusher);
+                if (!role)
+                    continue;
+                const rushed = {};
+
+                const db_rows = await db.query(`SELECT * FROM rushers`);
+                //if the table is empty, grab data from point logging channel
+                if (!db_rows || !db_rows.length) {
+                    const points_channel = guild.channels.cache.get(settings.channels.pointlogging);
+                    if (!points_channel)
+                        continue;
+                    const regex = /<@!?(?<id>[^>]+)>:.+`rusher`$/i;
+                    try {
+                        const messages = await points_channel.messages.fetch();
+                        for (const [snowflake, message] of messages) {
+                            if (!message.embeds || !message.embeds[0].description)
+                                continue;
+                            for (const line of message.embeds[0].description.split('\n')) {
+                                const result = line.match(regex);
+                                if (result && result.groups) {
+                                    rushed[result.groups.id] = Math.max(rushed[result.groups.id] || 0, message.createdTimestamp);
+                                }
+                            }
+                        }
+                    } catch (e) { console.log(e) }
+                }
+
+                const rows = [];
+                for (const [snowflake, member] of role.members) {
+                    rows.push({ id: snowflake, time: rushed[snowflake] || Date.now() });
+                }
+
+                const values = rows.reduce((acc, curr) => acc += `(${curr.id}, ${guild_id}, ${curr.time}), `, '').slice(0, -2);
+                //if the key already exists, just ignore it
+                db.query(`INSERT IGNORE INTO rushers (id, guildid, time) VALUES ${values}`);
+            }
+        }
+    })
+    db.query(`SELECT * FROM rushers`, (err, rows) => console.log(rows));
+}
 
 db.on('error', err => {
     if (err.code == 'PROTOCOL_CONNECTION_LOST') db = mysql.createConnection(botSettings.dbInfo)
@@ -189,7 +263,7 @@ db.on('error', err => {
 })
 
 tokenDB.connect(err => {
-    if (err) throw err;
+    if (err) ErrorLogger.log(err, bot);
     console.log('Connected to token database')
 })
 
@@ -198,7 +272,7 @@ tokenDB.on('error', err => {
     else ErrorLogger.log(err, bot)
 })
 
-bot.on("ready", async () => {
+bot.on("ready", async() => {
     CLIENT_ID = bot.user.id
     console.log(`Bot loaded: ${bot.user.username}`);
     bot.user.setActivity(`vibot.tech <- Soft Launch`)
@@ -223,13 +297,13 @@ bot.on("ready", async () => {
         if (!emojiServers.includes(g.id)) {
             let veriActive = g.channels.cache.get(bot.settings[g.id].channels.veriactive)
             if (!veriActive) return;
-            veriActive.bulkDelete(100).catch(er => { })
+            veriActive.bulkDelete(100).catch(er => {})
         }
     })
 
     //vetban check
     bot.setInterval(() => {
-        db.query(`SELECT * FROM vetbans WHERE suspended = true`, async (err, rows) => {
+        db.query(`SELECT * FROM vetbans WHERE suspended = true`, async(err, rows) => {
             if (err) ErrorLogger.log(err, bot)
             for (let i in rows) {
                 if (Date.now() > parseInt(rows[i].uTime)) {
@@ -274,7 +348,7 @@ bot.on("ready", async () => {
 
     //suspension check
     bot.setInterval(() => {
-        db.query(`SELECT * FROM suspensions WHERE suspended = true AND perma = false`, async (err, rows) => {
+        db.query(`SELECT * FROM suspensions WHERE suspended = true AND perma = false`, async(err, rows) => {
             if (err) ErrorLogger.log(err, bot)
             for (let i in rows) {
                 if (Date.now() > parseInt(rows[i].uTime)) {
@@ -324,7 +398,7 @@ bot.on("ready", async () => {
 
     //mute check
     bot.setInterval(() => {
-        db.query(`SELECT * FROM mutes WHERE muted = true`, async (err, rows) => {
+        db.query(`SELECT * FROM mutes WHERE muted = true`, async(err, rows) => {
             if (err) ErrorLogger.log(err, bot)
             for (let i in rows) {
                 if (Date.now() > parseInt(rows[i].uTime)) {
@@ -347,7 +421,7 @@ bot.on("ready", async () => {
     //initialize components (eg. modmail, verification)
     bot.guilds.cache.each(g => {
         if (!emojiServers.includes(g.id)) {
-            vibotChannels.update(g, bot).catch(er => { })
+            vibotChannels.update(g, bot).catch(er => {})
             if (bot.settings[g.id].backend.modmail) modmail.update(g, bot, db).catch(er => { ErrorLogger.log(er, bot); })
             if (bot.settings[g.id].backend.verification) verification.init(g, bot, db).catch(er => { ErrorLogger.log(er, bot); })
             if (bot.settings[g.id].backend.vetverification) vetVerification.init(g, bot, db).catch(er => { ErrorLogger.log(er, bot); })
@@ -387,17 +461,40 @@ bot.on('guildMemberAdd', member => {
     })
 })
 
+bot.on('guildMemberUpdate', (oldMember, newMember) => {
+    const settings = bot.settings[newMember.guild.id];
+    if (settings.backend.trackRushers) {
+        updateRusherTable(settings, oldMember, newMember) // not ready yet, fix something else
+    }
+})
+
+const updateRusherTable = (settings, oldMember, newMember) => {
+    if (not_ready_yet)
+        return;
+    if (oldMember.roles.cache.get(settings.roles.rusher) && !newMember.roles.cache.get(settings.roles.rusher)) {
+        //rusher role removed
+        db.query(`SELECT * FROM rushers WHERE guildid = ${newMember.guild.id} AND id = ${newMember.id}`, (err, rows) => {
+            if (rows && rows.length)
+                db.query(`DELETE FROM rushers WHERE id = ${newMember.id} AND guildid = ${newMember.guild.id}`);
+        });
+    } else if (!oldMember.roles.cache.get(settings.roles.rusher) && newMember.roles.cache.get(settings.roles.rusher)) {
+        //rusher role added
+        db.query(`INSERT INTO rushers (id, guildid, time) VALUES(${newMember.id}, ${newMember.guild.id}, ${Date.now()}) ON DUPLICATE KEY UPDATE time = VALUES(time)`);
+    }
+}
 bot.on('guildMemberRemove', member => {
     db.query(`SELECT suspended FROM suspensions WHERE id = '${member.id}' AND suspended = true`, (err, rows) => {
-        if (err) ErrorLogger.log(err, bot)
+        if (err) return ErrorLogger.log(err, bot)
         if (rows.length !== 0) {
             let modlog = member.guild.channels.cache.get(bot.settings[member.guild.id].channels.modlogs)
             if (!modlog) return ErrorLogger.log(new Error(`mod log not found in ${member.guild.id}`), bot)
             modlog.send(`${member} is attempting to dodge a suspension by leaving the server`)
             db.query(`UPDATE suspensions SET ignOnLeave = '${member.nickname}' WHERE id = '${member.id}' AND suspended = true`)
-            member.nickname.replace(/[^a-z|]/gi, '').split('|').forEach(n => {
-                db.query(`INSERT INTO veriblacklist (id, modid) VALUES ('${n}', 'Left Server While Suspended')`)
-            })
+            if (member.nickname) {
+                member.nickname.replace(/[^a-z|]/gi, '').split('|').forEach(n => {
+                    db.query(`INSERT INTO veriblacklist (id, modid) VALUES ('${n}', 'Left Server While Suspended')`)
+                })
+            }
         }
     })
 })
@@ -420,7 +517,7 @@ process.on('unhandledRejection', err => {
 })
 
 async function getGuild(message) {
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async(resolve, reject) => {
         let guilds = []
         bot.guilds.cache.each(g => {
             if (g.members.cache.has(message.author.id) && !emojiServers.includes(g.id)) {
@@ -460,7 +557,7 @@ async function getGuild(message) {
                 })
             } else {
                 let reactionCollector = new Discord.ReactionCollector(guildSelectionMessage, (r, u) => !u.bot)
-                reactionCollector.on('collect', async (r, u) => {
+                reactionCollector.on('collect', async(r, u) => {
                     switch (r.emoji.name) {
                         case '1️⃣':
                             resolve(guilds[0]);
@@ -608,7 +705,7 @@ function startAPI() {
         })
         app.use('/api/', apiLimit)
 
-        router.get('/', function (req, res) {
+        router.get('/', function(req, res) {
             res.json({ message: 'hooray! welcome to our api!' });
         });
 

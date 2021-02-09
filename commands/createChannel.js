@@ -11,6 +11,7 @@ module.exports = {
     description: 'Create a channel that stays open and is able to be edited. Useful for simply started a long lasting channel for run types where afk checks don\'t make sense. *Default cap is 50*',
     args: '<create/open/close/rename/log/setcap> (data)',
     notes: '`create <name>` creates new channel\n`open` unlocks the channel\n`close` locks the channel\n`rename <new name>` renames the channel\n`log` (c/ve) logs a dungeon complete for everyone in vc *c/v/e required for channels in vet section only*\n`setcap <#>` sets the vc cap',
+    requiredArgs: 1,
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         switch (args[0].toLowerCase()) {
@@ -91,7 +92,7 @@ module.exports = {
                                 break;
                             case 2:
                                 clearInterval(timer)
-                                //unlock the channel (event boi for events :^))
+                                    //unlock the channel (event boi for events :^))
                                 if (channel.channel.parent.name.toLowerCase() == 'events') {
                                     var eventBoi = message.guild.roles.cache.get(settings.roles.eventraider)
                                     var raider = message.guild.roles.cache.get(settings.roles.raider)
@@ -180,10 +181,18 @@ module.exports = {
                     else {
                         if (!args[1]) return message.channel.send('Run type not recognized')
                         switch (args[1].charAt(0).toLowerCase()) {
-                            case 'e': runType = 0; break;
-                            case 'v': runType = 1; break;
-                            case 'c': runType = 2; break;
-                            default: message.channel.send('Run type not recognized'); break;
+                            case 'e':
+                                runType = 0;
+                                break;
+                            case 'v':
+                                runType = 1;
+                                break;
+                            case 'c':
+                                runType = 2;
+                                break;
+                            default:
+                                message.channel.send('Run type not recognized');
+                                break;
                         }
                     }
                     if (!runType && runType !== 0) return
@@ -242,7 +251,7 @@ function getChannel(message) {
 
 async function createChannel(name, isVet, message, bot) {
     let settings = bot.settings[message.guild.id]
-    return new Promise(async (res, rej) => {
+    return new Promise(async(res, rej) => {
         //channel creation
         if (isVet) {
             var parent = 'veteran raiding';
@@ -265,7 +274,7 @@ async function createChannel(name, isVet, message, bot) {
             userLimit: 50
         }).then(c => c.setPosition(lounge.position + 1))
 
-        await message.member.voice.setChannel(channel).catch(er => { })
+        await message.member.voice.setChannel(channel).catch(er => {})
 
         //allows raiders to view
         channel.updateOverwrite(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
