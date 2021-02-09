@@ -91,6 +91,7 @@ module.exports = {
                     .setColor('#00ff00')
                     .setTitle('This weeks current logged runs!')
                     .setDescription('None!')
+                    .setFooter(`##### Total Runs`)
                 rows.sort((a, b) => {
                     let aTot = 0, bTot = 0;
                     for (let i of info.runs) {
