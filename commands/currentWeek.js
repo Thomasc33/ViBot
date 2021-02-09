@@ -91,6 +91,7 @@ module.exports = {
                     .setColor('#00ff00')
                     .setTitle('This weeks current logged runs!')
                     .setDescription('None!')
+                    .setFooter(`##### Total Runs`)
                 rows.sort((a, b) => {
                     let aTot = 0, bTot = 0;
                     for (let i of info.runs) {
@@ -132,13 +133,13 @@ module.exports = {
                     else if (embed.description.length + `\n${string}`.length >= 2048) {//change to 2048
                         if (embed.fields.length == 0) embed.addField('-', string)
                         else if (embed.fields[embed.fields.length - 1].value.length + `\n${string}`.length >= 1024) { //change to 1024
-                            if (embed.length + `\n${string}`.length >= 5975) {//change back to 6k
+                            if (embed.length + `\n${string}`.length >= 6000) {//change back to 6k
                                 embeds.push(new Discord.MessageEmbed(embed))
                                 embed.setDescription('None!')
                                 embed.fields = []
                             } else embed.addField('-', string)
                         } else {
-                            if (embed.length + `\n${string}`.length >= 5975) { //change back to 6k
+                            if (embed.length + `\n${string}`.length >= 6000) { //change back to 6k
                                 embeds.push(new Discord.MessageEmbed(embed))
                                 embed.setDescription('None!')
                                 embed.fields = []
