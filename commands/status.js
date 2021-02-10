@@ -1,5 +1,6 @@
 const Discord = require('discord.js');
 const ErrorLogger = require('../lib/logError')
+const package = require('../package.json')
 
 module.exports = {
     name: 'status',
@@ -14,7 +15,7 @@ module.exports = {
             .setTitle('ViBot Status')
             .addField('Ping', `${latency}ms`, true)
             .addField('Uptime', `${Math.floor(bot.uptime / 86400000)} Days ${Math.floor((bot.uptime - Math.floor(bot.uptime / 86400000) * 86400000) / 3600000)} Hours ${Math.round((bot.uptime - Math.floor(bot.uptime / 86400000) * 86400000 - Math.floor((bot.uptime - Math.floor(bot.uptime / 86400000) * 86400000) / 3600000) * 3600000) / 60000)} Minutes`, false)
-            .setFooter('ViBot v3.1.1')
+            .setFooter(`ViBot v${package.version}`)
             .setTimestamp(Date.now());
         m.edit('', embed);
     }
