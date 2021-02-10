@@ -2,7 +2,7 @@ const Discord = require('discord.js')
 
 module.exports = {
     name: 'joinrun',
-    alias: ['join'],
+    alias: ['join', 'drag', 'move'],
     description: 'Join back into the VC of a run incase you get disconnected',
     role: 'raider',
     dms: true,
@@ -19,9 +19,7 @@ module.exports = {
                 runsIn.push(i)
             }
         }
-        if (runsIn.length == 0) { message.channel.send('I could not find any runs that you were a part of. If you were not in the voice channel when the afk check ended, you should leave the run before you get suspended.') }
-        else if (runsIn.length == 1) { this.moveIn(guild.members.cache.get(message.author.id), runsIn[0], bot).catch(er => message.channel.send('Join lounge, then try this command again')) }
-        else {
+        if (runsIn.length == 0) { message.channel.send('I could not find any runs that you were a part of. If you were not in the voice channel when the afk check ended, you should leave the run before you get suspended.') } else if (runsIn.length == 1) { this.moveIn(guild.members.cache.get(message.author.id), runsIn[0], bot).catch(er => message.channel.send('Join lounge, then try this command again')) } else {
             let runEmbed = new Discord.MessageEmbed()
                 .setColor('#ff0000')
                 .setTitle('Which run are you trying to enter?')

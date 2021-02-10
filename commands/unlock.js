@@ -23,29 +23,29 @@ module.exports = {
         } else return message.channel.send("Try again, but in dylanbot-commands or veteran-bot-commands")
         bot = bott
         await this.unlock(message, channel, args[0], verifiedRaiderRole)
-
-        message.channel.send(`${channel.name} has been unlocked`)
+        if (channel)
+            message.channel.send(`${channel.name} has been unlocked`)
     },
     async unlock(message, channel, channelNumber, raider) {
         let settings = bot.settings[message.guild.id]
         if (channel == null) return message.channel.send("Could not find channel correctly, please try again");
         if (message.channel.parent.name.toLowerCase() === 'raiding') {
             await channel.setName(`${settings.voiceprefixes.raidingprefix}${channelNumber} <-- Join!`).catch(er => ErrorLogger.log(er, bot))
-            setTimeout(function () { channel.setUserLimit(75).catch(er => ErrorLogger.log(er, bot)) }, 500)
-            setTimeout(function () { channel.updateOverwrite(raider.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)) }, 1000)
+            setTimeout(function() { channel.setUserLimit(75).catch(er => ErrorLogger.log(er, bot)) }, 500)
+            setTimeout(function() { channel.updateOverwrite(raider.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)) }, 1000)
         }
         if (message.channel.parent.name.toLowerCase() === 'veteran raiding') {
             await channel.setName(`${settings.voiceprefixes.vetprefix}${channelNumber} <-- Join!`).catch(er => ErrorLogger.log(er, bot))
-            setTimeout(function () { channel.setUserLimit(75).catch(er => ErrorLogger.log(er, bot)) }, 500)
-            setTimeout(function () { channel.updateOverwrite(raider.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)) }, 1000)
+            setTimeout(function() { channel.setUserLimit(75).catch(er => ErrorLogger.log(er, bot)) }, 500)
+            setTimeout(function() { channel.updateOverwrite(raider.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)) }, 1000)
         }
         if (message.channel.parent.name.toLowerCase() === 'events') {
             let eventBoi = await message.guild.roles.cache.get(settings.roles.eventraider)
             let name = channel.name.substring(0, channel.name.indexOf(channelNumber) + 1)
             await channel.setName(`${name} <-- Join!`).catch(er => ErrorLogger.log(er, bot))
-            setTimeout(function () { channel.setUserLimit(75).catch(er => ErrorLogger.log(er, bot)) }, 500)
-            setTimeout(function () { channel.updateOverwrite(raider.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)) }, 1000)
-            setTimeout(function () { channel.updateOverwrite(eventBoi.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)) }, 1000)
+            setTimeout(function() { channel.setUserLimit(75).catch(er => ErrorLogger.log(er, bot)) }, 500)
+            setTimeout(function() { channel.updateOverwrite(raider.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)) }, 1000)
+            setTimeout(function() { channel.updateOverwrite(eventBoi.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)) }, 1000)
         }
     }
 };

@@ -145,9 +145,13 @@ module.exports = {
                 }
 
             }
+            let description = `${member} [Player Link](https://www.realmeye.com/player/${ign})`;
+            if (settings.name ===  "Oryx Sanctuary")
+                description += ` - [Web App](https://losthalls.org/profile/${ign})`;
+
             let mainEmbed = new Discord.MessageEmbed()
                 .setAuthor(`${u.tag} tried to verify as a veteran under: ${ign}`, u.avatarURL())
-                .setDescription(`${member} [Player Link](https://www.realmeye.com/player/${ign})`)
+                .setDescription(description)
                 .addField('Bot-Logged Runs:', `${loggedRuns}`)
                 .addField('Realmeye Logged Runs:', `${realmEyeRuns}`)
                 .addField('Maxed Characters:', `Total: ${maxedChars} | Melee: ${meleeMaxed}`)
