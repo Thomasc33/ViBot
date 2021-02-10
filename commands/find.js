@@ -23,7 +23,7 @@ module.exports = {
                 if (notFoundString == '') notFoundString = `${u}`
                 else notFoundString = notFoundString.concat(`, ${u}`)
             } else {
-                expelled.push(...member.nickname.replace(/[^a-z|]/gi, '').split('|'));
+                expelled.push(...(member.nickname || '').replace(/[^a-z|]/gi, '').split('|'));
                 var embed = new Discord.MessageEmbed()
                     .setColor('#00ff00')
                     .setDescription(`Search \`${u}\` matched \`${member.nickname||member.user.tag}\`: <@!${member.id}>`)
