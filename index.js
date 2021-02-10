@@ -463,7 +463,7 @@ bot.on('guildMemberAdd', member => {
 
 bot.on('guildMemberUpdate', (oldMember, newMember) => {
     const settings = bot.settings[newMember.guild.id];
-    if (settings.backend.trackRushers) {
+    if (settings && settings.backend && settings.backend.trackRushers) {
         updateRusherTable(settings, oldMember, newMember) // not ready yet, fix something else
     }
 })
