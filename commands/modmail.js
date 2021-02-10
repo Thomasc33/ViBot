@@ -20,7 +20,7 @@ module.exports = {
         let settings = bot.settings[guild.id]
         let modMailChannel = guild.channels.cache.get(settings.channels.modmail)
         let messages = await modMailChannel.messages.fetch({ limit: 100 })
-        messages.filter(m => m.author.id == bot.user.id && m.reactions.cache.has('🔑')).each(async function (m) {
+        messages.filter(m => m.author.id == bot.user.id && m.reactions.cache.has('🔑')).each(async function(m) {
             if (!m.reactions.cache.has('🔑') || watchedModMails.includes(m.id)) return;
             module.exports.watchMessage(m, db)
         })
@@ -55,16 +55,28 @@ module.exports = {
         let raider = guild.members.cache.get(embed.footer.text.split(/ +/g)[2])
         if (!raider) return
         let dms = await raider.user.createDM()
+
+        function checkInServer() {
+            const result = guild.members.cache.get(dms.recipient.id);
+            if (!result)
+                message.channel.send(`User ${dms.recipient} is no longer in the server.`);
+            return result;
+        }
         let modMailMessage = await dms.messages.fetch(modMailMessageID)
         let keyCollector = new Discord.ReactionCollector(m, keyFilter)
-        keyCollector.on('collect', async function (r, u) {
+        keyCollector.on('collect', async function(r, u) {
             let reactor = guild.members.cache.get(u.id)
             let choiceCollector = new Discord.ReactionCollector(m, choiceFilter)
             let collected = false;
-            choiceCollector.on('collect', async function (r, u) {
+            choiceCollector.on('collect', async function(r, u) {
                 collected = true;
                 choiceCollector.stop()
                 if (reactor.id !== u.id) return;
+                if (!checkInServer()) {
+                    await m.reactions.removeAll();
+                    await m.react('🚫');
+                    return;
+                }
                 switch (r.emoji.name) {
                     case '📧':
                         let originalMessage = embed.description;
@@ -73,20 +85,31 @@ module.exports = {
                             .setDescription(`__How would you like to respond to ${raider}'s [message](${m.url})__\n${originalMessage}`)
                         let responseEmbedMessage = await modMailChannel.send(responseEmbed)
                         let responseCollector = new Discord.MessageCollector(modMailChannel, m => m.author.id === reactor.id)
-                        responseCollector.on('collect', async function (mes) {
+                        responseCollector.on('collect', async function(mes) {
                             let response = mes.content.trim()
                             if (response == '') return mes.channel.send(`Invalid response. Please provide text. If you attached an image, please copy the URL and send that`)
                             responseCollector.stop()
                             await mes.delete()
+                            if (!checkInServer()) {
+                                await m.reactions.removeAll();
+                                await m.react('🚫');
+                                return;
+                            }
                             responseEmbed.setDescription(`__Are you sure you want to respond with the following?__\n${response}`)
                             await responseEmbedMessage.edit(responseEmbed)
                             await responseEmbedMessage.react('✅')
                             await responseEmbedMessage.react('❌')
                             let ConfirmReactionCollector = new Discord.ReactionCollector(responseEmbedMessage, ConfirmationFilter)
-                            ConfirmReactionCollector.on('collect', async function (r, u) {
+                            ConfirmReactionCollector.on('collect', async function(r, u) {
                                 if (u.id !== reactor.id) return;
                                 if (r.emoji.name === '✅') {
                                     ConfirmReactionCollector.stop()
+                                    if (!checkInServer()) {
+                                        responseEmbedMessage.delete();
+                                        await m.reactions.removeAll();
+                                        await m.react('🚫');
+                                        return;
+                                    }
                                     await dms.send(response)
                                     responseEmbedMessage.delete()
                                     embed.addField(`Response by ${reactor.nickname}:`, response)
@@ -94,23 +117,24 @@ module.exports = {
                                     await m.reactions.removeAll()
                                     await m.react('📫')
                                     keyCollector.stop()
-                                }
-                                else if (r.emoji.name === '❌') {
+                                } else if (r.emoji.name === '❌') {
                                     ConfirmReactionCollector.stop()
                                     await responseEmbedMessage.delete()
                                     await m.reactions.removeAll()
                                     await m.react('🔑')
-                                }
-                                else return;
+                                } else return;
                             })
                         })
                         break;
                     case '👀':
                         let eyesEmbed = new Discord.MessageEmbed()
                             .setDescription(`Your [message](${modMailMessage.url}) has been recieved and read`)
-                        await dms.send(eyesEmbed)
                         await m.reactions.removeAll()
-                        await m.react('👀')
+                        if (checkInServer()) {
+                            await dms.send(eyesEmbed)
+                            await m.react('👀')
+                        } else
+                            await m.react('🚫');
                         break;
                     case '🗑️':
                         await m.reactions.removeAll()
@@ -152,7 +176,7 @@ module.exports = {
 }
 
 async function checkBlacklist(member, db) {
-    return new Promise(async (res, rej) => {
+    return new Promise(async(res, rej) => {
         db.query(`SELECT * FROM modmailblacklist WHERE id = '${member.id}'`, (err, rows) => {
             if (err) return rej(err)
             if (rows.length == 0) {
