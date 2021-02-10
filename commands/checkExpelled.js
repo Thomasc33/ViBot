@@ -1,25 +1,27 @@
 const Discord = require('discord.js')
 
 module.exports = {
-        name: 'checkexpelled',
-        role: 'security',
-        description: 'Checks expelled list for verified people',
-        async execute(message, args, bot, db) {
-            let members = await getList(db)
-            let toRemove = {}
-            for (const m of members) {
-                let member = message.guild.members.cache.get(m.id)
-                if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(m.id.toLowerCase()));
-                if (member && member.roles.cache.get(bot.settings[message.guild.id].roles.raider)) toRemove[member] = [...(toRemove[member] || []), m.id];
-            }
-            let embed = new Discord.MessageEmbed()
-                .setColor(`#706b60`)
-                .setTitle(`People to remove from expelled list`)
-                .setDescription('None!')
-            for (const member in toRemove) {
-                fitStringIntoEmbed(embed, `${member}: \`${toRemove[member].join('\` \`')}\``, message.channel)
+    name: 'checkexpelled',
+    role: 'security',
+    description: 'Checks expelled list for verified people',
+    async execute(message, args, bot, db) {
+        let members = await getList(db)
+        let toRemove = []
+        for (const m of members) {
+            let member = message.guild.members.cache.get(m.id)
+            if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(m.id.toLowerCase()));
+            if (member && member.roles.cache.has(bot.settings[message.guild.id].roles.raider)) toRemove.push(m.id)
         }
-        message.channel.send(embed)
+        let embed = new Discord.MessageEmbed()
+            .setColor(`#706b60`)
+            .setTitle(`Attempting to remove the following from expelled list`)
+            .setDescription('None!')
+        for (let m of toRemove) {
+            fitStringIntoEmbed(embed, isNaN(parseInt(m)) ? `\`${m}\`` : `<@!${m}> : \`${m}\``, message.channel)
+        }
+        await message.channel.send(embed)
+
+        if (toRemove.length > 0) db.query(`DELETE FROM veriblacklist WHERE ${toRemove.map(m => `id = '${m}'`).join(' OR ')}`)
     }
 }
 
