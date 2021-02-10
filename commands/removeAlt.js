@@ -58,7 +58,7 @@ module.exports = {
                         else newname += ` | ${names[i]}`
                 }
                 await member.setNickname(newname)
-                db.query(`INSERT INTO veriblacklist (id, modid) VALUES ('${names[choice]}', '${message.author.id}')`)
+                db.query(`INSERT INTO veriblacklist (id, modid, guildid, reason) VALUES ('${names[choice]}', '${message.author.id}', '${message.guild.id}', 'Alt account removed from user.')`)
                 let embed = new Discord.MessageEmbed()
                     .setTitle('Alt Removed')
                     .setColor('#fefefe')

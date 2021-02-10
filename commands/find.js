@@ -13,7 +13,7 @@ module.exports = {
         var suspendedButVerifed = message.guild.roles.cache.get(settings.roles.tempsuspended)
         var suspendedRole = message.guild.roles.cache.get(settings.roles.permasuspended)
         var notFoundString = ''
-        let expelled = await checkBlackList(args, db)
+        let expelled = [...args];
         //combines users into an array
         for (let i in args) {
             let u = args[i];
@@ -23,14 +23,11 @@ module.exports = {
                 if (notFoundString == '') notFoundString = `${u}`
                 else notFoundString = notFoundString.concat(`, ${u}`)
             } else {
+                expelled.push(...member.nickname.replace(/[^a-z|]/gi, '').split('|'));
                 var embed = new Discord.MessageEmbed()
                     .setColor('#00ff00')
                     .setDescription(`Search \`${u}\` matched \`${member.nickname||member.user.tag}\`: <@!${member.id}>`)
-                    .addFields(
-                        { name: 'Highest Role', value: `<@&${member.roles.highest.id}>`, inline: true },
-                        { name: 'Suspended', value: `❌`, inline: true },
-                        { name: 'Voice Channel', value: 'Not Connected', inline: true }
-                    );
+                    .addFields({ name: 'Highest Role', value: `<@&${member.roles.highest.id}>`, inline: true }, { name: 'Suspended', value: `❌`, inline: true }, { name: 'Voice Channel', value: 'Not Connected', inline: true });
                 if (member.roles.cache.has(suspendedButVerifed.id)) {
                     embed.fields[1].value = `:white_check_mark: \n<@&${suspendedButVerifed.id}>`;
                     embed.setColor('#ff0000');
@@ -52,6 +49,8 @@ module.exports = {
                 .setDescription(notFoundString);
             message.channel.send(embed)
         }
+
+        expelled = await checkBlackList([...new Set(expelled.map(e => e.toLowerCase()))], db);
         if (expelled.length > 0) {
             let expelledString = ''
             for (let i in expelled) {
@@ -68,7 +67,7 @@ module.exports = {
 }
 
 async function checkBlackList(args, db) {
-    return new Promise(async (res, rej) => {
+    return new Promise(async(res, rej) => {
         let expelled = []
         let promises = []
         for (let i in args) {

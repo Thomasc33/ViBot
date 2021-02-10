@@ -478,7 +478,7 @@ module.exports = {
                         //1
                         else if (r.emoji.name === '1️⃣') {
                             //add to expelled
-                            db.query(`INSERT INTO veriblacklist (id, modid) VALUES ('${member.id}', '${reactor.id}'),('${ign.toLowerCase()}', '${reactor.id}')`)
+                            db.query(`INSERT INTO veriblacklist (id, modid, guildid, reason) VALUES ('${member.id}', '${reactor.id}', '${message.guild.id}', 'Reacted with 1️⃣ to verification.'),('${ign.toLowerCase()}', '${reactor.id}', '${message.guild.id}', 'Reacted with 1️⃣ to verification.')`)
                             //dm user, tell to appeal to reactor
                             member.user.send(`You were denied from verifying in \`${message.guild.name}\`. Please contact ${reactor} \`${reactor.user.tag}\` to appeal`)
                             //set embed color to red, add wave emote
@@ -513,7 +513,7 @@ module.exports = {
                         //4
                         else if (r.emoji.name === '4️⃣') {
                             //expell user
-                            db.query(`INSERT INTO veriblacklist (id, modid) VALUES ('${member.id}', '${reactor.id}')`)
+                            db.query(`INSERT INTO veriblacklist (id, modid) VALUES ('${member.id}', '${reactor.id}', '${message.guild.id}', 'Reacted with 4️⃣ to verification.')`)
                             //dm user that they were denied
                             member.user.send(`You were denied from verifying in \`${message.guild.name}\``)
                             //update embed

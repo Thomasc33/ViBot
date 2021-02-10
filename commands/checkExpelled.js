@@ -1,26 +1,25 @@
 const Discord = require('discord.js')
 
 module.exports = {
-    name: 'checkexpelled',
-    role: 'security',
-    description: 'Checks expelled list for verified people',
-    async execute(message, args, bot, db) {
-        let members = await getList(db)
-        let toRemove = []
-        for (let i in members) {
-            let m = members[i]
-            let member = message.guild.members.cache.get(m)
-            if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(m.toLowerCase()));
-            if (member) toRemove.push(m)
+        name: 'checkexpelled',
+        role: 'security',
+        description: 'Checks expelled list for verified people',
+        async execute(message, args, bot, db) {
+            let members = await getList(db)
+            let toRemove = {}
+            for (const m of members) {
+                let member = message.guild.members.cache.get(m.id)
+                if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(m.id.toLowerCase()));
+                if (member && member.roles.cache.get(bot.settings[message.guild.id].roles.raider)) toRemove[member] = [...(toRemove[member] || []), m.id];
+            }
+            let embed = new Discord.MessageEmbed()
+                .setColor(`#706b60`)
+                .setTitle(`People to remove from expelled list`)
+                .setDescription('None!')
+            for (const member in toRemove) {
+                fitStringIntoEmbed(embed, `${member}: \`${toRemove[member].join('\` \`')}\``, message.channel)
         }
-        let embed = new Discord.MessageEmbed()
-            .setColor(`#706b60`)
-            .setTitle(`People removed from expelled list`)
-            .setDescription('None!')
-        for (let i in toRemove) {
-            fitStringIntoEmbed(embed, toRemove[i], message.channel)
-        }
-        message.channel.send(embeds)
+        message.channel.send(embed)
     }
 }
 

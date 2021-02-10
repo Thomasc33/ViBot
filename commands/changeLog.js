@@ -53,11 +53,11 @@ module.exports = {
         confirmMessage.react('✅')
         confirmMessage.react('❌')
         let confirmReactionCollector = new Discord.ReactionCollector(confirmMessage, (r, u) => u.id == message.author.id)
-        confirmReactionCollector.on('collect', async (r, u) => {
+        confirmReactionCollector.on('collect', async(r, u) => {
             if (r.emoji.name == '✅') {
                 confirmReactionCollector.stop()
                 await confirmMessage.delete()
-                if (operator != 's' && (logTypes[logIndex] == `cultsLead` || logTypes[logIndex] == `voidsLead` || logTypes[logIndex] == `assists` || logTypes[logIndex] == `parses` || logTypes[logIndex] == `o3parses` || logTypes[logIndex] == `feedback`)) {
+                if (operator != 's' && ['cultsLead', 'voidsLead', 'assists', 'parses', 'o3parses', 'feedback', 'o3assists', 'o3feedback'].includes(logTypes[logIndex])) {
                     let currentWeekConfirmEmbed = new Discord.MessageEmbed()
                         .setTitle('Confirm Action')
                         .setDescription('Do you also want to add/remove this from currentweek?')
@@ -65,7 +65,7 @@ module.exports = {
                     currentweekConfirmMessage.react('✅')
                     currentweekConfirmMessage.react('❌')
                     let currentweekConfirmCollector = new Discord.ReactionCollector(currentweekConfirmMessage, (r, u) => u.id == message.author.id)
-                    currentweekConfirmCollector.on('collect', async (r, u) => {
+                    currentweekConfirmCollector.on('collect', async(r, u) => {
                         if (r.emoji.name == '✅') {
                             currentweekConfirmMessage.delete()
                             currentweekConfirmCollector.stop()
@@ -90,6 +90,12 @@ module.exports = {
                                 case 'feedback':
                                     currentWeekName = `currentweekFeedback`
                                     break;
+                                case 'o3assists':
+                                    currentWeekName = 'currentweekAssistso3'
+                                    break;
+                                case 'o3feedback':
+                                    currentWeekName = 'currentweeko3Feedback'
+                                    break;
                             }
                             if (operator == 'a') currentWeekQuery += `${currentWeekName} = ${currentWeekName} + ${count} `
                             else currentWeekQuery += `${currentWeekName} = ${currentWeekName} - ${count} `
@@ -106,14 +112,14 @@ module.exports = {
                 } else {
                     sendQuery()
                 }
+
                 function sendQuery() {
                     db.query(query, (err, rows) => {
                         if (err) message.channel.send(`\`${err}\``)
                         message.react('✅')
                     })
                 }
-            }
-            else if (r.emoji.name == '❌') {
+            } else if (r.emoji.name == '❌') {
                 confirmReactionCollector.stop()
                 await confirmMessage.delete()
             }

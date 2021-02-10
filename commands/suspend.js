@@ -113,12 +113,12 @@ module.exports = {
                         await member.roles.remove(userRoles)
                         setTimeout(() => { member.roles.add(suspendedRole.id); }, 1000)
                         await member.user.send(embed)
-                        db.query(`INSERT INTO suspensions (id, guildid, suspended, uTime, reason, modid, roles, logmessage) VALUES ('${member.id}', '${message.guild.id}', true, '${Date.now() + time}', '${reason}', '${message.author.id}', '${userRolesString}', '${messageId.id}');`)
+                        db.query(`INSERT INTO suspensions (id, guildid, suspended, uTime, reason, modid, roles, logmessage) VALUES ('${member.id}', '${message.guild.id}', true, '${Date.now() + time}', ${db.escape(reason)}, '${message.author.id}', '${userRolesString}', '${messageId.id}');`)
                     }
                     message.channel.send(`${member} has been suspended`)
                 }
 
-            })
+            })  
         } catch (er) {
             ErrorLogger.log(er, bot)
             message.channel.send("Error with command. Please check syntax and try again");

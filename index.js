@@ -492,7 +492,7 @@ bot.on('guildMemberRemove', member => {
             db.query(`UPDATE suspensions SET ignOnLeave = '${member.nickname}' WHERE id = '${member.id}' AND suspended = true`)
             if (member.nickname) {
                 member.nickname.replace(/[^a-z|]/gi, '').split('|').forEach(n => {
-                    db.query(`INSERT INTO veriblacklist (id, modid) VALUES ('${n}', 'Left Server While Suspended')`)
+                    db.query(`INSERT INTO veriblacklist (id, guildid, modid, reason) VALUES ('${n}', '${member.guild.id}', '${bot.user.id}', 'Left Server While Suspended')`)
                 })
             }
         }
