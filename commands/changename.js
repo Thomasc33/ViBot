@@ -13,7 +13,7 @@ module.exports = {
     role: 'eventraider',
     async execute(message, args, bot) {
         const settings = bot.settings[message.guild.id];
-        const staff = message.member.roles.highest >= message.guild.roles.cache.get(settings.roles.security);
+        const staff = message.member.roles.highest.comparePositionTo(message.guild.roles.cache.get(settings.roles.security)) >= 0;
         const arg_list = prefix + 'changename ' + (staff ? this.args : '<new name>');
         try {
             if (!staff && args.length != 1)
