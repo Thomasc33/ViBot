@@ -8,8 +8,9 @@ module.exports = {
     name: 'changename',
     description: 'Changes the name of a user and logs it automatically.',
     alias: ['cn'],
-    args: '[User id/mention] <new name> [proof]',
+    args: '<new name>',
     requiredArgs: 1,
+    notes: 'Security+: [mention | ID] <new name> [proof]',
     role: 'eventraider',
     async execute(message, args, bot) {
         const settings = bot.settings[message.guild.id];
