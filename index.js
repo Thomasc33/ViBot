@@ -405,13 +405,15 @@ bot.on("ready", async() => {
                     const guildId = rows[i].guildid;
                     let settings = bot.settings[guildId]
                     const guild = bot.guilds.cache.get(guildId);
-                    const member = guild.members.cache.get(rows[i].id);
-                    if (!member) return db.query(`UPDATE mutes SET muted = false WHERE id = '${rows[i].id}'`)
-                    try {
-                        await member.roles.remove(settings.roles.muted)
-                        await db.query(`UPDATE mutes SET muted = false WHERE id = '${rows[i].id}'`)
-                    } catch (er) {
-                        ErrorLogger.log(er, bot)
+                    if (guild) {
+                        const member = guild.members.cache.get(rows[i].id);
+                        if (!member) return db.query(`UPDATE mutes SET muted = false WHERE id = '${rows[i].id}'`)
+                        try {
+                            await member.roles.remove(settings.roles.muted)
+                            await db.query(`UPDATE mutes SET muted = false WHERE id = '${rows[i].id}'`)
+                        } catch (er) {
+                            ErrorLogger.log(er, bot)
+                        }
                     }
                 }
             }
