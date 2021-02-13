@@ -98,7 +98,7 @@ module.exports = {
                         suspensionLog.send(embed).then(member.user.send(embed))
                     } else {
                         let userRolesString = '', userRoles = []
-                        const roles = member.roles.cache.filter(r => !r.managed && r.id != settings.roles.nitro);
+                        const roles = [...member.roles.cache.filter(r => !r.managed && r.id != settings.roles.nitro).values()];
                         embed.fields[3].value = roles.join(', ') || 'None!';
                         member.roles.cache.each(r => {
                             if (!r.managed && r.id != settings.roles.nitro) {
