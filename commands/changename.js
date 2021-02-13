@@ -8,12 +8,13 @@ module.exports = {
     name: 'changename',
     description: 'Changes the name of a user and logs it automatically.',
     alias: ['cn'],
-    args: '[User id/mention] <new name> [proof]',
+    args: '<new name>',
     requiredArgs: 1,
-    role: 'eventraider',
+    notes: 'Security+: [mention | ID] <new name> [proof]',
+    role: 'raider',
     async execute(message, args, bot) {
         const settings = bot.settings[message.guild.id];
-        const staff = message.member.roles.highest >= message.guild.roles.cache.get(settings.roles.security);
+        const staff = message.member.roles.highest.comparePositionTo(message.guild.roles.cache.get(settings.roles.security)) >= 0;
         const arg_list = prefix + 'changename ' + (staff ? this.args : '<new name>');
         try {
             if (!staff && args.length != 1)
