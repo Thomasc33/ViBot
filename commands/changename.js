@@ -11,7 +11,7 @@ module.exports = {
     args: '<new name>',
     requiredArgs: 1,
     notes: 'Security+: [mention | ID] <new name> [proof]',
-    role: 'eventraider',
+    role: 'raider',
     async execute(message, args, bot) {
         const settings = bot.settings[message.guild.id];
         const staff = message.member.roles.highest.comparePositionTo(message.guild.roles.cache.get(settings.roles.security)) >= 0;
