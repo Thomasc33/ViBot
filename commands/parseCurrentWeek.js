@@ -124,12 +124,12 @@ module.exports = {
                             if (CachedMessages[channel.guild.id]) CachedMessages[channel.guild.id] = []
                             for (let i in embeds) {
                                 let m = await channel.send(embeds[i])
-                                CachedMessages[channel.guild.id].push(m)
+                                CachedMessages[channel.guild.id].shift(m)
                             }
                         }
                         async function gatherMessages() {
                             CachedMessages[channel.guild.id] = []
-                            let messages = await channel.messages.fetch({ limit: 3 })
+                            let messages = await channel.messages.fetch({ limit: 5 })
                             let messageArray = messages.array()
                             if (messageArray.length !== embeds.length) resendMessages()
                             else for (let i of messageArray) { CachedMessages[channel.guild.id].push(i); editMessages(); }
