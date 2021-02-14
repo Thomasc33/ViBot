@@ -72,7 +72,19 @@ module.exports = {
         //check to see if they are currently under review and veri-blacklist
         if (active.includes(u.id)) return
         if (watching.includes(u.id)) return u.send(`You are currently under manual verification. If you do not hear back within 48 hours, please DM me again to contact modmail`).catch(er => { })
-        if (await checkBlackList(u.id, db)) return u.send(`You are currently blacklisted from verifying. Please DM me to contact mod-mail and find out why`)
+        let blInfo = await checkBlackList(u.id, db);
+        if (blInfo) 
+        {
+            const blGuild = bot.guilds.cache.get(blInfo.guildid);
+            if (!blGuild || !bot.settings[blGuild.id])
+                return u.send(`You are currently blacklisted from verifying. Please DM me to contact mod-mail and find out why`);
+            
+            const staff = blGuild.members.cache.get(blInfo.modid);
+            if (!staff || staff.id == bot.user.id || staff.roles.highest.comparePositionTo(bot.settings[blGuild.id].roles.security) < 0)
+                return u.send(`You are currently blacklisted from the __${blGuild.name}__ server and cannot verify. The person who blacklisted you is no longer staff. Please DM me and send mod-mail to that server to appeal.`);
+
+            return u.send(`You are currently blacklisted from the __${blGuild.name}__ server and cannot verify. Please contact ${staff} in order to appeal. If they do not reply within 48 hours, feel free to mod-mail the ${blGuild.name} server to get assistance.`);            
+        }
         active.push(u.id)
 
         //log that they are attempting to verify
@@ -136,7 +148,7 @@ module.exports = {
         }
 
         //cancels verification
-        async function cancelVerification(reason) {
+        async function cancelVerification(reason, info) {
             //0=timeout,1=aborted,2=blacklisted ign,3=dupe
             switch (reason) {
                 case 0:
@@ -147,13 +159,29 @@ module.exports = {
                     LoggingEmbed.setDescription(`<@!${u.id}> cancelled their verification`)
                     embed.setDescription(`Verification aborted`)
                     break;
-                case 2:
+                case 2: 
                     LoggingEmbed.setDescription(`<@!${u.id}> was auto-denied because ${ign} is blacklisted`)
-                    embed.setDescription(`You are currently blacklisted from verifying. Please DM me to contact mod-mail and find out why`)
+                    const blGuild = bot.guilds.cache.get(info.guildid);
+                    LoggingEmbed.addField('Server', blGuild ? blGuild.name : 'Unknown', true);
+                    LoggingEmbed.addField('Security', `<@!${info.modid}>`, true);
+                    
+                    const staff = blGuild.members.cache.get(info.modid);
+                    const blgsettings = bot.settings[blGuild.id];
+                    const currently = blgsettings && staff && staff.roles.highest.comparePositionTo(blgsettings.roles.security) >= 0;
+                    if (blGuild.id != guild.id)
+                    {
+                        LoggingEmbed.addField(`Staff?`, currently ? '✅' : '❌', true);
+                    }
+                    if (!blGuild)
+                        embed.setDescription(`You are currently blacklisted from verifying. Please DM me to contact mod-mail and find out why`);
+                    else if (!currently)
+                        embed.setDescription(`You are currently blacklisted from the __${blGuild.name}__ server and cannot verify. The person who blacklisted you is no longer staff. Please DM me and send mod-mail to that server to appeal.`);
+                    else
+                        embed.setDescription(`You are currently blacklisted from the __${blGuild.name}__ server and cannot verify. Please contact ${staff} in order to appeal. If they do not reply within 48 hours, feel free to mod-mail the ${blGuild.name} server to get assistance.`);
                     break;
-                case 3:
+                case 3: 
                     LoggingEmbed.setDescription(`<@!${u.id}> was auto-denied because ${ign} already exists in the server`)
-                    embed.setDescription(`There is already a member verified under ${ign}. If this is an error, please DM me to get in contact with mod-mail`)
+                    embed.setDescription(`There is already a member verified under ${ign}. If this is an error, please DM me to get in contact with mod-mail`);
                     break;
             }
             embed.footer = null
@@ -203,9 +231,9 @@ module.exports = {
                 })
             })
         }
-
+        blInfo = await checkBlackList(ign, db);
         //check blacklist for ign
-        if (await checkBlackList(ign, db)) return cancelVerification(2)
+        if (blInfo) return cancelVerification(2, blInfo)
 
         //verify name isnt in server yet
         let dupes = guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(ign.toLowerCase()));
@@ -627,7 +655,7 @@ async function checkBlackList(id, db) {
     return new Promise(async (resolve, reject) => {
         db.query(`SELECT * FROM veriblacklist WHERE id = '${id.toLowerCase()}'`, async (err, rows) => {
             if (err) reject(err)
-            if (rows.length != 0) resolve(true)
+            if (rows.length != 0) resolve(rows[0])
             else resolve(false)
         })
     })

@@ -16,8 +16,8 @@ module.exports = {
         if (!member) return message.channel.send("User not found")
         if (member.roles.cache.has(suspendedRole.id) || member.roles.cache.has(sbvRole.id)) return message.channel.send("User is suspended")
         if (member.roles.cache.has(raiderRole.id)) return message.channel.send('User is already verified')
-        await member.roles.add(raiderRole)
         if (member.roles.cache.has(settings.roles.eventraider)) await member.roles.remove(settings.roles.eventraider)
+        await member.roles.add(raiderRole)
         let tag = member.user.tag.substring(0, member.user.tag.length - 5)
         let nick = ''
         if (tag == args[1]) {

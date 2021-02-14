@@ -23,6 +23,7 @@ module.exports = {
                 if (notFoundString == '') notFoundString = `${u}`
                 else notFoundString = notFoundString.concat(`, ${u}`)
             } else {
+                expelled.push(member.user.id);
                 expelled.push(...(member.nickname || '').replace(/[^a-z|]/gi, '').split('|'));
                 var embed = new Discord.MessageEmbed()
                     .setColor('#00ff00')
