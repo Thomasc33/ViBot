@@ -105,11 +105,6 @@ module.exports = {
                                 userRoles.push(r.id)
                                 userRolesString = userRolesString.concat(`${r.id} `)
                             }
-                            if (embed.fields[3].value == 'None!') {
-                                embed.fields[3].value = `<@&${r.id}>`
-                            } else {
-                                embed.fields[3].value += `, <@&${r.id}>`
-                            }
                         })
                         messageId = await suspensionLog.send(embed);
                         await member.roles.remove(userRoles)
