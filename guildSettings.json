@@ -1,4 +1,177 @@
 {
+    "types": {
+        "type": "string",
+        "roles": "role",
+        "channels": "channel",
+        "voice": "channel",
+        "voiceprefixes": "string",
+        "backend": "boolean",
+        "numerical": "number",
+        "runreqs": "number",
+        "autoveri": "number",
+        "vetverireqs": "number",
+        "points": "number",
+        "commands": "boolean",
+        "categories": "string",
+        "messages": {
+            "type": "string",
+            "verifications": "string"
+        }
+    },
+    "defaults": {
+        "name": null,
+        "roles": {
+            "moderator": "Moderator",
+            "officer": "Officer",
+            "headrl": "Head Raid Leader",
+            "vetrl": "Veteran Raid Leader",
+            "security": "Security",
+            "fullskip": "Fullskip",
+            "developer": "Developer",
+            "rl": "Raid Leader",
+            "almostrl": "Almost Raid Leader",
+            "trialrl": "Trial Raid Leader",
+            "headeventrl": "Head Event Organizer",
+            "eventrl": "Event Organizer",
+            "rusher": "Official Rusher",
+            "nitro": "Nitro Booster",
+            "lol": "Leader on Leave",
+            "vetraider": "Veteran Raider",
+            "raider": "Verified Raider",
+            "eventraider": "Event Boi",
+            "muted": "Muted",
+            "tempsuspended": "Suspended but Verified",
+            "permasuspended": "Suspended",
+            "vetban": "Banned Veteran Raider",
+            "tempkey": "Temporary Key Popper",
+            "topkey": "Veteran Key Popper",
+            "bottomkey": "Verified Key Popper",
+            "cultping": "Cult boi",
+            "voidping": "Void boi"
+        },
+        "channels": {
+            "modmail": "history-bot-dms",
+            "verification": "get-verified",
+            "manualverification": "veri-pending",
+            "vetverification": "veteran-verification",
+            "manualvetverification": "veri-pending-veterans",
+            "verificationlog": "veri-log",
+            "activeverification": "veri-active",
+            "modlogs": "mod-logs",
+            "history": "history",
+            "suspendlog": "suspend-log",
+            "viallog": "vial-logs",
+            "rlfeedback": "customer-feedback",
+            "currentweek": "currentweek",
+            "eventcurrentweek": "e-currentweek",
+            "pastweeks": "leader-activity-log",
+            "eventpastweeks": "e-weekly-logs",
+            "leadinglog": "leader-leading-logs",
+            "leaderchat": "leader-chat",
+            "vetleaderchat": "veteran-rl-chat",
+            "parsechannel": "crasher-list",
+            "raidstatus": "raid-status-announcements",
+            "eventstatus": "event-status-announcements",
+            "vetstatus": "veteran-status-announcements",
+            "raidcommands": "dylanbot-commands",
+            "eventcommands": "eventbot-commands",
+            "vetcommands": "veteran-bot-commands",
+            "raidingchannels": "active-channels",
+            "eventchannels": "active-channels-e",
+            "vetchannels": "active-channels-v",
+            "runlogs": "dylanbot-info",
+            "dmcommands": "history-reacts",
+            "veriactive": "veri-active",
+            "pointlogging": "point-history",
+            "veriattempts": "veri-attempts",
+            "modmailinfo": "mod-mail",
+            "parsecurrentweek": "mod-current-week",
+            "pastparseweeks": "mod-parse-history",
+            "roleassignment": "role-assignment"
+        },
+        "voice": {
+            "raidingtemplate": "Raiding Template",
+            "eventtemplate": "Event Raiding Template",
+            "vettemplate": "Vet Raiding Template",
+            "lounge": "lounge",
+            "vetlounge": "Veteran Lounge",
+            "eventlounge": "Event Lounge",
+            "afk": "afk",
+            "veteventtemplate": "Vet Event Template"
+        },
+        "voiceprefixes": {
+            "raidingprefix": "Backup raiding-",
+            "vetprefix": "Veteran Raiding-"
+        },
+        "backend": {
+            "modmail": false,
+            "currentweek": false,
+            "eventcurrentweek": false,
+            "parsecurrentweek": false,
+            "verification": false,
+            "vetverification": false,
+            "points": false,
+            "supporter": false,
+            "roleassignment": false,
+            "realmeyestats": false,
+            "trackRushers": false
+        },
+        "numerical": {
+            "afktime": 360,
+            "eventafktime": 360,
+            "nitrocount": 5,
+            "nitrocooldown": 3600000,
+            "topkey": 50,
+            "bottomkey": 15,
+            "ticketlimit": 5,
+            "supporterlimit": 5
+        },
+        "runreqs": {
+            "weapon": 10,
+            "ability": 4,
+            "armor": 10,
+            "ring": 4
+        },
+        "autoveri": {
+            "fame": 1000,
+            "stars": 30,
+            "realmage": 365,
+            "discordage": 3,
+            "deathcount": 100
+        },
+        "vetverireqs": {
+            "maxed": 3,
+            "meleemaxed": 1,
+            "runs": 100,
+            "weapon": 13,
+            "ability": 0,
+            "armor": 14,
+            "ring": 0
+        },
+        "points": {
+            "earlylocation": 20,
+            "perrun": 1,
+            "nitromultiplier": 2,
+            "keypop": 20,
+            "vialpop": 3,
+            "rushing": 1,
+            "brain": 1,
+            "mystic": 1,
+            "eventkey": 2,
+            "cultlocation": 20,
+            "voidlocation": 25,
+            "fsvlocation": 30,
+            "o3streaming": 5,
+            "o3trickster": 3,
+            "o3puri": 3
+        },
+        "commands": {},
+        "categories": {
+            "raiding": "raiding",
+            "veteran": "veteran raiding",
+            "event": "events"
+        }
+    },
     "701483950559985705": {
         "name": "Dev Halls",
         "roles": {
@@ -120,9 +293,13 @@
             "deathcount": 100
         },
         "vetverireqs": {
-            "maxed": 3,
-            "meleemaxed": 1,
-            "runs": 100
+            "maxed": 0,
+            "meleemaxed": 0,
+            "runs": 50,
+            "weapon": 14,
+            "ability": 7,
+            "armor": 15,
+            "ring": 0
         },
         "points": {
             "earlylocation": 20,
@@ -249,8 +426,7 @@
             "bruh": true,
             "testalt": true,
             "createtemplate": true,
-            "id": true,
-            "setupv2": true
+            "id": true
         },
         "categories": {
             "raiding": "raiding",
@@ -369,7 +545,11 @@
         "vetverireqs": {
             "maxed": 3,
             "meleemaxed": 1,
-            "runs": 100
+            "runs": 100,
+            "weapon": 14,
+            "ability": 0,
+            "armor": 15,
+            "ring": 0
         },
         "points": {
             "earlylocation": 20,
@@ -510,7 +690,11 @@
         "vetverireqs": {
             "maxed": 3,
             "meleemaxed": 1,
-            "runs": 100
+            "runs": 100,
+            "weapon": 13,
+            "ability": 0,
+            "armor": 14,
+            "ring": 0
         },
         "points": {
             "earlylocation": 20,
@@ -755,7 +939,11 @@
         "vetverireqs": {
             "maxed": 3,
             "meleemaxed": 1,
-            "runs": 100
+            "runs": 100,
+            "weapon": 13,
+            "ability": 0,
+            "armor": 14,
+            "ring": 0
         },
         "points": {
             "earlylocation": 20,
@@ -894,9 +1082,13 @@
             "deathcount": 100
         },
         "vetverireqs": {
-            "maxed": 2,
+            "maxed": 0,
             "meleemaxed": 0,
-            "runs": 20
+            "runs": 50,
+            "weapon": 14,
+            "ability": 7,
+            "armor": 15,
+            "ring": 0
         },
         "points": {
             "earlylocation": 20,
@@ -1153,7 +1345,11 @@
         "vetverireqs": {
             "maxed": 3,
             "meleemaxed": 1,
-            "runs": 100
+            "runs": 100,
+            "weapon": 13,
+            "ability": 0,
+            "armor": 14,
+            "ring": 0
         },
         "points": {
             "earlylocation": 20,
