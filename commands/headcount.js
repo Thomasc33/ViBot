@@ -45,7 +45,7 @@ module.exports = {
                     else runType = await getTemplate(message, afkTemplates, args[0]).catch(er => message.channel.send(`Unable to get template. Error: \`${er}\``))
                     break;
             }
-            if (!runType) eventHC().catch(er => { message.channel.send('Run Type not recognized') })
+            if (!runType) eventHC().catch(er => { message.channel.send(er) })
 
             let embed = new Discord.MessageEmbed()
                 .setAuthor(`Headcount for ${runType.runName} by ${message.member.nickname}`)
@@ -126,6 +126,6 @@ async function eventReact(pingMessage, event) {
 async function getTemplate(message, afkTemplates, runType) {
     return new Promise(async (res, rej) => {
         if (afkTemplates[message.author.id] && afkTemplates[message.author.id][runType.toLowerCase()]) return res(afkTemplates[message.author.id][runType.toLowerCase()])
-        else rej(`No templates for user under: ${runType}`)
+        else res(null)
     })
 }
