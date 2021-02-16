@@ -4,6 +4,7 @@ const ErrorLogger = require('../lib/logError')
 const realmEyeScrape = require('../lib/realmEyeScrape')
 const charList = require('./characterList')
 const lootInfo = require('../data/lootInfo.json')
+const ext = require('../lib/extensions');
 
 var watching = []
 var embedMessage, bot
@@ -13,37 +14,52 @@ const dungeons = {
         realmeyestring: null,
         dbnames: ['o3runs'],
         dbisvet: 'iso3Vet',
-        lootInfo: 'o3'
+        lootInfo: 'o3',
+        boss: 'O3',
+        webAppLink: true,
+        webdata: true
     },
     '343704644712923138': {
         realmeyestring: ['Voids completed'],
         dbnames: ['voidRuns'],
         dbisvet: 'isVet',
-        lootInfo: 'halls'
+        lootInfo: 'halls',
+        boss: 'Void',
+        webAppLink: false,
+        webdata: false
+    },
+    '701483950559985705': {
+        realmeyestring: null,
+        dbnames: ['o3runs'],
+        dbisvet: 'iso3Vet',
+        lootInfo: 'o3',
+        boss: 'O3',
+        webAppLink: true,
+        webdata: true
     }
 }
 
 module.exports = {
-    name: 'vetverification',
-    role: 'moderator',
-    description: 'createmessage/restart',
-    execute(message, args, bot, db) {
-        switch (args[0]) {
-            case 'createmessage':
-                this.createMessage(message, bot, db)
-                break;
-            case 'restart':
-                this.restartPending(message.guild, db)
-        }
-    },
-    async createMessage(message, bot, db) {
-        let settings = bot.settings[message.guild.id]
-        let vetVeriChannel = message.guild.channels.cache.get(settings.channels.vetverification)
-        if (!vetVeriChannel) return message.channel.send(`Vet Verification channel not found`)
-        let vetVeriEmbed = new Discord.MessageEmbed()
-            .setTitle(`Veteran Verification for ${message.guild.name}`)
-            .addField('How to', 'React with the :white_check_mark: to get the role.\nMake sure to make your graveyard and character list public on realmeye before reacting\nAlso run the command ;stats to see your current run total.')
-            .addField('Requirements', `${(settings.vetverireqs.maxed) ? `-${settings.vetverireqs.maxed} 8/8 Characters\n` : ''}${(settings.vetverireqs.meleemaxed) ? `-${settings.vetverireqs.meleemaxed} 8/8 Melee Characters\n` : ''}${(settings.vetverireqs.runs) ? `-${settings.vetverireqs.runs} Completed Runs\n` : ''}`)
+        name: 'vetverification',
+        role: 'moderator',
+        description: 'createmessage/restart',
+        execute(message, args, bot, db) {
+            switch (args[0]) {
+                case 'createmessage':
+                    this.createMessage(message, bot, db)
+                    break;
+                case 'restart':
+                    this.restartPending(message.guild, db)
+            }
+        },
+        async createMessage(message, bot, db) {
+            let settings = bot.settings[message.guild.id]
+            let vetVeriChannel = message.guild.channels.cache.get(settings.channels.vetverification)
+            if (!vetVeriChannel) return message.channel.send(`Vet Verification channel not found`)
+            let vetVeriEmbed = new Discord.MessageEmbed()
+                .setTitle(`Veteran Verification for ${message.guild.name}`)
+                .addField('How to', 'React with the :white_check_mark: to get the role.\nMake sure to make your graveyard and character list public on realmeye before reacting\nAlso run the command ;stats to see your current run total.')
+                .addField('Requirements', `${(settings.vetverireqs.maxed) ? `-${settings.vetverireqs.maxed} 8/8 Characters\n` : ''}${(settings.vetverireqs.meleemaxed) ? `-${settings.vetverireqs.meleemaxed} 8/8 Melee Characters\n` : ''}${(settings.vetverireqs.runs) ? `-${settings.vetverireqs.runs} Completed Runs\n` : ''}`)
         embedMessage = await vetVeriChannel.send(vetVeriEmbed)
         embedMessage.react('✅')
         this.init(message.guild, bot, db)
@@ -70,18 +86,31 @@ module.exports = {
         let veriLog = guild.channels.cache.get(settings.channels.verificationlog)
         let veriPending = guild.channels.cache.get(settings.channels.manualvetverification)
         let ign = member.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|')[0]
+        const dungeon = dungeons[guild.id];
+        if (!dungeon)
+            return;
         if (!member) return;
         if (watching.includes(u.id)) return
         if (member.roles.cache.has(vetRaider)) return
         let loggedRuns = 0
         let isVet = false
-        db.query(`SELECT * FROM users WHERE id = '${u.id}'`, (err, rows) => {
-            if (err) ErrorLogger.log(err, bot)
-            if (rows.length == 0) return
-            if (dungeons[guild.id] && dungeons[guild.id].dbnames) for (let i of dungeons[guild.id].dbnames) if (rows[0][i]) loggedRuns += parseInt(rows[0][i])
-            if (dungeons[guild.id] && dungeons[guild.id].dbisvet) isVet = rows[0][dungeons[guild.id].dbisvet]
-        })
-        if (isVet) return member.roles.add(vetRaider)
+        let profile;
+        if (!dungeon.webdata){
+            console.log('no web data');
+            db.query(`SELECT * FROM users WHERE id = '${u.id}'`, (err, rows) => {
+                if (err) ErrorLogger.log(err, bot)
+                if (rows.length == 0) return
+                if (dungeon.dbnames) for (let i of dungeon.dbnames) if (rows[0][i]) loggedRuns += parseInt(rows[0][i])
+                if (dungeon.dbisvet) isVet = rows[0][dungeon.dbisvet]
+            })
+        } else {
+            try {
+                profile = await realmEyeScrape.getSancProfile(ign);
+                loggedRuns = profile.participation.completions;
+            }
+            catch (e) { console.log(e)};
+        }
+        //if (isVet) return member.roles.add(vetRaider)
         let userInfo = await realmEyeScrape.getUserInfo(ign)
         let maxedChars = 0;
         let meleeMaxed = 0;
@@ -95,11 +124,11 @@ module.exports = {
                 }
             }
         }
-        if (dungeons[guild.id] && dungeons[guild.id].realmeyestring) {
+        if (dungeon.realmeyestring) {
             let graveyard = await realmEyeScrape.getGraveyardSummary(ign)
             for (let i in graveyard.achievements) {
                 let achievement = graveyard.achievements[i]
-                if (dungeons[guild.id].realmeyestring.includes(achievement.type)) {
+                if (dungeon.realmeyestring.includes(achievement.type)) {
                     realmEyeRuns += parseInt(achievement.total)
                 }
             }
@@ -112,56 +141,105 @@ module.exports = {
             //vet verify
             veriLog.send(`${member} (${member} has been given the Veteran Raider role automatically)`)
             await member.roles.add(vetRaider)
-            db.query(`UPDATE users SET isVet = true WHERE id = '${u.id}'`)
+           // db.query(`UPDATE users SET ${dungeon.dbisvet} = true WHERE id = '${u.id}'`)
         } else {
             //manual verify
             let whites = 0;
-            let t14Weapons = 0;
-            let t14Armors = 0;
+            let Weapons = 0;
+            let Abilities = 0;
+            let Armors = 0;
+            let Rings = 0;
             let STs = 0;
-            if (dungeons[guild.id].lootInfo && lootInfo[dungeons[guild.id].lootInfo]) for (let i in userInfo.characters) {
+
+            if (dungeon.lootInfo && lootInfo[dungeon.lootInfo]) for (let i in userInfo.characters) {
                 let char = userInfo.characters[i]
                 //weapon
                 if (char.weapon) {
-                    if (char.weapon.includes('T14')) t14Weapons++;
-                    else if (lootInfo[dungeons[guild.id].lootInfo].whites.includes(char.weapon.substring(0, char.weapon.lastIndexOf(' ')))) whites++;
-                    else if (lootInfo[dungeons[guild.id].lootInfo].STs.includes(char.weapon.substring(0, char.weapon.lastIndexOf(' ')))) STs++;
+                    if (settings.vetverireqs.weapon)
+                    {
+                        const match = char.weapon.match(/(^T(?<t1>\d+)|T(?<t2>\d+)$)/);
+                        if (match) {
+                            const tier = match.groups.t1 === undefined ? match.groups.t2 : match.groups.t1;
+                            if (tier == settings.vetverireqs.weapon) Weapons++;
+                        }
+                    }
+                    else if (lootInfo[dungeon.lootInfo].whites.includes(char.weapon.substring(0, char.weapon.lastIndexOf(' ')))) whites++;
+                    else if (lootInfo[dungeon.lootInfo].STs.includes(char.weapon.substring(0, char.weapon.lastIndexOf(' ')))) STs++;
+                    
                 }
                 //ability
                 if (char.ability) {
-                    if (lootInfo[dungeons[guild.id].lootInfo].whites.includes(char.ability.substring(0, char.ability.lastIndexOf(' ')))) whites++;
-                    else if (lootInfo[dungeons[guild.id].lootInfo].STs.includes(char.ability.substring(0, char.ability.lastIndexOf(' ')))) STs++;
+                    if (settings.vetverireqs.ability)
+                    {
+                        const match = char.ability.match(/(^T(?<t1>\d+)|T(?<t2>\d+)$)/);
+                        if (match) {
+                            const tier = match.groups.t1 === undefined ? match.groups.t2 : match.groups.t1;
+                            if (tier == settings.vetverireqs.ability) Abilities++;
+                        }
+                    }
+                    if (lootInfo[dungeon.lootInfo].whites.includes(char.ability.substring(0, char.ability.lastIndexOf(' ')))) whites++;
+                    else if (lootInfo[dungeon.lootInfo].STs.includes(char.ability.substring(0, char.ability.lastIndexOf(' ')))) STs++;
                 }
                 //armor
                 if (char.armor) {
-                    if (char.armor.includes('T14')) t14Armors++;
-                    else if (lootInfo[dungeons[guild.id].lootInfo].whites.includes(char.armor.substring(0, char.armor.lastIndexOf(' ')))) whites++;
-                    else if (lootInfo[dungeons[guild.id].lootInfo].STs.includes(char.armor.substring(0, char.armor.lastIndexOf(' ')))) STs++;
+                    if (settings.vetverireqs.armor)
+                    {
+                        const match = char.armor.match(/(^T(?<t1>\d+)|T(?<t2>\d+)$)/);
+                        if (match) {
+                            const tier = match.groups.t1 === undefined ? match.groups.t2 : match.groups.t1;
+                            if (tier == settings.vetverireqs.armor) Armors++;
+                        }
+                    }
+                    else if (lootInfo[dungeon.lootInfo].whites.includes(char.armor.substring(0, char.armor.lastIndexOf(' ')))) whites++;
+                    else if (lootInfo[dungeon.lootInfo].STs.includes(char.armor.substring(0, char.armor.lastIndexOf(' ')))) STs++;
                 }
                 //ring
                 if (char.ring) {
-                    if (lootInfo[dungeons[guild.id].lootInfo].whites.includes(char.ring.substring(0, char.ring.lastIndexOf(' ')))) whites++;
-                    else if (lootInfo[dungeons[guild.id].lootInfo].STs.includes(char.ring.substring(0, char.ring.lastIndexOf(' ')))) STs++;
+                    if (settings.vetverireqs.ring)
+                    {
+                        const match = char.ring.match(/(^T(?<t1>\d+)|T(?<t2>\d+)$)/);
+                        if (match) {
+                            const tier = match.groups.t1 === undefined ? match.groups.t2 : match.groups.t1;
+                            if (tier == settings.vetverireqs.ring) Rings++;
+                        }
+                    }
+                    if (lootInfo[dungeon.lootInfo].whites.includes(char.ring.substring(0, char.ring.lastIndexOf(' ')))) whites++;
+                    else if (lootInfo[dungeon.lootInfo].STs.includes(char.ring.substring(0, char.ring.lastIndexOf(' ')))) STs++;
                 }
-
             }
             let description = `${member} [Player Link](https://www.realmeye.com/player/${ign})`;
-            if (settings.name ===  "Oryx Sanctuary")
+            if (dungeon.webAppLink)
                 description += ` - [Web App](https://losthalls.org/profile/${ign})`;
 
+            let gearString = [
+                {name: 'Weapons', count: Weapons, tier: settings.vetverireqs.weapon},
+                {name: 'Abilities', count: Abilities, tier: settings.vetverireqs.ability },
+                {name: 'Armors', count: Armors, tier: settings.vetverireqs.armor },
+                {name: 'Rings', count: Rings, tier: settings.vetverireqs.ring }]
+                .map(g => g.tier ? `T${g.tier} ${g.name}: ${g.count}` : '')
+                .filter(g => g != '');
+            gearString.push(`Whites: ${whites}`, `STs: ${STs}`);
+
+            gearString = gearString.join(' | ');
+                
+            const problemList = [ '-Not Enough Runs Completed', '-Not Enough Maxed Characters', '-Not Enough Maxed Melee Characters'];
+            const problemString = problems.sort().map(v => problemList[v - 1]).join('\n') || 'None!';
             let mainEmbed = new Discord.MessageEmbed()
                 .setAuthor(`${u.tag} tried to verify as a veteran under: ${ign}`, u.avatarURL())
-                .setDescription(description)
-                .addField('Bot-Logged Runs:', `${loggedRuns}`)
-                .addField('Realmeye Logged Runs:', `${realmEyeRuns}`)
+                .setDescription(description);
+            console.log(profile);
+            if (!profile)
+                mainEmbed.addField('Bot-Logged Runs:', `${loggedRuns || 0}`);
+            else 
+                mainEmbed.addField('Started Runs', `${profile.participation.reg || 0}`)
+                    .addField('Completed Runs', `${profile.participation.completions || 0}`);
+            mainEmbed.addField('Realmeye Logged Runs:', `${realmEyeRuns || 0}`)
                 .addField('Maxed Characters:', `Total: ${maxedChars} | Melee: ${meleeMaxed}`)
-                .addField('Dungeon Specific Gear:', `Whites: ${whites} | T14 Weapons: ${t14Weapons} | T14 Armors: ${t14Armors} | STs: ${STs}`)
-                .addField('Problems:', ' ')
+                .addField('Dungeon Specific Gear:', gearString || 'None!')
+                .addField('Problems:', problemString)
                 .setFooter(u.id)
                 .setTimestamp()
-            if (problems.includes(1)) mainEmbed.fields[4].value += '-Not Enough Runs Completed\n'
-            if (problems.includes(2)) mainEmbed.fields[4].value += '-Not Enough Maxed Characters\n'
-            if (problems.includes(3)) mainEmbed.fields[4].value += '-Not Enough Maxed Melee Characters\n'
+
             let pendingMessage = await veriPending.send(mainEmbed)
             await pendingMessage.react('🔑')
             await u.send('You are currently under manual review for veteran verification. If you do not hear back within 48 hours, Please reach out to a Security or higher')
@@ -197,6 +275,14 @@ module.exports = {
                 if (!(u.id == reactor.id)) return;
                 let embed = message.embeds[0]
                 let member = message.guild.members.cache.get(embed.footer.text)
+                const info = { 
+                    role: vetRaider,
+                    guild: message.guild,
+                    member: member,
+                    staff: reactor,
+                    reqs: settings.vetverireqs,
+                    dungeon: dungeons[message.guild.id]
+                };
                 await message.reactions.removeAll();
                 switch (r.emoji.name) {
                     case '💯':
@@ -206,7 +292,9 @@ module.exports = {
                         embed.setFooter(`Accepted by ${reactor.nickname}`)
                         await message.edit(embed)
                         await member.roles.add(vetRaider.id)
-                        db.query(`UPDATE users SET isVet = true WHERE id = '${u.id}'`)
+                        //member.user.send(ext.parse(settings.messages.verifications.acceptvetveri, info))
+                        member.user.send(`You have been verified for the ${info.role.name} role in \`${info.guild.name}\`.`)
+                        //db.query(`UPDATE users SET isVet = true WHERE id = '${u.id}'`)
                         ManualVerificationCollector.stop()
                         keyCollector.stop()
                         removeFromArray(member.id)
@@ -217,6 +305,8 @@ module.exports = {
                         embed.setColor('#ff0000')
                         embed.setFooter(`Rejected by ${reactor.nickname}`)
                         await message.edit(embed)
+                        //member.user.send(ext.parse(settings.messages.verifications.deniedvetveri, info))
+                        member.user.send(`You were denied from verifying for the \`${info.role.name}\` role in \`${info.guild.name}\`. Feel free to contact any Security+ staff member directly with screenshots in game if you have \`${info.reqs.runs}\` confirmable ${info.dungeon.boss} runs in your exaltations **or** between your live characters and graveyard.`)
                         ManualVerificationCollector.stop()
                         keyCollector.stop()
                         removeFromArray(member.id)
@@ -238,4 +328,4 @@ module.exports = {
 }
 const checkFilter = (r, u) => !u.bot && r.emoji.name === '✅'
 const KeyFilter = (r, u) => !u.bot && r.emoji.name === '🔑'
-const ManualFilter = (r, u) => !u.bot && (r.emoji.name === '💯' || r.emoji.name === '👋' || r.emoji.name === '🔒')
+const ManualFilter = (r, u) => !u.bot && (r.emoji.name === '💯' || r.emoji.name === '👋' || r.emoji.name === '🔒' || r.emoji.name === '📧')
