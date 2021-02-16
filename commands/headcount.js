@@ -46,6 +46,21 @@ module.exports = {
                     break;
             }
             if (!runType) eventHC().catch(er => { message.channel.send('Run Type not recognized') })
+
+            let embed = new Discord.MessageEmbed()
+                .setAuthor(`Headcount for ${runType.runName} by ${message.member.nickname}`)
+                .setDescription(`React with ${bot.emojis.cache.get(runType.keyEmoteID)} if you have a key\nOtherwise react with your gear/class choices below`)
+                .setColor(runType.embed.color)
+                .setTimestamp()
+            if (message.author.avatarURL()) embed.author.iconURL = message.author.avatarURL()
+
+            let m = await textChannel.send('@here', embed)
+
+            await m.react(runType.keyEmoteID)
+            if(runType.vialReact) await m.react(botSettings.emoteIDs.Vial)
+            for(let i of runType.earlyLocationReacts) await m.react(i.emoteID)
+            for(let i of runType.reacts) await m.react(i)
+
         } else eventHC().catch(er => { message.channel.send(er) })
 
         async function eventHC() {
