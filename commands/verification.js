@@ -512,6 +512,9 @@ module.exports = {
                         }
                         //2
                         else if (r.emoji.name === '2️⃣') {
+                            //add to expelled
+                            db.query(`INSERT INTO veriblacklist (id, modid, guildid, reason) VALUES ('${member.id}', '${reactor.id}', '${message.guild.id}', 'Reacted with 1️⃣ to verification.'),('${ign.toLowerCase()}', '${reactor.id}', '${message.guild.id}', 'Reacted with 1️⃣ to verification.')`)
+                            
                             //set nickname
                             let tag = member.user.tag.substring(0, member.user.tag.length - 5)
                             let nick = ''

@@ -62,7 +62,7 @@ module.exports = {
 
         //create afkInfo from templates
 
-        let runInfo = {...runType }
+        let runInfo = { ...runType }
 
         //isVet
         let isVet = false
@@ -99,7 +99,7 @@ module.exports = {
         destroyInactiveRuns();
 
         //copy event template
-        let runInfo = {...event }
+        let runInfo = { ...event }
 
         //isVet
         runInfo.isVet = isVet;
@@ -256,19 +256,19 @@ class afkCheck {
     }
 
     async sendMessage() {
-            let flag = null;
-            switch (this.afkInfo.location.substring(0, 2)) {
-                case 'us':
-                    flag = ':flag_us:'
-                    break;
-                case 'eu':
-                    flag = ':flag_eu:'
-                    break;
-            }
-            if (this.afkInfo.startDelay > 0) {
-                let embed = new Discord.MessageEmbed()
-                    .setColor(this.afkInfo.embed.color)
-                    .setDescription(`A \`${this.afkInfo.runName}\`${flag ? `in (${flag})` : ''} will begin in ${Math.round(this.afkInfo.startDelay / 1000)} seconds. ${this.afkInfo.twoPhase ? `Only reactables will be moved in at first. After everything is confirmed, the channel will open up.` : `Be prepared to join \`${this.channel.name}\``}`)
+        let flag = null;
+        switch (this.afkInfo.location.substring(0, 2)) {
+            case 'us':
+                flag = ':flag_us:'
+                break;
+            case 'eu':
+                flag = ':flag_eu:'
+                break;
+        }
+        if (this.afkInfo.startDelay > 0) {
+            let embed = new Discord.MessageEmbed()
+                .setColor(this.afkInfo.embed.color)
+                .setDescription(`A \`${this.afkInfo.runName}\`${flag ? `in (${flag})` : ''} will begin in ${Math.round(this.afkInfo.startDelay / 1000)} seconds. ${this.afkInfo.twoPhase ? `Only reactables will be moved in at first. After everything is confirmed, the channel will open up.` : `Be prepared to join \`${this.channel.name}\``}`)
             this.raidStatusMessage = await this.raidStatus.send(`${this.settings.roles[this.afkInfo.pingRole] ? `<@&${this.settings.roles[this.afkInfo.pingRole]}> @here` : `@here`}, ${this.afkInfo.runName}${flag ? ` (${flag})` : ''}. ${this.afkInfo.twoPhase ? `Only reactables will be moved in at first. After everything is confirmed, the channel will open up.` : ''}`, embed)
         } else {
             this.raidStatusMessage = await this.raidStatus.send(`${this.settings.roles[this.afkInfo.pingRole] ? `<@&${this.settings.roles[this.afkInfo.pingRole]}> @here` : `@here`}, \`${this.afkInfo.runName}\`${flag ? ` (${flag})` : ''} is beginning now. ${this.afkInfo.twoPhase ? `Only reactables will be moved in at first. After everything is confirmed, the channel will open up.` : `Please join ${this.channel.name}`}`)
@@ -979,20 +979,18 @@ async function createChannel(runInfo, message, bot) {
     let settings = bot.settings[message.guild.id]
     return new Promise(async (res, rej) => {
         //channel creation
-        if (runInfo.isEvent) {
+        if (runInfo.isVet) {
+            var parent = 'veteran raiding';
+            var template = message.guild.channels.cache.get(settings.voice.vettemplate)
+            var raider = message.guild.roles.cache.get(settings.roles.vetraider)
+            var vibotChannels = message.guild.channels.cache.get(settings.channels.vetchannels)
+        } else if (runInfo.isEvent) {
             var parent = 'events';
             var template = message.guild.channels.cache.get(settings.voice.eventtemplate)
             var raider = message.guild.roles.cache.get(settings.roles.raider)
             var eventBoi = message.guild.roles.cache.get(settings.roles.eventraider)
             var vibotChannels = message.guild.channels.cache.get(settings.channels.eventchannels)
-        }
-        else if (runInfo.isVet) {
-            var parent = 'veteran raiding';
-            var template = message.guild.channels.cache.get(settings.voice.vettemplate)
-            var raider = message.guild.roles.cache.get(settings.roles.vetraider)
-            var vibotChannels = message.guild.channels.cache.get(settings.channels.vetchannels)
-        }
-        else {
+        } else {
             var parent = 'raiding';
             var template = message.guild.channels.cache.get(settings.voice.raidingtemplate)
             var raider = message.guild.roles.cache.get(settings.roles.raider)
