@@ -242,7 +242,11 @@ module.exports = {
 
             let pendingMessage = await veriPending.send(mainEmbed)
             await pendingMessage.react('🔑')
-            await u.send('You are currently under manual review for veteran verification. If you do not hear back within 48 hours, Please reach out to a Security or higher')
+            try {
+                await u.send('You are currently under manual review for veteran verification. If you do not hear back within 48 hours, Please reach out to a Security or higher')
+            } catch (e) {
+                //User has DMs off
+            }
             veriPending.send(await charList.getEmbed(ign, bot))
             this.pendingModule(pendingMessage, db)
         }
@@ -293,7 +297,11 @@ module.exports = {
                         await message.edit(embed)
                         await member.roles.add(vetRaider.id)
                         //member.user.send(ext.parse(settings.messages.verifications.acceptvetveri, info))
-                        member.user.send(`You have been verified for the ${info.role.name} role in \`${info.guild.name}\`.`)
+                        try {
+                            member.user.send(`You have been verified for the ${info.role.name} role in \`${info.guild.name}\`.`)
+                        } catch (e) { 
+                            //user has DMs off
+                        }
                         //db.query(`UPDATE users SET isVet = true WHERE id = '${u.id}'`)
                         ManualVerificationCollector.stop()
                         keyCollector.stop()
@@ -306,7 +314,11 @@ module.exports = {
                         embed.setFooter(`Rejected by ${reactor.nickname}`)
                         await message.edit(embed)
                         //member.user.send(ext.parse(settings.messages.verifications.deniedvetveri, info))
+                        try {
                         member.user.send(`You were denied from verifying for the \`${info.role.name}\` role in \`${info.guild.name}\`. Feel free to contact any Security+ staff member directly with screenshots in game if you have \`${info.reqs.runs}\` confirmable ${info.dungeon.boss} runs in your exaltations **or** between your live characters and graveyard.`)
+                        } catch (e) {
+                            //user has DMs off
+                        }
                         ManualVerificationCollector.stop()
                         keyCollector.stop()
                         removeFromArray(member.id)
