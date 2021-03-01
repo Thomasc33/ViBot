@@ -128,7 +128,7 @@ async function dmHandler(message) {
                 .setDescription(`\`\`\`${message.content}\`\`\``)
             let confirmModMailMessage = await message.channel.send(confirmModMailEmbed)
             let reactionCollector = new Discord.ReactionCollector(confirmModMailMessage, (r, u) => u.id == message.author.id && (r.emoji.name == '✅' || r.emoji.name == '❌'))
-            reactionCollector.on('collect', async(r, u) => {
+            reactionCollector.on('collect', async (r, u) => {
                 reactionCollector.stop()
                 if (r.emoji.name == '✅') {
                     let guild = await getGuild(message).catch(er => { cancelled = true })
@@ -205,7 +205,7 @@ db.connect(err => {
 const tryInitializeRushers = () => {
     //db.query(`DROP TABLE rushers`); 
     //if rusher table doesn't exist, initialize it with data from point logging channel
-    db.query(`CREATE TABLE IF NOT EXISTS rushers (id VARCHAR(32) NOT NULL, guildid VARCHAR(32) NOT NULL, time BIGINT DEFAULT 0, PRIMARY KEY (id, guildid))`, async(err, rows) => {
+    db.query(`CREATE TABLE IF NOT EXISTS rushers (id VARCHAR(32) NOT NULL, guildid VARCHAR(32) NOT NULL, time BIGINT DEFAULT 0, PRIMARY KEY (id, guildid))`, async (err, rows) => {
         if (err) ErrorLogger.log(err, bot)
 
         for (const guild_id in bot.settings) {
@@ -272,7 +272,7 @@ tokenDB.on('error', err => {
     else ErrorLogger.log(err, bot)
 })
 
-bot.on("ready", async() => {
+bot.on("ready", async () => {
     CLIENT_ID = bot.user.id
     console.log(`Bot loaded: ${bot.user.username}`);
     bot.user.setActivity(`vibot.tech <- Soft Launch`)
@@ -297,13 +297,13 @@ bot.on("ready", async() => {
         if (!emojiServers.includes(g.id)) {
             let veriActive = g.channels.cache.get(bot.settings[g.id].channels.veriactive)
             if (!veriActive) return;
-            veriActive.bulkDelete(100).catch(er => {})
+            veriActive.bulkDelete(100).catch(er => { })
         }
     })
 
     //vetban check
     bot.setInterval(() => {
-        db.query(`SELECT * FROM vetbans WHERE suspended = true`, async(err, rows) => {
+        db.query(`SELECT * FROM vetbans WHERE suspended = true`, async (err, rows) => {
             if (err) ErrorLogger.log(err, bot)
             for (let i in rows) {
                 if (Date.now() > parseInt(rows[i].uTime)) {
@@ -348,7 +348,7 @@ bot.on("ready", async() => {
 
     //suspension check
     bot.setInterval(() => {
-        db.query(`SELECT * FROM suspensions WHERE suspended = true AND perma = false`, async(err, rows) => {
+        db.query(`SELECT * FROM suspensions WHERE suspended = true AND perma = false`, async (err, rows) => {
             if (err) ErrorLogger.log(err, bot)
             for (let i in rows) {
                 if (Date.now() > parseInt(rows[i].uTime)) {
@@ -398,7 +398,7 @@ bot.on("ready", async() => {
 
     //mute check
     bot.setInterval(() => {
-        db.query(`SELECT * FROM mutes WHERE muted = true`, async(err, rows) => {
+        db.query(`SELECT * FROM mutes WHERE muted = true`, async (err, rows) => {
             if (err) ErrorLogger.log(err, bot)
             for (let i in rows) {
                 if (Date.now() > parseInt(rows[i].uTime)) {
@@ -423,7 +423,7 @@ bot.on("ready", async() => {
     //initialize components (eg. modmail, verification)
     bot.guilds.cache.each(g => {
         if (!emojiServers.includes(g.id)) {
-            vibotChannels.update(g, bot).catch(er => {})
+            vibotChannels.update(g, bot).catch(er => { })
             if (bot.settings[g.id].backend.modmail) modmail.update(g, bot, db).catch(er => { ErrorLogger.log(er, bot); })
             if (bot.settings[g.id].backend.verification) verification.init(g, bot, db).catch(er => { ErrorLogger.log(er, bot); })
             if (bot.settings[g.id].backend.vetverification) vetVerification.init(g, bot, db).catch(er => { ErrorLogger.log(er, bot); })
@@ -508,6 +508,25 @@ bot.on('guildMemberRemove', member => {
         }
     })
 })
+bot.on('messageReactionAdd', (r, u) => {
+    //spongemock
+    if (r.emoji.id == '812959258638549022') {
+        let content = [...r.message.content]
+        for (let i in content) {
+            if (!content[i]) continue
+            try {
+                if (Math.random() > .5) content[i] = content[i].toLowerCase()
+                else content[i] = content[i].toUpperCase()
+            } catch (er) { console.log(er) }
+        }
+        let spongemockEmbed = new Discord.MessageEmbed()
+            .setColor('#FDF300')
+            .setDescription(content.join(''))
+            .setThumbnail('https://res.cloudinary.com/nashex/image/upload/v1613698392/assets/759584001131544597_im3kgg.png')
+        r.message.channel.send(spongemockEmbed)
+        r.remove()
+    }
+})
 
 process.on('uncaughtException', err => {
     if (!err) return
@@ -527,7 +546,7 @@ process.on('unhandledRejection', err => {
 })
 
 async function getGuild(message) {
-    return new Promise(async(resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         let guilds = []
         bot.guilds.cache.each(g => {
             if (g.members.cache.has(message.author.id) && !emojiServers.includes(g.id)) {
@@ -567,7 +586,7 @@ async function getGuild(message) {
                 })
             } else {
                 let reactionCollector = new Discord.ReactionCollector(guildSelectionMessage, (r, u) => !u.bot)
-                reactionCollector.on('collect', async(r, u) => {
+                reactionCollector.on('collect', async (r, u) => {
                     switch (r.emoji.name) {
                         case '1️⃣':
                             resolve(guilds[0]);
@@ -715,7 +734,7 @@ function startAPI() {
         })
         app.use('/api/', apiLimit)
 
-        router.get('/', function(req, res) {
+        router.get('/', function (req, res) {
             res.json({ message: 'hooray! welcome to our api!' });
         });
 
