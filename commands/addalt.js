@@ -25,7 +25,7 @@ module.exports = {
         collector.on('collect', async m => {
             try {
                 if (m.content.toLowerCase().charAt(0) == 'y') {
-                    member.setNickname(`${member.nickname} | ${altName}`);
+                    member.setNickname(`${member.nickname} | ${altName}`, `Old Name: ${member.nickname}\nNew Name: ${member.nickname} | ${altName}\nChange by: ${message.member}`);
                     let embed = new Discord.MessageEmbed()
                         .setTitle('Alt Added')
                         .setDescription(member)

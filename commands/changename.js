@@ -151,7 +151,8 @@ const changeName = async(message, bot, settings, member, names, idx, altName, us
             if (await confirm.confirm(message.author.id)) {
                 const oldNickname = member.nickname;
                 try {
-                    await member.setNickname(userPrefix + names.join(' | '));
+                    const newName = userPrefix + names.join(' | ');
+                    await member.setNickname(newName, `Old Name: ${oldNickname}\nNew Name: ${newName}\nChange by: ${message.member}`);
                 } catch (err) {
                     reject(`There was an issue changing ${member}'s nickname: \`${err.toString().split('\n')[0]}\``)
                     return ErrorLogger.log(err, bot);
