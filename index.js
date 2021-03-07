@@ -529,7 +529,11 @@ bot.on('messageReactionAdd', (r, u) => {
 })
 
 bot.on('typingStart', (c, u) => {
-    if (c.type === 'dm' && !u.bot) c.startTyping()
+    if (c.type !== 'dm' || u.bot || verification.checkActive(u.id)) return
+    c.startTyping()
+    setTimeout(() => {
+        c.stopTyping()
+    }, 7500)
 })
 
 process.on('uncaughtException', err => {
