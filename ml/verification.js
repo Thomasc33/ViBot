@@ -199,6 +199,7 @@ async function altDetection(rank, fame, deaths, age, chars, skins, oneDay, oneWe
  */
 async function trainNewData(rank, fame, deaths, age, chars, skins, oneDay, oneWeek, lifeTime, verified) {
     return new Promise(async (res, rej) => {
+        if (!botSettings.MLActiveTraining) return res('done')
         //normalize data
         let normalizedRank = normalize(parseInt(rank), RANK_MIN, RANK_MAX)
         let normalizedFame = normalize(parseInt(fame), FAME_MIN, FAME_MAX)
@@ -247,7 +248,8 @@ async function trainNewData(rank, fame, deaths, age, chars, skins, oneDay, oneWe
 
 
 var saveInterval = setInterval(async () => {
-    await model.save(`file://${botSettings.vibotDirectory}/verificationModel`).catch(err => {});
+    if (!botSettings.MLActiveTraining && !botSettings.MLtraining) return clearInterval(saveInterval)
+    await model.save(`file://${botSettings.vibotDirectory}/verificationModel`).catch(err => { });
 }, 60000)
 
 module.exports = {

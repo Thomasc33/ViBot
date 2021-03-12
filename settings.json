@@ -7,6 +7,7 @@
     "developerId": "277636691227836419",
     "api": true,
     "MLtraining": false,
+    "MLActiveTraining": false,
     "apiPort": 80,
     "earlyLocationCooldown": 7200000,
     "vibotDirectory": "C:/Users/Carrt/OneDrive/Desktop/ViBot",
