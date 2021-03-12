@@ -214,7 +214,7 @@ module.exports = {
             }
         }
         for (let i of commands) {
-            if (!bot.settings[guild.id].commands[i]) bot.settings[guild.id].commands[i] = true
+            if (!bot.settings[guild.id].commands[i] && bot.settings[guild.id].commands[i] !== false) bot.settings[guild.id].commands[i] = true
         }
         for (let i of categories) {
             if (!bot.settings[guild.id].categories[i]) bot.settings[guild.id].categories[i] = getDefaultCategoryName(i)
