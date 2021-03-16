@@ -280,7 +280,7 @@ bot.on("ready", async () => {
     vi.send('Halls Bot Starting Back Up')
 
     //start api
-    if (bot.guilds.cache.has(botSettings.hallsId)) startAPI()
+    startAPI()
 
     //to hide dev server
     if (bot.user.id == botSettings.prodBotId) emojiServers.push('701483950559985705');
