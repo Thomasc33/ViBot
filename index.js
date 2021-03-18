@@ -57,6 +57,7 @@ bot.on('message', message => {
         if (!bot.serverWhiteList.includes(message.guild.id)) return
         if (createTemplate.checkActive(message.author.id) && message.channel.id === bot.settings[message.guild.id].channels.vetcommands) return;
         if (!message.content.startsWith(prefix)) return autoMod(message);
+        if (!bot.settings[message.guild.id]) return
         const args = message.content.slice(prefix.length).split(/ +/);
         const commandName = args.shift().toLowerCase()
         if (commandName.replace(/[^a-z]/gi, '') == '') return
@@ -726,6 +727,7 @@ function fitStringIntoEmbed(embed, string, channel) {
 
 function startAPI() {
     if (botSettings.api) {
+        console.log('api starting')
         var credentials = {
             key: fs.readFileSync('./public/privkey.pem', 'utf8'),
             cert: fs.readFileSync('./public/cert.pem', 'utf8')
