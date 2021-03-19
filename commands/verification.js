@@ -338,7 +338,7 @@ module.exports = {
                 .setAuthor(`${u.tag} is attempting to verify as: ${ign}`, u.avatarURL())
                 .setDescription(`<@!${u.id}> : [Realmeye Link](https://www.realmeye.com/player/${ign})`)
                 .addFields({ name: 'Rank', value: `${data.rank}`, inline: true }, { name: 'Guild', value: `${data.guild}`, inline: true }, { name: 'Guild Rank', value: `${data.guild_rank}`, inline: true }, { name: 'Alive Fame', value: `${data.fame}`, inline: true }, { name: 'Death Fame', value: `${data.account_fame}`, inline: true }, { name: 'Deaths', value: `${data.deaths[data.deaths.length - 1]}`, inline: true }, { name: 'Account Created', value: `${data.created}`, inline: true }, { name: 'Last seen', value: `${data.player_last_seen}`, inline: true }, { name: 'Character Count', value: `${data.chars}`, inline: true }, { name: 'Skins', value: `${data.skins}`, inline: true },
-                    { name: 'Alt %', value: altDetectionScore ? `${altDetectionScore}%` : 'Error Gathering Data', inline: true }, { name: 'Discord account created', value: u.createdAt, inline: false },
+                    { name: 'Alt %', value: altDetectionScore ? `${altDetectionScore.toFixed(20)}%` : 'Error Gathering Data', inline: true }, { name: 'Discord account created', value: u.createdAt, inline: false },
                 )
                 .setFooter(`${u.id}`)
             let reason = ''

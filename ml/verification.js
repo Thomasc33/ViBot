@@ -211,28 +211,28 @@ if (fs.existsSync(`${botSettings.vibotDirectory}/verificationModel/model.json`))
 else {
     //set model
     model = tf.sequential();
-
+    let layer = 'softplus'
     //input layer
     model.add(tf.layers.dense({
-        units: 100,
+        units: 270,
         inputShape: [270],
-        activation: 'sigmoid'
+        activation: layer
     }))
 
     //hidden layers
     model.add(tf.layers.dense({
         units: 270,
-        activation: 'sigmoid'
+        activation: layer
     }))
     model.add(tf.layers.dense({
         units: 100,
-        activation: 'sigmoid'
+        activation: layer
     }))
 
     //output layer
     model.add(tf.layers.dense({
         units: 1,
-        activation: 'sigmoid'
+        activation: layer
     }))
 
     //compile
@@ -250,7 +250,7 @@ async function train() {
     if (botSettings.MLtraining) {
         const config = {
             shuffle: true,
-            epochs: 50,
+            epochs: 10,
             verbose: 1
         }
         const response = await model.fit(xs, ys, config)
