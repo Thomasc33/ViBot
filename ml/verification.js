@@ -276,21 +276,22 @@ async function altDetection(userInfo) {
  * 
  * @param {Object} userInfo 
  * @param {Number} verified 
+ * @param {Number} Epochs
  * @returns 
  */
-async function trainNewData(userInfo, verified) {
+async function trainNewData(userInfo, verified, epochs = 3) {
     return new Promise(async (res, rej) => {
-        if (!botSettings.MLActiveTraining) return res('done')
+        if (!botSettings.MLActiveTraining) return res(NaN)
         let data = arrayFromUserInfo(userInfo)
         if (!data) rej('missing data')
         //train
         const config = {
             shuffle: true,
-            epochs: 3,
+            epochs: epochs,
             verbose: 0
         }
-        await model.fit(tf.tensor2d([data]), tf.tensor2d([[verified]]), config)
-        res('done')
+        const response = await model.fit(tf.tensor2d([data]), tf.tensor2d([[verified]]), config)
+        res(response.history.loss[0])
     })
 }
 
