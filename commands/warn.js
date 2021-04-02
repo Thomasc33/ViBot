@@ -4,9 +4,12 @@ module.exports = {
     name: 'warn',
     role: 'almostrl',
     description: 'Warns a user for a given reason',
+    alias: ['swarn'],
     args: '<user> <reason>',
     requiredArgs: 1,
+    notes: 'Using swarn will silently warn, not sending the user a message.',
     async execute(message, args, bot, db) {
+        const silent = message.content[1].toLowerCase() == 's';
         if (args.length < 2) return;
         let member = message.mentions.members.first()
         if (!member) member = message.guild.members.cache.get(args[0])
@@ -25,11 +28,12 @@ module.exports = {
                 .setColor('#ff0000')
                 .setTitle(`Warning Issued on the Server: ${message.guild.name}`)
                 .setDescription(`__Moderator:__ <@!${message.author.id}> (${message.member.nickname})\n__Reason:__ ${reason}`)
-            member.send(warnEmbed)
+            if (!silent)
+                member.send(warnEmbed)
         })
         if (!errored) setTimeout(() => {
             db.query(`SELECT * FROM warns WHERE id = '${member.user.id}'`, (err, rows) => {
-                message.channel.send(`${member.nickname} warned successfully. This is their \`${rows.length}\` warning`)
+                message.channel.send(`${member.nickname}${silent ? ' silently' : ''} warned successfully. This is their \`${rows.length}\` warning`)
             })
         }, 500)
     }

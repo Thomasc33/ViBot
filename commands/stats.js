@@ -37,7 +37,7 @@ module.exports = {
     },
     async getStatsEmbed(id, guild, db) {
         return new Promise((resolve, reject) => {
-            db.query(`SELECT * FROM users WHERE id = '${id}'`, async (err, rows) => {
+            db.query(`SELECT * FROM users WHERE id = '${id}'`, async(err, rows) => {
                 if (err) return reject()
                 if (rows.length == 0) return reject('No user found');
                 let guildMember = guild.members.cache.get(id)
@@ -63,13 +63,12 @@ module.exports = {
                     Assists: ${rows[0].assists}
                     Oryx Assists: ${rows[0].assistso3}
 
-                    <${botSettings.emote.HelmRune}>__**Runes**__<${botSettings.emote.SwordRune}>
+                    <${botSettings.emote.helmRune}>__**Runes**__<${botSettings.emote.swordRune}>
                     Runes Popped: ${rows[0].runesused} 
                     
                     🎟️__**Points**__🎟️
                     Points: ${rows[0].points}`)
-                }
-                else embed
+                } else embed
                     .setColor('#015c21')
                     .setDescription(`<${botSettings.emote.hallsPortal}> __**Stats for**__ <@!${id}> <${botSettings.emote.hallsPortal}>
                     
@@ -102,11 +101,15 @@ module.exports = {
         })
     },
     async updateO3Runs(id, guild, db) {
-        return new Promise(async (res, rej) => {
+        return new Promise(async(res, rej) => {
             let ign = guild.members.cache.get(id).nickname.replace(/[^a-z|]/gi, '').split('|')[0]
             if (!ign) return res();
             let resu = await axios.post(`https://api.losthalls.org/getProfile`, { ign: ign })
-            if (!resu || resu.data.satus == 203 || !resu.data.profile.oryx3.participation.completions) return res();
+            if (!resu || resu.data.status == 203) return res(console.log(resu));
+            if (!resu.data.profile || !resu.data.profile.oryx3.participation.completions) {
+                console.log(resu.data);
+                return res();
+            }
             db.query(`UPDATE users SET o3runs = ${resu.data.profile.oryx3.participation.completions} WHERE id = '${id}'`, (err, rows) => {
                 return res();
             })

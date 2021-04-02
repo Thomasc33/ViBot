@@ -2,23 +2,185 @@ const Discord = require('discord.js')
 const getFeedback = require('./getFeedback')
 const ErrorLogger = require('../lib/logError')
 
+const num_words = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣']
+
+const guilds = {
+    'default': {
+        'fullskip': ['vetrl'],
+        'rl': ['fullskip'],
+        'almostrl': ['rl'],
+        'trialrl': ['almostrl'],
+        'db_rows': [
+            ['Voids', 'voidsLead'],
+            ['Cults', 'cultsLead']
+        ]
+    },
+    '701483950559985705': {
+        'fullskip': ['fsvrl', 'mrvrl'],
+        'rl': ['fullskip', 'mrvrl'],
+        'almostrl': ['rl'],
+        'trialrl': ['almostrl'],
+        'db_rows': [
+            ['Voids', 'voidsLead'],
+            ['Cults', 'cultsLead']
+        ]
+    },
+    '343704644712923138': {
+        'fullskip': ['fsvrl', 'mrvrl'],
+        'rl': ['fullskip', 'mrvrl'],
+        'almostrl': ['rl'],
+        'trialrl': ['almostrl'],
+        'db_rows': [
+            ['Voids', 'voidsLead'],
+            ['Cults', 'cultsLead']
+        ]
+    },
+    '708026927721480254': {
+        'rl': ['vetrl'],
+        'almostrl': ['rl'],
+        'trialrl': ['almostrl'],
+        'db_rows': [
+            ['O3s', 'o3leads']
+        ]
+    },
+    'channels': {
+        'trialrl': 'leaderchat',
+        'almostrl': 'leaderchat',
+        'rl': 'vetleaderchat',
+        'fullskip': 'vetleaderchat'
+    }
+}
+
 module.exports = {
     name: 'vote',
     role: 'headrl',
-    args: '<ign>',
+    args: '<ign> [igns...]',
     requiredArgs: 1,
     description: 'Puts up a vote for promotions based on users current role.',
     notes: 'Puts the message in leader-chat/veteran-rl-chat based on vote',
     async execute(message, args, bot, db) {
         if (args.length == 0) return;
         for (let i in args) {
-            let member = message.guild.members.cache.get(args[0])
+            let member = message.guild.members.cache.get(args[i])
             if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[i].toLowerCase()));
-            if (!member) return message.channel.send(`Issue finding ${args[i]}. Try again`);
-            postVote(message, member, bot, db)
+            if (!member) {
+                message.channel.send(`Issue finding ${args[i]}. Try again`);
+                continue;
+            }
+            postVote2(message, member, bot, db)
         }
         message.delete()
     }
+}
+
+async function postVote2(message, member, bot, db) {
+    const settings = bot.settings[message.guild.id];
+    if (!settings) return;
+
+    const promos = guilds[message.guild.id] || guilds.default;
+    for (let [rolekey, info] of Object.entries(promos)) {
+
+        if (rolekey == 'db_rows') continue;
+        if (!settings.roles[rolekey]) continue;
+        const role = message.guild.roles.cache.get(settings.roles[rolekey]);
+
+        if (!role) continue;
+
+        if (!member.roles.cache.has(role.id)) continue;
+
+        info = info.filter(r => {
+            r = message.guild.roles.cache.get(settings.roles[r]);
+            return r && !member.roles.cache.has(r.id)
+        });
+        if (info.length == 0)
+            continue;
+        let promotion = info[0];
+        if (info.length > 1)
+            promotion = await retrievePromotionType(settings, message.channel, message.author, member, role, info);
+        if (!promotion) return message.channel.send(`Cancelled vote for ${member}`);
+
+        await db.query(`SELECT * FROM users WHERE id = ${member.id}`, async(err, rows) => {
+            if (err) ErrorLogger.log(err, bot);
+            const feedback = await getFeedback.getFeedback(member, message.guild, bot);
+            const promo_role = message.guild.roles.cache.get(settings.roles[promotion]);
+            const embed = new Discord.MessageEmbed()
+                .setColor('#ff0000')
+                .setAuthor(`${member.nickname} to ${promo_role.name}`, member.user.displayAvatarURL({ dynamic: true }))
+                .setDescription(`${member}\n`);
+
+            const min_role = Object.keys(promos)[Object.keys(promos).length - 2];
+            if (rolekey != min_role) {
+                if (rows[0]) embed.description += `Runs Logged: ` + promos.db_rows.map(r => `${rows[0][r[1]]} ${r[0]}`).join(', ');
+                else embed.description += 'Issue getting runs';
+                embed.addField(`Recent Feedback:`, '** **');
+            } else embed.addField('Feedback:', '** **');
+
+            feedback.forEach(m => {
+                const link = `[Link](${m}) `;
+                let field = embed.fields[embed.fields.length - 1];
+                if (field.value.length + link.length < 1024)
+                    field.value += link;
+                else if (embed.fields.length < 15)
+                    embed.addField('-', `[Link](${m}) `);
+            });
+
+            const msg = await message.guild.channels.cache.get(settings.channels[guilds.channels[rolekey]]).send(embed);
+            await msg.react('✅');
+            await msg.react('😐');
+            await msg.react('❌');
+            if (rolekey == 'almostrl')
+                await msg.react('👀');
+        })
+        return;
+    }
+
+    return message.channel.send(`${member} doesn't have a role eligible for promotion`);
+}
+
+function retrievePromotionType(settings, channel, author, member, role, info) {
+    return new Promise(async(resolve, reject) => {
+        const embed = new Discord.MessageEmbed()
+            .setColor('#0000ff')
+            .setAuthor(`Choose Promotion for ${member.nickname}`, member.user.displayAvatarURL({ dynamic: true }))
+            .setDescription(`There are multiple promotion paths for ${role}. Choose one of the following:` +
+                info.map((v, i) => `${num_words[i]}: **${member.guild.roles.cache.get(settings.roles[v])}**`).join('\n'));
+
+        const message = await channel.send(embed);
+
+        const collector = message.createReactionCollector((reaction, user) => !user.bot && user.id == author.id, { time: 30000 });
+        let resolved = false;
+
+        collector.on('collect', async(reaction, user) => {
+            if (!reaction.me)
+                return;
+
+            let resolution = num_words.indexOf(reaction.emoji.name);
+            resolved = true;
+            if (resolution == -1)
+                resolve();
+            else
+                resolve(info[resolution]);
+
+            message.delete();
+            collector.stop();
+        });
+
+        collector.on('end', () => {
+            message.delete();
+            if (!resolved) {
+                resolved = true;
+                resolve();
+            }
+        });
+
+        for (const i in info) {
+            if (resolved)
+                return;
+            await message.react(num_words[i]);
+        }
+        if (!resolved)
+            await message.react('❌');
+    })
 }
 
 async function postVote(message, member, bot, db) {
@@ -43,7 +205,7 @@ async function postVote(message, member, bot, db) {
         .setAuthor(`${member.nickname} to ${voteType}`)
         .setDescription(`${member}\n`)
     if (member.user.avatarURL()) voteEmbed.author.iconURL = member.user.avatarURL()
-    db.query(`SELECT * FROM users WHERE id = ${member.id}`, async (err, rows) => {
+    db.query(`SELECT * FROM users WHERE id = ${member.id}`, async(err, rows) => {
         if (err) ErrorLogger.log(err, bot)
         if (voteType != 'Almost Raid Leader')
             if (rows[0]) {

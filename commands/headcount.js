@@ -54,17 +54,17 @@ module.exports = {
                 .setTimestamp()
             if (message.author.avatarURL()) embed.author.iconURL = message.author.avatarURL()
 
-            let m = await textChannel.send('@here', embed)
+            let m = await textChannel.send(`${runType.pingRole ? '<@&' + settings.roles[runType.pingRole] + '> ' : ''}@here`, embed)
 
             await m.react(runType.keyEmoteID)
-            if(runType.vialReact) await m.react(botSettings.emoteIDs.Vial)
-            for(let i of runType.earlyLocationReacts) await m.react(i.emoteID)
-            for(let i of runType.reacts) await m.react(i)
+            if (runType.vialReact) await m.react(botSettings.emoteIDs.Vial)
+            for (let i of runType.earlyLocationReacts) await m.react(i.emoteID)
+            for (let i of runType.reacts) await m.react(i)
 
         } else eventHC().catch(er => { message.channel.send(er) })
 
         async function eventHC() {
-            return new Promise(async (res, rej) => {
+            return new Promise(async(res, rej) => {
                 var eventType = args[0]
                 if (!eventFile[eventType]) return rej("Event type unrecognized. Check ;events and try again")
 
@@ -124,7 +124,7 @@ async function eventReact(pingMessage, event) {
 }
 
 async function getTemplate(message, afkTemplates, runType) {
-    return new Promise(async (res, rej) => {
+    return new Promise(async(res, rej) => {
         if (afkTemplates[message.author.id] && afkTemplates[message.author.id][runType.toLowerCase()]) return res(afkTemplates[message.author.id][runType.toLowerCase()])
         else res(null)
     })
