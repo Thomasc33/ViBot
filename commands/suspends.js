@@ -1,11 +1,11 @@
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
-
+const moment = require('moment');
 module.exports = {
     name: 'suspends',
     description: 'Shows all suspends that the bot is currently tracking',
-    role: 'security',
-    args: '(user)',
+    role: 'rl',
+    args: '<user>',
     alias: ['suspensions'],
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
@@ -15,20 +15,24 @@ module.exports = {
             if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
             if (!member) return message.channel.send('User not found');
 
-            db.query(`SELECT * FROM suspensions WHERE id = '${member.id}'`, async (err, rows) => {
-                if (rows.length == 0) return message.channel.send('User has no suspends logged under me')
+            let search = '';
+            if (message.member.roles.highest.position < message.guild.roles.cache.get(settings.roles.security).position)
+                search = ` AND guildid = '${message.guild.id}' AND (suspended = 1 OR perma = 1) ORDER BY uTime DESC LIMIT 0, 1`;
+            db.query(`SELECT * FROM suspensions WHERE id = '${member.id}'${search}`, async(err, rows) => {
+                if (!rows || rows.length == 0) return message.channel.send('User has no suspends logged under me')
                 if (err) ErrorLogger.log(err, bot)
-                let suspension = rows[0]
                 let embed = new Discord.MessageEmbed()
                     .setDescription('None!')
-                for (let i in rows) {
-                    let string = `__Suspension ${parseInt(i) + 1} case for ${member}__\`${member.nickname}\`\nReason: \`${suspension.reason.trim()}\`\nSuspended by: <@!${suspension.modid}>`
+                let i = 0;
+                for (let suspension of rows) {
+                    i++;
+                    let string = `__Suspension ${i} case for ${member}__\`${member.nickname}\` in ${bot.guilds.cache.get(suspension.guildid).name}\nReason: \`${suspension.reason.trim()}\`\nSuspended by: <@!${suspension.modid}> ${suspension.suspended ? 'Ends' : 'Ended'} ${moment().to(new Date(parseInt(suspension.uTime)))}\n`;
                     fitStringIntoEmbed(embed, string, message.channel)
                 }
                 message.channel.send(embed)
             })
 
-        } else {
+        } else if (false && message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.security).position) {
             let embed = new Discord.MessageEmbed()
                 .setColor(message.guild.roles.cache.get(settings.roles.tempsuspended).hexColor)
                 .setTitle('Current Logged Suspensions')

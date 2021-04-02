@@ -1,6 +1,6 @@
 const fs = require('fs')
 const Discord = require('discord.js')
-const roles = ['moderator', 'officer', 'headrl', 'vetrl', 'security', 'fullskip', 'developer', 'rl', 'almostrl', 'trialrl', 'headeventrl', 'eventrl', 'rusher', 'nitro', 'lol', 'vetraider', 'raider', 'eventraider', 'muted',
+const roles = ['moderator', 'officer', 'headrl', 'vetrl', 'fsvrl', 'mrvrl', 'security', 'fullskip', 'developer', 'rl', 'almostrl', 'trialrl', 'headeventrl', 'eventrl', 'rusher', 'nitro', 'lol', 'vetraider', 'raider', 'eventraider', 'muted',
     'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'topkey', 'bottomkey', 'cultping', 'voidping']
 const channels = ['modmail', 'verification', 'manualverification', 'vetverification', 'manualvetverification', 'verificationlog', 'activeverification', 'modlogs', 'history', 'suspendlog',
     'viallog', 'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel', 'raidstatus', 'eventstatus',
@@ -229,6 +229,8 @@ function getDefaultRoleName(name) {
         case 'officer': return 'Officer'
         case 'headrl': return 'Head Raid Leader'
         case 'vetrl': return 'Veteran Raid Leader'
+        case 'fsvrl': return 'Fullskip Boi VRL'
+        case 'mrvrl': return 'Master Reader VRL'
         case 'security': return 'Security'
         case 'fullskip': return 'Fullskip'
         case 'developer': return 'Developer'

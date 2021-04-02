@@ -26,7 +26,7 @@ module.exports = {
         if (member.roles.highest.position >= message.member.roles.highest.position) return message.channel.send(`${member} has a role greater than or equal to you and cannot be muted`);
         if (member.roles.cache.has(pSuspendRole.id)) return message.channel.send('User is perma suspended already, no need to suspend again')
         if (member.roles.cache.has(suspendedRole.id)) {
-            db.query(`SELECT * FROM suspensions WHERE id = '${member.id}' AND suspended = true`, async (err, rows) => {
+            db.query(`SELECT * FROM suspensions WHERE id = '${member.id}' AND suspended = true`, async(err, rows) => {
                 if (rows.length != 0) {
                     message.channel.send(`${member.nickname} is already suspended. Reply __**Y**__es to overwrite`);
                     let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 10000 });
@@ -36,7 +36,7 @@ module.exports = {
                             message.channel.send('Overwriting suspension...');
                             suspend(true)
                             collector.stop();
-                        } else if (message.content.carAt(0) == 'n') {
+                        } else if (message.content.charAt(0) == 'n') {
                             collector.stop()
                             return;
                         } else {
@@ -59,7 +59,8 @@ module.exports = {
                 .addField(`Reason:`, reason)
                 .addField(`Roles`, 'None!')
                 .setTimestamp(Date.now());
-            let userRolesString = '', userRoles = []
+            let userRolesString = '',
+                userRoles = []
             member.roles.cache.each(r => {
                 if (!r.managed) {
                     userRoles.push(r.id)
@@ -73,7 +74,7 @@ module.exports = {
             })
             await member.edit({ roles: [pSuspendRole] })
             if (overwrite) db.query(`UPDATE suspensions SET perma = true, uTime = '0', modid = '${message.member.id}' WHERE id = '${member.id}' AND suspended = true`)
-            else db.query(`INSERT INTO suspensions (id, guildid, suspended, uTime, reason, modid, roles, logmessage, perma) VALUES ('${member.id}', '${message.guild.id}', true, '0', '${reason}', '${message.author.id}', '${userRolesString}', 'n/a', true);`)
+            else db.query(`INSERT INTO suspensions (id, guildid, suspended, uTime, reason, modid, roles, logmessage, perma) VALUES ('${member.id}', '${message.guild.id}', true, '0', ${db.escape(reason)}, '${message.author.id}', '${userRolesString}', 'n/a', true);`)
             message.channel.send(`${member} has been permanently suspended`)
             message.guild.channels.cache.get(settings.channels.suspendlog).send(embed)
         }
