@@ -527,9 +527,9 @@ class afkCheck {
                         else this.leaderEmbed.fields[index].value += `, <@!${u.id}>`
                         this.leaderEmbedMessage.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, this.bot));
                         this.runInfoMessage.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, this.bot));
-                        afkChecksEmitter.on('Ended', channelID => {
+                        afkChecksEmitter.on('Ended', (channelID, aborted) => {
                             if (channelID == this.channel.id) {
-                                this.db.query(`UPDATE users SET lastnitrouse = '${Date.now()}' WHERE id = ${u.id}`)
+                                if (!aborted) this.db.query(`UPDATE users SET lastnitrouse = '${Date.now()}' WHERE id = ${u.id}`)
                             }
                         })
                     } else {
