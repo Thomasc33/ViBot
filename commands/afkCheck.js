@@ -527,7 +527,11 @@ class afkCheck {
                         else this.leaderEmbed.fields[index].value += `, <@!${u.id}>`
                         this.leaderEmbedMessage.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, this.bot));
                         this.runInfoMessage.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, this.bot));
-                        this.db.query(`UPDATE users SET lastnitrouse = '${Date.now()}' WHERE id = ${u.id}`)
+                        afkChecksEmitter.on('Ended', channelID => {
+                            if (channelID == this.channel.id) {
+                                this.db.query(`UPDATE users SET lastnitrouse = '${Date.now()}' WHERE id = ${u.id}`)
+                            }
+                        })
                     } else {
                         let lastUse = Math.round((Date.now() - rows[0].lastnitrouse) / 60000)
                         reactor.send(`Nitro perks have been limited to once an hour. Your last use was \`${lastUse}\` minutes ago`).catch(er => this.commandChannel.send(`<@!${u.id}> tried to react with <${botSettings.emote.shard}> but their DMs are private`))
@@ -570,6 +574,12 @@ class afkCheck {
                         await this.leaderEmbedMessage.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                         await this.runInfoMessage.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                         await m.delete()
+                        afkChecksEmitter.on('Ended', (channelID, aborted) => {
+                            if (aborted && channelID == this.channel.id) {
+                                dms.send(`The afk check was aborted, you have been refunded ${earlyLocationCost} points`)
+                                this.db.query(`UPDATE users SET points = points + ${earlyLocationCost} WHERE id = ${u.id}`)
+                            }
+                        })
                     }
                     else dms.send(`There was an issue using the points: \`${er}\``).catch(er => this.commandChannel.send(`<@!${u.id}> tried to react with 🎟️ but their DMs are private`))
                 }
@@ -841,8 +851,7 @@ class afkCheck {
         }
 
         //mark afk check as over
-        setTimeout(() => { emitter.emit('Ended', this.channel.id) }, 2000);
-
+        setTimeout(() => { emitter.emit('Ended', this.channel.id, false) }, 2000);
         this.active = false;
     }
 
@@ -884,7 +893,7 @@ class afkCheck {
             })
 
 
-        emitter.emit('Ended', this.channel.id)
+        emitter.emit('Ended', this.channel.id, true)
         this.active = false;
     }
 
