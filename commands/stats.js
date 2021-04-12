@@ -2,117 +2,155 @@ const Discord = require('discord.js')
 const botSettings = require('../settings.json')
 const axios = require('axios')
 module.exports = {
-    name: 'stats',
-    description: 'Gives users stats',
-    args: '(user)',
-    role: 'raider',
-    dms: true,
-    async execute(message, args, bot, db) {
-        if (args.length == 0) var member = message.author
-        else var member = message.mentions.members.first()
-        if (!member) member = message.guild.members.cache.get(args[0])
-        if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
-        if (!member) return message.channel.send(`\`${args[0]}\` not found`)
-        let embed = await this.getStatsEmbed(member.id, message.guild, db).catch(er => {
-            message.channel.send('User has not been logged yet. Database is updated every 24-48 hours')
-        })
-        if (embed) {
-            message.author.send(embed)
-            message.react('✅')
-        }
-    },
-    async dmExecution(message, args, bot, db, guild) {
-        let member
-        if (args.length == 0) member = message.author
-        else if (message.mentions.members) member = message.mentions.members.first()
-        if (!member) member = guild.members.cache.get(args[0])
-        if (!member) member = guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
-        let embed = await this.getStatsEmbed(member.id, guild, db).catch(er => {
-            message.channel.send('User has not been logged yet. People are logged after they complete their first run')
-        })
-        if (embed) {
-            message.author.send(embed)
-            message.react('✅')
-        }
-    },
-    async getStatsEmbed(id, guild, db) {
-        return new Promise((resolve, reject) => {
-            db.query(`SELECT * FROM users WHERE id = '${id}'`, async(err, rows) => {
-                if (err) return reject()
-                if (rows.length == 0) return reject('No user found');
-                let guildMember = guild.members.cache.get(id)
-                let embed = new Discord.MessageEmbed()
-                if (guild.id == '708026927721480254') {
-                    await this.updateO3Runs(id, guild, db)
-                    embed.setColor('#015c21')
-                        .setDescription(`<${botSettings.emote.o3}> __**Stats for**__ <@!${id}> <${botSettings.emote.o3}>
-                    *This includes stats from Pub Halls*
+        name: 'stats',
+        description: 'Gives users stats',
+        args: '(user)',
+        role: 'raider',
+        dms: true,
+        async execute(message, args, bot, db) {
+            if (args.length == 0) var member = message.author
+            else var member = message.mentions.members.first()
+            if (!member) member = message.guild.members.cache.get(args[0])
+            if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
+            let id = args[0];
+            if (member)
+                id = member.id;
 
-                    🔑 __**Keys Popped**__ 🔑
-                    Halls: ${rows[0].keypops}
-                    Other: ${rows[0].eventpops}
-                    
-                    <${botSettings.emote.o3}>__**Runs Done**__<${botSettings.emote.o3}>
-                    Cult: ${rows[0].cultRuns}
-                    Void: ${rows[0].voidRuns}
-                    Oryx Three: ${rows[0].o3runs}
-                    
-                    <${botSettings.emote.o3}>__**Runs Led**__<${botSettings.emote.o3}>
-                    Oryx Three: ${rows[0].cultsLead}
-                    Realm Clearing: ${rows[0].o3leads}
-                    Assists: ${rows[0].assists}
-                    Oryx Assists: ${rows[0].assistso3}
-
-                    <${botSettings.emote.helmRune}>__**Runes**__<${botSettings.emote.swordRune}>
-                    Runes Popped: ${rows[0].runesused} 
-                    
-                    🎟️__**Points**__🎟️
-                    Points: ${rows[0].points}`)
-                } else embed
-                    .setColor('#015c21')
-                    .setDescription(`<${botSettings.emote.hallsPortal}> __**Stats for**__ <@!${id}> <${botSettings.emote.hallsPortal}>
-                    
-                    <${botSettings.emote.LostHallsKey}> __**Keys Popped**__ <${botSettings.emote.LostHallsKey}>
-                    Halls: ${rows[0].keypops}
-                    Other: ${rows[0].eventpops}
-                    
-                    <${botSettings.emote.hallsPortal}>__**Runs Done**__<${botSettings.emote.hallsPortal}>
-                    Cult: ${rows[0].cultRuns}
-                    Void: ${rows[0].voidRuns}
-                    Solo cults: ${rows[0].solocult}
-                    Other: ${rows[0].eventruns}
-                    ${rows[0].parses ? 'Parses: ' + rows[0].parses : ''}
-                    
-                    <${botSettings.emote.hallsPortal}>__**Runs Led**__<${botSettings.emote.hallsPortal}>
-                    Cult: ${rows[0].cultsLead}
-                    Void: ${rows[0].voidsLead}
-                    Events: ${parseInt(rows[0].eventsLead) * 10} minutes
-                    Assists: ${rows[0].assists}
-                    
-                    <${botSettings.emote.Vial}>__**Vials**__<${botSettings.emote.Vial}>
-                    Dropped: ${rows[0].vialStored}
-                    Used: ${rows[0].vialUsed}
-                    
-                    🎟️__**Points**__🎟️
-                    Points: ${rows[0].points}`)
-                if (guildMember) embed.setThumbnail(guildMember.user.avatarURL())
-                resolve(embed)
+            if (!/^[0-9]+$/.test(id))
+                return message.channel.send(`Could not find user by the name or id of ${id}.`);
+            let embed = await this.getStatsEmbed(member.id, message.guild, db).catch(er => {
+                message.channel.send(new Discord.MessageEmbed().setDescription(`${er}`));
             })
-        })
-    },
-    async updateO3Runs(id, guild, db) {
-        return new Promise(async(res, rej) => {
-            let ign = guild.members.cache.get(id).nickname.replace(/[^a-z|]/gi, '').split('|')[0]
-            if (!ign) return res();
-            let resu = await axios.post(`https://api.losthalls.org/getProfile`, { ign: ign })
-            if (!resu || resu.data.status == 203) return res(console.log(resu));
-            if (!resu.data.profile || !resu.data.profile.oryx3.participation.completions) {
-                console.log(resu.data);
-                return res();
+            if (embed) {
+                message.author.send(embed)
+                message.react('✅')
             }
-            db.query(`UPDATE users SET o3runs = ${resu.data.profile.oryx3.participation.completions} WHERE id = '${id}'`, (err, rows) => {
-                return res();
-            })
+        },
+        async dmExecution(message, args, bot, db, guild) {
+            let member
+            if (args.length == 0) member = message.author
+            else if (message.mentions.members) member = message.mentions.members.first()
+            if (!member) member = guild.members.cache.get(args[0])
+            if (!member) member = guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
+            let id = args[0];
+            if (member)
+                id = member.id;
+
+            if (!/^[0-9]+$/.test(id))
+                return message.channel.send(`Could not find user by the name or id of ${id}.`);
+
+            let embed = await this.getStatsEmbed(id, guild, db).catch(er => {
+                message.channel.send(new Discord.MessageEmbed().setDescription(`${er}`))
+            });
+
+            if (embed) {
+                message.author.send(embed)
+                message.react('✅')
+            }
+        },
+        async getStatsEmbed(id, guild, db) {
+            const member = guild.members.cache.get(id);
+            let ign = member && member.nickname ? member.nickname.replace(/[^a-z|]/gi, '').split('|')[0] : id;
+            let data;
+            if (ign)
+                data = await axios.post(`https://api.losthalls.org/getProfile`, { ign });
+
+            const oryx3 = {
+                participation: { reg: 0, vet: 0, completions: 0 },
+                leading: { reg: 0, vet: 0 },
+                pops: { inc: 0, shield: 0, sword: 0, helmet: 0 }
+            };
+
+            if (data) data = data.data;
+
+            if (data && data.profile && data.profile.oryx3) {
+                oryx3.participation = { ...oryx3.participation, ...data.profile.oryx3.participation };
+                oryx3.leading = { ...oryx3.leading, ...data.profile.oryx3.leading };
+                oryx3.pops = { ...oryx3.pops, ...data.profile.pops };
+                db.query(`UPDATE users SET o3runs = ${data.profile.oryx3.participation.completions} WHERE id = '${id}'`);
+            }
+
+            return new Promise((res, rej) => {
+                db.query(`SELECT * FROM users WHERE id = '${id}'`, async(err, rows) => {
+                    if (err)
+                        rej(`There was a problem retrieving user data for ${member || id}.`);
+
+                    if (!rows || !rows.length)
+                        return rej(`${member || id} could not be found in the database.`);
+
+                    const row = rows[0];
+
+                    const embed = new Discord.MessageEmbed()
+                        .setColor('#015c21')
+                        .setDescription(`__**Stats for**__ <@${id}> ${member ? '\`' + (member.nickname || member.user.tag) + '\`' : ''}`)
+                        .addFields([
+                            //LOST HALLS
+                            {
+                                name: `<${botSettings.emote.hallsPortal}> Lost Halls Stats <${botSettings.emote.hallsPortal}>`,
+                                value: '** **'
+                            },
+                            {
+                                name: `<:legendaryMysteryKey:831052176507535360> __**Keys Popped**__ <:legendaryMysteryKey:831052176507535360>`,
+                                value: `<${botSettings.emote.LostHallsKey}> ${row.keypops}
+                                        <:epicMysteryKey:831051424187940874> ${row.eventpops}
+                                        <${botSettings.emote.Vial}> ${row.vialStored} Dropped
+                                        <${botSettings.emote.Vial}> ${row.vialUsed} Used`,
+                                        inline: true
+                            },
+                            {
+                                name: `<${botSettings.emote.hallsPortal}> __**Runs Done**__ <${botSettings.emote.hallsPortal}>`,
+                                value: `<${botSettings.emote.malus}> ${row.cultRuns}
+                                        <${botSettings.emote.voidd}> ${row.voidRuns} 
+                                        <:epicMysteryKey:831051424187940874> ${row.eventruns} `,
+                                        inline: true
+                            },
+                            {
+                                name: `<${botSettings.emote.hallsPortal}> __**Runs Led**__ <${botSettings.emote.hallsPortal}>`,
+                                value: `<${botSettings.emote.malus}> ${row.cultsLead} 
+                                        <${botSettings.emote.voidd}> ${row.voidsLead} 
+                                        <:epicMysteryKey:831051424187940874> ${parseInt(row.eventsLead) * 10} Minutes 
+                                        ${row.assists} Assists
+                                        ${row.parses} Parses`,
+                                        inline: true
+                            },
+
+                            //ORYX SANCTUARY
+                            {
+                                name: `<:oryxThree:831047591096745984> Oryx Sanctuary Stats <:oryxThree:831047591096745984>`,
+                                value: '** **'
+                            },
+                            {
+                                name: `<:o3portal:831046404252237855> __**Runes Popped**__ <:o3portal:831046404252237855>`,
+                                value: `<:inc:831046532156620851> ${oryx3.pops.inc}  
+                                        <:shieldRune:831046532232118292> ${oryx3.pops.shield} 
+                                        <:swordRune:831046532370530324> ${oryx3.pops.sword}  
+                                        <:helmetRune:831046532115202078> ${oryx3.pops.helmet} `,
+                                        inline: true
+                            },
+                            {
+                                name: `<:oryxThree:831047591096745984> __**Runs Done**__ <:oryxThree:831047591096745984>`,
+                                value: `${oryx3.participation.reg} Normal Runs
+                                        ${oryx3.participation.vet} Veteran Runs
+                                        ${oryx3.participation.completions} Completes`,
+                                        inline: true
+                            },
+                            {
+                                name: `<:oryxThree:831047591096745984> __**Runs Lead**__ <:oryxThree:831047591096745984>`,
+                                value: `${oryx3.leading.reg} Normal Runs
+                                        ${oryx3.leading.vet} Veteran Runs`,
+                                        inline: true
+                            },
+
+                            //points & misc
+                            {
+                                name: `✨ Miscellaneous Stats ✨`,
+                                value: `🎟️ ${row.points} Points`
+                            }
+                        ]);
+                    if (member)
+                        embed.setThumbnail(member.user.avatarURL());
+                    res(embed);
+            });
         })
     }
 }
