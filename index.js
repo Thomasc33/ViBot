@@ -91,11 +91,28 @@ async function dmHandler(message) {
     if (verification.checkActive(message.author.id)) return
     let cancelled = false;
     let statsTypos = ['stats', 'satts', 'stat', 'status', 'sats', 'stata', 'stts']
-    if (statsTypos.includes(message.content.replace(/[^a-z0-9]/gi, ''))) {
-        let guild = await getGuild(message).catch(er => { cancelled = true })
+    if (statsTypos.includes(message.content.split(' ')[0].replace(/[^a-z0-9]/gi, ''))) {
+        //let guild = await getGuild(message).catch(er => { cancelled = true })
+        let guild;
+        for (const g of bot.guilds.cache.array())
+        {
+            if (g.members.cache.get(message.author.id))
+            {
+                guild = g;
+                break;
+            }
+        }
+        if (!guild)
+            cancelled = true;
         logCommand(guild)
-        if (!cancelled) message.channel.send(await stats.getStatsEmbed(message.author.id, guild, db)
-            .catch(er => { message.channel.send('You are not currently logged in the database. The database gets updated every 24-48 hours') }))
+        if (!cancelled) {
+            try {
+                message.channel.send(await stats.getStatsEmbed(message.author.id, guild, db))
+            }
+            catch(er) { 
+                message.channel.send('You are not currently logged in the database. The database gets updated every 24-48 hours') 
+            }
+        }
     } else if (/^.?(pl[ea]{0,2}se?\s*)?(j[oi]{2}n|d[ra]{2}g\s*(me)?)(\s*pl[ea]{0,2}se?)?$/i.test(message.content)) {
         let guild = await getGuild(message).catch(er => cancelled = true)
         logCommand(guild)
