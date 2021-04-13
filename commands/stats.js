@@ -6,6 +6,7 @@ module.exports = {
         description: 'Gives users stats',
         args: '(user)',
         role: 'raider',
+        noGuildChoice: true,
         dms: true,
         async execute(message, args, bot, db) {
             if (args.length == 0) var member = message.author
@@ -79,7 +80,6 @@ module.exports = {
                         return rej(`${member || id} could not be found in the database.`);
 
                     const row = rows[0];
-
                     const embed = new Discord.MessageEmbed()
                         .setColor('#015c21')
                         .setDescription(`__**Stats for**__ <@${id}> ${member ? '\`' + (member.nickname || member.user.tag) + '\`' : ''}`)
@@ -91,26 +91,26 @@ module.exports = {
                             },
                             {
                                 name: `<:legendaryMysteryKey:831052176507535360> __**Keys Popped**__ <:legendaryMysteryKey:831052176507535360>`,
-                                value: `<${botSettings.emote.LostHallsKey}> ${row.keypops}
-                                        <:epicMysteryKey:831051424187940874> ${row.eventpops}
-                                        <${botSettings.emote.Vial}> ${row.vialStored} Dropped
-                                        <${botSettings.emote.Vial}> ${row.vialUsed} Used`,
+                                value: `<${botSettings.emote.LostHallsKey}> ${row.keypops}\n` +
+                                        `<:epicMysteryKey:831051424187940874> ${row.eventpops}\n` +
+                                        `<${botSettings.emote.Vial}> ${row.vialStored} Dropped\n` +
+                                        `<${botSettings.emote.Vial}> ${row.vialUsed} Used`,
                                         inline: true
                             },
                             {
                                 name: `<${botSettings.emote.hallsPortal}> __**Runs Done**__ <${botSettings.emote.hallsPortal}>`,
-                                value: `<${botSettings.emote.malus}> ${row.cultRuns}
-                                        <${botSettings.emote.voidd}> ${row.voidRuns} 
-                                        <:epicMysteryKey:831051424187940874> ${row.eventruns} `,
+                                value: `<${botSettings.emote.malus}> ${row.cultRuns}\n` +
+                                        `<${botSettings.emote.voidd}> ${row.voidRuns}\n` +
+                                        `<:epicMysteryKey:831051424187940874> ${row.eventruns}`,
                                         inline: true
                             },
                             {
                                 name: `<${botSettings.emote.hallsPortal}> __**Runs Led**__ <${botSettings.emote.hallsPortal}>`,
-                                value: `<${botSettings.emote.malus}> ${row.cultsLead} 
-                                        <${botSettings.emote.voidd}> ${row.voidsLead} 
-                                        <:epicMysteryKey:831051424187940874> ${parseInt(row.eventsLead) * 10} Minutes 
-                                        ${row.assists} Assists
-                                        ${row.parses} Parses`,
+                                value: `<${botSettings.emote.malus}> ${row.cultsLead}\n` +
+                                        `<${botSettings.emote.voidd}> ${row.voidsLead}\n` + 
+                                        `<:epicMysteryKey:831051424187940874> ${parseInt(row.eventsLead) * 10} Minutes\n` +
+                                        `${row.assists} Assists\n` +
+                                        `${row.parses} Parses`,
                                         inline: true
                             },
 
@@ -121,23 +121,23 @@ module.exports = {
                             },
                             {
                                 name: `<:o3portal:831046404252237855> __**Runes Popped**__ <:o3portal:831046404252237855>`,
-                                value: `<:inc:831046532156620851> ${oryx3.pops.inc}  
-                                        <:shieldRune:831046532232118292> ${oryx3.pops.shield} 
-                                        <:swordRune:831046532370530324> ${oryx3.pops.sword}  
-                                        <:helmetRune:831046532115202078> ${oryx3.pops.helmet} `,
+                                value: `<:inc:831046532156620851> ${oryx3.pops.inc}\n` +
+                                        `<:shieldRune:831046532232118292> ${oryx3.pops.shield}\n` +
+                                        `<:swordRune:831046532370530324> ${oryx3.pops.sword}\n` +
+                                        `<:helmetRune:831046532115202078> ${oryx3.pops.helmet} `,
                                         inline: true
                             },
                             {
                                 name: `<:oryxThree:831047591096745984> __**Runs Done**__ <:oryxThree:831047591096745984>`,
-                                value: `${oryx3.participation.reg} Normal Runs
-                                        ${oryx3.participation.vet} Veteran Runs
-                                        ${oryx3.participation.completions} Completes`,
+                                value: `${oryx3.participation.reg} Normal Runs\n` +
+                                        `${oryx3.participation.vet} Veteran Runs\n` +
+                                        `${oryx3.participation.completions} Completes`,
                                         inline: true
                             },
                             {
                                 name: `<:oryxThree:831047591096745984> __**Runs Lead**__ <:oryxThree:831047591096745984>`,
-                                value: `${oryx3.leading.reg} Normal Runs
-                                        ${oryx3.leading.vet} Veteran Runs`,
+                                value: `${oryx3.leading.reg} Normal Runs\n` +
+                                        `${oryx3.leading.vet} Veteran Runs`,
                                         inline: true
                             },
 
