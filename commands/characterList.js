@@ -28,6 +28,7 @@ module.exports = {
                 .catch(er => {
                     return reject(er)
                 })
+            if (!charInfo) return reject('error')
             let embed = new Discord.MessageEmbed()
                 .setColor('#0000ff')
                 .setTitle(`Character List for ${ign}`)
