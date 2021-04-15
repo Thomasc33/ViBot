@@ -8,6 +8,7 @@ module.exports = {
     args: 'None | EO+ <user> | HRL+ <add/remove> <user>',
     role: 'raider',
     dms: true,
+    dmNeedsGuild: true,
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         if (message.member.roles.highest.position < message.guild.roles.cache.get(settings.roles.eventrl).position) {

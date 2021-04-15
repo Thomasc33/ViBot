@@ -5,6 +5,7 @@ module.exports = {
     description: 'Restarts the bot',
     role: 'moderator',
     restarting: false,
+    allowedInRestart: true,
     async execute(message, args, bot) {
         if (args.length != 0 && args[0].toLowerCase() == 'force') process.exit()
         else module.exports.restarting = true;

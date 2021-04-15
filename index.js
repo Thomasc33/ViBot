@@ -1,3 +1,4 @@
+// Imports
 const fs = require('fs')
 const Discord = require('discord.js')
 const cron = require('cron')
@@ -7,10 +8,10 @@ const token = require('./botKey.json')
 const prefix = botSettings.prefix
 const bot = new Discord.Client()
 bot.commands = new Discord.Collection()
-bot.crasherList = require('./crasherList.json')
-bot.afkChecks = require('./afkChecks.json')
-bot.settings = require('./guildSettings.json')
-bot.serverWhiteList = require('./serverWhiteList.json')
+bot.crasherList = require('./crasherList.json') || {}
+bot.afkChecks = require('./afkChecks.json') || {}
+bot.settings = require('./guildSettings.json') || {}
+bot.serverWhiteList = require('./serverWhiteList.json') || {}
 const cooldowns = new Discord.Collection()
 const ErrorLogger = require(`./lib/logError`)
 const CommandLogger = require('./lib/logCommand')
@@ -26,7 +27,7 @@ const modmail = require('./commands/modmail')
 const setup = require('./commands/setup')
 const restarting = require('./commands/restart')
 const createTemplate = require('./commands/createTemplate')
-const emojiServers = require('./data/emojiServers.json')
+const emojiServers = require('./data/emojiServers.json') || {}
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 const express = require('express')
 const https = require('https')
@@ -37,19 +38,16 @@ const router = express.Router()
 const app = express();
 const path = require('path')
 const cors = require('cors')
-
 const rootCas = require('ssl-root-cas').create();
-
-// fixes ALL https requests (whether using https directly or the request module)
 require('https').globalAgent.options.ca = rootCas;
-var CLIENT_ID, CLIENT_SECRET
-
 for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
     bot.commands.set(command.name, command);
 }
 
 
+
+// Bot Event Handlers
 bot.on('message', message => {
     try {
         if (message.channel.type === 'dm') return dmHandler(message);
@@ -61,10 +59,10 @@ bot.on('message', message => {
         const args = message.content.slice(prefix.length).split(/ +/);
         const commandName = args.shift().toLowerCase()
         if (commandName.replace(/[^a-z]/gi, '') == '') return
-        if (restarting.restarting && commandName !== 'restart') return message.channel.send('Cannot execute command as a restart is pending')
         const command = bot.commands.get(commandName) || bot.commands.find(cmd => cmd.alias && cmd.alias.includes(commandName))
         if (!command) return message.channel.send('Command doesnt exist, check \`commands\` and try again');
         if (!bot.settings[message.guild.id].commands[command.name]) return message.channel.send('Command doesnt exist, check \`commands\` and try again');
+        if (restarting.restarting && !command.allowedInRestart) return message.channel.send('Cannot execute command as a restart is pending')
         if (message.member.roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role]).position && (message.author.id !== '277636691227836419' && message.author.id !== '298989767369031684')) return;
         if (command.requiredArgs && command.requiredArgs > args.length) return message.channel.send(`Command Entered incorrecty. \`${botSettings.prefix}${command.name} ${command.args}\``)
         if (command.cooldown) {
@@ -85,210 +83,6 @@ bot.on('message', message => {
         ErrorLogger.log(er, bot)
     }
 });
-
-async function dmHandler(message) {
-    if (message.author.bot) return;
-    if (verification.checkActive(message.author.id)) return
-    let cancelled = false;
-    let statsTypos = ['stats', 'satts', 'stat', 'status', 'sats', 'stata', 'stts']
-    if (statsTypos.includes(message.content.split(' ')[0].replace(/[^a-z0-9]/gi, ''))) {
-        //let guild = await getGuild(message).catch(er => { cancelled = true })
-        let guild;
-        for (const g of bot.guilds.cache.array())
-        {
-            if (g.members.cache.get(message.author.id))
-            {
-                guild = g;
-                break;
-            }
-        }
-        if (!guild)
-            cancelled = true;
-        logCommand(guild)
-        if (!cancelled) {
-            try {
-                message.channel.send(await stats.getStatsEmbed(message.author.id, guild, db))
-            }
-            catch(er) { 
-                message.channel.send('You are not currently logged in the database. The database gets updated every 24-48 hours') 
-            }
-        }
-    } else if (/^.?(pl[ea]{0,2}se?\s*)?(j[oi]{2}n|d[ra]{2}g\s*(me)?)(\s*pl[ea]{0,2}se?)?$/i.test(message.content)) {
-        let guild = await getGuild(message).catch(er => cancelled = true)
-        logCommand(guild)
-        if (!cancelled) {
-            require('./commands/joinRun').dmExecution(message, message.content.split(/\s+/), bot, db, guild, tokenDB);
-        }
-    } else {
-        if (message.content.replace(/[^0-9]/g, '') == message.content) return;
-        let args = message.content.split(/ +/)
-        let commandName = args.shift().toLowerCase().replace(prefix, '')
-        let command = bot.commands.get(commandName) || bot.commands.find(c => c.alias && c.alias.includes(commandName))
-        if (!command) {
-            sendModMail()
-        } else if (command.dms) {
-            let guild = await getGuild(message).catch(er => cancelled = true)
-            logCommand(guild)
-            if (!cancelled) {
-                let member = guild.members.cache.get(message.author.id)
-                if (member.roles.highest.position < guild.roles.cache.get(bot.settings[guild.id].roles[command.role]).position && message.author.id !== '277636691227836419') {
-                    sendModMail();
-                } else command.dmExecution(message, args, bot, db, guild, tokenDB)
-            }
-        } else {
-            message.channel.send('This command does not work in DM\'s. Please use this inside of a server')
-        }
-        async function sendModMail() {
-            let confirmModMailEmbed = new Discord.MessageEmbed()
-                .setColor(`#ff0000`)
-                .setTitle('Are you sure you want to message modmail?')
-                .setFooter('Spamming modmail with junk will result in being modmail blacklisted')
-                .setDescription(`\`\`\`${message.content}\`\`\``)
-            let confirmModMailMessage = await message.channel.send(confirmModMailEmbed)
-            let reactionCollector = new Discord.ReactionCollector(confirmModMailMessage, (r, u) => u.id == message.author.id && (r.emoji.name == '✅' || r.emoji.name == '❌'))
-            reactionCollector.on('collect', async (r, u) => {
-                reactionCollector.stop()
-                if (r.emoji.name == '✅') {
-                    let guild = await getGuild(message).catch(er => { cancelled = true })
-                    if (!cancelled) {
-                        if (r.emoji.name == '✅') modmail.sendModMail(message, guild, bot, db)
-                        confirmModMailMessage.delete()
-                    }
-                } else {
-                    confirmModMailMessage.delete()
-                }
-
-            })
-            confirmModMailMessage.react('✅')
-                .then(confirmModMailMessage.react('❌'))
-        }
-    }
-    async function logCommand(guild) {
-        let logEmbed = new Discord.MessageEmbed()
-            .setAuthor(message.author.tag)
-            .setColor('#0000ff')
-            .setDescription(`<@!${message.author.id}> sent the bot: "${message.content}"`)
-            .setFooter(`User ID: ${message.author.id}`)
-            .setTimestamp()
-        if (message.author.avatarURL()) logEmbed.author.iconURL = message.author.avatarURL()
-        guild.channels.cache.get(bot.settings[guild.id].channels.dmcommands).send(logEmbed)
-    }
-}
-
-async function autoMod(message) {
-    let settings = bot.settings[message.guild.id]
-    if (!settings) return;
-    if (!message.member.roles.highest || message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.trialrl).position) return
-    if (message.mentions.roles.size != 0) mute('Pinging Roles', 2);
-
-    function mute(reason, time) {
-        //time: 1=1 hour, 2=1 day
-        let timeString, timeValue;
-        if (time == 1) {
-            timeString = '1 Hour';
-            timeValue = 3600000
-        } else if (time == 2) {
-            timeString = '1 Day';
-            timeValue = 86400000
-        }
-        message.member.roles.add(settings.roles.muted)
-            .then(db.query(`INSERT INTO mutes (id, guildid, muted, reason, modid, uTime) VALUES ('${message.author.id}', '${message.guild.id}', true, '${reason}','${bot.user.id}', '${Date.now() + timeValue}')`))
-            .then(message.author.send(`You have been muted in \`${message.guild.name}\` for \`${reason}\`. This will last for \`${timeString}\``))
-            .then(() => {
-                let modlog = message.guild.channels.cache.get(settings.channels.modlog)
-                if (!modlog) return ErrorLogger.log(new Error('Mod log not found for automod'), bot)
-                modlog.send(`${message.member} was muted for \`${timeString}\` for \`${reason}\``)
-            })
-    }
-}
-
-bot.login(token.key);
-
-var db = mysql.createConnection(botSettings.dbInfo)
-var tokenDB = mysql.createConnection(botSettings.tokenDBInfo)
-
-const not_ready_yet = true;
-
-db.connect(err => {
-    if (err) ErrorLogger.log(err, bot);
-
-    console.log("Connected to database");
-
-    if (not_ready_yet)
-        return;
-
-    tryInitializeRushers();
-})
-
-const tryInitializeRushers = () => {
-    //db.query(`DROP TABLE rushers`); 
-    //if rusher table doesn't exist, initialize it with data from point logging channel
-    db.query(`CREATE TABLE IF NOT EXISTS rushers (id VARCHAR(32) NOT NULL, guildid VARCHAR(32) NOT NULL, time BIGINT DEFAULT 0, PRIMARY KEY (id, guildid))`, async (err, rows) => {
-        if (err) ErrorLogger.log(err, bot)
-
-        for (const guild_id in bot.settings) {
-            const settings = bot.settings[guild_id];
-
-            if (settings.backend.trackRushers) {
-
-                const guild = bot.guilds.cache.get(guild_id);
-                if (!guild)
-                    continue;
-                const role = guild.roles.cache.get(settings.roles.rusher);
-                if (!role)
-                    continue;
-                const rushed = {};
-
-                const db_rows = await db.query(`SELECT * FROM rushers`);
-                //if the table is empty, grab data from point logging channel
-                if (!db_rows || !db_rows.length) {
-                    const points_channel = guild.channels.cache.get(settings.channels.pointlogging);
-                    if (!points_channel)
-                        continue;
-                    const regex = /<@!?(?<id>[^>]+)>:.+`rusher`$/i;
-                    try {
-                        const messages = await points_channel.messages.fetch();
-                        for (const [snowflake, message] of messages) {
-                            if (!message.embeds || !message.embeds[0].description)
-                                continue;
-                            for (const line of message.embeds[0].description.split('\n')) {
-                                const result = line.match(regex);
-                                if (result && result.groups) {
-                                    rushed[result.groups.id] = Math.max(rushed[result.groups.id] || 0, message.createdTimestamp);
-                                }
-                            }
-                        }
-                    } catch (e) { console.log(e) }
-                }
-
-                const rows = [];
-                for (const [snowflake, member] of role.members) {
-                    rows.push({ id: snowflake, time: rushed[snowflake] || Date.now() });
-                }
-
-                const values = rows.reduce((acc, curr) => acc += `(${curr.id}, ${guild_id}, ${curr.time}), `, '').slice(0, -2);
-                //if the key already exists, just ignore it
-                db.query(`INSERT IGNORE INTO rushers (id, guildid, time) VALUES ${values}`);
-            }
-        }
-    })
-    db.query(`SELECT * FROM rushers`, (err, rows) => console.log(rows));
-}
-
-db.on('error', err => {
-    if (err.code == 'PROTOCOL_CONNECTION_LOST') db = mysql.createConnection(botSettings.dbInfo)
-    else ErrorLogger.log(err, bot)
-})
-
-tokenDB.connect(err => {
-    if (err) ErrorLogger.log(err, bot);
-    console.log('Connected to token database')
-})
-
-tokenDB.on('error', err => {
-    if (err.code == 'PROTOCOL_CONNECTION_LOST') tokenDB = mysql.createConnection(botSettings.tokenDBInfo)
-    else ErrorLogger.log(err, bot)
-})
 
 bot.on("ready", async () => {
     CLIENT_ID = bot.user.id
@@ -496,20 +290,6 @@ bot.on('guildMemberUpdate', (oldMember, newMember) => {
     }
 })
 
-const updateRusherTable = (settings, oldMember, newMember) => {
-    if (not_ready_yet)
-        return;
-    if (oldMember.roles.cache.get(settings.roles.rusher) && !newMember.roles.cache.get(settings.roles.rusher)) {
-        //rusher role removed
-        db.query(`SELECT * FROM rushers WHERE guildid = ${newMember.guild.id} AND id = ${newMember.id}`, (err, rows) => {
-            if (rows && rows.length)
-                db.query(`DELETE FROM rushers WHERE id = ${newMember.id} AND guildid = ${newMember.guild.id}`);
-        });
-    } else if (!oldMember.roles.cache.get(settings.roles.rusher) && newMember.roles.cache.get(settings.roles.rusher)) {
-        //rusher role added
-        db.query(`INSERT INTO rushers (id, guildid, time) VALUES(${newMember.id}, ${newMember.guild.id}, ${Date.now()}) ON DUPLICATE KEY UPDATE time = VALUES(time)`);
-    }
-}
 bot.on('guildMemberRemove', member => {
     db.query(`SELECT suspended FROM suspensions WHERE id = '${member.id}' AND suspended = true`, (err, rows) => {
         if (err) return ErrorLogger.log(err, bot)
@@ -526,6 +306,7 @@ bot.on('guildMemberRemove', member => {
         }
     })
 })
+
 bot.on('messageReactionAdd', (r, u) => {
     //spongemock
     if (r.emoji.id == '812959258638549022') {
@@ -554,6 +335,11 @@ bot.on('typingStart', (c, u) => {
     }, 7500)
 })
 
+bot.login(token.key);
+
+
+
+// Process Event Listening
 process.on('uncaughtException', err => {
     if (!err) return
     ErrorLogger.log(err, bot);
@@ -570,6 +356,233 @@ process.on('unhandledRejection', err => {
     } else return
     ErrorLogger.log(err, bot);
 })
+
+
+
+// Data Base Connectors
+var db = mysql.createConnection(botSettings.dbInfo)
+var tokenDB = mysql.createConnection(botSettings.tokenDBInfo)
+
+const not_ready_yet = true;
+
+db.connect(err => {
+    if (err) ErrorLogger.log(err, bot);
+
+    console.log("Connected to database");
+
+    if (not_ready_yet)
+        return;
+
+    tryInitializeRushers();
+})
+
+const tryInitializeRushers = () => {
+    //db.query(`DROP TABLE rushers`); 
+    //if rusher table doesn't exist, initialize it with data from point logging channel
+    db.query(`CREATE TABLE IF NOT EXISTS rushers (id VARCHAR(32) NOT NULL, guildid VARCHAR(32) NOT NULL, time BIGINT DEFAULT 0, PRIMARY KEY (id, guildid))`, async (err, rows) => {
+        if (err) ErrorLogger.log(err, bot)
+
+        for (const guild_id in bot.settings) {
+            const settings = bot.settings[guild_id];
+
+            if (settings.backend.trackRushers) {
+
+                const guild = bot.guilds.cache.get(guild_id);
+                if (!guild)
+                    continue;
+                const role = guild.roles.cache.get(settings.roles.rusher);
+                if (!role)
+                    continue;
+                const rushed = {};
+
+                const db_rows = await db.query(`SELECT * FROM rushers`);
+                //if the table is empty, grab data from point logging channel
+                if (!db_rows || !db_rows.length) {
+                    const points_channel = guild.channels.cache.get(settings.channels.pointlogging);
+                    if (!points_channel)
+                        continue;
+                    const regex = /<@!?(?<id>[^>]+)>:.+`rusher`$/i;
+                    try {
+                        const messages = await points_channel.messages.fetch();
+                        for (const [snowflake, message] of messages) {
+                            if (!message.embeds || !message.embeds[0].description)
+                                continue;
+                            for (const line of message.embeds[0].description.split('\n')) {
+                                const result = line.match(regex);
+                                if (result && result.groups) {
+                                    rushed[result.groups.id] = Math.max(rushed[result.groups.id] || 0, message.createdTimestamp);
+                                }
+                            }
+                        }
+                    } catch (e) { console.log(e) }
+                }
+
+                const rows = [];
+                for (const [snowflake, member] of role.members) {
+                    rows.push({ id: snowflake, time: rushed[snowflake] || Date.now() });
+                }
+
+                const values = rows.reduce((acc, curr) => acc += `(${curr.id}, ${guild_id}, ${curr.time}), `, '').slice(0, -2);
+                //if the key already exists, just ignore it
+                db.query(`INSERT IGNORE INTO rushers (id, guildid, time) VALUES ${values}`);
+            }
+        }
+    })
+    db.query(`SELECT * FROM rushers`, (err, rows) => console.log(rows));
+}
+
+const updateRusherTable = (settings, oldMember, newMember) => {
+    if (not_ready_yet)
+        return;
+    if (oldMember.roles.cache.get(settings.roles.rusher) && !newMember.roles.cache.get(settings.roles.rusher)) {
+        //rusher role removed
+        db.query(`SELECT * FROM rushers WHERE guildid = ${newMember.guild.id} AND id = ${newMember.id}`, (err, rows) => {
+            if (rows && rows.length)
+                db.query(`DELETE FROM rushers WHERE id = ${newMember.id} AND guildid = ${newMember.guild.id}`);
+        });
+    } else if (!oldMember.roles.cache.get(settings.roles.rusher) && newMember.roles.cache.get(settings.roles.rusher)) {
+        //rusher role added
+        db.query(`INSERT INTO rushers (id, guildid, time) VALUES(${newMember.id}, ${newMember.guild.id}, ${Date.now()}) ON DUPLICATE KEY UPDATE time = VALUES(time)`);
+    }
+}
+
+db.on('error', err => {
+    if (err.code == 'PROTOCOL_CONNECTION_LOST') db = mysql.createConnection(botSettings.dbInfo)
+    else ErrorLogger.log(err, bot)
+})
+
+tokenDB.connect(err => {
+    if (err) ErrorLogger.log(err, bot);
+    console.log('Connected to token database')
+})
+
+tokenDB.on('error', err => {
+    if (err.code == 'PROTOCOL_CONNECTION_LOST') tokenDB = mysql.createConnection(botSettings.tokenDBInfo)
+    else ErrorLogger.log(err, bot)
+})
+
+
+
+// Functions
+async function dmHandler(message) {
+    if (message.author.bot) return;
+    if (verification.checkActive(message.author.id)) return
+    let cancelled = false;
+    let statsTypos = ['stats', 'satts', 'stat', 'status', 'sats', 'stata', 'stts']
+    if (statsTypos.includes(message.content.split(' ')[0].replace(/[^a-z0-9]/gi, ''))) {
+        let guild;
+        for (const g of bot.guilds.cache.array()) {
+            if (g.members.cache.get(message.author.id)) {
+                guild = g;
+                break;
+            }
+        }
+        if (!guild)
+            cancelled = true;
+        logCommand(guild)
+        if (!cancelled) {
+            try {
+                message.channel.send(await stats.getStatsEmbed(message.author.id, guild, db))
+            }
+            catch (er) {
+                message.channel.send('You are not currently logged in the database. The database gets updated every 24-48 hours')
+            }
+        }
+    } else if (/^.?(pl[ea]{0,2}se?\s*)?(j[oi]{2}n|d[ra]{2}g\s*(me)?)(\s*pl[ea]{0,2}se?)?$/i.test(message.content)) {
+        let guild = await getGuild(message).catch(er => cancelled = true)
+        logCommand(guild)
+        if (!cancelled) {
+            require('./commands/joinRun').dmExecution(message, message.content.split(/\s+/), bot, db, guild, tokenDB);
+        }
+    } else {
+        if (message.content.replace(/[^0-9]/g, '') == message.content) return;
+        let args = message.content.split(/ +/)
+        let commandName = args.shift().toLowerCase().replace(prefix, '')
+        const command = bot.commands.get(commandName) || bot.commands.find(c => c.alias && c.alias.includes(commandName))
+        if (!command) {
+            sendModMail()
+        } else if (command.dms) {
+            let guild
+            if (command.dmNeedsGuild) {
+                guild = await getGuild(message).catch(er => cancelled = true)
+                logCommand(guild)
+            }
+            if (!cancelled) {
+                if (!command.dmNeedsGuild) command.dmExecution(message, args, bot, db, guild, tokenDB)
+                else {
+                    let member = guild.members.cache.get(message.author.id)
+                    if (member.roles.highest.position < guild.roles.cache.get(bot.settings[guild.id].roles[command.role]).position && message.author.id !== '277636691227836419') {
+                        sendModMail();
+                    } else command.dmExecution(message, args, bot, db, guild, tokenDB)
+                }
+            }
+        } else {
+            message.channel.send('This command does not work in DM\'s. Please use this inside of a server')
+        }
+        async function sendModMail() {
+            let confirmModMailEmbed = new Discord.MessageEmbed()
+                .setColor(`#ff0000`)
+                .setTitle('Are you sure you want to message modmail?')
+                .setFooter('Spamming modmail with junk will result in being modmail blacklisted')
+                .setDescription(`\`\`\`${message.content}\`\`\``)
+            let confirmModMailMessage = await message.channel.send(confirmModMailEmbed)
+            let reactionCollector = new Discord.ReactionCollector(confirmModMailMessage, (r, u) => u.id == message.author.id && (r.emoji.name == '✅' || r.emoji.name == '❌'))
+            reactionCollector.on('collect', async (r, u) => {
+                reactionCollector.stop()
+                if (r.emoji.name == '✅') {
+                    let guild = await getGuild(message).catch(er => { cancelled = true })
+                    if (!cancelled) {
+                        if (r.emoji.name == '✅') modmail.sendModMail(message, guild, bot, db)
+                        confirmModMailMessage.delete()
+                    }
+                } else {
+                    confirmModMailMessage.delete()
+                }
+
+            })
+            confirmModMailMessage.react('✅')
+                .then(confirmModMailMessage.react('❌'))
+        }
+    }
+    async function logCommand(guild) {
+        if(!guild || !bot.settings[guild.id]) return
+        let logEmbed = new Discord.MessageEmbed()
+            .setAuthor(message.author.tag)
+            .setColor('#0000ff')
+            .setDescription(`<@!${message.author.id}> sent the bot: "${message.content}"`)
+            .setFooter(`User ID: ${message.author.id}`)
+            .setTimestamp()
+        if (message.author.avatarURL()) logEmbed.author.iconURL = message.author.avatarURL()
+        guild.channels.cache.get(bot.settings[guild.id].channels.dmcommands).send(logEmbed)
+    }
+}
+
+async function autoMod(message) {
+    let settings = bot.settings[message.guild.id]
+    if (!settings) return;
+    if (!message.member.roles.highest || message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.trialrl).position) return
+    if (message.mentions.roles.size != 0) mute('Pinging Roles', 2);
+
+    function mute(reason, time) {
+        //time: 1=1 hour, 2=1 day
+        let timeString, timeValue;
+        if (time == 1) {
+            timeString = '1 Hour';
+            timeValue = 3600000
+        } else if (time == 2) {
+            timeString = '1 Day';
+            timeValue = 86400000
+        }
+        message.member.roles.add(settings.roles.muted)
+            .then(db.query(`INSERT INTO mutes (id, guildid, muted, reason, modid, uTime) VALUES ('${message.author.id}', '${message.guild.id}', true, '${reason}','${bot.user.id}', '${Date.now() + timeValue}')`))
+            .then(message.author.send(`You have been muted in \`${message.guild.name}\` for \`${reason}\`. This will last for \`${timeString}\``))
+            .then(() => {
+                let modlog = message.guild.channels.cache.get(settings.channels.modlog)
+                if (!modlog) return ErrorLogger.log(new Error('Mod log not found for automod'), bot)
+                modlog.send(`${message.member} was muted for \`${timeString}\` for \`${reason}\``)
+            })
+    }
+}
 
 async function getGuild(message) {
     return new Promise(async (resolve, reject) => {
@@ -742,6 +755,9 @@ function fitStringIntoEmbed(embed, string, channel) {
     }
 }
 
+
+
+// API
 function startAPI() {
     if (botSettings.api) {
         console.log('api starting')

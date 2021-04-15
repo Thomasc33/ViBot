@@ -7,6 +7,7 @@ module.exports = {
     description: 'Displays leaderboards for different stats on the server',
     alias: ['lb'],
     dms: true,
+    dmNeedsGuild: true,
     role: 'raider',
     execute(message, args, bot, db) {
         this.leaderBoardModule(message, bot, db, message.guild)

@@ -6,6 +6,7 @@ module.exports = {
     description: 'Join back into the VC of a run incase you get disconnected',
     role: 'raider',
     dms: true,
+    dmNeedsGuild: true,
     async execute(message, args, bot, db) {
         this.findChannel(message, bot, message.guild)
     },

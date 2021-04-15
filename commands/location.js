@@ -9,6 +9,7 @@ module.exports = {
     requiredArgs: 1,
     args: '<location>',
     role: 'eventrl',
+    allowedInRestart: true,
     execute(message, args, bot) {
         let channel = message.member.voice.channelID
         if (!channel) return message.channel.send('Please join a voice channel to change location')
