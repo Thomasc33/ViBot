@@ -574,7 +574,7 @@ class afkCheck {
                         await this.leaderEmbedMessage.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                         await this.runInfoMessage.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                         await m.delete()
-                        afkChecksEmitter.on('Ended', (channelID, aborted) => {
+                        emitter.on('Ended', (channelID, aborted) => {
                             if (aborted && channelID == this.channel.id) {
                                 dms.send(`The afk check was aborted, you have been refunded ${earlyLocationCost} points`)
                                 this.db.query(`UPDATE users SET points = points + ${earlyLocationCost} WHERE id = ${u.id}`)
