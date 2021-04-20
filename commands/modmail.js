@@ -156,10 +156,10 @@ module.exports = {
                         await m.react('🔑')
                         break;
                 }
-                if (m.guild.id == '701483950559985705' && r.emoji.id == '752368122551337061') {
+                if (m.guild.id == '343704644712923138' && r.emoji.id == '752368122551337061') {
                     await m.reactions.removeAll()
                     await m.react('752368122551337061')
-                    let botReco = bot.guilds.cache.get('701483950559985705').channels.cache.get('701483950798929992')
+                    let botReco = bot.guilds.cache.get('343704644712923138').channels.cache.get('746634644644167680')
                     if (botReco) {
                         let embed = new Discord.MessageEmbed()
                         let oldEmbed = m.embeds[0]
