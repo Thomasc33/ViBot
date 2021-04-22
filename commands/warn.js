@@ -7,7 +7,9 @@ module.exports = {
     alias: ['swarn'],
     args: '<user> <reason>',
     requiredArgs: 1,
-    notes: 'Using swarn will silently warn, not sending the user a message.',
+    getNotes(guildid, member) {
+        return 'Using swarn will silently warn, not sending the user a message.'
+    },
     async execute(message, args, bot, db) {
         const silent = message.content[1].toLowerCase() == 's';
         if (args.length < 2) return;

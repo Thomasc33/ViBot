@@ -10,9 +10,9 @@ module.exports = {
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         let member = message.mentions.members.first()
-        if (member == null) member = message.guild.members.cache.get(args[0])
-        if (member == null) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
-        if (member == null) { message.channel.send('User not found'); return; }
+        if (!member) member = message.guild.members.cache.get(args[0])
+        if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
+        if (!member) { message.channel.send('User not found'); return; }
         db.query(`SELECT * FROM users WHERE id = '${member.id}'`, (err, rows) => {
             if (err) ErrorLogger.log(err, bot)
             if (settings.backend.points) {

@@ -4,55 +4,60 @@ const vision = require('@google-cloud/vision');
 const realmEyeScrape = require('../lib/realmEyeScrape');
 const charStats = require('../data/charStats.json')
 const botSettings = require('../settings.json')
-const ParseCurrentWeek = require('./parseCurrentWeek')
+const ParseCurrentWeek = require('../currentweekInfo.json').parsecurrentweek
 const client = new vision.ImageAnnotatorClient(botSettings.gcloudOptions);
 
 
 module.exports = {
-        name: 'parsemembers',
-        description: 'Parse',
-        alias: ['pm'],
-        args: '<image>',
-        notes: 'Image can either be a link, or an embeded image',
-        role: 'almostrl',
-        async execute(message, args, bot, db) {
-            let settings = bot.settings[message.guild.id]
-            let channel = message.member.voice.channel
+    name: 'parsemembers',
+    description: 'Parse',
+    alias: ['pm'],
+    args: '<image>',
+    getNotes(guildid, member) {
+        return 'Image can either be a link, or an embeded image'
+    },
+    role: 'almostrl',
+    async execute(message, args, bot, db) {
+        let settings = bot.settings[message.guild.id]
+        let channel = message.member.voice.channel
 
-            if (args.length && /^\d+$/.test(args[0])) //add ability to parse from a different channel with ;pm channelid <image>
-                channel = bot.channels.resolve(args.shift());
+        if (args.length && /^\d+$/.test(args[0])) //add ability to parse from a different channel with ;pm channelid <image>
+            channel = bot.channels.resolve(args.shift());
 
-            if (!channel) return message.channel.send('Channel not found. Make sure you are in a channel, then try again');
+        if (!channel) return message.channel.send('Channel not found. Make sure you are in a channel, then try again');
 
-            let parseStatusEmbed = new Discord.MessageEmbed()
-                .setColor(`#00ff00`)
-                .setTitle('Parse Status')
-                .addField('Parse By', `${message.member}`)
-                .addField('Status', 'Gathering image')
-            let parseStatusMessage = await message.channel.send(parseStatusEmbed)
-            let image;
-            if (message.attachments.size) image = await message.attachments.first().proxyURL;
-            else if (args.length) image = args[0]; //added check if args actually exists
-            if (!image) {
-                parseStatusEmbed.setColor('#ff0000')
-                    .fields[1].value = 'Error Getting Image'
-                await parseStatusMessage.edit(parseStatusEmbed)
-                return;
-            }
-            parseStatusEmbed.fields[1].value = 'Sending Image to Google'
+        let parseStatusEmbed = new Discord.MessageEmbed()
+            .setColor(`#00ff00`)
+            .setTitle('Parse Status')
+            .addField('Parse By', `${message.member}`)
+            .addField('Status', 'Gathering image')
+        let parseStatusMessage = await message.channel.send(parseStatusEmbed)
+        let started = Date.now()
+        let image;
+        if (message.attachments.size) image = await message.attachments.first().proxyURL;
+        else if (args.length) image = args[0]; //added check if args actually exists
+        if (!image) {
+            parseStatusEmbed.setColor('#ff0000')
+                .fields[1].value = 'Error Getting Image'
             await parseStatusMessage.edit(parseStatusEmbed)
-            try {
-                const [result] = await client.textDetection(image);
-                var players = result.fullTextAnnotation;
-                players = players.text.replace(/[\n,]/g, " ").split(/ +/)
-                players.shift()
-                players.shift()
-                players.shift()
-            } catch (er) {
-                parseStatusEmbed.fields[1].value = `Error: \`${er.message}\``
-                await parseStatusMessage.edit(parseStatusEmbed)
-                return;
-            }
+            return;
+        }
+        parseStatusEmbed.fields[1].value = 'Sending Image to Google'
+        parseStatusMessage.edit(parseStatusEmbed)
+        try {
+            const [result] = await client.textDetection(image);
+            var players = result.fullTextAnnotation;
+            players = players.text.replace(/[\n,]/g, " ").split(/ +/)
+            players.shift()
+            players.shift()
+            players.shift()
+        } catch (er) {
+            parseStatusEmbed.fields[1].value = `Error: \`${er.message}\``
+            await parseStatusMessage.edit(parseStatusEmbed)
+            return;
+        }
+
+        async function crasherParse() {
             parseStatusEmbed.fields[1].value = 'Processing Data'
             await parseStatusMessage.edit(parseStatusEmbed)
             var raiders = []
@@ -119,187 +124,177 @@ module.exports = {
                 .setDescription(`There are ${crashers.length} crashers, ${alts.length} potential alts, and ${otherChannel.length} people in other channels`)
                 .addFields({ name: 'Potential Alts', value: altsS }, { name: 'Other Channels', value: movedS }, { name: 'Crashers', value: crashersS }, { name: 'Find Command', value: `\`\`\`${find}\`\`\`` }, { name: 'Kick List', value: `\`\`\`${kickList}\`\`\`` })
             if (bot.afkChecks[channel.id]) embed.addField(`Were in VC`, `The following can do \`;join\`:\n${allowedCrashers.map(u => `${u} `)}`)
-        await message.channel.send(embed);
-        parseStatusEmbed.fields[1].value = `Crasher Parse Completed. See Below. Beginning Character Parse`
-        await parseStatusMessage.edit(parseStatusEmbed)
+            await message.channel.send(embed);
+            parseStatusEmbed.fields[1].value = `Crasher Parse Completed. See Below. Beginning Character Parse`
+            await parseStatusMessage.edit(parseStatusEmbed)
 
-        if (bot.afkChecks[channel.id]) {
-            let id = bot.afkChecks[channel.id].key
-            if (id) {
-                let member = message.guild.members.cache.get(id)
-                if (member) {
-                    message.channel.send(`/tell ${member.nickname} Can you kick the following people? **Don't copy paste names from kicklist. It may DC you**`)
+            if (bot.afkChecks[channel.id]) {
+                let id = bot.afkChecks[channel.id].key
+                if (id) {
+                    let member = message.guild.members.cache.get(id)
+                    if (member) {
+                        message.channel.send(`/tell ${member.nickname} Can you kick the following people? **Don't copy paste names from kicklist. It may DC you**`)
+                    }
                 }
             }
+            //post in crasher-list
+            let key = null
+            if (message.member.voice.channel && bot.afkChecks[message.member.voice.channel.id] && bot.afkChecks[message.member.voice.channel.id].key) key = bot.afkChecks[message.member.voice.channel.id].key
+            postInCrasherList(embed, message.guild.channels.cache.get(settings.channels.parsechannel), message.member, key)
         }
-        
-        //post in crasher-list
-        let key = null
-        if (message.member.voice.channel && 
-            bot.afkChecks[message.member.voice.channel.id] && 
-            bot.afkChecks[message.member.voice.channel.id].key) 
-            key = bot.afkChecks[message.member.voice.channel.id].key
-        postInCrasherList(embed, message.guild.channels.cache.get(settings.channels.parsechannel), message.member, key)
-
-        //character parse
-
-        let unreachable = []
-        let characterParseEmbed = new Discord.MessageEmbed()
-            .setColor('#00ff00')
-            .setTitle('Character Parse');
-        const infoList = await realmEyeScrape.getUserGroupInfo(players);
-        for (let i in players) {
-            if (players[i] == '') continue;
-            var characterInfo = infoList[players[i]];
-            if (!characterInfo || !characterInfo.characters) { 
-                unreachable.push(players[i]); 
-                console.log(players[i],characterInfo); 
-                continue 
-            }
-            if (!characterInfo.characters[0]) { 
-                unreachable.push(players[i]); 
-                continue;
-            }
-            try {
-                if (characterInfo.characters[0].class.replace(/[^a-zA-Z]/g, '') != characterInfo.characters[0].class) { unreachable.push(players[i]); continue }
-                let maxStats = charStats[characterInfo.characters[0].class.toLowerCase()]
-                if (!maxStats) { 
-                    let ci2 = characterInfo;
-                    message.channel.send(`Stats for \`${characterInfo.ign}\` \`${characterInfo.characters[0].class}\` is missing`).then(m => console.log(ci2));
-                    continue; 
-                }
-                let issue = false;
-                let character = characterInfo.characters[0]
-                let issueString = ''
-                //check for level 20
-                if (parseInt(character.level) != 20) {
-                    issue = true
-                    issueString += `\nNot level 20 (${character.level}/20)`
-                }
-                //check for max dex/attack
-                if (settings.backend.realmeyestats) {
-                    let statstot = character.statsTotal.replace(/[^0-9-,]/g, '').split(',')
-                    let statsbonus = character.statsBonus.replace(/[^0-9-,]/g, '').split(',')
-                    let statsArray = []
-                    for (let i in statstot) {
-                        statsArray.push(parseInt(statstot[i]) - parseInt(statsbonus[i]))
-                    }
-                    let stats = {
-                        hp: statsArray[0],
-                        mp: statsArray[1],
-                        att: statsArray[2],
-                        def: statsArray[3],
-                        spd: statsArray[4],
-                        vit: statsArray[5],
-                        wis: statsArray[6],
-                        dex: statsArray[7],
-                    }
-                    if (stats.dex < maxStats.dex) {
-                        issue = true;
-                        issueString += `\nDex is not maxed (${stats.dex}/${maxStats.dex})`
-                    }
-                    if (stats.att < maxStats.att) {
-                        issue = true;
-                        issueString += `\nAttack is not maxed (${stats.att}/${maxStats.att})`
-                    }
-                }
-                //check for gear reqs
-                //weapon
-                if (character.weapon) {
-                    let weaponTier = parseInt(character.weapon.split(/ +/).pop().replace('T', ''))
-                    if (weaponTier < settings.runreqs.weapon && weaponTier !== NaN) {
-                        issue = true;
-                        issueString += `\nWeapon tier is too low (T${weaponTier})`
-                    }
-                } else {
-                    issue = true;
-                    issueString += `\nWeapon is not equipped`
-                }
-                //ability
-                if (character.ability) {
-                    if (character.class.toLowerCase() != 'trickster' && character.class.toLowerCase() != 'mystic') {
-                        let abilityTier = parseInt(character.ability.split(/ +/).pop().replace('T', ''))
-                        if (abilityTier < settings.runreqs.ability && abilityTier !== NaN) {
-                            issue = true;
-                            issueString += `\nAbility tier is too low (T${abilityTier})`
+        async function characterParse() {
+            let unreachable = []
+            let characterParseEmbed = new Discord.MessageEmbed()
+                .setColor('#00ff00')
+                .setTitle('Character Parse')
+            let promises = []
+            for (let i in players) {
+                if (players[i] == '') continue;
+                promises.push(new Promise(async res => {
+                    realmEyeScrape.getUserInfo(players[i]).then(characterInfo => {
+                        function exit(console) {
+                            if (console) console.log(console)
+                            unreachable.push(players[i]);
+                            return res()
                         }
-                    }
-                } else {
-                    issue = true;
-                    issueString += `\nAbility is not equipped`
-                }
-                //armor
-                if (character.armor) {
-                    let armorTier = parseInt(character.armor.split(/ +/).pop().replace('T', ''))
-                    if (armorTier < settings.runreqs.armor && armorTier !== NaN) {
-                        issue = true;
-                        issueString += `\nArmor tier is too low (T${armorTier})`
-                    }
-                } else {
-                    issue = true;
-                    issueString += `\nArmor is not equipped`
-                }
-                //ring
-                if (character.ring) {
-                    let ringTier = parseInt(character.ring.split(/ +/).pop().replace('T', ''))
-                    if (ringTier < settings.runreqs.ring && ringTier !== NaN) {
-                        issue = true;
-                        issueString += `\nRing tier is too low (T${ringTier})`
-                    }
-                } else {
-                    issue = true;
-                    issueString += `\nRing is not equipped`
-                }
-                if (issue) {
-                    let characterEmote = bot.emojis.cache.find(e => e.name == character.class)
-                    let weaponEmoji, abilityEmoji, armorEmoji, ringEmoji
-                    if (!character.weapon) weaponEmoji = 'None'
-                    else weaponEmoji = bot.emojis.cache.find(e => e.name.toLowerCase().replace(/[^a-z0-9]/g, '').includes(character.weapon.split(' ').slice(0, -1).join('').toLowerCase().replace(/[^a-z0-9]/g, '')))
-                    if (!character.ability) abilityEmoji = 'None'
-                    else abilityEmoji = bot.emojis.cache.find(e => e.name.toLowerCase().replace(/[^a-z0-9]/g, '').includes(character.ability.split(' ').slice(0, -1).join('').toLowerCase().replace(/[^a-z0-9]/g, '')))
-                    if (!character.armor) armorEmoji = 'None'
-                    else armorEmoji = bot.emojis.cache.find(e => e.name.toLowerCase().replace(/[^a-z0-9]/g, '').includes(character.armor.split(' ').slice(0, -1).join('').toLowerCase().replace(/[^a-z0-9]/g, '')))
-                    if (!character.ring) ringEmoji = 'None'
-                    else ringEmoji = bot.emojis.cache.find(e => e.name.toLowerCase().replace(/[^a-z0-9]/g, '').includes(character.ring.split(' ').slice(0, -1).join('').toLowerCase().replace(/[^a-z0-9]/g, '')))
-                    let linkText =  `[Link](https://www.realmeye.com/player/${players[i]}) | ${characterEmote} | LVL: \`${character.level}\` | Fame: \`${character.fame}\` | Stats: \`${character.stats}\` | ${weaponEmoji} ${abilityEmoji} ${armorEmoji} ${ringEmoji}${issueString}`;
-                    if (characterParseEmbed.fields.length >= 24 || characterParseEmbed.length + linkText.length + players[i].length + 10 > 6000) {
-                        await message.channel.send(characterParseEmbed)
-                        characterParseEmbed.fields = []
-                    }
-                    characterParseEmbed.addField(players[i], linkText)
-                    if (characterParseEmbed.length > 6000)
-                    {
-                        let field = characterParseEmbed.fields.pop();
-
-                    }
-                    if (i % 5 == 0) {
-                        parseStatusEmbed.fields[1].value = `Parsing Characters (${i}/${players.length})`
-                        await parseStatusMessage.edit(parseStatusEmbed)
-                    }
-                }
-            } catch (er) {
-                console.log(er)
-                console.log(player);
-                unreachable.push(player)
+                        if (!characterInfo || !characterInfo.characters[0] || characterInfo.characters[0].class.replace(/[^a-zA-Z]/g, '') != characterInfo.characters[0].class) return exit()
+                        let maxStats = charStats[characterInfo.characters[0].class.toLowerCase()]
+                        if (!maxStats) return exit(`Stats for ${characterInfo.characters[0].class} is missing`)
+                        let issue = false;
+                        let character = characterInfo.characters[0]
+                        let issueString = ''
+                        //check for level 20
+                        if (parseInt(character.level) != 20) {
+                            issue = true
+                            issueString += `\nNot level 20 (${character.level}/20)`
+                        }
+                        //check for max dex/attack
+                        if (settings.backend.realmeyestats) {
+                            let statstot = character.statsTotal.replace(/[^0-9-,]/g, '').split(',')
+                            let statsbonus = character.statsBonus.replace(/[^0-9-,]/g, '').split(',')
+                            let statsArray = []
+                            for (let i in statstot) {
+                                statsArray.push(parseInt(statstot[i]) - parseInt(statsbonus[i]))
+                            }
+                            let stats = {
+                                hp: statsArray[0],
+                                mp: statsArray[1],
+                                att: statsArray[2],
+                                def: statsArray[3],
+                                spd: statsArray[4],
+                                vit: statsArray[5],
+                                wis: statsArray[6],
+                                dex: statsArray[7],
+                            }
+                            if (stats.dex < maxStats.dex) {
+                                issue = true;
+                                issueString += `\nDex is not maxed (${stats.dex}/${maxStats.dex})`
+                            }
+                            if (stats.att < maxStats.att) {
+                                issue = true;
+                                issueString += `\nAttack is not maxed (${stats.att}/${maxStats.att})`
+                            }
+                        }
+                        //check for gear reqs
+                        //weapon
+                        if (character.weapon) {
+                            let weaponTier = parseInt(character.weapon.split(/ +/).pop().replace('T', ''))
+                            if (weaponTier < settings.runreqs.weapon && weaponTier !== NaN) {
+                                issue = true;
+                                issueString += `\nWeapon tier is too low (T${weaponTier})`
+                            }
+                        } else {
+                            issue = true;
+                            issueString += `Weapon is not equipped`
+                        }
+                        //ability
+                        if (character.ability) {
+                            if (character.class.toLowerCase() != 'trickster' && character.class.toLowerCase() != 'mystic') {
+                                let abilityTier = parseInt(character.ability.split(/ +/).pop().replace('T', ''))
+                                if (abilityTier < settings.runreqs.ability && abilityTier !== NaN) {
+                                    issue = true;
+                                    issueString += `\nAbility tier is too low (T${abilityTier})`
+                                }
+                            }
+                        } else {
+                            issue = true;
+                            issueString += `Ability is not equipped`
+                        }
+                        //armor
+                        if (character.armor) {
+                            let armorTier = parseInt(character.armor.split(/ +/).pop().replace('T', ''))
+                            if (armorTier < settings.runreqs.armor && armorTier !== NaN) {
+                                issue = true;
+                                issueString += `\nArmor tier is too low (T${armorTier})`
+                            }
+                        } else {
+                            issue = true;
+                            issueString += `Armor is not equipped`
+                        }
+                        //ring
+                        if (character.ring) {
+                            let ringTier = parseInt(character.ring.split(/ +/).pop().replace('T', ''))
+                            if (ringTier < settings.runreqs.ring && ringTier !== NaN) {
+                                issue = true;
+                                issueString += `\nRing tier is too low (T${ringTier})`
+                            }
+                        } else {
+                            issue = true;
+                            issueString += `Ring is not equipped`
+                        }
+                        if (issue) {
+                            let characterEmote = bot.emojis.cache.find(e => e.name == character.class)
+                            let weaponEmoji, abilityEmoji, armorEmoji, ringEmoji
+                            if (!character.weapon) weaponEmoji = 'None'
+                            else weaponEmoji = bot.emojis.cache.find(e => e.name.toLowerCase().replace(/[^a-z0-9]/g, '').includes(character.weapon.split(' ').slice(0, -1).join('').toLowerCase().replace(/[^a-z0-9]/g, '')))
+                            if (!character.ability) abilityEmoji = 'None'
+                            else abilityEmoji = bot.emojis.cache.find(e => e.name.toLowerCase().replace(/[^a-z0-9]/g, '').includes(character.ability.split(' ').slice(0, -1).join('').toLowerCase().replace(/[^a-z0-9]/g, '')))
+                            if (!character.armor) armorEmoji = 'None'
+                            else armorEmoji = bot.emojis.cache.find(e => e.name.toLowerCase().replace(/[^a-z0-9]/g, '').includes(character.armor.split(' ').slice(0, -1).join('').toLowerCase().replace(/[^a-z0-9]/g, '')))
+                            if (!character.ring) ringEmoji = 'None'
+                            else ringEmoji = bot.emojis.cache.find(e => e.name.toLowerCase().replace(/[^a-z0-9]/g, '').includes(character.ring.split(' ').slice(0, -1).join('').toLowerCase().replace(/[^a-z0-9]/g, '')))
+                            if (characterParseEmbed.fields.length >= 24 || characterParseEmbed.length + issueString.length + 50 > 6000) {
+                                message.channel.send(characterParseEmbed)
+                                characterParseEmbed.fields = []
+                            }
+                            characterParseEmbed.addField(players[i], `[Link](https://www.realmeye.com/player/${players[i]}) | ${characterEmote} | LVL: \`${character.level}\` | Fame: \`${character.fame}\` | Stats: \`${character.stats}\` | ${weaponEmoji} ${abilityEmoji} ${armorEmoji} ${ringEmoji}${issueString}`)
+                            if (i % 5 == 0) {
+                                parseStatusEmbed.fields[1].value = `Parsing Characters (${i}/${players.length})`
+                                parseStatusMessage.edit(parseStatusEmbed)
+                            }
+                        }
+                        return res()
+                    }).catch(er => {
+                        unreachable.push(players[i])
+                        return res()
+                    })
+                }))
             }
+            await Promise.all(promises)
+            let unreachableEmbed = new Discord.MessageEmbed()
+                .setColor('#00ff00')
+                .setTitle('The following were unreachable')
+                .setDescription('None!')
+            for (let i in unreachable) {
+                if (unreachableEmbed.description == 'None!') unreachableEmbed.setDescription(`${unreachable[i]} `)
+                else unreachableEmbed.setDescription(unreachableEmbed.description.concat(`, ${unreachable[i]}`))
+            }
+            await message.channel.send(characterParseEmbed)
+            await message.channel.send(unreachableEmbed)
         }
-        let unreachableEmbed = new Discord.MessageEmbed()
-            .setColor('#00ff00')
-            .setTitle('The following were unreachable')
-            .setDescription('None!')
-        for (let i in unreachable) {
-            if (unreachableEmbed.description == 'None!') unreachableEmbed.setDescription(`${unreachable[i]} `)
-            else unreachableEmbed.setDescription(unreachableEmbed.description.concat(`, ${unreachable[i]}`))
-        }
-        await message.channel.send(characterParseEmbed)
-        await message.channel.send(unreachableEmbed)
 
-        parseStatusEmbed.fields[1].value = 'Parse Completed'
+        let parsePromises = []
+        parsePromises.push(crasherParse())
+        parsePromises.push(characterParse())
+
+        await Promise.all(parsePromises)
+
+        parseStatusEmbed.fields[1].value = `Parse Completed\nParse took ${(Date.now() - started) / 1000} seconds`
         await parseStatusMessage.edit(parseStatusEmbed)
 
         let currentweekparsename, parsetotalname
-        for (let i of ParseCurrentWeek.tables) if (message.guild.id == i.id) { currentweekparsename = i.parsecurrentweek; parsetotalname = i.parsetotal }
-        if (!currentweekparsename) return
+        for (let i of ParseCurrentWeek.tables) if (message.guild.id == i.id && !i.disabled) { currentweekparsename = i.parsecurrentweek; parsetotalname = i.parsetotal }
+        if (!currentweekparsename || !parsetotalname) return
         db.query(`UPDATE users SET ${parsetotalname} = ${parsetotalname} + 1, ${currentweekparsename} = ${currentweekparsename} + 1 WHERE id = '${message.author.id}'`)
         ParseCurrentWeek.update(message.guild, db, bot)
     }

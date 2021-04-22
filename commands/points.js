@@ -11,6 +11,7 @@ module.exports = {
     dmNeedsGuild: true,
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
+        if(!settings || !settings.backend.points) return
         if (message.member.roles.highest.position < message.guild.roles.cache.get(settings.roles.eventrl).position) {
             await message.member.send(await this.getPointEmbed(message.member, db))
             message.react('✅')

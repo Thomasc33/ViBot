@@ -2,7 +2,10 @@ module.exports = {
     name: 'commend',
     role: 'rl',
     args: '<user> <rusher/mapmarker>',
-    notes: 'rusher',
+    getNotes(guildid,member){
+        //to be implemented
+        return 'to be implemented'
+    },
     requiredArgs: 2,
     description: 'Gives user a role',
     async execute(message, args, bot, db) {
@@ -12,9 +15,9 @@ module.exports = {
 
         //args 0
         let member = message.mentions.members.first()
-        if (member == null) member = message.guild.members.cache.get(args[0])
-        if (member == null) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
-        if (member == null) return message.channel.send('User not found')
+        if (!member) member = message.guild.members.cache.get(args[0])
+        if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
+        if (!member) return message.channel.send('User not found')
 
         //args 1
         let type = args[1].charAt(0).toLowerCase()

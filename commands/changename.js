@@ -10,7 +10,9 @@ module.exports = {
     alias: ['cn'],
     args: '<new name>',
     requiredArgs: 1,
-    notes: 'Security+: [mention | ID] <new name> [proof]',
+    getNotes(guildid, member){
+        return 'Security+: [mention | ID] <new name> [proof]'
+    },
     role: 'raider',
     async execute(message, args, bot) {
         const settings = bot.settings[message.guild.id];

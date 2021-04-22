@@ -1,0 +1,120 @@
+{
+    "343704644712923138": {
+        "logtypes": [
+            "keypops",
+            "eventpops",
+            "cultsLead",
+            "voidsLead",
+            "assists",
+            "solocult",
+            "vialStored",
+            "vialUsed",
+            "cultRuns",
+            "voidRuns",
+            "eventsLead",
+            "parses",
+            "o3parses",
+            "feedback",
+            "o3assists",
+            "o3runs",
+            "o3feedback"
+        ],
+        "currentweeks": [
+            {
+                "case": "cultsLead",
+                "currentWeekName": "currentweekCult"
+            },
+            {
+                "case": "voidsLead",
+                "currentWeekName": "currentweekVoid"
+            },
+            {
+                "case": "assists",
+                "currentWeekName": "currentweekAssists"
+            },
+            {
+                "case": "parses",
+                "currentWeekName": "currentweekparses"
+            },
+            {
+                "case": "o3parses",
+                "currentWeekName": "o3currentweekparses"
+            },
+            {
+                "case": "feedback",
+                "currentWeekName": "currentweekFeedback"
+            },
+            {
+                "case": "o3assists",
+                "currentWeekName": "currentweekAssistso3"
+            },
+            {
+                "case": "o3feedback",
+                "currentWeekName": "currentweeko3Feedback"
+            },
+            {
+                "case": "o3runs",
+                "currentWeekName": "currentweeko3"
+            }
+        ]
+    },
+    "701483950559985705": {
+        "logtypes": [
+            "keypops",
+            "eventpops",
+            "cultsLead",
+            "voidsLead",
+            "assists",
+            "solocult",
+            "vialStored",
+            "vialUsed",
+            "cultRuns",
+            "voidRuns",
+            "eventsLead",
+            "parses",
+            "o3parses",
+            "feedback",
+            "o3assists",
+            "o3runs",
+            "o3feedback"
+        ],
+        "currentweeks": [
+            {
+                "case": "cultsLead",
+                "currentWeekName": "currentweekCult"
+            },
+            {
+                "case": "voidsLead",
+                "currentWeekName": "currentweekVoid"
+            },
+            {
+                "case": "assists",
+                "currentWeekName": "currentweekAssists"
+            },
+            {
+                "case": "parses",
+                "currentWeekName": "currentweekparses"
+            },
+            {
+                "case": "o3parses",
+                "currentWeekName": "o3currentweekparses"
+            },
+            {
+                "case": "feedback",
+                "currentWeekName": "currentweekFeedback"
+            },
+            {
+                "case": "o3assists",
+                "currentWeekName": "currentweekAssistso3"
+            },
+            {
+                "case": "o3feedback",
+                "currentWeekName": "currentweeko3Feedback"
+            },
+            {
+                "case": "o3runs",
+                "currentWeekName": "currentweeko3"
+            }
+        ]
+    }
+}

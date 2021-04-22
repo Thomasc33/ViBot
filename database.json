@@ -1,0 +1,22 @@
+{
+    "343704644712923138": {
+        "schema": "halls",
+        "users_table": "users",
+        "suspends_table": "suspensions",
+        "warns_table": "warns",
+        "vetbans_table": "vetbans",
+        "veriblacklist_table": "veriblacklist",
+        "userInfo": {
+            "id": "id",
+            "isRusher": "isRusher",
+            "isVet": "isVet",
+            "points": "points",
+            "vialUse": "vialUsed",
+            "vialStored": "vialStored"
+        },
+        "eventInfo": {
+            "eventruns": "eventruns",
+            "eventpops": "eventpops"
+        }
+    }
+}

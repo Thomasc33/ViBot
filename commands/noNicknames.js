@@ -4,7 +4,9 @@ module.exports = {
     description: 'Lists all verified raiders that dont have a nickname',
     role: 'security',
     alias: ['nn'],
-    notes: 'Only usable in mod-bot-commands',
+    getNotes(guildid, member) {
+        return 'Only usable in mod-bot-commands'
+    },
     execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
         var users = []

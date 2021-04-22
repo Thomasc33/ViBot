@@ -57,7 +57,9 @@ module.exports = {
     args: '<ign> [igns...]',
     requiredArgs: 1,
     description: 'Puts up a vote for promotions based on users current role.',
-    notes: 'Puts the message in leader-chat/veteran-rl-chat based on vote',
+    getNotes(guildid, member) {
+        return 'Puts the message in leader-chat/veteran-rl-chat based on vote'
+    },
     async execute(message, args, bot, db) {
         if (args.length == 0) return;
         for (let i in args) {
@@ -99,7 +101,7 @@ async function postVote2(message, member, bot, db) {
             promotion = await retrievePromotionType(settings, message.channel, message.author, member, role, info);
         if (!promotion) return message.channel.send(`Cancelled vote for ${member}`);
 
-        await db.query(`SELECT * FROM users WHERE id = ${member.id}`, async(err, rows) => {
+        await db.query(`SELECT * FROM users WHERE id = ${member.id}`, async (err, rows) => {
             if (err) ErrorLogger.log(err, bot);
             const feedback = await getFeedback.getFeedback(member, message.guild, bot);
             const promo_role = message.guild.roles.cache.get(settings.roles[promotion]);
@@ -138,7 +140,7 @@ async function postVote2(message, member, bot, db) {
 }
 
 function retrievePromotionType(settings, channel, author, member, role, info) {
-    return new Promise(async(resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         const embed = new Discord.MessageEmbed()
             .setColor('#0000ff')
             .setAuthor(`Choose Promotion for ${member.nickname}`, member.user.displayAvatarURL({ dynamic: true }))
@@ -150,7 +152,7 @@ function retrievePromotionType(settings, channel, author, member, role, info) {
         const collector = message.createReactionCollector((reaction, user) => !user.bot && user.id == author.id, { time: 30000 });
         let resolved = false;
 
-        collector.on('collect', async(reaction, user) => {
+        collector.on('collect', async (reaction, user) => {
             if (!reaction.me)
                 return;
 
@@ -205,7 +207,7 @@ async function postVote(message, member, bot, db) {
         .setAuthor(`${member.nickname} to ${voteType}`)
         .setDescription(`${member}\n`)
     if (member.user.avatarURL()) voteEmbed.author.iconURL = member.user.avatarURL()
-    db.query(`SELECT * FROM users WHERE id = ${member.id}`, async(err, rows) => {
+    db.query(`SELECT * FROM users WHERE id = ${member.id}`, async (err, rows) => {
         if (err) ErrorLogger.log(err, bot)
         if (voteType != 'Almost Raid Leader')
             if (rows[0]) {

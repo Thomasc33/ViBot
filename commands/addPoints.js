@@ -5,7 +5,7 @@ module.exports = {
     role: 'security',
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
-        if (!settings) return
+        if (!settings || !settings.backend.points) return
         let type
         let command = message.content.substring(botSettings.prefix.length, message.content.length).split(/ +/)[0].toLowerCase()
         if (command == this.name) type = args.shift()
