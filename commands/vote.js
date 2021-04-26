@@ -2,7 +2,7 @@ const Discord = require('discord.js')
 const getFeedback = require('./getFeedback')
 const ErrorLogger = require('../lib/logError')
 
-const num_words = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣']
+const num_words = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '❌']
 
 const guilds = {
     'default': {
@@ -98,7 +98,7 @@ async function postVote2(message, member, bot, db) {
             continue;
         let promotion = info[0];
         if (info.length > 1)
-            promotion = await retrievePromotionType(settings, message.channel, message.author, member, role, info);
+            promotion = await retrievePromotionType(settings, message.channel, message.author, member, role, info).catch(err => ErrorLogger.log(err, bot));
         if (!promotion) return message.channel.send(`Cancelled vote for ${member}`);
 
         await db.query(`SELECT * FROM users WHERE id = ${member.id}`, async (err, rows) => {
@@ -149,39 +149,29 @@ function retrievePromotionType(settings, channel, author, member, role, info) {
 
         const message = await channel.send(embed);
 
-        const collector = message.createReactionCollector((reaction, user) => !user.bot && user.id == author.id, { time: 30000 });
+        const collector = message.createReactionCollector((reaction, user) => !user.bot && user.id == author.id && num_words.indexOf(reaction.emoji.name) >= 0, { time: 30000 });
         let resolved = false;
 
-        collector.on('collect', async (reaction, user) => {
-            if (!reaction.me)
-                return;
-
-            let resolution = num_words.indexOf(reaction.emoji.name);
+        collector.once('collect', async (reaction, user) => {
             resolved = true;
-            if (resolution == -1)
-                resolve();
-            else
-                resolve(info[resolution]);
-
-            message.delete();
             collector.stop();
+            if (reaction.emoji.name == '❌')
+                return resolve();
+            return resolve(info[num_words.indexOf(reaction.emoji.name)]);
+
         });
 
         collector.on('end', () => {
             message.delete();
-            if (!resolved) {
-                resolved = true;
-                resolve();
-            }
         });
 
         for (const i in info) {
             if (resolved)
                 return;
-            await message.react(num_words[i]);
+            await message.react(num_words[i]).catch(()=>{});
         }
         if (!resolved)
-            await message.react('❌');
+            await message.react('❌').catch(()=>{});
     })
 }
 
