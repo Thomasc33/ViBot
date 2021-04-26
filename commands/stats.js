@@ -19,36 +19,13 @@ module.exports = {
 
             if (!/^[0-9]+$/.test(id))
                 return message.channel.send(`Could not find user by the name or id of ${id}.`);
-            let embed = await this.getStatsEmbed(member.id, message.guild, db).catch(er => {
+            let embed = await this.getStatsEmbed(id, message.guild, db).catch(er => {
                 message.channel.send(new Discord.MessageEmbed().setDescription(`${er}`));
             })
             if (embed) {
-                message.author.send(embed)
-                message.react('✅')
+                message.channel.send(embed)
             }
         },
-        // async dmExecution(message, args, bot, db, guild) {
-        //     let member
-        //     if (args.length == 0) member = message.author
-        //     else if (message.mentions.members) member = message.mentions.members.first()
-        //     if (!member) member = guild.members.cache.get(args[0])
-        //     if (!member) member = guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
-        //     let id = args[0];
-        //     if (member)
-        //         id = member.id;
-
-        //     if (!/^[0-9]+$/.test(id))
-        //         return message.channel.send(`Could not find user by the name or id of ${id}.`);
-
-        //     let embed = await this.getStatsEmbed(id, guild, db).catch(er => {
-        //         message.channel.send(new Discord.MessageEmbed().setDescription(`${er}`))
-        //     });
-
-        //     if (embed) {
-        //         message.author.send(embed)
-        //         message.react('✅')
-        //     }
-        // },
         async getStatsEmbed(id, guild, db) {
             const member = guild.members.cache.get(id);
             let ign = member && member.nickname ? member.nickname.replace(/[^a-z|]/gi, '').split('|')[0] : id;
