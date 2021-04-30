@@ -1,5 +1,5 @@
 const afk = require('./oldAfkCheck');
-const ErrorLogger = require('../lib/logError')
+const ErrorLogger = require('../../lib/logError')
 
 module.exports = {
     name: 'allowoldrun',

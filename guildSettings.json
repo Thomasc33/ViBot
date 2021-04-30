@@ -201,7 +201,9 @@
             "moderator": "701483950597734400",
             "headeventrl": "701483950564049014",
             "cultping": null,
-            "voidping": null
+            "voidping": null,
+            "fsvrl": "827225078340386846",
+            "mrvrl": "827226665984720938"
         },
         "channels": {
             "modmail": "701483950798929995",
@@ -426,7 +428,8 @@
             "bruh": true,
             "testalt": true,
             "createtemplate": true,
-            "id": true
+            "id": true,
+            "trainmodel": true
         },
         "categories": {
             "raiding": "raiding",

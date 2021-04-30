@@ -34,7 +34,8 @@ module.exports = {
             .addField('Verified By', `<@!${message.author.id}>`, true)
             .setTimestamp(Date.now());
         message.guild.channels.cache.get(settings.channels.modlogs).send(embed);
-        message.channel.send(`${member} has been given ${raiderRole}`)
+        let confirmEmbed = new Discord.MessageEmbed().setDescription(`${member} has been given ${raiderRole}`)
+        message.channel.send(confirmEmbed)
         member.user.send(`You have been verified on \`${message.guild.name}\`. Please head over to rules, faq, and raiding-rules channels to familiarize yourself with the server. Happy raiding`)
     }
 }

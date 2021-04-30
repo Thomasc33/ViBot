@@ -369,7 +369,7 @@ class afkCheck {
             if (this.afkInfo.twoPhase) {
                 this.leaderEmbed.footer.text = `React with ❌ to abort, Channel is opening...`
                 this.leaderEmbedMessage.edit(this.leaderEmbed)
-                let tempM = await this.raidStatus.send(`Channel will open in 5 seconds...`)
+                let tempM = await this.raidStatus.send(`<#${this.channel.id}> will open in 5 seconds...`)
                 setTimeout(async (afk) => {
                     await tempM.edit(`${afk.channel.name} is open!`)
                     await afk.channel.updateOverwrite(afk.verifiedRaiderRole.id, { CONNECT: true, VIEW_CHANNEL: true })

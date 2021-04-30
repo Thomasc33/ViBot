@@ -1,6 +1,6 @@
-const afk = require('./afkCheck');
-const ErrorLogger = require('../lib/logError')
-const EventAFK = require('./eventAfk')
+const afk = require('../afkCheck');
+const ErrorLogger = require('../../lib/logError')
+const EventAFK = require('../eventAfk')
 
 module.exports = {
     name: 'allowrun',
