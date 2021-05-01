@@ -1,4 +1,5 @@
 const afkChecks = require('./afkCheck')
+const botStatus = require('./botstatus')
 
 module.exports = {
     name: 'restart',
@@ -10,6 +11,9 @@ module.exports = {
         if (args.length != 0 && args[0].toLowerCase() == 'force') process.exit()
         else module.exports.restarting = true;
         message.channel.send('Restart Queued')
+        botStatus.StatusEmbed.fields[0].value = 'Restart Pending'
+        botStatus.StatusEmbed.setColor('#ff0000')
+        botStatus.updateAll()
         let Promises = []
 
         //afk checks

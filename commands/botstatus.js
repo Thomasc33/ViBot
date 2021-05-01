@@ -2,7 +2,7 @@ const Discord = require("discord.js")
 const reScrape = require('../lib/realmEyeScrape')
 
 var statusMessages = {}, Bot, DB
-const interval = setInterval(() => { module.exports.updateAll() }, 1000)//120000) //update every 2 mins
+const interval = setInterval(() => { module.exports.updateAll() }, 120000) //update every 2 mins
 const StatusEmbed = new Discord.MessageEmbed()
 module.exports = {
     name: 'botstatus',
@@ -62,7 +62,11 @@ module.exports = {
         await m.edit(StatusEmbed)
     },
     async updateAll() {
-        if(!DB || !Bot || StatusEmbed.fields.length < 3) return //happens on bot initialization
+        if (!DB || !Bot || StatusEmbed.fields.length < 3) return //happens on bot initialization
+        if (StatusEmbed.fields[0].value == 'Initializing') {
+            StatusEmbed.fields[0].value = 'Chilling';
+            StatusEmbed.setColor('#00ff00')
+        }
         StatusEmbed.fields[1].value = await this.checkDataBase() ? '✅' : '❌'
         StatusEmbed.fields[2].value = await reScrape.checkProxy() ? '✅' : '❌'
         for (let i in statusMessages) {
@@ -73,6 +77,7 @@ module.exports = {
 
     },
     statusMessages,
+    StatusEmbed,
     async checkDataBase() {
         return new Promise((res) => {
             DB.query('SELECT id FROM users LIMIT 1', (err, rows) => {
