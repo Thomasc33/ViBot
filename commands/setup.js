@@ -5,7 +5,7 @@ const roles = ['moderator', 'officer', 'headrl', 'vetrl', 'fsvrl', 'mrvrl', 'sec
 const channels = ['modmail', 'verification', 'manualverification', 'vetverification', 'manualvetverification', 'verificationlog', 'activeverification', 'modlogs', 'history', 'suspendlog',
     'viallog', 'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel', 'raidstatus', 'eventstatus',
     'vetstatus', 'raidcommands', 'eventcommands', 'vetcommands', 'raidingchannels', 'eventchannels', 'vetchannels', 'runlogs', 'dmcommands', 'veriactive', 'pointlogging', 'veriattempts',
-    'modmailinfo', 'parsecurrentweek', 'pastparseweeks', 'roleassignment']
+    'modmailinfo', 'parsecurrentweek', 'pastparseweeks', 'roleassignment', 'botstatus']
 const categories = ['raiding', 'veteran', 'event']
 const voice = ['raidingtemplate', 'eventtemplate', 'vettemplate', 'veteventtemplate', 'lounge', 'vetlounge', 'eventlounge', 'afk']
 const voiceprefixes = ['raidingprefix', 'vetprefix']
@@ -297,6 +297,7 @@ function getDefaultChannelName(name) {
         case 'parsecurrentweek': return 'mod-current-week';
         case 'pastparseweeks': return 'mod-parse-history';
         case 'roleassignment': return 'role-assignment';
+        case 'botstatus': return 'bot-status'
     }
 }
 

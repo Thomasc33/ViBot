@@ -38,6 +38,7 @@ const router = express.Router()
 const app = express();
 const path = require('path')
 const cors = require('cors')
+const botstatus = require('./commands/botstatus')
 const rootCas = require('ssl-root-cas').create();
 require('https').globalAgent.options.ca = rootCas;
 for (const file of commandFiles) {
@@ -240,6 +241,7 @@ bot.on("ready", async () => {
             if (bot.settings[g.id].backend.verification) verification.init(g, bot, db).catch(er => { ErrorLogger.log(er, bot); })
             if (bot.settings[g.id].backend.vetverification) vetVerification.init(g, bot, db).catch(er => { ErrorLogger.log(er, bot); })
             if (bot.settings[g.id].backend.roleassignment) roleAssignment.init(g, bot).catch(er => { ErrorLogger.log(er, bot); })
+            botstatus.init(g, bot, db)
         }
     })
 
