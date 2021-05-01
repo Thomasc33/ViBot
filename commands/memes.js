@@ -29,8 +29,10 @@ module.exports = {
                 break;
             case 'shiba':
                 message.channel.send({ files: [shibas[~~(shibas.length * Math.random())]] })
+                break;
             case 'rj':
                 message.channel.send({files: ['https://media.discordapp.net/attachments/488881485366165515/795036389834096640/20210102_151014.jpg?width=811&height=1081']})
+                break;
         }
     }
 }

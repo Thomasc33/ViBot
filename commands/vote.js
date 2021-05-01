@@ -4,52 +4,7 @@ const ErrorLogger = require('../lib/logError')
 
 const num_words = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '❌']
 
-const guilds = {
-    'default': {
-        'fullskip': ['vetrl'],
-        'rl': ['fullskip'],
-        'almostrl': ['rl'],
-        'trialrl': ['almostrl'],
-        'db_rows': [
-            ['Voids', 'voidsLead'],
-            ['Cults', 'cultsLead']
-        ]
-    },
-    '701483950559985705': {
-        'fullskip': ['fsvrl', 'mrvrl'],
-        'rl': ['fullskip', 'mrvrl'],
-        'almostrl': ['rl'],
-        'trialrl': ['almostrl'],
-        'db_rows': [
-            ['Voids', 'voidsLead'],
-            ['Cults', 'cultsLead']
-        ]
-    },
-    '343704644712923138': {
-        'fullskip': ['fsvrl', 'mrvrl'],
-        'rl': ['fullskip', 'mrvrl'],
-        'almostrl': ['rl'],
-        'trialrl': ['almostrl'],
-        'db_rows': [
-            ['Voids', 'voidsLead'],
-            ['Cults', 'cultsLead']
-        ]
-    },
-    '708026927721480254': {
-        'rl': ['vetrl'],
-        'almostrl': ['rl'],
-        'trialrl': ['almostrl'],
-        'db_rows': [
-            ['O3s', 'o3leads']
-        ]
-    },
-    'channels': {
-        'trialrl': 'leaderchat',
-        'almostrl': 'leaderchat',
-        'rl': 'vetleaderchat',
-        'fullskip': 'vetleaderchat'
-    }
-}
+const guilds = require('../voteInfo.json')
 
 module.exports = {
     name: 'vote',
@@ -168,10 +123,10 @@ function retrievePromotionType(settings, channel, author, member, role, info) {
         for (const i in info) {
             if (resolved)
                 return;
-            await message.react(num_words[i]).catch(()=>{});
+            await message.react(num_words[i]).catch(() => { });
         }
         if (!resolved)
-            await message.react('❌').catch(()=>{});
+            await message.react('❌').catch(() => { });
     })
 }
 

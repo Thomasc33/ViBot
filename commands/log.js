@@ -115,6 +115,7 @@ function confirm(runInfo, message, count) {
 function getRunInfo(guildInfo, key) {
     for (let i of guildInfo.main) {
         if (key == i.key) return i;
+        if (i.alias.includes(key)) return i
     }
     return null
 }

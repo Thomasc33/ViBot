@@ -1,5 +1,6 @@
 const Discord = require('discord.js')
 const CachedMessages = {}
+const tables = require('../currentweekInfo.json').eventcurrentweek
 
 module.exports = {
     name: 'eventcurrentweek',
@@ -23,8 +24,10 @@ module.exports = {
         let settings = bot.settings[guild.id]
         let leaderLog = guild.channels.cache.get(settings.channels.eventpastweeks)
         if (!leaderLog) return console.log('Channel not found')
+        let table = getTable(guild.id)
+        if (!table) return
         await this.sendEmbed(leaderLog, db, bot)
-        await db.query(`UPDATE users SET currentweekEvents = 0`)
+        if (!table.dontReset) await db.query(`UPDATE users SET ${table.eventcurrentweek} = 0`)
         this.update(guild, db, bot)
     },
     async update(guild, db, bot) {
@@ -35,19 +38,20 @@ module.exports = {
     },
     async sendEmbed(channel, db, bot) {
         let settings = bot.settings[channel.guild.id]
+        let table = getTable(channel.guild.id)
         return new Promise(async function (resolve, reject) {
-            db.query(`SELECT * FROM users WHERE currentweekEvents != 0`, async function (err, rows) {
+            db.query(`SELECT * FROM users WHERE ${table.eventcurrentweek} != 0`, async function (err, rows) {
                 if (err) reject(err)
                 let logged = []
                 let embed = new Discord.MessageEmbed()
                     .setColor('#00ff00')
                     .setTitle('This weeks current logged runs!')
                     .setDescription('None!')
-                rows.sort((a, b) => (parseInt(a.currentweekEvents) < parseInt(b.currentweekEvents)) ? 1 : -1)
+                rows.sort((a, b) => (parseInt(a[table.eventcurrentweek]) < parseInt(b[table.eventcurrentweek])) ? 1 : -1)
                 let index = 0
                 let embeds = []
                 for (let i of rows) {
-                    let string = `**[${index + 1}]** <@!${i.id}>:\nMinutes Lead: \`${parseInt(i.currentweekEvents) * 10}\``
+                    let string = `**[${index + 1}]** <@!${i.id}>:\nMinutes Lead: \`${parseInt(i[table.eventcurrentweek]) * 10}\``
                     fitStringIntoEmbed(embed, string)
                     logged.push(i.id)
                     index++;
@@ -109,4 +113,13 @@ module.exports = {
             })
         })
     }
+}
+
+/**
+ * 
+ * @param {String} guildid 
+ */
+function getTable(guildid) {
+    for (let i of tables) if (i.id == guildid) return i
+    return null
 }

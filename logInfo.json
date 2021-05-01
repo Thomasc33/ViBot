@@ -3,6 +3,7 @@
         "main": [
             {
                 "key": "v",
+                "alias": ["void", "voids"],
                 "multiply": null,
                 "allowAssists": true,
                 "confirm": false,
@@ -20,6 +21,7 @@
             },
             {
                 "key": "c",
+                "alias": ["cult", "cults"],
                 "multiply": null,
                 "allowAssists": true,
                 "confirm": false,
@@ -37,6 +39,7 @@
             },
             {
                 "key": "f",
+                "alias": ["feedback", "fb"],
                 "multiply": null,
                 "allowAssists": false,
                 "confirm": false,
@@ -54,6 +57,7 @@
             },
             {
                 "key": "e",
+                "alias": ["event", "events", "other"],
                 "multiply": 10,
                 "allowAssists": false,
                 "confirm": true,
@@ -76,6 +80,7 @@
         "main": [
             {
                 "key": "v",
+                "alias": ["void", "voids"],
                 "multiply": null,
                 "allowAssists": true,
                 "confirm": false,
@@ -87,11 +92,13 @@
                 "toDisplay": [
                     "currentweekCult",
                     "currentweekVoid",
-                    "currentweekAssists"
+                    "currentweekAssists",
+                    "currentweekFeedback"
                 ]
             },
             {
                 "key": "c",
+                "alias": ["cult", "cults"],
                 "multiply": null,
                 "allowAssists": true,
                 "confirm": false,
@@ -103,11 +110,13 @@
                 "toDisplay": [
                     "currentweekCult",
                     "currentweekVoid",
-                    "currentweekAssists"
+                    "currentweekAssists",
+                    "currentweekFeedback"
                 ]
             },
             {
                 "key": "f",
+                "alias": ["feedback", "fb"],
                 "multiply": null,
                 "allowAssists": false,
                 "confirm": false,
@@ -125,6 +134,7 @@
             },
             {
                 "key": "e",
+                "alias": ["event", "events", "other"],
                 "multiply": 10,
                 "allowAssists": false,
                 "confirm": true,
@@ -147,6 +157,7 @@
         "main": [
             {
                 "key": "o",
+                "alias": ["o3", "oryx"],
                 "multiply": null,
                 "allowAssists": true,
                 "confirm": false,
@@ -163,6 +174,7 @@
             },
             {
                 "key": "p",
+                "alias": ["parse"],
                 "multiply": null,
                 "allowAssists": false,
                 "confirm": false,
@@ -177,6 +189,7 @@
             },
             {
                 "key": "e",
+                "alias": ["event", "events"],
                 "multiply": 10,
                 "allowAssists": false,
                 "confirm": true,
@@ -191,6 +204,7 @@
             },
             {
                 "key": "f",
+                "alias": ["feedback", "fb"],
                 "multiply": null,
                 "allowAssists": false,
                 "confirm": false,

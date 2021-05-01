@@ -61,5 +61,39 @@
             "parsecurrentweek": "",
             "parsetotal": ""
         }
+    ],
+    "eventcurrentweek": [
+        {
+            "id": "343704644712923138",
+            "eventcurrentweek": "currentweekEvents",
+            "eventtotal": "eventsLead",
+            "dontReset": false
+        },
+        {
+            "id": "701483950559985705",
+            "eventcurrentweek": "currentweekEvents",
+            "eventtotal": "eventsLead",
+            "dontReset": false
+        },
+        {
+            "id": "708026927721480254",
+            "eventcurrentweek": "currentweekEvents",
+            "eventtotal": "eventsLead",
+            "dontReset": true
+        },
+        {
+            "id": "451171819672698920",
+            "disabled": true,
+            "eventcurrentweek": "",
+            "eventtotal": "",
+            "dontReset": false
+        },
+        {
+            "id": "697216053914370158",
+            "disabled": true,
+            "eventcurrentweek": "",
+            "eventtotal": "",
+            "dontReset": false
+        }
     ]
 }

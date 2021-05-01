@@ -46,7 +46,7 @@ module.exports = {
         let settings = bot.settings[guild.id]
         if (!embedMessage) {
             let veriChannel = guild.channels.cache.get(settings.channels.verification)
-            if (veriChannel == null) return;
+            if (!veriChannel) return;
             let messages = await veriChannel.messages.fetch({ limit: 1 })
             embedMessage = messages.first()
         }
@@ -234,7 +234,7 @@ module.exports = {
         if (blInfo) return cancelVerification(2, blInfo)
 
         //verify name isnt in server yet
-        let dupes = guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(ign.toLowerCase()));
+        let dupes = guild.members.cache.filter(user => user.nickname).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(ign.toLowerCase()));
         if (dupes) {
             return cancelVerification(3)
         } else {

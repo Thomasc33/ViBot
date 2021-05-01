@@ -17,13 +17,13 @@ module.exports = {
 }
 
 function fitStringIntoEmbed(embed, string) {
-    if (embed.fields.length == 0) embed.addField('.', string, true)
+    if (embed.fields.length == 0) embed.addField('** **', string, true)
     else if (embed.fields[embed.fields.length - 1].value.length + `\n${string}`.length >= 1024) { //change to 1024
         if (embed.length + `\n${string}`.length >= 6000) {//change back to 6k
             embeds.push(new Discord.MessageEmbed(embed))
             embed.setDescription('None!')
             embed.fields = []
-        } else embed.addField('.', string, true)
+        } else embed.addField('** **', string, true)
     } else {
         if (embed.length + `\n${string}`.length >= 6000) { //change back to 6k
             embeds.push(new Discord.MessageEmbed(embed))

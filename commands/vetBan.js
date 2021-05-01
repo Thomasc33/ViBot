@@ -11,7 +11,6 @@ module.exports = {
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         const vetBanRole = message.guild.roles.cache.get(settings.roles.vetban)
-        const vetRaiderRole = message.guild.roles.cache.get(settings.roles.vetraider);
         const suspensionLog = message.guild.channels.cache.get(settings.channels.suspendlog)
         let toBan = [];
         if (args.length < 3) {

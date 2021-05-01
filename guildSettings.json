@@ -243,7 +243,8 @@
             "modmailinfo": "701483951168159812",
             "parsecurrentweek": null,
             "pastparseweeks": null,
-            "roleassignment": "787195924249968650"
+            "roleassignment": "787195924249968650",
+            "botstatus": "837885356467683349"
         },
         "voice": {
             "raidingtemplate": "717947391755681902",
@@ -429,7 +430,8 @@
             "testalt": true,
             "createtemplate": true,
             "id": true,
-            "trainmodel": true
+            "trainmodel": true,
+            "botstatus": true
         },
         "categories": {
             "raiding": "raiding",

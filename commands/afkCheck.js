@@ -21,7 +21,7 @@ module.exports = {
     requiredArgs: 1,
     args: '<c/v/f/x> <location>',
     role: 'almostrl',
-    emitter: emitter,
+    emitter,
     get runs() {
         return [...runs];
     },
