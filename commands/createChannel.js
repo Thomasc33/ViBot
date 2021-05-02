@@ -1,6 +1,7 @@
 const ChannelsCommand = require('./vibotChannels')
 const Discord = require('discord.js')
 const fs = require('fs')
+const dbInfo = require('../database.json')
 
 var channels = []
 
@@ -10,7 +11,7 @@ module.exports = {
     role: 'eventrl',
     description: 'Create a channel that stays open and is able to be edited. Useful for simply started a long lasting channel for run types where afk checks don\'t make sense. *Default cap is 50*',
     args: '<create/open/close/rename/log/setcap> (data)',
-    getNotes(guildid,member) {
+    getNotes(guildid, member) {
         return '`create <name>` creates new channel\n`open` unlocks the channel\n`close` locks the channel\n`rename <new name>` renames the channel\n`log` (c/ve) logs a dungeon complete for everyone in vc *c/v/e required for channels in vet section only*\n`setcap <#>` sets the vc cap'
     },
     requiredArgs: 1,
@@ -179,28 +180,16 @@ module.exports = {
 
                     //get runtype
                     let runType
-                    if (channel.channel.parent.name.toLowerCase() == 'events') runType = 0
+                    if (channel.channel.parent.name.toLowerCase() == settings.categories.event) runType = 0
                     else {
                         if (!args[1]) return message.channel.send('Run type not recognized')
-                        switch (args[1].charAt(0).toLowerCase()) {
-                            case 'e':
-                                runType = 0;
-                                break;
-                            case 'v':
-                                runType = 1;
-                                break;
-                            case 'c':
-                                runType = 2;
-                                break;
-                            default:
-                                message.channel.send('Run type not recognized');
-                                break;
-                        }
+                        runType = afkCheck.getRunType(args[1].charAt(0).toLowerCase())
                     }
                     if (!runType && runType !== 0) return
+                    if (runType == 0 && !dbInfo[message.guild.id]) return message.channel.send('Event logging not setup for this server, contact Vi')
 
                     //log 
-                    let query = `UPDATE users SET ${(runType == 0) ? 'eventruns = eventruns + 1 WHERE ' : ''}${(runType == 1) ? 'voidRuns = voidRuns + 1 WHERE ' : ''}${(runType == 2) ? 'cultRuns = cultRuns + 1 WHERE ' : ''}`
+                    let query = `UPDATE users SET ${(runType == 0) ? `${dbInfo[message.guild.id].eventInfo.eventruns} = ${dbInfo[message.guild.id].eventInfo.eventruns} + 1 WHERE ` : `${runType.runLogName} = ${runType.runLogName} + 1 WHERE `}`
                     channel.channel.members.each(m => query = query.concat(`id = '${m.id}' OR `))
                     query = query.substring(0, query.length - 4)
                     db.query(query, err => {

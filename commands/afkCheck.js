@@ -8,9 +8,9 @@ const points = require('./points');
 const keyRoles = require('./keyRoles');
 const restart = require('./restart')
 const EventEmitter = require('events').EventEmitter
-const Events = require('../data/events.json')
 const pointLogger = require('../lib/pointLogger')
 const patreonHelper = require('../lib/patreonHelper')
+const afkTemplates = require('../afkTemplates.json')
 var emitter = new EventEmitter()
 
 var runs = [] //{channel: id, afk: afk instance}
@@ -22,6 +22,7 @@ module.exports = {
     args: '<c/v/f/x> <location>',
     role: 'almostrl',
     emitter,
+    getRunType,
     get runs() {
         return [...runs];
     },
@@ -38,36 +39,16 @@ module.exports = {
         destroyInactiveRuns();
 
         //Check Run Type
-        let afkTemplates = require('../afkTemplates.json')
-        let runType = null;
-        switch (args[0].charAt(0).toLowerCase()) {
-            case 'c':
-                runType = afkTemplates.cult;
-                break;
-            case 'v':
-                runType = afkTemplates.void;
-                break;
-            case 'f':
-                runType = afkTemplates.fullSkipVoid;
-                break;
-            case 'x':
-                runType = afkTemplates.splitCult;
-                break;
-            default:
-                if (message.member.roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles.vetrl).position) return message.channel.send('Run Type Not Recognized')
-                else runType = await getTemplate(message, afkTemplates, args[0]).catch(er => message.channel.send(`Unable to get template. Error: \`${er}\``))
-                break;
-        }
+        let runType = getRunType(args[0].charAt(0).toLowerCase(), message.guild.id);
+        if (!runType && message.member.roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles.vetrl).position) return message.channel.send('Run Type Not Recognized')
+        if (!runType) runType = await getTemplate(message, afkTemplates, args[0]).catch(er => message.channel.send(`Unable to get template. Error: \`${er}\``))
         if (!runType) return
 
         //create afkInfo from templates
-
         let runInfo = { ...runType }
 
         //isVet
-        let isVet = false
-        if (message.channel.parent.name.toLowerCase().includes('veteran')) isVet = true;
-        runInfo.isVet = isVet;
+        runInfo.isVet = message.channel.parent.name.toLowerCase() == bot.settings[message.guild.id].categories.veteran ? true : false;
 
         //set Raid Leader
         runInfo.raidLeader = message.author.id;
@@ -510,7 +491,7 @@ class afkCheck {
             this.earlyLocation.push(u);
             return;
         }
-        if (this.nitro.length + 1 > this.settings.numerical.nitrocount) return;
+        if (this.nitro.length + 1 > this.settings.numerical.nitrocount) return reactor.send('Too many Nitro Boosters have already received location for this run. Try again in the next run!');
         if (reactor.roles.cache.has(this.nitroBooster.id)) {
             if (reactor.voice.channel && reactor.voice.channel.id == this.channel.id) {
                 reactor.send('Nitro has changed and only gives garunteed spot in VC. You are already in the VC so this use hasn\'t been counted').catch(er => this.commandChannel.send(`<@!${u.id}> tried to react with <${botSettings.emote.shard}> but their DMs are private`))
@@ -666,18 +647,54 @@ class afkCheck {
     }
 
     async postAfk() {
+        if (!this.afkInfo.postAfkCheck) return this.endAfk();
+
+        //stop main timer
+        clearInterval(this.timer);
+
+        //stops panel reaction collector
+        this.leaderReactionCollector.stop();
+
+        //change filter on main reaction collector
+        this.raidStatusReactionCollector.filter = (r, u) => !u.bot && r.emoji.id === this.settings.misc.icon.replace(/[^0-9]/gi, '');
+
+        //move out people
+        this.channel.members.each(async u => {
+            if (!this.raiders.includes(u.id)) {
+                let reactor = this.message.guild.members.cache.get(u.id)
+                if (reactor.roles.highest.position >= this.leaderOnLeave.position) return;
+                await reactor.voice.setChannel(this.afkChannel).catch(er => { })
+            }
+        });
+
+        //start post afk timer
+        this.timer = await setInterval(() => { this.updatePost() }, 5000);
+
+        //lock vc
+        this.channel.updateOverwrite(this.verifiedRaiderRole.id, { CONNECT: false, VIEW_CHANNEL: true })
+        if (this.eventBoi) await this.channel.updateOverwrite(this.eventBoi.id, { CONNECT: false, VIEW_CHANNEL: true })
+
+        //post afk check embed
+        this.mainEmbed.setDescription(`__**Post AFK Move-in**__\nIf you got moved out of vc, or missed the afk check:\n**1.** Join lounge\n**2** React with <${this.settings.misc.icon}> to get moved in.\n__Time Remaining:__ ${this.postTime} seconds.`)
+            .setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`);
+        this.raidStatusMessage.edit("", this.mainEmbed).catch(er => console.log(er));
+    }
+    async updatePost() {
+        this.postTime -= 5;
+        if (this.postTime == 0) return this.endAfk();
+
+        this.mainEmbed.setDescription(`__**Post AFK Move-in**__\nIf you got moved out of vc, or missed the afk check:\n**1.** Join lounge\n**2** React with <${this.settings.misc.icon}> to get moved in.\n__Time Remaining:__ ${this.postTime} seconds.`);
+        this.raidStatusMessage.edit("", this.mainEmbed).catch(er => console.log(er));
+    }
+
+    async endAfk() {
+        //end everything
         this.raidStatusReactionCollector.stop();
         this.leaderReactionCollector.stop();
         clearInterval(this.moveInTimer);
         clearInterval(this.timer);
-        clearInterval(this.updateVC)
+        clearInterval(this.updateVC);
 
-        if (!this.afkInfo.postAfkCheck) return this.endAfk();
-        //ill implement later
-        this.endAfk();
-    }
-
-    async endAfk() {
         //split groups for split runs
         if (this.afkInfo.isSplit) await this.splitLogic();
 
@@ -809,7 +826,7 @@ class afkCheck {
 
         //log key
         for (let u of this.keys) {
-            this.db.query(`UPDATE users SET keypops = keypops + 1 WHERE id = '${u}'`)
+            this.db.query(`UPDATE users SET ${this.afkInfo.keyLogName} = ${this.afkInfo.keyLogName} + 1 WHERE id = '${u}'`)
             keyRoles.checkUser(this.guild.members.cache.get(u), this.bot, this.db)
         }
 
@@ -818,9 +835,7 @@ class afkCheck {
         else setTimeout(log, 60000, this)
         function log(afkCheck) {
             if (afkCheck.channel && afkCheck.channel.members.size != 0) {
-                let query = `UPDATE users SET `
-                if (afkCheck.afkInfo.vialReact) query = query.concat('voidRuns = voidRuns + 1 WHERE ')
-                else query = query.concat('cultRuns = cultRuns + 1 WHERE ')
+                let query = `UPDATE users SET ${afkCheck.afkInfo.runLogName} = ${afkCheck.afkInfo.runLogName} + 1 WHERE `
                 afkCheck.channel.members.each(m => query = query.concat(`id = '${m.id}' OR `))
                 query = query.substring(0, query.length - 4)
                 afkCheck.db.query(query, err => {
@@ -887,6 +902,7 @@ class afkCheck {
             time: Date.now(),
             runType: this.run
         }
+        this.bot.afkChecks[this.channel.id].active = false
         if (this.keys.length > 0)
             fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => {
                 if (err) ErrorLogger.log(err, this.bot)
@@ -895,6 +911,7 @@ class afkCheck {
 
         emitter.emit('Ended', this.channel.id, true)
         this.active = false;
+
     }
 
     async splitLogic() {
@@ -989,18 +1006,18 @@ async function createChannel(runInfo, message, bot) {
     return new Promise(async (res, rej) => {
         //channel creation
         if (runInfo.isVet) {
-            var parent = 'veteran raiding';
+            var parent = settings.categories.veteran;
             var template = message.guild.channels.cache.get(settings.voice.vettemplate)
             var raider = message.guild.roles.cache.get(settings.roles.vetraider)
             var vibotChannels = message.guild.channels.cache.get(settings.channels.vetchannels)
         } else if (runInfo.isEvent) {
-            var parent = 'events';
+            var parent = settings.categories.event;
             var template = message.guild.channels.cache.get(settings.voice.eventtemplate)
             var raider = message.guild.roles.cache.get(settings.roles.raider)
             var eventBoi = message.guild.roles.cache.get(settings.roles.eventraider)
             var vibotChannels = message.guild.channels.cache.get(settings.channels.eventchannels)
         } else {
-            var parent = 'raiding';
+            var parent = settings.categories.raiding;
             var template = message.guild.channels.cache.get(settings.voice.raidingtemplate)
             var raider = message.guild.roles.cache.get(settings.roles.raider)
             var vibotChannels = message.guild.channels.cache.get(settings.channels.raidingchannels)
@@ -1031,6 +1048,18 @@ async function createChannel(runInfo, message, bot) {
         if (!channel) rej('No channel was made')
         res(channel);
     })
+}
+
+/**
+ * 
+ * @param {String} char 
+ * @param {String} guildid 
+ * @returns {Object} RunType
+ */
+function getRunType(char, guildid) {
+    for (let i in afkTemplates[guildid]) if (afkTemplates[guildid][i].symbol == char) return afkTemplates[guildid][i]
+    return null
+
 }
 
 async function getTemplate(message, afkTemplates, runType) {

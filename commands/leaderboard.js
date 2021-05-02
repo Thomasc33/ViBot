@@ -33,6 +33,38 @@ const leaderBoardTypes = {
             "dbNames": ["points"],
             "name": "Points"
         }
+    ],
+    "701483950559985705": [
+        {
+            "index": 0,
+            "dbNames": ["keypops"],
+            "name": "Key Pops"
+        },
+        {
+            "index": 1,
+            "dbNames": ["eventpops"],
+            "name": "Event Key Pops"
+        },
+        {
+            "index": 2,
+            "dbNames": ["cultRuns", "voidRuns"],
+            "name": "Total Runs"
+        },
+        {
+            "index": 3,
+            "dbNames": ["cultsLead", "voidsLead"],
+            "name": "Total Runs Lead"
+        },
+        {
+            "index": 4,
+            "dbNames": ["vialUsed"],
+            "name": "Vials Used"
+        },
+        {
+            "index": 5,
+            "dbNames": ["points"],
+            "name": "Points"
+        }
     ]
 }
 
@@ -44,9 +76,11 @@ module.exports = {
     dmNeedsGuild: true,
     role: 'raider',
     execute(message, args, bot, db) {
+        if (!leaderBoardTypes[message.guild.id]) return message.channel.send('Leaderboards not setup for this server')
         this.leaderBoardModule(message, bot, db, message.guild)
     },
     async dmExecution(message, args, bot, db, guild) {
+        if (!leaderBoardTypes[guild.id]) return message.channel.send('Leaderboards not setup for this server')
         this.leaderBoardModule(message, bot, db, guild)
     },
     async leaderBoardModule(message, bot, db, guild) {
@@ -77,30 +111,30 @@ module.exports = {
                     let desc = `<@!${rows[i].id}>`
                     if (member && member.nickname) desc += ` \`${member.nickname}\``
                     tot = 0
-                    for (let j of rows[i].dbNames) tot = tot + parseInt(rows[i][j])
+                    for (let j of type.dbNames) tot = tot + parseInt(rows[i][j])
                     desc += `: \`${tot}\` ${type.name}`
                     fitStringIntoEmbed(embed, desc, message.channel)
                 }
                 message.channel.send(embed)
                 embedMessage.delete()
             })
-            for (let i = 0; i < leaderBoardTypes.length; i++) {
-                if (reacted) break;
-                switch (i) {
-                    case 0: await embedMessage.react('1️⃣').catch(er => { }); break;
-                    case 1: await embedMessage.react('2️⃣').catch(er => { }); break;
-                    case 2: await embedMessage.react('3️⃣').catch(er => { }); break;
-                    case 3: await embedMessage.react('4️⃣').catch(er => { }); break;
-                    case 4: await embedMessage.react('5️⃣').catch(er => { }); break;
-                    case 5: await embedMessage.react('6️⃣').catch(er => { }); break;
-                    case 6: await embedMessage.react('7️⃣').catch(er => { }); break;
-                    case 7: await embedMessage.react('8️⃣').catch(er => { }); break;
-                    case 8: await embedMessage.react('9️⃣').catch(er => { }); break;
-                    case 9: await embedMessage.react('🔟').catch(er => { }); break;
-                }
-            }
-            if (!reacted) embedMessage.react('❌').catch(er => { });
         })
+        for (let i = 0; i < leaderBoardTypes[guild.id].length; i++) {
+            if (reacted) break;
+            switch (i) {
+                case 0: await embedMessage.react('1️⃣').catch(er => { }); break;
+                case 1: await embedMessage.react('2️⃣').catch(er => { }); break;
+                case 2: await embedMessage.react('3️⃣').catch(er => { }); break;
+                case 3: await embedMessage.react('4️⃣').catch(er => { }); break;
+                case 4: await embedMessage.react('5️⃣').catch(er => { }); break;
+                case 5: await embedMessage.react('6️⃣').catch(er => { }); break;
+                case 6: await embedMessage.react('7️⃣').catch(er => { }); break;
+                case 7: await embedMessage.react('8️⃣').catch(er => { }); break;
+                case 8: await embedMessage.react('9️⃣').catch(er => { }); break;
+                case 9: await embedMessage.react('🔟').catch(er => { }); break;
+            }
+        }
+        if (!reacted) embedMessage.react('❌').catch(er => { });
     }
 }
 function fitStringIntoEmbed(embed, string, channel) {
