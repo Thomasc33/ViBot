@@ -15,11 +15,10 @@
         "keyFilename": "C:/Program Files (x86)/Google/Cloud SDK/vibotparsingkeyjs.json",
         "projectId": "vibot-275815"
     },
-    "dbInfo": {
+    "defaultDbInfo": {
         "host": "40.142.138.170",
         "user": "DevComputer",
-        "password": "NiqiPId0R$V9E5v!Y1YyDN3H$y",
-        "database": "testinghalls"
+        "password": "NiqiPId0R$V9E5v!Y1YyDN3H$y"
     },
     "tokenDBInfo": {
         "host": "40.142.138.170",
