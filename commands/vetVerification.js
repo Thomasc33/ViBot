@@ -120,7 +120,7 @@ module.exports = {
                 }
             }
         }
-        let problems = [1]
+        let problems = []
         if (!(loggedRuns >= settings.vetverireqs.runs || realmEyeRuns >= settings.vetverireqs.runs || exaltCounts >= settings.vetverireqs.runs)) problems.push(1)
         if (maxedChars < settings.vetverireqs.maxed) problems.push(2)
         if (meleeMaxed < settings.vetverireqs.meleeMaxed) problems.push(3)
