@@ -13,6 +13,7 @@ module.exports = {
         const vetRaiderRole = message.guild.roles.cache.get(settings.roles.vetraider);
         var member = message.mentions.members.first()
         if (!member) member = message.guild.members.cache.get(args[0]);
+        if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
         if (!member) return message.channel.send("User not found")
         if (member.roles.cache.has(vetBanRole.id)) return message.channel.send("User is vet banned")
         member.roles.add(vetRaiderRole)
