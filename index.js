@@ -39,11 +39,11 @@ const bot = new Discord.Client()
 const cooldowns = new Discord.Collection()
 bot.commands = new Discord.Collection()
 bot.dbs = {}
-bot.crasherList = require('./data/crasherList.json') || {}
-bot.afkChecks = require('./afkChecks.json') || {}
-bot.settings = require('./guildSettings.json') || {}
-bot.serverWhiteList = require('./data/serverWhiteList.json') || {}
-const emojiServers = require('./data/emojiServers.json') || {}
+bot.crasherList = moduleIsAvailable('./data/crasherList.json') ? require('./data/crasherList.json') : {}
+bot.afkChecks = moduleIsAvailable('./afkChecks.json') ? require('./afkChecks.json') : {}
+bot.settings = moduleIsAvailable('./guildSettings.json') ? require('./guildSettings.json') : {}
+bot.serverWhiteList = moduleIsAvailable('./data/serverWhiteList.json') ? require('./data/serverWhiteList.json') : {}
+const emojiServers = moduleIsAvailable('./data/emojiServers.json') ? require('./data/emojiServers.json') : {}
 const dbSchemas = require('./data/schemas.json')
 const router = express.Router()
 const app = express();
@@ -768,6 +768,15 @@ function checkPatreon(patreonRoleId, userId) {
     else return false
 }
 
+function moduleIsAvailable(path) {
+    try {
+        require.resolve(path);
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
 
 
 // API
@@ -921,7 +930,6 @@ function startAPI() {
         })
 
         app.use('/api', router)
-        app.use('/o/discord', require('./api/discord'))
         app.use((err, req, res, next) => {
             switch (err.message) {
                 case 'NoCodeProvided':
@@ -939,8 +947,6 @@ function startAPI() {
         app.use((err, req, res) => {
             console.log(req)
         })
-
-
 
         const httpsServer = https.createServer(credentials, app)
 
