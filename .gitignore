@@ -1,3 +1,5 @@
 node_modules/
 .vs/
 settings.json
+guildSettings.json
+afkChecks.json
