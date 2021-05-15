@@ -221,11 +221,15 @@ else {
 
     //hidden layers
     model.add(tf.layers.dense({
-        units: 270,
+        units: 750,
         activation: layer
     }))
     model.add(tf.layers.dense({
-        units: 100,
+        units: 75,
+        activation: layer
+    }))
+    model.add(tf.layers.dense({
+        units: 20,
         activation: layer
     }))
 
@@ -237,8 +241,8 @@ else {
 
     //compile
     model.compile({
-        optimizer: tf.train.adam(),
-        loss: tf.losses.meanSquaredError
+        optimizer: tf.train.adam(0.0001),
+        loss: tf.losses.huberLoss
     })
 
     train().then(async () => { console.log('training complete') })
@@ -250,8 +254,10 @@ async function train() {
     if (botSettings.MLtraining) {
         const config = {
             shuffle: true,
-            epochs: 10,
-            verbose: 1
+            epochs: 15,
+            verbose: 1,
+            validationSplit: 0.2,
+            shuffle: true,
         }
         const response = await model.fit(xs, ys, config)
         console.log(response.history.loss[0])

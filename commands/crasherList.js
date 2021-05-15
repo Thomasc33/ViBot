@@ -1,5 +1,5 @@
 const Discord = require('discord.js')
-const crasherList = require('../crasherList.json')
+const crasherList = require('../data/crasherList.json')
 const fs = require('fs')
 const ErrorLogger = require('../lib/logError')
 

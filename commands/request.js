@@ -8,9 +8,46 @@ module.exports = {
     description: 'In the event someone fake reacts, simply use this command and a message will be sent to raid-status/vet-status where a new raider can react and get sent location',
     alias: ['rq'],
     role: 'almostrl',
-    args: '<key/vial/brain/mystic/rusher> [Location]',
-    requiredArgs: 1,
+    /**
+     * 
+     * @param {Discord.Message} message 
+     * @param {Array} args 
+     * @param {Discord.Client} bot 
+     * @param {*} db 
+     */
     async execute(message, args, bot, db) {
+        //check vc for an active afk check
+        let vc = message.member.voice.channel
+        if (!vc) return message.channel.send('Join a VC to request')
+        let afkRuns = afkCheck.runs
+        let found = false, afk
+        for (let i of afkRuns) if (i.channel == vc.id && i.afk.active) { found = true; afk = i.afk }
+        if (!found || !afk) return message.channel.send('No active afk checks found')
+
+        //prompt for what emote to request
+        let promptEmbed = new Discord.MessageEmbed()
+            .setDescription('Select a reaction to request')
+        let m = await message.channel.send(promptEmbed)
+        let reacts = [afk.afkInfo.keyEmoteID]
+        if (afk.afkInfo.vialReact) reacts.push(afk.afkInfo.vialEmoteID)
+        for (let i of afk.afkInfo.earlyLocationReacts) reacts.push(i.emoteID)
+
+        let reactionCollector = new Discord.ReactionCollector(m, (r, u) => !u.bot && reacts.includes(r.emoji.id))
+        reactionCollector.on('collect', async (r, u) => {
+            //post in raid status
+            let raidStatusEmbed = new Discord.MessageEmbed()
+                .setDescription(`A ${r.emoji} has been requested in ${afk.channel}.`)
+            let rm = await afk.raidStatus.send(raidStatusEmbed)
+            let rsReactionCollector = new Discord.ReactionCollector(rm, (re, u) => !u.bot && re.emoji.id == r.emoji.id)
+            rsReactionCollector.on('collect', (r, u) => {
+                afkCheck.requestReactionHandler(r, u, vc.id)
+            })
+            rm.react(r.emoji.id)
+            m.delete()
+        })
+        for (let i of reacts) await m.react(i)
+    },
+    async executeOld(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         let isVet
         if (message.channel.parent.name.toLowerCase() === 'raiding') isVet = false;

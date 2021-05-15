@@ -1,5 +1,5 @@
 const ErrorLogger = require('../lib/logError')
-const db = require('../database.json')
+const db = require('../data/database.json')
 
 module.exports = {
     name: 'addvial',

@@ -1,7 +1,7 @@
 const ChannelsCommand = require('./vibotChannels')
 const Discord = require('discord.js')
 const fs = require('fs')
-const dbInfo = require('../database.json')
+const dbInfo = require('../data/database.json')
 
 var channels = []
 

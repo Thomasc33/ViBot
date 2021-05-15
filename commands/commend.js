@@ -1,15 +1,27 @@
+const Discord = require('discord.js')
+const commendations = require('../data/commends.json')
 module.exports = {
     name: 'commend',
     role: 'rl',
-    args: '<user> <rusher/mapmarker>',
-    getNotes(guildid,member){
-        //to be implemented
-        return 'to be implemented'
+    args: '<user> <role *see below*>',
+    getNotes(guildid, member) {
+        return commendations ? `Role List: ${commendations[guildid].map(r => { r.roleName }).join(', ')}` : 'no roles found for this guild'
     },
     requiredArgs: 2,
     description: 'Gives user a role',
+    /**
+     * 
+     * @param {Discord.Message} message 
+     * @param {Array} args 
+     * @param {Discord.Client} bot 
+     * @param {*} db 
+     * @returns 
+     */
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
+        let commendationInfo = commendations[message.guild.id]
+        if (!commendationInfo) return message.channel.send('Commendations not setup for this server')
+
         //check args length
         if (args.length < 2) return
 
@@ -23,18 +35,22 @@ module.exports = {
         let type = args[1].charAt(0).toLowerCase()
 
         //give role and log
-        switch (type) {
-            case 'r':
-            case 'm':
-                let rusher = message.guild.roles.cache.get(settings.roles.rusher)
-                if (member.roles.cache.has(rusher.id)) return message.channel.send(`${member} already has \`${rusher.name}\``)
+        let found = false
+        for (let i of commendationInfo) {
+            if (i.roleName == type.toLowerCase()) {
+                found = true
+                if (i.minimumRole) {
+                    let minRole = message.guild.roles.cache.get(settings.roles[i.minimumRole])
+                    if (minRole && message.member.roles.highest.position < minRole.position) return message.channel.send(`The minimum role to commend this role is \`${minRole.name}\``)
+                }
+                let role = message.guild.roles.cache.get(settings.roles[i.roleSetupName])
+                if (!role) return message.channels.send(`\`${i.roleSetupName}\` not found in setup`)
+                if (member.roles.cache.has(role.id)) return message.channel.send(`${member} already has \`${role.name}\``)
                 let modlog = message.guild.channels.cache.get(settings.channels.modlogs)
-                await modlog.send(`\`${rusher.name}\` added to ${member} per the request of ${message.member}`)
-                member.roles.add(rusher.id)
-                if (type == 'r') db.query(`UPDATE users SET isRusher = true WHERE id = '${member.id}'`)
-                break;
-            default:
-                return message.channel.send(`${args[1]} is not a valid commendation type. Check \`;commands commend\` for a list of roles`)
+                if (modlog) await modlog.send(`\`${role.name}\` added to ${member} per the request of ${message.member}`)
+                member.roles.add(role.id)
+                if (i.dbName) db.query(`UPDATE users SET ${i.dbName} = true WHERE id = '${member.id}'`)
+            }
         }
 
         //give confirmation

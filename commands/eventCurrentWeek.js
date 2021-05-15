@@ -1,6 +1,6 @@
 const Discord = require('discord.js')
 const CachedMessages = {}
-const tables = require('../currentweekInfo.json').eventcurrentweek
+const tables = require('../data/currentweekInfo.json').eventcurrentweek
 
 module.exports = {
     name: 'eventcurrentweek',

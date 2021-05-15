@@ -1,6 +1,11 @@
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
 
+//const keypops = require('../data/keypop.json')
+const keypops = {
+    
+}
+
 module.exports = {
     name: 'pop',
     description: 'Logs key pops',

@@ -23,6 +23,7 @@ module.exports = {
     role: 'almostrl',
     emitter,
     getRunType,
+    requestReactionHandler,
     get runs() {
         return [...runs];
     },
@@ -286,6 +287,7 @@ class afkCheck {
             .setTimestamp(Date.now())
         if (this.message.author.avatarURL()) this.mainEmbed.author.iconURL = this.message.author.avatarURL()
         if (this.afkInfo.reqsImageUrl) this.mainEmbed.setImage(this.afkInfo.reqsImageUrl)
+        this.mainEmbed.description = this.mainEmbed.description.replace('{voicechannel}', `${this.channel}`)
         this.raidStatusMessage.edit(this.mainEmbed)
         this.bot.afkChecks[this.channel.id].url = this.raidStatusMessage.url
 
@@ -1076,4 +1078,13 @@ async function destroyInactiveRuns() {
         }
     }
     runs = runs.filter((v, i, r) => v.afk)
+}
+
+function requestReactionHandler(r, u, channelId) {
+    for (let i of runs) {
+        if (i.channel == channelId) {
+            i.afk.reactionHandler(r, u)
+            return
+        }
+    }
 }

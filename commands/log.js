@@ -3,7 +3,7 @@ const CurrentWeek = require('./currentWeek')
 const eCurrentWeek = require('./eventCurrentWeek')
 const pCurrentWeek = require('./parseCurrentWeek')
 
-const logs = require('../logInfo.json')
+const logs = require('../data/logInfo.json')
 
 
 module.exports = {

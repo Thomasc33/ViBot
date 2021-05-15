@@ -4,7 +4,7 @@ const vision = require('@google-cloud/vision');
 const realmEyeScrape = require('../lib/realmEyeScrape');
 const charStats = require('../data/charStats.json')
 const botSettings = require('../settings.json')
-const ParseCurrentWeek = require('../currentweekInfo.json').parsecurrentweek
+const ParseCurrentWeek = require('../data/currentweekInfo.json').parsecurrentweek
 const client = new vision.ImageAnnotatorClient(botSettings.gcloudOptions);
 
 

@@ -1,6 +1,6 @@
 const Discord = require('discord.js')
 //const logTypes = ['keypops', 'eventpops', 'cultsLead', 'voidsLead', 'assists', 'solocult', 'vialStored', 'vialUsed', 'cultRuns', 'voidRuns', 'eventsLead', 'parses', 'o3parses', 'feedback', 'o3assists', 'o3runs', 'o3feedback']
-const db = require('../changelog.json')
+const db = require('../data/changelog.json')
 
 module.exports = {
     name: 'changelog',

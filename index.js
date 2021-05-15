@@ -39,12 +39,12 @@ const bot = new Discord.Client()
 const cooldowns = new Discord.Collection()
 bot.commands = new Discord.Collection()
 bot.dbs = {}
-bot.crasherList = require('./crasherList.json') || {}
+bot.crasherList = require('./data/crasherList.json') || {}
 bot.afkChecks = require('./afkChecks.json') || {}
 bot.settings = require('./guildSettings.json') || {}
-bot.serverWhiteList = require('./serverWhiteList.json') || {}
+bot.serverWhiteList = require('./data/serverWhiteList.json') || {}
 const emojiServers = require('./data/emojiServers.json') || {}
-const dbSchemas = require('./schemas.json')
+const dbSchemas = require('./data/schemas.json')
 const router = express.Router()
 const app = express();
 const rootCas = require('ssl-root-cas').create();
@@ -549,7 +549,7 @@ async function dmHandler(message) {
 async function autoMod(message) {
     let settings = bot.settings[message.guild.id]
     if (!settings || !settings.backend.automod) return;
-    if (!message.member.roles.highest || message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.trialrl).position) return
+    if (!message.member.roles.highest || message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.eventrl).position) return
     if (message.mentions.roles.size != 0) mute('Pinging Roles', 2);
 
     function mute(reason, time) {
