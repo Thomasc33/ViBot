@@ -176,9 +176,9 @@ const achievementIndexes = {
 }
 
 var model
-if (fs.existsSync(`${botSettings.vibotDirectory}/verificationModel/model.json`)) {
+if (fs.existsSync(`${global.appRoot}/verificationModel/model.json`)) {
     async function loadModel() {
-        model = await tf.loadLayersModel(`file://${botSettings.vibotDirectory}/verificationModel/model.json`)
+        model = await tf.loadLayersModel(`file://${global.appRoot}/verificationModel/model.json`)
 
         //compile
         model.compile({

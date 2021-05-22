@@ -3,14 +3,12 @@
     "prodBotId": "",
     "botId": "",
     "botSecret": "",
-    "hallsId": "",
     "developerId": "",
     "api": false,
     "MLtraining": false,
     "MLActiveTraining": false,
     "apiPort": 80,
     "earlyLocationCooldown": 720000,
-    "vibotDirectory": "",
     "gcloudOptions": {
         "keyFilename": "",
         "projectId": ""

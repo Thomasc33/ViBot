@@ -81,7 +81,7 @@ module.exports = {
     async checkDataBase() {
         return new Promise((res) => {
             DB.query('SELECT id FROM users LIMIT 1', (err, rows) => {
-                if (!err || rows.length > 0) return res(true)
+                if (!err || (rows && rows.length > 0)) return res(true)
                 else return res(false)
             })
         })

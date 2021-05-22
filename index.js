@@ -9,6 +9,9 @@ const bodyParser = require('body-parser')
 const rateLimit = require('express-rate-limit')
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
+const path = require('path');
+global.appRoot = path.resolve(__dirname); //put here so verification ml doenst break
+
 
 // Import Internal Libraries
 const ErrorLogger = require(`./lib/logError`)
