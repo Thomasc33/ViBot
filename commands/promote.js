@@ -1,16 +1,17 @@
-const promoTypes = [
-    {
-        key: 'e',
-        toAdd: 'eventrl',
-        toRemove: 'lol'
-    },
-    {
-        key: 'l',
-        toAdd: 'lol',
-        toRemove: 'eventrl'
-    }
-]
-
+const promoTypes = {
+    "343704644712923138": [
+        {
+            key: 'e',
+            toAdd: 'eventrl',
+            toRemove: 'lol'
+        },
+        {
+            key: 'l',
+            toAdd: 'lol',
+            toRemove: 'eventrl'
+        }
+    ]
+}
 
 module.exports = {
     name: 'promote',
@@ -30,7 +31,8 @@ module.exports = {
         if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[1].toLowerCase()));
         if (!member) return message.channel.send('User not found')
 
-        for (let i of promoTypes) {
+        if (!promoTypes[message.guild.id]) return message.channel.send('Promos not setup for this guild')
+        for (let i of promoTypes[message.guild.id]) {
             if (i.key == promoType) {
                 await member.roles.add(settings.roles[i.toAdd])
                 await member.roles.remove(settings.roles[i.toRemove]).catch(er => { })

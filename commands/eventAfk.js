@@ -86,6 +86,18 @@ module.exports = {
             eventTemplate.reacts.push(botSettings.emoteIDs.switchS)
         }
 
+        //keyCount
+        if(event.keyCount) eventTemplate.keyCount = event.keyCount
+
+        //keyPopPoints
+        if(event.keyPopPoints) eventTemplate.keyPopPointsOverride = keyPopPoints
+
+        //earlyLocationCost
+        if(event.earlyLocationCost) eventTemplate.earlyLocationCost = earlyLocationCost
+
+        //vcCap
+        if(event.vcCap) eventTemplate.vcCap = event.vcCap
+
         //start afkcheck
         afkCheck.eventAfkExecute(message, args, bot, db, tokenDB, eventTemplate, isVet)
     },

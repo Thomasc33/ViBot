@@ -105,10 +105,3 @@ async function eventReact(pingMessage, event) {
     if (event.bard) await pingMessage.react(botSettings.emoteIDs.Bard)
     if (event.priest) await pingMessage.react(botSettings.emoteIDs.Priest)
 }
-
-async function getTemplate(message, afkTemplates, runType) {
-    return new Promise(async (res, rej) => {
-        if (afkTemplates[message.author.id] && afkTemplates[message.author.id][runType.toLowerCase()]) return res(afkTemplates[message.author.id][runType.toLowerCase()])
-        else res(null)
-    })
-}

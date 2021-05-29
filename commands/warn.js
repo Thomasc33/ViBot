@@ -2,7 +2,7 @@ const Discord = require('discord.js')
 
 module.exports = {
     name: 'warn',
-    role: 'almostrl',
+    role: 'eventrl',
     description: 'Warns a user for a given reason',
     alias: ['swarn'],
     args: '<user> <reason>',

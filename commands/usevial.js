@@ -4,6 +4,7 @@ module.exports = {
     name: 'usevial',
     alias: ['uv'],
     description: 'Adds popped vial to user',
+    guildSpecific: true,
     args: '<user>',
     requiredArgs: 1,
     role: 'almostrl',

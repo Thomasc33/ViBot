@@ -1,16 +1,28 @@
 {
     "343704644712923138": {
         "losthalls": {
-            "alias": ["lh"],
+            "alias": [
+                "lh"
+            ],
             "points": "keypop",
             "schema": "keypops",
             "name": "lost halls"
         },
         "event": {
-            "alias": ["e"],
+            "alias": [
+                "e"
+            ],
             "points": "eventkey",
             "schema": "eventpops",
             "name": "event key"
+        },
+        "exaltation": {
+            "alias": [
+                "ex"
+            ],
+            "points": "exaltkey",
+            "schema": "eventpops",
+            "name": "exaltation key"
         }
     }
 }

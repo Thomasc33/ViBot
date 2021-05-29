@@ -2,6 +2,7 @@ const botSettings = require('../settings.json')
 module.exports = {
     name: 'addpoints',
     alias: ['stream', 'priest', 'trickster'],
+    guildSpecific: true,
     role: 'security',
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]

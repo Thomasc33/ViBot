@@ -5,6 +5,7 @@ module.exports = {
     name: 'addvial',
     alias: ['av'],
     description: 'Adds stored vial to user',
+    guildSpecific: true,
     args: '<user>',
     requiredArgs: 1,
     role: 'almostrl',

@@ -2,7 +2,7 @@ const Discord = require('discord.js')
 
 module.exports = {
     name: 'eventdupes',
-    description: 'Displays all users who have both Event Bois and Verified Raider',
+    description: 'Displays all users who have both Event Raider and Verified Raider',
     role: 'security',
     async execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]

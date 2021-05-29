@@ -836,7 +836,12 @@
         "knight": true,
         "bard": true,
         "trickster": true,
-        "priest": true
+        "priest": true,
+        "keyCount": 2,
+        "keyPopPoints": 5,
+        "earlyLocationCost": 15,
+        "vcCap": 40,
+        "rolePing": "fungalReact"
     },
     "nest": {
         "name": "Nest",
@@ -864,7 +869,12 @@
         "knight": false,
         "bard": true,
         "trickster": true,
-        "priest": true
+        "priest": true,
+        "keyCount": 3,
+        "keyPopPoints": 5,
+        "earlyLocationCost": 15,
+        "vcCap": 40,
+        "rolePing": "nestReact"
     },
     "fullskipnest": {
         "name": "Full-skip Nest",
@@ -892,7 +902,12 @@
         "knight": true,
         "bard": true,
         "trickster": true,
-        "priest": true
+        "priest": true,
+        "keyCount": 3,
+        "keyPopPoints": 5,
+        "earlyLocationCost": 15,
+        "vcCap": 40,
+        "rolePing": "nestReact"
     },
     "shatters": {
         "name": "Shatters",
@@ -920,7 +935,12 @@
         "knight": true,
         "bard": true,
         "trickster": true,
-        "priest": true
+        "priest": true,
+        "keyCount": 3,
+        "keyPopPoints": 5,
+        "earlyLocationCost": 15,
+        "vcCap": 40,
+        "rolePing": "shattsReact"
     },
     "shaitan": {
         "name": "Shaitans",

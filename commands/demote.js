@@ -2,6 +2,7 @@ module.exports = {
     name: 'demote',
     role: 'headeventrl',
     description: 'Removes eo or leader on leave',
+    guildSpecific: true,
     args: '<user>',
     requiredArgs: 2,
     async execute(message, args, bot, db) {

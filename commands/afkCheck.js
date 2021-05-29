@@ -803,6 +803,7 @@ class afkCheck {
             //key point logging
             for (let u of this.keys) {
                 let points = this.settings.points.keypop
+                if (this.afkInfo.keyPopPointsOverride) points = this.afkInfo.keyPopPointsOverride
                 if (this.guild.members.cache.get(u).roles.cache.has(this.nitroBooster.id)) points = points * this.settings.points.nitromultiplier
                 await this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u}'`)
                 pointsLog.push({

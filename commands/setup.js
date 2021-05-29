@@ -1,7 +1,7 @@
 const fs = require('fs')
 const Discord = require('discord.js')
 const roles = ['moderator', 'officer', 'headrl', 'vetrl', 'fsvrl', 'mrvrl', 'security', 'fullskip', 'developer', 'rl', 'almostrl', 'trialrl', 'headeventrl', 'eventrl', 'rusher', 'nitro', 'lol', 'vetraider', 'raider', 'eventraider', 'muted',
-    'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'topkey', 'bottomkey', 'cultping', 'voidping']
+    'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'topkey', 'bottomkey', 'cultping', 'voidping', 'shattsReact', 'fungalReact', 'nestReact']
 const channels = ['modmail', 'verification', 'manualverification', 'vetverification', 'manualvetverification', 'verificationlog', 'activeverification', 'modlogs', 'history', 'suspendlog',
     'viallog', 'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel', 'raidstatus', 'eventstatus',
     'vetstatus', 'raidcommands', 'eventcommands', 'vetcommands', 'raidingchannels', 'eventchannels', 'vetchannels', 'runlogs', 'dmcommands', 'veriactive', 'pointlogging', 'veriattempts',
@@ -14,7 +14,7 @@ const numerical = ['afktime', 'eventafktime', 'nitrocount', 'nitrocooldown', 'to
 const runreqs = ['weapon', 'ability', 'armor', 'ring']
 const autoveri = ['fame', 'stars', 'realmage', 'discordage', 'deathcount']
 const vetverireqs = ['maxed', 'meleemaxed', 'runs']
-const points = ['earlylocation', 'perrun', 'nitromultiplier', 'keypop', 'vialpop', 'rushing', 'brain', 'mystic', 'eventkey', 'cultlocation', 'voidlocation', 'fsvlocation', 'o3streaming', 'o3trickster', 'o3puri']
+const points = ['earlylocation', 'perrun', 'nitromultiplier', 'keypop', 'vialpop', 'rushing', 'brain', 'mystic', 'eventkey', 'cultlocation', 'voidlocation', 'fsvlocation', 'o3streaming', 'o3trickster', 'o3puri', 'exaltkey']
 var commands = []
 
 const menus = ['roles', 'channels', 'voice', 'voiceprefixes', 'backend', 'numerical', 'runreqs', 'autoveri', 'vetverireqs', 'points', 'commands', 'categories']
@@ -214,7 +214,7 @@ module.exports = {
             }
         }
         for (let i of commands) {
-            if (!bot.settings[guild.id].commands[i] && bot.settings[guild.id].commands[i] !== false) bot.settings[guild.id].commands[i] = true
+            if (!bot.settings[guild.id].commands[i] && bot.settings[guild.id].commands[i] !== false) bot.settings[guild.id].commands[i] = bot.commands.get(i).guildSpecific ? false : true //this might not work lol
         }
         for (let i of categories) {
             if (!bot.settings[guild.id].categories[i]) bot.settings[guild.id].categories[i] = getDefaultCategoryName(i)
@@ -254,6 +254,9 @@ function getDefaultRoleName(name) {
         case 'bottomkey': return 'Verified Key Popper'
         case 'cultping': return 'Cult boi'
         case 'voidping': return 'Void boi'
+        case 'shattsReact': return 'Shatters boi'
+        case 'fungalReact': return 'Fungal boi'
+        case 'nestReact': return 'Nest boi'
     }
 }
 
@@ -378,6 +381,7 @@ function getDefaultPointValue(name) {
         case 'o3streaming': return 5;
         case 'o3trickster': return 3;
         case 'o3puri': return 3;
+        case 'exaltkey': return 5
     }
 }
 
