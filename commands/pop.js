@@ -54,6 +54,6 @@ module.exports = {
 function findKey(guildid, key) {
     let info = keypops[guildid]
     if (Object.keys(info).includes(key)) return info[key]
-    for (let i of info) if (i.alias.includes(key)) return i
+    for (let i in info) if (info[i].alias.includes(key)) return info[i]
     return null
 }
