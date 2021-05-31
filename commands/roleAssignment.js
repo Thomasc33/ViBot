@@ -35,11 +35,11 @@ module.exports = {
 
             case 'edit':
                 let mC = await channel.messages.fetch({ limit: 1 })
-                let m = mC.first()
-                if (m.author.id !== bot.user.id) return ErrorLogger.log(new Error('Role Assignment message author id is not bots id'), bot)
-                m.edit(embed)
+                let me = mC.first()
+                if (me.author.id !== bot.user.id) return ErrorLogger.log(new Error('Role Assignment message author id is not bots id'), bot)
+                me.edit(embed)
                 for (let i of guildReacts) {
-                    await m.react(i.react.replace(/[^0-9]/gi, ''))
+                    await me.react(i.react.replace(/[^0-9]/gi, ''))
                 }
                 return this.init(message.guild, bot)
                 
