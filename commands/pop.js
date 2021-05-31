@@ -27,7 +27,7 @@ module.exports = {
         let keyInfo = findKey(message.guild.id, args[0].toLowerCase())
         if (!keyInfo) return message.channel.send(`\`${args[0]}\` not recognized`)
 
-        message.channel.send(`Are you sure you want to log ${count} ${i.name} pops for ${user.nickname}? (Y/N)`)
+        message.channel.send(`Are you sure you want to log ${count} ${keyInfo.name} pops for ${user.nickname}? (Y/N)`)
         let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 20000 });
         collector.on('collect', m => {
             if (m.content.charAt(0).toLowerCase() == 'y') {
@@ -35,15 +35,14 @@ module.exports = {
                 db.query(`SELECT * FROM users WHERE id = '${user.id}'`, (err, rows) => {
                     if (err) ErrorLogger.log(err, bot)
                     if (rows.length == 0) return message.channel.send('User is not logged in the DB')
-                    db.query(`UPDATE users SET ${i.schema} = ${i.schema} + ${count} WHERE id = '${user.id}'`)
-                    message.channel.send(`Key has been logged. ${user.nickname} now has ${parseInt(rows[0][i.schema]) + parseInt(count)} pops`)
+                    db.query(`UPDATE users SET ${keyInfo.schema} = ${keyInfo.schema} + ${count} WHERE id = '${user.id}'`)
+                    message.channel.send(`Key has been logged. ${user.nickname} now has ${parseInt(rows[0][keyInfo.schema]) + parseInt(count)} pops`)
                 })
-                if (settings.backend.points && i.points) {
-                    let points = settings.points[i.points] * count
+                if (settings.backend.points && keyInfo.points) {
+                    let points = settings.points[keyInfo.points] * count
                     if (user.roles.cache.has(settings.roles.nitro)) points = points * settings.points.nitromultiplier
                     db.query(`UPDATE users SET points = points + ${points} WHERE id = '${user.id}'`)
                 }
-                message.react('✅')
             } else if (m.content.charAt(0).toLowerCase() == 'n') {
                 collector.stop()
                 return message.channel.send('Cancelled.')
@@ -55,6 +54,6 @@ module.exports = {
 function findKey(guildid, key) {
     let info = keypops[guildid]
     if (Object.keys(info).includes(key)) return info[key]
-    for (let i of info) if (i.alias.includes(key)) return i
+    for (let i of info) if (keyInfo.alias.includes(key)) return i
     return null
 }
