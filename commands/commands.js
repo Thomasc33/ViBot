@@ -23,10 +23,9 @@ module.exports = {
                 message.channel.send('Command doesnt exist, check \`commands\` and try again');
                 return;
             }
-            if ((message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role]).position && message.author.id !== '277636691227836419') || !bot.settings[message.guild.id].commands[command.name]) {
-                message.channel.send('Command doesnt exist, check \`commands\` and try again');
-                return;
-            }
+            if (!message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role])) return message.channel.send('Permissions not setup for that commands role')
+            if ((message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role]).position && message.author.id !== '277636691227836419') || !bot.settings[message.guild.id].commands[command.name])
+                return message.channel.send('Command doesnt exist, check \`commands\` and try again');
             var commandPanel = new Discord.MessageEmbed()
                 .setTitle(command.name)
                 .setColor('#ff0000')
