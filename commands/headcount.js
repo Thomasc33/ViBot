@@ -11,7 +11,10 @@ module.exports = {
     description: 'Puts a headcount in a raid status channel',
     alias: ['hc'],
     requiredArgs: 1,
-    args: '<c/v/fsv/event>',
+    args: '<run type>',
+    getNotes(guildid, member) {
+        return `Run Types: \`;events\` or ${afkCheck.getNotes(guildid, member)}`
+    },
     role: 'eventrl',
     async execute(message, args, bott) {
         //settings

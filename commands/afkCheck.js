@@ -19,8 +19,11 @@ module.exports = {
     name: 'afk',
     description: 'The new version of the afk check',
     requiredArgs: 1,
-    args: '<c/v/f/x> <location>',
+    args: '<run symbol> <location>',
     role: 'almostrl',
+    getNotes(guildid, member) {
+        return `${afkTemplates[guildid].map(afk => `${afk.symbol}`).join(', ')}${afkTemplates[member.id] ? `, ${afkTemplates[member.id].map(afk => `${afk.symbol}`).join(', ')}` : ''}`
+    },
     emitter,
     getRunType,
     requestReactionHandler,

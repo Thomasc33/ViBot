@@ -398,5 +398,132 @@
             },
             "font-color": "#000000"
         }
+    },
+    "451171819672698920": {
+        "shatters": {
+            "runType": "Shatters",
+            "runName": "Shatters",
+            "symbol": "s",
+            "reqsImageUrl": "",
+            "keyEmoteID": "723001429903802478",
+            "pingRole": null,
+            "isSplit": false,
+            "newChannel": false,
+            "vialReact": false,
+            "postAfkCheck": true,
+            "twoPhase": false,
+            "startDelay": 0,
+            "vcCap": 50,
+            "timeLimit": 360,
+            "keyCount": 2,
+            "earlyLocationCost": 20,
+            "earlyLocationReacts": [
+                {
+                    "emoteID": "723018852862001152",
+                    "pointsGiven": 2,
+                    "limit": 1,
+                    "shortName": "1st rusher",
+                    "requiredRole": "rusher"
+                },
+                {
+                    "emoteID": "723018852853612614",
+                    "pointsGiven": 2,
+                    "limit": 1,
+                    "shortName": "2nd rusher",
+                    "requiredRole": "rusher"
+                },
+                {
+                    "emoteID": "723018431275859969",
+                    "pointsGiven": 2,
+                    "limit": 2,
+                    "shortName": "mystic",
+                    "requiredRole": "mystic"
+                },
+                {
+                    "emoteID": "723018431275728918",
+                    "pointsGiven": 2,
+                    "limit": 3,
+                    "shortName": "trickster",
+                    "requiredRole": "trickster"
+                }
+            ],
+            "reacts": [
+                "723018852929372270",
+                "723018431489900595",
+                "723018431296831539",
+                "723018431598952498",
+                "723018431531581470",
+                "720401067300356196",
+                "720404621331267697",
+                "720401153140981890"
+            ],
+            "embed": {
+                "color": "#015c21",
+                "description": "To join, **connect to the raiding channel by clicking its name**\nIf you have a key react with <:shattersK:723001429903802478>\nTo indicate your class or gear choices, react with <:Warrior:723018431489900595> <:Paladin:723018431296831539> <:Knight:723018431598952498> <:Assassin:723018431531581470> <:UTScholarsSeal:720401067300356196> <:UTTomeoftheMushroomTribes:720404621331267697> <:UTShieldofOgmur:720401153140981890>\nIf you plan on rushing, react with the switch you are going to clear <:switch1:723018852862001152> <:switch2:723018852853612614> <:switchS:723018852929372270>\nIf you plan on bringing a mystic, react with the <:Mystic:723018431275859969>\nIf you have the role <@&585542641975033859> react with <:nitro:701491230349066261> to get into VC"
+            },
+            "font-color": "#fefefe"
+        },
+        "newshatters": {
+            "runType": "Shatters",
+            "runName": "Shatters",
+            "symbol": "z",
+            "reqsImageUrl": "",
+            "keyEmoteID": "723001429903802478",
+            "pingRole": null,
+            "isSplit": false,
+            "newChannel": false,
+            "vialReact": false,
+            "postAfkCheck": true,
+            "twoPhase": true,
+            "startDelay": 5000,
+            "vcCap": 50,
+            "timeLimit": 360,
+            "keyCount": 2,
+            "earlyLocationCost": 20,
+            "earlyLocationReacts": [
+                {
+                    "emoteID": "723018852862001152",
+                    "pointsGiven": 2,
+                    "limit": 1,
+                    "shortName": "1st rusher",
+                    "requiredRole": "rusher"
+                },
+                {
+                    "emoteID": "723018852853612614",
+                    "pointsGiven": 2,
+                    "limit": 1,
+                    "shortName": "2nd rusher",
+                    "requiredRole": "rusher"
+                },
+                {
+                    "emoteID": "723018431275859969",
+                    "pointsGiven": 2,
+                    "limit": 2,
+                    "shortName": "mystic",
+                    "requiredRole": "mystic"
+                },
+                {
+                    "emoteID": "723018431275728918",
+                    "pointsGiven": 2,
+                    "limit": 3,
+                    "shortName": "trickster",
+                    "requiredRole": "trickster"
+                }
+            ],
+            "reacts": [
+                "723018431489900595",
+                "723018431296831539",
+                "723018431598952498",
+                "723018431531581470",
+                "720401067300356196",
+                "720404621331267697",
+                "720401153140981890"
+            ],
+            "embed": {
+                "color": "#015c21",
+                "description": "To join, wait for an indication the channel is open, then **connect to the raiding channel by clicking its name**\nIf you have a key react with <:shattersK:723001429903802478>\nTo indicate your class or gear choices, react with <:Warrior:723018431489900595> <:Paladin:723018431296831539> <:Knight:723018431598952498> <:Assassin:723018431531581470> <:UTScholarsSeal:720401067300356196> <:UTTomeoftheMushroomTribes:720404621331267697> <:UTShieldofOgmur:720401153140981890>\nIf you plan on rushing, react with the switch you are going to clear <:switch1:723018852862001152> <:switch2:723018852853612614> <:switchS:723018852929372270>\nIf you plan on bringing a mystic, react with the <:Mystic:723018431275859969>\nIf you have the role <@&585542641975033859> react with <:nitro:701491230349066261> to get into VC"
+            },
+            "font-color": "#fefefe"
+        }
     }
 }

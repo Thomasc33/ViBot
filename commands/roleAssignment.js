@@ -86,5 +86,5 @@ function getEmbed(guildReacts) {
     for (let i of guildReacts) {
         embed.addField(i.prettyName, i.react, true)
     }
-    return guildReacts
+    return embed
 }
