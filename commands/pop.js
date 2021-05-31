@@ -6,7 +6,10 @@ const keypops = require('../data/keypop.json')
 module.exports = {
     name: 'pop',
     description: 'Logs key pops',
-    args: '<lh/event> <user> (count)',
+    args: '<keytype> <user> (count)',
+    getNotes(guildid, u) {
+        return keypops[guildid] ? Object.keys(keypops[guildid]).toString() : `not setup for guild ${guildid}`
+    },
     requiredArgs: 2,
     role: 'eventrl',
     async execute(message, args, bot, db) {
@@ -40,6 +43,7 @@ module.exports = {
                     if (user.roles.cache.has(settings.roles.nitro)) points = points * settings.points.nitromultiplier
                     db.query(`UPDATE users SET points = points + ${points} WHERE id = '${user.id}'`)
                 }
+                message.react('✅')
             } else if (m.content.charAt(0).toLowerCase() == 'n') {
                 collector.stop()
                 return message.channel.send('Cancelled.')
