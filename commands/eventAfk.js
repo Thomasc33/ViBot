@@ -98,6 +98,9 @@ module.exports = {
         //vcCap
         if(event.vcCap) eventTemplate.vcCap = event.vcCap
 
+        //ping Role
+        if(event.rolePing) eventTemplate.pingRole = event.rolePing
+
         //start afkcheck
         afkCheck.eventAfkExecute(message, args, bot, db, tokenDB, eventTemplate, isVet)
     },

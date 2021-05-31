@@ -3,7 +3,10 @@
         "main": [
             {
                 "key": "v",
-                "alias": ["void", "voids"],
+                "alias": [
+                    "void",
+                    "voids"
+                ],
                 "multiply": null,
                 "allowAssists": true,
                 "confirm": false,
@@ -21,7 +24,10 @@
             },
             {
                 "key": "c",
-                "alias": ["cult", "cults"],
+                "alias": [
+                    "cult",
+                    "cults"
+                ],
                 "multiply": null,
                 "allowAssists": true,
                 "confirm": false,
@@ -39,7 +45,10 @@
             },
             {
                 "key": "f",
-                "alias": ["feedback", "fb"],
+                "alias": [
+                    "feedback",
+                    "fb"
+                ],
                 "multiply": null,
                 "allowAssists": false,
                 "confirm": false,
@@ -57,7 +66,11 @@
             },
             {
                 "key": "e",
-                "alias": ["event", "events", "other"],
+                "alias": [
+                    "event",
+                    "events",
+                    "other"
+                ],
                 "multiply": 10,
                 "allowAssists": false,
                 "confirm": true,
@@ -80,7 +93,10 @@
         "main": [
             {
                 "key": "v",
-                "alias": ["void", "voids"],
+                "alias": [
+                    "void",
+                    "voids"
+                ],
                 "multiply": null,
                 "allowAssists": true,
                 "confirm": false,
@@ -98,7 +114,10 @@
             },
             {
                 "key": "c",
-                "alias": ["cult", "cults"],
+                "alias": [
+                    "cult",
+                    "cults"
+                ],
                 "multiply": null,
                 "allowAssists": true,
                 "confirm": false,
@@ -116,7 +135,10 @@
             },
             {
                 "key": "f",
-                "alias": ["feedback", "fb"],
+                "alias": [
+                    "feedback",
+                    "fb"
+                ],
                 "multiply": null,
                 "allowAssists": false,
                 "confirm": false,
@@ -134,7 +156,11 @@
             },
             {
                 "key": "e",
-                "alias": ["event", "events", "other"],
+                "alias": [
+                    "event",
+                    "events",
+                    "other"
+                ],
                 "multiply": 10,
                 "allowAssists": false,
                 "confirm": true,
@@ -157,7 +183,10 @@
         "main": [
             {
                 "key": "o",
-                "alias": ["o3", "oryx"],
+                "alias": [
+                    "o3",
+                    "oryx"
+                ],
                 "multiply": null,
                 "allowAssists": true,
                 "confirm": false,
@@ -174,7 +203,9 @@
             },
             {
                 "key": "p",
-                "alias": ["parse"],
+                "alias": [
+                    "parse"
+                ],
                 "multiply": null,
                 "allowAssists": false,
                 "confirm": false,
@@ -189,7 +220,10 @@
             },
             {
                 "key": "e",
-                "alias": ["event", "events"],
+                "alias": [
+                    "event",
+                    "events"
+                ],
                 "multiply": 10,
                 "allowAssists": false,
                 "confirm": true,
@@ -204,7 +238,10 @@
             },
             {
                 "key": "f",
-                "alias": ["feedback", "fb"],
+                "alias": [
+                    "feedback",
+                    "fb"
+                ],
                 "multiply": 2,
                 "allowAssists": false,
                 "confirm": false,
@@ -229,7 +266,12 @@
         "main": [
             {
                 "key": "s",
-                "alias": ["shatters", "shatt", "success", "successful"],
+                "alias": [
+                    "shatters",
+                    "shatt",
+                    "success",
+                    "successful"
+                ],
                 "multiply": null,
                 "allowAssists": true,
                 "confirm": false,
@@ -246,7 +288,10 @@
             },
             {
                 "key": "f",
-                "alias": ["fail", "failed"],
+                "alias": [
+                    "fail",
+                    "failed"
+                ],
                 "multiply": null,
                 "allowAssists": true,
                 "confirm": false,
@@ -259,6 +304,24 @@
                     "currentweek",
                     "currentweekfailed",
                     "currentweekassists"
+                ]
+            },
+            {
+                "key": "e",
+                "alias": [
+                    "event",
+                    "events"
+                ],
+                "multiply": 10,
+                "allowAssists": false,
+                "confirm": true,
+                "main": "eventslead",
+                "currentweek": "currentweekEvents",
+                "color": "#00FF00",
+                "desc": "`Event` run",
+                "toUpdate": 2,
+                "toDisplay": [
+                    "currentweekEvents"
                 ]
             }
         ],
