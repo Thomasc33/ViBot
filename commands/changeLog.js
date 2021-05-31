@@ -9,7 +9,7 @@ module.exports = {
     args: '<user> <add/remove/set> <log type> <#>',
     requiredArgs: 4,
     getNotes(guildid, member) {
-        return getLogTypes(guildid).toString()
+        return getLogTypes(guildid) ? getLogTypes(guildid).toString() : `Not setup for guild ${guildid}`
     },
     async execute(message, args, bot, db) {
         if (args.length < 4) return
