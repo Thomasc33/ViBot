@@ -13,7 +13,7 @@ module.exports = {
     requiredArgs: 1,
     args: '<run type>',
     getNotes(guildid, member) {
-        return `Run Types: \`;events\` or ${afkCheck.getNotes(guildid, member)}`
+        return `**Run Types:**\n*Regular Afk Checks:*\n${afkCheck.getNotes(guildid, member)}\n*Events:*\nSee \`;events\``
     },
     role: 'eventrl',
     async execute(message, args, bott) {
