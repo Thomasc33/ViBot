@@ -314,31 +314,34 @@ bot.on("ready", async () => {
 });
 
 bot.on('guildMemberAdd', member => {
-    db.query(`SELECT suspended, ignOnLeave FROM suspensions WHERE id = '${member.id}' AND suspended = true AND guildid = '${member.guild.id}'`, (err, rows) => {
-        if (rows.length !== 0) {
-            let msg = `${member} rejoined server after leaving while suspended. `;
-            member.roles.add(bot.settings[member.guild.id].roles.tempsuspended)
-            if (rows[0].ignOnLeave) {
-                if (rows[0].ignOnLeave != 'undefined' && rows[0].ignOnLeave != 'null') {
-                    member.setNickname(rows[0].ignOnLeave);
-                    msg += `Giving suspended role and nickname back.`
+    if (bot.dbs[member.guild.id]) {
+        let db = bot.dbs[member.guild.id]
+        db.query(`SELECT suspended, ignOnLeave FROM suspensions WHERE id = '${member.id}' AND suspended = true AND guildid = '${member.guild.id}'`, (err, rows) => {
+            if (rows.length !== 0) {
+                let msg = `${member} rejoined server after leaving while suspended. `;
+                member.roles.add(bot.settings[member.guild.id].roles.tempsuspended)
+                if (rows[0].ignOnLeave) {
+                    if (rows[0].ignOnLeave != 'undefined' && rows[0].ignOnLeave != 'null') {
+                        member.setNickname(rows[0].ignOnLeave);
+                        msg += `Giving suspended role and nickname back.`
+                    } else
+                        msg += `Could not assign a nickname as it was either null or undefined. Giving suspended role back.`;
                 } else
                     msg += `Could not assign a nickname as it was either null or undefined. Giving suspended role back.`;
-            } else
-                msg += `Could not assign a nickname as it was either null or undefined. Giving suspended role back.`;
-            let modlog = member.guild.channels.cache.get(bot.settings[member.guild.id].channels.modlogs)
-            if (!modlog) return ErrorLogger.log(new Error(`mod log not found in ${member.guild.id}`), bot)
-            modlog.send(`${member} rejoined server after leaving while suspended. Giving suspended role and nickname back.`)
-        }
-    })
-    db.query(`SELECT muted FROM mutes WHERE id = '${member.id}' AND muted = true`, (err, rows) => {
-        if (rows.length !== 0) {
-            member.roles.add(bot.settings[member.guild.id].roles.muted)
-            let modlog = member.guild.channels.cache.get(bot.settings[member.guild.id].channels.modlogs)
-            if (!modlog) return ErrorLogger.log(new Error(`mod log not found in ${member.guild.id}`), bot)
-            modlog.send(`${member} rejoined server after leaving while muted. Giving muted role back.`)
-        }
-    })
+                let modlog = member.guild.channels.cache.get(bot.settings[member.guild.id].channels.modlogs)
+                if (!modlog) return ErrorLogger.log(new Error(`mod log not found in ${member.guild.id}`), bot)
+                modlog.send(`${member} rejoined server after leaving while suspended. Giving suspended role and nickname back.`)
+            }
+        })
+        db.query(`SELECT muted FROM mutes WHERE id = '${member.id}' AND muted = true`, (err, rows) => {
+            if (rows.length !== 0) {
+                member.roles.add(bot.settings[member.guild.id].roles.muted)
+                let modlog = member.guild.channels.cache.get(bot.settings[member.guild.id].channels.modlogs)
+                if (!modlog) return ErrorLogger.log(new Error(`mod log not found in ${member.guild.id}`), bot)
+                modlog.send(`${member} rejoined server after leaving while muted. Giving muted role back.`)
+            }
+        })
+    }
 })
 
 bot.on('guildMemberUpdate', (oldMember, newMember) => {
