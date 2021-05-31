@@ -75,7 +75,7 @@ module.exports = {
                         })
                     }
                 }
-                message.guild.channels.cache.get(settings.channels.history).send(`${channelName} deleted by <@!${u.id}>`)
+                message.guild.channels.cache.get(settings.channels.history).send(new Discord.MessageEmbed().setDescription(`${channelName} deleted by <@!${u.id}>`))
                 if (!channel) return
                 await channel.delete().catch(er => { })
                 await m.delete()
