@@ -370,7 +370,7 @@ bot.on('messageReactionAdd', (r, u) => {
 
     //modmail
     if (r.emoji.name == '🔑' && r.message.author.id == bot.user.id && r.message.channel.id == bot.settings[r.message.guild.id].channels.modmail) {
-        modmail.modmailLogic(r.message, db, u)
+        modmail.modmailLogic(r.message, bot.dbs[r.message.guild.id], u)
     }
     //spongemock
     if (r.emoji.id == '812959258638549022') {
