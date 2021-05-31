@@ -11,6 +11,7 @@ module.exports = {
     async execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
         if (!settings) return message.channel.send('settings not setup')
+        message.delete()
         switch (args[0].toLowerCase()) {
             case 'c/v':
                 var embed = new Discord.MessageEmbed()
@@ -36,6 +37,5 @@ module.exports = {
                 break;
             default: message.channel.send("Poll Type not recognized. Please try again")
         }
-        message.delete()
     }
 }

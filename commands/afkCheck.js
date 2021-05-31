@@ -773,7 +773,7 @@ class afkCheck {
                     bigEmbed = true;
                     historyEmbed.addField('-', `, <@!${m}>`)
                 }
-                else historyEmbed.fields[4].value += `, <@!${m}>`
+                else historyEmbed.fields[4].value == 'None!' ? historyEmbed.fields[4].value = `<@!${m}>`: historyEmbed.fields[4].value += `, <@!${m}>`
             }
         })
         this.message.guild.channels.cache.get(this.settings.channels.history).send(historyEmbed)
