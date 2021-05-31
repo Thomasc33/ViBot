@@ -17,7 +17,7 @@ module.exports = {
     },
     async trainFromIGN(ign, verified) {
         let userInfo = await ml.RealmeyeFucker(ign)
-        if (!userInfo) return message.channel.send('Realmeye page isnt fully public. Try again')
+        if (!userInfo) return
         await ml.trainNewData(userInfo, verified)
     },
     async testFromIGN(ign) {

@@ -8,7 +8,6 @@ module.exports = {
     args: '<member> <time> <time type> (Reason)',
     role: 'security',
     requiredArgs: 1,
-    notes: 'Timed feature here:tm:',
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         const memberSearch = args.shift();

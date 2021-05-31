@@ -3,7 +3,9 @@ module.exports = {
     role: 'security',
     description: 'Removes a pending verification or veteran verification module if bot hiccups',
     args: '<r/v> <id>',
-    notes: 'r = regular, v = veteran',
+    getNotes(guildid, member) {
+        return 'r = regular, v = veteran'
+    },
     requiredArgs: 2,
     async execute(message, args, bot) {
         //veteran or regular

@@ -4,11 +4,13 @@ module.exports = {
     description: 'Lists all verified raiders that dont have a nickname',
     role: 'security',
     alias: ['nn'],
-    notes: 'Only usable in mod-bot-commands',
+    getNotes(guildid, member) {
+        return 'Only usable in mod-bot-commands'
+    },
     execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
         var users = []
-        let noNickname = message.guild.members.cache.filter(m => m.nickname == null);// && m.roles.cache.has(message.guild.roles.cache.find(r => r.name === 'Verified Raider'))
+        let noNickname = message.guild.members.cache.filter(m => !m.nickname);// && m.roles.cache.has(message.guild.roles.cache.find(r => r.name === 'Verified Raider'))
         noNickname.each(user => {
             if (user.roles.cache.has(settings.roles.raider)) {
                 users.push(user)

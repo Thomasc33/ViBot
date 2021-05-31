@@ -1,6 +1,7 @@
 {
     "template": {
         "enabled": false,
+        "aliases": [],
         "keyEmojiId": "",
         "keyEmote": "",
         "portalEmojiId": "",
@@ -27,6 +28,7 @@
     },
     "piratecave": {
         "name": "Pirate Cave",
+        "aliases": ["pcave"],
         "enabled": true,
         "keyEmojiId": "723001429744418826",
         "keyEmote": ":pcaveK:723001429744418826",
@@ -54,6 +56,7 @@
     },
     "forestmaze": {
         "name": "Forest Maze",
+        "aliases": ["forest", "maze"],
         "enabled": true,
         "keyEmojiId": "723001429597487174",
         "keyEmote": ":forestK:723001429597487174",
@@ -81,11 +84,12 @@
     },
     "spiderden": {
         "name": "Spider Den",
+        "aliases": ["spider"],
         "enabled": true,
         "keyEmojiId": "723001429798813706",
         "keyEmote": ":spiderK:723001429798813706",
         "portalEmojiId": "723001215478399088",
-        "portalEmote": ":spider:723001215478399088 ",
+        "portalEmote": ":spider:723001215478399088",
         "color": "#800080",
         "rushers": false,
         "stun": false,
@@ -108,11 +112,12 @@
     },
     "snakepit": {
         "name": "Snake Pit",
+        "aliases": ["snake", "pit"],
         "enabled": true,
         "keyEmojiId": "723001429647818763",
         "keyEmote": ":snakeK:723001429647818763",
-        "portalEmojiId": "723001215646171166",
-        "portalEmote": "a:snakeK:723001215646171166",
+        "portalEmojiId": "767953167362687018",
+        "portalEmote": "a:snake2:767953167362687018",
         "color": "#00ff00",
         "rushers": false,
         "stun": false,
@@ -135,6 +140,7 @@
     },
     "forbiddenjungle": {
         "name": "Forbidden Jungle",
+        "aliases": ["jungle"],
         "enabled": true,
         "keyEmojiId": "723001429782036520",
         "keyEmote": ":jungleK:723001429782036520",
@@ -162,6 +168,7 @@
     },
     "hive": {
         "name": "Hive",
+        "aliases": [],
         "enabled": true,
         "keyEmojiId": "723001429677310002",
         "keyEmote": ":hiveK:723001429677310002",
@@ -189,6 +196,7 @@
     },
     "magicwoods": {
         "name": "Magic Woods",
+        "aliases": ["mwoods"],
         "enabled": true,
         "keyEmojiId": "723001429702344757",
         "keyEmote": ":mwoodK:723001429702344757",
@@ -216,6 +224,7 @@
     },
     "spriteworld": {
         "name": "Sprite World",
+        "aliases": ["sprite"],
         "enabled": true,
         "keyEmojiId": "723001429605744641",
         "keyEmote": ":spriteK:723001429605744641",
@@ -243,6 +252,7 @@
     },
     "candyland": {
         "name": "Candyland",
+        "aliases": ["cland"],
         "enabled": true,
         "keyEmojiId": "723001429362737223",
         "keyEmote": ":clandK:723001429362737223",
@@ -270,11 +280,12 @@
     },
     "undeadlair": {
         "name": "Undead Lair",
+        "aliases": ["udl"],
         "enabled": true,
         "keyEmojiId": "723001429736030220",
         "keyEmote": ":udlK:723001429736030220",
-        "portalEmojiId": "723001215528468492",
-        "portalEmote": "a:udl:723001215528468492",
+        "portalEmojiId": "767950706577113130",
+        "portalEmote": "a:udl2:767950706577113130",
         "color": "#fefefe",
         "rushers": true,
         "stun": false,
@@ -297,6 +308,7 @@
     },
     "abyss": {
         "name": "Abyss of Demons",
+        "aliases": [],
         "enabled": true,
         "keyEmojiId": "723001429538897921",
         "keyEmote": ":abyK:723001429538897921",
@@ -324,6 +336,7 @@
     },
     "manor": {
         "name": "Manor",
+        "aliases": [],
         "enabled": true,
         "keyEmojiId": "723001429702475848",
         "keyEmote": ":manorK:723001429702475848",
@@ -351,6 +364,7 @@
     },
     "sewers": {
         "name": "Sewers",
+        "aliases": ["sew"],
         "enabled": true,
         "keyEmojiId": "723001429492629536",
         "keyEmote": ":sewerK:723001429492629536",
@@ -378,11 +392,12 @@
     },
     "library": {
         "name": "Library",
+        "aliases": ["lib"],
         "enabled": true,
         "keyEmojiId": "723001429366800516",
         "keyEmote": ":libK:723001429366800516",
-        "portalEmojiId": "723001215297912903",
-        "portalEmote": "a:lib:723001215297912903",
+        "portalEmojiId": "767951597804060702",
+        "portalEmote": "a:lib2:767951597804060702",
         "color": "#000000",
         "rushers": true,
         "stun": false,
@@ -405,11 +420,12 @@
     },
     "cemetary": {
         "name": "Cemetary",
+        "aliases": ["cem"],
         "enabled": true,
         "keyEmojiId": "723001429152759850",
         "keyEmote": ":cemK:723001429152759850",
-        "portalEmojiId": "723001215373541378",
-        "portalEmote": "a:cem:723001215373541378",
+        "portalEmojiId": "767952240987865098",
+        "portalEmote": "a:cem2:767952240987865098",
         "color": "#00ff00",
         "rushers": false,
         "stun": false,
@@ -432,6 +448,7 @@
     },
     "machine": {
         "name": "Machine",
+        "aliases": [],
         "enabled": true,
         "keyEmojiId": "723001429677178940",
         "keyEmote": ":machineK:723001429677178940",
@@ -459,11 +476,12 @@
     },
     "lab": {
         "name": "Lab",
+        "aliases": ["mlab"],
         "enabled": true,
         "keyEmojiId": "723001429312405557",
         "keyEmote": ":labK:723001429312405557",
-        "portalEmojiId": "723001215260033037",
-        "portalEmote": "a:lab:723001215260033037",
+        "portalEmojiId": "767951828766687275",
+        "portalEmote": "a:lab2:767951828766687275",
         "color": "#ff00ff",
         "rushers": true,
         "stun": false,
@@ -486,11 +504,12 @@
     },
     "parasite": {
         "name": "Parasite",
+        "aliases": ["para"],
         "enabled": true,
         "keyEmojiId": "723001429492629565",
         "keyEmote": ":parasiteK:723001429492629565",
-        "portalEmojiId": "723001215545245718",
-        "portalEmote": "a:parasite:723001215545245718",
+        "portalEmojiId": "767952088256479262",
+        "portalEmote": "a:parasite2:767952088256479262",
         "color": "#ff0000",
         "rushers": true,
         "stun": false,
@@ -513,6 +532,7 @@
     },
     "beachzone": {
         "name": "Beachzone",
+        "aliases": [],
         "enabled": true,
         "keyEmojiId": "723001429534441553",
         "keyEmote": ":beachK:723001429534441553",
@@ -540,6 +560,7 @@
     },
     "davy": {
         "name": "Davy's",
+        "aliases": [],
         "enabled": true,
         "keyEmojiId": "723001429601550386",
         "keyEmote": ":davyK:723001429601550386",
@@ -567,6 +588,7 @@
     },
     "mountaintemple": {
         "name": "Mountain Temple",
+        "aliases": ["mt"],
         "enabled": true,
         "keyEmojiId": "723001429786230805",
         "keyEmote": ":mtK:723001429786230805",
@@ -594,6 +616,7 @@
     },
     "lair": {
         "name": "Lair of Draconis",
+        "aliases": ["lod"],
         "enabled": true,
         "keyEmojiId": "723001429685698580",
         "keyEmote": ":lodK:723001429685698580",
@@ -621,6 +644,7 @@
     },
     "deadwaterdocks": {
         "name": "Deadwater Docks",
+        "aliases": ["ddocks"],
         "enabled": true,
         "keyEmojiId": "723001429601550376",
         "keyEmote": ":ddockK:723001429601550376",
@@ -648,6 +672,7 @@
     },
     "woodland": {
         "name": "Woodland Labyrinth",
+        "aliases": ["wlab"],
         "enabled": true,
         "keyEmojiId": "723001429606006787",
         "keyEmote": ":wlandK:723001429606006787",
@@ -675,6 +700,7 @@
     },
     "crawlingdepths": {
         "name": "Crawling Depths",
+        "aliases": ["cdepths"],
         "enabled": true,
         "keyEmojiId": "723001429555675186",
         "keyEmote": ":cdepthsK:723001429555675186",
@@ -702,6 +728,7 @@
     },
     "oceantrench": {
         "name": "Ocean Trench",
+        "aliases": ["ot"],
         "enabled": true,
         "keyEmojiId": "723001429714796604",
         "keyEmote": ":otK:723001429714796604",
@@ -729,6 +756,7 @@
     },
     "icecave": {
         "name": "Ice Cave",
+        "aliases": ["cave"],
         "enabled": true,
         "keyEmojiId": "723001429119467563",
         "keyEmote": ":caveK:723001429119467563",
@@ -756,6 +784,7 @@
     },
     "tomb": {
         "name": "Tomb of Ancients",
+        "aliases": [],
         "enabled": true,
         "keyEmojiId": "723001429618327564",
         "keyEmote": ":tombK:723001429618327564",
@@ -783,6 +812,7 @@
     },
     "fungal": {
         "name": "Fungal Cavern",
+        "aliases": [],
         "enabled": true,
         "keyEmojiId": "723001429614395402",
         "keyEmote": ":fungalK:723001429614395402",
@@ -806,10 +836,16 @@
         "knight": true,
         "bard": true,
         "trickster": true,
-        "priest": true
+        "priest": true,
+        "keyCount": 2,
+        "keyPopPoints": 5,
+        "earlyLocationCost": 15,
+        "vcCap": 40,
+        "rolePing": "fungalReact"
     },
     "nest": {
         "name": "Nest",
+        "aliases": [],
         "enabled": true,
         "keyEmojiId": "723001429693956106",
         "keyEmote": ":nestK:723001429693956106",
@@ -833,10 +869,16 @@
         "knight": false,
         "bard": true,
         "trickster": true,
-        "priest": true
+        "priest": true,
+        "keyCount": 3,
+        "keyPopPoints": 5,
+        "earlyLocationCost": 15,
+        "vcCap": 40,
+        "rolePing": "nestReact"
     },
     "fullskipnest": {
         "name": "Full-skip Nest",
+        "aliases": ["fsnest"],
         "enabled": true,
         "keyEmojiId": "723001429693956106",
         "keyEmote": ":nestK:723001429693956106",
@@ -860,10 +902,16 @@
         "knight": true,
         "bard": true,
         "trickster": true,
-        "priest": true
+        "priest": true,
+        "keyCount": 3,
+        "keyPopPoints": 5,
+        "earlyLocationCost": 15,
+        "vcCap": 40,
+        "rolePing": "nestReact"
     },
     "shatters": {
         "name": "Shatters",
+        "aliases": ["shatts"],
         "enabled": true,
         "keyEmojiId": "723001429903802478",
         "keyEmote": ":shattersK:723001429903802478",
@@ -887,10 +935,16 @@
         "knight": true,
         "bard": true,
         "trickster": true,
-        "priest": true
+        "priest": true,
+        "keyCount": 3,
+        "keyPopPoints": 5,
+        "earlyLocationCost": 15,
+        "vcCap": 40,
+        "rolePing": "shattsReact"
     },
     "shaitan": {
         "name": "Shaitans",
+        "aliases": [],
         "enabled": true,
         "keyEmojiId": "723001429870248006",
         "keyEmote": ":shaitanK:723001429870248006",
@@ -918,6 +972,7 @@
     },
     "encore": {
         "name": "Encore",
+        "aliases": [],
         "enabled": true,
         "keyEmojiId": "723001429656338462",
         "keyEmote": ":encoreK:723001429656338462",
@@ -945,6 +1000,7 @@
     },
     "reef": {
         "name": "Cnidarian Reef",
+        "aliases": [],
         "enabled": true,
         "keyEmojiId": "723001429542830092",
         "keyEmote": ":reefK:723001429542830092",
@@ -972,6 +1028,7 @@
     },
     "thicket": {
         "name": "Thicket",
+        "aliases": [],
         "enabled": true,
         "keyEmojiId": "723001429781905439",
         "keyEmote": ":thicketK:723001429781905439",
@@ -999,11 +1056,12 @@
     },
     "hudl": {
         "name": "Heroic Undead Lair",
+        "aliases": [],
         "enabled": true,
         "keyEmojiId": "723001429757001728",
         "keyEmote": ":hudlK:723001429757001728",
-        "portalEmojiId": "723001215654297640",
-        "portalEmote": "a:hudl:723001215654297640",
+        "portalEmojiId": "767957135358165014",
+        "portalEmote": "a:hudl2:767957135358165014",
         "color": "#000000",
         "rushers": false,
         "stun": false,
@@ -1026,6 +1084,7 @@
     },
     "habyss": {
         "name": "Heroic Abyss of Demons",
+        "aliases": [],
         "enabled": true,
         "keyEmojiId": "723001429689761792",
         "keyEmote": ":habyK:723001429689761792",
@@ -1053,6 +1112,7 @@
     },
     "battlenexus": {
         "name": "Battle Nexus",
+        "aliases": ["bnex"],
         "enabled": true,
         "keyEmojiId": "723001429547155477",
         "keyEmote": ":bnexK:723001429547155477",
@@ -1080,6 +1140,7 @@
     },
     "bella": {
         "name": "Belladonna's Garden",
+        "aliases": [],
         "enabled": true,
         "keyEmojiId": "723001429408874567",
         "keyEmote": ":bellaK:723001429408874567",
@@ -1107,6 +1168,7 @@
     },
     "icetomb": {
         "name": "Ice Tomb",
+        "aliases": [],
         "enabled": true,
         "keyEmojiId": "723001429631041597",
         "keyEmote": ":itombK:723001429631041597",
@@ -1134,6 +1196,7 @@
     },
     "caveofathousandtreasures": {
         "name": "Cave of a Thousand Treasures",
+        "aliases": ["tcave"],
         "enabled": true,
         "keyEmojiId": "723001430189015100",
         "keyEmote": ":ttK:723001430189015100",
@@ -1161,6 +1224,7 @@
     },
     "puppet": {
         "name": "Puppet Theatre",
+        "aliases": ["pup"],
         "enabled": true,
         "keyEmojiId": "723001429798813696",
         "keyEmote": ":puppetK:723001429798813696",
@@ -1188,6 +1252,7 @@
     },
     "random": {
         "name": "Random",
+        "aliases": [],
         "enabled": true,
         "keyEmojiId": "723009084814524449",
         "keyEmote": ":oryx:723009084814524449",
@@ -1215,12 +1280,13 @@
     },
     "ruins": {
         "name": "Ancient Ruins",
+        "aliases": [],
         "enabled": true,
         "keyEmojiId": "753020950378709055",
         "keyEmote": ":ruinsK:753020950378709055",
         "portalEmojiId": "753021093685755955",
         "portalEmote": ":ruins:753021093685755955",
-        "color": "#",
+        "color": "#ffff00",
         "rushers": true,
         "stun": true,
         "ogmur": true,
@@ -1242,12 +1308,13 @@
     },
     "htt": {
         "name": "High Tech Terror",
+        "aliases": [],
         "enabled": true,
-        "keyEmojiId": "753020950378709055",
-        "keyEmote": ":ruinsK:753020950378709055",
-        "portalEmojiId": "753021093685755955",
-        "portalEmote": ":ruins:753021093685755955",
-        "color": "#",
+        "keyEmojiId": "837606520756764694",
+        "keyEmote": ":httK:837606520756764694",
+        "portalEmojiId": "768163469034782721",
+        "portalEmote": "a:htt:768163469034782721",
+        "color": "#ff00ff",
         "rushers": false,
         "stun": true,
         "ogmur": true,

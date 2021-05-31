@@ -1,8 +1,8 @@
 const Discord = require('discord.js')
-const botSettings = require('../settings.json')
-const eventFile = require('../data/events.json')
-const ErrorLogger = require('../lib/logError')
-const Channels = require('./vibotChannels')
+const botSettings = require('../../settings.json')
+const eventFile = require('../../data/events.json')
+const ErrorLogger = require('../../lib/logError')
+const Channels = require('../vibotChannels')
 
 var bot
 var activeRun = false;

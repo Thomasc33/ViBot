@@ -1,0 +1,54 @@
+{
+    "343704644712923138": {
+        "losthalls": {
+            "alias": [
+                "lh"
+            ],
+            "points": "keypop",
+            "schema": "keypops",
+            "name": "lost halls"
+        },
+        "event": {
+            "alias": [
+                "e"
+            ],
+            "points": "eventkey",
+            "schema": "eventpops",
+            "name": "event key"
+        },
+        "exaltation": {
+            "alias": [
+                "ex"
+            ],
+            "points": "exaltkey",
+            "schema": "eventpops",
+            "name": "exaltation key"
+        }
+    },
+    "451171819672698920": {
+        "shatters": {
+            "alias": [
+                "s"
+            ],
+            "points": "keypop",
+            "schema": "shatterspops",
+            "name": "shatters"
+        },
+        "event": {
+            "alias": [
+                "e"
+            ],
+            "points": "eventkey",
+            "schema": "eventpops",
+            "name": "event key"
+        },
+        "exaltation": {
+            "alias": [
+                "ex"
+            ],
+            "points": "exaltkey",
+            "schema": "eventpops",
+            "name": "exaltation key"
+        }
+    }
+}

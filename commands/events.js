@@ -9,15 +9,26 @@ module.exports = {
         let embed = new Discord.MessageEmbed()
             .setColor('#ff0000')
             .setTitle('Current event run types')
-        for (x in Events) {
-            if (Events[x].enabled) {
-                if (embed.fields.length == 25) {
-                    message.channel.send(embed);
-                    embed.fields = []
-                }
-                embed.addField(x, `<${Events[x].keyEmote}>`, true)
-            }
+        for (let x in Events) if (Events[x].enabled) {
+            fitStringIntoEmbed(embed, `<${Events[x].keyEmote}><${Events[x].portalEmote}> **${x}**${Events[x].aliases.length > 0 ? `\n*Aliases:${Events[x].aliases.map(a => `${` ${a}`}`)}*` : ''}`)
         }
         message.channel.send(embed)
+    }
+}
+
+function fitStringIntoEmbed(embed, string) {
+    if (embed.fields.length == 0) embed.addField('** **', string, true)
+    else if (embed.fields[embed.fields.length - 1].value.length + `\n${string}`.length >= 1024) { //change to 1024
+        if (embed.length + `\n${string}`.length >= 6000) {//change back to 6k
+            embeds.push(new Discord.MessageEmbed(embed))
+            embed.setDescription('None!')
+            embed.fields = []
+        } else embed.addField('** **', string, true)
+    } else {
+        if (embed.length + `\n${string}`.length >= 6000) { //change back to 6k
+            embeds.push(new Discord.MessageEmbed(embed))
+            embed.setDescription('None!')
+            embed.fields = []
+        } else embed.fields[embed.fields.length - 1].value = embed.fields[embed.fields.length - 1].value.concat(`\n${string}`)
     }
 }

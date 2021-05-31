@@ -1,0 +1,50 @@
+{
+    "343704644712923138": [
+        {
+            "roleName": "rusher",
+            "roleId": "352935273874718720",
+            "dbName": "isRusher",
+            "minimumRole": null,
+            "prefix": null
+        }
+    ],
+    "708026927721480254": [
+        {
+            "roleName": "mapmarker",
+            "roleId": "725103259307606057",
+            "dbName": null,
+            "minimumRole": null,
+            "prefix": null
+        }
+    ],
+    "451171819672698920": [
+        {
+            "roleName": "rusher",
+            "roleId": "458203880560394243",
+            "dbName": null,
+            "minimumRole": null,
+            "prefix": "-"
+        },
+        {
+            "roleName": "mystic",
+            "roleId": "751927822477688903",
+            "dbName": null,
+            "minimumRole": "vetrl",
+            "prefix": "="
+        },
+        {
+            "roleName": "priest",
+            "roleId": "451179020655263754",
+            "dbName": null,
+            "minimumRole": null,
+            "prefix": null
+        },
+        {
+            "roleName": "trickster",
+            "roleId": "769988745733996564",
+            "dbName": null,
+            "minimumRole": null,
+            "prefix": "+"
+        }
+    ]
+}

@@ -1,7 +1,6 @@
 const Discord = require('discord.js')
 const afkTemplates = require('../afkTemplates.json');
 const botSettings = require('../settings.json');
-const guildSettings = require('../guildSettings.json');
 const eventTemplates = require('../data/events.json');
 const fs = require('fs');
 const ext = require('../lib/extensions.js');
@@ -160,7 +159,7 @@ class AfkTemplate {
         const fields = [];
         for (const reaction of this.data.earlyLocationReacts) {
             const emoji = this.bot.emojis.resolve(reaction.emoteID);
-            const role = this.guild.roles.resolve(guildSettings[this.guild.id].roles[reaction.requiredRole]);
+            const role = this.guild.roles.resolve(this.bot.settings[this.guild.id].roles[reaction.requiredRole]);
             fields.push({
                 name: `${emoji} ${reaction.shortName} ${emoji}`,
                 value: `*Early React*\r\nPoints Given: ${reaction.pointsGiven}\r\nReaction Limit: ${reaction.limit}${reaction.requiredRole ? '\r\nRequired Role:\r\n' : role}`
@@ -288,7 +287,7 @@ class AfkTemplate {
         this.data.keyCount = await this.channel.then(c => c.nextInt(res => res > 0, 'Please enter a number of keys that\'s at least 1.', this.author.id));
     }
     async editPingRole() {
-        await this.updateDM(`**Ping Role**: Should this afk ping ${this.guild.roles.resolve(guildSettings[this.guild.id].roles.voidping)} or ${this.guild.roles.resolve(guildSettings[this.guild.id].roles.cultping)}?`);
+        await this.updateDM(`**Ping Role**: Should this afk ping ${this.guild.roles.resolve(this.bot.settings[this.guild.id].roles.voidping)} or ${this.guild.roles.resolve(this.bot.settings[this.guild.id].roles.cultping)}?`);
         this.data.pingRole = await new Promise(async (resolve, reject) => {
             const collector = await this.dm.then(d => d.createReactionCollector((reaction, user) => user.id == this.author.id &&
                 (reaction.emoji.name == '❌' || [botSettings.emoteIDs.voidd,
@@ -357,7 +356,7 @@ class AfkTemplate {
     async getRoleSelection() {
         return new Promise(async (resolve, reject) => {
             let rolesMessage;
-            const guildRoles = guildSettings[this.guild.id].roles;
+            const guildRoles = this.bot.settings[this.guild.id].roles;
             try {
                 const rolesEmbed = new Discord.MessageEmbed()
                     .setColor("#000000")
@@ -440,7 +439,7 @@ module.exports = {
      */
     async execute(message, args, bot, db, tokenDB, event) {
         //Must start it in vet commands
-        if (message.channel.id != guildSettings[message.guild.id].channels.vetcommands) return;
+        if (message.channel.id != bot.settings[message.guild.id].channels.vetcommands) return;
 
         if (AfkTemplate.active.find(t => t.author.id == message.author.id))
             return message.channel.send('You are already in the process of creating a raiding template.');
@@ -504,7 +503,7 @@ module.exports = {
                             .setTimestamp(new Date());
                         afk_template.reactEmbed.setColor("#00ff00");
                         message.author.send(afk_template.embed).then(() => message.author.send(afk_template.reactEmbed))
-                        bot.channels.resolve(guildSettings[message.guild.id].channels.history).send(afk_template.embed).then(m => m.channel.send(afk_template.reactEmbed));
+                        bot.channels.resolve(bot.settings[message.guild.id].channels.history).send(afk_template.embed).then(m => m.channel.send(afk_template.reactEmbed));
                         break;
                     case '⚙️':
                         //await afk_template.edit();

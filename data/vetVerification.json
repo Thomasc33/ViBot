@@ -1,0 +1,42 @@
+{
+    "708026927721480254": {
+        "realmeyestring": null,
+        "dbnames": ["o3runs"],
+        "dbisvet": "iso3Vet",
+        "lootInfo": "o3",
+        "boss": "O3",
+        "webAppLink": true,
+        "webdata": true,
+        "exaltStats": ["life"]
+    },
+    "343704644712923138": {
+        "realmeyestring": ["Voids completed"],
+        "dbnames": ["voidRuns"],
+        "dbisvet": "isVet",
+        "lootInfo": "halls",
+        "boss": "Void",
+        "webAppLink": false,
+        "webdata": false,
+        "exaltStats": ["mana", "defense", "speed"]
+    },
+    "701483950559985705": {
+        "realmeyestring": ["Voids completed"],
+        "dbnames": ["voidRuns"],
+        "dbisvet": "isVet",
+        "lootInfo": "halls",
+        "boss": "Void",
+        "webAppLink": false,
+        "webdata": false,
+        "exaltStats": ["mana", "defense", "speed"]
+    },
+    "451171819672698920": {
+        "realmeyestring": ["Shatters completed"],
+        "dbnames": ["runs"],
+        "dbisvet": null,
+        "lootInfo": "shatters",
+        "boss": "Forgotten King",
+        "webAppLink": false,
+        "webdata": false,
+        "exaltStats": ["attack"]
+    }
+}

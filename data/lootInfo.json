@@ -51,5 +51,28 @@
             "Golem Garments",
             "Rusty Cuffs"
         ]
+    },
+    "shatters": {
+        "whites": [
+            "Sword of the Colossus",
+            "Marble Seal",
+            "Breastplate of New Life",
+            "Magical Lodestone",
+            "Bow of the Void",
+            "Quiver of the Shadows",
+            "Armor of Nil",
+            "Sourcestone",
+            "Staff of Unholy Sacrifice",
+            "Skull of Corrupted Souls",
+            "Ritual Robe",
+            "Bloodshed Ring",
+            "Omnipotence Ring"
+        ],
+        "STs": [
+            "Carved Golem Remains",
+            "Brain of the Golem",
+            "Golem Garments",
+            "Rusty Cuffs"
+        ]
     }
 }

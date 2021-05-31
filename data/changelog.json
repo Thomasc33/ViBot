@@ -1,0 +1,93 @@
+{
+    "343704644712923138": {
+        "logtypes": [
+            "keypops",
+            "eventpops",
+            "cultsLead",
+            "voidsLead",
+            "assists",
+            "vialStored",
+            "vialUsed",
+            "cultRuns",
+            "voidRuns",
+            "eventsLead",
+            "parses",
+            "feedback"
+        ],
+        "currentweeks": [
+            {
+                "case": "cultsLead",
+                "currentWeekName": "currentweekCult"
+            },
+            {
+                "case": "voidsLead",
+                "currentWeekName": "currentweekVoid"
+            },
+            {
+                "case": "assists",
+                "currentWeekName": "currentweekAssists"
+            },
+            {
+                "case": "parses",
+                "currentWeekName": "currentweekparses"
+            },
+            {
+                "case": "feedback",
+                "currentWeekName": "currentweekFeedback"
+            },
+            {
+                "case": "eventsLead",
+                "currentWeekName": "currentweekEvents"
+            }
+        ]
+    },
+    "701483950559985705": {
+        "logtypes": [
+            "eventpops",
+            "eventsLead",
+            "o3parses",
+            "o3assists",
+            "o3runs",
+            "o3feedback"
+        ],
+        "currentweeks": [
+            {
+                "case": "eventsLead",
+                "currentWeekName": "currentweekEvents"
+            },
+            {
+                "case": "o3parses",
+                "currentWeekName": "o3currentweekparses"
+            },
+            {
+                "case": "o3assists",
+                "currentWeekName": "currentweekAssistso3"
+            },
+            {
+                "case": "o3feedback",
+                "currentWeekName": "currentweeko3Feedback"
+            },
+            {
+                "case": "o3runs",
+                "currentWeekName": "currentweeko3"
+            }
+        ]
+    },
+    "451171819672698920": {
+        "logtypes": ["shatterspops", "eventpops", "eventpops", "successruns", "failruns", "assists", "eventslead"],
+        "currentweeks": [
+            {
+                "case": "successruns",
+                "currentWeekName": "currentweek"
+            },
+            {
+                "case": "failruns",
+                "currentWeekName": "currentweekfailed"
+            },
+            {
+                "case": "assists",
+                "currentWeekName": "currentweekassists"
+            }
+        ]
+    }
+}

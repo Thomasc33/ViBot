@@ -1,5 +1,4 @@
 const Discord = require('discord.js')
-const crasherList = require('../crasherList.json')
 const fs = require('fs')
 const ErrorLogger = require('../lib/logError')
 
@@ -35,7 +34,9 @@ module.exports = {
     send(channel, bot) {
         if (!channel) return;
         let crashers = 'None!'
-        for (let i in bot.crasherList) {
+        let guildCrashers = bot.crasherList[channel.guild.id]
+        if (!guildCrashers) return
+        for (let i in guildCrashers) {
             if (crashers == 'None!') crashers = `/kick ${i}`
             else crashers += `\n/kick ${i}`
         }
@@ -51,11 +52,12 @@ module.exports = {
             switch (m.content.charAt(0).toLowerCase()) {
                 case 'y':
                     messageCollector.stop()
-                    bot.crasherList[args[1].toLowerCase()] = {
+                    if (!bot.crasherList[message.guild.id]) bot.crasherList[message.guild.id] = {}
+                    bot.crasherList[message.guild.id][args[1].toLowerCase()] = {
                         addedBy: message.author.id,
                         added: Date.now()
                     }
-                    fs.writeFile('./crasherList.json', JSON.stringify(bot.crasherList, null, 4), async function (err) {
+                    fs.writeFileSync('./data/crasherList.json', JSON.stringify(bot.crasherList, null, 4), async function (err) {
                         if (err) ErrorLogger.log(err, bot)
                         let confirmMessage = await message.channel.send(`${args[1].toLowerCase()} has been added to the crasher list. Would you like to update the message?`)
                         let reactionCollector = new Discord.ReactionCollector(confirmMessage, (r, u) => !u.bot && u.id == message.author.id && (r.emoji.name === '✅' || r.emoji.name === '❌'))
@@ -65,8 +67,7 @@ module.exports = {
                             await confirmMessage.delete()
                             message.react('✅')
                             if (r.emoji.name == '✅') {
-                                let cl = require('./crasherList')
-                                cl.update(message, args, bot)
+                                module.exports.update(message, args, bot)
                             }
                         })
                     })
@@ -77,15 +78,17 @@ module.exports = {
     },
     async remove(message, args, bot) {
         let found = false;
-        for (let i in bot.crasherList) {
+        let guildCrashers = bot.crasherList[message.guild.id]
+        if(!guildCrashers) return message.channel.send('No crashers for this guild')
+        for (let i in guildCrashers) {
             if (args[1].toLowerCase() == i) {
                 found = true;
-                let d = new Date(bot.crasherList[i].added)
+                let d = new Date(guildCrashers[i].added)
                 let embed = new Discord.MessageEmbed()
                     .setColor('#ff0000')
                     .setTitle('Confirm Action')
                     .setDescription(`Are you sure you want to remove ${i} from the crasher list?`)
-                    .addField('Added By:', `<@!${bot.crasherList[i].addedBy}>`)
+                    .addField('Added By:', `<@!${guildCrashers[i].addedBy}>`)
                     .addField('Added:', d.toDateString())
                 let confirmMessage = await message.channel.send(embed)
                 let reactionCollector = new Discord.ReactionCollector(confirmMessage, (r, u) => !u.bot && u.id == message.author.id && (r.emoji.name === '✅' || r.emoji.name === '❌'))
@@ -93,8 +96,8 @@ module.exports = {
                 await confirmMessage.react('❌')
                 reactionCollector.on('collect', async function (r, u) {
                     if (r.emoji.name == '✅') {
-                        delete bot.crasherList[i];
-                        fs.writeFile('./crasherList.json', JSON.stringify(bot.crasherList, null, 4), async function (err) {
+                        delete bot.crasherList[message.guild.id][i];
+                        fs.writeFileSync('./data/crasherList.json', JSON.stringify(bot.crasherList, null, 4), async function (err) {
                             reactionCollector.stop()
                             let newEmbed = new Discord.MessageEmbed()
                                 .setColor('#00ff00')
@@ -106,8 +109,7 @@ module.exports = {
                                 message.react('✅')
                                 if (r.emoji.name == '✅') {
                                     nreactionCollector.stop()
-                                    let cl = require('./crasherList')
-                                    cl.update(message, args, bot)
+                                    module.exports.update(message, args, bot)
                                 } else nreactionCollector.stop()
                             })
                         })

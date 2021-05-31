@@ -1,0 +1,29 @@
+{
+    "343704644712923138": [
+        {
+            "reactName": "cultping",
+            "prettyName": "Cults",
+            "react": "<:malus:701491230332157972>"
+        },
+        {
+            "reactName": "voidping",
+            "prettyName": "Voids",
+            "react": "<:void:701491230210523247>"
+        },
+        {
+            "reactName": "shattsReact",
+            "prettyName": "Shatters",
+            "react": "<:shatters:723001214865899532>"
+        },
+        {
+            "reactName": "nestReact",
+            "prettyName": "Nests",
+            "react": "<:nest:723001215407095899>"
+        },
+        {
+            "reactName": "fungalReact",
+            "prettyName": "Fungals",
+            "react": "<:fungal:723001215696240660>"
+        }
+    ]
+}

@@ -1,0 +1,270 @@
+{
+    "343704644712923138": {
+        "main": [
+            {
+                "key": "v",
+                "alias": ["void", "voids"],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "voidsLead",
+                "currentweek": "currentweekVoid",
+                "color": "#8c00ff",
+                "desc": "`Void` Run",
+                "toUpdate": 1,
+                "toDisplay": [
+                    "currentweekCult",
+                    "currentweekVoid",
+                    "currentweekAssists",
+                    "currentweekFeedback"
+                ]
+            },
+            {
+                "key": "c",
+                "alias": ["cult", "cults"],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "cultsLead",
+                "currentweek": "currentweekCult",
+                "color": "#ff0000",
+                "desc": "`Cult` Run",
+                "toUpdate": 1,
+                "toDisplay": [
+                    "currentweekCult",
+                    "currentweekVoid",
+                    "currentweekAssists",
+                    "currentweekFeedback"
+                ]
+            },
+            {
+                "key": "f",
+                "alias": ["feedback", "fb"],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": false,
+                "main": "feedback",
+                "currentweek": "currentweekFeedback",
+                "color": "#8c00ff",
+                "desc": "`Feedback`",
+                "toUpdate": 1,
+                "toDisplay": [
+                    "currentweekCult",
+                    "currentweekVoid",
+                    "currentweekAssists",
+                    "currentweekFeedback"
+                ]
+            },
+            {
+                "key": "e",
+                "alias": ["event", "events", "other"],
+                "multiply": 10,
+                "allowAssists": false,
+                "confirm": true,
+                "main": "eventsLead",
+                "currentweek": "currentweekEvents",
+                "color": "#00FF00",
+                "desc": "`Event` run",
+                "toUpdate": 2,
+                "toDisplay": [
+                    "currentweekEvents"
+                ]
+            }
+        ],
+        "assist": {
+            "main": "assists",
+            "currentweek": "currentweekAssists"
+        }
+    },
+    "701483950559985705": {
+        "main": [
+            {
+                "key": "v",
+                "alias": ["void", "voids"],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "voidsLead",
+                "currentweek": "currentweekVoid",
+                "color": "#8c00ff",
+                "desc": "`Void` Run",
+                "toUpdate": 1,
+                "toDisplay": [
+                    "currentweekCult",
+                    "currentweekVoid",
+                    "currentweekAssists",
+                    "currentweekFeedback"
+                ]
+            },
+            {
+                "key": "c",
+                "alias": ["cult", "cults"],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "cultsLead",
+                "currentweek": "currentweekCult",
+                "color": "#ff0000",
+                "desc": "`Cult` Run",
+                "toUpdate": 1,
+                "toDisplay": [
+                    "currentweekCult",
+                    "currentweekVoid",
+                    "currentweekAssists",
+                    "currentweekFeedback"
+                ]
+            },
+            {
+                "key": "f",
+                "alias": ["feedback", "fb"],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": false,
+                "main": "feedback",
+                "currentweek": "currentweekFeedback",
+                "color": "#8c00ff",
+                "desc": "`Feedback`",
+                "toUpdate": 1,
+                "toDisplay": [
+                    "currentweekCult",
+                    "currentweekVoid",
+                    "currentweekAssists",
+                    "currentweekFeedback"
+                ]
+            },
+            {
+                "key": "e",
+                "alias": ["event", "events", "other"],
+                "multiply": 10,
+                "allowAssists": false,
+                "confirm": true,
+                "main": "eventsLead",
+                "currentweek": "currentweekEvents",
+                "color": "#00FF00",
+                "desc": "`Event` run",
+                "toUpdate": 2,
+                "toDisplay": [
+                    "currentweekEvents"
+                ]
+            }
+        ],
+        "assist": {
+            "main": "assists",
+            "currentweek": "currentweekAssists"
+        }
+    },
+    "708026927721480254": {
+        "main": [
+            {
+                "key": "o",
+                "alias": ["o3", "oryx"],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "o3leads",
+                "currentweek": "currentweeko3",
+                "color": "#8c00ff",
+                "desc": "`Oryx` Run",
+                "toUpdate": 1,
+                "toDisplay": [
+                    "currentweeko3",
+                    "currentweekAssistso3",
+                    "currentweeko3Feedback"
+                ]
+            },
+            {
+                "key": "p",
+                "alias": ["parse"],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": false,
+                "main": "o3parses",
+                "currentweek": "o3currentweekparses",
+                "color": "#8c00ff",
+                "desc": "`Parse`",
+                "toUpdate": 3,
+                "toDisplay": [
+                    "o3currentweekparses"
+                ]
+            },
+            {
+                "key": "e",
+                "alias": ["event", "events"],
+                "multiply": 10,
+                "allowAssists": false,
+                "confirm": true,
+                "main": "eventsLead",
+                "currentweek": "currentweekEvents",
+                "color": "#00FF00",
+                "desc": "`Event` run",
+                "toUpdate": 2,
+                "toDisplay": [
+                    "currentweekEvents"
+                ]
+            },
+            {
+                "key": "f",
+                "alias": ["feedback", "fb"],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": false,
+                "main": "o3feedback",
+                "currentweek": "currentweeko3Feedback",
+                "color": "#8c00ff",
+                "desc": "`Feedback`",
+                "toUpdate": 1,
+                "toDisplay": [
+                    "currentweeko3",
+                    "currentweekAssistso3",
+                    "currentweeko3Feedback"
+                ]
+            }
+        ],
+        "assist": {
+            "main": "assistso3",
+            "currentweek": "currentweekAssistso3"
+        }
+    },
+    "451171819672698920": {
+        "main": [
+            {
+                "key": "s",
+                "alias": ["shatters", "shatt", "success", "successful"],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "successruns",
+                "currentweek": "currentweek",
+                "color": "#308a00",
+                "desc": "`Successful` Run",
+                "toUpdate": 1,
+                "toDisplay": [
+                    "currentweek",
+                    "currentweekfailed",
+                    "currentweekassists"
+                ]
+            },
+            {
+                "key": "f",
+                "alias": ["fail", "failed"],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "failruns",
+                "currentweek": "currentweekfailed",
+                "color": "#ff0000",
+                "desc": "`Failed` Run",
+                "toUpdate": 1,
+                "toDisplay": [
+                    "currentweek",
+                    "currentweekfailed",
+                    "currentweekassists"
+                ]
+            }
+        ],
+        "assist": {
+            "main": "assists",
+            "currentweek": "currentweekassists"
+        }
+    }
+}

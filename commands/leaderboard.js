@@ -1,6 +1,72 @@
 const Discord = require('discord.js')
-const leaderBoardTypes = ['keypops', 'eventpops', 'runs', 'runs lead', 'vialUsed', 'solocult', 'runesused', 'points']
 const ErrorLogger = require('../lib/logError')
+
+const leaderBoardTypes = {
+    "343704644712923138": [
+        {
+            "index": 0,
+            "dbNames": ["keypops"],
+            "name": "Key Pops"
+        },
+        {
+            "index": 1,
+            "dbNames": ["eventpops"],
+            "name": "Event Key Pops"
+        },
+        {
+            "index": 2,
+            "dbNames": ["cultRuns", "voidRuns"],
+            "name": "Total Runs"
+        },
+        {
+            "index": 3,
+            "dbNames": ["cultsLead", "voidsLead"],
+            "name": "Total Runs Lead"
+        },
+        {
+            "index": 4,
+            "dbNames": ["vialUsed"],
+            "name": "Vials Used"
+        },
+        {
+            "index": 5,
+            "dbNames": ["points"],
+            "name": "Points"
+        }
+    ],
+    "701483950559985705": [
+        {
+            "index": 0,
+            "dbNames": ["keypops"],
+            "name": "Key Pops"
+        },
+        {
+            "index": 1,
+            "dbNames": ["eventpops"],
+            "name": "Event Key Pops"
+        },
+        {
+            "index": 2,
+            "dbNames": ["cultRuns", "voidRuns"],
+            "name": "Total Runs"
+        },
+        {
+            "index": 3,
+            "dbNames": ["cultsLead", "voidsLead"],
+            "name": "Total Runs Lead"
+        },
+        {
+            "index": 4,
+            "dbNames": ["vialUsed"],
+            "name": "Vials Used"
+        },
+        {
+            "index": 5,
+            "dbNames": ["points"],
+            "name": "Points"
+        }
+    ]
+}
 
 module.exports = {
     name: 'leaderboard',
@@ -10,175 +76,50 @@ module.exports = {
     dmNeedsGuild: true,
     role: 'raider',
     execute(message, args, bot, db) {
+        if (!leaderBoardTypes[message.guild.id]) return message.channel.send('Leaderboards not setup for this server')
         this.leaderBoardModule(message, bot, db, message.guild)
     },
     async dmExecution(message, args, bot, db, guild) {
+        if (!leaderBoardTypes[guild.id]) return message.channel.send('Leaderboards not setup for this server')
         this.leaderBoardModule(message, bot, db, guild)
     },
     async leaderBoardModule(message, bot, db, guild) {
         let embed = new Discord.MessageEmbed()
             .setColor(`#0000ff`)
             .setAuthor(`Select a leaderboard`)
-            .setDescription(`1️⃣ Key Pops\n2️⃣ Other Key Pops\n3️⃣ Total Runs\n4️⃣ Runs Lead\n5️⃣ Vials Popped\n6️⃣ Solo Cults\n7️⃣ Runes Used\n8️⃣ Points`)
+            .setDescription(leaderBoardTypes[guild.id].map(lb => `${numberToEmote(lb.index)} ${lb.name}`).join('\n'))
         if (message.author.avatarURL()) embed.author.iconURL = message.author.avatarURL()
         let embedMessage = await message.channel.send(embed)
         let reacted = false
-        let reactionCollector = new Discord.ReactionCollector(embedMessage, (r, u) => !u.bot)
+        let reactionCollector = new Discord.ReactionCollector(embedMessage, (r, u) => u.id == message.author.id && ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟', '❌'])
         reactionCollector.on('collect', async (r, u) => {
-            switch (r.emoji.name) {
-                case '1️⃣':
-                    reactionCollector.stop();
-                    reacted = true;
-                    db.query(`SELECT * FROM users ORDER BY ${leaderBoardTypes[0]} DESC LIMIT 25`, (err, rows) => {
-                        if (err) ErrorLogger.log(err, bot)
-                        embed.author.name = `Top 25 Key Pops`
-                        embed.description = 'None!'
-                        for (let i in rows) {
-                            let member = guild.members.cache.get(rows[i].id)
-                            let desc = `<@!${rows[i].id}>`
-                            if (member && member.nickname) desc += ` \`${member.nickname}\``
-                            desc += `: \`${rows[i].keypops}\` Keys Popped`
-                            fitStringIntoEmbed(embed, desc, message.channel)
-                        }
-                        message.channel.send(embed)
-                        embedMessage.delete()
-                    })
-                    break;
-                case '2️⃣':
-                    reactionCollector.stop();
-                    reacted = true;
-                    db.query(`SELECT * FROM users ORDER BY ${leaderBoardTypes[1]} DESC LIMIT 25`, (err, rows) => {
-                        if (err) ErrorLogger.log(err, bot)
-                        embed.author.name = `Top 25 Other Key Pops`
-                        embed.description = 'None!'
-                        for (let i in rows) {
-                            let member = guild.members.cache.get(rows[i].id)
-                            let desc = `<@!${rows[i].id}>`
-                            if (member && member.nickname) desc += ` \`${member.nickname}\``
-                            desc += `: \`${rows[i].eventpops}\` Other Key Pops`
-                            fitStringIntoEmbed(embed, desc, message.channel)
-                        }
-                        message.channel.send(embed)
-                        embedMessage.delete()
-                    })
-                    break;
-                case '3️⃣':
-                    reactionCollector.stop();
-                    reacted = true;
-                    db.query(`SELECT * FROM users ORDER BY cultRuns + voidRuns DESC LIMIT 25`, (err, rows) => {
-                        if (err) ErrorLogger.log(err, bot)
-                        embed.author.name = `Top 25 Total Runs`
-                        embed.description = 'None!'
-                        for (let i in rows) {
-                            let member = guild.members.cache.get(rows[i].id)
-                            let desc = `<@!${rows[i].id}>`
-                            if (member && member.nickname) desc += ` \`${member.nickname}\``
-                            desc += `: \`${rows[i].cultRuns + rows[i].voidRuns}\` Total Runs (\`${rows[i].voidRuns}\` voids, \`${rows[i].cultRuns}\` cults)`
-                            fitStringIntoEmbed(embed, desc, message.channel)
-                        }
-                        message.channel.send(embed)
-                        embedMessage.delete()
-                    })
-                    break;
-                case '4️⃣':
-                    reactionCollector.stop();
-                    reacted = true;
-                    db.query(`SELECT * FROM users ORDER BY cultsLead + voidsLead DESC LIMIT 25`, (err, rows) => {
-                        if (err) ErrorLogger.log(err, bot)
-                        embed.author.name = `Top 25 Total Runs Lead`
-                        embed.description = 'None!'
-                        for (let i in rows) {
-                            let member = guild.members.cache.get(rows[i].id)
-                            let desc = `<@!${rows[i].id}>`
-                            if (member && member.nickname) desc += ` \`${member.nickname}\``
-                            desc += `: \`${rows[i].cultsLead + rows[i].voidsLead}\` Total Runs (\`${rows[i].voidsLead}\` voids, \`${rows[i].cultsLead}\` cults)`
-                            fitStringIntoEmbed(embed, desc, message.channel)
-                        }
-                        message.channel.send(embed)
-                        embedMessage.delete()
-                    })
-                    break;
-                case '5️⃣':
-                    reactionCollector.stop();
-                    reacted = true;
-                    db.query(`SELECT * FROM users ORDER BY ${leaderBoardTypes[4]} DESC LIMIT 25`, (err, rows) => {
-                        if (err) ErrorLogger.log(err, bot)
-                        embed.author.name = `Top 25 Vials Used`
-                        embed.description = 'None!'
-                        for (let i in rows) {
-                            let member = guild.members.cache.get(rows[i].id)
-                            let desc = `<@!${rows[i].id}>`
-                            if (member && member.nickname) desc += ` \`${member.nickname}\``
-                            desc += `: \`${rows[i].vialUsed}\` Vials Used`
-                            fitStringIntoEmbed(embed, desc, message.channel)
-                        }
-                        message.channel.send(embed)
-                        embedMessage.delete()
-                    })
-                    break;
-                case '6️⃣':
-                    reactionCollector.stop();
-                    reacted = true;
-                    db.query(`SELECT * FROM users ORDER BY ${leaderBoardTypes[5]} DESC LIMIT 25`, (err, rows) => {
-                        if (err) ErrorLogger.log(err, bot)
-                        embed.author.name = `Top 25 Solo Culters`
-                        embed.description = 'None!'
-                        for (let i in rows) {
-                            let member = guild.members.cache.get(rows[i].id)
-                            let desc = `<@!${rows[i].id}>`
-                            if (member && member.nickname) desc += ` \`${member.nickname}\``
-                            desc += `: \`${rows[i].solocult}\` Solo Cults`
-                            fitStringIntoEmbed(embed, desc, message.channel)
-                        }
-                        message.channel.send(embed)
-                        embedMessage.delete()
-                    })
-                    break;
-                case '7️⃣':
-                    reactionCollector.stop();
-                    reacted = true;
-                    db.query(`SELECT * FROM users ORDER BY ${leaderBoardTypes[6]} DESC LIMIT 25`, (err, rows) => {
-                        if (err) ErrorLogger.log(err, bot)
-                        embed.author.name = `Top 25 Rune Poppers`
-                        embed.description = 'None!'
-                        for (let i in rows) {
-                            let member = guild.members.cache.get(rows[i].id)
-                            let desc = `<@!${rows[i].id}>`
-                            if (member && member.nickname) desc += ` \`${member.nickname}\``
-                            desc += `: \`${rows[i].runesused}\` Runes Used`
-                            fitStringIntoEmbed(embed, desc, message.channel)
-                        }
-                        message.channel.send(embed)
-                        embedMessage.delete()
-                    })
-                    break;
-                case '8️⃣':
-                    reactionCollector.stop();
-                    reacted = true;
-                    db.query(`SELECT * FROM users ORDER BY ${leaderBoardTypes[7]} DESC LIMIT 25`, (err, rows) => {
-                        if (err) ErrorLogger.log(err, bot)
-                        embed.author.name = `Top 25 in Points`
-                        embed.description = 'None!'
-                        for (let i in rows) {
-                            let member = guild.members.cache.get(rows[i].id)
-                            let desc = `<@!${rows[i].id}>`
-                            if (member && member.nickname) desc += ` \`${member.nickname}\``
-                            desc += `: \`${rows[i].points}\` Points`
-                            fitStringIntoEmbed(embed, desc, message.channel)
-                        }
-                        message.channel.send(embed)
-                        embedMessage.delete()
-                    })
-                    break;
-                //case '9️⃣': reactionCollector.stop(); break;
-                //case '🔟': reactionCollector.stop(); break;
-                case '❌': await embedMessage.delete(); reactionCollector.stop(); break;
-                default:
-                    let retryMessage = await message.channel.send('There was an issue with the reaction. Please try again');
-                    setTimeout(() => { retryMessage.delete() }, 5000)
+            if (r.emoji.name == '❌') {
+                reactionCollector.stop()
+                embedMessage.delete()
+                return
             }
+            let type = leaderBoardTypes[guild.id][emoteToIndex(r.emoji.name)]
+            if (!type) return
+            reactionCollector.stop();
+            reacted = true;
+            db.query(`SELECT * FROM users ORDER BY ${type.dbNames.map(n => n).join(' + ')} DESC LIMIT 25`, (err, rows) => {
+                if (err) ErrorLogger.log(err, bot)
+                embed.author.name = `Top 25 ${type.name}`
+                embed.description = 'None!'
+                for (let i in rows) {
+                    let member = guild.members.cache.get(rows[i].id)
+                    let desc = `<@!${rows[i].id}>`
+                    if (member && member.nickname) desc += ` \`${member.nickname}\``
+                    tot = 0
+                    for (let j of type.dbNames) tot = tot + parseInt(rows[i][j])
+                    desc += `: \`${tot}\` ${type.name}`
+                    fitStringIntoEmbed(embed, desc, message.channel)
+                }
+                message.channel.send(embed)
+                embedMessage.delete()
+            })
         })
-        for (let i = 0; i < leaderBoardTypes.length; i++) {
+        for (let i = 0; i < leaderBoardTypes[guild.id].length; i++) {
             if (reacted) break;
             switch (i) {
                 case 0: await embedMessage.react('1️⃣').catch(er => { }); break;
@@ -221,5 +162,37 @@ function fitStringIntoEmbed(embed, string, channel) {
         }
     } else {
         embed.setDescription(embed.description.concat(`\n${string}`))
+    }
+}
+
+function numberToEmote(i) {
+    switch (i) {
+        case 0: return '1️⃣'
+        case 1: return '2️⃣'
+        case 2: return '3️⃣'
+        case 3: return '4️⃣'
+        case 4: return '5️⃣'
+        case 5: return '6️⃣'
+        case 6: return '7️⃣'
+        case 7: return '8️⃣'
+        case 8: return '9️⃣'
+        case 9: return '🔟'
+        default: return null
+    }
+}
+
+function emoteToIndex(emote) {
+    switch (emote) {
+        case '1️⃣': return 0
+        case '2️⃣': return 1
+        case '3️⃣': return 2
+        case '4️⃣': return 3
+        case '5️⃣': return 4
+        case '6️⃣': return 5
+        case '7️⃣': return 6
+        case '8️⃣': return 7
+        case '9️⃣': return 8
+        case '🔟': return 9
+        default: return null
     }
 }

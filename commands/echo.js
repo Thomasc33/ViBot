@@ -1,5 +1,3 @@
-const { execute } = require("./lock");
-
 module.exports = {
     name: 'echo',
     role: 'moderator',

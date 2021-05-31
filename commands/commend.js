@@ -1,40 +1,80 @@
+const Discord = require('discord.js')
+const commendations = require('../data/commends.json')
 module.exports = {
     name: 'commend',
     role: 'rl',
-    args: '<user> <rusher/mapmarker>',
-    notes: 'rusher',
+    args: '<user> <role *see below*>',
+    getNotes(guildid, member) {
+        return commendations ? `Role List: ${commendations[guildid].map(r => { r.roleName }).join(', ')}` : 'no roles found for this guild'
+    },
     requiredArgs: 2,
     description: 'Gives user a role',
+    /**
+     * 
+     * @param {Discord.Message} message 
+     * @param {Array} args 
+     * @param {Discord.Client} bot 
+     * @param {*} db 
+     * @returns 
+     */
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
+        let commendationInfo = commendations[message.guild.id]
+        if (!commendationInfo) return message.channel.send('Commendations not setup for this server')
+
         //check args length
         if (args.length < 2) return
 
         //args 0
         let member = message.mentions.members.first()
-        if (member == null) member = message.guild.members.cache.get(args[0])
-        if (member == null) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
-        if (member == null) return message.channel.send('User not found')
+        if (!member) member = message.guild.members.cache.get(args[0])
+        if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
+        if (!member) return message.channel.send('User not found')
 
         //args 1
         let type = args[1].charAt(0).toLowerCase()
 
         //give role and log
-        switch (type) {
-            case 'r':
-            case 'm':
-                let rusher = message.guild.roles.cache.get(settings.roles.rusher)
-                if (member.roles.cache.has(rusher.id)) return message.channel.send(`${member} already has \`${rusher.name}\``)
+        let found = false
+        for (let i of commendationInfo) {
+            if (i.roleName == type.toLowerCase()) {
+                found = true
+                if (i.minimumRole) {
+                    let minRole = message.guild.roles.cache.get(settings.roles[i.minimumRole])
+                    if (minRole && message.member.roles.highest.position < minRole.position) return message.channel.send(`The minimum role to commend this role is \`${minRole.name}\``)
+                }
+                let role = message.guild.roles.cache.get(settings.roles[i.roleSetupName])
+                if (!role) return message.channels.send(`\`${i.roleSetupName}\` not found in setup`)
+                if (member.roles.cache.has(role.id)) return message.channel.send(`${member} already has \`${role.name}\``)
                 let modlog = message.guild.channels.cache.get(settings.channels.modlogs)
-                await modlog.send(`\`${rusher.name}\` added to ${member} per the request of ${message.member}`)
-                member.roles.add(rusher.id)
-                if (type == 'r') db.query(`UPDATE users SET isRusher = true WHERE id = '${member.id}'`)
-                break;
-            default:
-                return message.channel.send(`${args[1]} is not a valid commendation type. Check \`;commands commend\` for a list of roles`)
+                if (modlog) await modlog.send(`\`${role.name}\` added to ${member} per the request of ${message.member}`)
+                member.roles.add(role.id)
+                if (i.dbName) db.query(`UPDATE users SET ${i.dbName} = true WHERE id = '${member.id}'`)
+                if (i.prefix) addPrefix(i.prefix, member)
+            }
         }
 
         //give confirmation
         message.react('✅')
+    }
+}
+
+function addPrefix(p, member) {
+    let prefix = member.nickname.replace(/[a-z0-9|]/gi, '')
+    if (!prefix || prefix == '') member.setNickname(`${p}${member.nickname.replace(/[+-=]/gi, '')}`)
+    else if (prefix.replace(/[^+-=]/gi, '') != prefix) return console.log('returning');
+    switch (p) {
+        case '+':
+            member.setNickname(`${p}${prefix.replace('+', '')}${member.nickname.replace(/[+-=]/gi, '')}`)
+            break;
+        case '-':
+            member.setNickname(`${prefix.replace(/[=-]/gi, '')}${p}${prefix.replace(/[+-]/gi, '')}${member.nickname.replace(/[+-=]/gi, '')}`)
+            break;
+        case '=':
+            member.setNickname(`${prefix.replace('=', '')}${p}${member.nickname.replace(/[+-=]/gi, '')}`)
+            break;
+        default:
+            member.setNickname(`${p}${prefix.replace(p, '')}${member.nickname.replace(/[+-=]/gi, '')}`)
+            break;
     }
 }

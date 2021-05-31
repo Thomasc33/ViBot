@@ -5,12 +5,25 @@ const pointLogger = require('../lib/pointLogger')
 module.exports = {
     name: 'points',
     description: 'Displays how many points a user has',
-    args: 'None | EO+ <user> | HRL+ <add/remove> <user>',
+    args: 'None',
     role: 'raider',
+    /**
+     * 
+     * @param {String} guildid 
+     * @param {Discord.GuildMember} member 
+     */
+    getNotes(guildid, member) {
+        let settings = member.client.settings[guildid]
+        if (!settings) return null
+        if (member.roles.highest.position >= member.guild.roles.cache.get(settings.roles.headrl).position || member.id == '277636691227836419') return 'EO+ <user> | HRL+ <add/remove> <user>'
+        if (member.roles.highest.position >= member.guild.roles.cache.get(settings.roles.eventrl).position || member.id == '277636691227836419') return '<user> to see someones points'
+        else return null
+    },
     dms: true,
     dmNeedsGuild: true,
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
+        if (!settings || !settings.backend.points) return
         if (message.member.roles.highest.position < message.guild.roles.cache.get(settings.roles.eventrl).position) {
             await message.member.send(await this.getPointEmbed(message.member, db))
             message.react('✅')

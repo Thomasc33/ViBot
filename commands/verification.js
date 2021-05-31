@@ -46,7 +46,7 @@ module.exports = {
         let settings = bot.settings[guild.id]
         if (!embedMessage) {
             let veriChannel = guild.channels.cache.get(settings.channels.verification)
-            if (veriChannel == null) return;
+            if (!veriChannel) return;
             let messages = await veriChannel.messages.fetch({ limit: 1 })
             embedMessage = messages.first()
         }
@@ -234,7 +234,7 @@ module.exports = {
         if (blInfo) return cancelVerification(2, blInfo)
 
         //verify name isnt in server yet
-        let dupes = guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(ign.toLowerCase()));
+        let dupes = guild.members.cache.filter(user => user.nickname).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(ign.toLowerCase()));
         if (dupes) {
             return cancelVerification(3)
         } else {
@@ -244,7 +244,7 @@ module.exports = {
         }
 
         //generate and give vericode
-        let vericode = `PUBHALLS-${Math.floor(Math.random() * 10000)}`
+        let vericode = `VIBOT-${Math.floor(Math.random() * 10000)}`
         embed.setDescription(`You have chosen to verify under: \`${ign}\`\n\nPlease add the following code into your realmeye description:\n\`\`\`${vericode}\`\`\`\nRe-react to the ✅ when it is done`)
         embedMessage.edit(embed)
         let veriCodeReactionCollector = new Discord.ReactionCollector(embedMessage, (r, u) => !u.bot && r.emoji.name == '✅')

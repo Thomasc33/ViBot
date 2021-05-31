@@ -36,8 +36,8 @@ module.exports = {
                 commandPanel.addField('Aliases', command.alias)
             } if (command.args != null) {
                 commandPanel.addField('Args', command.args)
-            } if (command.notes != null) {
-                commandPanel.addField('Special Notes', command.notes)
+            } if (command.getNotes(message.guild.id, message.member)) {
+                commandPanel.addField('Special Notes', command.getNotes(message.guild.id, message.member))
             }
             var minimumRole = message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role])
             commandPanel.addField('Minimum Role', minimumRole);

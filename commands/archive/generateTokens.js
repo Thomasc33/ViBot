@@ -1,5 +1,3 @@
-const { execute } = require("./redeem");
-
 module.exports = {
     name: 'generatetokens',
     role: 'developer',

@@ -1,6 +1,4 @@
-const { DiscordAPIError } = require('discord.js');
 const fs = require('fs');
-const { args } = require('./points');
 module.exports = {
     name: 'reload',
     role: 'moderator',

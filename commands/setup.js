@@ -1,20 +1,20 @@
 const fs = require('fs')
 const Discord = require('discord.js')
 const roles = ['moderator', 'officer', 'headrl', 'vetrl', 'fsvrl', 'mrvrl', 'security', 'fullskip', 'developer', 'rl', 'almostrl', 'trialrl', 'headeventrl', 'eventrl', 'rusher', 'nitro', 'lol', 'vetraider', 'raider', 'eventraider', 'muted',
-    'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'topkey', 'bottomkey', 'cultping', 'voidping']
+    'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'topkey', 'bottomkey', 'cultping', 'voidping', 'shattsReact', 'fungalReact', 'nestReact']
 const channels = ['modmail', 'verification', 'manualverification', 'vetverification', 'manualvetverification', 'verificationlog', 'activeverification', 'modlogs', 'history', 'suspendlog',
     'viallog', 'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel', 'raidstatus', 'eventstatus',
     'vetstatus', 'raidcommands', 'eventcommands', 'vetcommands', 'raidingchannels', 'eventchannels', 'vetchannels', 'runlogs', 'dmcommands', 'veriactive', 'pointlogging', 'veriattempts',
-    'modmailinfo', 'parsecurrentweek', 'pastparseweeks', 'roleassignment']
+    'modmailinfo', 'parsecurrentweek', 'pastparseweeks', 'roleassignment', 'botstatus']
 const categories = ['raiding', 'veteran', 'event']
 const voice = ['raidingtemplate', 'eventtemplate', 'vettemplate', 'veteventtemplate', 'lounge', 'vetlounge', 'eventlounge', 'afk']
 const voiceprefixes = ['raidingprefix', 'vetprefix']
-const backend = ['modmail', 'currentweek', 'eventcurrentweek', 'parsecurrentweek', 'verification', 'vetverification', 'points', 'supporter', 'roleassignment', 'realmeyestats']
+const backend = ['modmail', 'currentweek', 'eventcurrentweek', 'parsecurrentweek', 'verification', 'vetverification', 'points', 'supporter', 'roleassignment', 'realmeyestats', 'automod']
 const numerical = ['afktime', 'eventafktime', 'nitrocount', 'nitrocooldown', 'topkey', 'bottomkey', 'ticketlimit', 'supporterlimit']
 const runreqs = ['weapon', 'ability', 'armor', 'ring']
 const autoveri = ['fame', 'stars', 'realmage', 'discordage', 'deathcount']
 const vetverireqs = ['maxed', 'meleemaxed', 'runs']
-const points = ['earlylocation', 'perrun', 'nitromultiplier', 'keypop', 'vialpop', 'rushing', 'brain', 'mystic', 'eventkey', 'cultlocation', 'voidlocation', 'fsvlocation', 'o3streaming', 'o3trickster', 'o3puri']
+const points = ['earlylocation', 'perrun', 'nitromultiplier', 'keypop', 'vialpop', 'rushing', 'brain', 'mystic', 'eventkey', 'cultlocation', 'voidlocation', 'fsvlocation', 'o3streaming', 'o3trickster', 'o3puri', 'exaltkey']
 var commands = []
 
 const menus = ['roles', 'channels', 'voice', 'voiceprefixes', 'backend', 'numerical', 'runreqs', 'autoveri', 'vetverireqs', 'points', 'commands', 'categories']
@@ -214,7 +214,7 @@ module.exports = {
             }
         }
         for (let i of commands) {
-            if (!bot.settings[guild.id].commands[i] && bot.settings[guild.id].commands[i] !== false) bot.settings[guild.id].commands[i] = true
+            if (!bot.settings[guild.id].commands[i] && bot.settings[guild.id].commands[i] !== false) bot.settings[guild.id].commands[i] = bot.commands.get(i).guildSpecific ? false : true //this might not work lol
         }
         for (let i of categories) {
             if (!bot.settings[guild.id].categories[i]) bot.settings[guild.id].categories[i] = getDefaultCategoryName(i)
@@ -254,6 +254,9 @@ function getDefaultRoleName(name) {
         case 'bottomkey': return 'Verified Key Popper'
         case 'cultping': return 'Cult boi'
         case 'voidping': return 'Void boi'
+        case 'shattsReact': return 'Shatters boi'
+        case 'fungalReact': return 'Fungal boi'
+        case 'nestReact': return 'Nest boi'
     }
 }
 
@@ -297,6 +300,7 @@ function getDefaultChannelName(name) {
         case 'parsecurrentweek': return 'mod-current-week';
         case 'pastparseweeks': return 'mod-parse-history';
         case 'roleassignment': return 'role-assignment';
+        case 'botstatus': return 'bot-status'
     }
 }
 
@@ -377,6 +381,7 @@ function getDefaultPointValue(name) {
         case 'o3streaming': return 5;
         case 'o3trickster': return 3;
         case 'o3puri': return 3;
+        case 'exaltkey': return 5
     }
 }
 

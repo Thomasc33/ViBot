@@ -1,10 +1,15 @@
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
+const kickTemplates = require('../data/kickOptions.json')
 
 module.exports = {
     name: 'kick',
     description: 'Kicks user from server and logs it',
     args: '<id/mention> <reason>',
+    getNotes(guildid, member) {
+        if (!kickTemplates[guildid]) return undefined
+        return `Available Templates: `.concat(Object.keys(kickTemplates[guildid]).map(k => k).join(', '))
+    },
     requiredArgs: 1,
     role: 'security',
     execute(message, args, bot) {
@@ -13,9 +18,7 @@ module.exports = {
         var member = message.mentions.members.first()
         if (!member) member = message.guild.members.cache.get(args[0]);
         if (!member) { message.channel.send('User not found. Please try again'); return; }
-        if (member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.eventrl).position) {
-            return message.channel.send(`You may not kick other staff members (eo+)`);
-        }
+        if (member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.eventrl).position) return message.channel.send(`You may not kick other staff members (eo+)`);
         let reason
         if (args.length > 1) {
             reason = ''
@@ -23,6 +26,7 @@ module.exports = {
                 reason = reason.concat(args[i]) + ' ';
             }
         } else reason = false
+        if (kickTemplates[message.guild.id] && kickTemplates[message.guild.id].includes(reason.toLowerCase())) reason = kickTemplates[message.guild.id][reason.toLowerCase()]
         message.channel.send(`Are you sure you want to kick ${member.displayName}? Y/N`);
         let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 10000 });
         collector.on('collect', async m => {

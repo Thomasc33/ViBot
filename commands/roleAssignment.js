@@ -2,15 +2,7 @@ const ErrorLogger = require('../lib/logError')
 const Discord = require('discord.js');
 
 //add this to settings eventually:registered:
-const reacts = [{
-    reactName: 'cultping',
-    prettyName: 'Cults',
-    react: '<:malus:701491230332157972>' //<:malus:727619718592200745>
-}, {
-    reactName: 'voidping',
-    prettyName: 'Voids',
-    react: '<:void:701491230210523247>'//'<:void_entity:727621690112344216>'
-}]
+const reacts = require('../data/roleAssignment.json')
 
 module.exports = {
     name: 'roleassignment',
@@ -18,40 +10,53 @@ module.exports = {
     role: 'moderator',
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
-        if (!settings) return;
+        if (!settings || !settings.backend.roleassignment) return;
+
+        let guildReacts = reacts[message.guild.id]
+        if (!guildReacts) return message.channel.send('Reactions not setup for this guild')
+
+        //make embed
+        let embed = getEmbed(guildReacts)
+
+        //get channel
+        let channel = message.guild.channels.cache.get(settings.channels.roleassignment)
+        if (!channel) return message.channel.send('Could not find channel: ' + settings.channels.roleassignment)
 
         //get arg
         if (args.length == 0) return
         switch (args[0].toLowerCase()) {
             case 'send':
-                //make embed
-                const embed = new Discord.MessageEmbed()
-                    .setTitle(`Role Assignment`)
-                    .setDescription('React/Unreact with one of the following emojis to get pinged for specific runs')
-                for (let i of reacts) {
-                    embed.addField(i.prettyName, i.react, true)
-                }
-
-                //get channel
-                let channel = message.guild.channels.cache.get(settings.channels.roleassignment)
-                if (!channel) return message.channel.send('Could not find channel: ' + settings.channels.roleassignment)
-
                 //send to channel and add reacts
                 let m = await channel.send(embed)
-                for (let i of reacts) {
+                for (let i of guildReacts) {
                     await m.react(i.react.replace(/[^0-9]/gi, ''))
                 }
                 return this.init(message.guild, bot)
+
+            case 'edit':
+                let mC = await channel.messages.fetch({ limit: 1 })
+                let me = mC.first()
+                if (me.author.id !== bot.user.id) return ErrorLogger.log(new Error('Role Assignment message author id is not bots id'), bot)
+                me.edit(embed)
+                for (let i of guildReacts) {
+                    await me.react(i.react.replace(/[^0-9]/gi, ''))
+                }
+                return this.init(message.guild, bot)
+                
             case 'init':
                 return this.init(message.guild, bot)
         }
     },
     async init(guild, bot) {
         let settings = bot.settings[guild.id]
-        if (!settings) return
+        if (!settings || !settings.backend.roleassignment) return
+
+        let guildReacts = reacts[guild.id]
+        if (!guildReacts) return
 
         //watch reacts with dispose option
         let channel = guild.channels.cache.get(settings.channels.roleassignment)
+        if (!channel) return
 
         let mC = await channel.messages.fetch({ limit: 1 })
         let m = mC.first()
@@ -62,7 +67,7 @@ module.exports = {
         async function handleReact(r, u, isRemove) {
             //get react type
             let roleID
-            for (let i of reacts) {
+            for (let i of guildReacts) {
                 if (i.react.replace(/[^0-9]/gi, '') == r.emoji.id) roleID = settings.roles[i.reactName]
             }
             if (!roleID) return
@@ -72,4 +77,14 @@ module.exports = {
             else member.roles.add(roleID)
         }
     }
+}
+
+function getEmbed(guildReacts) {
+    let embed = new Discord.MessageEmbed()
+        .setTitle(`Role Assignment`)
+        .setDescription('React/Unreact with one of the following emojis to get pinged for specific runs')
+    for (let i of guildReacts) {
+        embed.addField(i.prettyName, i.react, true)
+    }
+    return guildReacts
 }

@@ -12,8 +12,9 @@ module.exports = {
         const vetBanRole = message.guild.roles.cache.get(settings.roles.vetban)
         const vetRaiderRole = message.guild.roles.cache.get(settings.roles.vetraider);
         var member = message.mentions.members.first()
-        if (member == null) member = message.guild.members.cache.get(args[0]);
-        if (member == null) return message.channel.send("User not found")
+        if (!member) member = message.guild.members.cache.get(args[0]);
+        if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
+        if (!member) return message.channel.send("User not found")
         if (member.roles.cache.has(vetBanRole.id)) return message.channel.send("User is vet banned")
         member.roles.add(vetRaiderRole)
         let embed = new Discord.MessageEmbed()
@@ -23,6 +24,7 @@ module.exports = {
             .addField('Verified By', `<@!${message.author.id}>`, true)
             .setTimestamp(Date.now());
         message.guild.channels.cache.get(settings.channels.modlogs).send(embed);
-        message.channel.send(`${member} has been given ${vetRaiderRole}`)
+        let confirmEmbed = new Discord.MessageEmbed().setDescription(`${member} has been given ${vetRaiderRole}`)
+        message.channel.send(confirmEmbed)
     }
 }

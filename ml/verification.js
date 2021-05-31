@@ -1,7 +1,5 @@
 const tf = require('@tensorflow/tfjs-node')
 const fs = require('fs')
-const mainAccountData = require('../data/maindata.json')
-const altAccountData = require('../data/altdata.json')
 const botSettings = require('../settings.json')
 const realmEyeScrape = require('../lib/realmEyeScrape')
 
@@ -177,28 +175,10 @@ const achievementIndexes = {
     'Accuracy': 11
 }
 
-var xs2D = [], ys2D = []
-for (let i in altAccountData) {
-    let data = arrayFromUserInfo(altAccountData[i])
-    if (!data) continue
-    xs2D.push(data)
-    ys2D.push([1])
-}
-for (let i in mainAccountData) {
-    let data = arrayFromUserInfo(mainAccountData[i])
-    if (!data) continue
-    xs2D.push(data)
-    ys2D.push([0])
-}
-
-const xs = tf.tensor2d(xs2D)
-const ys = tf.tensor2d(ys2D)
-
 var model
-
-if (fs.existsSync(`${botSettings.vibotDirectory}/verificationModel/model.json`)) {
+if (fs.existsSync(`${global.appRoot}/verificationModel/model.json`)) {
     async function loadModel() {
-        model = await tf.loadLayersModel(`file://${botSettings.vibotDirectory}/verificationModel/model.json`)
+        model = await tf.loadLayersModel(`file://${global.appRoot}/verificationModel/model.json`)
 
         //compile
         model.compile({
@@ -221,11 +201,15 @@ else {
 
     //hidden layers
     model.add(tf.layers.dense({
-        units: 270,
+        units: 750,
         activation: layer
     }))
     model.add(tf.layers.dense({
-        units: 100,
+        units: 75,
+        activation: layer
+    }))
+    model.add(tf.layers.dense({
+        units: 20,
         activation: layer
     }))
 
@@ -237,8 +221,8 @@ else {
 
     //compile
     model.compile({
-        optimizer: tf.train.adam(),
-        loss: tf.losses.meanSquaredError
+        optimizer: tf.train.adam(0.0001),
+        loss: tf.losses.huberLoss
     })
 
     train().then(async () => { console.log('training complete') })
@@ -248,10 +232,32 @@ else {
 
 async function train() {
     if (botSettings.MLtraining) {
+        const mainAccountData = require('../data/maindata.json')
+        const altAccountData = require('../data/altdata.json')
+        var xs2D = [], ys2D = []
+        for (let i in altAccountData) {
+            let data = arrayFromUserInfo(altAccountData[i])
+            if (!data) continue
+            xs2D.push(data)
+            ys2D.push([1])
+        }
+        for (let i in mainAccountData) {
+            let data = arrayFromUserInfo(mainAccountData[i])
+            if (!data) continue
+            xs2D.push(data)
+            ys2D.push([0])
+        }
+
+        const xs = tf.tensor2d(xs2D)
+        const ys = tf.tensor2d(ys2D)
+
+
         const config = {
             shuffle: true,
-            epochs: 10,
-            verbose: 1
+            epochs: 15,
+            verbose: 1,
+            validationSplit: 0.2,
+            shuffle: true,
         }
         const response = await model.fit(xs, ys, config)
         console.log(response.history.loss[0])

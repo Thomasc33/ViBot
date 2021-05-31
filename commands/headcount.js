@@ -1,6 +1,8 @@
 const Discord = require('discord.js');
 const botSettings = require('../settings.json');
 const ErrorLogger = require('../lib/logError')
+const afkCheck = require('./afkCheck')
+const eventAfk = require('./eventAfk')
 const eventFile = require('../data/events.json')
 
 var bot
@@ -23,29 +25,11 @@ module.exports = {
         else if (message.channel.parent.name.toLowerCase() === settings.categories.raiding) textChannel = message.guild.channels.cache.get(settings.channels.raidstatus)
         else if (message.channel.parent.name.toLowerCase() === settings.categories.event) textChannel = message.guild.channels.cache.get(settings.channels.eventstatus)
 
-        //normal execution
+        //check to see if an event exists under args[0]
+        if (message.channel.parent.name.toLowerCase() !== settings.categories.raiding && eventAfk.getEventType(args[0], eventFile)) return eventHC()
         if (message.channel.parent.name.toLowerCase() !== 'events') {
-            let afkTemplates = require('../afkTemplates.json')
-            let runType = null;
-            switch (args[0].charAt(0).toLowerCase()) {
-                case 'c':
-                    runType = afkTemplates.cult;
-                    break;
-                case 'v':
-                    runType = afkTemplates.void;
-                    break;
-                case 'f':
-                    runType = afkTemplates.fullSkipVoid;
-                    break;
-                case 'x':
-                    runType = afkTemplates.splitCult;
-                    break;
-                default:
-                    if (message.member.roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles.vetrl).position) return message.channel.send('Run Type Not Recognized')
-                    else runType = await getTemplate(message, afkTemplates, args[0]).catch(er => message.channel.send(`Unable to get template. Error: \`${er}\``))
-                    break;
-            }
-            if (!runType) eventHC().catch(er => { message.channel.send(er) })
+            let runType = afkCheck.getRunType(args[0].charAt(0).toLowerCase(), message.guild.id)
+            if (!runType) return message.channel.send('Run Type not recognized')
 
             let embed = new Discord.MessageEmbed()
                 .setAuthor(`Headcount for ${runType.runName} by ${message.member.nickname}`)
@@ -64,11 +48,10 @@ module.exports = {
         } else eventHC().catch(er => { message.channel.send(er) })
 
         async function eventHC() {
-            return new Promise(async(res, rej) => {
+            return new Promise(async (res, rej) => {
                 var eventType = args[0]
-                if (!eventFile[eventType]) return rej("Event type unrecognized. Check ;events and try again")
-
-                var event = eventFile[eventType]
+                var event = eventAfk.getEventType(eventType)
+                if (!event) return rej('No event found')
                 if (!event.enabled) return rej(`${event.name} is currently disabled.`);
 
                 var embed = new Discord.MessageEmbed()
@@ -121,11 +104,4 @@ async function eventReact(pingMessage, event) {
     if (event.paladin) await pingMessage.react(botSettings.emoteIDs.Paladin)
     if (event.bard) await pingMessage.react(botSettings.emoteIDs.Bard)
     if (event.priest) await pingMessage.react(botSettings.emoteIDs.Priest)
-}
-
-async function getTemplate(message, afkTemplates, runType) {
-    return new Promise(async(res, rej) => {
-        if (afkTemplates[message.author.id] && afkTemplates[message.author.id][runType.toLowerCase()]) return res(afkTemplates[message.author.id][runType.toLowerCase()])
-        else res(null)
-    })
 }

@@ -3,18 +3,22 @@ const fs = require('fs')
 const Discord = require('discord.js')
 const cron = require('cron')
 const mysql = require('mysql')
-const botSettings = require('./settings.json')
-const token = require('./botKey.json')
-const prefix = botSettings.prefix
-const bot = new Discord.Client()
-bot.commands = new Discord.Collection()
-bot.crasherList = require('./crasherList.json') || {}
-bot.afkChecks = require('./afkChecks.json') || {}
-bot.settings = require('./guildSettings.json') || {}
-bot.serverWhiteList = require('./serverWhiteList.json') || {}
-const cooldowns = new Discord.Collection()
+const express = require('express')
+const https = require('https')
+const bodyParser = require('body-parser')
+const rateLimit = require('express-rate-limit')
+const cookieParser = require('cookie-parser')
+const cors = require('cors')
+const path = require('path');
+global.appRoot = path.resolve(__dirname); //put here so verification ml doenst break
+
+
+// Import Internal Libraries
 const ErrorLogger = require(`./lib/logError`)
 const CommandLogger = require('./lib/logCommand')
+
+// Specific Commands
+const botstatus = require('./commands/botstatus')
 const vibotChannels = require('./commands/vibotChannels')
 const vetVerification = require('./commands/vetVerification')
 const verification = require('./commands/verification')
@@ -27,24 +31,31 @@ const modmail = require('./commands/modmail')
 const setup = require('./commands/setup')
 const restarting = require('./commands/restart')
 const createTemplate = require('./commands/createTemplate')
-const emojiServers = require('./data/emojiServers.json') || {}
+
+
+// Global Variables/Data
+const botSettings = require('./settings.json')
+const token = require('./botKey.json')
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
-const express = require('express')
-const https = require('https')
-const bodyParser = require('body-parser')
-const rateLimit = require('express-rate-limit')
-const cookieParser = require('cookie-parser')
+const prefix = botSettings.prefix
+const bot = new Discord.Client()
+const cooldowns = new Discord.Collection()
+bot.commands = new Discord.Collection()
+bot.dbs = {}
+bot.crasherList = moduleIsAvailable('./data/crasherList.json') ? require('./data/crasherList.json') : {}
+bot.afkChecks = moduleIsAvailable('./afkChecks.json') ? require('./afkChecks.json') : {}
+bot.settings = moduleIsAvailable('./guildSettings.json') ? require('./guildSettings.json') : {}
+bot.serverWhiteList = moduleIsAvailable('./data/serverWhiteList.json') ? require('./data/serverWhiteList.json') : {}
+const emojiServers = moduleIsAvailable('./data/emojiServers.json') ? require('./data/emojiServers.json') : {}
+const dbSchemas = require('./data/schemas.json')
 const router = express.Router()
 const app = express();
-const path = require('path')
-const cors = require('cors')
 const rootCas = require('ssl-root-cas').create();
 require('https').globalAgent.options.ca = rootCas;
 for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
     bot.commands.set(command.name, command);
 }
-
 
 
 // Bot Event Handlers
@@ -63,7 +74,7 @@ bot.on('message', message => {
         if (!command) return message.channel.send('Command doesnt exist, check \`commands\` and try again');
         if (!bot.settings[message.guild.id].commands[command.name]) return message.channel.send('Command doesnt exist, check \`commands\` and try again');
         if (restarting.restarting && !command.allowedInRestart) return message.channel.send('Cannot execute command as a restart is pending')
-        if (message.member.roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role]).position && (message.author.id !== '277636691227836419' && message.author.id !== '298989767369031684' && message.author.id !== '130850662522159104')) return;
+        if ((message.member.roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role]).position && (message.author.id !== '277636691227836419' && message.author.id !== '298989767369031684' && message.author.id !== '130850662522159104')) && (command.patreonRole ? !checkPatreon(command.patreonRole, message.author.id) : true)) return;
         if (command.requiredArgs && command.requiredArgs > args.length) return message.channel.send(`Command Entered incorrecty. \`${botSettings.prefix}${command.name} ${command.args}\``)
         if (command.cooldown) {
             if (cooldowns.get(command.name)) {
@@ -73,7 +84,7 @@ bot.on('message', message => {
             setTimeout(() => { cooldowns.delete(command.name) }, command.cooldown * 1000)
         }
         try {
-            command.execute(message, args, bot, db, tokenDB)
+            command.execute(message, args, bot, bot.dbs[message.guild.id], tokenDB)
             CommandLogger.log(message, bot)
         } catch (er) {
             ErrorLogger.log(er, bot)
@@ -85,14 +96,36 @@ bot.on('message', message => {
 });
 
 bot.on("ready", async () => {
-    CLIENT_ID = bot.user.id
     console.log(`Bot loaded: ${bot.user.username}`);
-    bot.user.setActivity(`vibot.tech <- Soft Launch`)
+    bot.user.setActivity(`vibot.tech`)
     let vi = bot.users.cache.get(botSettings.developerId)
     vi.send('Halls Bot Starting Back Up')
 
     //start api
     startAPI()
+
+    //connect databases
+    bot.guilds.cache.each(g => {
+        if (!emojiServers.includes(g.id)) {
+            if (!dbSchemas[g.id] || !dbSchemas[g.id].schema) return console.log('Missing Schema name (schema.json) for: ', g.id)
+            let dbInfo = {
+                host: dbSchemas[g.id].host || botSettings.defaultDbInfo.host,
+                user: dbSchemas[g.id].user || botSettings.defaultDbInfo.user,
+                password: dbSchemas[g.id].password || botSettings.defaultDbInfo.password,
+                database: dbSchemas[g.id].schema
+            }
+            bot.dbs[g.id] = mysql.createConnection(dbInfo)
+            connectDB(bot.dbs[g.id])
+
+            bot.dbs[g.id].on('error', err => {
+                if (err.code == 'PROTOCOL_CONNECTION_LOST' || err.code == 'PROTOCOL_ENQUEUE_AFTER_FATAL_ERROR') {
+                    bot.dbs[g.id] = mysql.createConnection(dbInfo)
+                    connectDB(bot.dbs[g.id])
+                }
+                else ErrorLogger.log(err, bot)
+            })
+        }
+    })
 
     //to hide dev server
     if (bot.user.id == botSettings.prodBotId) emojiServers.push('701483950559985705');
@@ -115,44 +148,52 @@ bot.on("ready", async () => {
 
     //vetban check
     bot.setInterval(() => {
-        db.query(`SELECT * FROM vetbans WHERE suspended = true`, async (err, rows) => {
-            if (err) ErrorLogger.log(err, bot)
-            for (let i in rows) {
-                if (Date.now() > parseInt(rows[i].uTime)) {
-                    const guildId = rows[i].guildid;
-                    let settings = bot.settings[guildId]
-                    const guild = bot.guilds.cache.get(guildId);
-                    const proofLogID = rows[i].logmessage;
-                    const member = guild.members.cache.get(rows[i].id);
-                    if (!member) return db.query(`UPDATE vetbans SET suspended = false WHERE id = '${rows[i].id}'`)
-                    try {
-                        await member.roles.remove(settings.roles.vetban)
-                        setTimeout(() => { member.roles.add(settings.roles.vetraider); }, 1000)
-                        setTimeout(() => {
-                            if (!member.roles.cache.has(settings.roles.vetraider))
-                                member.roles.add(settings.roles.vetraider).catch(er => ErrorLogger.log(er, bot))
-                        }, 5000)
-                        try {
-                            let messages = await guild.channels.cache.get(settings.channels.suspendlog).messages.fetch({ limit: 100 })
-                            let m = messages.get(proofLogID)
-                            if (!m) {
-                                guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${rows[i].id}> has been un-vet-banned automatically`)
-                            } else {
-                                let embed = m.embeds.shift();
-                                embed.setColor('#00ff00')
-                                    .setDescription(embed.description.concat(`\nUn-vet-banned automatically`))
-                                    .setFooter('Unsuspended at')
-                                    .setTimestamp(Date.now())
-                                m.edit(embed)
+        let checked = []
+        bot.guilds.cache.each(g => {
+            if (!emojiServers.includes(g.id)) {
+                if (bot.dbs[g.id] && !checked.includes(bot.dbs[g.id].config.databse)) {
+                    checked.push(bot.dbs[g.id].config.databse) //prevents people from being unsuspended twice
+                    bot.dbs[g.id].query(`SELECT * FROM vetbans WHERE suspended = true`, async (err, rows) => {
+                        if (err) ErrorLogger.log(err, bot)
+                        for (let i in rows) {
+                            if (Date.now() > parseInt(rows[i].uTime)) {
+                                const guildId = rows[i].guildid;
+                                let settings = bot.settings[guildId]
+                                const guild = bot.guilds.cache.get(guildId);
+                                const proofLogID = rows[i].logmessage;
+                                const member = guild.members.cache.get(rows[i].id);
+                                if (!member) return bot.dbs[g.id].query(`UPDATE vetbans SET suspended = false WHERE id = '${rows[i].id}'`)
+                                try {
+                                    await member.roles.remove(settings.roles.vetban)
+                                    setTimeout(() => { member.roles.add(settings.roles.vetraider); }, 1000)
+                                    setTimeout(() => {
+                                        if (!member.roles.cache.has(settings.roles.vetraider))
+                                            member.roles.add(settings.roles.vetraider).catch(er => ErrorLogger.log(er, bot))
+                                    }, 5000)
+                                    try {
+                                        let messages = await guild.channels.cache.get(settings.channels.suspendlog).messages.fetch({ limit: 100 })
+                                        let m = messages.get(proofLogID)
+                                        if (!m) {
+                                            guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${rows[i].id}> has been un-vet-banned automatically`)
+                                        } else {
+                                            let embed = m.embeds.shift();
+                                            embed.setColor('#00ff00')
+                                                .setDescription(embed.description.concat(`\nUn-vet-banned automatically`))
+                                                .setFooter('Unsuspended at')
+                                                .setTimestamp(Date.now())
+                                            m.edit(embed)
+                                        }
+                                    } catch (er) {
+                                        guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${rows[i].id}> has been un-vet-banned automatically`)
+                                    } finally {
+                                        await bot.dbs[g.id].query(`UPDATE vetbans SET suspended = false WHERE id = '${rows[i].id}'`)
+                                    }
+                                } catch (er) {
+                                    ErrorLogger.log(er, bot)
+                                }
                             }
-                        } catch (er) {
-                            guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${rows[i].id}> has been un-vet-banned automatically`)
-                        } finally {
-                            await db.query(`UPDATE vetbans SET suspended = false WHERE id = '${rows[i].id}'`)
                         }
-                    } catch (er) {
-                        ErrorLogger.log(er, bot)
-                    }
+                    })
                 }
             }
         })
@@ -160,49 +201,57 @@ bot.on("ready", async () => {
 
     //suspension check
     bot.setInterval(() => {
-        db.query(`SELECT * FROM suspensions WHERE suspended = true AND perma = false`, async (err, rows) => {
-            if (err) ErrorLogger.log(err, bot)
-            for (let i in rows) {
-                if (Date.now() > parseInt(rows[i].uTime)) {
-                    const guildId = rows[i].guildid;
-                    let settings = bot.settings[guildId]
-                    const proofLogID = rows[i].logmessage;
-                    const rolesString = rows[i].roles;
-                    let roles = []
-                    const guild = bot.guilds.cache.get(guildId);
-                    const member = guild.members.cache.get(rows[i].id);
-                    if (!member) {
-                        guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${rows[i].id}> has been unsuspended automatically. However, they are not in the server`)
-                        return db.query(`UPDATE suspensions SET suspended = false WHERE id = '${rows[i].id}'`)
-                    }
-                    rolesString.split(' ').forEach(r => { if (r !== '') roles.push(r) })
-                    try {
-                        await member.edit({ roles: roles }).catch(er => ErrorLogger.log(er, bot))
-                        setTimeout(() => {
-                            if (member.roles.cache.has(settings.roles.tempsuspended))
-                                member.edit({ roles: roles }).catch(er => ErrorLogger.log(er, bot))
-                        }, 5000)
-                        try {
-                            let messages = await guild.channels.cache.get(settings.channels.suspendlog).messages.fetch({ limit: 100 })
-                            let m = messages.get(proofLogID)
-                            if (!m) {
-                                guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${rows[i].id}> has been unsuspended automatically`)
-                            } else {
-                                let embed = m.embeds.shift();
-                                embed.setColor('#00ff00')
-                                    .setDescription(embed.description.concat(`\nUnsuspended automatically`))
-                                    .setFooter('Unsuspended at')
-                                    .setTimestamp(Date.now())
-                                m.edit(embed)
+        let checked = []
+        bot.guilds.cache.each(g => {
+            if (!emojiServers.includes(g.id)) {
+                if (bot.dbs[g.id] && !checked.includes(bot.dbs[g.id].config.databse)) {
+                    checked.push(bot.dbs[g.id].config.databse) //prevents people from being unsuspended twice
+                    bot.dbs[g.id].query(`SELECT * FROM suspensions WHERE suspended = true AND perma = false`, async (err, rows) => {
+                        if (err) ErrorLogger.log(err, bot)
+                        for (let i in rows) {
+                            if (Date.now() > parseInt(rows[i].uTime)) {
+                                const guildId = rows[i].guildid;
+                                let settings = bot.settings[guildId]
+                                const proofLogID = rows[i].logmessage;
+                                const rolesString = rows[i].roles;
+                                let roles = []
+                                const guild = bot.guilds.cache.get(guildId);
+                                const member = guild.members.cache.get(rows[i].id);
+                                if (!member) {
+                                    guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${rows[i].id}> has been unsuspended automatically. However, they are not in the server`)
+                                    return bot.dbs[g.id].query(`UPDATE suspensions SET suspended = false WHERE id = '${rows[i].id}'`)
+                                }
+                                rolesString.split(' ').forEach(r => { if (r !== '') roles.push(r) })
+                                try {
+                                    await member.edit({ roles: roles }).catch(er => ErrorLogger.log(er, bot))
+                                    setTimeout(() => {
+                                        if (member.roles.cache.has(settings.roles.tempsuspended))
+                                            member.edit({ roles: roles }).catch(er => ErrorLogger.log(er, bot))
+                                    }, 5000)
+                                    try {
+                                        let messages = await guild.channels.cache.get(settings.channels.suspendlog).messages.fetch({ limit: 100 })
+                                        let m = messages.get(proofLogID)
+                                        if (!m) {
+                                            guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${rows[i].id}> has been unsuspended automatically`)
+                                        } else {
+                                            let embed = m.embeds.shift();
+                                            embed.setColor('#00ff00')
+                                                .setDescription(embed.description.concat(`\nUnsuspended automatically`))
+                                                .setFooter('Unsuspended at')
+                                                .setTimestamp(Date.now())
+                                            m.edit(embed)
+                                        }
+                                    } catch (er) {
+                                        guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${rows[i].id}> has been unsuspended automatically`)
+                                    } finally {
+                                        await bot.dbs[g.id].query(`UPDATE suspensions SET suspended = false WHERE id = '${rows[i].id}'`)
+                                    }
+                                } catch (er) {
+                                    ErrorLogger.log(er, bot)
+                                }
                             }
-                        } catch (er) {
-                            guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${rows[i].id}> has been unsuspended automatically`)
-                        } finally {
-                            await db.query(`UPDATE suspensions SET suspended = false WHERE id = '${rows[i].id}'`)
                         }
-                    } catch (er) {
-                        ErrorLogger.log(er, bot)
-                    }
+                    })
                 }
             }
         })
@@ -210,36 +259,45 @@ bot.on("ready", async () => {
 
     //mute check
     bot.setInterval(() => {
-        db.query(`SELECT * FROM mutes WHERE muted = true`, async (err, rows) => {
-            if (err) ErrorLogger.log(err, bot)
-            for (let i in rows) {
-                if (Date.now() > parseInt(rows[i].uTime)) {
-                    const guildId = rows[i].guildid;
-                    let settings = bot.settings[guildId]
-                    const guild = bot.guilds.cache.get(guildId);
-                    if (guild) {
-                        const member = guild.members.cache.get(rows[i].id);
-                        if (!member) return db.query(`UPDATE mutes SET muted = false WHERE id = '${rows[i].id}'`)
-                        try {
-                            await member.roles.remove(settings.roles.muted)
-                            await db.query(`UPDATE mutes SET muted = false WHERE id = '${rows[i].id}'`)
-                        } catch (er) {
-                            ErrorLogger.log(er, bot)
+        let checked = []
+        bot.guilds.cache.each(g => {
+            if (!emojiServers.includes(g.id)) {
+                if (bot.dbs[g.id] && !checked.includes(bot.dbs[g.id].config.databse)) {
+                    checked.push(bot.dbs[g.id].config.databse) //prevents people from being unsuspended twice
+                    bot.dbs[g.id].query(`SELECT * FROM mutes WHERE muted = true`, async (err, rows) => {
+                        if (err) ErrorLogger.log(err, bot)
+                        for (let i in rows) {
+                            if (Date.now() > parseInt(rows[i].uTime)) {
+                                const guildId = rows[i].guildid;
+                                let settings = bot.settings[guildId]
+                                const guild = bot.guilds.cache.get(guildId);
+                                if (guild) {
+                                    const member = guild.members.cache.get(rows[i].id);
+                                    if (!member) return bot.dbs[g.id].query(`UPDATE mutes SET muted = false WHERE id = '${rows[i].id}'`)
+                                    try {
+                                        await member.roles.remove(settings.roles.muted)
+                                        await bot.dbs[g.id].query(`UPDATE mutes SET muted = false WHERE id = '${rows[i].id}'`)
+                                    } catch (er) {
+                                        ErrorLogger.log(er, bot)
+                                    }
+                                }
+                            }
                         }
-                    }
+                    })
                 }
             }
         })
-    }, 61000);
+    }, 90000);
 
     //initialize components (eg. modmail, verification)
     bot.guilds.cache.each(g => {
         if (!emojiServers.includes(g.id)) {
             vibotChannels.update(g, bot).catch(er => { })
-            if (bot.settings[g.id].backend.modmail) modmail.update(g, bot, db).catch(er => { ErrorLogger.log(er, bot); })
-            if (bot.settings[g.id].backend.verification) verification.init(g, bot, db).catch(er => { ErrorLogger.log(er, bot); })
-            if (bot.settings[g.id].backend.vetverification) vetVerification.init(g, bot, db).catch(er => { ErrorLogger.log(er, bot); })
+            if (bot.settings[g.id].backend.modmail) modmail.init(g, bot, bot.dbs[g.id]).catch(er => { ErrorLogger.log(er, bot); })
+            if (bot.settings[g.id].backend.verification) verification.init(g, bot, bot.dbs[g.id]).catch(er => { ErrorLogger.log(er, bot); })
+            if (bot.settings[g.id].backend.vetverification) vetVerification.init(g, bot, bot.dbs[g.id]).catch(er => { ErrorLogger.log(er, bot); })
             if (bot.settings[g.id].backend.roleassignment) roleAssignment.init(g, bot).catch(er => { ErrorLogger.log(er, bot); })
+            botstatus.init(g, bot, bot.dbs[g.id])
         }
     })
 
@@ -247,9 +305,9 @@ bot.on("ready", async () => {
     const currentWeekReset = cron.job('0 0 * * SUN', () => {
         bot.guilds.cache.each(g => {
             if (!emojiServers.includes(g.id)) {
-                if (bot.settings[g.id].backend.currentweek) currentWeek.newWeek(g, bot, db);
-                if (bot.settings[g.id].backend.eventcurrentweek) ecurrentWeek.newWeek(g, bot, db)
-                if (bot.settings[g.id].backend.parsecurrentweek) pcurrentWeek.newWeek(g, bot, db)
+                if (bot.settings[g.id].backend.currentweek) currentWeek.newWeek(g, bot, bot.dbs[g.id]);
+                if (bot.settings[g.id].backend.eventcurrentweek) ecurrentWeek.newWeek(g, bot, bot.dbs[g.id])
+                if (bot.settings[g.id].backend.parsecurrentweek) pcurrentWeek.newWeek(g, bot, bot.dbs[g.id])
             }
         })
     }, null, true, 'America/New_York', null, false)
@@ -308,6 +366,12 @@ bot.on('guildMemberRemove', member => {
 })
 
 bot.on('messageReactionAdd', (r, u) => {
+    if (u.bot) return
+
+    //modmail
+    if (r.emoji.name == '🔑' && r.message.author.id == bot.user.id && r.message.channel.id == bot.settings[r.message.guild.id].channels.modmail) {
+        modmail.modmailLogic(r.message, bot.dbs[r.message.guild.id], u)
+    }
     //spongemock
     if (r.emoji.id == '812959258638549022') {
         let content = [...r.message.content]
@@ -359,97 +423,15 @@ process.on('unhandledRejection', err => {
 
 
 
-// Data Base Connectors
-var db = mysql.createConnection(botSettings.dbInfo)
+// Data Base Connectors (Global DB was here, now moved to bot ready listener)
 var tokenDB = mysql.createConnection(botSettings.tokenDBInfo)
 
-const not_ready_yet = true;
-
-db.connect(err => {
-    if (err) ErrorLogger.log(err, bot);
-
-    console.log("Connected to database");
-
-    if (not_ready_yet)
-        return;
-
-    tryInitializeRushers();
-})
-
-const tryInitializeRushers = () => {
-    //db.query(`DROP TABLE rushers`); 
-    //if rusher table doesn't exist, initialize it with data from point logging channel
-    db.query(`CREATE TABLE IF NOT EXISTS rushers (id VARCHAR(32) NOT NULL, guildid VARCHAR(32) NOT NULL, time BIGINT DEFAULT 0, PRIMARY KEY (id, guildid))`, async (err, rows) => {
-        if (err) ErrorLogger.log(err, bot)
-
-        for (const guild_id in bot.settings) {
-            const settings = bot.settings[guild_id];
-
-            if (settings.backend.trackRushers) {
-
-                const guild = bot.guilds.cache.get(guild_id);
-                if (!guild)
-                    continue;
-                const role = guild.roles.cache.get(settings.roles.rusher);
-                if (!role)
-                    continue;
-                const rushed = {};
-
-                const db_rows = await db.query(`SELECT * FROM rushers`);
-                //if the table is empty, grab data from point logging channel
-                if (!db_rows || !db_rows.length) {
-                    const points_channel = guild.channels.cache.get(settings.channels.pointlogging);
-                    if (!points_channel)
-                        continue;
-                    const regex = /<@!?(?<id>[^>]+)>:.+`rusher`$/i;
-                    try {
-                        const messages = await points_channel.messages.fetch();
-                        for (const [snowflake, message] of messages) {
-                            if (!message.embeds || !message.embeds[0].description)
-                                continue;
-                            for (const line of message.embeds[0].description.split('\n')) {
-                                const result = line.match(regex);
-                                if (result && result.groups) {
-                                    rushed[result.groups.id] = Math.max(rushed[result.groups.id] || 0, message.createdTimestamp);
-                                }
-                            }
-                        }
-                    } catch (e) { console.log(e) }
-                }
-
-                const rows = [];
-                for (const [snowflake, member] of role.members) {
-                    rows.push({ id: snowflake, time: rushed[snowflake] || Date.now() });
-                }
-
-                const values = rows.reduce((acc, curr) => acc += `(${curr.id}, ${guild_id}, ${curr.time}), `, '').slice(0, -2);
-                //if the key already exists, just ignore it
-                db.query(`INSERT IGNORE INTO rushers (id, guildid, time) VALUES ${values}`);
-            }
-        }
+function connectDB(db) {
+    db.connect(err => {
+        if (err) ErrorLogger.log(err, bot);
+        else console.log("Connected to database: ", db.config.database);
     })
-    db.query(`SELECT * FROM rushers`, (err, rows) => console.log(rows));
 }
-
-const updateRusherTable = (settings, oldMember, newMember) => {
-    if (not_ready_yet)
-        return;
-    if (oldMember.roles.cache.get(settings.roles.rusher) && !newMember.roles.cache.get(settings.roles.rusher)) {
-        //rusher role removed
-        db.query(`SELECT * FROM rushers WHERE guildid = ${newMember.guild.id} AND id = ${newMember.id}`, (err, rows) => {
-            if (rows && rows.length)
-                db.query(`DELETE FROM rushers WHERE id = ${newMember.id} AND guildid = ${newMember.guild.id}`);
-        });
-    } else if (!oldMember.roles.cache.get(settings.roles.rusher) && newMember.roles.cache.get(settings.roles.rusher)) {
-        //rusher role added
-        db.query(`INSERT INTO rushers (id, guildid, time) VALUES(${newMember.id}, ${newMember.guild.id}, ${Date.now()}) ON DUPLICATE KEY UPDATE time = VALUES(time)`);
-    }
-}
-
-db.on('error', err => {
-    if (err.code == 'PROTOCOL_CONNECTION_LOST') db = mysql.createConnection(botSettings.dbInfo)
-    else ErrorLogger.log(err, bot)
-})
 
 tokenDB.connect(err => {
     if (err) ErrorLogger.log(err, bot);
@@ -464,6 +446,11 @@ tokenDB.on('error', err => {
 
 
 // Functions
+/**
+ * Handles DM's sent to the bot. Seperates modmail from commands. Executes commands or sends to modmail
+ * @param {Discord.Message} message 
+ * @returns 
+ */
 async function dmHandler(message) {
     if (message.author.bot) return;
     if (verification.checkActive(message.author.id)) return
@@ -482,7 +469,7 @@ async function dmHandler(message) {
         logCommand(guild)
         if (!cancelled) {
             try {
-                message.channel.send(await stats.getStatsEmbed(message.author.id, guild, db))
+                message.channel.send(await stats.getStatsEmbed(message.author.id, guild, bot))
             }
             catch (er) {
                 message.channel.send('You are not currently logged in the database. The database gets updated every 24-48 hours')
@@ -492,7 +479,7 @@ async function dmHandler(message) {
         let guild = await getGuild(message).catch(er => cancelled = true)
         logCommand(guild)
         if (!cancelled) {
-            require('./commands/joinRun').dmExecution(message, message.content.split(/\s+/), bot, db, guild, tokenDB);
+            require('./commands/joinRun').dmExecution(message, message.content.split(/\s+/), bot, bot.dbs[guild.id], guild, tokenDB);
         }
     } else {
         if (message.content.replace(/[^0-9]/g, '') == message.content) return;
@@ -508,12 +495,12 @@ async function dmHandler(message) {
                 logCommand(guild)
             }
             if (!cancelled) {
-                if (!command.dmNeedsGuild) command.dmExecution(message, args, bot, db, guild, tokenDB)
+                if (!command.dmNeedsGuild) command.dmExecution(message, args, bot, null, guild, tokenDB)
                 else {
                     let member = guild.members.cache.get(message.author.id)
                     if (member.roles.highest.position < guild.roles.cache.get(bot.settings[guild.id].roles[command.role]).position && message.author.id !== '277636691227836419') {
                         sendModMail();
-                    } else command.dmExecution(message, args, bot, db, guild, tokenDB)
+                    } else command.dmExecution(message, args, bot, bot.dbs[guild.id], guild, tokenDB)
                 }
             }
         } else {
@@ -532,7 +519,7 @@ async function dmHandler(message) {
                 if (r.emoji.name == '✅') {
                     let guild = await getGuild(message).catch(er => { cancelled = true })
                     if (!cancelled) {
-                        if (r.emoji.name == '✅') modmail.sendModMail(message, guild, bot, db)
+                        if (r.emoji.name == '✅') modmail.sendModMail(message, guild, bot, bot.dbs[guild.id])
                         confirmModMailMessage.delete()
                     }
                 } else {
@@ -545,7 +532,7 @@ async function dmHandler(message) {
         }
     }
     async function logCommand(guild) {
-        if(!guild || !bot.settings[guild.id]) return
+        if (!guild || !bot.settings[guild.id]) return
         let logEmbed = new Discord.MessageEmbed()
             .setAuthor(message.author.tag)
             .setColor('#0000ff')
@@ -557,10 +544,15 @@ async function dmHandler(message) {
     }
 }
 
+/**
+ * If enabled, will mute users for pinging roles
+ * @param {Discord.Message} message 
+ * @returns 
+ */
 async function autoMod(message) {
     let settings = bot.settings[message.guild.id]
-    if (!settings) return;
-    if (!message.member.roles.highest || message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.trialrl).position) return
+    if (!settings || !settings.backend.automod) return;
+    if (!message.member.roles.highest || message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.eventrl).position) return
     if (message.mentions.roles.size != 0) mute('Pinging Roles', 2);
 
     function mute(reason, time) {
@@ -584,6 +576,11 @@ async function autoMod(message) {
     }
 }
 
+/**
+ * Returns common guild, or prompts for a guild selection
+ * @param {Discord.Message} message 
+ * @returns {Discord.Guild} guild
+ */
 async function getGuild(message) {
     return new Promise(async (resolve, reject) => {
         let guilds = []
@@ -727,6 +724,12 @@ async function getGuild(message) {
     })
 }
 
+/**
+ * Fits a string into an embed as tightly as possible, or sends the embed and resets the embed variable to an empty embed
+ * @param {Discord.MessageEmbed} embed 
+ * @param {String} string 
+ * @param {Discord.TextChannel} channel 
+ */
 function fitStringIntoEmbed(embed, string, channel) {
     if (embed.description == 'None!') {
         embed.setDescription(string)
@@ -752,6 +755,28 @@ function fitStringIntoEmbed(embed, string, channel) {
         }
     } else {
         embed.setDescription(embed.description.concat(`\n${string}`))
+    }
+}
+
+var vibotControlGuild
+/**
+ * Checks user by ID's to see if they have a patreon role in control panel discord
+ * @param {String} patreonRoleId 
+ * @param {String} userId 
+ * @returns 
+ */
+function checkPatreon(patreonRoleId, userId) {
+    if (!vibotControlGuild) vibotControlGuild = bot.guilds.cache.get('739623118833713214')
+    if (vibotControlGuild.members.cache.get(userId).roles.cache.has(patreonRoleId)) return true
+    else return false
+}
+
+function moduleIsAvailable(path) {
+    try {
+        require.resolve(path);
+        return true;
+    } catch (e) {
+        return false;
     }
 }
 
@@ -908,7 +933,6 @@ function startAPI() {
         })
 
         app.use('/api', router)
-        app.use('/o/discord', require('./api/discord'))
         app.use((err, req, res, next) => {
             switch (err.message) {
                 case 'NoCodeProvided':
@@ -926,8 +950,6 @@ function startAPI() {
         app.use((err, req, res) => {
             console.log(req)
         })
-
-
 
         const httpsServer = https.createServer(credentials, app)
 

@@ -19,8 +19,7 @@ module.exports = {
         else if (message.channel.id == settings.channels.vetcommands) isVet = true
         else return;
         var eventType = args[0]
-        if (!eventFile[eventType]) return message.channel.send("Event type unrecognized. Check ;events and try again")
-        var event = eventFile[eventType]
+        let event = getEventType(eventType, eventFile)
         if (!event.enabled) return message.channel.send(`${event.name} is currently disabled.`);
 
         //create template from event info
@@ -87,7 +86,26 @@ module.exports = {
             eventTemplate.reacts.push(botSettings.emoteIDs.switchS)
         }
 
+        //keyCount
+        if(event.keyCount) eventTemplate.keyCount = event.keyCount
+
+        //keyPopPoints
+        if(event.keyPopPoints) eventTemplate.keyPopPointsOverride = keyPopPoints
+
+        //earlyLocationCost
+        if(event.earlyLocationCost) eventTemplate.earlyLocationCost = earlyLocationCost
+
+        //vcCap
+        if(event.vcCap) eventTemplate.vcCap = event.vcCap
+
         //start afkcheck
         afkCheck.eventAfkExecute(message, args, bot, db, tokenDB, eventTemplate, isVet)
+    },
+    getEventType
+}
+
+function getEventType(arg, events) {
+    for (let i in events) {
+        if (i.toLowerCase() == arg.toLowerCase() || events[i].includes(arg.toLowerCase())) return events[i]
     }
 }
