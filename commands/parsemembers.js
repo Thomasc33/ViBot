@@ -152,16 +152,16 @@ module.exports = {
                 if (players[i] == '') continue;
                 promises.push(new Promise(async res => {
                     realmEyeScrape.getUserInfo(players[i]).then(characterInfo => {
-                        function exit(console) {
-                            if (console) console.log(console)
+                        function exit(me) {
+                            if (me) console.log(me)
                             unreachable.push(players[i]);
                             return res()
                         }
-                        if (!characterInfo || !characterInfo.characters[0] || characterInfo.characters[0].class.replace(/[^a-zA-Z]/g, '') != characterInfo.characters[0].class) return exit()
-                        let maxStats = charStats[characterInfo.characters[0].class.toLowerCase()]
-                        if (!maxStats) return exit(`Stats for ${characterInfo.characters[0].class} is missing`)
+                        if (!characterInfo || !characterInfo.chars[0] || characterInfo.chars[0].class.replace(/[^a-zA-Z]/g, '') != characterInfo.chars[0].class) return exit()
+                        let maxStats = charStats[characterInfo.chars[0].class.toLowerCase()]
+                        if (!maxStats) return exit(`Stats for ${characterInfo.chars[0].class} is missing`)
                         let issue = false;
-                        let character = characterInfo.characters[0]
+                        let character = characterInfo.chars[0]
                         let issueString = ''
                         //check for level 20
                         if (parseInt(character.level) != 20) {
@@ -285,7 +285,8 @@ module.exports = {
 
         let parsePromises = []
         parsePromises.push(crasherParse())
-        parsePromises.push(characterParse())
+        //parsePromises.push(characterParse())
+        
 
         await Promise.all(parsePromises)
 
