@@ -316,7 +316,10 @@ class afkCheck {
      * @param {Discord.User} u 
      */
     async reactionHandler(r, u) {
-        if (r.emoji.id == this.afkInfo.keyEmoteID) this.confirmSelection(u, r, 0, 'key', this.afkInfo.keyCount)
+        if (r.emoji.id == this.afkInfo.keyEmoteID) {
+            r.users.remove(u.id)
+            this.confirmSelection(u, r, 0, 'key', this.afkInfo.keyCount)
+        }
         else if (this.afkInfo.vialReact && r.emoji.id == this.afkInfo.vialEmoteID) this.confirmSelection(u, r, 1, 'vial', 3)
         else if (r.emoji.id === '701491230349066261') return this.useNitro(u, this.leaderEmbed.fields.length - 1)
         else if (r.emoji.id === '752368122551337061') return this.supporterUse(u, this.leaderEmbed.fields.length - 2)
@@ -773,7 +776,7 @@ class afkCheck {
                     bigEmbed = true;
                     historyEmbed.addField('-', `, <@!${m}>`)
                 }
-                else historyEmbed.fields[4].value == 'None!' ? historyEmbed.fields[4].value = `<@!${m}>`: historyEmbed.fields[4].value += `, <@!${m}>`
+                else historyEmbed.fields[4].value == 'None!' ? historyEmbed.fields[4].value = `<@!${m}>` : historyEmbed.fields[4].value += `, <@!${m}>`
             }
         })
         this.message.guild.channels.cache.get(this.settings.channels.history).send(historyEmbed)
