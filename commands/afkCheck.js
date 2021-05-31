@@ -22,7 +22,7 @@ module.exports = {
     args: '<run symbol> <location>',
     role: 'almostrl',
     getNotes(guildid, member) {
-        return `${afkTemplates[guildid].map(afk => `${afk.symbol}`).join(', ')}${afkTemplates[member.id] ? `, ${afkTemplates[member.id].map(afk => `${afk.symbol}`).join(', ')}` : ''}`
+        return `${afkTemplates[guildid] ? Object.keys(afkTemplates[guildid]).map(afk => `${afk.symbol}`).join(', ') : 'None for guild'}${afkTemplates[member.id] ? `, ${Object.keys(afkTemplates[member.id]).map(afk => `${afk.symbol}`).join(', ')}` : ''}`
     },
     emitter,
     getRunType,
