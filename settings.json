@@ -1,30 +1,30 @@
 {
     "prefix": ";",
     "prodBotId": "589996847083290629",
-    "botId": "701196529519689790",
-    "botSecret": "eWyB5L1FkraexM1VQSE5HI5W1QhgQD7U",
-    "hallsId": "343704644712923138",
-    "developerId": "277636691227836419",
+    "botId": "589996847083290629",
+    "botSecret": "b5Y9waUlhn1t38MrhWaZt0oTybjvcZyX",
+	"hallsId": "343704644712923138",
+	"developerId": "277636691227836419",
     "api": true,
     "MLtraining": false,
-    "MLActiveTraining": false,
-    "apiPort": 80,
+    "MLActiveTraining": false,	
+    "apiPort": 3002,
     "earlyLocationCooldown": 7200000,
-    "vibotDirectory": "C:/Users/Carrt/OneDrive/Desktop/ViBot",
+    "vibotDirectory": "C:/Users/Thomas/Desktop/ViBot",
     "gcloudOptions": {
-        "keyFilename": "C:/Program Files (x86)/Google/Cloud SDK/vibotparsingkeyjs.json",
-        "projectId": "vibot-275815"
+        "keyFilename": "C:/Program Files (x86)/Google/Cloud SDK/vibotparsingkey21.json",
+        "projectId": "vibot-parse"
     },
     "dbInfo": {
-        "host": "40.142.138.170",
-        "user": "DevComputer",
-        "password": "NiqiPId0R$V9E5v!Y1YyDN3H$y",
-        "database": "testinghalls"
+        "host": "localhost",
+        "user": "root",
+        "password": "localhost",
+        "database": "halls"
     },
     "tokenDBInfo": {
-        "host": "40.142.138.170",
-        "user": "DevComputer",
-        "password": "NiqiPId0R$V9E5v!Y1YyDN3H$y",
+        "host": "localhost",
+        "user": "root",
+        "password": "localhost",
         "database": "supporters"
     },
     "emote": {

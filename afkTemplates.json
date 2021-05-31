@@ -12,7 +12,7 @@
         "postAfkCheck": false,
         "twoPhase": true,
         "startDelay": 10000,
-        "vcCap": 50,
+        "vcCap": 45,
         "timeLimit": 360,
         "keyCount": 1,
         "earlyLocationCost": 20,
