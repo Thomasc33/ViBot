@@ -35,7 +35,7 @@ module.exports = {
                     db.query(`UPDATE users SET ${i.schema} = ${i.schema} + ${count} WHERE id = '${user.id}'`)
                     message.channel.send(`Key has been logged. ${user.nickname} now has ${parseInt(rows[0][i.schema]) + parseInt(count)} pops`)
                 })
-                if (settings.backend.points) {
+                if (settings.backend.points && i.points) {
                     let points = settings.points[i.points] * count
                     if (user.roles.cache.has(settings.roles.nitro)) points = points * settings.points.nitromultiplier
                     db.query(`UPDATE users SET points = points + ${points} WHERE id = '${user.id}'`)

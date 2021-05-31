@@ -224,5 +224,47 @@
             "main": "assistso3",
             "currentweek": "currentweekAssistso3"
         }
+    },
+    "451171819672698920": {
+        "main": [
+            {
+                "key": "s",
+                "alias": ["shatters", "shatt", "success", "successful"],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "successruns",
+                "currentweek": "currentweek",
+                "color": "#308a00",
+                "desc": "`Successful` Run",
+                "toUpdate": 1,
+                "toDisplay": [
+                    "currentweek",
+                    "currentweekfailed",
+                    "currentweekassists"
+                ]
+            },
+            {
+                "key": "f",
+                "alias": ["fail", "failed"],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "failruns",
+                "currentweek": "currentweekfailed",
+                "color": "#ff0000",
+                "desc": "`Failed` Run",
+                "toUpdate": 1,
+                "toDisplay": [
+                    "currentweek",
+                    "currentweekfailed",
+                    "currentweekassists"
+                ]
+            }
+        ],
+        "assist": {
+            "main": "assists",
+            "currentweek": "currentweekassists"
+        }
     }
 }

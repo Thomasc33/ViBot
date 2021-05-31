@@ -50,10 +50,31 @@ module.exports = {
                 if (modlog) await modlog.send(`\`${role.name}\` added to ${member} per the request of ${message.member}`)
                 member.roles.add(role.id)
                 if (i.dbName) db.query(`UPDATE users SET ${i.dbName} = true WHERE id = '${member.id}'`)
+                if (i.prefix) addPrefix(i.prefix, member)
             }
         }
 
         //give confirmation
         message.react('✅')
+    }
+}
+
+function addPrefix(p, member) {
+    let prefix = member.nickname.replace(/[a-z0-9|]/gi, '')
+    if (!prefix || prefix == '') member.setNickname(`${p}${member.nickname.replace(/[+-=]/gi, '')}`)
+    else if (prefix.replace(/[^+-=]/gi, '') != prefix) return console.log('returning');
+    switch (p) {
+        case '+':
+            member.setNickname(`${p}${prefix.replace('+', '')}${member.nickname.replace(/[+-=]/gi, '')}`)
+            break;
+        case '-':
+            member.setNickname(`${prefix.replace(/[=-]/gi, '')}${p}${prefix.replace(/[+-]/gi, '')}${member.nickname.replace(/[+-=]/gi, '')}`)
+            break;
+        case '=':
+            member.setNickname(`${prefix.replace('=', '')}${p}${member.nickname.replace(/[+-=]/gi, '')}`)
+            break;
+        default:
+            member.setNickname(`${p}${prefix.replace(p, '')}${member.nickname.replace(/[+-=]/gi, '')}`)
+            break;
     }
 }

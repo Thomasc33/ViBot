@@ -18,5 +18,45 @@
             "eventruns": "eventruns",
             "eventpops": "eventpops"
         }
+    },
+    "708026927721480254": {
+        "schema": "halls",
+        "users_table": "users",
+        "suspends_table": "suspensions",
+        "warns_table": "warns",
+        "vetbans_table": "vetbans",
+        "veriblacklist_table": "veriblacklist",
+        "userInfo": {
+            "id": "id",
+            "isRusher": null,
+            "isVet": "isO3Vet",
+            "points": "points",
+            "vialUse": null,
+            "vialStored": null
+        },
+        "eventInfo": {
+            "eventruns": "eventruns",
+            "eventpops": "eventpops"
+        }
+    },
+    "451171819672698920": {
+        "schema": "shatters",
+        "users_table": "users",
+        "suspends_table": "suspensions",
+        "warns_table": "warns",
+        "vetbans_table": "vetbans",
+        "veriblacklist_table": "veriblacklist",
+        "userInfo": {
+            "id": "id",
+            "isRusher": null,
+            "isVet": "isVet",
+            "points": "points",
+            "vialUse": null,
+            "vialStored": null
+        },
+        "eventInfo": {
+            "eventruns": "eventruns",
+            "eventpops": "eventpops"
+        }
     }
 }

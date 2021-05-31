@@ -90,5 +90,43 @@
             ],
             "name": "Points"
         }
+    ],
+    "451171819672698920": [
+        {
+            "index": 0,
+            "dbNames": [
+                "shatterspops"
+            ],
+            "name": "Key Pops"
+        },
+        {
+            "index": 1,
+            "dbNames": [
+                "eventpops"
+            ],
+            "name": "Event Key Pops"
+        },
+        {
+            "index": 2,
+            "dbNames": [
+                "runs"
+            ],
+            "name": "Total Runs"
+        },
+        {
+            "index": 3,
+            "dbNames": [
+                "successruns",
+                "failruns"
+            ],
+            "name": "Total Runs Lead"
+        },
+        {
+            "index": 4,
+            "dbNames": [
+                "points"
+            ],
+            "name": "Points"
+        }
     ]
 }

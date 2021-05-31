@@ -1,6 +1,6 @@
 {
     "currentweek": [
-        { 
+        {
             "id": "343704644712923138",
             "runs": [
                 "currentweekCult",
@@ -11,7 +11,7 @@
                 "currentweekFeedback"
             ]
         },
-        { 
+        {
             "id": "701483950559985705",
             "runs": [
                 "currentweekCult",
@@ -22,7 +22,7 @@
                 "currentweekFeedback"
             ]
         },
-        { 
+        {
             "id": "708026927721480254",
             "runs": [
                 "currentweeko3",
@@ -30,6 +30,16 @@
             ],
             "assists": [
                 "currentweekAssistso3"
+            ]
+        },
+        {
+            "id": "451171819672698920",
+            "runs": [
+                "currentweek",
+                "currentweekfailed"
+            ],
+            "assists": [
+                "currentweekassists"
             ]
         }
     ],

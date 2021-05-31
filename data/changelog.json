@@ -72,5 +72,22 @@
                 "currentWeekName": "currentweeko3"
             }
         ]
+    },
+    "451171819672698920": {
+        "logtypes": ["shatterspops", "eventpops", "eventpops", "successruns", "failruns", "assists", "eventslead"],
+        "currentweeks": [
+            {
+                "case": "successruns",
+                "currentWeekName": "currentweek"
+            },
+            {
+                "case": "failruns",
+                "currentWeekName": "currentweekfailed"
+            },
+            {
+                "case": "assists",
+                "currentWeekName": "currentweekassists"
+            }
+        ]
     }
 }

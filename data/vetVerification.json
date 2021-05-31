@@ -28,5 +28,15 @@
         "webAppLink": false,
         "webdata": false,
         "exaltStats": ["mana", "defense", "speed"]
+    },
+    "451171819672698920": {
+        "realmeyestring": ["Shatters completed"],
+        "dbnames": ["runs"],
+        "dbisvet": null,
+        "lootInfo": "shatters",
+        "boss": "Forgotten King",
+        "webAppLink": false,
+        "webdata": false,
+        "exaltStats": ["attack"]
     }
 }

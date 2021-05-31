@@ -44,6 +44,17 @@
             ["Current Week", "currentweeko3"]
         ]
     },
+    "451171819672698920": {
+        "rl": ["vetrl"],
+        "almostrl": ["rl"],
+        "trialrl": ["almostrl"],
+        "db_rows": [
+            ["Shatters Lead", "runs"],
+            ["Current Week Lead", "currentweek"],
+            ["Failed Runs", "failruns"],
+            ["Current Week Failed", "currentweekfailed"]
+        ]
+    },
     "channels": {
         "trialrl": "leaderchat",
         "almostrl": "leaderchat",
