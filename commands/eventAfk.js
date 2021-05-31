@@ -106,6 +106,6 @@ module.exports = {
 
 function getEventType(arg, events) {
     for (let i in events) {
-        if (i.toLowerCase() == arg.toLowerCase() || events[i].includes(arg.toLowerCase())) return events[i]
+        if (i.toLowerCase() == arg.toLowerCase() || events[i].aliases.includes(arg.toLowerCase())) return events[i]
     }
 }

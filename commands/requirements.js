@@ -2,7 +2,7 @@ const reqs = require('../data/reqsImages.json')
 
 module.exports = {
     name: 'requirements',
-    args: ['reqs'],
+    alias: ['reqs'],
     description: 'Send requirement image in current channel',
     role: 'eventrl',
     async execute(message, args, bot) {
