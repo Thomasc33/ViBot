@@ -90,10 +90,10 @@ module.exports = {
         if(event.keyCount) eventTemplate.keyCount = event.keyCount
 
         //keyPopPoints
-        if(event.keyPopPoints) eventTemplate.keyPopPointsOverride = keyPopPoints
+        if(event.keyPopPoints) eventTemplate.keyPopPointsOverride = event.keyPopPoints
 
         //earlyLocationCost
-        if(event.earlyLocationCost) eventTemplate.earlyLocationCost = earlyLocationCost
+        if(event.earlyLocationCost) eventTemplate.earlyLocationCost = event.earlyLocationCost
 
         //vcCap
         if(event.vcCap) eventTemplate.vcCap = event.vcCap
