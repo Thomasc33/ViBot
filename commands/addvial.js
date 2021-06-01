@@ -1,5 +1,5 @@
 const ErrorLogger = require('../lib/logError')
-const db = require('../data/database.json')
+const dbInfo = require('../data/database.json')
 
 module.exports = {
     name: 'addvial',
@@ -11,7 +11,7 @@ module.exports = {
     role: 'almostrl',
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
-        let vialStoredName = db[message.guild.id] ? db[message.guild.id].userInfo.vialStored : null
+        let vialStoredName = dbInfo[message.guild.id] ? dbInfo[message.guild.id].userInfo.vialStored : null
         if(!vialStoredName) return message.channel.send('No known column name for Vial Storage')
         let member = message.mentions.members.first()
         if (!member) member = message.guild.members.cache.get(args[0])
