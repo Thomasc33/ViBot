@@ -149,7 +149,7 @@ module.exports = {
                 .setTitle('Character Parse')
             let promises = []
             for (let i in players) {
-                if (players[i] == '') continue;
+                if (players[i].replace(/[^a-z]/gi, '') == '') continue;
                 promises.push(new Promise(async res => {
                     realmEyeScrape.getUserInfo(players[i]).then(characterInfo => {
                         function exit(me) {
