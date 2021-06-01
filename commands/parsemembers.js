@@ -151,11 +151,10 @@ module.exports = {
             for (let i in players) {
                 if (players[i].replace(/[^a-z]/gi, '') == '') continue;
                 await test()
-                async function test(){
+                async function test(){ //synchronous :sadge:
                     return new Promise(async res => {
                         realmEyeScrape.getUserInfo(players[i]).then(characterInfo => {
                             function exit(me) {
-                                console.log('in exit')
                                 if (me) console.log(me)
                                 unreachable.push(players[i]);
                                 return res()
@@ -172,7 +171,6 @@ module.exports = {
                                 issueString += `\nNot level 20 (${character.level}/20)`
                             }
                             //check for max dex/attack
-                            console.log('checking stats')
                             if (settings.backend.realmeyestats) {
                                 let statstot = character.statsTotal.replace(/[^0-9-,]/g, '').split(',')
                                 let statsbonus = character.statsBonus.replace(/[^0-9-,]/g, '').split(',')
@@ -201,7 +199,6 @@ module.exports = {
                             }
                             //check for gear reqs
                             //weapon
-                            console.log('checcking weapon')
                             if (character.weapon) {
                                 let weaponTier = parseInt(character.weapon.split(/ +/).pop().replace('T', ''))
                                 if (weaponTier < settings.runreqs.weapon && weaponTier !== NaN) {
@@ -213,7 +210,6 @@ module.exports = {
                                 issueString += `Weapon is not equipped`
                             }
                             //ability
-                            console.log('checking ability')
                             if (character.ability) {
                                 if (character.class.toLowerCase() != 'trickster' && character.class.toLowerCase() != 'mystic') {
                                     let abilityTier = parseInt(character.ability.split(/ +/).pop().replace('T', ''))
@@ -227,7 +223,6 @@ module.exports = {
                                 issueString += `Ability is not equipped`
                             }
                             //armor
-                            console.log('checking armor')
                             if (character.armor) {
                                 let armorTier = parseInt(character.armor.split(/ +/).pop().replace('T', ''))
                                 if (armorTier < settings.runreqs.armor && armorTier !== NaN) {
@@ -239,7 +234,6 @@ module.exports = {
                                 issueString += `Armor is not equipped`
                             }
                             //ring
-                            console.log('checking ring')
                             if (character.ring) {
                                 let ringTier = parseInt(character.ring.split(/ +/).pop().replace('T', ''))
                                 if (ringTier < settings.runreqs.ring && ringTier !== NaN) {
@@ -251,7 +245,6 @@ module.exports = {
                                 issueString += `Ring is not equipped`
                             }
                             if (issue) {
-                                console.log('in issue')
                                 let characterEmote = bot.emojis.cache.find(e => e.name == character.class)
                                 let weaponEmoji, abilityEmoji, armorEmoji, ringEmoji
                                 if (!character.weapon) weaponEmoji = 'None'
@@ -268,7 +261,6 @@ module.exports = {
                                 }
                                 characterParseEmbed.addField(players[i], `[Link](https://www.realmeye.com/player/${players[i]}) | ${characterEmote} | LVL: \`${character.level}\` | Fame: \`${character.fame}\` | Stats: \`${character.stats}\` | ${weaponEmoji} ${abilityEmoji} ${armorEmoji} ${ringEmoji}${issueString}`)
                                 if (i % 5 == 0) {
-                                    console.log('in mod')
                                     parseStatusEmbed.fields[1].value = `Parsing Characters (${i}/${players.length})`
                                     parseStatusMessage.edit(parseStatusEmbed)
                                 }
