@@ -6,6 +6,7 @@
         "warns_table": "warns",
         "vetbans_table": "vetbans",
         "veriblacklist_table": "veriblacklist",
+        "mainKeyType": "keypops",
         "userInfo": {
             "id": "id",
             "isRusher": "isRusher",
@@ -26,6 +27,7 @@
         "warns_table": "warns",
         "vetbans_table": "vetbans",
         "veriblacklist_table": "veriblacklist",
+        "mainKeyType": "keypops",
         "userInfo": {
             "id": "id",
             "isRusher": null,
@@ -46,6 +48,7 @@
         "warns_table": "warns",
         "vetbans_table": "vetbans",
         "veriblacklist_table": "veriblacklist",
+        "mainKeyType": "shatterspops",
         "userInfo": {
             "id": "id",
             "isRusher": null,

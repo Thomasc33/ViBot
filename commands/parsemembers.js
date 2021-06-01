@@ -151,7 +151,7 @@ module.exports = {
             for (let i in players) {
                 if (players[i].replace(/[^a-z]/gi, '') == '') continue;
                 await test()
-                async function test(){ //synchronous :sadge:
+                async function test() { //synchronous :sadge:
                     return new Promise(async res => {
                         realmEyeScrape.getUserInfo(players[i]).then(characterInfo => {
                             function exit(me) {
@@ -298,7 +298,7 @@ module.exports = {
         await parseStatusMessage.edit(parseStatusEmbed)
 
         let currentweekparsename, parsetotalname
-        for (let i of ParseCurrentWeek.tables) if (message.guild.id == i.id && !i.disabled) { currentweekparsename = i.parsecurrentweek; parsetotalname = i.parsetotal }
+        for (let i in ParseCurrentWeek.tables) if (message.guild.id == i.id && !i.disabled) { currentweekparsename = ParseCurrentWeek.tables[i].parsecurrentweek; parsetotalname = ParseCurrentWeek.tables[i].parsetotal }
         if (!currentweekparsename || !parsetotalname) return
         db.query(`UPDATE users SET ${parsetotalname} = ${parsetotalname} + 1, ${currentweekparsename} = ${currentweekparsename} + 1 WHERE id = '${message.author.id}'`)
         ParseCurrentWeek.update(message.guild, db, bot)

@@ -1,5 +1,6 @@
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
+const dbInfo = require('../data/database.json')
 const botSettings = require('../settings.json')
 
 module.exports = {
@@ -33,16 +34,17 @@ module.exports = {
     },
     async checkAll(guild, bot, db) {
         let settings = bot.settings[guild.id]
-        db.query(`SELECT keypops, id FROM users WHERE keypops >= 15`, (err, rows) => {
+        if (!settings || !dbInfo[guild.id] || !dbInfo[guild.id].mainKeyType) return
+        db.query(`SELECT ${dbInfo[guild.id].mainKeyType}, id FROM users WHERE ${dbInfo[guild.id].mainKeyType} >= 15`, (err, rows) => {
             if (err) ErrorLogger.log(err, bot)
             for (let i in rows) {
                 let u = rows[i]
-                if (u.keypops >= 15) {
+                if (u[dbInfo[guild.id].mainKeyType] >= 15) {
                     let m = guild.members.cache.get(u.id)
                     if (!m) continue;
                     if (!m.roles.cache.has(settings.roles.bottomkey)) m.roles.add(settings.roles.bottomkey)
                 }
-                if (u.keypops >= 50) {
+                if (u[dbInfo[guild.id].mainKeyType] >= 50) {
                     let m = guild.members.cache.get(u.id)
                     if (!m) continue;
                     if (!m.roles.cache.has(settings.roles.topkey)) m.roles.add(settings.roles.topkey)
@@ -52,11 +54,13 @@ module.exports = {
     },
     async checkUser(member, bot, db) {
         let settings = bot.settings[member.guild.id]
-        db.query(`SELECT keypops FROM users WHERE id = '${member.id}'`, (err, rows) => {
+        if (!settings || !dbInfo[member.guild.id] || !dbInfo[member.guild.id].mainKeyType) return
+        db.query(`SELECT ${dbInfo[member.guild.id].mainKeyType} FROM users WHERE id = '${member.id}'`, (err, rows) => {
             if (err) ErrorLogger.log(err, bot)
-            if (!rows[0].keypops) return
-            if (rows[0].keypops >= 15) if (!member.roles.cache.has(settings.roles.bottomkey)) member.roles.add(settings.roles.bottomkey)
-            if (rows[0].keypops >= 50) if (!member.roles.cache.has(settings.roles.topkey)) member.roles.add(settings.roles.topkey)
+            if (!rows) return db.query(`INSERT INTO users (id) VALUES ('${member.id}')`)
+            if (!rows[0][dbInfo[member.guild.id].mainKeyType]) return
+            if (rows[0][dbInfo[member.guild.id].mainKeyType] >= 15) if (!member.roles.cache.has(settings.roles.bottomkey)) member.roles.add(settings.roles.bottomkey)
+            if (rows[0][dbInfo[member.guild.id].mainKeyType] >= 50) if (!member.roles.cache.has(settings.roles.topkey)) member.roles.add(settings.roles.topkey)
         })
     }
 }
