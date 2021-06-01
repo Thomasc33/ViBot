@@ -159,6 +159,32 @@ function getFields(row, schema) {
             inline: true
         }
     ]
+    if (schema == 'shatters') return [
+        {
+            name: `<:shatters:723001214865899532> Shatters Stats <:shatters:723001214865899532>`,
+            value: '** **'
+        },
+        {
+            name: `<:legendaryMysteryKey:831052176507535360> __**Keys Popped**__ <:legendaryMysteryKey:831052176507535360>`,
+            value: `<:shattersK:723001429903802478> ${row.shatterspops}\n` +
+                `<:epicMysteryKey:831051424187940874> ${row.eventpops}\n`,
+            inline: true
+        },
+        {
+            name: `<:TheForgottenCrown:719931358889115680> __**Runs Done**__ <:TheForgottenCrown:719931358889115680>`,
+            value: `<:forgottenKing:849406533435523093> ${row.runs}\n` +
+                `<:epicMysteryKey:831051424187940874> ${row.eventruns}`,
+            inline: true
+        },
+        {
+            name: `<:TheForgottenCrown:719931358889115680> __**Runs Led**__ <:TheForgottenCrown:719931358889115680>`,
+            value: `<:forgottenKing:849406533435523093> ${row.successruns}\n` +
+                `❌ ${row.failruns}\n` +
+                `<:epicMysteryKey:831051424187940874> ${parseInt(row.eventslead) * 10} Minutes\n` +
+                `${row.assists} Assists\n`,
+            inline: true
+        }
+    ]
     console.log('no found schema in stats.js:getFields. Schema: ', schema)
     return []
 }
