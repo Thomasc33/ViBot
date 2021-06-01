@@ -157,11 +157,11 @@ module.exports = {
                             unreachable.push(players[i]);
                             return res()
                         }
-                        if (!characterInfo || !characterInfo.chars[0] || characterInfo.chars[0].class.replace(/[^a-zA-Z]/g, '') != characterInfo.chars[0].class) return exit()
-                        let maxStats = charStats[characterInfo.chars[0].class.toLowerCase()]
-                        if (!maxStats) return exit(`Stats for ${characterInfo.chars[0].class} is missing`)
+                        if (!characterInfo || !characterInfo.characters[0] || characterInfo.characters[0].class.replace(/[^a-zA-Z]/g, '') != characterInfo.characters[0].class) return exit()
+                        let maxStats = charStats[characterInfo.characters[0].class.toLowerCase()]
+                        if (!maxStats) return exit(`Stats for ${characterInfo.characters[0].class} is missing`)
                         let issue = false;
-                        let character = characterInfo.chars[0]
+                        let character = characterInfo.characters[0]
                         let issueString = ''
                         //check for level 20
                         if (parseInt(character.level) != 20) {
