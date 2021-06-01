@@ -150,136 +150,139 @@ module.exports = {
             let promises = []
             for (let i in players) {
                 if (players[i].replace(/[^a-z]/gi, '') == '') continue;
-                promises.push(new Promise(async res => {
-                    realmEyeScrape.getUserInfo(players[i]).then(characterInfo => {
-                        function exit(me) {
-                            console.log('in exit')
-                            if (me) console.log(me)
-                            unreachable.push(players[i]);
-                            return res()
-                        }
-                        if (!characterInfo || !characterInfo.characters[0] || characterInfo.characters[0].class.replace(/[^a-zA-Z]/g, '') != characterInfo.characters[0].class) return exit()
-                        let maxStats = charStats[characterInfo.characters[0].class.toLowerCase()]
-                        if (!maxStats) return exit(`Stats for ${characterInfo.characters[0].class} is missing`)
-                        let issue = false;
-                        let character = characterInfo.characters[0]
-                        let issueString = ''
-                        //check for level 20
-                        if (parseInt(character.level) != 20) {
-                            issue = true
-                            issueString += `\nNot level 20 (${character.level}/20)`
-                        }
-                        //check for max dex/attack
-                        console.log('checking stats')
-                        if (settings.backend.realmeyestats) {
-                            let statstot = character.statsTotal.replace(/[^0-9-,]/g, '').split(',')
-                            let statsbonus = character.statsBonus.replace(/[^0-9-,]/g, '').split(',')
-                            let statsArray = []
-                            for (let i in statstot) {
-                                statsArray.push(parseInt(statstot[i]) - parseInt(statsbonus[i]))
+                await test()
+                async function test(){
+                    return new Promise(async res => {
+                        realmEyeScrape.getUserInfo(players[i]).then(characterInfo => {
+                            function exit(me) {
+                                console.log('in exit')
+                                if (me) console.log(me)
+                                unreachable.push(players[i]);
+                                return res()
                             }
-                            let stats = {
-                                hp: statsArray[0],
-                                mp: statsArray[1],
-                                att: statsArray[2],
-                                def: statsArray[3],
-                                spd: statsArray[4],
-                                vit: statsArray[5],
-                                wis: statsArray[6],
-                                dex: statsArray[7],
+                            if (!characterInfo || !characterInfo.characters[0] || characterInfo.characters[0].class.replace(/[^a-zA-Z]/g, '') != characterInfo.characters[0].class) return exit()
+                            let maxStats = charStats[characterInfo.characters[0].class.toLowerCase()]
+                            if (!maxStats) return exit(`Stats for ${characterInfo.characters[0].class} is missing`)
+                            let issue = false;
+                            let character = characterInfo.characters[0]
+                            let issueString = ''
+                            //check for level 20
+                            if (parseInt(character.level) != 20) {
+                                issue = true
+                                issueString += `\nNot level 20 (${character.level}/20)`
                             }
-                            if (stats.dex < maxStats.dex) {
-                                issue = true;
-                                issueString += `\nDex is not maxed (${stats.dex}/${maxStats.dex})`
-                            }
-                            if (stats.att < maxStats.att) {
-                                issue = true;
-                                issueString += `\nAttack is not maxed (${stats.att}/${maxStats.att})`
-                            }
-                        }
-                        //check for gear reqs
-                        //weapon
-                        console.log('checcking weapon')
-                        if (character.weapon) {
-                            let weaponTier = parseInt(character.weapon.split(/ +/).pop().replace('T', ''))
-                            if (weaponTier < settings.runreqs.weapon && weaponTier !== NaN) {
-                                issue = true;
-                                issueString += `\nWeapon tier is too low (T${weaponTier})`
-                            }
-                        } else {
-                            issue = true;
-                            issueString += `Weapon is not equipped`
-                        }
-                        //ability
-                        console.log('checking ability')
-                        if (character.ability) {
-                            if (character.class.toLowerCase() != 'trickster' && character.class.toLowerCase() != 'mystic') {
-                                let abilityTier = parseInt(character.ability.split(/ +/).pop().replace('T', ''))
-                                if (abilityTier < settings.runreqs.ability && abilityTier !== NaN) {
+                            //check for max dex/attack
+                            console.log('checking stats')
+                            if (settings.backend.realmeyestats) {
+                                let statstot = character.statsTotal.replace(/[^0-9-,]/g, '').split(',')
+                                let statsbonus = character.statsBonus.replace(/[^0-9-,]/g, '').split(',')
+                                let statsArray = []
+                                for (let i in statstot) {
+                                    statsArray.push(parseInt(statstot[i]) - parseInt(statsbonus[i]))
+                                }
+                                let stats = {
+                                    hp: statsArray[0],
+                                    mp: statsArray[1],
+                                    att: statsArray[2],
+                                    def: statsArray[3],
+                                    spd: statsArray[4],
+                                    vit: statsArray[5],
+                                    wis: statsArray[6],
+                                    dex: statsArray[7],
+                                }
+                                if (stats.dex < maxStats.dex) {
                                     issue = true;
-                                    issueString += `\nAbility tier is too low (T${abilityTier})`
+                                    issueString += `\nDex is not maxed (${stats.dex}/${maxStats.dex})`
+                                }
+                                if (stats.att < maxStats.att) {
+                                    issue = true;
+                                    issueString += `\nAttack is not maxed (${stats.att}/${maxStats.att})`
                                 }
                             }
-                        } else {
-                            issue = true;
-                            issueString += `Ability is not equipped`
-                        }
-                        //armor
-                        console.log('checking armor')
-                        if (character.armor) {
-                            let armorTier = parseInt(character.armor.split(/ +/).pop().replace('T', ''))
-                            if (armorTier < settings.runreqs.armor && armorTier !== NaN) {
+                            //check for gear reqs
+                            //weapon
+                            console.log('checcking weapon')
+                            if (character.weapon) {
+                                let weaponTier = parseInt(character.weapon.split(/ +/).pop().replace('T', ''))
+                                if (weaponTier < settings.runreqs.weapon && weaponTier !== NaN) {
+                                    issue = true;
+                                    issueString += `\nWeapon tier is too low (T${weaponTier})`
+                                }
+                            } else {
                                 issue = true;
-                                issueString += `\nArmor tier is too low (T${armorTier})`
+                                issueString += `Weapon is not equipped`
                             }
-                        } else {
-                            issue = true;
-                            issueString += `Armor is not equipped`
-                        }
-                        //ring
-                        console.log('checking ring')
-                        if (character.ring) {
-                            let ringTier = parseInt(character.ring.split(/ +/).pop().replace('T', ''))
-                            if (ringTier < settings.runreqs.ring && ringTier !== NaN) {
+                            //ability
+                            console.log('checking ability')
+                            if (character.ability) {
+                                if (character.class.toLowerCase() != 'trickster' && character.class.toLowerCase() != 'mystic') {
+                                    let abilityTier = parseInt(character.ability.split(/ +/).pop().replace('T', ''))
+                                    if (abilityTier < settings.runreqs.ability && abilityTier !== NaN) {
+                                        issue = true;
+                                        issueString += `\nAbility tier is too low (T${abilityTier})`
+                                    }
+                                }
+                            } else {
                                 issue = true;
-                                issueString += `\nRing tier is too low (T${ringTier})`
+                                issueString += `Ability is not equipped`
                             }
-                        } else {
-                            issue = true;
-                            issueString += `Ring is not equipped`
-                        }
-                        if (issue) {
-                            console.log('in issue')
-                            let characterEmote = bot.emojis.cache.find(e => e.name == character.class)
-                            let weaponEmoji, abilityEmoji, armorEmoji, ringEmoji
-                            if (!character.weapon) weaponEmoji = 'None'
-                            else weaponEmoji = bot.emojis.cache.find(e => e.name.toLowerCase().replace(/[^a-z0-9]/g, '').includes(character.weapon.split(' ').slice(0, -1).join('').toLowerCase().replace(/[^a-z0-9]/g, '')))
-                            if (!character.ability) abilityEmoji = 'None'
-                            else abilityEmoji = bot.emojis.cache.find(e => e.name.toLowerCase().replace(/[^a-z0-9]/g, '').includes(character.ability.split(' ').slice(0, -1).join('').toLowerCase().replace(/[^a-z0-9]/g, '')))
-                            if (!character.armor) armorEmoji = 'None'
-                            else armorEmoji = bot.emojis.cache.find(e => e.name.toLowerCase().replace(/[^a-z0-9]/g, '').includes(character.armor.split(' ').slice(0, -1).join('').toLowerCase().replace(/[^a-z0-9]/g, '')))
-                            if (!character.ring) ringEmoji = 'None'
-                            else ringEmoji = bot.emojis.cache.find(e => e.name.toLowerCase().replace(/[^a-z0-9]/g, '').includes(character.ring.split(' ').slice(0, -1).join('').toLowerCase().replace(/[^a-z0-9]/g, '')))
-                            if (characterParseEmbed.fields.length >= 24 || characterParseEmbed.length + issueString.length + 50 > 6000) {
-                                message.channel.send(characterParseEmbed)
-                                characterParseEmbed.fields = []
+                            //armor
+                            console.log('checking armor')
+                            if (character.armor) {
+                                let armorTier = parseInt(character.armor.split(/ +/).pop().replace('T', ''))
+                                if (armorTier < settings.runreqs.armor && armorTier !== NaN) {
+                                    issue = true;
+                                    issueString += `\nArmor tier is too low (T${armorTier})`
+                                }
+                            } else {
+                                issue = true;
+                                issueString += `Armor is not equipped`
                             }
-                            characterParseEmbed.addField(players[i], `[Link](https://www.realmeye.com/player/${players[i]}) | ${characterEmote} | LVL: \`${character.level}\` | Fame: \`${character.fame}\` | Stats: \`${character.stats}\` | ${weaponEmoji} ${abilityEmoji} ${armorEmoji} ${ringEmoji}${issueString}`)
-                            if (i % 5 == 0) {
-                                console.log('in mod')
-                                parseStatusEmbed.fields[1].value = `Parsing Characters (${i}/${players.length})`
-                                parseStatusMessage.edit(parseStatusEmbed)
+                            //ring
+                            console.log('checking ring')
+                            if (character.ring) {
+                                let ringTier = parseInt(character.ring.split(/ +/).pop().replace('T', ''))
+                                if (ringTier < settings.runreqs.ring && ringTier !== NaN) {
+                                    issue = true;
+                                    issueString += `\nRing tier is too low (T${ringTier})`
+                                }
+                            } else {
+                                issue = true;
+                                issueString += `Ring is not equipped`
                             }
-                        }
-                        return res()
-                    }).catch(er => {
-                        ErrorLogger.log(er, bot)
-                        unreachable.push(players[i])
-                        return res()
+                            if (issue) {
+                                console.log('in issue')
+                                let characterEmote = bot.emojis.cache.find(e => e.name == character.class)
+                                let weaponEmoji, abilityEmoji, armorEmoji, ringEmoji
+                                if (!character.weapon) weaponEmoji = 'None'
+                                else weaponEmoji = bot.emojis.cache.find(e => e.name.toLowerCase().replace(/[^a-z0-9]/g, '').includes(character.weapon.split(' ').slice(0, -1).join('').toLowerCase().replace(/[^a-z0-9]/g, '')))
+                                if (!character.ability) abilityEmoji = 'None'
+                                else abilityEmoji = bot.emojis.cache.find(e => e.name.toLowerCase().replace(/[^a-z0-9]/g, '').includes(character.ability.split(' ').slice(0, -1).join('').toLowerCase().replace(/[^a-z0-9]/g, '')))
+                                if (!character.armor) armorEmoji = 'None'
+                                else armorEmoji = bot.emojis.cache.find(e => e.name.toLowerCase().replace(/[^a-z0-9]/g, '').includes(character.armor.split(' ').slice(0, -1).join('').toLowerCase().replace(/[^a-z0-9]/g, '')))
+                                if (!character.ring) ringEmoji = 'None'
+                                else ringEmoji = bot.emojis.cache.find(e => e.name.toLowerCase().replace(/[^a-z0-9]/g, '').includes(character.ring.split(' ').slice(0, -1).join('').toLowerCase().replace(/[^a-z0-9]/g, '')))
+                                if (characterParseEmbed.fields.length >= 24 || characterParseEmbed.length + issueString.length + 50 > 6000) {
+                                    message.channel.send(characterParseEmbed)
+                                    characterParseEmbed.fields = []
+                                }
+                                characterParseEmbed.addField(players[i], `[Link](https://www.realmeye.com/player/${players[i]}) | ${characterEmote} | LVL: \`${character.level}\` | Fame: \`${character.fame}\` | Stats: \`${character.stats}\` | ${weaponEmoji} ${abilityEmoji} ${armorEmoji} ${ringEmoji}${issueString}`)
+                                if (i % 5 == 0) {
+                                    console.log('in mod')
+                                    parseStatusEmbed.fields[1].value = `Parsing Characters (${i}/${players.length})`
+                                    parseStatusMessage.edit(parseStatusEmbed)
+                                }
+                            }
+                            return res()
+                        }).catch(er => {
+                            ErrorLogger.log(er, bot)
+                            unreachable.push(players[i])
+                            return res()
+                        })
                     })
-                }))
+                }
             }
-            await Promise.all(promises)
+            //await Promise.all(promises)
             let unreachableEmbed = new Discord.MessageEmbed()
                 .setColor('#00ff00')
                 .setTitle('The following were unreachable')
