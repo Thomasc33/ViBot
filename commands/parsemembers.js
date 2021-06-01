@@ -16,7 +16,7 @@ module.exports = {
     getNotes(guildid, member) {
         return 'Image can either be a link, or an embeded image'
     },
-    role: 'almostrl',
+    role: 'eventrl',
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         let channel = message.member.voice.channel
@@ -265,6 +265,7 @@ module.exports = {
                         }
                         return res()
                     }).catch(er => {
+                        ErrorLogger.log(er, bot)
                         unreachable.push(players[i])
                         return res()
                     })
@@ -285,7 +286,7 @@ module.exports = {
 
         let parsePromises = []
         parsePromises.push(crasherParse())
-        //parsePromises.push(characterParse())
+        parsePromises.push(characterParse())
         
 
         await Promise.all(parsePromises)
