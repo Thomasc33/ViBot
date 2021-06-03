@@ -184,7 +184,7 @@ module.exports = {
                     if (channel.channel.parent.name.toLowerCase() == settings.categories.event) runType = 0
                     else {
                         if (!args[1]) return message.channel.send('Run type not recognized')
-                        runType = afkCheck.getRunType(args[1].charAt(0).toLowerCase())
+                        runType = afkCheck.getRunType(args[1].charAt(0).toLowerCase(), message.guild.id)
                     }
                     if (!runType && runType !== 0) return
                     if (runType == 0 && !dbInfo[message.guild.id]) return message.channel.send('Event logging not setup for this server, contact Vi')
