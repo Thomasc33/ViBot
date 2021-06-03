@@ -149,6 +149,7 @@ class afkCheck {
      * @param {String} afkInfo.reqsImageUrl 
      * @param {String} afkInfo.keyEmoteID
      * @param {String} afkInfo.vialEmoteID
+     * @param {String} afkInfo.keyLogName
      * @param {Boolean} afkInfo.isVet
      * @param {Boolean} afkInfo.twoPhase
      * @param {Boolean} afkInfo.isEvent
