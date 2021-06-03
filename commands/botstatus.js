@@ -2,7 +2,7 @@ const Discord = require("discord.js")
 const reScrape = require('../lib/realmEyeScrape')
 
 var statusMessages = {}, Bot, DB
-const interval = setInterval(() => { module.exports.updateAll() }, 120000) //update every 2 mins
+const interval = setInterval(() => { module.exports.updateAll() }, 30000) //update every 2 mins
 const StatusEmbed = new Discord.MessageEmbed()
 module.exports = {
     name: 'botstatus',
@@ -45,7 +45,7 @@ module.exports = {
         let c = guild.channels.cache.get(settings.channels.botstatus)
         if (!c) return console.log('botstatus not found for ', guild.id)
         let ms = await c.messages.fetch({ limit: 10 })
-        ms.filter(m => m.author.id == bot.user.id)
+        ms = ms.filter(m => m.author.id == bot.user.id)
         statusMessages[guild.id] = ms.first()
         this.update(guild)
     },
