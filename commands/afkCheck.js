@@ -798,7 +798,7 @@ class afkCheck {
                 if (rows.length < this.channel.members.size) {
                     let unlogged = this.channel.members.keyArray().filter(e => !dbIds.includes(e))
                     for (let i in unlogged) {
-                        this.db.query(`INSERT INTO users (id) VALUES('${unlogged[i]}')`)
+                        this.db.query(`INSERT INTO users (id) VALUES('${unlogged[i]}')`, er => { if (er) console.log('error inserting unlogged members in ', this.guild.id) })
                     }
                 }
             })
@@ -812,7 +812,7 @@ class afkCheck {
                 let points = this.settings.points.keypop
                 if (this.afkInfo.keyPopPointsOverride) points = this.afkInfo.keyPopPointsOverride
                 if (this.guild.members.cache.get(u).roles.cache.has(this.nitroBooster.id)) points = points * this.settings.points.nitromultiplier
-                await this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u}'`)
+                await this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u}'`, er => { if (er) console.log('error logging key points in ', this.guild.id) })
                 pointsLog.push({
                     uid: u,
                     points: points,
@@ -823,7 +823,7 @@ class afkCheck {
                 if (this.reactables[r].users) this.reactables[r].users.forEach(u => {
                     let points = +this.reactables[r].points
                     if (this.message.guild.members.cache.get(u).roles.cache.has(this.nitroBooster.id)) points = +points * +this.settings.points.nitromultiplier
-                    this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u}'`)
+                    this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u}'`, er => { if (er) console.log('error logging reactable points in ', this.guild.id) })
                     pointsLog.push({
                         uid: u,
                         points: points,
@@ -850,9 +850,7 @@ class afkCheck {
                 let query = `UPDATE users SET ${afkCheck.afkInfo.runLogName} = ${afkCheck.afkInfo.runLogName} + 1 WHERE `
                 afkCheck.channel.members.each(m => query = query.concat(`id = '${m.id}' OR `))
                 query = query.substring(0, query.length - 4)
-                afkCheck.db.query(query, err => {
-                    if (err) ErrorLogger.log(err, afkCheck.bot)
-                })
+                afkCheck.db.query(query, er => { if (er) console.log('error logging run completes in ', this.guild.id) })
                 if (afkCheck.settings.backend.points) {
                     //give points to everyone in run
                     let regular = []
@@ -866,12 +864,12 @@ class afkCheck {
                         let regularQuery = `UPDATE users SET points = points + ${afkCheck.settings.points.perrun} WHERE `
                         regular.forEach(m => { regularQuery = regularQuery.concat(`id = '${m.id}' OR `) })
                         regularQuery = regularQuery.substring(0, regularQuery.length - 4)
-                        afkCheck.db.query(regularQuery, err => { if (err) ErrorLogger.log(err, afkCheck.bot) })
+                        afkCheck.db.query(regularQuery, er => { if (er) console.log('error logging points for run completes in ', this.guild.id) })
                         //nitro raiders point logging
                         let nitroQuery = `UPDATE users SET points = points + ${afkCheck.settings.points.perrun * afkCheck.settings.points.nitromultiplier} WHERE `
                         nitros.forEach(m => nitroQuery = nitroQuery.concat(`id = '${m.id}' OR `))
                         nitroQuery = nitroQuery.substring(0, nitroQuery.length - 4)
-                        afkCheck.db.query(nitroQuery, err => { if (err) ErrorLogger.log(err, afkCheck.bot) })
+                        afkCheck.db.query(nitroQuery, er => { if (er) console.log('error logging points for run (nitro) completes in ', this.guild.id) })
                     }
                 }
             }
