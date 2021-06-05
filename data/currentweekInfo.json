@@ -92,14 +92,14 @@
             "dontReset": true
         },
         {
-            "id": "451171819672698920",
+            "id": "697216053914370158",
             "disabled": true,
             "eventcurrentweek": "",
             "eventtotal": "",
             "dontReset": false
         },
         {
-            "id": "697216053914370158",
+            "id": "451171819672698920",
             "disabled": false,
             "eventcurrentweek": "currentweekEvents",
             "eventtotal": "eventslead",

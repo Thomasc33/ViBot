@@ -1,38 +1,5 @@
 const Discord = require('discord.js')
-const tables = [
-    { //halls
-        id: '343704644712923138',
-        runs: [
-            'currentweekCult',
-            'currentweekVoid'
-        ],
-        assists: [
-            'currentweekAssists',
-            'currentweekFeedback'
-        ],
-    },
-    { //dev halls
-        id: '701483950559985705',
-        runs: [
-            'currentweekCult',
-            'currentweekVoid'
-        ],
-        assists: [
-            'currentweekAssists',
-            'currentweekFeedback'
-        ],
-    },
-    { //o3
-        id: '708026927721480254',
-        runs: [
-            'currentweeko3',
-            'currentweeko3Feedback'
-        ],
-        assists: [
-            'currentweekAssistso3'
-        ],
-    }
-]
+const tables = require('../data/currentweekInfo.json').currentweek
 
 const CachedMessages = {}
 

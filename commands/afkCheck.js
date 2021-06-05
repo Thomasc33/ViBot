@@ -850,7 +850,7 @@ class afkCheck {
                 let query = `UPDATE users SET ${afkCheck.afkInfo.runLogName} = ${afkCheck.afkInfo.runLogName} + 1 WHERE `
                 afkCheck.channel.members.each(m => query = query.concat(`id = '${m.id}' OR `))
                 query = query.substring(0, query.length - 4)
-                afkCheck.db.query(query, er => { if (er) console.log('error logging run completes in ', this.guild.id) })
+                afkCheck.db.query(query, er => { if (er) console.log('error logging run completes in ', afkCheck.guild.id) })
                 if (afkCheck.settings.backend.points) {
                     //give points to everyone in run
                     let regular = []
@@ -864,12 +864,12 @@ class afkCheck {
                         let regularQuery = `UPDATE users SET points = points + ${afkCheck.settings.points.perrun} WHERE `
                         regular.forEach(m => { regularQuery = regularQuery.concat(`id = '${m.id}' OR `) })
                         regularQuery = regularQuery.substring(0, regularQuery.length - 4)
-                        afkCheck.db.query(regularQuery, er => { if (er) console.log('error logging points for run completes in ', this.guild.id) })
+                        afkCheck.db.query(regularQuery, er => { if (er) console.log('error logging points for run completes in ', afkCheck.guild.id) })
                         //nitro raiders point logging
                         let nitroQuery = `UPDATE users SET points = points + ${afkCheck.settings.points.perrun * afkCheck.settings.points.nitromultiplier} WHERE `
                         nitros.forEach(m => nitroQuery = nitroQuery.concat(`id = '${m.id}' OR `))
                         nitroQuery = nitroQuery.substring(0, nitroQuery.length - 4)
-                        afkCheck.db.query(nitroQuery, er => { if (er) console.log('error logging points for run (nitro) completes in ', this.guild.id) })
+                        afkCheck.db.query(nitroQuery, er => { if (er) console.log('error logging points for run (nitro) completes in ', afkCheck.guild.id) })
                     }
                 }
             }
