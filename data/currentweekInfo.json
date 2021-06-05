@@ -100,9 +100,9 @@
         },
         {
             "id": "697216053914370158",
-            "disabled": true,
-            "eventcurrentweek": "",
-            "eventtotal": "",
+            "disabled": false,
+            "eventcurrentweek": "currentweekEvents",
+            "eventtotal": "eventslead",
             "dontReset": false
         }
     ]
