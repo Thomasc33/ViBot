@@ -836,7 +836,7 @@ class afkCheck {
 
         //log key
         for (let u of this.keys) {
-            this.db.query(`UPDATE users SET ${this.afkInfo.keyLogName} = ${this.afkInfo.keyLogName} + 1 WHERE id = '${u}'`, er => {
+            if (this.afkInfo.keyLogName) this.db.query(`UPDATE users SET ${this.afkInfo.keyLogName} = ${this.afkInfo.keyLogName} + 1 WHERE id = '${u}'`, er => {
                 console.log(`${this.afkInfo.keyLogName} missing from ${this.guild.name} ${this.guild.id}`)
             })
             keyRoles.checkUser(this.guild.members.cache.get(u), this.bot, this.db)

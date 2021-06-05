@@ -1,6 +1,7 @@
 const eventFile = require('../data/events.json')
 const afkCheck = require('./afkCheck')
 const botSettings = require('../settings.json')
+const dbInfo = require('../data/database.json')
 
 module.exports = {
     name: 'eventafk',
@@ -30,6 +31,7 @@ module.exports = {
             reqsImageUrl: "",
             keyEmoteID: event.keyEmojiId,
             vialEmoteID: event.portalEmojiId,
+            keyLogName: dbInfo[message.guild.id] ? dbInfo[message.guild.id].eventInfo.eventpops || null: null,
             isSplit: false,
             newChannel: true,
             vialReact: false,
