@@ -21,6 +21,7 @@ module.exports = {
         else return;
         var eventType = args[0]
         let event = getEventType(eventType, eventFile)
+        if (!event) return message.channel.send(`${eventType} does not exist.`);
         if (!event.enabled) return message.channel.send(`${event.name} is currently disabled.`);
 
         //create template from event info
