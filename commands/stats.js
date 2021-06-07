@@ -75,7 +75,7 @@ module.exports = {
             //Add o3 and misc(points)
             let otherFields = []
             if (hasO3) otherFields = getFields(oryx3, 'oryx3')
-            if (rows['halls']) otherFields.push({ name: `✨ Miscellaneous Stats ✨`, value: `🎟️ ${rows['halls'][0].points || 0} Points` })
+            if (rows['halls'] && rows['halls'][0]) otherFields.push({ name: `✨ Miscellaneous Stats ✨`, value: `🎟️ ${rows['halls'][0].points || 0} Points` })
             if (rows['testinghalls']) otherFields.push({ name: `✨ (Testing) Miscellaneous Stats ✨`, value: `🎟️ ${rows['testinghalls'][0].points || 0} Points` })
             if (otherFields.length > 0) embed.addFields(otherFields);
 
