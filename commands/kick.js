@@ -26,7 +26,7 @@ module.exports = {
                 reason = reason.concat(args[i]) + ' ';
             }
         } else reason = false
-        if (kickTemplates[message.guild.id] && kickTemplates[message.guild.id].includes(reason.toLowerCase())) reason = kickTemplates[message.guild.id][reason.toLowerCase()]
+        if (reason && kickTemplates[message.guild.id] && kickTemplates[message.guild.id][reason.toLowerCase()]) reason = kickTemplates[message.guild.id][reason.toLowerCase()]
         message.channel.send(`Are you sure you want to kick ${member.displayName}? Y/N`);
         let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 10000 });
         collector.on('collect', async m => {
