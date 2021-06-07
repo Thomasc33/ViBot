@@ -573,8 +573,8 @@ async function autoMod(message) {
             timeValue = 86400000
         }
         message.member.roles.add(settings.roles.muted)
-            .then(db.query(`INSERT INTO mutes (id, guildid, muted, reason, modid, uTime) VALUES ('${message.author.id}', '${message.guild.id}', true, '${reason}','${bot.user.id}', '${Date.now() + timeValue}')`))
-            .then(message.author.send(`You have been muted in \`${message.guild.name}\` for \`${reason}\`. This will last for \`${timeString}\``))
+            .then(() => bot.dbs[message.guild.id].query(`INSERT INTO mutes (id, guildid, muted, reason, modid, uTime) VALUES ('${message.author.id}', '${message.guild.id}', true, '${reason}','${bot.user.id}', '${Date.now() + timeValue}')`))
+            .then(() => message.author.send(`You have been muted in \`${message.guild.name}\` for \`${reason}\`. This will last for \`${timeString}\``))
             .then(() => {
                 let modlog = message.guild.channels.cache.get(settings.channels.modlog)
                 if (!modlog) return ErrorLogger.log(new Error('Mod log not found for automod'), bot)

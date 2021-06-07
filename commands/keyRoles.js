@@ -57,7 +57,7 @@ module.exports = {
         if (!settings || !dbInfo[member.guild.id] || !dbInfo[member.guild.id].mainKeyType) return
         db.query(`SELECT ${dbInfo[member.guild.id].mainKeyType} FROM users WHERE id = '${member.id}'`, (err, rows) => {
             if (err) ErrorLogger.log(err, bot)
-            if (!rows) return db.query(`INSERT INTO users (id) VALUES ('${member.id}')`)
+            if (!rows || !rows[0]) return db.query(`INSERT INTO users (id) VALUES ('${member.id}')`)
             if (!rows[0][dbInfo[member.guild.id].mainKeyType]) return
             if (rows[0][dbInfo[member.guild.id].mainKeyType] >= 15) if (!member.roles.cache.has(settings.roles.bottomkey)) member.roles.add(settings.roles.bottomkey)
             if (rows[0][dbInfo[member.guild.id].mainKeyType] >= 50) if (!member.roles.cache.has(settings.roles.topkey)) member.roles.add(settings.roles.topkey)

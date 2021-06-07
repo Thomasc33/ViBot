@@ -17,7 +17,7 @@ module.exports = {
         location = location.trim();
         if (location.length >= 1024) return message.channel.send('Location must be below 1024 characters, try again');
         if (location == '') return;
-        if (message.channel.parent.name.toLowerCase() === 'events') return EventAFK.changeLocation(location)
+        //if (message.channel.parent.name.toLowerCase() === 'events') return afkCheck.changeLocation(location, channel)
         let res = afkCheck.changeLocation(location, channel)
         if (res) message.channel.send(res)
         else message.react('✅');

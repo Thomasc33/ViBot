@@ -51,9 +51,9 @@ module.exports = {
         } else eventHC().catch(er => { message.channel.send(er) })
 
         async function eventHC() {
-            return new Promise(async (res, rej) => {
+            return new Promise(async(res, rej) => {
                 var eventType = args[0]
-                var event = eventAfk.getEventType(eventType)
+                var event = eventAfk.getEventType(eventType, eventFile)
                 if (!event) return rej('No event found')
                 if (!event.enabled) return rej(`${event.name} is currently disabled.`);
 
