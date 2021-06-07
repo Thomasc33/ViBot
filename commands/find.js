@@ -6,7 +6,7 @@ module.exports = {
     description: "Finds users from a nickname",
     args: '[Users]',
     requiredArgs: 1,
-    role: 'almostrl',
+    role: 'eventrl',
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         if (args.length == 0) return;
