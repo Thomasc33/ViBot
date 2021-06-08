@@ -24,7 +24,7 @@ module.exports = {
                 db.query(`UPDATE users SET vialUsed = ${parseInt(rows[0].vialUsed) + 1} WHERE id = '${member.id}'`)
             }
             message.channel.send(`Vial logged. They now have ${parseInt(rows[0].vialUsed) + 1} vials popped`)
-            message.guild.channels.cache.get(settings.channels.viallog).send(`Vial pop added to ${member} (${member.nickname}), logged by ${message.member} (${parseInt(rows[0].vialUsed) + 1} total pops)`)
+            message.channel.send(new Discord.MessageEmbed().setDescription(`Vial pop added to ${member} (${member.nickname}), logged by ${message.member} (${parseInt(rows[0].vialUsed) + 1} total pops)`).setTimestamp().setColor('#0c045c').setThumbnail('https://cdn.discordapp.com/emojis/701491230567039018.png?v=1'))
         })
     }
 }
