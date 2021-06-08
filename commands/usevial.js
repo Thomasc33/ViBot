@@ -1,4 +1,5 @@
 const ErrorLogger = require('../lib/logError')
+const Discord = require('discord.js')
 
 module.exports = {
     name: 'usevial',
