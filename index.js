@@ -939,7 +939,7 @@ function startAPI() {
             res.json(bot.afkChecks)
         })
 
-        router.post('/currentweek/update', (req, res) => {
+        router.post('/currentweek/update', async (req, res) => {
             if (!req.body) {
                 res.status(400)
                 return res.json(JSON.stringify('No body'))
@@ -952,7 +952,7 @@ function startAPI() {
                 res.status(400)
                 return res.json(JSON.stringify('No currentweektype'))
             }
-            let guild = bot.guilds.resolveID(req.body.guildid)
+            let guild = await bot.guilds.resolveID(req.body.guildid)
             if (!guild) {
                 res.status(400)
                 return res.json(JSON.stringify('Bad guildid'))
