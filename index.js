@@ -953,7 +953,7 @@ function startAPI() {
                 return res.json(JSON.stringify('No currentweektype'))
             }
             let found = false
-            for(let i of bot.guilds.keys()) if (i == req.body.guildid) found = true
+            for(let i of bot.guilds.cache.keys()) if (i == req.body.guildid) found = true
             if(!found) {
                 res.status(400)
                 return res.json(JSON.stringify('Bad guildid'))
