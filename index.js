@@ -939,6 +939,54 @@ function startAPI() {
             res.json(bot.afkChecks)
         })
 
+        router.post('/currentweek/update', (req, res) => {
+            if (!req.body) {
+                res.status(400)
+                return res.json(JSON.stringify('No body'))
+            }
+            if (!req.body.guildid) {
+                res.status(400)
+                return res.json(JSON.stringify('No guildid'))
+            }
+            if (!req.body.currentweektype) {
+                res.status(400)
+                return res.json(JSON.stringify('No currentweektype'))
+            }
+            let guild = bot.guilds.resolveID(req.body.guildid)
+            if (!guild) {
+                res.status(400)
+                return res.json(JSON.stringify('Bad guildid'))
+            }
+            let currentweektypes = ['currentweek', 'eventcurrentweek', 'parsecurrentweek']
+            let index = req.body.currentweektype
+            if (isNaN(parseInt(index)) || parseInt(index) >= currentweektypes.length) {
+                res.status(400)
+                return res.json(JSON.stringify('Bad currentweektype'))
+            }
+            let currentweektype = currentweektypes[parseInt(index)]
+            if (!bot.settings[guild.id].backend[currentweektype]) {
+                res.status(403)
+                return res.json(JSON.stringify('Currentweek type disabled'))
+            }
+            switch (parseInt(index)) {
+                case 0:
+                    currentWeek.update(guild, bot.dbs[guild.id], bot)
+                    res.status(200)
+                    return res.json(JSON.stringify('Success'))
+                case 1:
+                    ecurrentWeek.update(guild, bot.dbs[guild.id], bot)
+                    res.status(200)
+                    return res.json(JSON.stringify('Success'))
+                case 2:
+                    pcurrentWeek.update(guild, bot.dbs[guild.id], bot)
+                    res.status(200)
+                    return res.json(JSON.stringify('Success'))
+                default:
+                    res.status(404)
+                    return res.json(JSON.stringify('Default statement hit on currentweek type'))
+            }
+        })
+
         app.use('/api', router)
         app.use((err, req, res, next) => {
             switch (err.message) {
