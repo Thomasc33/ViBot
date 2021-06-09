@@ -939,7 +939,7 @@ function startAPI() {
             res.json(bot.afkChecks)
         })
 
-        router.post('/currentweek/update', async (req, res) => {
+        router.post('/currentweek/update', (req, res) => {
             if (!req.body) {
                 res.status(400)
                 return res.json(JSON.stringify('No body'))
@@ -952,11 +952,13 @@ function startAPI() {
                 res.status(400)
                 return res.json(JSON.stringify('No currentweektype'))
             }
-            let guild = await bot.guilds.resolveID(req.body.guildid)
-            if (!guild) {
+            let found = false
+            for(let i of bot.guilds.keys()) if (i == req.body.guildid) found = true
+            if(!found) {
                 res.status(400)
                 return res.json(JSON.stringify('Bad guildid'))
             }
+            let guild = bot.guilds.cache.get(req.body.guildid)
             let currentweektypes = ['currentweek', 'eventcurrentweek', 'parsecurrentweek']
             let index = req.body.currentweektype
             if (isNaN(parseInt(index)) || parseInt(index) >= currentweektypes.length) {
