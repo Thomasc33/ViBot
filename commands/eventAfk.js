@@ -2,6 +2,7 @@ const eventFile = require('../data/events.json')
 const afkCheck = require('./afkCheck')
 const botSettings = require('../settings.json')
 const dbInfo = require('../data/database.json')
+const oldStyleAfkGuilds = ['451171819672698920']
 
 module.exports = {
     name: 'eventafk',
@@ -32,13 +33,13 @@ module.exports = {
             reqsImageUrl: "",
             keyEmoteID: event.keyEmojiId,
             vialEmoteID: event.portalEmojiId,
-            keyLogName: dbInfo[message.guild.id] ? dbInfo[message.guild.id].eventInfo.eventpops || null: null,
+            keyLogName: dbInfo[message.guild.id] ? dbInfo[message.guild.id].eventInfo.eventpops || null : null,
             isSplit: false,
-            newChannel: true,
+            newChannel: oldStyleAfkGuilds.includes(message.guild.id) ? false : true,
             vialReact: false,
-            postAfkCheck: false,
+            postAfkCheck: oldStyleAfkGuilds.includes(message.guild.id) ? true : false,
             startDelay: 5000,
-            vcCap: 50,
+            vcCap: 45,
             timeLimit: 180,
             keyCount: 3,
             earlyLocationCost: 15,
@@ -90,19 +91,19 @@ module.exports = {
         }
 
         //keyCount
-        if(event.keyCount) eventTemplate.keyCount = event.keyCount
+        if (event.keyCount) eventTemplate.keyCount = event.keyCount
 
         //keyPopPoints
-        if(event.keyPopPoints) eventTemplate.keyPopPointsOverride = event.keyPopPoints
+        if (event.keyPopPoints) eventTemplate.keyPopPointsOverride = event.keyPopPoints
 
         //earlyLocationCost
-        if(event.earlyLocationCost) eventTemplate.earlyLocationCost = event.earlyLocationCost
+        if (event.earlyLocationCost) eventTemplate.earlyLocationCost = event.earlyLocationCost
 
         //vcCap
-        if(event.vcCap) eventTemplate.vcCap = event.vcCap
+        if (event.vcCap) eventTemplate.vcCap = event.vcCap
 
         //ping Role
-        if(event.rolePing) eventTemplate.pingRole = event.rolePing
+        if (event.rolePing) eventTemplate.pingRole = event.rolePing
 
         //start afkcheck
         afkCheck.eventAfkExecute(message, args, bot, db, tokenDB, eventTemplate, isVet)
