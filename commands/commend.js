@@ -32,7 +32,7 @@ module.exports = {
         if (!member) return message.channel.send('User not found')
 
         //args 1
-        let type = args[1].charAt(0).toLowerCase()
+        let type = args[1].toLowerCase()
 
         //give role and log
         let found = false
@@ -53,6 +53,8 @@ module.exports = {
                 if (i.prefix) addPrefix(i.prefix, member)
             }
         }
+
+        if (!found) return message.channel.send('Role name not found, get the list with `;help commend`')
 
         //give confirmation
         message.react('✅')

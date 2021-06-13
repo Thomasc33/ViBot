@@ -48,8 +48,8 @@ module.exports = {
             if (errored) return
 
             //OSanc Logic
+            let data, hasO3 = false;
             if (botSettings.osancStats) {
-                let data, hasO3 = false;
                 const oryx3 = {
                     participation: { reg: 0, vet: 0, completions: 0 },
                     leading: { reg: 0, vet: 0 },
