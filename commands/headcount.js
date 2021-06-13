@@ -36,7 +36,7 @@ module.exports = {
 
             let embed = new Discord.MessageEmbed()
                 .setAuthor(`Headcount for ${runType.runName} by ${message.member.nickname}`)
-                .setDescription(`React with ${bot.emojis.cache.get(runType.keyEmoteID)} if you have a key\nOtherwise react with your gear/class choices below`)
+                .setDescription(`${runType.headcountEmote ? `React with ${bot.emojis.cache.get(runType.headcountEmote)} if you are coming\n` : ''}React with ${bot.emojis.cache.get(runType.keyEmoteID)} if you have a key\nOtherwise react with your gear/class choices below`)
                 .setColor(runType.embed.color)
                 .setTimestamp()
             if (message.author.avatarURL()) embed.author.iconURL = message.author.avatarURL()
@@ -51,7 +51,7 @@ module.exports = {
         } else eventHC().catch(er => { message.channel.send(er) })
 
         async function eventHC() {
-            return new Promise(async(res, rej) => {
+            return new Promise(async (res, rej) => {
                 var eventType = args[0]
                 var event = eventAfk.getEventType(eventType, eventFile)
                 if (!event) return rej('No event found')

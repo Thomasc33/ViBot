@@ -150,6 +150,7 @@ class afkCheck {
      * @param {String} afkInfo.keyEmoteID
      * @param {String} afkInfo.vialEmoteID
      * @param {String} afkInfo.keyLogName
+     * @param {String} afkInfo.headcountEmote
      * @param {Boolean} afkInfo.isVet
      * @param {Boolean} afkInfo.twoPhase
      * @param {Boolean} afkInfo.isEvent
@@ -157,6 +158,7 @@ class afkCheck {
      * @param {Boolean} afkInfo.newChannel
      * @param {Boolean} afkInfo.vialReact
      * @param {Boolean} afkInfo.postAfkCheck
+     * @param {Booelan} afkInfo.headcountOnAfk
      * @param {Number} afkInfo.startDelay
      * @param {Number} afkInfo.vcCap
      * @param {Number} afkInfo.timeLimit
@@ -372,6 +374,7 @@ class afkCheck {
     }
 
     async addReacts() {
+        if (this.afkInfo.headcountEmote && this.afkInfo.headcountOnAfk) this.raidStatusMessage.react(this.afkInfo.headcountEmote)
         await this.raidStatusMessage.react(this.afkInfo.keyEmoteID)
         if (this.afkInfo.vialReact) await this.raidStatusMessage.react(this.afkInfo.vialEmoteID)
         for (let i of this.afkInfo.earlyLocationReacts) await this.raidStatusMessage.react(i.emoteID)

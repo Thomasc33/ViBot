@@ -1,72 +1,7 @@
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
 
-const leaderBoardTypes = {
-    "343704644712923138": [
-        {
-            "index": 0,
-            "dbNames": ["keypops"],
-            "name": "Key Pops"
-        },
-        {
-            "index": 1,
-            "dbNames": ["eventpops"],
-            "name": "Event Key Pops"
-        },
-        {
-            "index": 2,
-            "dbNames": ["cultRuns", "voidRuns"],
-            "name": "Total Runs"
-        },
-        {
-            "index": 3,
-            "dbNames": ["cultsLead", "voidsLead"],
-            "name": "Total Runs Lead"
-        },
-        {
-            "index": 4,
-            "dbNames": ["vialUsed"],
-            "name": "Vials Used"
-        },
-        {
-            "index": 5,
-            "dbNames": ["points"],
-            "name": "Points"
-        }
-    ],
-    "701483950559985705": [
-        {
-            "index": 0,
-            "dbNames": ["keypops"],
-            "name": "Key Pops"
-        },
-        {
-            "index": 1,
-            "dbNames": ["eventpops"],
-            "name": "Event Key Pops"
-        },
-        {
-            "index": 2,
-            "dbNames": ["cultRuns", "voidRuns"],
-            "name": "Total Runs"
-        },
-        {
-            "index": 3,
-            "dbNames": ["cultsLead", "voidsLead"],
-            "name": "Total Runs Lead"
-        },
-        {
-            "index": 4,
-            "dbNames": ["vialUsed"],
-            "name": "Vials Used"
-        },
-        {
-            "index": 5,
-            "dbNames": ["points"],
-            "name": "Points"
-        }
-    ]
-}
+const leaderBoardTypes = require('../data/leaderBoardInfo.json')
 
 module.exports = {
     name: 'leaderboard',

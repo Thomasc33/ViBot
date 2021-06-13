@@ -5,7 +5,7 @@ module.exports = {
     role: 'rl',
     args: '<user> <role *see below*>',
     getNotes(guildid, member) {
-        return commendations ? `Role List: ${commendations[guildid].map(r => { r.roleName }).join(', ')}` : 'no roles found for this guild'
+        return commendations ? `Role List: ${commendations[guildid].map(r => r.roleName).join(', ')}` : 'no roles found for this guild'
     },
     requiredArgs: 2,
     description: 'Gives user a role',
