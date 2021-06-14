@@ -83,10 +83,9 @@ async function postVote2(message, member, bot, db) {
 
             const msg = await message.guild.channels.cache.get(settings.channels[guilds.channels[rolekey]]).send(embed);
             await msg.react('✅');
-            await msg.react('😐');
+            if (message.guild.id !== '708026927721480254') await msg.react('😐');
             await msg.react('❌');
-            if (rolekey == 'almostrl')
-                await msg.react('👀');
+            if (rolekey == 'almostrl' && message.guild.id !== '708026927721480254') await msg.react('👀');
         })
         return;
     }
