@@ -1,5 +1,6 @@
 const ErrorLogger = require('../lib/logError')
 const dbInfo = require('../data/database.json')
+const Discord = require('discord.js')
 
 module.exports = {
     name: 'addvial',
@@ -20,8 +21,8 @@ module.exports = {
         db.query(`SELECT * FROM users WHERE id = '${member.id}'`, (err, rows) => {
             if (err) ErrorLogger.log(err, bot)
             db.query(`UPDATE users SET ${vialStoredName} = ${parseInt(rows[0][vialStoredName]) + 1} WHERE id = '${member.id}'`)
-            message.channel.send(`Vial logged. They now have ${parseInt(rows[0][vialStoredName]) + 1} vials stored`)
-            message.guild.channels.cache.get(settings.channels.viallog).send(`Vial added to ${member} (${member.nickname}), logged by ${message.member} (${parseInt(rows[0][vialStoredName]) + 1} remaining vials)`)
+            message.channel.send(new Discord.MessageEmbed().setDescription(`Vial logged. They now have ${parseInt(rows[0][vialStoredName]) + 1} vials stored`).setTimestamp().setColor('#0c045c').setThumbnail('https://cdn.discordapp.com/emojis/701491230567039018.png?v=1'))
+            message.guild.channels.cache.get(settings.channels.viallog).send(new Discord.MessageEmbed().setDescription(`Vial added to ${member} (${member.nickname}), logged by ${message.member} (${parseInt(rows[0][vialStoredName]) + 1} remaining vials)`).setTimestamp().setColor('#0c045c').setThumbnail('https://cdn.discordapp.com/emojis/701491230567039018.png?v=1'))
         })
     }
 }

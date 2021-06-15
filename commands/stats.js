@@ -49,19 +49,21 @@ module.exports = {
 
             //OSanc Logic
             let data, hasO3 = false;
-            const oryx3 = {
-                participation: { reg: 0, vet: 0, completions: 0 },
-                leading: { reg: 0, vet: 0 },
-                pops: { inc: 0, shield: 0, sword: 0, helmet: 0 }
-            };
-            if (ign) data = await axios.post(`https://api.losthalls.org/getProfile`, { ign });
-            if (data) data = data.data;
-            if (data && data.profile && data.profile.oryx3) {
-                hasO3 = true
-                oryx3.participation = { ...oryx3.participation, ...data.profile.oryx3.participation };
-                oryx3.leading = { ...oryx3.leading, ...data.profile.oryx3.leading };
-                oryx3.pops = { ...oryx3.pops, ...data.profile.pops };
-                if (bot.dbs['343704644712923138']) bot.dbs['343704644712923138'].query(`UPDATE users SET o3runs = ${data.profile.oryx3.participation.completions} WHERE id = '${id}'`);
+            if (botSettings.osancStats) {
+                const oryx3 = {
+                    participation: { reg: 0, vet: 0, completions: 0 },
+                    leading: { reg: 0, vet: 0 },
+                    pops: { inc: 0, shield: 0, sword: 0, helmet: 0 }
+                };
+                if (ign) data = await axios.post(`https://api.osanc.net/getProfile`, { ign });
+                if (data) data = data.data;
+                if (data && data.profile && data.profile.oryx3) {
+                    hasO3 = true
+                    oryx3.participation = { ...oryx3.participation, ...data.profile.oryx3.participation };
+                    oryx3.leading = { ...oryx3.leading, ...data.profile.oryx3.leading };
+                    oryx3.pops = { ...oryx3.pops, ...data.profile.pops };
+                    if (bot.dbs['343704644712923138']) bot.dbs['343704644712923138'].query(`UPDATE users SET o3runs = ${data.profile.oryx3.participation.completions} WHERE id = '${id}'`);
+                }
             }
 
             //setup embed

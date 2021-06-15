@@ -1,4 +1,5 @@
 const ErrorLogger = require('../lib/logError')
+const Discord = require('discord.js')
 
 module.exports = {
     name: 'usevial',
@@ -16,15 +17,16 @@ module.exports = {
         if (!member) { message.channel.send('User not found'); return; }
         db.query(`SELECT * FROM users WHERE id = '${member.id}'`, (err, rows) => {
             if (err) ErrorLogger.log(err, bot)
+            let points
             if (settings.backend.points) {
-                if (member.roles.cache.has(settings.roles.nitro)) var points = settings.points.vialpop * settings.points.nitromultiplier
-                else var points = settings.points.vialpop
+                if (member.roles.cache.has(settings.roles.nitro)) points = settings.points.vialpop * settings.points.nitromultiplier
+                else points = settings.points.vialpop
                 db.query(`UPDATE users SET vialUsed = ${parseInt(rows[0].vialUsed) + 1}, points = points + ${points} WHERE id = '${member.id}'`)
             } else {
                 db.query(`UPDATE users SET vialUsed = ${parseInt(rows[0].vialUsed) + 1} WHERE id = '${member.id}'`)
             }
-            message.channel.send(`Vial logged. They now have ${parseInt(rows[0].vialUsed) + 1} vials popped`)
-            message.guild.channels.cache.get(settings.channels.viallog).send(`Vial pop added to ${member} (${member.nickname}), logged by ${message.member} (${parseInt(rows[0].vialUsed) + 1} total pops)`)
+            message.channel.send(new Discord.MessageEmbed().setDescription(`Vial logged. They now have ${parseInt(rows[0].vialUsed) + 1} vials popped`).setTimestamp().setColor('#0c045c').setThumbnail('https://cdn.discordapp.com/emojis/701491230567039018.png?v=1'))
+            message.guild.channels.cache.get(settings.channels.viallog).send(new Discord.MessageEmbed().setDescription(`Vial pop added to ${member} (${member.nickname}), logged by ${message.member} (${parseInt(rows[0].vialUsed) + 1} total pops)${settings.backend.points ? `\n${points} points added \`${parseInt(rows[0].points) + points}\` total` : ''}`).setTimestamp().setColor('#0c045c').setThumbnail('https://cdn.discordapp.com/emojis/701491230567039018.png?v=1'))
         })
     }
 }
