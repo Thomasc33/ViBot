@@ -219,8 +219,10 @@ class afkCheck {
         this.postTime = 20;
         this.reactables = {}
         this.active = true;
-        for (let i of this.afkInfo.earlyLocationReacts) {
-            this.reactables[i.shortName] = { users: [], points: i.pointsGiven }
+        if (this.afkInfo.earlyLocationReacts) {
+            for (let i of this.afkInfo.earlyLocationReacts) {
+                this.reactables[i.shortName] = { users: [], points: i.pointsGiven }
+            }
         }
         this.knights = []
         this.warriors = []

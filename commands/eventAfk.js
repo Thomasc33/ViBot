@@ -40,7 +40,7 @@ module.exports = {
             postAfkCheck: oldStyleAfkGuilds.includes(message.guild.id) ? true : false,
             startDelay: 5000,
             vcCap: 45,
-            timeLimit: 180,
+            timeLimit: 300,
             keyCount: 3,
             earlyLocationCost: 15,
             earlyLocationReacts: [{
