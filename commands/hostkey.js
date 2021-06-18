@@ -12,15 +12,26 @@ module.exports = {
     requiredArgs: 0,
     guildSpecific: true,
     getNotes(guildid, member){
-        return '';
+        return 'Maximum of 5 key types per notification. There is a 30 minute waiting period after a successful notification sent before another can be done.';
     },
     activePanels: [],
+    oldSends: [],
     checkActive(id) {
         return this.activePanels.includes(id);
     },
     role: 'eventraider',
     async execute(message, args, bot) {
+        const alerts = bot.settings[message.guild.id].channels.keyalerts;
+        if (!alerts)
+            return message.channel.send(`Command requires more server setup in order to run.`);
         const dm = await message.author.createDM();
+
+        const old = this.oldSends.find(s => s.id == message.author.id);
+        if (old && new Date() - old.date < bot.settings[message.guild.id].numerical.waitnewkeyalert * MINUTE)
+            return message.channel.send(`You still need to wait before you can send more notifications.`);
+        if (old)
+            this.oldSends = this.oldSends.filter(s => s.id != message.author.id);
+
         const eventMsg = await events.send(dm);
         const eventsLink = eventMsg.url;
 
@@ -28,7 +39,7 @@ module.exports = {
         const panel_embed = new Discord.MessageEmbed()
             .setAuthor("Select keys to pop")
             .setColor("#3498db")
-            .setDescription("Select up to 5 key types and how many of each to add. If you put the wrong amount, simply reselect the key type and use the new amount, or 0 to remove it.\n\nSelect from the following:\n🔑 - add a new type of key\n✅ - to send the notification\n❌ - to cancel.");
+            .setDescription("Select up to 5 key types and how many of each to add. If you put the wrong amount, simply reselect the key type and use the new amount, or 0 to remove it.\n\nSelect from the following:\n🔑 - add a new type of key\n✅ - to send the notification\n❌ - to cancel.\n\nIf you submit, you will not be able to submit more for another 30 minutes.");
 
         const panel = await dm.send(panel_embed);
         await panel.react('🔑');
@@ -81,6 +92,7 @@ module.exports = {
                             .setThumbnail(bot.emojis.cache.get(key.event.portalEmojiId).url)
                             .setColor(key.event.color));
                 }
+                this.oldSends.push({id: message.author.id, date: new Date()} );
                 panel_embed.setAuthor(`Notification Sent`)
                            .setDescription(`${message.guild.name} events staff has been notified that you have the below keys to pop. If a leader wishes to host, they will contact you directly.`)
                            .setTimestamp()

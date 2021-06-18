@@ -258,6 +258,31 @@ bot.on("ready", async () => {
         })
     }, 60000);
 
+    //key alerts check
+    bot.setInterval(() => {
+        bot.guilds.cache.each(g => {
+            const settings = bot.settings[g.id];
+            if (!settings || !settings.commands.hostkey || !settings.channels.keyalerts || !settings.numerical.keyalertsage)
+                return;
+            
+            const channel = bot.channels.cache.get(settings.channels.keyalerts);
+            channel.messages.fetch()
+                .then(messages => {
+                    bulk = [];
+
+                    messages.each(message => 
+                    {  
+                        if (new Date() - message.createdAt > 60000 * settings.numerical.keyalertsage)
+                            bulk.push(message);
+                    })
+                    if (bulk.length == 1)
+                        bulk[0].delete();
+                    else if (bulk.length > 1)
+                        channel.bulkDelete(bulk);
+                })
+        })
+    }, 300000);
+
     //mute check
     bot.setInterval(() => {
         let checked = []
