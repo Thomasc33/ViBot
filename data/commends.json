@@ -8,6 +8,15 @@
             "prefix": null
         }
     ],
+    "701483950559985705": [
+        {
+            "roleName": "rusher",
+            "roleId": "352935273874718720",
+            "dbName": "isRusher",
+            "minimumRole": null,
+            "prefix": null
+        }
+    ],
     "708026927721480254": [
         {
             "roleName": "mapmarker",
