@@ -73,7 +73,7 @@ module.exports = {
 
                 for (const key of keys)
                 {
-                    bot.channels.cache.get('855549655445012490')
+                    bot.channels.cache.get(bot.settings[message.guild.id].channels.keyalerts)
                         .send(new Discord.MessageEmbed()
                             .setAuthor(`${message.member.nickname || message.author.tag} has ${key.event.name} Keys`, message.author.displayAvatarURL())
                             .setDescription(`<${key.event.keyEmote}> ${message.member} has \`${key.count}\` ${key.event.name} keys.`)
