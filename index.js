@@ -48,6 +48,8 @@ bot.settings = moduleIsAvailable('./guildSettings.json') ? require('./guildSetti
 bot.serverWhiteList = moduleIsAvailable('./data/serverWhiteList.json') ? require('./data/serverWhiteList.json') : {}
 const emojiServers = moduleIsAvailable('./data/emojiServers.json') ? require('./data/emojiServers.json') : {}
 const dbSchemas = require('./data/schemas.json')
+const events = require('./commands/events')
+const eventList = require('./data/events.json')
 const router = express.Router()
 const app = express();
 const rootCas = require('ssl-root-cas').create();
@@ -268,20 +270,33 @@ bot.on("ready", async () => {
             const channel = bot.channels.cache.get(settings.channels.keyalerts);
             channel.messages.fetch()
                 .then(messages => {
-                    bulk = [];
-
+                    const bulk = [];
+                    const notifs = {};
                     messages.each(message => 
                     {  
-                        if (new Date() - message.createdAt > 60000 * settings.numerical.keyalertsage)
+                        if (new Date() > message.embeds[0].timestamp) {
                             bulk.push(message);
+                            const [ id, eid, ...rest ] = message.embeds[0].footer.text.split(' ');
+                            notifs[id] = [...(notifs[id] || []), eid];
+                        }
                     })
                     if (bulk.length == 1)
                         bulk[0].delete();
                     else if (bulk.length > 1)
                         channel.bulkDelete(bulk);
+                    for (const memberid in notifs) {
+                        const member = g.members.cache.get(memberid);
+                        if (!member) continue;
+                        member.send(new Discord.MessageEmbed()
+                            .setTitle('Event Key Notifications Expired')
+                            .setDescription('The following event key notifications you sent have expired. If you still would like to pop them, please send another request.\n\n'
+                             + notifs[memberid].map(i => `<${eventList[i].keyEmote}> ${eventList[i].name}`).join('\n'))
+                             .setTimestamp()
+                             .setColor('#ff0000'));
+                    }
                 })
         })
-    }, 300000);
+    }, 30000);
 
     //mute check
     bot.setInterval(() => {
