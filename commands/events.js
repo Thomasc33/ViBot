@@ -6,13 +6,26 @@ module.exports = {
     description: 'Shows all current enabled event run types',
     role: 'eventrl',
     execute(message, args, bot) {
+        this.send(message.channel);
+    },
+    send(channel) {
         let embed = new Discord.MessageEmbed()
             .setColor('#ff0000')
             .setTitle('Current event run types')
         for (let x in Events) if (Events[x].enabled) {
             fitStringIntoEmbed(embed, `<${Events[x].keyEmote}><${Events[x].portalEmote}> **${x}**${Events[x].aliases.length > 0 ? `\n*Aliases:${Events[x].aliases.map(a => `${` ${a}`}`)}*` : ''}`)
         }
-        message.channel.send(embed)
+        return channel.send(embed)
+    },
+    find(name) {
+        name = name.toLowerCase();
+        for (const e in Events)
+        {
+            if (!Events[e].enabled)
+                continue;
+            if (e == name || (Events[e].aliases && Events[e].aliases.includes(name)))
+                return { eventId: e, event: Events[e] };
+        }
     }
 }
 

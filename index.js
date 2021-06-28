@@ -31,7 +31,7 @@ const modmail = require('./commands/modmail')
 const setup = require('./commands/setup')
 const restarting = require('./commands/restart')
 const createTemplate = require('./commands/createTemplate')
-
+const hostkeys = require('./commands/hostkey');
 
 // Global Variables/Data
 const botSettings = require('./settings.json')
@@ -258,6 +258,31 @@ bot.on("ready", async () => {
         })
     }, 60000);
 
+    //key alerts check
+    bot.setInterval(() => {
+        bot.guilds.cache.each(g => {
+            const settings = bot.settings[g.id];
+            if (!settings || !settings.commands.hostkey || !settings.channels.keyalerts || !settings.numerical.keyalertsage)
+                return;
+            
+            const channel = bot.channels.cache.get(settings.channels.keyalerts);
+            channel.messages.fetch()
+                .then(messages => {
+                    bulk = [];
+
+                    messages.each(message => 
+                    {  
+                        if (new Date() - message.createdAt > 60000 * settings.numerical.keyalertsage)
+                            bulk.push(message);
+                    })
+                    if (bulk.length == 1)
+                        bulk[0].delete();
+                    else if (bulk.length > 1)
+                        channel.bulkDelete(bulk);
+                })
+        })
+    }, 300000);
+
     //mute check
     bot.setInterval(() => {
         let checked = []
@@ -376,7 +401,7 @@ bot.on('messageReactionAdd', (r, u) => {
     if (u.bot) return
 
     //modmail
-    if (r.emoji.name == '🔑' && r.message.author.id == bot.user.id && r.message.channel.id == bot.settings[r.message.guild.id].channels.modmail) {
+    if (r.emoji.name == '🔑' && !(r.message.channel instanceof Discord.DMChannel) && r.message.author.id == bot.user.id && r.message.channel.id == bot.settings[r.message.guild.id].channels.modmail) {
         modmail.modmailLogic(r.message, bot.dbs[r.message.guild.id], u)
     }
     //spongemock
@@ -461,6 +486,7 @@ tokenDB.on('error', err => {
 async function dmHandler(message) {
     if (message.author.bot) return;
     if (verification.checkActive(message.author.id)) return
+    if (hostkeys.checkActive(message.author.id)) return
     let cancelled = false;
     let statsTypos = ['stats', 'satts', 'stat', 'status', 'sats', 'stata', 'stts']
     if (statsTypos.includes(message.content.split(' ')[0].replace(/[^a-z0-9]/gi, ''))) {
