@@ -30,7 +30,7 @@ module.exports = {
 
                 var embed = new Discord.MessageEmbed()
                     .setColor('#00ff00')
-                    .setDescription(`Search \`${u}\` matched \`${member.nickname||member.user.tag}\`: <@!${member.id}>${nicks ? '\nRealmEye Links: ' + nicks : ''}`)
+                    .setDescription(`Search \`${u}\` matched \`${member.nickname||member.user.tag}\`: <@!${member.id}>${nicks ? '\n**IGNS** • ' + nicks: ''}`)
                     .addFields(
                         { name: 'Highest Role', value: `<@&${member.roles.highest.id}>`, inline: true }, 
                         { name: 'Suspended', value: `❌`, inline: true }, 
