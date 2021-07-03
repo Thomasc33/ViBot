@@ -42,7 +42,8 @@ module.exports = {
             if (message.author.avatarURL()) embed.author.iconURL = message.author.avatarURL()
 
             let m = await textChannel.send(`${runType.pingRole ? '<@&' + settings.roles[runType.pingRole] + '> ' : ''}@here`, embed)
-
+            if (runType.headcountEmote)
+                m.react(runType.headcountEmote)
             await m.react(runType.keyEmoteID)
             if (runType.vialReact) await m.react(botSettings.emoteIDs.Vial)
             for (let i of runType.earlyLocationReacts) await m.react(i.emoteID)

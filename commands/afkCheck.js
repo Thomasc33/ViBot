@@ -790,6 +790,7 @@ class afkCheck {
                 else historyEmbed.fields[4].value == 'None!' ? historyEmbed.fields[4].value = `<@!${m}>` : historyEmbed.fields[4].value += `, <@!${m}>`
             }
         })
+        historyEmbed.setFooter(`${this.channel.id} • ${this.raidStatusMessage.id} • ${this.leaderEmbedMessage.id} • ${raiders.length} Raiders`)
         this.message.guild.channels.cache.get(this.settings.channels.history).send(historyEmbed)
         this.message.guild.channels.cache.get(this.settings.channels.runlogs).send(historyEmbed)
 
