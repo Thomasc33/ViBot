@@ -32,8 +32,6 @@ module.exports = {
         if (old)
             this.oldSends = this.oldSends.filter(s => s.id != message.author.id);
 
-        let timer = 120;
-
         const eventMsg = await events.send(dm);
         const eventsLink = eventMsg.url;
 
@@ -41,12 +39,10 @@ module.exports = {
         const panel_embed = new Discord.MessageEmbed()
             .setAuthor("Select keys to pop")
             .setColor("#3498db")
-            .setDescription("Select up to 5 key types and how many of each to add. If you put the wrong amount, simply reselect the key type and use the new amount, or 0 to remove it.\n\nSelect from the following:\n🔑 - add a new type of key\n⏱️ - set amount of time before notification expires\n✅ - to send the notification\n❌ - to cancel.\n\nIf you submit, you will not be able to submit more for another 30 minutes.");
+            .setDescription("Select up to 5 key types and how many of each to add. If you put the wrong amount, simply reselect the key type and use the new amount, or 0 to remove it.\n\nSelect from the following:\n🔑 - add a new type of key\n✅ - to send the notification\n❌ - to cancel.\n\nIf you submit, you will not be able to submit more for another 30 minutes.");
 
-        panel_embed.addField(`Notification Expires`, `${timer} minutes`)
         const panel = await dm.send(panel_embed);
         await panel.react('🔑');
-        await panel.react('⏱️');
         await panel.react('✅');
         await panel.react('❌');
 
@@ -54,9 +50,8 @@ module.exports = {
 
         panel.collector = panel.createReactionCollector((r, u) => !u.bot, { idle: 2 * MINUTE });
         let request = null;
-        let success = false;
         panel.collector.on('end', reason => {
-            if (!success)
+            if (reason != "Manual")
             {
                 this.activePanels = this.activePanels.filter(id => id != message.author.id);
                 panel_embed.setAuthor(`Panel Timed Out`)
@@ -72,7 +67,6 @@ module.exports = {
                 return;
             switch (reaction.emoji.name) {
             case '❌':
-                success = true;
                 panel.collector.stop("Manual");
                 this.activePanels = this.activePanels.filter(id => id != message.author.id);
                 panel_embed.setAuthor(`Cancelled Notifications`)
@@ -83,22 +77,18 @@ module.exports = {
                 panel.edit(panel_embed);
                 return;
             case '✅':
-                success = true;
                 panel.collector.stop("Manual");
                 this.activePanels = this.activePanels.filter(id => id != message.author.id);
                 if (!keys.length) 
                     return dm.send("You did not select any keys.");
 
-                const date = new Date();
-                date.setMinutes(date.getMinutes() + timer);
                 for (const key of keys)
                 {
                     bot.channels.cache.get(bot.settings[message.guild.id].channels.keyalerts)
                         .send(new Discord.MessageEmbed()
                             .setAuthor(`${message.member.nickname || message.author.tag} has ${key.event.name} Keys`, message.author.displayAvatarURL())
                             .setDescription(`<${key.event.keyEmote}> ${message.member} has \`${key.count}\` ${key.event.name} keys.`)
-                            .setFooter(`${message.author.id} ${key.name} • Offer Expires At`)
-                            .setTimestamp(date)
+                            .setTimestamp()
                             .setThumbnail(bot.emojis.cache.get(key.event.portalEmojiId).url)
                             .setColor(key.event.color));
                 }
@@ -108,19 +98,6 @@ module.exports = {
                            .setTimestamp()
                            .setColor("#00ff00");
                 return panel.edit(panel_embed);
-            case '⏱️':
-                const timer_embed = new Discord.MessageEmbed()
-                    .setAuthor("Select Expiration Time")
-                    .setDescription(`Input an amount of minutes the timer should expire at. The current time is set to ${timer} minutes.`)
-                    .setColor(panel_embed.color);
-                    request = await dm.send(timer_embed);
-                    timer = await dm.nextInt(i => i >= 5, "Please use a time of at least 5 minutes.");
-                    panel.collector.resetTimer();
-                    panel_embed.fields[0].value = `${timer} minutes`;
-                    request.delete();
-                    request = null;
-                    panel.edit(panel_embed);
-                    return;
             case '🔑':
                 const embed = new Discord.MessageEmbed()
                     .setAuthor("Select a Dungeon")
@@ -187,7 +164,6 @@ module.exports = {
                         return dm.send(`You already have 5 dungeons listed. Please remove some by setting key count for them to 0 before adding more.`);
 
                     const fields = [];
-                    fields.push({ name: 'Notification Expires', value: `${timer} minutes`});
                     if (reply.count == 0)
                         keys = keys.filter(k => k.name != reply.name);
                     else if (keys.find(k => k.name == reply.name))
