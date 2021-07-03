@@ -40,8 +40,8 @@ module.exports = {
                 .setColor(runType.embed.color)
                 .setTimestamp()
             if (message.author.avatarURL()) embed.author.iconURL = message.author.avatarURL()
-
-            let m = await textChannel.send(`${runType.pingRole ? '<@&' + settings.roles[runType.pingRole] + '> ' : ''}@here`, embed)
+            const pingRole = runType.pingRole || runType.rolePing;
+            let m = await textChannel.send(`${pingRole ? '<@&' + settings.roles[pingRole] + '> ' : ''}@here`, embed)
             if (runType.headcountEmote)
                 m.react(runType.headcountEmote)
             await m.react(runType.keyEmoteID)
