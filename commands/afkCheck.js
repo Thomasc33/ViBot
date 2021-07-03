@@ -637,11 +637,15 @@ class afkCheck {
         if (!this.mainEmbed) return;
         this.mainEmbed.setFooter(`Time Remaining: ${Math.floor(this.time / 60)} minutes and ${this.time % 60} seconds`);
         this.raidStatusMessage.edit(this.mainEmbed)
+        if (!this.bot.afkChecks[this.channel.id])
+            return clearInterval(this.timerInterval);
         this.bot.afkChecks[this.channel.id].timeLeft = this.time;
         this.bot.afkChecks[this.channel.id].vcSize = this.channel.members.size;
     }
 
     async updateVCNumber() {
+        if (!this.bot.afkChecks[this.channel.id])
+            return clearInterval(this.updateVC);
         this.bot.afkChecks[this.channel.id].vcSize = this.channel.members.size;
     }
 
