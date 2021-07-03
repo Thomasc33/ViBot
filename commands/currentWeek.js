@@ -121,7 +121,11 @@ module.exports = {
                             else editMessages()
                         } else gatherMessages()
                         async function resendMessages() {
-                            await channel.bulkDelete(20)
+                            try {
+                                await channel.bulkDelete(20)
+                            } catch (e) {
+                                await channel.messages.fetch().then(messages => messages.each(m => m.delete()))
+                            }
                             if (CachedMessages[channel.guild.id]) CachedMessages[channel.guild.id] = []
                             for (let i in embeds) {
                                 let m = await channel.send(embeds[i])

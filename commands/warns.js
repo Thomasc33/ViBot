@@ -4,7 +4,7 @@ const ErrorLogger = require('../lib/logError')
 module.exports = {
     name: 'warns',
     description: 'Displays all warns for a user',
-    role: 'almostrl',
+    role: 'eventrl',
     requiredArgs: 1,
     args: '<user>',
     async execute(message, args, bot, db) {
