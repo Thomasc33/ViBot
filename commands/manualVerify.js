@@ -6,7 +6,7 @@ module.exports = {
     alias: ['mv'],
     requiredArgs: 2,
     args: '<id/mention> <ign>',
-    async execute(message, args, bot) {
+    async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         const suspendedRole = message.guild.roles.cache.get(settings.roles.permasuspended)
         const sbvRole = message.guild.roles.cache.get(settings.roles.tempsuspended)
@@ -36,6 +36,39 @@ module.exports = {
         message.guild.channels.cache.get(settings.channels.modlogs).send(embed);
         let confirmEmbed = new Discord.MessageEmbed().setDescription(`${member} has been given ${raiderRole}`)
         message.channel.send(confirmEmbed)
+    
         member.user.send(`You have been verified on \`${message.guild.name}\`. Please head over to rules, faq, and raiding-rules channels to familiarize yourself with the server. Happy raiding`)
+
+        db.query(`SELECT * FROM veriblacklist WHERE id = '${member.id}' OR id = '${nick}'`, async (err, rows) => {
+            if (!rows || !rows.length)
+                return;
+            
+            const expelEmbed = new Discord.MessageEmbed()
+                .setTitle('Automatic Expel Removal')
+                .setDescription(`The follow expels have been removed from the database tied to ${member}. If these should stick, please react with ❌ in the next 10 seconds.`)
+                .setColor('#E0B0FF');
+
+            for (const row of rows) {
+                expelEmbed.addField(`${row.id}`, `Expelled by <@${row.modid}> in ${bot.guilds.cache.get(row.guildid).name}:\`\`\`${row.reason}\`\`\``);
+            }
+
+            const expelMessage = await message.channel.send(expelEmbed);
+            expelMessage.react('❌');
+            expelMessage.collector = expelMessage.createReactionCollector((r, u) => u.id == message.author.id && r.emoji.name == '❌', { time: 10000 });
+            expelMessage.collector.on('collect', (r, u) => {
+                expelMessage.collector.stop();
+            })
+            expelMessage.collector.on('end', (collected) => {
+                if (!collected.size) {
+                    expelEmbed.setDescription(`The follow expels have been removed from the database tied to ${member}.`);
+                    db.query(`DELETE FROM veriblacklist WHERE id = '${member.id}' OR id = '${nick}'`);
+                    expelMessage.reactions.removeAll();
+                    expelMessage.react('✅');
+                } else {
+                    expelEmbed.setDescription(`The following expels for ${member} have not been removed.`);
+                }
+                expelMessage.edit(expelEmbed);
+            })
+        })
     }
 }
