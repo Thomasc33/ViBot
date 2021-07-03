@@ -13,6 +13,7 @@
                 "main": "voidsLead",
                 "currentweek": "currentweekVoid",
                 "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/701491230210523247.png?v=1",
                 "desc": "`Void` Run",
                 "toUpdate": 1,
                 "toDisplay": [
@@ -34,6 +35,7 @@
                 "main": "cultsLead",
                 "currentweek": "currentweekCult",
                 "color": "#ff0000",
+                "icon": "https://cdn.discordapp.com/emojis/701491230332157972.png?v=1",
                 "desc": "`Cult` Run",
                 "toUpdate": 1,
                 "toDisplay": [
@@ -55,6 +57,7 @@
                 "main": "feedback",
                 "currentweek": "currentweekFeedback",
                 "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/858920770806087710.png?v=1",
                 "desc": "`Feedback`",
                 "toUpdate": 1,
                 "toDisplay": [
@@ -77,6 +80,7 @@
                 "main": "eventsLead",
                 "currentweek": "currentweekEvents",
                 "color": "#00FF00",
+                "icon": "https://cdn.discordapp.com/emojis/831052176507535360.png?v=1",
                 "desc": "`Event` run",
                 "toUpdate": 2,
                 "toDisplay": [
@@ -103,6 +107,7 @@
                 "main": "voidsLead",
                 "currentweek": "currentweekVoid",
                 "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/701491230210523247.png?v=1",
                 "desc": "`Void` Run",
                 "toUpdate": 1,
                 "toDisplay": [
@@ -124,6 +129,7 @@
                 "main": "cultsLead",
                 "currentweek": "currentweekCult",
                 "color": "#ff0000",
+                "icon": "https://cdn.discordapp.com/emojis/701491230332157972.png?v=1",
                 "desc": "`Cult` Run",
                 "toUpdate": 1,
                 "toDisplay": [
@@ -145,6 +151,7 @@
                 "main": "feedback",
                 "currentweek": "currentweekFeedback",
                 "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/858920770806087710.png?v=1",
                 "desc": "`Feedback`",
                 "toUpdate": 1,
                 "toDisplay": [
@@ -167,6 +174,7 @@
                 "main": "eventsLead",
                 "currentweek": "currentweekEvents",
                 "color": "#00FF00",
+                "icon": "https://cdn.discordapp.com/emojis/831052176507535360.png?v=1",
                 "desc": "`Event` run",
                 "toUpdate": 2,
                 "toDisplay": [
@@ -193,6 +201,7 @@
                 "main": "o3leads",
                 "currentweek": "currentweeko3",
                 "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/831047591096745984.png?v=1",
                 "desc": "`Oryx` Run",
                 "toUpdate": 1,
                 "toDisplay": [
@@ -212,6 +221,7 @@
                 "main": "o3parses",
                 "currentweek": "o3currentweekparses",
                 "color": "#8c00ff",
+                "icon": null,
                 "desc": "`Parse`",
                 "toUpdate": 3,
                 "toDisplay": [
@@ -230,6 +240,7 @@
                 "main": "eventsLead",
                 "currentweek": "currentweekEvents",
                 "color": "#00FF00",
+                "icon": "https://cdn.discordapp.com/emojis/831052176507535360.png?v=1",
                 "desc": "`Event` run",
                 "toUpdate": 2,
                 "toDisplay": [
@@ -248,6 +259,7 @@
                 "main": "o3feedback",
                 "currentweek": "currentweeko3Feedback",
                 "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/858920770806087710.png?v=1",
                 "desc": "`Feedback`",
                 "toUpdate": 1,
                 "toDisplay": [
@@ -278,6 +290,7 @@
                 "main": "successruns",
                 "currentweek": "currentweek",
                 "color": "#308a00",
+                "icon": "https://cdn.discordapp.com/emojis/849406533435523093.png?v=1",
                 "desc": "`Successful` Run",
                 "toUpdate": 1,
                 "toDisplay": [
@@ -298,6 +311,7 @@
                 "main": "failruns",
                 "currentweek": "currentweekfailed",
                 "color": "#ff0000",
+                "icon": "https://cdn.discordapp.com/emojis/849406533435523093.png?v=1",
                 "desc": "`Failed` Run",
                 "toUpdate": 1,
                 "toDisplay": [
@@ -318,6 +332,7 @@
                 "main": "eventslead",
                 "currentweek": "currentweekEvents",
                 "color": "#00FF00",
+                "icon": "https://cdn.discordapp.com/emojis/858920770806087710.png?v=1",
                 "desc": "`Event` run",
                 "toUpdate": 2,
                 "toDisplay": [
