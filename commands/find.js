@@ -26,11 +26,11 @@ module.exports = {
                 expelled.push(member.user.id);
                 expelled.push(...(member.nickname || '').replace(/[^a-z|]/gi, '').split('|'));
 
-                const nicks = member.nickname ? member.nickname.replace(/[^a-z|]/,'').split('|').map(n => `[**${n.trim()}**](https://www.realmeye.com/player/${n.trim()})`).join(' • ') : null;
+                const nicks = member.nickname ? member.nickname.replace(/[^a-z|]/gi,'').split('|').map(n => `[${n.trim()}](https://www.realmeye.com/player/${n.trim()})`).join(' • ') : null;
 
                 var embed = new Discord.MessageEmbed()
                     .setColor('#00ff00')
-                    .setDescription(`Search \`${u}\` matched \`${member.nickname||member.user.tag}\`: <@!${member.id}>${nicks ? '\n**IGNS** • ' + nicks: ''}`)
+                    .setDescription(`Search \`${u}\` matched \`${member.nickname||member.user.tag}\`: <@!${member.id}>${nicks ? '\n**IGNS • ' + nicks + '**': ''}`)
                     .addFields(
                         { name: 'Highest Role', value: `<@&${member.roles.highest.id}>`, inline: true }, 
                         { name: 'Suspended', value: `❌`, inline: true }, 
