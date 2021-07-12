@@ -510,14 +510,16 @@ class afkCheck {
         if (this.nitro.length + 1 > this.settings.numerical.nitrocount) return reactor.send('Too many Nitro Boosters have already received location for this run. Try again in the next run!');
         if (reactor.roles.cache.has(this.nitroBooster.id)) {
             if (reactor.voice.channel && reactor.voice.channel.id == this.channel.id) {
-                reactor.send('Nitro has changed and only gives garunteed spot in VC. You are already in the VC so this use hasn\'t been counted').catch(er => this.commandChannel.send(`<@!${u.id}> tried to react with <${botSettings.emote.shard}> but their DMs are private`))
+                reactor.send(`Nitro benefits in \`${this.message.guild.name}\` only gives garunteed spot in VC. You are already in the VC so this use hasn\'t been counted`).catch(er => this.commandChannel.send(`<@!${u.id}> tried to react with <${botSettings.emote.shard}> but their DMs are private`))
             } else {
                 await this.db.query(`SELECT * FROM users WHERE id = '${u.id}'`, async (err, rows) => {
                     if (err) ErrorLogger.log(err, bot)
                     if (rows.length == 0) return await this.db.query(`INSERT INTO users (id) VALUES('${u.id}')`)
                     if (Date.now() - this.settings.numerical.nitrocooldown > parseInt(rows[0].lastnitrouse)) {
-                        //reactor.send(`The location for this run has been set to \`${this.afkInfo.location}\``);
-                        //this.earlyLocation.push(u);
+                        if (this.settings.backend.nitroearlylocation) {
+                            reactor.send(`The location for this run has been set to \`${this.afkInfo.location}\``);
+                            this.earlyLocation.push(u);
+                        }
                         reactor.voice.setChannel(this.channel.id).catch(er => { reactor.send('Please join a voice channel and you will be moved in automatically') })
                         this.nitro.push(u)
                         if (this.leaderEmbed.fields[index].value == `None!`) this.leaderEmbed.fields[index].value = `<@!${u.id}> `;
@@ -531,7 +533,7 @@ class afkCheck {
                         })
                     } else {
                         let lastUse = Math.round((Date.now() - rows[0].lastnitrouse) / 60000)
-                        reactor.send(`Nitro perks have been limited to once an hour. Your last use was \`${lastUse}\` minutes ago`).catch(er => this.commandChannel.send(`<@!${u.id}> tried to react with <${botSettings.emote.shard}> but their DMs are private`))
+                        reactor.send(`Nitro perks are limited to once an hour. Your last use was \`${lastUse}\` minutes ago`).catch(er => this.commandChannel.send(`<@!${u.id}> tried to react with <${botSettings.emote.shard}> but their DMs are private`))
                     }
                 })
             }
