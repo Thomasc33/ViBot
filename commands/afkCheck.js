@@ -327,7 +327,7 @@ class afkCheck {
      */
     async reactionHandler(r, u) {
         if (r.emoji.id == this.afkInfo.keyEmoteID) {
-            r.users.remove(u.id)
+            if (this.settings.backend.removekeyreacts) r.users.remove(u.id)
             this.confirmSelection(u, r, 0, 'key', this.afkInfo.keyCount)
         }
         else if (this.afkInfo.vialReact && r.emoji.id == this.afkInfo.vialEmoteID) this.confirmSelection(u, r, 1, 'vial', 3)
@@ -903,7 +903,9 @@ class afkCheck {
 
         await this.channel.updateOverwrite(this.verifiedRaiderRole.id, { CONNECT: false, VIEW_CHANNEL: false })
         if (this.eventBoi) await this.channel.updateOverwrite(this.eventBoi.id, { CONNECT: false, VIEW_CHANNEL: false })
-        setTimeout(() => this.channel.setPosition(this.channel.parent.children.filter(c => c.type == 'voice').size - 1), 1000)
+        if (this.afkInfo.newChannel && !this.isVet) {
+            this.channel.setPosition(this.afkChannel.position)
+        }
 
         this.mainEmbed.setDescription(`This afk check has been aborted`)
             .setFooter(`The afk check has been aborted by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
