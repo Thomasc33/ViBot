@@ -264,14 +264,13 @@ bot.on("ready", async () => {
             const settings = bot.settings[g.id];
             if (!settings || !settings.commands.hostkey || !settings.channels.keyalerts || !settings.numerical.keyalertsage)
                 return;
-            
+
             const channel = bot.channels.cache.get(settings.channels.keyalerts);
             channel.messages.fetch()
                 .then(messages => {
                     bulk = [];
 
-                    messages.each(message => 
-                    {  
+                    messages.each(message => {
                         if (new Date() - message.createdAt > 60000 * settings.numerical.keyalertsage)
                             bulk.push(message);
                     })
@@ -572,7 +571,7 @@ async function dmHandler(message) {
             .setFooter(`User ID: ${message.author.id}`)
             .setTimestamp()
         if (message.author.avatarURL()) logEmbed.author.iconURL = message.author.avatarURL()
-        guild.channels.cache.get(bot.settings[guild.id].channels.dmcommands).send(logEmbed)
+        guild.channels.cache.get(bot.settings[guild.id].channels.dmcommands).send(logEmbed).catch(er => { ErrorLogger.log(new Error(`Unable to find/send in settings.channels.dmcommands channel for ${guild.id}`), bot) })
     }
 }
 
