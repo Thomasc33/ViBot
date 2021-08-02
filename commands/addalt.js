@@ -13,10 +13,11 @@ module.exports = {
         var member = message.mentions.members.first()
         if (!member) member = message.guild.members.cache.get(args.shift());
         else { args.shift() }
+        if(!member) return message.channel.send('User not found in the server')
         const altName = args.shift();
         let dupeName = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(altName.toLowerCase()));
         if (dupeName) return message.channel.send(`${dupeName} already has the name ${altName}`)
-        let image = message.attachments.first().proxyURL
+        let image = message.attachments.first() ? message.attachments.first().proxyURL : null
         if (!image) image = args[2]
         if (!image) return message.channel.send(`Please provide an image`)
         if (!validURL(image)) return message.channel.send(`Error attaching the image. Please try again`)

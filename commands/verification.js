@@ -164,14 +164,13 @@ module.exports = {
                     LoggingEmbed.addField('Server', blGuild ? blGuild.name : 'Unknown', true);
                     LoggingEmbed.addField('Security', `<@!${info.modid}>`, true);
 
+                    if (!blGuild)
+                        embed.setDescription(`You are currently blacklisted from verifying. Please DM me to contact mod-mail and find out why`);
                     const staff = blGuild.members.cache.get(info.modid);
                     const blgsettings = bot.settings[blGuild.id];
                     const currently = blgsettings && staff && staff.roles.highest.comparePositionTo(blgsettings.roles.security) >= 0;
-                    if (blGuild.id != guild.id) {
+                    if (blGuild.id != guild.id)
                         LoggingEmbed.addField(`Staff?`, currently ? '✅' : '❌', true);
-                    }
-                    if (!blGuild)
-                        embed.setDescription(`You are currently blacklisted from verifying. Please DM me to contact mod-mail and find out why`);
                     else if (!currently)
                         embed.setDescription(`You are currently blacklisted from the __${blGuild.name}__ server and cannot verify. The person who blacklisted you is no longer staff. Please DM me and send mod-mail to that server to appeal.`);
                     else

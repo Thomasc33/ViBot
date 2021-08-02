@@ -93,7 +93,7 @@ module.exports = {
             }
         }
         if (dungeon.realmeyestring) {
-            let graveyard = await realmEyeScrape.getGraveyardSummary(ign)
+            let graveyard = await realmEyeScrape.getGraveyardSummary(ign).catch(er => null)
             for (let i in graveyard.achievements) {
                 let achievement = graveyard.achievements[i]
                 if (dungeon.realmeyestring.includes(achievement.type)) {

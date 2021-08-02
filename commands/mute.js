@@ -25,6 +25,7 @@ module.exports = {
         }
         let time = parseInt(args.shift())
         let timeType = args.shift()
+        if (!timeType) return message.channel.send("Please enter a valid time type __**d**__ay, __**m**__inute, __**h**__our, __**s**__econd, __**w**__eek, __**y**__ear");
         let reason = args.join(' ');
         switch (timeType.charAt(0).toLowerCase()) {
             case 'd':
@@ -46,13 +47,12 @@ module.exports = {
                 time *= 3600000;
                 break;
             default:
-                message.channel.send("Please enter a valid time type __**d**__ay, __**m**__inute, __**h**__our, __**s**__econd, __**w**__eek, __**y**__ear");
-                return;
+                return message.channel.send("Please enter a valid time type __**d**__ay, __**m**__inute, __**h**__our, __**s**__econd, __**w**__eek, __**y**__ear");
         }
         db.query(`INSERT INTO mutes (id, guildid, muted, reason, modid, uTime) VALUES ('${member.id}', '${message.guild.id}', true, '${reason || 'None Provided'}','${message.author.id}', '${Date.now() + time}')`, err => {
             member.roles.add(muted).catch(er => ErrorLogger.log(er, bot))
             message.channel.send(`${member} has been muted`)
-            member.user.send(`You have been muted on \`${message.guild.name}\` by <@!${message.author.id}> \`${message.author.tag}\`${ reason ? ': ' + reason : 'No reason provided'}.`);
+            member.user.send(`You have been muted on \`${message.guild.name}\` by <@!${message.author.id}> \`${message.author.tag}\`${reason ? ': ' + reason : 'No reason provided'}.`);
         })
     }
 }

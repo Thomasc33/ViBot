@@ -49,7 +49,7 @@ module.exports = {
                 .setColor('#E0B0FF');
 
             for (const row of rows) {
-                expelEmbed.addField(`${row.id}`, `Expelled by <@${row.modid}> in ${bot.guilds.cache.get(row.guildid).name}:\`\`\`${row.reason}\`\`\``);
+                expelEmbed.addField(`${row.id}`, `Expelled by <@${row.modid}> in ${bot.guilds.cache.get(row.guildid).name || row.guildid}:\`\`\`${row.reason}\`\`\``);
             }
 
             const expelMessage = await message.channel.send(expelEmbed);

@@ -270,7 +270,7 @@ class afkCheck {
     async start() {
         //create/send leader embed
         this.leaderEmbed = new Discord.MessageEmbed()
-            .setColor(this.afkInfo.embed.color)
+            .setColor(this.afkInfo.embed.color || "#fefefe")
             .setTitle(`${this.message.member.nickname}'s ${this.afkInfo.runName}`)
             .addField('Our current keys', 'None!')
             .setFooter(`React with ❌ to abort${this.afkInfo.twoPhase ? ', React with ✅ to open the channel' : ''}`)
@@ -299,7 +299,8 @@ class afkCheck {
         if (this.afkInfo.embed.thumbnail && !this.afkInfo.embed.removeThumbnail) this.mainEmbed.setThumbnail(this.afkInfo.embed.thumbnail)
         this.mainEmbed.description = this.mainEmbed.description.replace('{voicechannel}', `${this.channel}`)
         this.raidStatusMessage.edit(this.mainEmbed)
-        this.bot.afkChecks[this.channel.id].url = this.raidStatusMessage.url
+        if (this.bot.afkChecks[this.channel.id])
+            this.bot.afkChecks[this.channel.id].url = this.raidStatusMessage.url
 
         //unlock channel
         if (!this.afkInfo.twoPhase) {
