@@ -22,8 +22,8 @@ module.exports = {
             case 'create':
                 //get channel parent
                 let isVet = false;
-                if (message.channel.parent.name.toLowerCase() == 'veteran raiding') isVet = true;
-                else if (message.channel.parent.name.toLowerCase() == 'events') isVet = false;
+                if (message.channel.parent.name.toLowerCase() == settings.categories.veteran) isVet = true;
+                else if (message.channel.parent.name.toLowerCase() == settings.categories.event) isVet = false;
                 else return message.channel.send('Channel category is invalid')
 
                 //channel name
@@ -170,6 +170,9 @@ module.exports = {
                     bot.afkChecks[channel.channelID].runType.runType = name;
                     bot.afkChecks[channel.channelID].runType.runName = name;
                     fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot) })
+
+                    //change messages
+                    
                 }
                 rename()
                 break;
