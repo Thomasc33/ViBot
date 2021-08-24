@@ -24,6 +24,13 @@
             "dbName": null,
             "minimumRole": null,
             "prefix": null
+        },
+        {
+            "roleName": "rusher",
+            "roleId": "879728642740076595",
+            "dbName": null,
+            "minimumRole": null,
+            "prefix": null
         }
     ],
     "451171819672698920": [
