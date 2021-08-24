@@ -289,7 +289,7 @@ module.exports = {
 
         let parsePromises = []
         parsePromises.push(crasherParse())
-        parsePromises.push(characterParse())
+		if (settings.backend.characterparse) parsePromises.push(characterParse())
 
 
         await Promise.all(parsePromises)

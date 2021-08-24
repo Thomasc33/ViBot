@@ -43,8 +43,8 @@ module.exports = {
                     let minRole = message.guild.roles.cache.get(settings.roles[i.minimumRole])
                     if (minRole && message.member.roles.highest.position < minRole.position) return message.channel.send(`The minimum role to commend this role is \`${minRole.name}\``)
                 }
-                let role = message.guild.roles.cache.get(settings.roles[i.roleName])
-                if (!role) return message.channel.send(`\`${i.roleName}\` not found in setup`)
+                let role = message.guild.roles.cache.get(i.roleId)
+                if (!role) return message.channel.send(`\`${i.roleId}\` not found`)
                 if (member.roles.cache.has(role.id)) return message.channel.send(`${member} already has \`${role.name}\``)
                 let modlog = message.guild.channels.cache.get(settings.channels.modlogs)
                 if (modlog) await modlog.send(new Discord.MessageEmbed()
