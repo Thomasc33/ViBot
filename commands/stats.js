@@ -187,7 +187,7 @@ function getFields(row, schema) {
                 `<:epicMysteryKey:831051424187940874> ${parseInt(row.eventslead) * 10} Minutes\n` +
                 `🤝 ${row.assists} Assists\n` + 
                 `<:forgottenKing:849406533435523093> ${row.oldsuccessruns} *Legacy*\n` + 
-				`🤝 ${row.oldassists} *Legacy* Assists`,
+				`🤝 ${row.oldassists} *Legacy Assists*`,
             inline: true
         }
     ]

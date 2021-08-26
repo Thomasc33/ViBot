@@ -116,8 +116,7 @@
         {
             "index": 3,
             "dbNames": [
-                "successruns",
-                "failruns"
+                "successruns"
             ],
             "name": "Total Runs Lead"
         },
