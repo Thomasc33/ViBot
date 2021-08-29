@@ -91,8 +91,10 @@ module.exports = {
                                 }
                                 sendQuery()
                             })
+                            return;
                         }
                     }
+                    sendQuery()
                 } else {
                     sendQuery()
                 }
