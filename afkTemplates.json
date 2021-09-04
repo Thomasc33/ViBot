@@ -17,7 +17,7 @@
             "postAfkCheck": false,
             "twoPhase": true,
             "startDelay": 10000,
-            "vcCap": 50,
+            "vcCap": 45,
             "timeLimit": 360,
             "keyCount": 1,
             "earlyLocationCost": 20,
@@ -459,32 +459,18 @@
             "earlyLocationCost": 20,
             "earlyLocationReacts": [
                 {
-                    "emoteID": "723018852862001152",
-                    "pointsGiven": 2,
-                    "limit": 1,
-                    "shortName": "1st rusher",
-                    "requiredRole": "rusher"
-                },
-                {
-                    "emoteID": "723018852853612614",
-                    "pointsGiven": 2,
-                    "limit": 1,
-                    "shortName": "2nd rusher",
-                    "requiredRole": "rusher"
-                },
-                {
-                    "emoteID": "723018431275859969",
-                    "pointsGiven": 2,
-                    "limit": 2,
-                    "shortName": "mystic",
-                    "requiredRole": "mystic"
-                },
-                {
-                    "emoteID": "723018431275728918",
+                    "emoteID": "883780914134540328",
                     "pointsGiven": 2,
                     "limit": 3,
-                    "shortName": "trickster",
-                    "requiredRole": "trickster"
+                    "shortName": "Switch Rusher",
+                    "requiredRole": "rusher"
+                },
+                {
+                    "emoteID": "720404621331267697",
+                    "pointsGiven": 2,
+                    "limit": 3,
+                    "shortName": "Fungal Tome",
+                    "requiredRole": "priest"
                 }
             ],
             "reacts": [
@@ -492,9 +478,7 @@
                 "723018431489900595",
                 "723018431296831539",
                 "723018431598952498",
-                "723018431531581470",
                 "720401067300356196",
-                "720404621331267697",
                 "720401153140981890"
             ],
             "embed": {
@@ -528,41 +512,26 @@
             "earlyLocationCost": 20,
             "earlyLocationReacts": [
                 {
-                    "emoteID": "723018852862001152",
-                    "pointsGiven": 2,
-                    "limit": 1,
-                    "shortName": "1st rusher",
-                    "requiredRole": "rusher"
-                },
-                {
-                    "emoteID": "723018852853612614",
-                    "pointsGiven": 2,
-                    "limit": 1,
-                    "shortName": "2nd rusher",
-                    "requiredRole": "rusher"
-                },
-                {
-                    "emoteID": "723018431275859969",
-                    "pointsGiven": 2,
-                    "limit": 2,
-                    "shortName": "mystic",
-                    "requiredRole": "mystic"
-                },
-                {
-                    "emoteID": "723018431275728918",
+                    "emoteID": "883780914134540328",
                     "pointsGiven": 2,
                     "limit": 3,
-                    "shortName": "trickster",
-                    "requiredRole": "trickster"
+                    "shortName": "Switch Rusher",
+                    "requiredRole": "rusher"
+                },
+                {
+                    "emoteID": "720404621331267697",
+                    "pointsGiven": 2,
+                    "limit": 3,
+                    "shortName": "Fungal Tome",
+                    "requiredRole": "priest"
                 }
             ],
             "reacts": [
+                "723018852929372270",
                 "723018431489900595",
                 "723018431296831539",
                 "723018431598952498",
-                "723018431531581470",
                 "720401067300356196",
-                "720404621331267697",
                 "720401153140981890"
             ],
             "embed": {
