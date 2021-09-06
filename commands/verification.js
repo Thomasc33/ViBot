@@ -365,7 +365,10 @@ module.exports = {
                 }
             } else nick = ign
             await member.setNickname(nick)
-            setTimeout(() => { member.roles.add(settings.roles.raider) }, 1000)
+            setTimeout(async () => {
+                        await member.roles.add(settings.roles.raider)
+                        if (settings.backend.giveeventroleonverification) member.roles.add(settings.roles.eventraider)
+                    }, 1000)
             db.query(`INSERT INTO users (id) VALUES ('${u.id}')`, err => {
                 if (err) return
             })
@@ -453,7 +456,10 @@ module.exports = {
                     } else nick = ign
                     await member.setNickname(nick)
                     //give verified raider role
-                    setTimeout(() => { member.roles.add(settings.roles.raider) }, 1000)
+                    setTimeout(async () => {
+                        await member.roles.add(settings.roles.raider)
+                        if (settings.backend.giveeventroleonverification) member.roles.add(settings.roles.eventraider)
+                    }, 1000)
                     //dm user
                     member.user.send(`You have been successfully verified in \`${message.guild.name}\`. Welcome! AFK-Checks work a little big different here, so make sure to read through the FAQ to learn more.${settings.backend.roleassignment ? ` To get pinged for specific afk checks, head over to <#${settings.channels.roleassignment}>` : null}`)
                     //remove from watching embed
