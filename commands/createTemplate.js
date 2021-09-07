@@ -142,13 +142,13 @@ class AfkTemplate {
         if (this.dmMessage)
             return this.dmMessage;
 
-        return this.dmMessage = this.channel.then(c => c.send(this.embed));
+        return this.dmMessage = this.channel.then(c => c.send({ embeds: [this.embed] }));
     }
     async updateDM(description) {
         this.embed.fields = this.fields;
         if (description)
             this.embed.setDescription(description);
-        await this.dm.then(d => d.edit(this.embed));
+        await this.dm.then(d => d.edit({ embeds: [this.embed] }));
     }
     async updateReacts(description) {
         if (description)
@@ -172,13 +172,13 @@ class AfkTemplate {
         });
 
         this.reactEmbed.fields = fields;
-        await this.rm.then(r => r.edit(this.reactEmbed));
+        await this.rm.then(r => r.edit({ embeds: [this.reactEmbed] }));
     }
     get rm() {
         if (this.reactMessage)
             return this.reactMessage;
 
-        return this.reactMessage = this.channel.then((c) => c.send(this.reactEmbed));
+        return this.reactMessage = this.channel.then((c) => c.send({ embeds: [this.reactEmbed] }));
     }
     async editRunType() {
         await this.updateDM('**VC Name**: What name do you want to give the VC? Type cancel to cancel');
@@ -195,7 +195,7 @@ class AfkTemplate {
                 .setDescription('React with the key this run should accept. React with :x: to cancel')
                 .setTitle('Key Selection')
                 .setColor('#dadada');
-            const keySelection = await this.channel.then((c) => c.send(embed));
+            const keySelection = await this.channel.then((c) => c.send({ embeds: [embed] }));
             const collector = keySelection.createReactionCollector((reaction, user) => { reaction.me && user.id == this.author.id }, { time: ext.MAX_WAIT });
             let resolved = false;
             collector.once('collect', (reaction, user) => {
@@ -237,7 +237,7 @@ class AfkTemplate {
         const embed = new Discord.MessageEmbed()
             .setDescription(`\`\`\`${unavailable.join(', ')}\`\`\``)
             .setAuthor('Unavailable symbols');
-        const msg = await (await this.channel).send(embed);
+        const msg = await (await this.channel).send({ embeds: [embed] });
         this.symbol = (await this.channel.then(c => c.next((message) => {
             return message.content &&
                 !/\s+/.test(message.content) &&
@@ -336,7 +336,7 @@ class AfkTemplate {
         const earlyReacts = (await this.rm.then(r => r.getReactionBatch(this.author.id))).slice(0, 23);
         for (const emoji of earlyReacts) {
             const reaction = { emoteID: emoji.id, pointsGiven: 0 };
-            await this.rm.then(r => r.edit(this.reactEmbed.setDescription(`${emoji}: **How many people should get early location?**`)));
+            await this.rm.then(r => r.edit({ embeds: [this.reactEmbed.setDescription(`${emoji}: **How many people should get early location?**`)] }));
             reaction.limit = await this.channel.then(c => c.nextInt(res => res > 0, 'Please enter a number equal to or greater than 1.', this.author.id));
 
             this.rm.then(r => r.edit(this.reactEmbed.setDescription(`${emoji}: **What is the short name of the react?** No space allowed.`)));
@@ -384,7 +384,7 @@ class AfkTemplate {
                 if (roleList.length)
                     rolesEmbed.addField('** **', `**${roleList.join('\r\n')}**`, true)
 
-                rolesMessage = await (await this.channel).send(rolesEmbed);
+                rolesMessage = await (await this.channel).send({ embeds: [rolesEmbed] });
                 const selection_idx = await this.channel.then(c => c.nextInt(res => res >= 0 && res <= selections.length, `Please enter a value between 0 and ${selections.length}. Enter 0 for no role.`, this.author.id));
                 rolesMessage.delete();
                 resolve(selection_idx == 0 ? null : selections[selection_idx - 1]);
@@ -502,8 +502,8 @@ module.exports = {
                             .setFooter(`UID: ${message.author.id} • ;afk ${afk_template.symbol} • Created at`)
                             .setTimestamp(new Date());
                         afk_template.reactEmbed.setColor("#00ff00");
-                        message.author.send(afk_template.embed).then(() => message.author.send(afk_template.reactEmbed))
-                        bot.channels.resolve(bot.settings[message.guild.id].channels.history).send(afk_template.embed).then(m => m.channel.send(afk_template.reactEmbed));
+                        message.author.send({ embeds: [afk_template.embed] }).then(() => message.author.send({ embeds: [afk_template.reactEmbed] }))
+                        bot.channels.resolve(bot.settings[message.guild.id].channels.history).send({ embeds: [afk_template.embed] }).then(m => m.channel.send({ embeds: [afk_template.reactEmbed] }));
                         break;
                     case '⚙️':
                         //await afk_template.edit();
@@ -526,14 +526,14 @@ module.exports = {
                 .setDescription(error.stack || error)
                 .setFooter(`UID: ${message.author.id} • Cancelled at`)
                 .setTimestamp(new Date());
-            message.author.send(afk_template.embed).then(async () => {
+            message.author.send({ embeds: [afk_template.embed] }).then(async () => {
                 if (afk_template.reactEmbed) {
                     const dm = await afk_template.dm.then(d => d);
                     afk_template.reactEmbed.setColor('#ff0000')
                         .setFooter(`TID: ${dm.id} • Cancelled at`)
                         .setTimestamp(new Date())
                         .setTitle('Raiding Template Cancelled');
-                    message.author.send(afk_template.reactEmbed);
+                    message.author.send({ embeds: [afk_template.reactEmbed] });
                 }
             })
         }

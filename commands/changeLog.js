@@ -1,10 +1,9 @@
 const Discord = require('discord.js')
-//const logTypes = ['keypops', 'eventpops', 'cultsLead', 'voidsLead', 'assists', 'solocult', 'vialStored', 'vialUsed', 'cultRuns', 'voidRuns', 'eventsLead', 'parses', 'o3parses', 'feedback', 'o3assists', 'o3runs', 'o3feedback']
 const db = require('../data/changelog.json')
 
 module.exports = {
     name: 'changelog',
-    role: 'headrl',
+    role: 'headeventrl',
     description: 'Changes logs',
     args: '<user> <add/remove/set> <log type> <#>',
     requiredArgs: 4,
@@ -55,10 +54,10 @@ module.exports = {
         let confirmEmbed = new Discord.MessageEmbed()
             .setTitle(`Confirm Action`)
             .setDescription(`${args[1]} ${count} ${logTypes[logIndex]} to ${member}`)
-        let confirmMessage = await message.channel.send(confirmEmbed)
+        let confirmMessage = await message.channel.send({ embeds: [confirmEmbed] })
         confirmMessage.react('✅')
         confirmMessage.react('❌')
-        let confirmReactionCollector = new Discord.ReactionCollector(confirmMessage, (r, u) => u.id == message.author.id)
+        let confirmReactionCollector = new Discord.ReactionCollector(confirmMessage, { filter: (r, u) => u.id == message.author.id })
         confirmReactionCollector.on('collect', async (r, u) => {
             if (r.emoji.name == '✅') {
                 confirmReactionCollector.stop()
@@ -69,10 +68,10 @@ module.exports = {
                             let currentWeekConfirmEmbed = new Discord.MessageEmbed()
                                 .setTitle('Confirm Action')
                                 .setDescription('Do you also want to add/remove this from currentweek?')
-                            let currentweekConfirmMessage = await message.channel.send(currentWeekConfirmEmbed)
+                            let currentweekConfirmMessage = await message.channel.send({ embeds: [currentWeekConfirmEmbed] })
                             currentweekConfirmMessage.react('✅')
                             currentweekConfirmMessage.react('❌')
-                            let currentweekConfirmCollector = new Discord.ReactionCollector(currentweekConfirmMessage, (r, u) => u.id == message.author.id)
+                            let currentweekConfirmCollector = new Discord.ReactionCollector(currentweekConfirmMessage, { filter: (r, u) => u.id == message.author.id })
                             currentweekConfirmCollector.on('collect', async (r, u) => {
                                 if (r.emoji.name == '✅') {
                                     currentweekConfirmMessage.delete()

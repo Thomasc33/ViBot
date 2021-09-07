@@ -27,8 +27,8 @@ module.exports = {
                     .setTitle('Confirm Action')
                     .setColor('#ff0000')
                     .setDescription(`I don't have any log of ${member} being muted. Are you sure you want to unmute them?`)
-                let confirmMessage = await message.channel.send(embed)
-                let reactionCollector = new Discord.ReactionCollector(confirmMessage, (r, u) => !u.bot && u.id == message.author.id && (r.emoji.name === '✅' || r.emoji.name === '❌'))
+                let confirmMessage = await message.channel.send({ embeds: [embed] })
+                let reactionCollector = new Discord.ReactionCollector(confirmMessage, { filter: (r, u) => !u.bot && u.id == message.author.id && (r.emoji.name === '✅' || r.emoji.name === '❌') })
                 reactionCollector.on('collect', async (r, u) => {
                     confirmMessage.delete()
                     if (r.emoji.name !== '✅') return;
@@ -44,8 +44,8 @@ module.exports = {
                     .setTitle('Confirm Action')
                     .setColor('#ff0000')
                     .setDescription(`Are you sure you want to unmute ${member}\nReason: ${reason}\nMuted by <@!${rows[0].modid}>\nMuted until: ${unmuteDate.toDateString()}`)
-                let confirmMessage = await message.channel.send(embed)
-                let reactionCollector = new Discord.ReactionCollector(confirmMessage, (r, u) => !u.bot && u.id == message.author.id && (r.emoji.name === '✅' || r.emoji.name === '❌'))
+                let confirmMessage = await message.channel.send({ embeds: [embed] })
+                let reactionCollector = new Discord.ReactionCollector(confirmMessage, { filter: (r, u) => !u.bot && u.id == message.author.id && (r.emoji.name === '✅' || r.emoji.name === '❌') })
                 await confirmMessage.react('✅')
                 await confirmMessage.react('❌')
                 reactionCollector.on('collect', async (r, u) => {

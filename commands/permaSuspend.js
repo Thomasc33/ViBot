@@ -76,7 +76,7 @@ module.exports = {
             if (overwrite) db.query(`UPDATE suspensions SET perma = true, uTime = '0', modid = '${message.member.id}' WHERE id = '${member.id}' AND suspended = true`)
             else db.query(`INSERT INTO suspensions (id, guildid, suspended, uTime, reason, modid, roles, logmessage, perma) VALUES ('${member.id}', '${message.guild.id}', true, '0', ${db.escape(reason)}, '${message.author.id}', '${userRolesString}', 'n/a', true);`)
             message.channel.send(`${member} has been permanently suspended`)
-            message.guild.channels.cache.get(settings.channels.suspendlog).send(embed)
+            message.guild.channels.cache.get(settings.channels.suspendlog).send({ embeds: [embed] })
         }
     }
 }

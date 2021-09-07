@@ -1,9 +1,8 @@
 {
   "name": "vibot",
-  "version": "^4.0.1",
+  "version": "^4.2.0",
   "description": "ViBot",
   "main": "index.js",
-  "devDependencies": {},
   "dependencies": {
     "@discordjs/opus": "^0.5.0",
     "@google-cloud/vision": "^2.3.1",
@@ -16,7 +15,7 @@
     "cors": "^2.8.5",
     "cron": "^1.8.2",
     "dependencies": "0.0.1",
-    "discord.js": "^12.5.3",
+    "discord.js": "^13.1.0",
     "express": "^4.17.1",
     "express-rate-limit": "^5.2.6",
     "ffmpeg-static": "^4.3.0",

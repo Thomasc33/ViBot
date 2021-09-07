@@ -31,7 +31,7 @@ module.exports = {
                 .setTitle(`Warning Issued on the Server: ${message.guild.name}`)
                 .setDescription(`__Moderator:__ <@!${message.author.id}> (${message.member.nickname})\n__Reason:__ ${reason}`)
             if (!silent)
-                member.send(warnEmbed)
+                member.send({ embeds: [warnEmbed] })
         })
         if (!errored) setTimeout(() => {
             db.query(`SELECT * FROM warns WHERE id = '${member.user.id}'`, (err, rows) => {

@@ -42,7 +42,7 @@ module.exports = {
         let channel = message.guild.channels.cache.get(embed.footer.text)
         if (!channel) return m.delete()
         let channelName = channel.name
-        let reactionCollector = new Discord.ReactionCollector(m, xFilter)
+        let reactionCollector = new Discord.ReactionCollector(m, { filter: xFilter })
         reactionCollector.on('collect', async (r, u) => {
             reactionCollector.stop()
             if (!m.mentions.members.first()) return remove()
@@ -51,7 +51,7 @@ module.exports = {
                 await m.reactions.removeAll()
                 await m.react('✅')
                 await m.react('❌')
-                let confirmReactionCollector = new Discord.ReactionCollector(m, (r, uu) => (r.emoji.name === '✅' || r.emoji.name === '❌') && u.id == uu.id)
+                let confirmReactionCollector = new Discord.ReactionCollector(m, { filter: (r, uu) => (r.emoji.name === '✅' || r.emoji.name === '❌') && u.id == uu.id })
                 confirmReactionCollector.on('collect', async (r, u) => {
                     if (r.emoji.name == '❌') {
                         await m.reactions.removeAll()
@@ -75,7 +75,12 @@ module.exports = {
                         })
                     }
                 }
-                message.guild.channels.cache.get(settings.channels.history).send(new Discord.MessageEmbed().setDescription(`${channelName} deleted by <@!${u.id}>`))
+                message.guild.channels.cache.get(settings.channels.history).send({
+                    embeds: [
+                        new Discord.MessageEmbed()
+                            .setDescription(`${channelName} deleted by <@!${u.id}>`)
+                    ]
+                })
                 if (!channel) return
                 await channel.delete().catch(er => { })
                 await m.delete()

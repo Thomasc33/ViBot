@@ -20,9 +20,14 @@ module.exports = {
         if (!/^[0-9]+$/.test(id))
             return message.channel.send(`Could not find user by the name or id of ${id}.`);
         let embed = await this.getStatsEmbed(id, message.guild, bot).catch(er => {
-            message.channel.send(new Discord.MessageEmbed().setDescription(`${er}`));
+            message.channel.send({
+                embeds:
+                    [
+                        new Discord.MessageEmbed().setDescription(`${er}`)
+                    ]
+            });
         })
-        if (embed) message.channel.send(embed)
+        if (embed) message.channel.send({ embeds: [embed] })
     },
     async getStatsEmbed(id, guild, bot) {
         return new Promise(async (res, rej) => {
@@ -55,7 +60,7 @@ module.exports = {
                 pops: { inc: 0, shield: 0, sword: 0, helmet: 0 }
             };
             if (botSettings.osancStats) {
-  
+
                 if (ign) data = await axios.post(`https://api.osanc.net/getProfile`, { ign });
                 if (data) data = data.data;
                 if (data && data.profile && data.profile.oryx3) {

@@ -51,7 +51,7 @@ module.exports = {
                 db.query(`SELECT * FROM users WHERE id = '${message.author.id}'`, (err, rows) => {
                     if (err) { res(null); return message.channel.send(`Error: ${err}`) }
                     if (rows.length < 1) { res(null); return message.channel.send('Current week stats could not be retrived. However, run was still logged') }
-                    currentWeekEmbed.setDescription(`Run Logged for ${`<@!${message.author.id}>`}${message.member.nickname? ` \`${message.member.nickname}\`` : ''}`)
+                    currentWeekEmbed.setDescription(`Run Logged for ${`<@!${message.author.id}>`}${message.member.nickname ? ` \`${message.member.nickname}\`` : ''}`)
                         .addField('Current week:', run.toDisplay.map(c => ` \`${rows[0][c]}\` ${c.replace('currentweek', '')}`))
                         .setTimestamp()
                         .setColor(run.color)
@@ -90,8 +90,8 @@ module.exports = {
         await Promise.all(promises)
 
         embed.setDescription(desc)
-        message.channel.send(currentWeekEmbed)
-        message.guild.channels.cache.get(settings.channels.leadinglog).send(embed)
+        message.channel.send({ embeds: [currentWeekEmbed] })
+        message.guild.channels.cache.get(settings.channels.leadinglog).send({ embeds: [embed] })
         if (!toUpdate) return
         if (toUpdate == 1 && settings.backend.currentweek) CurrentWeek.update(message.guild, db, bot)
         if (toUpdate == 2 && settings.backend.eventcurrentweek) eCurrentWeek.update(message.guild, db, bot)
@@ -107,8 +107,8 @@ function confirm(runInfo, message, count) {
             .setDescription(`Are you sure that you lead for around ${parseInt(count) * runInfo.multiply} minutes?`)
             .setFooter(message.member.nickname)
             .setTimestamp()
-        let confirmMessage = await message.channel.send(confirmEmbed)
-        let confirmCollector = new Discord.ReactionCollector(confirmMessage, (r, u) => !u.bot && u.id == message.author.id && (r.emoji.name === '✅' || r.emoji.name === '❌'))
+        let confirmMessage = await message.channel.send({ embeds: [confirmEmbed] })
+        let confirmCollector = new Discord.ReactionCollector(confirmMessage, { filter: (r, u) => !u.bot && u.id == message.author.id && (r.emoji.name === '✅' || r.emoji.name === '❌') })
         confirmMessage.react('✅')
         confirmMessage.react('❌')
         confirmCollector.on('collect', async function (r, u) {

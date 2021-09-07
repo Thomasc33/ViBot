@@ -26,14 +26,14 @@ module.exports = {
                 expelled.push(member.user.id);
                 expelled.push(...(member.nickname || '').replace(/[^a-z|]/gi, '').split('|'));
 
-                const nicks = member.nickname ? member.nickname.replace(/[^a-z|]/,'').split('|').map(n => `[**${n.trim()}**](https://www.realmeye.com/player/${n.trim()})`).join(' • ') : null;
+                const nicks = member.nickname ? member.nickname.replace(/[^a-z|]/, '').split('|').map(n => `[**${n.trim()}**](https://www.realmeye.com/player/${n.trim()})`).join(' • ') : null;
 
                 var embed = new Discord.MessageEmbed()
                     .setColor('#00ff00')
-                    .setDescription(`Search \`${u}\` matched \`${member.nickname||member.user.tag}\`: <@!${member.id}>${nicks ? '\n**IGNS** • ' + nicks: ''}`)
+                    .setDescription(`Search \`${u}\` matched \`${member.nickname || member.user.tag}\`: <@!${member.id}>${nicks ? '\n**IGNS** • ' + nicks : ''}`)
                     .addFields(
-                        { name: 'Highest Role', value: `<@&${member.roles.highest.id}>`, inline: true }, 
-                        { name: 'Suspended', value: `❌`, inline: true }, 
+                        { name: 'Highest Role', value: `<@&${member.roles.highest.id}>`, inline: true },
+                        { name: 'Suspended', value: `❌`, inline: true },
                         { name: 'Voice Channel', value: 'Not Connected', inline: true });
                 if (member.roles.cache.has(suspendedButVerifed.id)) {
                     embed.fields[1].value = `:white_check_mark: \n<@&${suspendedButVerifed.id}>`;
@@ -46,7 +46,7 @@ module.exports = {
                 if (member.voice.channel != null) {
                     embed.fields[2].value = member.voice.channel.name;
                 }
-                message.channel.send(embed);
+                message.channel.send({ embeds: [embed] });
             }
         }
         if (notFoundString != '') {
@@ -54,7 +54,7 @@ module.exports = {
                 .setColor('#ffff00')
                 .setTitle('Users not found:')
                 .setDescription(notFoundString);
-            message.channel.send(embed)
+            message.channel.send({ embeds: [embed] })
         }
 
         expelled = await checkBlackList([...new Set(expelled.map(e => e.toLowerCase()))], db);
@@ -68,13 +68,13 @@ module.exports = {
                 .setColor(`#ff0000`)
                 .setTitle(`The following users are expelled`)
                 .setDescription(expelledString)
-            message.channel.send(expelledEmbed)
+            message.channel.send({ embeds: [expelledEmbed] })
         }
     }
 }
 
 async function checkBlackList(args, db) {
-    return new Promise(async(res, rej) => {
+    return new Promise(async (res, rej) => {
         let expelled = []
         let promises = []
         for (let i in args) {

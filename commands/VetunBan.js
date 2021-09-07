@@ -32,7 +32,7 @@ module.exports = {
                         .setDescription(embed.description.concat(`\nUn-vet-banned automatically`))
                         .setFooter('Unsuspended at')
                         .setTimestamp(Date.now())
-                    logMessage.edit(embed);
+                    logMessage.edit({ embeds: [embed] });
                 } else {
                     message.guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${rows[0].id}> has been un-vet-banned automatically`)
                 }

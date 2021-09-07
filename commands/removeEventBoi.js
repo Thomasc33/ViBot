@@ -29,11 +29,11 @@ module.exports = {
             .setTimestamp(Date.now());
         try {
             if (validURL(image)) embed.setImage(image)
-            message.guild.channels.cache.get(settings.channels.modlogs).send(embed);
+            message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });
             message.channel.send(`Event Boi has been removed from ${member}`)
         } catch (er) {
             message.channel.send('There was an issue attaching the image. However, Event Boi was still removed')
-            message.guild.channels.cache.get(settings.channels.modlogs).send(embed);
+            message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });
         }
         function validURL(str) {
             var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol

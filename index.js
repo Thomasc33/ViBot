@@ -38,8 +38,26 @@ const botSettings = require('./settings.json')
 const token = require('./botKey.json')
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 const prefix = botSettings.prefix
-const bot = new Discord.Client()
 const cooldowns = new Discord.Collection()
+const bot = new Discord.Client({
+    intents: [ // Discord moment
+        Discord.Intents.FLAGS.GUILDS,
+        Discord.Intents.FLAGS.GUILD_MEMBERS,
+        Discord.Intents.FLAGS.GUILD_BANS,
+        Discord.Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
+        Discord.Intents.FLAGS.GUILD_INTEGRATIONS,
+        Discord.Intents.FLAGS.GUILD_WEBHOOKS,
+        Discord.Intents.FLAGS.GUILD_INVITES,
+        Discord.Intents.FLAGS.GUILD_VOICE_STATES,
+        Discord.Intents.FLAGS.GUILD_PRESENCES,
+        Discord.Intents.FLAGS.GUILD_MESSAGES,
+        Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+        Discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
+        Discord.Intents.FLAGS.DIRECT_MESSAGES,
+        Discord.Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
+        Discord.Intents.FLAGS.DIRECT_MESSAGE_TYPING
+    ]
+})
 bot.commands = new Discord.Collection()
 bot.dbs = {}
 bot.crasherList = moduleIsAvailable('./data/crasherList.json') ? require('./data/crasherList.json') : {}
@@ -59,9 +77,9 @@ for (const file of commandFiles) {
 
 
 // Bot Event Handlers
-bot.on('message', message => {
+bot.on('messageCreate', message => {
     try {
-        if (message.channel.type === 'dm') return dmHandler(message);
+        if (message.channel.type === 'DM') return dmHandler(message);
         if (message.author.bot) return;
         if (!bot.serverWhiteList.includes(message.guild.id)) return
         if (createTemplate.checkActive(message.author.id) && message.channel.id === bot.settings[message.guild.id].channels.vetcommands) return;
@@ -148,7 +166,7 @@ bot.on("ready", async () => {
     })
 
     //vetban check
-    bot.setInterval(() => {
+    let vetbanInterval = setInterval(() => {
         let checked = []
         bot.guilds.cache.each(g => {
             if (!emojiServers.includes(g.id)) {
@@ -182,7 +200,7 @@ bot.on("ready", async () => {
                                                 .setDescription(embed.description.concat(`\nUn-vet-banned automatically`))
                                                 .setFooter('Unsuspended at')
                                                 .setTimestamp(Date.now())
-                                            m.edit(embed)
+                                            m.edit({ embeds: [embed] })
                                         }
                                     } catch (er) {
                                         guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${rows[i].id}> has been un-vet-banned automatically`)
@@ -201,7 +219,7 @@ bot.on("ready", async () => {
     }, 120000);
 
     //suspension check
-    bot.setInterval(() => {
+    let suspensionInterval = setInterval(() => {
         let checked = []
         bot.guilds.cache.each(g => {
             if (!emojiServers.includes(g.id)) {
@@ -240,7 +258,7 @@ bot.on("ready", async () => {
                                                 .setDescription(embed.description.concat(`\nUnsuspended automatically`))
                                                 .setFooter('Unsuspended at')
                                                 .setTimestamp(Date.now())
-                                            m.edit(embed)
+                                            m.edit({ embeds: [embed] })
                                         }
                                     } catch (er) {
                                         guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${rows[i].id}> has been unsuspended automatically`)
@@ -259,7 +277,7 @@ bot.on("ready", async () => {
     }, 60000);
 
     //key alerts check
-    bot.setInterval(() => {
+    let keyAlertsInterval = setInterval(() => {
         bot.guilds.cache.each(g => {
             const settings = bot.settings[g.id];
             if (!settings || !settings.commands.hostkey || !settings.channels.keyalerts || !settings.numerical.keyalertsage)
@@ -283,7 +301,7 @@ bot.on("ready", async () => {
     }, 300000);
 
     //mute check
-    bot.setInterval(() => {
+    let muteInterval = setInterval(() => {
         let checked = []
         bot.guilds.cache.each(g => {
             if (!emojiServers.includes(g.id)) {
@@ -417,13 +435,13 @@ bot.on('messageReactionAdd', (r, u) => {
             .setColor('#FDF300')
             .setDescription(content.join(''))
             .setThumbnail('https://res.cloudinary.com/nashex/image/upload/v1613698392/assets/759584001131544597_im3kgg.png')
-        r.message.channel.send(spongemockEmbed)
+        r.message.channel.send({ embeds: [spongemockEmbed] })
         r.remove()
     }
 })
 
 bot.on('typingStart', (c, u) => {
-    if (c.type !== 'dm' || u.bot || verification.checkActive(u.id)) return
+    if (c.type !== 'DM' || u.bot || verification.checkActive(u.id)) return
     c.startTyping()
     setTimeout(() => {
         c.stopTyping()
@@ -490,17 +508,16 @@ async function dmHandler(message) {
     let statsTypos = ['stats', 'satts', 'stat', 'status', 'sats', 'stata', 'stts']
     if (statsTypos.includes(message.content.split(' ')[0].replace(/[^a-z0-9]/gi, ''))) {
         let guild;
-        for (const g of bot.guilds.cache.array()) {
+        bot.guilds.cache.forEach(g => {
             if (g.members.cache.get(message.author.id)) {
                 guild = g;
-                break;
             }
-        }
+        })
         if (!guild) cancelled = true;
         logCommand(guild)
         if (!cancelled) {
             try {
-                message.channel.send(await stats.getStatsEmbed(message.author.id, guild, bot))
+                message.channel.send({ embeds: [await stats.getStatsEmbed(message.author.id, guild, bot)] })
             }
             catch (er) {
                 message.channel.send('You are not currently logged in the database. The database gets updated every 24-48 hours')
@@ -543,8 +560,8 @@ async function dmHandler(message) {
                 .setTitle('Are you sure you want to message modmail?')
                 .setFooter('Spamming modmail with junk will result in being modmail blacklisted')
                 .setDescription(`\`\`\`${message.content}\`\`\``)
-            let confirmModMailMessage = await message.channel.send(confirmModMailEmbed)
-            let reactionCollector = new Discord.ReactionCollector(confirmModMailMessage, (r, u) => u.id == message.author.id && (r.emoji.name == '✅' || r.emoji.name == '❌'))
+            let confirmModMailMessage = await message.channel.send({ embeds: [confirmModMailEmbed] })
+            let reactionCollector = new Discord.ReactionCollector(confirmModMailMessage, { filter: (r, u) => u.id == message.author.id && (r.emoji.name == '✅' || r.emoji.name == '❌') })
             reactionCollector.on('collect', async (r, u) => {
                 reactionCollector.stop()
                 if (r.emoji.name == '✅') {
@@ -571,7 +588,7 @@ async function dmHandler(message) {
             .setFooter(`User ID: ${message.author.id}`)
             .setTimestamp()
         if (message.author.avatarURL()) logEmbed.author.iconURL = message.author.avatarURL()
-        guild.channels.cache.get(bot.settings[guild.id].channels.dmcommands).send(logEmbed).catch(er => { ErrorLogger.log(new Error(`Unable to find/send in settings.channels.dmcommands channel for ${guild.id}`), bot) })
+        guild.channels.cache.get(bot.settings[guild.id].channels.dmcommands).send({ embeds: [logEmbed] }).catch(er => { ErrorLogger.log(new Error(`Unable to find/send in settings.channels.dmcommands channel for ${guild.id}`), bot) })
     }
 }
 
@@ -633,7 +650,7 @@ async function getGuild(message) {
                 g = guilds[i]
                 fitStringIntoEmbed(guildSelectionEmbed, `**${parseInt(i) + 1}:** ${g.name}`, message.channel)
             }
-            let guildSelectionMessage = await message.channel.send(guildSelectionEmbed)
+            let guildSelectionMessage = await message.channel.send({ embeds: [guildSelectionEmbed] })
             if (guilds.length > 10) {
                 let messageCollector = new Discord.MessageCollector(message.channel, m => m.author.id == message.author.id)
                 messageCollector.on('collect', async m => {
@@ -652,7 +669,7 @@ async function getGuild(message) {
                     }
                 })
             } else {
-                let reactionCollector = new Discord.ReactionCollector(guildSelectionMessage, (r, u) => !u.bot)
+                let reactionCollector = new Discord.ReactionCollector(guildSelectionMessage, { filter: (r, u) => !u.bot })
                 reactionCollector.on('collect', async (r, u) => {
                     switch (r.emoji.name) {
                         case '1️⃣':
@@ -769,7 +786,7 @@ function fitStringIntoEmbed(embed, string, channel) {
             embed.addField('-', string)
         } else if (embed.fields[embed.fields.length - 1].value.length + `\n${string}`.length >= 1024) {
             if (embed.length + `\n${string}`.length >= 6000) {
-                channel.send(embed)
+                channel.send({ embeds: [embed] })
                 embed.setDescription('None!')
                 embed.fields = []
             } else {
@@ -777,7 +794,7 @@ function fitStringIntoEmbed(embed, string, channel) {
             }
         } else {
             if (embed.length + `\n${string}`.length >= 6000) {
-                channel.send(embed)
+                channel.send({ embeds: [embed] })
                 embed.setDescription('None!')
                 embed.fields = []
             } else {

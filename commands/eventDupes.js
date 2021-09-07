@@ -15,24 +15,20 @@ module.exports = {
             .setTitle('Users with Event bois and Verified Raider')
             .setColor('#ff0000')
             .setDescription('None')
-        let memberArray = message.guild.members.cache.array()
-
-        for (let i in memberArray) {
-            let m = memberArray[i]
-
+        message.guild.members.cache.each(m => {
             if (m.roles.cache.has(eventbois.id) && m.roles.cache.has(raider.id)) {
                 if (embed.description == 'None') {
                     embed.setDescription(`${m}`)
                 } else {
                     if (embed.description.length > 2048) {
-                        message.channel.send(embed)
+                        message.channel.send({ embeds: [embed] })
                         embed.setDescription(`${m}`)
                     } else {
                         embed.setDescription(`${embed.description}\n${m}`)
                     }
                 }
             }
-        }
-        message.channel.send(embed)
+        })
+        message.channel.send({ embeds: [embed] })
     }
 }

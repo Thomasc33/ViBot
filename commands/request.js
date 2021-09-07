@@ -27,18 +27,18 @@ module.exports = {
         //prompt for what emote to request
         let promptEmbed = new Discord.MessageEmbed()
             .setDescription('Select a reaction to request')
-        let m = await message.channel.send(promptEmbed)
+        let m = await message.channel.send({ embeds: [promptEmbed] })
         let reacts = [afk.afkInfo.keyEmoteID]
         if (afk.afkInfo.vialReact) reacts.push(afk.afkInfo.vialEmoteID)
         for (let i of afk.afkInfo.earlyLocationReacts) reacts.push(i.emoteID)
 
-        let reactionCollector = new Discord.ReactionCollector(m, (r, u) => !u.bot && reacts.includes(r.emoji.id))
+        let reactionCollector = new Discord.ReactionCollector(m, { filter: (r, u) => !u.bot && reacts.includes(r.emoji.id) })
         reactionCollector.on('collect', async (r, u) => {
             //post in raid status
             let raidStatusEmbed = new Discord.MessageEmbed()
                 .setDescription(`A ${r.emoji} has been requested in ${afk.channel}.`)
-            let rm = await afk.raidStatus.send(raidStatusEmbed)
-            let rsReactionCollector = new Discord.ReactionCollector(rm, (re, u) => !u.bot && re.emoji.id == r.emoji.id)
+            let rm = await afk.raidStatus.send({ embeds: [raidStatusEmbed] })
+            let rsReactionCollector = new Discord.ReactionCollector(rm, { filter: (re, u) => !u.bot && re.emoji.id == r.emoji.id })
             rsReactionCollector.on('collect', (r, u) => {
                 afkCheck.requestReactionHandler(r, u, vc.id)
             })
@@ -112,8 +112,8 @@ module.exports = {
                 message.channel.send(`Request type unrecognized`)
                 return;
         }
-        requestMessage.edit(embed)
-        var reactionCollector = new Discord.ReactionCollector(requestMessage, ReactionFilter);
+        requestMessage.edit({ embeds: [embed] })
+        var reactionCollector = new Discord.ReactionCollector(requestMessage, { filter: ReactionFilter });
         var recieved = false;
         reactionCollector.on("collect", (r, u) => {
             if (r.emoji.id === botSettings.emoteIDs.LostHallsKey) {
@@ -155,7 +155,7 @@ module.exports = {
             let dm = await u.createDM().catch(er => console.log(r));
             let DirectMessage = await dm.send(`You reacted as <${botSettings.emote.LostHallsKey}>. Press :white_check_mark: to confirm. Ignore this message otherwise`).catch(r => console.log(r));
 
-            let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, dmReactionFilter);
+            let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, { filter: dmReactionFilter });
             await DirectMessage.react("✅");
             dmReactionCollector.on("collect", (r, u) => {
                 if (recieved) return;
@@ -168,7 +168,7 @@ module.exports = {
 
                 }
                 embed.setDescription(`Thank you to ${user} for bringing a <${botSettings.emote.LostHallsKey}>`)
-                requestMessage.edit('', embed);
+                requestMessage.edit({ content: null, embeds: [embed] });
                 reactionCollector.stop();
                 dmReactionCollector.stop();
                 db.query(`UPDATE users SET points = points + ${settings.points.keypop} WHERE id = ${u.id}`, err => { if (err) ErrorLogger.log(err) })
@@ -189,7 +189,7 @@ module.exports = {
                 let dm = await u.createDM().catch();
                 let DirectMessage = await dm.send(`You reacted as <${botSettings.emote.Vial}>. Press :white_check_mark: to confirm. Ignore this message otherwise`).catch();
 
-                let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, dmReactionFilter);
+                let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, { filter: dmReactionFilter });
 
                 await DirectMessage.react("✅");
                 await dmReactionCollector.on("collect", (r, u) => {
@@ -200,7 +200,7 @@ module.exports = {
                     let user = message.guild.members.cache.get(u.id)
                     user.edit({ channel: voiceChannel }).catch(er => message.channel.send("There was an issue moving them in. Most likely they aren't connect to a voice channel"));
                     embed.setDescription(`Thank you to ${user} for bringing a <${botSettings.emote.Vial}>`)
-                    requestMessage.edit('', embed);
+                    requestMessage.edit({ content: null, embeds: [embed] });
                     reactionCollector.stop();
                     dmReactionCollector.stop();
                     db.query(`UPDATE users SET points = points + ${settings.points.vialpop} WHERE id = ${u.id}`, err => { if (err) ErrorLogger.log(err) })
@@ -223,7 +223,7 @@ module.exports = {
             try {
                 let dm = await u.createDM()
                 let DirectMessage = await dm.send(`You reacted as <${botSettings.emote.Plane}>. Press :white_check_mark: to confirm. Ignore this message otherwise`);
-                let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, dmReactionFilter);
+                let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, { filter: dmReactionFilter });
                 await DirectMessage.react("✅");
                 await dmReactionCollector.on("collect", (r, u) => {
                     if (recieved) return;
@@ -233,7 +233,7 @@ module.exports = {
                     let user = message.guild.members.cache.get(u.id)
                     user.edit({ channel: voiceChannel }).catch(er => message.channel.send("There was an issue moving them in. Most likely they aren't connect to a voice channel"));
                     embed.setDescription(`Thank you to ${user} for bringing a <${botSettings.emote.Plane}>`)
-                    requestMessage.edit('', embed);
+                    requestMessage.edit({ content: null, embeds: [embed] });
                     reactionCollector.stop();
                     dmReactionCollector.stop();
                     db.query(`UPDATE users SET points = points + ${settings.points.rushing} WHERE id = ${u.id}`, err => { if (err) ErrorLogger.log(err) })
@@ -257,7 +257,7 @@ module.exports = {
                 let dm = await u.createDM();
                 let DirectMessage = await dm.send(`You reacted as <${botSettings.emote.Mystic}>. Press :white_check_mark: to confirm. Ignore this message otherwise`);
 
-                let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, dmReactionFilter);
+                let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, { filter: dmReactionFilter });
                 await DirectMessage.react("✅");
                 await dmReactionCollector.on("collect", (r, u) => {
                     if (recieved) return;
@@ -267,7 +267,7 @@ module.exports = {
                     let user = message.guild.members.cache.get(u.id)
                     user.edit({ channel: voiceChannel }).catch(er => message.channel.send("There was an issue moving them in. Most likely they aren't connect to a voice channel"));
                     embed.setDescription(`Thank you to ${user} for bringing a <${botSettings.emote.Mystic}>`)
-                    requestMessage.edit('', embed);
+                    requestMessage.edit({ content: null, embeds: [embed] });
                     reactionCollector.stop();
                     dmReactionCollector.stop();
 
@@ -294,7 +294,7 @@ module.exports = {
                 let dm = await u.createDM().catch();
                 let DirectMessage = await dm.send(`You reacted as <${botSettings.emote.Brain}>. Press :white_check_mark: to confirm. Ignore this message otherwise`).catch();
 
-                let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, dmReactionFilter);
+                let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, { filter: dmReactionFilter });
                 await DirectMessage.react("✅");
                 await dmReactionCollector.on("collect", (r, u) => {
                     if (recieved) return;
@@ -304,7 +304,7 @@ module.exports = {
                     let user = message.guild.members.cache.get(u.id)
                     user.edit({ channel: voiceChannel }).catch(er => message.channel.send("There was an issue moving them in. Most likely they aren't connect to a voice channel"));
                     embed.setDescription(`Thank you to ${user} for bringing a <${botSettings.emote.Brain}>`)
-                    requestMessage.edit('', embed);
+                    requestMessage.edit({ content: null, embeds: [embed] });
                     reactionCollector.stop();
                     dmReactionCollector.stop();
                     db.query(`UPDATE users SET points = points + ${settings.points.brain} WHERE id = ${u.id}`, err => { if (err) ErrorLogger.log(err) })

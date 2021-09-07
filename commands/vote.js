@@ -8,7 +8,7 @@ const guilds = require('../data/voteInfo.json')
 
 module.exports = {
     name: 'vote',
-    role: 'headrl',
+    role: 'headeventrl',
     args: '<ign> [igns...]',
     requiredArgs: 1,
     description: 'Puts up a vote for promotions based on users current role.',
@@ -81,7 +81,7 @@ async function postVote2(message, member, bot, db) {
                     embed.addField('-', `[Link](${m}) `);
             });
 
-            const msg = await message.guild.channels.cache.get(settings.channels[guilds.channels[rolekey]]).send(embed);
+            const msg = await message.guild.channels.cache.get(settings.channels[guilds.channels[rolekey]]).send({ embeds: [embed] });
             await msg.react('✅');
             if (message.guild.id !== '708026927721480254') await msg.react('😐');
             await msg.react('❌');
@@ -101,7 +101,7 @@ function retrievePromotionType(settings, channel, author, member, role, info) {
             .setDescription(`There are multiple promotion paths for ${role}. Choose one of the following:` +
                 info.map((v, i) => `${num_words[i]}: **${member.guild.roles.cache.get(settings.roles[v])}**`).join('\n'));
 
-        const message = await channel.send(embed);
+        const message = await channel.send({ embeds: [embed] });
 
         const collector = message.createReactionCollector((reaction, user) => !user.bot && user.id == author.id && num_words.indexOf(reaction.emoji.name) >= 0, { time: 30000 });
         let resolved = false;
@@ -164,7 +164,7 @@ async function postVote(message, member, bot, db) {
                 if (voteEmbed.description.length + `[Link](${m}) `.length < 2048) voteEmbed.description += `[Link](${m}) `
                 else cont = false
         })
-        let m = await channel.send(voteEmbed)
+        let m = await channel.send({ embeds: [voteEmbed] })
         await m.react('✅')
         await m.react('😐')
         await m.react('❌')

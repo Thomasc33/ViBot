@@ -19,7 +19,7 @@ module.exports = {
         for (let m of toRemove) {
             fitStringIntoEmbed(embed, isNaN(parseInt(m)) ? `\`${m}\`` : `<@!${m}> : \`${m}\``, message.channel)
         }
-        await message.channel.send(embed)
+        await message.channel.send({ embeds: [embed] })
 
         if (toRemove.length > 0) db.query(`DELETE FROM veriblacklist WHERE ${toRemove.map(m => `id = '${m}'`).join(' OR ')}`)
     }
@@ -42,7 +42,7 @@ function fitStringIntoEmbed(embed, string, channel) {
             embed.addField('-', string)
         } else if (embed.fields[embed.fields.length - 1].value.length + `\n${string}`.length >= 1024) {
             if (embed.length + `\n${string}`.length >= 6000) {
-                channel.send(embed)
+                channel.send({ embeds: [embed] })
                 embed.setDescription('None!')
                 embed.fields = []
             } else {
@@ -50,7 +50,7 @@ function fitStringIntoEmbed(embed, string, channel) {
             }
         } else {
             if (embed.length + `\n${string}`.length >= 6000) {
-                channel.send(embed)
+                channel.send({ embeds: [embed] })
                 embed.setDescription('None!')
                 embed.fields = []
             } else {

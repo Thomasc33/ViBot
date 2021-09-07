@@ -25,8 +25,24 @@ module.exports = {
             } else {
                 db.query(`UPDATE users SET vialUsed = ${parseInt(rows[0].vialUsed) + 1} WHERE id = '${member.id}'`)
             }
-            message.channel.send(new Discord.MessageEmbed().setDescription(`Vial logged. They now have ${parseInt(rows[0].vialUsed) + 1} vials popped`).setTimestamp().setColor('#0c045c').setThumbnail('https://cdn.discordapp.com/emojis/701491230567039018.png?v=1'))
-            message.guild.channels.cache.get(settings.channels.viallog).send(new Discord.MessageEmbed().setDescription(`Vial pop added to ${member} (${member.nickname}), logged by ${message.member} (${parseInt(rows[0].vialUsed) + 1} total pops)${settings.backend.points ? `\n${points} points added \`${parseInt(rows[0].points) + points}\` total` : ''}`).setTimestamp().setColor('#0c045c').setThumbnail('https://cdn.discordapp.com/emojis/701491230567039018.png?v=1'))
+            message.channel.send({
+                embeds: [
+                    new Discord.MessageEmbed()
+                        .setDescription(`Vial logged. They now have ${parseInt(rows[0].vialUsed) + 1} vials popped`)
+                        .setTimestamp()
+                        .setColor('#0c045c')
+                        .setThumbnail('https://cdn.discordapp.com/emojis/701491230567039018.png?v=1')
+                ]
+            })
+            message.guild.channels.cache.get(settings.channels.viallog).send({
+                embeds: [
+                    new Discord.MessageEmbed()
+                        .setDescription(`Vial pop added to ${member} (${member.nickname}), logged by ${message.member} (${parseInt(rows[0].vialUsed) + 1} total pops)${settings.backend.points ? `\n${points} points added \`${parseInt(rows[0].points) + points}\` total` : ''}`)
+                        .setTimestamp()
+                        .setColor('#0c045c')
+                        .setThumbnail('https://cdn.discordapp.com/emojis/701491230567039018.png?v=1')
+                ]
+            })
         })
     }
 }

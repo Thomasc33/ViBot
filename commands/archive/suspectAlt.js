@@ -22,7 +22,7 @@ module.exports = {
             .addField('User', user.displayName, true)
             .addField('Suspected By', `<@!${message.author.id}>`, true)
             .setTimestamp(Date.now());
-        await message.guild.channels.cache.get(settings.channels.modlogs).send(embed);
+        await message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });
         message.react('✅')
     }
 }

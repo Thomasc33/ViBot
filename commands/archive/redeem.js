@@ -36,7 +36,7 @@ module.exports = {
                 if (message.author.avatarURL()) confirmEmbed.author.iconURL = message.author.avatarURL()
                 if (rows[0].hasCooldown) confirmEmbed.description += `\nCooldown time: \`1 hour\``
                 else confirmEmbed.description += `\nCooldown time: \`None :)\``
-                message.author.send(confirmEmbed)
+                message.author.send({ embeds: [confirmEmbed] })
             })
         })
     }

@@ -14,7 +14,7 @@ module.exports = {
             db.query(`SELECT * FROM modmailblacklist`, (err, rows) => {
                 if (err) ErrorLogger.log(err, bot)
                 for (let i in rows) fitStringIntoEmbed(blackListedEmbed, `<@!${rows[i].id}>`, message.channel)
-                message.channel.send(blackListedEmbed)
+                message.channel.send({ embeds: [blackListedEmbed] })
             })
         } else if (args.length == 1) {
             let member = message.mentions.members.first()
@@ -66,7 +66,7 @@ function fitStringIntoEmbed(embed, string, channel) {
             embed.addField('-', string)
         } else if (embed.fields[embed.fields.length - 1].value.length + `, ${string}`.length >= 1024) {
             if (embed.length + `, ${string}`.length >= 6000) {
-                channel.send(embed)
+                channel.send({ embeds: [embed] })
                 embed.setDescription('None!')
                 embed.fields = []
             } else {
@@ -74,7 +74,7 @@ function fitStringIntoEmbed(embed, string, channel) {
             }
         } else {
             if (embed.length + `, ${string}`.length >= 6000) {
-                channel.send(embed)
+                channel.send({ embeds: [embed] })
                 embed.setDescription('None!')
                 embed.fields = []
             } else {

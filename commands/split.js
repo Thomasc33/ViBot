@@ -38,11 +38,11 @@ async function createChannel(isVet, message, bot) {
         }
         if (!template) return rej(`Template channel not found`)
         let channel = await template.clone()
-        setTimeout(() => channel.setParent(message.guild.channels.cache.filter(c => c.type == 'category').find(c => c.name.toLowerCase() === parent)), 1000)
+        setTimeout(() => channel.setParent(message.guild.channels.cache.filter(c => c.type == 'GUILD_CATEGORY').find(c => c.name.toLowerCase() === parent)), 1000)
         await channel.setName(`Split Channel`)
 
         //allows raiders to view
-        await channel.updateOverwrite(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+        await channel.permissionOverwrites.edit(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
 
         //Embed to remove
         let embed = new Discord.MessageEmbed()

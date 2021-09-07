@@ -30,7 +30,7 @@ module.exports = {
         member.roles.set([])
             .then(() => member.setNickname(''))
             .then(async() => { member.send(`You have been unverified${reason ? ': ' + reason : ''}. Please contact ${message.author} \`${message.author.tag}\` to appeal.`); })
-            .then(() =>     message.guild.channels.cache.get(settings.channels.modlogs).send(embed))
+            .then(() =>     message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] }))
             .then(() => message.react('✅'))
             .catch(er => {
                 message.channel.send(`Error: \`${er}\``)

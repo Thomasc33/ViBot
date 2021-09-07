@@ -31,7 +31,7 @@ module.exports = {
             .setTitle(`Veteran Verification for ${message.guild.name}`)
             .addField('How to', 'React with the :white_check_mark: to get the role.\nMake sure to make your graveyard and character list public on realmeye before reacting\nAlso run the command ;stats to see your current run total.')
             .addField('Requirements', `${(settings.vetverireqs.maxed) ? `-${settings.vetverireqs.maxed} 8/8 Characters\n` : ''}${(settings.vetverireqs.meleemaxed) ? `-${settings.vetverireqs.meleemaxed} 8/8 Melee Characters\n` : ''}${(settings.vetverireqs.runs) ? `-${settings.vetverireqs.runs} Completed Runs\n` : ''}`)
-        embedMessage = await vetVeriChannel.send(vetVeriEmbed)
+        embedMessage = await vetVeriChannel.send({ embeds: [vetVeriEmbed] })
         embedMessage.react('✅')
         this.init(message.guild, bot, db)
     },
@@ -44,7 +44,7 @@ module.exports = {
             let messages = await vetVeriChannel.messages.fetch({ limit: 1 })
             embedMessage = messages.first()
         }
-        let reactionCollector = new Discord.ReactionCollector(embedMessage, checkFilter)
+        let reactionCollector = new Discord.ReactionCollector(embedMessage, { filter: checkFilter })
         reactionCollector.on('collect', (r, u) => {
             this.vetVerify(u, guild, db)
         })
@@ -237,14 +237,14 @@ module.exports = {
                 .setFooter(u.id)
                 .setTimestamp()
 
-            let pendingMessage = await veriPending.send(mainEmbed)
+            let pendingMessage = await veriPending.send({ embeds: [mainEmbed] })
             await pendingMessage.react('🔑')
             try {
                 await u.send('You are currently under manual review for veteran verification. If you do not hear back within 48 hours, Please reach out to a Security or higher')
             } catch (e) {
                 //User has DMs off
             }
-            veriPending.send(await charList.getEmbed(ign, bot))
+            veriPending.send({ embeds: [await charList.getEmbed(ign, bot)] })
             this.pendingModule(pendingMessage, db)
         }
     },
@@ -264,14 +264,14 @@ module.exports = {
         else watching.push(message.embeds[0].footer.text)
         if (!message.reactions.cache.has('🔑')) message.react('🔑')
         let vetRaider = message.guild.roles.cache.get(settings.roles.vetraider)
-        let keyCollector = new Discord.ReactionCollector(message, KeyFilter)
+        let keyCollector = new Discord.ReactionCollector(message, { filter: KeyFilter })
         keyCollector.on('collect', async function (r, u) {
             let reactor = message.guild.members.cache.get(u.id)
             message.reactions.removeAll()
                 .then(message.react('💯'))
                 .then(message.react('👋'))
                 .then(message.react('🔒'))
-            let ManualVerificationCollector = new Discord.ReactionCollector(message, ManualFilter)
+            let ManualVerificationCollector = new Discord.ReactionCollector(message, { filter: ManualFilter })
             ManualVerificationCollector.on('collect', async function (r, u) {
                 if (!(u.id == reactor.id)) return;
                 let embed = message.embeds[0]
@@ -291,7 +291,7 @@ module.exports = {
                         await message.react('💯')
                         embed.setColor('#00ff00')
                         embed.setFooter(`Accepted by ${reactor.nickname}`)
-                        await message.edit(embed)
+                        await message.edit({ embeds: [embed] })
                         await member.roles.add(vetRaider.id)
                         //member.user.send(ext.parse(settings.messages.verifications.acceptvetveri, info))
                         try {
@@ -309,7 +309,7 @@ module.exports = {
                         await message.react('👋')
                         embed.setColor('#ff0000')
                         embed.setFooter(`Rejected by ${reactor.nickname}`)
-                        await message.edit(embed)
+                        await message.edit({ embeds: [embed] })
                         //member.user.send(ext.parse(settings.messages.verifications.deniedvetveri, info))
                         try {
                             member.user.send(`You were denied from verifying for the \`${info.role.name}\` role in \`${info.guild.name}\`. Feel free to contact any Security+ staff member directly with screenshots in game if you have \`${info.reqs.runs}\` confirmable ${info.dungeon.boss} runs in your exaltations **or** between your live characters and graveyard.`)

@@ -53,13 +53,13 @@ module.exports = {
         let settings = Bot.settings[guild.id]
         let c = guild.channels.cache.get(settings.channels.botstatus)
         if (!c) return console.log('botstatus not found for ', guild.id)
-        let m = await c.send(StatusEmbed)
+        let m = await c.send({ embeds: [StatusEmbed] })
         statusMessages[guild.id] = m
     },
     async update(guild) {
         if (!statusMessages[guild.id]) return
         m = statusMessages[guild.id]
-        await m.edit(StatusEmbed)
+        await m.edit({ embeds: [StatusEmbed] })
     },
     async updateAll() {
         if (!DB || !Bot || StatusEmbed.fields.length < 3) return //happens on bot initialization
@@ -70,7 +70,7 @@ module.exports = {
         StatusEmbed.fields[1].value = await this.checkDataBase() ? '✅' : '❌'
         StatusEmbed.fields[2].value = await reScrape.checkProxy() ? '✅' : '❌'
         for (let i in statusMessages) {
-            await statusMessages[i].edit(StatusEmbed)
+            await statusMessages[i].edit({ embeds: [StatusEmbed] })
         }
     },
     async setStatus() {

@@ -33,16 +33,16 @@ module.exports = {
             .addField('User', member.displayName, true)
             .addField('Verified By', `<@!${message.author.id}>`, true)
             .setTimestamp(Date.now());
-        message.guild.channels.cache.get(settings.channels.modlogs).send(embed);
+        message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });
         let confirmEmbed = new Discord.MessageEmbed().setDescription(`${member} has been given ${raiderRole}`)
-        message.channel.send(confirmEmbed)
-    
+        message.channel.send({ embeds: [confirmEmbed] })
+
         member.user.send(`You have been verified on \`${message.guild.name}\`. Please head over to rules, faq, and raiding-rules channels to familiarize yourself with the server. Happy raiding`)
 
         db.query(`SELECT * FROM veriblacklist WHERE id = '${member.id}' OR id = '${nick}'`, async (err, rows) => {
             if (!rows || !rows.length)
                 return;
-            
+
             const expelEmbed = new Discord.MessageEmbed()
                 .setTitle('Automatic Expel Removal')
                 .setDescription(`The follow expels have been removed from the database tied to ${member}. If these should stick, please react with ❌ in the next 10 seconds.`)
@@ -52,7 +52,7 @@ module.exports = {
                 expelEmbed.addField(`${row.id}`, `Expelled by <@${row.modid}> in ${bot.guilds.cache.get(row.guildid).name || row.guildid}:\`\`\`${row.reason}\`\`\``);
             }
 
-            const expelMessage = await message.channel.send(expelEmbed);
+            const expelMessage = await message.channel.send({ embeds: [expelEmbed] });
             expelMessage.react('❌');
             expelMessage.collector = expelMessage.createReactionCollector((r, u) => u.id == message.author.id && r.emoji.name == '❌', { time: 10000 });
             expelMessage.collector.on('collect', (r, u) => {
@@ -67,7 +67,7 @@ module.exports = {
                 } else {
                     expelEmbed.setDescription(`The following expels for ${member} have not been removed.`);
                 }
-                expelMessage.edit(expelEmbed);
+                expelMessage.edit({ embeds: [expelEmbed] });
             })
         })
     }

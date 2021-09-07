@@ -31,7 +31,7 @@ module.exports = {
                         embed.addField('-', string)
                     } else if (embed.fields[embed.fields.length - 1].value.length + `\n${string}`.length >= 1024) {
                         if (embed.length + `\n${string}`.length >= 6000) {
-                            channel.send(embed)
+                            channel.send({ embeds: [embed] })
                             embed.setDescription('None!')
                             embed.fields = []
                         } else {
@@ -39,7 +39,7 @@ module.exports = {
                         }
                     } else {
                         if (embed.length + `\n${string}`.length >= 6000) {
-                            channel.send(embed)
+                            channel.send({ embeds: [embed] })
                             embed.setDescription('None!')
                             embed.fields = []
                         } else {
@@ -50,7 +50,7 @@ module.exports = {
                     embed.setDescription(embed.description.concat(`\n${string}`))
                 }
             }
-            message.channel.send(embed)
+            message.channel.send({ embeds: [embed] })
         })
     }
 }
