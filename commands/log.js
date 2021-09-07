@@ -52,7 +52,7 @@ module.exports = {
                     if (err) { res(null); return message.channel.send(`Error: ${err}`) }
                     if (rows.length < 1) { res(null); return message.channel.send('Current week stats could not be retrived. However, run was still logged') }
                     currentWeekEmbed.setDescription(`Run Logged for ${`<@!${message.author.id}>`}${message.member.nickname ? ` \`${message.member.nickname}\`` : ''}`)
-                        .addField('Current week:', run.toDisplay.map(c => ` \`${rows[0][c]}\` ${c.replace('currentweek', '')}`))
+                        .addField('Current week:', run.toDisplay.map(c => ` \`${rows[0][c]}\` ${c.replace('currentweek', '')}`).join('\n'))
                         .setTimestamp()
                         .setColor(run.color)
                     if (run.icon) currentWeekEmbed.setThumbnail(run.icon)
