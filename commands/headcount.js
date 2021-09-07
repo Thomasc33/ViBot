@@ -41,7 +41,7 @@ module.exports = {
                 .setTimestamp()
             if (message.author.avatarURL()) embed.author.iconURL = message.author.avatarURL()
             const pingRole = runType.pingRole || runType.rolePing;
-            let m = await textChannel.send(`${pingRole ? '<@&' + settings.roles[pingRole] + '> ' : ''}@here`, embed)
+            let m = await textChannel.send({ content: `${pingRole ? '<@&' + settings.roles[pingRole] + '> ' : ''}@here`, embeds: [embed] })
             if (runType.headcountEmote)
                 m.react(runType.headcountEmote)
             await m.react(runType.keyEmoteID)
