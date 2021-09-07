@@ -23,8 +23,8 @@ module.exports = {
             .addField('User', member.displayName, true)
             .addField('Verified By', `<@!${message.author.id}>`, true)
             .setTimestamp(Date.now());
-        message.guild.channels.cache.get(settings.channels.modlogs).send(embed);
+        message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });
         let confirmEmbed = new Discord.MessageEmbed().setDescription(`${member} has been given ${vetRaiderRole}`)
-        message.channel.send(confirmEmbed)
+        message.channel.send({ embeds: [confirmEmbed] })
     }
 }

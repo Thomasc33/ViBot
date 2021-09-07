@@ -47,13 +47,17 @@ module.exports = {
                 if (!role) return message.channel.send(`\`${i.roleId}\` not found`)
                 if (member.roles.cache.has(role.id)) return message.channel.send(`${member} already has \`${role.name}\``)
                 let modlog = message.guild.channels.cache.get(settings.channels.modlogs)
-                if (modlog) await modlog.send(new Discord.MessageEmbed()
-                    .setTitle(`${role.name} Commendation`)
-                    .addField('Commender', `${message.author} \`${message.author.tag}\``)
-                    .addField('Commended', `${member} \`${member.user.tag}\``)
-                    .addField('Role', `${role}`)
-                    .setColor(role.hexColor)
-                    .setTimestamp());
+                if (modlog) await modlog.send({
+                    embeds: [
+                        new Discord.MessageEmbed()
+                            .setTitle(`${role.name} Commendation`)
+                            .addField('Commender', `${message.author} \`${message.author.tag}\``)
+                            .addField('Commended', `${member} \`${member.user.tag}\``)
+                            .addField('Role', `${role}`)
+                            .setColor(role.hexColor)
+                            .setTimestamp()
+                    ]
+                });
                 member.roles.add(role.id)
                 if (i.dbName) db.query(`UPDATE users SET ${i.dbName} = true WHERE id = '${member.id}'`)
                 if (i.prefix) addPrefix(i.prefix, member)

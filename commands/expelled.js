@@ -36,7 +36,7 @@ module.exports = {
                 for (let i in rows) {
                     fitStringIntoEmbed(embed, `${rows[i].id}`, message.channel, ', ')
                 }
-                message.channel.send(embed)
+                message.channel.send({ embeds: [embed] })
             });
         },
         async listUsers(message, args, bot, db) {
@@ -51,7 +51,7 @@ module.exports = {
                 const guild = bot.guilds.cache.get(row.guildid);
                 fitStringIntoEmbed(embed, `\`${row.id}\` by <@!${row.modid}> in **${guild ? guild.name : row.guildid}**: ${ row.reason || 'No reason provided.' }`, message.channel, '\n');
             }
-            message.channel.send(embed);
+            message.channel.send({ embeds: [embed] });
         })
     },
     async addExpelled(message, args, bot, db) {
@@ -86,7 +86,7 @@ function fitStringIntoEmbed(embed, string, channel, join) {
             embed.addField('-', string)
         } else if (embed.fields[embed.fields.length - 1].value.length + `${join}${string}`.length >= 1024) {
             if (embed.length + `${join}${string}`.length >= 6000) {
-                channel.send(embed)
+                channel.send({ embeds: [embed] })
                 embed.setDescription('None!')
                 embed.fields = []
             } else {
@@ -94,7 +94,7 @@ function fitStringIntoEmbed(embed, string, channel, join) {
             }
         } else {
             if (embed.length + `${join}${string}`.length >= 6000) {
-                channel.send(embed)
+                channel.send({ embeds: [embed] })
                 embed.setDescription('None!')
                 embed.fields = []
             } else {

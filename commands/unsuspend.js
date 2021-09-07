@@ -25,7 +25,7 @@ module.exports = {
         if (member.roles.cache.has(settings.roles.permasuspended)) return unPerma()
         if (!member.roles.cache.has(settings.roles.tempsuspended)) return message.channel.send("User is not suspended")
 
-        db.query(`SELECT * FROM suspensions WHERE id = '${member.id}' AND suspended = true`, async(err, rows) => {
+        db.query(`SELECT * FROM suspensions WHERE id = '${member.id}' AND suspended = true`, async (err, rows) => {
             if (err) ErrorLogger.log(err, bot)
             if (rows && rows.length == 0) {
                 message.channel.send(`This user was not suspended by ${bot.user}. Would you still like to unsuspend them (removes suspended and gives raider role back)? Y/N`)
@@ -65,7 +65,7 @@ module.exports = {
                             .setTimestamp(Date.now())
                             .addField('Reason for unsuspension', reason)
                         let messages = await bot.guilds.cache.get(guildId).channels.cache.get(settings.channels.suspendlog).messages.fetch({ limit: 100 })
-                        messages.filter(m => m.id == proofLogID && m.author.id == bot.user.id).first().edit(embed)
+                        messages.filter(m => m.id == proofLogID && m.author.id == bot.user.id).first().edit({ embeds: [embed] })
                     } catch (er) { bot.guilds.cache.get(guildId).channels.cache.get(settings.channels.suspendlog).send(`${member} has been unsuspended by ${message.member}`) }
                     db.query(`UPDATE suspensions SET suspended = 0 WHERE id = '${member.id}'`)
                     message.channel.send(`${member} has been unsuspended`)
@@ -77,12 +77,12 @@ module.exports = {
 
         function unPerma() {
             if (member.roles.highest.position < message.guild.roles.cache.get(settings.roles.security).position && message.author.id !== '277636691227836419') return
-            db.query(`SELECT * FROM suspensions WHERE perma = true AND suspended = true AND id = '${member.id}'`, async(err, rows) => {
+            db.query(`SELECT * FROM suspensions WHERE perma = true AND suspended = true AND id = '${member.id}'`, async (err, rows) => {
                 if (rows.length == 0) {
                     let confirm = await message.channel.send(`I do not have any records of ${member} being perma suspended. Would you like to remove suspended, and add raider back?`)
                     confirm.react('✅')
                         .then(confirm.react('❌'))
-                    let reactionCollector = new Discord.ReactionCollector(confirm, (r, u) => u.id = message.author.id && (r.emoji.name == '❌' || r.emoji.name == '✅'), { time: 60000 })
+                    let reactionCollector = new Discord.ReactionCollector(confirm, { filter: (r, u) => u.id = message.author.id && (r.emoji.name == '❌' || r.emoji.name == '✅'), time: 60000 })
                     reactionCollector.on('end', (c, r) => { confirm.delete() })
                     reactionCollector.on('collect', (r, u) => {
                         reactionCollector.stop()

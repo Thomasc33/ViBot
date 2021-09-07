@@ -2,6 +2,7 @@ const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
 const dbInfo = require('../data/database.json')
 const botSettings = require('../settings.json')
+const data = require('../data/keyRoles.json')
 
 module.exports = {
     name: 'keyroles',
@@ -12,9 +13,9 @@ module.exports = {
         const settings = bot.settings[message.guild.id]
         if (args.length == 0) {
             let keyCountEmbed = new Discord.MessageEmbed()
-                .setDescription(`<@&${settings.roles.topkey}>: ${settings.numerical.topkey} Pops\n<@&${settings.roles.bottomkey}>: ${settings.numerical.bottomkey} Pops`)
+                .setDescription(`<@&${settings.roles.topkey}>: ${settings.numerical.topkey} ${data[message.guild.id] ? data[message.guild.id].keyName : 'Pops'}\n<@&${settings.roles.bottomkey}>: ${settings.numerical.bottomkey} ${data[message.guild.id] ? data[message.guild.id].keyName : 'Pops'}`)
                 .setColor('#ff0000')
-            message.channel.send(keyCountEmbed)
+            message.channel.send({ embeds: [keyCountEmbed] })
         } else {
             if (args[0].toLowerCase() == 'check') {
                 if (args[1].toLowerCase() == 'all') {

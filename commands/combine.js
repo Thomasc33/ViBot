@@ -24,10 +24,8 @@ module.exports = {
         if (!found || !mainChannel || !splitChannelID) return message.channel.send(`Could not combine this channel`)
         let splitChannel = message.guild.channels.cache.get(splitChannelID)
         if (!splitChannel) return message.channel.send(`Could not find split channel`)
-        let splitMembers = splitChannel.members.array()
-        for (let i in splitMembers) {
-            let m = splitMembers[i]
+        splitChannel.members.forEach(async m => {
             await m.voice.setChannel(mainChannel).catch(er => { })
-        }
+        })
     }
 }

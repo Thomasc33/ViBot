@@ -42,7 +42,7 @@ module.exports = {
                     .addField('Kicked By', `<@!${m.author.id}>`, true)
                     .setTimestamp(Date.now());
 
-                await message.guild.channels.cache.get(settings.channels.modlogs).send(embed);
+                await message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });
                 if (reason) {
                     await message.guild.channels.cache.get(settings.channels.modlogs).send(reason);
                 }

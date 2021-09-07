@@ -19,7 +19,7 @@ module.exports = {
                     .setTitle('Cult or Void?')
                     .setDescription(`<${botSettings.emote.malus}> or <${botSettings.emote.voidd}>`)
                     .setFooter(`Started by ${message.guild.members.cache.get(message.author.id).nickname}`)
-                var embedMessage = await message.channel.send(embed);
+                var embedMessage = await message.channel.send({ embeds: [embed] });
                 embedMessage.react(botSettings.emote.malus)
                     .then(embedMessage.react(botSettings.emote.voidd))
                     .then(embedMessage.react(botSettings.emote.Plane))
@@ -31,7 +31,7 @@ module.exports = {
                     .setTitle('US or EU?')
                     .setDescription(`:flag_um: or :flag_eu:`)
                     .setFooter(`Started by ${message.guild.members.cache.get(message.author.id).nickname}`)
-                var embedMessage = await message.channel.send(embed);
+                var embedMessage = await message.channel.send({ embeds: [embed] });
                 embedMessage.react('🇺🇲')
                     .then(embedMessage.react(`🇪🇺`))
                 break;

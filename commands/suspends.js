@@ -29,7 +29,7 @@ module.exports = {
                     let string = `__Suspension ${i} case for ${member}__\`${member.nickname}\` in ${bot.guilds.cache.get(suspension.guildid).name}\nReason: \`${suspension.reason.trim()}\`\nSuspended by: <@!${suspension.modid}> ${suspension.suspended ? 'Ends' : 'Ended'} ${moment().to(new Date(parseInt(suspension.uTime)))}\n`;
                     fitStringIntoEmbed(embed, string, message.channel)
                 }
-                message.channel.send(embed)
+                message.channel.send({ embeds: [embed] })
             })
 
         } else if (message.member.roles.has(settings.roles.developer)) {
@@ -46,7 +46,7 @@ module.exports = {
                     let desc = (`__Suspension case for ${member}__\`${member.nickname}\`\nReason: \`${sus.reason.trim()}\`\nSuspended by: <@!${sus.modid}>\n`)
                     fitStringIntoEmbed(embed, desc, message.channel)
                 }
-                message.channel.send(embed)
+                message.channel.send({ embeds: [embed] })
             })
         }
     }
@@ -60,7 +60,7 @@ function fitStringIntoEmbed(embed, string, channel) {
             embed.addField('-', string)
         } else if (embed.fields[embed.fields.length - 1].value.length + `\n${string}`.length >= 1024) {
             if (embed.length + `\n${string}`.length + 1 >= 6000) {
-                channel.send(embed)
+                channel.send({ embeds: [embed] })
                 embed.setDescription('None!')
                 embed.fields = []
             } else {
@@ -68,7 +68,7 @@ function fitStringIntoEmbed(embed, string, channel) {
             }
         } else {
             if (embed.length + `\n${string}`.length >= 6000) {
-                channel.send(embed)
+                channel.send({ embeds: [embed] })
                 embed.setDescription('None!')
                 embed.fields = []
             } else {

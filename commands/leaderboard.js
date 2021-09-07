@@ -24,9 +24,9 @@ module.exports = {
             .setAuthor(`Select a leaderboard`)
             .setDescription(leaderBoardTypes[guild.id].map(lb => `${numberToEmote(lb.index)} ${lb.name}`).join('\n'))
         if (message.author.avatarURL()) embed.author.iconURL = message.author.avatarURL()
-        let embedMessage = await message.channel.send(embed)
+        let embedMessage = await message.channel.send({ embeds: [embed] })
         let reacted = false
-        let reactionCollector = new Discord.ReactionCollector(embedMessage, (r, u) => u.id == message.author.id && ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟', '❌'])
+        let reactionCollector = new Discord.ReactionCollector(embedMessage, { filter: (r, u) => u.id == message.author.id && ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟', '❌'] })
         reactionCollector.on('collect', async (r, u) => {
             if (r.emoji.name == '❌') {
                 reactionCollector.stop()
@@ -50,7 +50,7 @@ module.exports = {
                     desc += `: \`${tot}\` ${type.name}`
                     fitStringIntoEmbed(embed, desc, message.channel)
                 }
-                message.channel.send(embed)
+                message.channel.send({ embeds: [embed] })
                 embedMessage.delete()
             })
         })
@@ -80,7 +80,7 @@ function fitStringIntoEmbed(embed, string, channel) {
             embed.addField('-', string)
         } else if (embed.fields[embed.fields.length - 1].value.length + `\n${string}`.length >= 1024) {
             if (embed.length + `\n${string}`.length >= 6000) {
-                channel.send(embed)
+                channel.send({ embeds: [embed] })
                 embed.setDescription('None!')
                 embed.fields = []
             } else {
@@ -88,7 +88,7 @@ function fitStringIntoEmbed(embed, string, channel) {
             }
         } else {
             if (embed.length + `\n${string}`.length >= 6000) {
-                channel.send(embed)
+                channel.send({ embeds: [embed] })
                 embed.setDescription('None!')
                 embed.fields = []
             } else {

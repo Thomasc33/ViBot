@@ -123,24 +123,26 @@ module.exports = {
                             await channel.bulkDelete(20)
                             if (CachedMessages[channel.guild.id]) CachedMessages[channel.guild.id] = []
                             for (let i in embeds) {
-                                let m = await channel.send(embeds[i])
+                                let m = await channel.send({ embeds: [embeds[i]] })
                                 CachedMessages[channel.guild.id].shift(m)
                             }
                         }
                         async function gatherMessages() {
                             CachedMessages[channel.guild.id] = []
                             let messages = await channel.messages.fetch({ limit: 5 })
-                            let messageArray = messages.array()
-                            if (messageArray.length !== embeds.length) resendMessages()
-                            else for (let i of messageArray) { CachedMessages[channel.guild.id].push(i); editMessages(); }
+                            if (messages.size !== embeds.length) resendMessages()
+                            else {
+                                messages.forEach(m => CachedMessages[channel.guild.id].push(m))
+                                editMessages();
+                            }
                         }
                         async function editMessages() {
                             for (let i in CachedMessages[channel.guild.id]) {
-                                CachedMessages[channel.guild.id][i].edit(embeds[i])
+                                CachedMessages[channel.guild.id][i].edit({ embeds: [embeds[i]] })
                             }
                         }
                     } catch (er) { console.log(er) }
-                } else for (let i in embeds) channel.send(embeds[i])
+                } else for (let i in embeds) channel.send({ embeds: [embeds[i]] })
                 resolve(true)
             })
         })

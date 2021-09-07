@@ -22,7 +22,7 @@ module.exports = {
             .setTitle('Bazaar-Parse Status')
             .addField('Parse by', `${message.member}`)
             .addField('Status', 'Getting Image')
-        let parseStatusMessage = await message.channel.send(parseStatusEmbed)
+        let parseStatusMessage = await message.channel.send({ embeds: [parseStatusEmbed] })
         var image;
         if (message.attachments.size == 0) {
             image = args[0];
@@ -32,11 +32,11 @@ module.exports = {
         if (image == null) {
             parseStatusEmbed.setColor('#ff0000')
                 .fields[1].value = `Error Getting Image`
-            parseStatusMessage.edit(parseStatusEmbed)
+            parseStatusMessage.edit({ embeds: [parseStatusEmbed]})
             return;
         }
         parseStatusEmbed.fields[1].value = `Sending Image to Google`
-        parseStatusMessage.edit(parseStatusEmbed)
+        parseStatusMessage.edit({ embeds: [parseStatusEmbed]})
         const [result] = await client.textDetection(image)
         var players = result.fullTextAnnotation.text.toLowerCase().replace(/[\n,]/g, " ").split(/ +/)
         players.shift()
@@ -44,7 +44,7 @@ module.exports = {
         players.shift()
 
         parseStatusEmbed.fields[1].value = `Processing Results`
-        parseStatusMessage.edit(parseStatusEmbed)
+        parseStatusMessage.edit({ embeds: [parseStatusEmbed]})
 
         let crashers = []
         let supposedToBeThere = []
@@ -89,10 +89,10 @@ module.exports = {
             else embed.fields[1].value += `, ${crashers[i]}`
         }
 
-        await message.channel.send(embed)
+        await message.channel.send({ embeds: [embed] })
         parseStatusEmbed.fields[1].value = 'Parse Complete.'
-        parseStatusMessage.edit(parseStatusEmbed)
+        parseStatusMessage.edit({ embeds: [parseStatusEmbed]})
 
 
     }
-}  
+}

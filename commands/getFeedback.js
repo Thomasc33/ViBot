@@ -52,7 +52,7 @@ async function getMessages(channel, limit) {
             options.before = last_id;
         }
         const messages = await channel.messages.fetch(options);
-        sum_messages.push(...messages.array());
+        sum_messages.push(...messages.map(m => m));
         last_id = messages.last().id;
         if (messages.size != 100 || sum_messages.length >= limit) {
             break;

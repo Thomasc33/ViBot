@@ -17,6 +17,6 @@ module.exports = {
             .addField('Uptime', `${Math.floor(bot.uptime / 86400000)} Days ${Math.floor((bot.uptime - Math.floor(bot.uptime / 86400000) * 86400000) / 3600000)} Hours ${Math.round((bot.uptime - Math.floor(bot.uptime / 86400000) * 86400000 - Math.floor((bot.uptime - Math.floor(bot.uptime / 86400000) * 86400000) / 3600000) * 3600000) / 60000)} Minutes`, false)
             .setFooter(`ViBot v${package.version.replace('^', '')}`)
             .setTimestamp(Date.now());
-        m.edit('', embed);
+        m.edit({ content: null, embeds: [embed] });
     }
 }

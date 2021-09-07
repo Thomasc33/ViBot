@@ -109,8 +109,8 @@ module.exports = {
                         .addField(`Reason:`, reason)
                         .setFooter(`Unsuspending at `)
                         .setTimestamp(Date.now() + time);
-                    messageId = await suspensionLog.send(embed);
-                    await member.user.send(embed)
+                    messageId = await suspensionLog.send({ embeds: [embed] });
+                    await member.user.send({ embeds: [embed] })
                     db.query(`INSERT INTO vetbans (id, guildid, suspended, uTime, reason, modid, logmessage) VALUES ('${member.id}', '${message.guild.id}', true, '${Date.now() + time}', '${reason}', '${message.author.id}', '${messageId.id}');`, err => { if (err) console.log(err) })
                     await member.roles.remove(settings.roles.vetraider)
                     setTimeout(() => { member.roles.add(settings.roles.vetban); }, 1000)

@@ -126,8 +126,8 @@ class afk {
         this.reactionCollector = new Discord.ReactionCollector(this.pingMessage, openFilter);
 
         //Unlock channel
-        await this.channel.updateOverwrite(this.raider.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
-        if (this.eventBoi) await this.channel.updateOverwrite(this.eventBoi.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+        await this.channel.permissionOverwrites.edit(this.raider.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+        if (this.eventBoi) await this.channel.permissionOverwrites.edit(this.eventBoi.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
 
         //Leader Panel
         this.leaderEmbed = new Discord.MessageEmbed()
@@ -232,9 +232,9 @@ class afk {
         clearInterval(this.moveInTimer);
         clearInterval(this.timer);
 
-        await this.channel.updateOverwrite(this.raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
-        if (this.eventBoi) await this.channel.updateOverwrite(this.eventBoi.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
-        await this.channel.setPosition(this.channel.parent.children.filter(c => c.type == 'voice').size - 1)
+        await this.channel.permissionOverwrites.edit(this.raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+        if (this.eventBoi) await this.channel.permissionOverwrites.edit(this.eventBoi.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+        await this.channel.setPosition(this.channel.parent.children.filter(c => c.type == 'GUILD_VOICE').size - 1)
 
         this.embed.setDescription(`This afk check has ended`)
             .setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
@@ -252,9 +252,9 @@ class afk {
         clearInterval(this.moveInTimer);
         clearInterval(this.timer);
 
-        await this.channel.updateOverwrite(this.raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
-        if (this.eventBoi) await this.channel.updateOverwrite(this.eventBoi.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
-        await this.channel.setPosition(this.channel.parent.children.filter(c => c.type == 'voice').size - 1)
+        await this.channel.permissionOverwrites.edit(this.raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+        if (this.eventBoi) await this.channel.permissionOverwrites.edit(this.eventBoi.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+        await this.channel.setPosition(this.channel.parent.children.filter(c => c.type == 'GUILD_VOICE').size - 1)
 
         this.embed.setDescription(`This afk check has been aborted`)
             .setFooter(`The afk check has been aborted by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
@@ -318,13 +318,13 @@ function createChannel(message, bot, isVet) {
             var template = message.guild.channels.cache.get(settings.voice.veteventtemplate)
             var raider = message.guild.roles.cache.get(settings.roles.vetraider)
             var vibotChannels = message.guild.channels.cache.get(settings.channels.vetchannels)
-            var category = message.guild.channels.cache.filter(c => c.type == 'category').find(c => c.name.toLowerCase() === 'veteran raiding')
+            var category = message.guild.channels.cache.filter(c => c.type == 'GUILD_CATEGORY').find(c => c.name.toLowerCase() === 'veteran raiding')
         } else {
             var template = message.guild.channels.cache.get(settings.voice.eventtemplate)
             var raider = message.guild.roles.cache.get(settings.roles.raider)
             var EventBoi = message.guild.roles.cache.get(settings.roles.eventraider)
             var vibotChannels = message.guild.channels.cache.get(settings.channels.eventchannels)
-            var category = message.guild.channels.cache.filter(c => c.type == 'category').find(c => c.name.toLowerCase() === 'events')
+            var category = message.guild.channels.cache.filter(c => c.type == 'GUILD_CATEGORY').find(c => c.name.toLowerCase() === 'events')
         }
 
         let channel = await template.clone()
@@ -336,8 +336,8 @@ function createChannel(message, bot, isVet) {
         await channel.setName(`${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s Run`).catch(er => reject('Failed to set name'))
 
         //allows raiders to view
-        await channel.updateOverwrite(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)).catch(er => reject('Failed to give perms to raider'))
-        if (EventBoi) await channel.updateOverwrite(EventBoi.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)).catch(er => reject('Failed to give Event Boi Perms'))
+        await channel.permissionOverwrites.edit(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)).catch(er => reject('Failed to give perms to raider'))
+        if (EventBoi) await channel.permissionOverwrites.edit(EventBoi.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)).catch(er => reject('Failed to give Event Boi Perms'))
 
         //Embed to remove
         let embed = new Discord.MessageEmbed()

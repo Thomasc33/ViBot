@@ -28,25 +28,25 @@ module.exports = {
                         fitStringIntoEmbed(embed, `<@!${row.id}> by <@!${row.modid}> ending ${moment().to(new Date(parseInt(row.uTime)))}`, message.channel);
                     }
                 }
-                message.channel.send(embed)
+                message.channel.send({ embeds: [embed] })
                 embed.fields = [];
                 embed.setDescription('None!');
                 embed.setAuthor(`Mutes in ${message.guild.name} not set by ${message.guild.members.cache.get(bot.user.id).nickname||bot.user.tag}`);
                 members.forEach(m => fitStringIntoEmbed(embed, `${m}`, message.channel));
-                message.channel.send(embed);
+                message.channel.send({ embeds: [embed] });
             })
         } else {
             db.query(`SELECT * FROM mutes WHERE id = ${member.id} AND guildid = ${message.guild.id} ORDER BY muted DESC`, async(err, rows) => {
                 if (err) ErrorLogger.log(err, bot);
                 if (!rows || !rows.length)
-                    return message.channel.send(embed);
+                    return message.channel.send({ embeds: [embed] });
                 for (const row of rows) {
                     if (row.muted)
                         fitStringIntoEmbed(embed, `**Ends ${moment().to(new Date(parseInt(row.uTime)))} by <@!${row.modid}>: ${row.reason}**`);
                     else
                         fitStringIntoEmbed(embed, `Ended ${moment().to(new Date(parseInt(row.uTime)))} by <@!${row.modid}>: ${row.reason}`);
                 }
-                message.channel.send(embed);
+                message.channel.send({ embeds: [embed] });
             });
         }
 
@@ -61,7 +61,7 @@ function fitStringIntoEmbed(embed, string, channel) {
             embed.addField('-', string)
         } else if (embed.fields[embed.fields.length - 1].value.length + `\n${string}`.length >= 1024) {
             if (embed.length + `\n${string}`.length >= 6000) {
-                channel.send(embed)
+                channel.send({ embeds: [embed] })
                 embed.setDescription('None!')
                 embed.fields = []
             } else {
@@ -69,7 +69,7 @@ function fitStringIntoEmbed(embed, string, channel) {
             }
         } else {
             if (embed.length + `\n${string}`.length >= 6000) {
-                channel.send(embed)
+                channel.send({ embeds: [embed] })
                 embed.setDescription('None!')
                 embed.fields = []
             } else {

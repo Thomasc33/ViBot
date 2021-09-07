@@ -10,7 +10,7 @@ module.exports = {
     alias: ['cn'],
     args: '<new name>',
     requiredArgs: 1,
-    getNotes(guildid, member){
+    getNotes(guildid, member) {
         return 'Security+: [mention | ID] <new name> [proof]'
     },
     role: 'raider',
@@ -33,11 +33,11 @@ module.exports = {
                 await this.change(message, member, args.shift(), args, bot, settings, staff);
             }
         } catch (err) {
-            message.channel.send(err);
+            message.channel.send(err.toString());
         }
     },
     async change(message, member, altName, args, bot, settings, staff) {
-        return new Promise(async(resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             const own = message.member == member;
             altName = altName.replace(/[^a-z]/gi, '');
             if (!staff && altName.length > 10)
@@ -82,9 +82,8 @@ module.exports = {
                 //need to be both staff and it must have an image attached to change a name not in name history
                 if (!staff || !image)
                     return reject((own ? 'Your' : `${member}'s`) +
-                        ` name change history is private or ${altName} is on a separate account from one ${own ? 'you' : 'they'} own.\r\n${ 
-                            staff? 
-                            'Please make sure to attach an image for accounts not in ' + (own ? 'your' : 'their') + ' name change history.': 
+                        ` name change history is private or ${altName} is on a separate account from one ${own ? 'you' : 'they'} own.\r\n${staff ?
+                            'Please make sure to attach an image for accounts not in ' + (own ? 'your' : 'their') + ' name change history.' :
                             'If you would still like to change your name to ' + altName + ', please contact a Security+ staff member.'}`);
             }
 
@@ -114,7 +113,7 @@ module.exports = {
     }
 }
 
-const nameHistory = async(altName, names) => {
+const nameHistory = async (altName, names) => {
     let historyName;
     let history;
     let memberPrefix = '';
@@ -132,8 +131,8 @@ const nameHistory = async(altName, names) => {
     } catch (err) { console.log(err) }
 }
 
-const changeName = async(message, bot, settings, member, names, idx, altName, userPrefix, image, historyName, history) => {
-    return new Promise(async(resolve, reject) => {
+const changeName = async (message, bot, settings, member, names, idx, altName, userPrefix, image, historyName, history) => {
+    return new Promise(async (resolve, reject) => {
         const oldName = names[idx];
         names[idx] = altName;
         //if username is `Husky#1234` and ign is Husky, name change => husky, if name is huskY and ign is huskY, name change => husky
@@ -179,7 +178,7 @@ const changeName = async(message, bot, settings, member, names, idx, altName, us
                     //Show name change history between the old name and the new name
                     embed.addField('Found in Name History', `\`\`\`${total.reverse().join(' => ')}\`\`\``);
                 }
-                message.guild.channels.cache.get(settings.channels.modlogs).send(embed);
+                message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });
                 confirm.react('✅')
                 confirm.edit(`Successfully changed name for ${member} from \`${oldName || ' '}\` to \`${names[idx]}\`.`);
             } else {

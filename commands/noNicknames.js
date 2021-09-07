@@ -29,6 +29,6 @@ module.exports = {
         } else {
             embed.setDescription(`No users found with ${message.guild.roles.cache.get(settings.roles.raider)} and no nickname`)
         }
-        message.channel.send(embed)
+        message.channel.send({ embeds: [embed] })
     }
 }
