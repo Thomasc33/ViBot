@@ -39,7 +39,7 @@ module.exports = {
         if (image == null) image = args[2]
         let embed = new Discord.MessageEmbed()
             .setTitle('Manual Event Boi Verify')
-            .setDescription(member)
+            .setDescription(member.toString())
             .addField('User', member.displayName, true)
             .addField('Verified By', `<@!${message.author.id}>`, true)
             .setTimestamp(Date.now());

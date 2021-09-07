@@ -62,7 +62,7 @@ module.exports = {
                 let embed = new Discord.MessageEmbed()
                     .setTitle('Alt Removed')
                     .setColor('#fefefe')
-                    .setDescription(member)
+                    .setDescription(member.toString())
                     .addField('Main', member.nickname, true)
                     .addField('Alt Removed', names[choice], true)
                     .addField('Removed By', `<@!${message.author.id}> `)

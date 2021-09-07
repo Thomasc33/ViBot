@@ -29,7 +29,7 @@ module.exports = {
         await member.setNickname(nick)
         let embed = new Discord.MessageEmbed()
             .setTitle('Manual Verify')
-            .setDescription(member)
+            .setDescription(member.toString())
             .addField('User', member.displayName, true)
             .addField('Verified By', `<@!${message.author.id}>`, true)
             .setTimestamp(Date.now());

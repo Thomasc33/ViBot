@@ -282,7 +282,7 @@ async function createChannel(name, isVet, message, bot) {
             .setTimestamp()
             .setTitle(channel.name)
             .setColor(`#eeeeee`)
-        let m = await vibotChannels.send(`${message.member}`, embed)
+        let m = await vibotChannels.send({ content: `${message.member}`, embeds: [embed] })
         await m.react('❌')
         setTimeout(() => { ChannelsCommand.watchMessage(m, bot, settings) }, 5000)
         if (!channel) rej('No channel was made')

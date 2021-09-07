@@ -23,7 +23,7 @@ module.exports = {
         if (image == null) image = args[1]
         let embed = new Discord.MessageEmbed()
             .setTitle('Event Boi Removed')
-            .setDescription(member)
+            .setDescription(member.toString())
             .addField('User', member.displayName, true)
             .addField('Removed By', `<@!${message.author.id}>`, true)
             .setTimestamp(Date.now());
