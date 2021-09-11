@@ -105,7 +105,7 @@ module.exports = {
         }
         checkMessage.edit({ content: null, embeds: [checkEmbed] })
         FalseSuspends.execute(message, args, bot, db)
-        eventDupes.execute(message, args, bot, db)
+        if (!settings.backend.giveeventroleonverification) eventDupes.execute(message, args, bot, db)
     }
 }
 

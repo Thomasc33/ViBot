@@ -18,6 +18,7 @@ module.exports = {
         if (member.roles.cache.has(raiderRole.id)) return message.channel.send('User is already verified')
         if (member.roles.cache.has(settings.roles.eventraider)) await member.roles.remove(settings.roles.eventraider)
         await member.roles.add(raiderRole)
+        if (settings.backend.giveeventroleonverification) await member.roles.add(settings.roles.eventraider)
         let tag = member.user.tag.substring(0, member.user.tag.length - 5)
         let nick = ''
         if (tag == args[1]) {
@@ -54,12 +55,12 @@ module.exports = {
 
             const expelMessage = await message.channel.send({ embeds: [expelEmbed] });
             expelMessage.react('❌');
-            expelMessage.collector = expelMessage.createReactionCollector((r, u) => u.id == message.author.id && r.emoji.name == '❌', { time: 10000 });
+            expelMessage.collector = expelMessage.createReactionCollector({ filter: (r, u) => u.id == message.author.id && r.emoji.name == '❌', time: 10000 });
             expelMessage.collector.on('collect', (r, u) => {
                 expelMessage.collector.stop();
             })
-            expelMessage.collector.on('end', (collected) => {
-                if (!collected.size) {
+            expelMessage.collector.on('end', (collected, reason) => {
+                if (collected.size > 0) {
                     expelEmbed.setDescription(`The follow expels have been removed from the database tied to ${member}.`);
                     db.query(`DELETE FROM veriblacklist WHERE id = '${member.id}' OR id = '${nick}'`);
                     expelMessage.reactions.removeAll();
