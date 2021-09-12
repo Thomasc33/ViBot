@@ -47,7 +47,7 @@ module.exports = {
     },
     async add(message, args, bot) {
         message.channel.send(`Are you sure you want to add ${args[1].toLowerCase()} to the crasher list? (Y/N)`)
-        let messageCollector = new Discord.MessageCollector(message.channel, m => m.author.id == message.author.id)
+        let messageCollector = new Discord.MessageCollector(message.channel, {filter: m => m.author.id == message.author.id})
         messageCollector.on('collect', m => {
             switch (m.content.charAt(0).toLowerCase()) {
                 case 'y':

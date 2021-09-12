@@ -62,7 +62,7 @@ module.exports = {
                     db.query(`SELECT * FROM suspensions WHERE id = '${member.id}' AND suspended = true`, async (err, rows) => {
                         if (rows.length != 0) {
                             message.channel.send(member.nickname.concat(' is already suspended. Reply __**Y**__es to overwrite.'));
-                            let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 10000 });
+                            let collector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id === message.author.id, time: 10000 });
                             collector.on('collect', message => {
                                 if (message.content.charAt(0).toLowerCase() == 'y') {
                                     message.channel.send('Overwriting suspension...');

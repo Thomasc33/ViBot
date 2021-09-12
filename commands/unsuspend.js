@@ -29,7 +29,7 @@ module.exports = {
             if (err) ErrorLogger.log(err, bot)
             if (rows && rows.length == 0) {
                 message.channel.send(`This user was not suspended by ${bot.user}. Would you still like to unsuspend them (removes suspended and gives raider role back)? Y/N`)
-                let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 10000 });
+                let collector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id === message.author.id,  time: 10000 });
                 collector.on('collect', m => {
                     try {
                         if (m.content.toLowerCase().charAt(0) == 'y') {

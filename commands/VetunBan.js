@@ -39,7 +39,7 @@ module.exports = {
                 message.channel.send("User unbanned successfully");
             } else {
                 message.channel.send(`This user was not vet banned by ${bot.user}. Would you still like to unban then? Y/N`)
-                let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 10000 });
+                let collector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id === message.author.id, time: 10000 });
                 collector.on('collect', m => {
                     collector.stop()
                     try {
