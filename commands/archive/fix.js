@@ -12,7 +12,7 @@ module.exports = {
             let mes = await message.channel.send('Processing. This may take a minute')
             db.query('SELECT * FROM users', (err, rows) => {
                 if (err) ErrorLogger.log(err, bot)
-                let members = message.guild.members.cache.array();
+                let members = message.guild.members.cache.map(m => m);
                 var embed = new Discord.MessageEmbed()
                     .setColor('#015c21')
                     .setTitle('Fixed')
@@ -35,7 +35,7 @@ module.exports = {
                                 embed.fields[0].value = m
                             } else {
                                 if (embed.fields[0].value.length + `\n${m}` > 1024) {
-                                    message.channel.send(embed)
+                                    message.channel.send({ embeds: [embed] })
                                     embed.fields[1].value = ''
                                     embed.fields[0].value = ''
                                 }
@@ -47,7 +47,7 @@ module.exports = {
                                 embed.fields[1].value = m
                             } else {
                                 if (embed.fields[1].length + `\n${m}` > 1024) {
-                                    message.channel.send(embed)
+                                    message.channel.send({ embeds: [embed] })
                                     embed.fields[1].value = ''
                                     embed.fields[0].value = ''
                                 }
@@ -58,10 +58,10 @@ module.exports = {
                     }
                 }
                 mes.delete()
-                message.channel.send(embed)
+                message.channel.send({ embeds: [embed] })
             })
         } else if (args[0].toLowerCase() == 'dupes') {
-            let memberArray = message.guild.members.cache.array()
+            let memberArray = message.guild.members.cache.map(m=>m)
             for (let i in memberArray) {
                 let m = memberArray[i]
                 db.query(`SELECT * FROM users WHERE id = '${m.id}'`, (err, rows) => {

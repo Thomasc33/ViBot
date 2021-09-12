@@ -18,6 +18,7 @@ module.exports = {
         if (member.roles.cache.has(raiderRole.id)) return message.channel.send('User is already verified')
         if (member.roles.cache.has(settings.roles.eventraider)) await member.roles.remove(settings.roles.eventraider)
         await member.roles.add(raiderRole)
+        if (settings.backend.giveeventroleonverification) await member.roles.add(settings.roles.eventraider)
         let tag = member.user.tag.substring(0, member.user.tag.length - 5)
         let nick = ''
         if (tag == args[1]) {
@@ -29,37 +30,37 @@ module.exports = {
         await member.setNickname(nick)
         let embed = new Discord.MessageEmbed()
             .setTitle('Manual Verify')
-            .setDescription(member)
+            .setDescription(member.toString())
             .addField('User', member.displayName, true)
             .addField('Verified By', `<@!${message.author.id}>`, true)
             .setTimestamp(Date.now());
-        message.guild.channels.cache.get(settings.channels.modlogs).send(embed);
+        message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });
         let confirmEmbed = new Discord.MessageEmbed().setDescription(`${member} has been given ${raiderRole}`)
-        message.channel.send(confirmEmbed)
-    
+        message.channel.send({ embeds: [confirmEmbed] })
+
         member.user.send(`You have been verified on \`${message.guild.name}\`. Please head over to rules, faq, and raiding-rules channels to familiarize yourself with the server. Happy raiding`)
 
         db.query(`SELECT * FROM veriblacklist WHERE id = '${member.id}' OR id = '${nick}'`, async (err, rows) => {
             if (!rows || !rows.length)
                 return;
-            
+
             const expelEmbed = new Discord.MessageEmbed()
                 .setTitle('Automatic Expel Removal')
                 .setDescription(`The follow expels have been removed from the database tied to ${member}. If these should stick, please react with ❌ in the next 10 seconds.`)
                 .setColor('#E0B0FF');
 
             for (const row of rows) {
-                expelEmbed.addField(`${row.id}`, `Expelled by <@${row.modid}> in ${bot.guilds.cache.get(row.guildid).name}:\`\`\`${row.reason}\`\`\``);
+                expelEmbed.addField(`${row.id}`, `Expelled by <@${row.modid}> in ${bot.guilds.cache.get(row.guildid).name || row.guildid}:\`\`\`${row.reason}\`\`\``);
             }
 
-            const expelMessage = await message.channel.send(expelEmbed);
+            const expelMessage = await message.channel.send({ embeds: [expelEmbed] });
             expelMessage.react('❌');
-            expelMessage.collector = expelMessage.createReactionCollector((r, u) => u.id == message.author.id && r.emoji.name == '❌', { time: 10000 });
+            expelMessage.collector = expelMessage.createReactionCollector({ filter: (r, u) => u.id == message.author.id && r.emoji.name == '❌', time: 10000 });
             expelMessage.collector.on('collect', (r, u) => {
                 expelMessage.collector.stop();
             })
-            expelMessage.collector.on('end', (collected) => {
-                if (!collected.size) {
+            expelMessage.collector.on('end', (collected, reason) => {
+                if (collected.size > 0) {
                     expelEmbed.setDescription(`The follow expels have been removed from the database tied to ${member}.`);
                     db.query(`DELETE FROM veriblacklist WHERE id = '${member.id}' OR id = '${nick}'`);
                     expelMessage.reactions.removeAll();
@@ -67,7 +68,7 @@ module.exports = {
                 } else {
                     expelEmbed.setDescription(`The following expels for ${member} have not been removed.`);
                 }
-                expelMessage.edit(expelEmbed);
+                expelMessage.edit({ embeds: [expelEmbed] });
             })
         })
     }

@@ -116,8 +116,7 @@
         {
             "index": 3,
             "dbNames": [
-                "successruns",
-                "failruns"
+                "successruns"
             ],
             "name": "Total Runs Lead"
         },
@@ -127,6 +126,20 @@
                 "points"
             ],
             "name": "Points"
+        },
+        {
+            "index": 5,
+            "dbNames": [
+                "oldruns"
+            ],
+            "name": "Legacy Runs"
+        },
+        {
+            "index": 6,
+            "dbNames": [
+                "oldsuccessruns"
+            ],
+            "name": "Legacy Shatters Lead"
         }
     ]
 }

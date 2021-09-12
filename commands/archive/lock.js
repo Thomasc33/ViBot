@@ -19,7 +19,7 @@ module.exports = {
             var channel = await message.guild.channels.cache.find(c => c.name.includes(`${settings.voiceprefixes.vetprefix}${args[0]}`))
             var verifiedRaiderRole = await message.guild.roles.cache.get(settings.roles.vetraider);
         } else if (message.channel.parent.name.toLowerCase() === 'events') {
-            var channel = message.guild.channels.cache.find(c => c.type == 'category' && c.name == 'Events').children.find(c => c.name.includes(args[0]) && !c.name.includes('Realm Clearing'))
+            var channel = message.guild.channels.cache.find(c => c.type == 'GUILD_CATEGORY' && c.name == 'Events').children.find(c => c.name.includes(args[0]) && !c.name.includes('Realm Clearing'))
             var verifiedRaiderRole = await message.guild.roles.cache.get(settings.roles.raider);
         } else return message.channel.send("Try again, but in a proper category")
         bot = bott
@@ -32,18 +32,18 @@ module.exports = {
         let settings = bot.settings[message.guild.id]
         if (channel == null) return message.channel.send("Could not find channel correctly, please try again");
         if (message.channel.parent.name.toLowerCase() === 'raiding') {
-            await channel.updateOverwrite(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(r => ErrorLogger.log(er, bot))
+            await channel.permissionOverwrites.edit(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(r => ErrorLogger.log(er, bot))
             setTimeout(function () { channel.setName(`${settings.voiceprefixes.raidingprefix}${channelNumber}`).catch(r => ErrorLogger.log(r, bot)) }, 1000)
         }
         if (message.channel.parent.name.toLowerCase() === 'veteran raiding') {
-            await channel.updateOverwrite(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+            await channel.permissionOverwrites.edit(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
             setTimeout(function () { channel.setName(`${settings.voiceprefixes.vetprefix}${channelNumber}`).catch(er => ErrorLogger.log(er, bot)) }, 1000)
         }
         if (message.channel.parent.name.toLowerCase() === 'events') {
             let eventBoi = await message.guild.roles.cache.get(settings.roles.eventraider)
             let name = channel.name.substring(0, channel.name.indexOf(channelNumber) + 1)
-            await channel.updateOverwrite(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
-            await channel.updateOverwrite(eventBoi.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+            await channel.permissionOverwrites.edit(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+            await channel.permissionOverwrites.edit(eventBoi.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
             setTimeout(function () { channel.setName(`${name}`).catch(er => ErrorLogger.log(er, bot)) }, 1000)
         }
     }

@@ -28,7 +28,9 @@
     },
     "piratecave": {
         "name": "Pirate Cave",
-        "aliases": ["pcave"],
+        "aliases": [
+            "pcave"
+        ],
         "enabled": true,
         "keyEmojiId": "723001429744418826",
         "keyEmote": ":pcaveK:723001429744418826",
@@ -56,7 +58,10 @@
     },
     "forestmaze": {
         "name": "Forest Maze",
-        "aliases": ["forest", "maze"],
+        "aliases": [
+            "forest",
+            "maze"
+        ],
         "enabled": true,
         "keyEmojiId": "723001429597487174",
         "keyEmote": ":forestK:723001429597487174",
@@ -84,7 +89,9 @@
     },
     "spiderden": {
         "name": "Spider Den",
-        "aliases": ["spider"],
+        "aliases": [
+            "spider"
+        ],
         "enabled": true,
         "keyEmojiId": "723001429798813706",
         "keyEmote": ":spiderK:723001429798813706",
@@ -112,7 +119,10 @@
     },
     "snakepit": {
         "name": "Snake Pit",
-        "aliases": ["snake", "pit"],
+        "aliases": [
+            "snake",
+            "pit"
+        ],
         "enabled": true,
         "keyEmojiId": "723001429647818763",
         "keyEmote": ":snakeK:723001429647818763",
@@ -140,7 +150,9 @@
     },
     "forbiddenjungle": {
         "name": "Forbidden Jungle",
-        "aliases": ["jungle"],
+        "aliases": [
+            "jungle"
+        ],
         "enabled": true,
         "keyEmojiId": "723001429782036520",
         "keyEmote": ":jungleK:723001429782036520",
@@ -196,7 +208,9 @@
     },
     "magicwoods": {
         "name": "Magic Woods",
-        "aliases": ["mwoods"],
+        "aliases": [
+            "mwoods"
+        ],
         "enabled": true,
         "keyEmojiId": "723001429702344757",
         "keyEmote": ":mwoodK:723001429702344757",
@@ -224,7 +238,9 @@
     },
     "spriteworld": {
         "name": "Sprite World",
-        "aliases": ["sprite"],
+        "aliases": [
+            "sprite"
+        ],
         "enabled": true,
         "keyEmojiId": "723001429605744641",
         "keyEmote": ":spriteK:723001429605744641",
@@ -252,7 +268,9 @@
     },
     "candyland": {
         "name": "Candyland",
-        "aliases": ["cland"],
+        "aliases": [
+            "cland"
+        ],
         "enabled": true,
         "keyEmojiId": "723001429362737223",
         "keyEmote": ":clandK:723001429362737223",
@@ -280,7 +298,9 @@
     },
     "undeadlair": {
         "name": "Undead Lair",
-        "aliases": ["udl"],
+        "aliases": [
+            "udl"
+        ],
         "enabled": true,
         "keyEmojiId": "723001429736030220",
         "keyEmote": ":udlK:723001429736030220",
@@ -364,7 +384,9 @@
     },
     "sewers": {
         "name": "Sewers",
-        "aliases": ["sew"],
+        "aliases": [
+            "sew"
+        ],
         "enabled": true,
         "keyEmojiId": "723001429492629536",
         "keyEmote": ":sewerK:723001429492629536",
@@ -392,7 +414,9 @@
     },
     "library": {
         "name": "Library",
-        "aliases": ["lib"],
+        "aliases": [
+            "lib"
+        ],
         "enabled": true,
         "keyEmojiId": "723001429366800516",
         "keyEmote": ":libK:723001429366800516",
@@ -420,7 +444,9 @@
     },
     "cemetary": {
         "name": "Cemetary",
-        "aliases": ["cem"],
+        "aliases": [
+            "cem"
+        ],
         "enabled": true,
         "keyEmojiId": "723001429152759850",
         "keyEmote": ":cemK:723001429152759850",
@@ -476,7 +502,9 @@
     },
     "lab": {
         "name": "Lab",
-        "aliases": ["mlab"],
+        "aliases": [
+            "mlab"
+        ],
         "enabled": true,
         "keyEmojiId": "723001429312405557",
         "keyEmote": ":labK:723001429312405557",
@@ -504,7 +532,9 @@
     },
     "parasite": {
         "name": "Parasite",
-        "aliases": ["para"],
+        "aliases": [
+            "para"
+        ],
         "enabled": true,
         "keyEmojiId": "723001429492629565",
         "keyEmote": ":parasiteK:723001429492629565",
@@ -588,7 +618,9 @@
     },
     "mountaintemple": {
         "name": "Mountain Temple",
-        "aliases": ["mt"],
+        "aliases": [
+            "mt"
+        ],
         "enabled": true,
         "keyEmojiId": "723001429786230805",
         "keyEmote": ":mtK:723001429786230805",
@@ -616,7 +648,9 @@
     },
     "lair": {
         "name": "Lair of Draconis",
-        "aliases": ["lod"],
+        "aliases": [
+            "lod"
+        ],
         "enabled": true,
         "keyEmojiId": "723001429685698580",
         "keyEmote": ":lodK:723001429685698580",
@@ -644,7 +678,9 @@
     },
     "deadwaterdocks": {
         "name": "Deadwater Docks",
-        "aliases": ["ddocks"],
+        "aliases": [
+            "ddocks"
+        ],
         "enabled": true,
         "keyEmojiId": "723001429601550376",
         "keyEmote": ":ddockK:723001429601550376",
@@ -672,7 +708,9 @@
     },
     "woodland": {
         "name": "Woodland Labyrinth",
-        "aliases": ["wlab"],
+        "aliases": [
+            "wlab"
+        ],
         "enabled": true,
         "keyEmojiId": "723001429606006787",
         "keyEmote": ":wlandK:723001429606006787",
@@ -700,7 +738,9 @@
     },
     "crawlingdepths": {
         "name": "Crawling Depths",
-        "aliases": ["cdepths"],
+        "aliases": [
+            "cdepths"
+        ],
         "enabled": true,
         "keyEmojiId": "723001429555675186",
         "keyEmote": ":cdepthsK:723001429555675186",
@@ -728,7 +768,9 @@
     },
     "oceantrench": {
         "name": "Ocean Trench",
-        "aliases": ["ot"],
+        "aliases": [
+            "ot"
+        ],
         "enabled": true,
         "keyEmojiId": "723001429714796604",
         "keyEmote": ":otK:723001429714796604",
@@ -756,7 +798,9 @@
     },
     "icecave": {
         "name": "Ice Cave",
-        "aliases": ["cave"],
+        "aliases": [
+            "cave"
+        ],
         "enabled": true,
         "keyEmojiId": "723001429119467563",
         "keyEmote": ":caveK:723001429119467563",
@@ -878,7 +922,9 @@
     },
     "fullskipnest": {
         "name": "Full-skip Nest",
-        "aliases": ["fsnest"],
+        "aliases": [
+            "fsnest"
+        ],
         "enabled": true,
         "keyEmojiId": "723001429693956106",
         "keyEmote": ":nestK:723001429693956106",
@@ -911,7 +957,9 @@
     },
     "shatters": {
         "name": "Shatters",
-        "aliases": ["shatts"],
+        "aliases": [
+            "shatts"
+        ],
         "enabled": true,
         "keyEmojiId": "723001429903802478",
         "keyEmote": ":shattersK:723001429903802478",
@@ -1112,7 +1160,9 @@
     },
     "battlenexus": {
         "name": "Battle Nexus",
-        "aliases": ["bnex"],
+        "aliases": [
+            "bnex"
+        ],
         "enabled": true,
         "keyEmojiId": "723001429547155477",
         "keyEmote": ":bnexK:723001429547155477",
@@ -1196,7 +1246,9 @@
     },
     "caveofathousandtreasures": {
         "name": "Cave of a Thousand Treasures",
-        "aliases": ["tcave"],
+        "aliases": [
+            "tcave"
+        ],
         "enabled": true,
         "keyEmojiId": "723001430189015100",
         "keyEmote": ":ttK:723001430189015100",
@@ -1224,7 +1276,9 @@
     },
     "puppet": {
         "name": "Puppet Theatre",
-        "aliases": ["pup"],
+        "aliases": [
+            "pup"
+        ],
         "enabled": true,
         "keyEmojiId": "723001429798813696",
         "keyEmote": ":puppetK:723001429798813696",
@@ -1243,34 +1297,6 @@
         "daze": false,
         "curse": false,
         "expose": false,
-        "warrior": true,
-        "paladin": true,
-        "knight": true,
-        "bard": true,
-        "trickster": true,
-        "priest": true
-    },
-    "random": {
-        "name": "Random",
-        "aliases": [],
-        "enabled": true,
-        "keyEmojiId": "723009084814524449",
-        "keyEmote": ":oryx:723009084814524449",
-        "portalEmojiId": "723001215184535553",
-        "portalEmote": ":pcave:723001215184535553",
-        "color": "#fefefe",
-        "rushers": true,
-        "stun": true,
-        "ogmur": true,
-        "fungal": true,
-        "mseal": true,
-        "brain": true,
-        "stasis": true,
-        "parylize": true,
-        "slow": true,
-        "daze": true,
-        "curse": true,
-        "expose": true,
         "warrior": true,
         "paladin": true,
         "knight": true,
@@ -1333,5 +1359,43 @@
         "bard": true,
         "trickster": true,
         "priest": true
+    },
+    "random": {
+        "name": "Random",
+        "aliases": [],
+        "enabled": true,
+        "keyEmojiId": "723009084814524449",
+        "keyEmote": ":oryx:723009084814524449",
+        "portalEmojiId": "723001215184535553",
+        "portalEmote": ":pcave:723001215184535553",
+        "color": "#fefefe",
+        "rushers": true,
+        "stun": true,
+        "ogmur": true,
+        "fungal": true,
+        "mseal": true,
+        "brain": true,
+        "stasis": true,
+        "parylize": true,
+        "slow": true,
+        "daze": true,
+        "curse": true,
+        "expose": true,
+        "warrior": true,
+        "paladin": true,
+        "knight": true,
+        "bard": true,
+        "trickster": true,
+        "priest": true
+    },
+    "exalts": {
+        "name": "exalts",
+        "aliases": [
+            "ex",
+            "exaltations",
+            "exaltation"
+        ],
+        "enabled": true,
+        "color": "#fefefe"
     }
 }

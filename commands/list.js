@@ -18,7 +18,7 @@ module.exports = {
                             .setDescription(`Suspected Alt: ${m}`)
                             .setColor('#ff0000')
                             .setURL(`https://www.realmeye.com/player/${m.displayName.replace(/[^a-z|]/gi, '')}`)
-                        message.channel.send(saembed)
+                        message.channel.send({ embeds: [saembed] })
                     })
                 break;
             default:
@@ -39,7 +39,7 @@ module.exports = {
                     fitStringIntoEmbed(embed, `<@!${m.id}>`, message.channel)
                 })
                 embed.setFooter(`${members.size} users with role`)
-                message.channel.send(embed).catch(er => ErrorLogger.log(er, bot))
+                message.channel.send({ embeds: [embed] }).catch(er => ErrorLogger.log(er, bot))
                 break;
         }
     }
@@ -53,7 +53,7 @@ function fitStringIntoEmbed(embed, string, channel) {
             embed.addField('-', string)
         } else if (embed.fields[embed.fields.length - 1].value.length + `, ${string}`.length >= 1024) {
             if (embed.length + `, ${string}`.length >= 6000) {
-                channel.send(embed)
+                channel.send({ embeds: [embed] })
                 embed.setDescription('None!')
                 embed.fields = []
             } else {
@@ -61,7 +61,7 @@ function fitStringIntoEmbed(embed, string, channel) {
             }
         } else {
             if (embed.length + `, ${string}`.length >= 6000) {
-                channel.send(embed)
+                channel.send({ embeds: [embed] })
                 embed.setDescription('None!')
                 embed.fields = []
             } else {

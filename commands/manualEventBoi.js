@@ -39,17 +39,17 @@ module.exports = {
         if (image == null) image = args[2]
         let embed = new Discord.MessageEmbed()
             .setTitle('Manual Event Boi Verify')
-            .setDescription(member)
+            .setDescription(member.toString())
             .addField('User', member.displayName, true)
             .addField('Verified By', `<@!${message.author.id}>`, true)
             .setTimestamp(Date.now());
         try {
             if (validURL(image)) embed.setImage(image)
-            message.guild.channels.cache.get(settings.channels.modlogs).send(embed);
+            message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });
             message.channel.send(`${member} has been given ${eventRole}`)
         } catch (er) {
             message.channel.send('There was an issue attaching the image. However they have still been verified as event boi')
-            message.guild.channels.cache.get(settings.channels.modlogs).send(embed);
+            message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });
         }
         function validURL(str) {
             var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol

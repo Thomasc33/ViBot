@@ -1,7 +1,7 @@
 const fs = require('fs')
 const Discord = require('discord.js')
 const roles = ['moderator', 'officer', 'headrl', 'vetrl', 'fsvrl', 'mrvrl', 'security', 'fullskip', 'developer', 'rl', 'almostrl', 'trialrl', 'headeventrl', 'eventrl', 'rusher', 'nitro', 'lol', 'vetraider', 'raider', 'eventraider', 'muted',
-    'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'topkey', 'bottomkey', 'cultping', 'voidping', 'shattsReact', 'fungalReact', 'nestReact']
+    'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'topkey', 'bottomkey', 'cultping', 'voidping', 'shattsReact', 'fungalReact', 'nestReact', 'rcPing', 'o3Ping', 'veteventrl']
 const channels = ['modmail', 'verification', 'manualverification', 'vetverification', 'manualvetverification', 'verificationlog', 'activeverification', 'modlogs', 'history', 'suspendlog',
     'viallog', 'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel', 'raidstatus', 'eventstatus',
     'vetstatus', 'raidcommands', 'eventcommands', 'vetcommands', 'raidingchannels', 'eventchannels', 'vetchannels', 'runlogs', 'dmcommands', 'veriactive', 'pointlogging', 'veriattempts',
@@ -9,7 +9,8 @@ const channels = ['modmail', 'verification', 'manualverification', 'vetverificat
 const categories = ['raiding', 'veteran', 'event']
 const voice = ['raidingtemplate', 'eventtemplate', 'vettemplate', 'veteventtemplate', 'lounge', 'vetlounge', 'eventlounge', 'afk']
 const voiceprefixes = ['raidingprefix', 'vetprefix']
-const backend = ['modmail', 'currentweek', 'eventcurrentweek', 'parsecurrentweek', 'verification', 'vetverification', 'points', 'supporter', 'roleassignment', 'realmeyestats', 'automod']
+const backend = ['modmail', 'currentweek', 'eventcurrentweek', 'parsecurrentweek', 'verification', 'vetverification', 'points', 'supporter', 'roleassignment', 'realmeyestats', 'automod', 'nitroearlylocation', 'removekeyreacts', 'characterparse',
+	'giveeventroleonverification']
 const numerical = ['afktime', 'eventafktime', 'nitrocount', 'nitrocooldown', 'topkey', 'bottomkey', 'ticketlimit', 'supporterlimit', 'keyalertsage', 'waitnewkeyalert']
 const runreqs = ['weapon', 'ability', 'armor', 'ring']
 const autoveri = ['fame', 'stars', 'realmage', 'discordage', 'deathcount']
@@ -31,7 +32,7 @@ module.exports = {
                 .setColor('#54d1c2')
                 .setFooter(`Type 'cancel' to stop`)
                 .setDescription(`\`\`\`Please select what you wish to edit:\n1: roles\n2: channels\n3: voice\n4: voiceprefixes\n5: backend\n6: numerical\n7: runreqs\n8: autoveri\n9: vetverireqs\n10: points\n11: commands\n12: categories\`\`\``)
-            let setupMessage = await message.channel.send(setupEmbed)
+            let setupMessage = await message.channel.send({ embeds: [setupEmbed] })
             let mainMenu = new Discord.MessageCollector(message.channel, m => m.author.id == message.author.id)
             mainMenu.on('collect', async m => {
                 if (m.content.replace(/[^0-9]/g, '') != m.content) {
@@ -74,7 +75,7 @@ module.exports = {
                     }
                     setupEmbed.description += `\n\`\`\``
                     for (let i = 0; i < fieldIndex + 1; i++) if (setupEmbed.fields[i]) setupEmbed.fields[i].value += '```'
-                    await setupMessage.edit(setupEmbed)
+                    await setupMessage.edit({ embeds: [setupEmbed] })
                     let rolesMenu = new Discord.MessageCollector(message.channel, m => m.author.id == message.author.id)
                     rolesMenu.on('collect', async m => {
                         let num = m.content
@@ -87,7 +88,7 @@ module.exports = {
                         } else {
                             rolesMenu.stop()
                             setupEmbed.setDescription(`\`\`\`Please enter in the new value\`\`\`\nCurrent Value:\n**${array[parseInt(num) - 1]}** = ${bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]]}`)
-                            setupMessage.edit(setupEmbed)
+                            setupMessage.edit({ embeds: [setupEmbed] })
                             let newRoleNameCollector = new Discord.MessageCollector(message.channel, m => m.author.id == message.author.id)
                             newRoleNameCollector.on('collect', async mes => {
                                 if (mes.content.toLowerCase() == 'cancel') {
@@ -109,11 +110,11 @@ module.exports = {
                                             break;
                                         case 'int': bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]] = parseInt(mes.content); break;
                                     }
-                                    fs.writeFileSync('./guildSettings.json', JSON.stringify(bot.settings, null, 4), err => message.channel.send(err))
+                                    fs.writeFileSync('./guildSettings.json', JSON.stringify(bot.settings, null, 4), err => message.channel.send(err.toString()))
                                     setupEmbed.setDescription(change)
                                         .setTitle(`Changes Made`)
                                         .setFooter(`Setup completed`)
-                                    await setupMessage.edit(setupEmbed)
+                                    await setupMessage.edit({ embeds: [setupEmbed] })
                                     message.react('✅')
                                     mes.delete()
                                     newRoleNameCollector.stop()
@@ -127,7 +128,7 @@ module.exports = {
         }
     },
     autoSetup(guild, bot) {
-        if (commands.length == 0) commands = bot.commands.keyArray()
+        if (commands.length == 0) commands = bot.commands.keys()
         if (!bot.settings[guild.id]) {
             bot.settings[guild.id] = {
                 name: guild.name,
@@ -159,7 +160,7 @@ module.exports = {
         for (let i in channels) {
             let channel = channels[i]
             if (!bot.settings[guild.id].channels[channel]) {
-                let c = guild.channels.cache.find(c => c.name === getDefaultChannelName(channel) && c.type == 'text')
+                let c = guild.channels.cache.find(c => c.name === getDefaultChannelName(channel) && c.type == 'GUILD_TEXT')
                 if (c) bot.settings[guild.id].channels[channel] = c.id
                 else bot.settings[guild.id].channels[channel] = null
             }
@@ -167,7 +168,7 @@ module.exports = {
         for (let i in voice) {
             let v = voice[i]
             if (!bot.settings[guild.id].voice[v]) {
-                let vc = guild.channels.cache.find(c => c.name === getDefaultVoiceName(v) && c.type == 'voice')
+                let vc = guild.channels.cache.find(c => c.name === getDefaultVoiceName(v) && c.type == 'GUILD_VOICE')
                 if (vc) bot.settings[guild.id].voice[v] = vc.id
                 else bot.settings[guild.id].voice[v] = null
             }
@@ -219,7 +220,7 @@ module.exports = {
         for (let i of categories) {
             if (!bot.settings[guild.id].categories[i]) bot.settings[guild.id].categories[i] = getDefaultCategoryName(i)
         }
-        fs.writeFileSync('./guildSettings.json', JSON.stringify(bot.settings, null, 4), err => message.channel.send(err))
+        fs.writeFileSync('./guildSettings.json', JSON.stringify(bot.settings, null, 4), err => message.channel.send(err.toString()))
     }
 }
 
@@ -257,6 +258,8 @@ function getDefaultRoleName(name) {
         case 'shattsReact': return 'Shatters boi'
         case 'fungalReact': return 'Fungal boi'
         case 'nestReact': return 'Nest boi'
+        case 'rcPing': return 'RC Boi'
+        case 'o3Ping': return 'Oryx Boi'
     }
 }
 

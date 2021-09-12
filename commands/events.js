@@ -15,7 +15,7 @@ module.exports = {
         for (let x in Events) if (Events[x].enabled) {
             fitStringIntoEmbed(embed, `<${Events[x].keyEmote}><${Events[x].portalEmote}> **${x}**${Events[x].aliases.length > 0 ? `\n*Aliases:${Events[x].aliases.map(a => `${` ${a}`}`)}*` : ''}`)
         }
-        return channel.send(embed)
+        return channel.send({ embeds: [embed] })
     },
     find(name) {
         name = name.toLowerCase();

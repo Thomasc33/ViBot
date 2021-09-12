@@ -99,13 +99,13 @@ module.exports = {
                 checkEmbed.fields[i].value.split(', ').forEach(s => {
                     fitStringIntoEmbed(replacementEmbed, s, message.channel)
                 })
-                message.channel.send(replacementEmbed)
+                message.channel.send({ embeds: [replacementEmbed] })
                 checkEmbed.fields[i].value = 'See Below'
             }
         }
-        checkMessage.edit('', checkEmbed)
+        checkMessage.edit({ content: null, embeds: [checkEmbed] })
         FalseSuspends.execute(message, args, bot, db)
-        eventDupes.execute(message, args, bot, db)
+        if (!settings.backend.giveeventroleonverification) eventDupes.execute(message, args, bot, db)
     }
 }
 
@@ -117,7 +117,7 @@ function fitStringIntoEmbed(embed, string, channel) {
             embed.addField('-', string)
         } else if (embed.fields[embed.fields.length - 1].value.length + `, ${string}`.length >= 1024) {
             if (embed.length + `, ${string}`.length >= 6000) {
-                channel.send(embed)
+                channel.send({ embeds: [embed] })
                 embed.setDescription('None!')
                 embed.fields = []
             } else {
@@ -125,7 +125,7 @@ function fitStringIntoEmbed(embed, string, channel) {
             }
         } else {
             if (embed.length + `, ${string}`.length >= 6000) {
-                channel.send(embed)
+                channel.send({ embeds: [embed] })
                 embed.setDescription('None!')
                 embed.fields = []
             } else {

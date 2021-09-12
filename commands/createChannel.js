@@ -22,8 +22,8 @@ module.exports = {
             case 'create':
                 //get channel parent
                 let isVet = false;
-                if (message.channel.parent.name.toLowerCase() == 'veteran raiding') isVet = true;
-                else if (message.channel.parent.name.toLowerCase() == 'events') isVet = false;
+                if (message.channel.parent.name.toLowerCase() == settings.categories.veteran) isVet = true;
+                else if (message.channel.parent.name.toLowerCase() == settings.categories.event) isVet = false;
                 else return message.channel.send('Channel category is invalid')
 
                 //channel name
@@ -85,7 +85,7 @@ module.exports = {
 
                     //10 second timer
                     let iteration = 0;
-                    let timer = bot.setInterval(unlockInterval, 5000)
+                    let timer = setInterval(unlockInterval, 5000)
                     async function unlockInterval() {
                         switch (iteration) {
                             case 0:
@@ -104,12 +104,12 @@ module.exports = {
                                     var raider = message.guild.roles.cache.get(settings.roles.vetraider)
                                 }
 
-                                channel.channel.updateOverwrite(raider.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
-                                    .then(eventBoi ? channel.channel.updateOverwrite(eventBoi.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)) : null)
+                                channel.channel.permissionOverwrites.edit(raider.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+                                    .then(eventBoi ? channel.channel.permissionOverwrites.edit(eventBoi.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)) : null)
 
                                 //edit message in raid status
                                 channel.embed.fields[0].value = '**Open**'
-                                channel.message.edit('@here', channel.embed)
+                                channel.message.edit({ content: '@here', embeds: [channel.embed] })
 
                                 bot.afkChecks[channel.channelID].active = true;
                                 bot.afkChecks[channel.channelID].started = Date.now();
@@ -135,12 +135,12 @@ module.exports = {
                         var raider = message.guild.roles.cache.get(settings.roles.vetraider)
                     }
 
-                    channel.channel.updateOverwrite(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
-                        .then(eventBoi ? channel.channel.updateOverwrite(eventBoi.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)) : null)
+                    channel.channel.permissionOverwrites.edit(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+                        .then(eventBoi ? channel.channel.permissionOverwrites.edit(eventBoi.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)) : null)
 
                     //edit message in raid status
                     channel.embed.fields[0].value = '**Closed**'
-                    channel.message.edit('', channel.embed)
+                    channel.message.edit({ content: null, embeds: [channel.embed] })
                     bot.afkChecks[channel.channelID].active = false;
                     bot.afkChecks[channel.channelID].endedAt = Date.now();
                     fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot) })
@@ -165,11 +165,14 @@ module.exports = {
 
                     //update message in raid-status
                     channel.embed.author.text = `${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s ${name}`
-                    channel.message.edit(channel.embed)
+                    channel.message.edit({ embeds: [channel.embed] })
 
                     bot.afkChecks[channel.channelID].runType.runType = name;
                     bot.afkChecks[channel.channelID].runType.runName = name;
                     fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot) })
+
+                    //change messages
+
                 }
                 rename()
                 break;
@@ -262,15 +265,15 @@ async function createChannel(name, isVet, message, bot) {
         if (!template) return rej(`Template channel not found`)
         let channel = await template.clone({
             name: `${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s ${name}`,
-            parent: message.guild.channels.cache.filter(c => c.type == 'category').find(c => c.name.toLowerCase() === parent).id,
+            parent: message.guild.channels.cache.filter(c => c.type == 'GUILD_CATEGORY').find(c => c.name.toLowerCase() === parent).id,
             userLimit: 50
         }).then(c => c.setPosition(lounge.position + 1))
 
         await message.member.voice.setChannel(channel).catch(er => { })
 
         //allows raiders to view
-        channel.updateOverwrite(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
-        if (eventBoi) channel.updateOverwrite(eventBoi.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+        channel.permissionOverwrites.edit(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+        if (eventBoi) channel.permissionOverwrites.edit(eventBoi.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
 
         //Embed to remove
         let embed = new Discord.MessageEmbed()
@@ -279,7 +282,7 @@ async function createChannel(name, isVet, message, bot) {
             .setTimestamp()
             .setTitle(channel.name)
             .setColor(`#eeeeee`)
-        let m = await vibotChannels.send(`${message.member}`, embed)
+        let m = await vibotChannels.send({ content: `${message.member}`, embeds: [embed] })
         await m.react('❌')
         setTimeout(() => { ChannelsCommand.watchMessage(m, bot, settings) }, 5000)
         if (!channel) rej('No channel was made')

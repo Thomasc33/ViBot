@@ -13,10 +13,10 @@ module.exports = {
             .setDescription(`Started by ${message.member}
             React with 🔫 to join`)
             .setFooter('Time remaining 30 seconds')
-        let embedMessage = await message.channel.send(embed)
+        let embedMessage = await message.channel.send({ embeds: [embed] })
         embedMessage.react('🔫')
         let reactors = []
-        let reactionCollector = new Discord.ReactionCollector(embedMessage, gunFilter)
+        let reactionCollector = new Discord.ReactionCollector(embedMessage, { filter: gunFilter })
         reactionCollector.on('collect', (r, u) => {
             if (!reactors.includes(u)) reactors.push(u)
         })
@@ -30,7 +30,7 @@ module.exports = {
                 return;
             }
             embed.setFooter(`Time remaining ${time} seconds`)
-            embedMessage.edit(embed)
+            embedMessage.edit({ embeds: [embed] })
         }
         async function shoot() {
             clearInterval(timer)
@@ -49,7 +49,7 @@ module.exports = {
             embed.setDescription(`${embed.description}\nWinner: <@!${loser.id}> was shot to death!
             They have been muted for 1 minute`)
             embed.setFooter('Game Over')
-            embedMessage.edit(embed)
+            embedMessage.edit({ embeds: [embed] })
 
             let member = message.guild.members.cache.get(loser.id)
 

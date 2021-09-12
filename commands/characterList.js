@@ -13,14 +13,14 @@ module.exports = {
         if (!ign || ign.replace(/[^a-zA-Z]/g, '') !== ign || ign.length > 10) return message.channel.send('Username invalid')
         let embed = await this.getEmbed(ign, bot).catch(er => { message.channel.send(`User is either not found, or their profile is private`) })
         if (!embed) return;
-        message.channel.send(embed)
+        message.channel.send({ embeds: [embed] })
     },
     async dmExecution(message, args, bot, db, guild) {
         let ign = args[0]
         if (!ign || ign.replace(/[^a-zA-Z]/g, '') !== ign || ign.length > 10) return message.channel.send('Username invalid')
         let embed = await this.getEmbed(ign, bot).catch(er => { message.channel.send(`User is either not found, or their profile is private`) })
         if (!embed) return;
-        message.channel.send(embed)
+        message.channel.send({ embeds: [embed] })
     },
     async getEmbed(ign, bot) {
         return new Promise(async function (resolve, reject) {

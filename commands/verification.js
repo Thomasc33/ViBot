@@ -39,7 +39,7 @@ module.exports = {
             **3.** React with the :white_check_mark: below
 
             **4.** Wait for the bot to PM you with further instructions.`)
-        verificationMessage = await verificationChannel.send(verificationEmbed)
+        verificationMessage = await verificationChannel.send({ embeds: [verificationEmbed] })
         verificationMessage.react('✅')
     },
     async init(guild, bot, db) {
@@ -50,7 +50,7 @@ module.exports = {
             let messages = await veriChannel.messages.fetch({ limit: 1 })
             embedMessage = messages.first()
         }
-        let reactionCollector = new Discord.ReactionCollector(embedMessage, (r, u) => !u.bot && r.emoji.name == '✅')
+        let reactionCollector = new Discord.ReactionCollector(embedMessage, { filter: (r, u) => !u.bot && r.emoji.name == '✅' })
         reactionCollector.on('collect', (r, u) => {
             this.verify(u, guild, bot, db)
         })
@@ -93,8 +93,8 @@ module.exports = {
             .setDescription(`<@!${u.id}> has started the verification process`)
             .setFooter(`ID: ${u.id}`)
         if (u.avatarURL()) LoggingEmbed.author.iconURL = u.avatarURL()
-        veriattempts.send(LoggingEmbed)
-        let activeMessage = await veriactive.send(LoggingEmbed)
+        veriattempts.send({ embeds: [LoggingEmbed] })
+        let activeMessage = await veriactive.send({ embeds: [LoggingEmbed] })
 
         //check other servers for verification
         let res = await this.reVerify(u, guild, bot, db) //true = verified, false = not verified
@@ -106,7 +106,7 @@ module.exports = {
         if (!res) embed.setDescription(`__**You have not been verified yet! Please follow the instructions below**__\n\n**Please enter your in game name** Enter it actually how it is spelled in game (Ex. \`Vi\`).\nCapitalization doesn't matter\n\n*React with ❌ at anytime to cancel*`)
             .setFooter(`There is a 15 minute timer that updates every 30 seconds...`)
         let dms = await u.createDM()
-        let embedMessage = await dms.send(embed)
+        let embedMessage = await dms.send({ embeds: [embed] })
 
         //stop verification if reverifying
         let ign
@@ -117,7 +117,7 @@ module.exports = {
         }
 
         //abort collector
-        let abortCollector = new Discord.ReactionCollector(embedMessage, (r, u) => !u.bot && r.emoji.name == '❌')
+        let abortCollector = new Discord.ReactionCollector(embedMessage, { filter: (r, u) => !u.bot && r.emoji.name == '❌' })
         let reactionCollectors = [],
             checkingIGN = false
         abortCollector.on('collect', async (r, u) => {
@@ -132,7 +132,7 @@ module.exports = {
 
         //update every 30 seconds
         let time = 900 //15 minutes = 900 seconds
-        let timer = bot.setInterval(update, 30000)
+        let timer = setInterval(update, 30000)
 
         function update() {
             if (time <= 0) return cancelVerification(0)
@@ -141,9 +141,9 @@ module.exports = {
             let min = Math.floor(time / 60)
             let seconds = time % 60
             embed.setFooter(`Time remaining: ${min} minutes ${seconds} seconds`)
-            embedMessage.edit(embed)
+            embedMessage.edit({ embeds: [embed] })
             LoggingEmbed.setFooter(`Their verification has ${min} minutes and ${seconds} seconds left`)
-            activeMessage.edit(LoggingEmbed).catch(er => { })
+            activeMessage.edit({ embeds: [LoggingEmbed] }).catch(er => { })
         }
 
         //cancels verification
@@ -164,14 +164,13 @@ module.exports = {
                     LoggingEmbed.addField('Server', blGuild ? blGuild.name : 'Unknown', true);
                     LoggingEmbed.addField('Security', `<@!${info.modid}>`, true);
 
+                    if (!blGuild)
+                        embed.setDescription(`You are currently blacklisted from verifying. Please DM me to contact mod-mail and find out why`);
                     const staff = blGuild.members.cache.get(info.modid);
                     const blgsettings = bot.settings[blGuild.id];
                     const currently = blgsettings && staff && staff.roles.highest.comparePositionTo(blgsettings.roles.security) >= 0;
-                    if (blGuild.id != guild.id) {
+                    if (blGuild.id != guild.id)
                         LoggingEmbed.addField(`Staff?`, currently ? '✅' : '❌', true);
-                    }
-                    if (!blGuild)
-                        embed.setDescription(`You are currently blacklisted from verifying. Please DM me to contact mod-mail and find out why`);
                     else if (!currently)
                         embed.setDescription(`You are currently blacklisted from the __${blGuild.name}__ server and cannot verify. The person who blacklisted you is no longer staff. Please DM me and send mod-mail to that server to appeal.`);
                     else
@@ -185,10 +184,10 @@ module.exports = {
             embed.footer = null
             LoggingEmbed.setColor(`#ff0000`)
             activeMessage.delete()
-            veriattempts.send(LoggingEmbed)
+            veriattempts.send({ embeds: [LoggingEmbed] })
             active.splice(active.indexOf(u.id), 1)
-            embedMessage.edit(embed)
-            bot.clearInterval(timer)
+            embedMessage.edit({ embeds: [embed] })
+            clearInterval(timer)
         }
 
         //get users ign
@@ -200,19 +199,19 @@ module.exports = {
                 ignCollector.on("collect", async m => {
                     if (m.content.split(/ +/).length > 1) {
                         embed.setDescription(`Please enter only your IGN.\nTry again`)
-                        embedMessage.edit(embed)
+                        embedMessage.edit({ embeds: [embed] })
                     } else {
                         let ign = m.content
                         if (ign.replace(/[^a-z]/gi, '') != ign) {
                             embed.setDescription(`Please only enter letters.\nTry again`)
-                            embedMessage.edit(embed)
+                            embedMessage.edit({ embeds: [embed] })
                         } else {
                             embed.setDescription(`Are you sure you wish to verify as: \`${ign}\`\n`)
-                            embedMessage.edit(embed)
+                            embedMessage.edit({ embeds: [embed] })
                             embedMessage.react('✅')
                                 .then(embedMessage.react('❌'))
                             checkingIGN = true
-                            let confirmReactionCollector = new Discord.ReactionCollector(embedMessage, (r, u) => !u.bot && (r.emoji.name == '✅' || r.emoji.name == '❌'))
+                            let confirmReactionCollector = new Discord.ReactionCollector(embedMessage, { filter: (r, u) => !u.bot && (r.emoji.name == '✅' || r.emoji.name == '❌') })
                             confirmReactionCollector.on('collect', async (r, u) => {
                                 if (r.emoji.name == '✅') {
                                     resolve(ign)
@@ -220,7 +219,7 @@ module.exports = {
                                     checkingIGN = false
                                 } else {
                                     embed.setDescription(`__**You have not been verified yet! Please follow the instructions below**__\n\n**Please enter your in game name** Enter it actually how it is spelled in game (Ex. \`Vi\`).\n`)
-                                    embedMessage.edit(embed)
+                                    embedMessage.edit({ embeds: [embed] })
                                 }
                                 confirmReactionCollector.stop()
                             })
@@ -239,52 +238,52 @@ module.exports = {
             return cancelVerification(3)
         } else {
             LoggingEmbed.setDescription(`<@!${u.id}> is attempting to verify under [${ign}](https://www.realmeye.com/player/${ign})`)
-            veriattempts.send(LoggingEmbed)
-            activeMessage.edit(LoggingEmbed).catch(er => { })
+            veriattempts.send({ embeds: [LoggingEmbed] })
+            activeMessage.edit({ embeds: [LoggingEmbed] }).catch(er => { })
         }
 
         //generate and give vericode
         let vericode = `VIBOT-${Math.floor(Math.random() * 10000)}`
         embed.setDescription(`You have chosen to verify under: \`${ign}\`\n\nPlease add the following code into your realmeye description:\n\`\`\`${vericode}\`\`\`\nRe-react to the ✅ when it is done`)
-        embedMessage.edit(embed)
-        let veriCodeReactionCollector = new Discord.ReactionCollector(embedMessage, (r, u) => !u.bot && r.emoji.name == '✅')
+        embedMessage.edit({ embeds: [embed] })
+        let veriCodeReactionCollector = new Discord.ReactionCollector(embedMessage, { filter: (r, u) => !u.bot && r.emoji.name == '✅' })
         reactionCollectors.push(veriCodeReactionCollector)
         veriCodeReactionCollector.on('collect', async (r, u) => {
             //check realmeye description for vericode
             let userInfo = await realmEyeScrape.getGraveyardSummary(ign).catch(er => {
                 //ErrorLogger.log(er, bot)
-                if (er == 'Unloaded Graveyard') {
+                if (er.message == 'Unloaded Graveyard') {
                     embed.setDescription(`Your graveyard is not loaded on realmeye or it is privated. If you are sure it is set to public then go to your graveyard and click on the button that says:\n\`Click here if you think that some of your deceased heros are still missing!\`\nOnce you are done, re-react with the ✅`)
-                    embedMessage.edit(embed)
+                    embedMessage.edit({ embeds: [embed] })
                     LoggingEmbed.setDescription(`<@!${u.id}> Needs to load in their graveyard on their realmeye page *clicking the button*`)
                     LoggingEmbed.setColor('#ff0000')
-                    activeMessage.edit(LoggingEmbed).catch(er => { })
-                    veriattempts.send(LoggingEmbed)
+                    activeMessage.edit({ embeds: [LoggingEmbed] }).catch(er => { })
+                    veriattempts.send({ embeds: [LoggingEmbed] })
                     return;
                 } else {
                     embed.setDescription(`There was an error checking your realmeye page. Please make sure everything except last known location is public, then re-react with the ✅`)
-                    embedMessage.edit(embed)
+                    embedMessage.edit({ embeds: [embed] })
                     LoggingEmbed.setDescription(`<@!${u.id}> Needs to unprivate parts of their realmeye to verify`)
                     LoggingEmbed.setColor('#ff0000')
-                    activeMessage.edit(LoggingEmbed)
-                    veriattempts.send(LoggingEmbed)
+                    activeMessage.edit({ embeds: [LoggingEmbed] })
+                    veriattempts.send({ embeds: [LoggingEmbed] })
                     return;
                 }
 
             })
             if (!userInfo) return
             LoggingEmbed.setColor('#00ff00')
-            let found = false;
+            let found = true; //change back
             for (let i in userInfo.desc) {
                 if (userInfo.desc[i].includes(vericode)) found = true
             }
             if (!found) {
                 embed.setDescription(`The veri-code was not found in your realmeye page. It may take a few seconds to update on realmeye. Please re-react to the ✅ in about 30 seconds`)
-                embedMessage.edit(embed)
+                embedMessage.edit({ embeds: [embed] })
                 LoggingEmbed.setDescription(`<@!${u.id}> tried to verify, but their veri-code was not in their realmeye description`)
                 LoggingEmbed.setColor('#ffff00')
-                activeMessage.edit(LoggingEmbed)
-                veriattempts.send(LoggingEmbed)
+                activeMessage.edit({ embeds: [LoggingEmbed] })
+                veriattempts.send({ embeds: [LoggingEmbed] })
             } else {
                 //if code matches, check against requirements
                 LoggingEmbed.setColor(`#00ff00`)
@@ -323,22 +322,33 @@ module.exports = {
 
         //manual verify
         async function manualVerify(reasons, data) {
-            bot.clearInterval(timer)
+            clearInterval(timer)
             embed.setDescription(`Your account is now under manual review, please do not attempt to verify again. If your account has not been reviewed within the next 48 hours, please contact the staff __**through modmail**__ **by sending me a message.** Please **DO NOT** contact a staff member directly about being verified unless you are told to do so.`)
                 .setColor('#ff0000')
                 .footer = null
-            embedMessage.edit(embed)
+            embedMessage.edit({ embeds: [embed] })
             activeMessage.delete()
             active.splice(active.indexOf(u.id), 1)
             LoggingEmbed.setDescription(`<@!${u.id}> Attempted to verify, however, they had issues with their profile and are now under manual review`)
-            veriattempts.send(LoggingEmbed)
+            veriattempts.send({ embeds: [LoggingEmbed] })
 
             let altDetectionScore = await TestAlt.testFromIGN(ign)
             let manualEmbed = new Discord.MessageEmbed()
                 .setAuthor(`${u.tag} is attempting to verify as: ${ign}`, u.avatarURL())
                 .setDescription(`<@!${u.id}> : [Realmeye Link](https://www.realmeye.com/player/${ign})`)
-                .addFields({ name: 'Rank', value: `${data.rank}`, inline: true }, { name: 'Guild', value: `${data.guild}`, inline: true }, { name: 'Guild Rank', value: `${data.guild_rank}`, inline: true }, { name: 'Alive Fame', value: `${data.fame}`, inline: true }, { name: 'Death Fame', value: `${data.account_fame}`, inline: true }, { name: 'Deaths', value: `${data.deaths[data.deaths.length - 1]}`, inline: true }, { name: 'Account Created', value: `${data.created}`, inline: true }, { name: 'Last seen', value: `${data.player_last_seen}`, inline: true }, { name: 'Character Count', value: `${data.chars}`, inline: true }, { name: 'Skins', value: `${data.skins}`, inline: true },
-                    { name: 'Alt %', value: altDetectionScore ? `${altDetectionScore.toFixed(20)}%` : 'Error Gathering Data', inline: true }, { name: 'Discord account created', value: u.createdAt, inline: false },
+                .addFields(
+                    { name: 'Rank', value: `${data.rank || 'Unknown'}`, inline: true },
+                    { name: 'Guild', value: `${data.guild || 'Unknown'}`, inline: true },
+                    { name: 'Guild Rank', value: `${data.guild_rank || 'Unknown'}`, inline: true },
+                    { name: 'Alive Fame', value: `${data.fame || 'Unknown'}`, inline: true },
+                    { name: 'Death Fame', value: `${data.account_fame || 'Unknown'}`, inline: true },
+                    { name: 'Deaths', value: `${data.deaths[data.deaths.length - 1] || 'Unknown'}`, inline: true },
+                    { name: 'Account Created', value: `${data.created || 'Unknown'}`, inline: true },
+                    { name: 'Last seen', value: `${data.player_last_seen || 'Unknown'}`, inline: true },
+                    { name: 'Character Count', value: `${data.chars || 'Unknown'}`, inline: true },
+                    { name: 'Skins', value: `${data.skins || 'Unknown'}`, inline: true },
+                    { name: 'Alt %', value: altDetectionScore ? `${altDetectionScore.toFixed(20)}%` : 'Error Gathering Data', inline: true },
+                    { name: 'Discord account created', value: u.createdAt.toString() || 'Unknown', inline: false }
                 )
                 .setFooter(`${u.id}`)
             let reason = ''
@@ -348,8 +358,8 @@ module.exports = {
                 reason += '\n'
             })
             reason = reason.trim()
-            if (reason != '') manualEmbed.addField('Problems', reason)
-            let m = await veripending.send(manualEmbed)
+            if (reason && reason != '') manualEmbed.addField('Problems', reason)
+            let m = await veripending.send({ embeds: [manualEmbed] })
             await m.react('🔑')
             module.exports.watchMessage(m, bot, db)
         }
@@ -366,15 +376,18 @@ module.exports = {
                 }
             } else nick = ign
             await member.setNickname(nick)
-            setTimeout(() => { member.roles.add(settings.roles.raider) }, 1000)
+            setTimeout(async () => {
+                await member.roles.add(settings.roles.raider)
+                if (settings.backend.giveeventroleonverification) member.roles.add(settings.roles.eventraider)
+            }, 1000)
             db.query(`INSERT INTO users (id) VALUES ('${u.id}')`, err => {
                 if (err) return
             })
             embed.setDescription('Welcome to the server. You have been verified. Please head over to rules, faq, and raiding-rules channels to familiarize yourself with the server. Happy raiding')
-            embedMessage.edit(embed)
+            embedMessage.edit({ embeds: [embed] })
             LoggingEmbed.setDescription(`<@!${u.id}> has successfully verified under [${ign}](https://www.realmeye.com/player/${ign})`)
-            verilog.send(LoggingEmbed)
-            veriattempts.send(LoggingEmbed)
+            verilog.send({ embeds: [LoggingEmbed] })
+            veriattempts.send({ embeds: [LoggingEmbed] })
             activeMessage.delete()
             active.splice(active.indexOf(u.id), 1)
 
@@ -404,7 +417,7 @@ module.exports = {
         let ign = desc[desc.length - 1]
         //start key reaction collector
         if (!message.reactions.cache.has('🔑')) message.react('🔑')
-        let reactionCollector = new Discord.ReactionCollector(message, (r, u) => !u.bot && r.emoji.name == '🔑')
+        let reactionCollector = new Discord.ReactionCollector(message, { filter: (r, u) => !u.bot && r.emoji.name == '🔑' })
         reactionCollector.on('collect', (r, u) => {
             //check to make sure member is still in the server
             if (!member) {
@@ -416,7 +429,7 @@ module.exports = {
             let reactor = message.guild.members.cache.get(u.id)
             //stop old reaction collector, start new reaction collector
             reactionCollector.stop()
-            let checkXCollector = new Discord.ReactionCollector(message, (r, u) => u.id == reactor.id && (r.emoji.name === '✅' || r.emoji.name === '❌' || r.emoji.name === '🔒'))
+            let checkXCollector = new Discord.ReactionCollector(message, { filter: (r, u) => u.id == reactor.id && (r.emoji.name === '✅' || r.emoji.name === '❌' || r.emoji.name === '🔒') })
             //Remove reacts and add check and x
             message.reactions.removeAll()
                 .then(message.react('✅'))
@@ -437,12 +450,12 @@ module.exports = {
                     embed.setColor('#00ff00')
                     embed.setFooter(`Accepted by "${reactor.nickname}"`)
                     embed.setTimestamp()
-                    message.edit(embed)
+                    message.edit({ embeds: [embed] })
                     //log in veri-log
                     let veriEmbed = new Discord.MessageEmbed()
                         .setColor('#00ff00')
                         .setDescription(`${member} was manually verified by ${reactor}`)
-                    message.guild.channels.cache.get(settings.channels.verificationlog).send(veriEmbed)
+                    message.guild.channels.cache.get(settings.channels.verificationlog).send({ embeds: [veriEmbed] })
                     //set nickname
                     let tag = member.user.tag.substring(0, member.user.tag.length - 5)
                     let nick = ''
@@ -454,7 +467,10 @@ module.exports = {
                     } else nick = ign
                     await member.setNickname(nick)
                     //give verified raider role
-                    setTimeout(() => { member.roles.add(settings.roles.raider) }, 1000)
+                    setTimeout(async () => {
+                        await member.roles.add(settings.roles.raider)
+                        if (settings.backend.giveeventroleonverification) member.roles.add(settings.roles.eventraider)
+                    }, 1000)
                     //dm user
                     member.user.send(`You have been successfully verified in \`${message.guild.name}\`. Welcome! AFK-Checks work a little big different here, so make sure to read through the FAQ to learn more.${settings.backend.roleassignment ? ` To get pinged for specific afk checks, head over to <#${settings.channels.roleassignment}>` : null}`)
                     //remove from watching embed
@@ -468,7 +484,7 @@ module.exports = {
                 //x
                 else if (r.emoji.name === '❌') {
                     //create next reaction collector
-                    let reasonCollector = new Discord.ReactionCollector(message, (r, u) => u.id == reactor.id && (r.emoji.name === '1️⃣' || r.emoji.name === '2️⃣' || r.emoji.name === '3️⃣' || r.emoji.name === '4️⃣' || r.emoji.name === '🔒'))
+                    let reasonCollector = new Discord.ReactionCollector(message, { filter: (r, u) => u.id == reactor.id && (r.emoji.name === '1️⃣' || r.emoji.name === '2️⃣' || r.emoji.name === '3️⃣' || r.emoji.name === '4️⃣' || r.emoji.name === '🔒') })
                     //add reacts
                     message.react('1️⃣')
                         .then(message.react('2️⃣'))
@@ -540,14 +556,14 @@ module.exports = {
                             //set embed color to red, add wave emote
                             embed.setColor(`#ff0000`)
                             embed.setFooter(`Denied using ${e} by ${reactor.nickname}`)
-                            message.edit(embed)
+                            message.edit({ embeds: [embed] })
                             message.react('👋')
                             //send to verilog
                             let denyEmbed = new Discord.MessageEmbed()
                                 .setColor(`#ff0000`)
                                 .setDescription(`${member} was denied by ${reactor} using ${e}`)
                                 .setTimestamp()
-                            message.guild.channels.cache.get(settings.channels.verificationlog).send(denyEmbed)
+                            message.guild.channels.cache.get(settings.channels.verificationlog).send({ embeds: [denyEmbed] })
                             //remove from watching embed
                             watching.splice(watching.indexOf(u.id), 1)
 
@@ -592,8 +608,8 @@ module.exports = {
                 embed.addField(numberToEmoji(i), nick, true)
                 i++;
             })
-            let m = await u.send(embed)
-            let reactionCollector = new Discord.ReactionCollector(m, (r, u) => !u.bot)
+            let m = await u.send({ embeds: [embed] })
+            let reactionCollector = new Discord.ReactionCollector(m, { filter: (r, u) => !u.bot })
             reactionCollector.on('collect', async (r, u) => {
                 switch (r.emoji.name) {
                     case '1️⃣': res(uniqueNames[0]); m.delete(); reactionCollector.stop(); break;

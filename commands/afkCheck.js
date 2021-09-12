@@ -19,7 +19,7 @@ module.exports = {
     name: 'afk',
     description: 'The new version of the afk check',
     requiredArgs: 1,
-    args: '<run symbol> <location>',
+    args: '<run symbol> (key count) <location>',
     role: 'almostrl',
     getNotes(guildid, member) {
         return `${afkTemplates[guildid] ? Object.keys(afkTemplates[guildid]).map(afk => `\`${afkTemplates[guildid][afk].symbol}\``).join(', ') : 'None for guild'}${afkTemplates[member.id] ? `, ${Object.keys(afkTemplates[member.id]).map(afk => `\`${afkTemplates[member.id][afk].symbol}\``).join(', ')}` : ''}`
@@ -43,13 +43,21 @@ module.exports = {
         destroyInactiveRuns();
 
         //Check Run Type
-        let runType = getRunType(args[0].charAt(0).toLowerCase(), message.guild.id);
+        let runType = getRunType(args.shift().charAt(0).toLowerCase(), message.guild.id);
         if (!runType && message.member.roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles.vetrl).position) return message.channel.send('Run Type Not Recognized')
         if (!runType) runType = await getTemplate(message, afkTemplates, args[0]).catch(er => message.channel.send(`Unable to get template. Error: \`${er}\``))
         if (!runType) return
 
+        //Check for keycount
+        let keyCount
+        if (!isNaN(parseInt(args[0]))) {
+            keyCount = parseInt(args[0])
+            args.shift()
+        }
+
         //create afkInfo from templates
         let runInfo = { ...runType }
+        if (keyCount) runInfo.keyCount = keyCount
 
         //isVet
         runInfo.isVet = message.channel.parent.name.toLowerCase() == bot.settings[message.guild.id].categories.veteran ? true : false;
@@ -59,7 +67,7 @@ module.exports = {
 
         //get/set location
         let location = ''
-        for (i = 1; i < args.length; i++) location = location.concat(args[i]) + ' ';
+        for (i = 0; i < args.length; i++) location = location.concat(args[i]) + ' ';
         if (location.length >= 1024) return message.channel.send('Location must be below 1024 characters, try again');
         if (location == '') location = 'None'
         runInfo.location = location.trim();
@@ -270,7 +278,7 @@ class afkCheck {
     async start() {
         //create/send leader embed
         this.leaderEmbed = new Discord.MessageEmbed()
-            .setColor(this.afkInfo.embed.color)
+            .setColor(this.afkInfo.embed.color || "#fefefe")
             .setTitle(`${this.message.member.nickname}'s ${this.afkInfo.runName}`)
             .addField('Our current keys', 'None!')
             .setFooter(`React with ❌ to abort${this.afkInfo.twoPhase ? ', React with ✅ to open the channel' : ''}`)
@@ -279,13 +287,13 @@ class afkCheck {
         this.leaderEmbed.addField('Location', this.afkInfo.location)
             .addField('Other Early Location', 'None!')
             .addField('Nitro', 'None!')
-        this.leaderEmbedMessage = await this.commandChannel.send(this.leaderEmbed)
-        this.runInfoMessage = await this.runInfoChannel.send(this.leaderEmbed)
+        this.leaderEmbedMessage = await this.commandChannel.send({ embeds: [this.leaderEmbed] })
+        this.runInfoMessage = await this.runInfoChannel.send({ embeds: [this.leaderEmbed] })
         this.leaderEmbedMessage.react('❌')
         if (this.afkInfo.twoPhase) this.leaderEmbedMessage.react('✅')
 
         //add x and x-collector to leader embed
-        this.leaderReactionCollector = new Discord.ReactionCollector(this.leaderEmbedMessage, (r, u) => !u.bot)
+        this.leaderReactionCollector = new Discord.ReactionCollector(this.leaderEmbedMessage, { filter: (r, u) => !u.bot })
         this.leaderReactionCollector.on('collect', (r, u) => this.leaderReactionHandler(r, u))
 
         //send messages
@@ -298,17 +306,18 @@ class afkCheck {
         if (this.afkInfo.reqsImageUrl) this.mainEmbed.setImage(this.afkInfo.reqsImageUrl)
         if (this.afkInfo.embed.thumbnail && !this.afkInfo.embed.removeThumbnail) this.mainEmbed.setThumbnail(this.afkInfo.embed.thumbnail)
         this.mainEmbed.description = this.mainEmbed.description.replace('{voicechannel}', `${this.channel}`)
-        this.raidStatusMessage.edit(this.mainEmbed)
-        this.bot.afkChecks[this.channel.id].url = this.raidStatusMessage.url
+        this.raidStatusMessage.edit({ embeds: [this.mainEmbed] })
+        if (this.bot.afkChecks[this.channel.id])
+            this.bot.afkChecks[this.channel.id].url = this.raidStatusMessage.url
 
         //unlock channel
         if (!this.afkInfo.twoPhase) {
-            this.channel.updateOverwrite(this.verifiedRaiderRole.id, { CONNECT: true, VIEW_CHANNEL: true })
-            if (this.eventBoi) this.channel.updateOverwrite(this.eventBoi.id, { CONNECT: true, VIEW_CHANNEL: true })
+            this.channel.permissionOverwrites.edit(this.verifiedRaiderRole.id, { CONNECT: true, VIEW_CHANNEL: true })
+            if (this.eventBoi) this.channel.permissionOverwrites.edit(this.eventBoi.id, { CONNECT: true, VIEW_CHANNEL: true })
         }
 
         //create reaction collector
-        this.raidStatusReactionCollector = new Discord.ReactionCollector(this.raidStatusMessage, (r, u) => !u.bot)
+        this.raidStatusReactionCollector = new Discord.ReactionCollector(this.raidStatusMessage, { filter: (r, u) => !u.bot })
         this.raidStatusReactionCollector.on('collect', (r, u) => this.reactionHandler(r, u))
 
         //add reactions
@@ -327,7 +336,7 @@ class afkCheck {
      */
     async reactionHandler(r, u) {
         if (r.emoji.id == this.afkInfo.keyEmoteID) {
-            r.users.remove(u.id)
+            if (this.settings.backend.removekeyreacts) r.users.remove(u.id)
             this.confirmSelection(u, r, 0, 'key', this.afkInfo.keyCount)
         }
         else if (this.afkInfo.vialReact && r.emoji.id == this.afkInfo.vialEmoteID) this.confirmSelection(u, r, 1, 'vial', 3)
@@ -364,12 +373,12 @@ class afkCheck {
         } else if (r.emoji.name === '✅') {
             if (this.afkInfo.twoPhase) {
                 this.leaderEmbed.footer.text = `React with ❌ to abort, Channel is opening...`
-                this.leaderEmbedMessage.edit(this.leaderEmbed)
+                this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] })
                 let tempM = await this.raidStatus.send(`<#${this.channel.id}> will open in 5 seconds...`)
                 setTimeout(async (afk) => {
                     await tempM.edit(`${afk.channel.name} is open!`)
-                    await afk.channel.updateOverwrite(afk.verifiedRaiderRole.id, { CONNECT: true, VIEW_CHANNEL: true })
-                    if (afk.eventBoi) await afk.channel.updateOverwrite(afk.eventBoi.id, { CONNECT: true, VIEW_CHANNEL: true })
+                    await afk.channel.permissionOverwrites.edit(afk.verifiedRaiderRole.id, { CONNECT: true, VIEW_CHANNEL: true })
+                    if (afk.eventBoi) await afk.channel.permissionOverwrites.edit(afk.eventBoi.id, { CONNECT: true, VIEW_CHANNEL: true })
                 }, 5000, this)
                 setTimeout(async tempM => tempM.delete(), 20000, tempM)
                 for (let i of this.afkInfo.reacts) await this.raidStatusMessage.react(i)
@@ -418,7 +427,7 @@ class afkCheck {
             }
             //console.log(reactInfo.checkRealmEye.mheal).catch(er => {})
             let DirectMessage = await u.send(`You reacted as ${emote}.${(reactInfo && reactInfo.checkRealmEye) ? ` If you have a(n) ${reactInfo.checkRealmEye.class} that is ${reactInfo.checkRealmEye.ofEight}/8${reactInfo.checkRealmEye.orb ? ` and has a tier ${reactInfo.checkRealmEye.orb} orb` : ''}${reactInfo.checkRealmEye.mheal ? ` and a pet with at least ${reactInfo.checkRealmEye.mheal} mheal` : ``}` : ''}, press :white_check_mark: to confirm your reaction. Otherwise ignore this message`).catch(r => { if (r.message == 'Cannot send messages to this user') this.commandChannel.send(`<@!${u.id}> tried to react with <${emote}> but their DMs are private`) });
-            let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, (r, u) => !u.bot);
+            let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, { filter: (r, u) => !u.bot });
 
             await DirectMessage.react("✅");
             await dmReactionCollector.on("collect", async (r, u) => {
@@ -436,7 +445,7 @@ class afkCheck {
                     })
                     if (!found) {
                         let prompt = await u.send(`I could not find any 8/8 mystics under \`${this.message.guild.members.cache.get(u.id).nickname.replace(/[^a-z|]/gi, '').split('|')[0]}\`. React with :white_check_mark: if you do have an 8/8 mystic on another account`)
-                        let reactionCollector = new Discord.ReactionCollector(prompt, (r, u) => !u.bot);
+                        let reactionCollector = new Discord.ReactionCollector(prompt, { filter: (r, u) => !u.bot });
                         await prompt.react('✅')
                         reactionCollector.on('collect', (r, u) => {
                             if (r.emoji.name == '✅')
@@ -475,8 +484,8 @@ class afkCheck {
                     if (afk.leaderEmbed.fields[index].value == `None!`) {
                         afk.leaderEmbed.fields[index].value = `${emote}: <@!${u.id}>`;
                     } else afk.leaderEmbed.fields[index].value += `\n${emote}: ${`<@!${u.id}>`}`
-                    afk.leaderEmbedMessage.edit(afk.leaderEmbed).catch(er => ErrorLogger.log(er, afk.bot));
-                    afk.runInfoMessage.edit(afk.leaderEmbed).catch(er => ErrorLogger.log(er, afk.bot));
+                    afk.leaderEmbedMessage.edit({ embeds: [afk.leaderEmbed] }).catch(er => ErrorLogger.log(er, afk.bot));
+                    afk.runInfoMessage.edit({ embeds: [afk.leaderEmbed] }).catch(er => ErrorLogger.log(er, afk.bot));
                     //end collectors
                     clearInterval(endAfter);
                     dmReactionCollector.stop();
@@ -510,20 +519,22 @@ class afkCheck {
         if (this.nitro.length + 1 > this.settings.numerical.nitrocount) return reactor.send('Too many Nitro Boosters have already received location for this run. Try again in the next run!');
         if (reactor.roles.cache.has(this.nitroBooster.id)) {
             if (reactor.voice.channel && reactor.voice.channel.id == this.channel.id) {
-                reactor.send('Nitro has changed and only gives garunteed spot in VC. You are already in the VC so this use hasn\'t been counted').catch(er => this.commandChannel.send(`<@!${u.id}> tried to react with <${botSettings.emote.shard}> but their DMs are private`))
+                reactor.send(`Nitro benefits in \`${this.message.guild.name}\` only gives garunteed spot in VC. You are already in the VC so this use hasn\'t been counted`).catch(er => this.commandChannel.send(`<@!${u.id}> tried to react with <${botSettings.emote.shard}> but their DMs are private`))
             } else {
                 await this.db.query(`SELECT * FROM users WHERE id = '${u.id}'`, async (err, rows) => {
                     if (err) ErrorLogger.log(err, bot)
                     if (rows.length == 0) return await this.db.query(`INSERT INTO users (id) VALUES('${u.id}')`)
                     if (Date.now() - this.settings.numerical.nitrocooldown > parseInt(rows[0].lastnitrouse)) {
-                        //reactor.send(`The location for this run has been set to \`${this.afkInfo.location}\``);
-                        //this.earlyLocation.push(u);
+                        if (this.settings.backend.nitroearlylocation) {
+                            reactor.send(`The location for this run has been set to \`${this.afkInfo.location}\``);
+                            this.earlyLocation.push(u);
+                        }
                         reactor.voice.setChannel(this.channel.id).catch(er => { reactor.send('Please join a voice channel and you will be moved in automatically') })
                         this.nitro.push(u)
                         if (this.leaderEmbed.fields[index].value == `None!`) this.leaderEmbed.fields[index].value = `<@!${u.id}> `;
                         else this.leaderEmbed.fields[index].value += `, <@!${u.id}>`
-                        this.leaderEmbedMessage.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, this.bot));
-                        this.runInfoMessage.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, this.bot));
+                        this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
+                        this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
                         emitter.on('Ended', (channelID, aborted) => {
                             if (channelID == this.channel.id) {
                                 if (!aborted) this.db.query(`UPDATE users SET lastnitrouse = '${Date.now()}' WHERE id = ${u.id}`)
@@ -531,7 +542,7 @@ class afkCheck {
                         })
                     } else {
                         let lastUse = Math.round((Date.now() - rows[0].lastnitrouse) / 60000)
-                        reactor.send(`Nitro perks have been limited to once an hour. Your last use was \`${lastUse}\` minutes ago`).catch(er => this.commandChannel.send(`<@!${u.id}> tried to react with <${botSettings.emote.shard}> but their DMs are private`))
+                        reactor.send(`Nitro perks are limited to once an hour. Your last use was \`${lastUse}\` minutes ago`).catch(er => this.commandChannel.send(`<@!${u.id}> tried to react with <${botSettings.emote.shard}> but their DMs are private`))
                     }
                 })
             }
@@ -554,8 +565,8 @@ class afkCheck {
             if (rows[0].points < earlyLocationCost) return
             pointEmbed.setDescription(`You currently have \`${rows[0].points}\` points\nEarly location costs \`${earlyLocationCost}\``)
             let dms = await u.createDM().catch()
-            let m = await dms.send(pointEmbed).catch(er => this.commandChannel.send(`<@!${u.id}> tried to react with 🎟️ but their DMs are private`))
-            let reactionCollector = new Discord.ReactionCollector(m, (r, u) => !u.bot && (r.emoji.name == '❌' || r.emoji.name == '✅'))
+            let m = await dms.send({ embeds: [pointEmbed] }).catch(er => this.commandChannel.send(`<@!${u.id}> tried to react with 🎟️ but their DMs are private`))
+            let reactionCollector = new Discord.ReactionCollector(m, { filter: (r, u) => !u.bot && (r.emoji.name == '❌' || r.emoji.name == '✅') })
             reactionCollector.on('collect', async (r, u) => {
                 if (r.emoji.name == '❌') m.delete()
                 else if (r.emoji.name == '✅') {
@@ -568,8 +579,8 @@ class afkCheck {
                         else this.leaderEmbed.fields[index].value += `, <@!${u.id}>`
                         this.pointsUsers.push(u)
                         this.earlyLocation.push(u)
-                        await this.leaderEmbedMessage.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
-                        await this.runInfoMessage.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
+                        await this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, bot));
+                        await this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, bot));
                         await m.delete()
                         emitter.on('Ended', (channelID, aborted) => {
                             if (aborted && channelID == this.channel.id) {
@@ -616,8 +627,8 @@ class afkCheck {
             afkcheck.supporters.push(u)
             if (afkcheck.leaderEmbed.fields[index].value == `None!`) afkcheck.leaderEmbed.fields[index].value = `<@!${u.id}> `;
             else afkcheck.leaderEmbed.fields[index].value += `, <@!${u.id}>`
-            afkcheck.leaderEmbedMessage.edit(afkcheck.leaderEmbed).catch(er => ErrorLogger.log(er, this.bot));
-            afkcheck.runInfoMessage.edit(afkcheck.leaderEmbed).catch(er => ErrorLogger.log(er, this.bot));
+            afkcheck.leaderEmbedMessage.edit({ embeds: [afkcheck.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
+            afkcheck.runInfoMessage.edit({ embeds: [afkcheck.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
             if (cooldown) {
                 afkcheck.tokenDB.query(`SELECT * FROM patreon WHERE id = '${u.id}'`, (err, rows) => {
                     if (rows.length == 0) afkcheck.tokenDB.query(`INSERT INTO patreon (id, lastuse) VALUES ('${u.id}', '${Date.now() + (3600000 * cooldown)}')`, (err, rows) => { })
@@ -636,7 +647,7 @@ class afkCheck {
         }
         if (!this.mainEmbed) return;
         this.mainEmbed.setFooter(`Time Remaining: ${Math.floor(this.time / 60)} minutes and ${this.time % 60} seconds`);
-        this.raidStatusMessage.edit(this.mainEmbed)
+        this.raidStatusMessage.edit({ embeds: [this.mainEmbed] })
         if (!this.bot.afkChecks[this.channel.id])
             return clearInterval(this.timerInterval);
         this.bot.afkChecks[this.channel.id].timeLeft = this.time;
@@ -691,20 +702,20 @@ class afkCheck {
         this.timer = await setInterval(() => { this.updatePost() }, 5000);
 
         //lock vc
-        this.channel.updateOverwrite(this.verifiedRaiderRole.id, { CONNECT: false, VIEW_CHANNEL: true })
-        if (this.eventBoi) await this.channel.updateOverwrite(this.eventBoi.id, { CONNECT: false, VIEW_CHANNEL: true })
+        this.channel.permissionOverwrites.edit(this.verifiedRaiderRole.id, { CONNECT: false, VIEW_CHANNEL: true })
+        if (this.eventBoi) await this.channel.permissionOverwrites.edit(this.eventBoi.id, { CONNECT: false, VIEW_CHANNEL: true })
 
         //post afk check embed
         this.mainEmbed.setDescription(`__**Post AFK Move-in**__\nIf you got moved out of vc, or missed the afk check:\n**1.** Join lounge\n**2** React with <${this.settings.misc.icon}> to get moved in.\n__Time Remaining:__ ${this.postTime} seconds.`)
             .setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`);
-        this.raidStatusMessage.edit("", this.mainEmbed).catch(er => console.log(er));
+        this.raidStatusMessage.edit({ content: null, embeds: [this.mainEmbed] }).catch(er => console.log(er));
     }
     async updatePost() {
         this.postTime -= 5;
         if (this.postTime == 0) return this.endAfk();
 
         this.mainEmbed.setDescription(`__**Post AFK Move-in**__\nIf you got moved out of vc, or missed the afk check:\n**1.** Join lounge\n**2** React with <${this.settings.misc.icon}> to get moved in.\n__Time Remaining:__ ${this.postTime} seconds.`);
-        this.raidStatusMessage.edit("", this.mainEmbed).catch(er => console.log(er));
+        this.raidStatusMessage.edit({ content: null, embeds: [this.mainEmbed] }).catch(er => console.log(er));
     }
 
     async endAfk() {
@@ -719,8 +730,8 @@ class afkCheck {
         if (this.afkInfo.isSplit) await this.splitLogic();
 
         //lock channel
-        await this.channel.updateOverwrite(this.verifiedRaiderRole.id, { CONNECT: false, VIEW_CHANNEL: true })
-        if (this.eventBoi) await this.channel.updateOverwrite(this.eventBoi.id, { CONNECT: false, VIEW_CHANNEL: true })
+        await this.channel.permissionOverwrites.edit(this.verifiedRaiderRole.id, { CONNECT: false, VIEW_CHANNEL: true })
+        if (this.eventBoi) await this.channel.permissionOverwrites.edit(this.eventBoi.id, { CONNECT: false, VIEW_CHANNEL: true })
         if (this.afkInfo.newChannel && !this.isVet) {
             this.channel.setPosition(this.afkChannel.position)
         }
@@ -730,16 +741,16 @@ class afkCheck {
             .setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
         this.leaderEmbed.setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname} at`)
             .setTimestamp();
-        this.raidStatusMessage.edit('', this.mainEmbed).catch(er => ErrorLogger.log(er, this.bot))
-            .then(this.leaderEmbedMessage.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, this.bot)))
-            .then(this.runInfoMessage.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, this.bot)))
+        this.raidStatusMessage.edit({ content: null, embeds: [this.mainEmbed] }).catch(er => ErrorLogger.log(er, this.bot))
+            .then(this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot)))
+            .then(this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot)))
             .then(this.leaderEmbedMessage.reactions.removeAll())
 
         //store afk check information
         let earlyLocationIDS = []
         for (let i in this.earlyLocation) earlyLocationIDS.push(this.earlyLocation[i].id)
         let raiders = []
-        this.channel.members.array().forEach(m => raiders.push(m.id))
+        this.channel.members.forEach(m => raiders.push(m.id))
         this.bot.afkChecks[this.channel.id].keys = []
         this.bot.afkChecks[this.channel.id].earlyLocation = earlyLocationIDS
         this.bot.afkChecks[this.channel.id].raiders = raiders
@@ -795,8 +806,8 @@ class afkCheck {
             }
         })
         historyEmbed.setFooter(`${this.channel.id} • ${this.raidStatusMessage.id} • ${this.leaderEmbedMessage.id} • ${raiders.length} Raiders`)
-        this.message.guild.channels.cache.get(this.settings.channels.history).send(historyEmbed)
-        this.message.guild.channels.cache.get(this.settings.channels.runlogs).send(historyEmbed)
+        this.message.guild.channels.cache.get(this.settings.channels.history).send({ embeds: [historyEmbed] })
+        this.message.guild.channels.cache.get(this.settings.channels.runlogs).send({ embeds: [historyEmbed] })
 
         //make sure everyone in run is in db
         if (this.channel.members) {
@@ -899,23 +910,25 @@ class afkCheck {
         if (this.timer) clearInterval(this.timer);
         if (this.updateVC) clearInterval(this.updateVC)
 
-        await this.channel.updateOverwrite(this.verifiedRaiderRole.id, { CONNECT: false, VIEW_CHANNEL: false })
-        if (this.eventBoi) await this.channel.updateOverwrite(this.eventBoi.id, { CONNECT: false, VIEW_CHANNEL: false })
-        setTimeout(() => this.channel.setPosition(this.channel.parent.children.filter(c => c.type == 'voice').size - 1), 1000)
+        await this.channel.permissionOverwrites.edit(this.verifiedRaiderRole.id, { CONNECT: false, VIEW_CHANNEL: false })
+        if (this.eventBoi) await this.channel.permissionOverwrites.edit(this.eventBoi.id, { CONNECT: false, VIEW_CHANNEL: false })
+        if (this.afkInfo.newChannel && !this.isVet) {
+            this.channel.setPosition(this.afkChannel.position)
+        }
 
         this.mainEmbed.setDescription(`This afk check has been aborted`)
             .setFooter(`The afk check has been aborted by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
         this.leaderEmbed.setFooter(`The afk check has been aborted by ${this.message.guild.members.cache.get(this.endedBy.id).nickname} at`)
             .setTimestamp();
 
-        this.raidStatusMessage.edit('', this.mainEmbed).catch(er => ErrorLogger.log(er, this.bot))
-        this.leaderEmbedMessage.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, this.bot))
-        this.runInfoMessage.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, this.bot))
+        this.raidStatusMessage.edit({ content: null, embeds: [this.mainEmbed] }).catch(er => ErrorLogger.log(er, this.bot))
+        this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot))
+        this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot))
 
         let earlyLocationIDS = []
         for (let i in this.earlyLocation) earlyLocationIDS.push(this.earlyLocation[i].id)
         let raiders = []
-        this.channel.members.array().forEach(m => raiders.push(m.id))
+        this.channel.members.forEach(m => raiders.push(m.id))
         this.bot.afkChecks[this.channel.id] = {
             isVet: this.isVet,
             leader: this.message.author.id,
@@ -998,7 +1011,7 @@ class afkCheck {
             if (groupEmbed.fields[1].value == 'None!') groupEmbed.fields[1].value = `${nick}`
             else groupEmbed.fields[1].value += `\n${nick}`
         }
-        this.raidStatus.send(groupEmbed)
+        this.raidStatus.send({ embeds: [groupEmbed] })
     }
 
     async changeLocation(location) {
@@ -1008,8 +1021,8 @@ class afkCheck {
 
         this.leaderEmbed.fields[this.leaderEmbed.fields.length - 3].value = this.afkInfo.location;
 
-        this.leaderEmbedMessage.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, this.bot));
-        this.runInfoMessage.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, this.bot));
+        this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
+        this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
 
         for (let i of this.earlyLocation) {
             await i.send(`The location for this run has changed to \`${this.afkInfo.location}\``)
@@ -1047,15 +1060,15 @@ async function createChannel(runInfo, message, bot) {
         if (!template) return rej(`Template channel not found`)
         let channel = await template.clone({
             name: `${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s ${runInfo.runType}`,
-            parent: message.guild.channels.cache.filter(c => c.type == 'category').find(c => c.name.toLowerCase() === parent).id,
+            parent: message.guild.channels.cache.filter(c => c.type == 'GUILD_CATEGORY').find(c => c.name.toLowerCase() === parent).id,
             userLimit: runInfo.vcCap
         }).then(c => c.setPosition(0))
 
         await message.member.voice.setChannel(channel).catch(er => { })
 
         //allows raiders to view
-        channel.updateOverwrite(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
-        if (eventBoi) channel.updateOverwrite(eventBoi.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+        channel.permissionOverwrites.edit(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+        if (eventBoi) channel.permissionOverwrites.edit(eventBoi.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
 
         //Embed to remove
         let embed = new Discord.MessageEmbed()
@@ -1064,7 +1077,7 @@ async function createChannel(runInfo, message, bot) {
             .setTimestamp()
             .setTitle(channel.name)
             .setColor(runInfo.embed.color)
-        let m = await vibotChannels.send(`${message.member}`, embed)
+        let m = await vibotChannels.send({ content: `${message.member}`, embeds: [embed] })
         await m.react('❌')
         setTimeout(() => { Channels.watchMessage(m, bot, settings) }, 5000)
         if (!channel) rej('No channel was made')

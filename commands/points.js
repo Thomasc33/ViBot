@@ -25,10 +25,10 @@ module.exports = {
         let settings = bot.settings[message.guild.id]
         if (!settings || !settings.backend.points) return
         if (message.member.roles.highest.position < message.guild.roles.cache.get(settings.roles.eventrl).position) {
-            await message.member.send(await this.getPointEmbed(message.member, db))
+            await message.member.send({ embeds: [await this.getPointEmbed(message.member, db)] })
             message.react('✅')
         } else if (message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.headrl).position || message.member.id == '277636691227836419') {
-            if (args.length == 0) return await message.member.send(await this.getPointEmbed(message.member, db)).then(message.react('✅'))
+            if (args.length == 0) return await message.member.send({ embeds: [await this.getPointEmbed(message.member, db)] }).then(message.react('✅'))
             switch (args[0].toLowerCase()) {
                 case 'add':
                     let member = message.mentions.members.first()
@@ -59,23 +59,23 @@ module.exports = {
                     if (!member1) member1 = message.guild.members.cache.get(args[0])
                     if (!member1) member1 = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
                     if (!member1) return message.channel.send(`${args[1]} is not a valid user`)
-                    await message.member.send(await this.getPointEmbed(member1, db))
+                    await message.member.send({ embeds: [await this.getPointEmbed(member1, db)] })
                     break;
             }
         } else {
-            if (args.length == 0) await message.member.send(await this.getPointEmbed(message.member, db))
+            if (args.length == 0) await message.member.send({ embeds: [await this.getPointEmbed(message.member, db)] })
             else {
                 let member = message.mentions.members.first()
                 if (!member) member = message.guild.members.cache.get(args[0])
                 if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
                 if (!member) return message.channel.send(`${member} not found`)
-                await message.member.send(await this.getPointEmbed(member, db))
+                await message.member.send({ embeds: [await this.getPointEmbed(member, db)] })
             }
             message.react('✅')
         }
     },
     async dmExecution(message, args, bot, db, guild) {
-        return message.channel.send(await this.getPointEmbed(message.author, db))
+        return message.channel.send({ embeds: [await this.getPointEmbed(message.author, db)] })
     },
     getPointEmbed(member, db) {
         return new Promise((resolve, reject) => {

@@ -1014,12 +1014,12 @@ async function fsvReact(message) {
 }
 async function unlockChannel(raiderRole, voiceChannel, voiceChannelNumber, isVet, settings, vcCap) {
     if (isVet) {
-        await voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(r => console.log(r));
+        await voiceChannel.permissionOverwrites.edit(raiderRole.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(r => console.log(r));
         await voiceChannel.setName(`${settings.voiceprefixes.vetprefix}${voiceChannelNumber} <-- Join!`).catch(r => console.log(r));
         await voiceChannel.setUserLimit(vcCap).catch(r => console.log(r));
     }
     if (!isVet) {
-        await voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(r => console.log(r));
+        await voiceChannel.permissionOverwrites.edit(raiderRole.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(r => console.log(r));
         await voiceChannel.setName(`${settings.voiceprefixes.raidingprefix}${voiceChannelNumber} <-- Join!`).catch(r => console.log(r));
         await voiceChannel.setUserLimit(vcCap).catch(r => console.log(r));
     }
@@ -1027,12 +1027,12 @@ async function unlockChannel(raiderRole, voiceChannel, voiceChannelNumber, isVet
 }
 async function lockChannel(raiderRole, voiceChannel, voiceChannelNumber, isVet, settings) {
     if (isVet) {
-        await voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(r => console.log(r));
+        await voiceChannel.permissionOverwrites.edit(raiderRole.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(r => console.log(r));
         await voiceChannel.setName(`${settings.voiceprefixes.vetprefix}${voiceChannelNumber}`).catch(r => console.log(r));
         //await voiceChannel.setUserLimit(99).catch(r => console.log(r));
     }
     if (!isVet) {
-        await voiceChannel.updateOverwrite(raiderRole.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(r => console.log(r));
+        await voiceChannel.permissionOverwrites.edit(raiderRole.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(r => console.log(r));
         await voiceChannel.setName(`${settings.voiceprefixes.raidingprefix}${voiceChannelNumber}`).catch(r => console.log(r));
         //await voiceChannel.setUserLimit(99).catch(r => console.log(r));
     }

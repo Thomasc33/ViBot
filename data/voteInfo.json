@@ -28,6 +28,7 @@
         "rl": ["fullskip", "mrvrl"],
         "almostrl": ["rl"],
         "trialrl": ["almostrl"],
+        "veteo": ["eventrl"],
         "db_rows": [
             ["Voids", "voidsLead"],
             ["Cults", "cultsLead"],

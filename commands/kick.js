@@ -37,12 +37,12 @@ module.exports = {
                 await member.kick(reason).catch(er => { ErrorLogger.log(er, bot); message.channel.send(`Could not kick because: \`${er.message}\``); return; })
                 let embed = new Discord.MessageEmbed()
                     .setTitle('User Kicked')
-                    .setDescription(member)
+                    .setDescription(member.toString())
                     .addField('User', member.displayName, true)
                     .addField('Kicked By', `<@!${m.author.id}>`, true)
                     .setTimestamp(Date.now());
 
-                await message.guild.channels.cache.get(settings.channels.modlogs).send(embed);
+                await message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });
                 if (reason) {
                     await message.guild.channels.cache.get(settings.channels.modlogs).send(reason);
                 }

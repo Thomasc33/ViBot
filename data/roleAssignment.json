@@ -25,5 +25,24 @@
             "prettyName": "Fungals",
             "react": "<:fungal:723001215696240660>"
         }
-    ]
+    ],
+    "708026927721480254": [
+        {
+            "reactName": "o3Ping",
+            "prettyName": "Oryx 3",
+            "react": "<:oryxThree:831047591096745984>"
+        },
+        {
+            "reactName": "rcPing",
+            "prettyName": "Realm Clearing",
+            "react": "<:pcave:723001215184535553>"
+        }
+    ],
+	"451171819672698920": [
+	{
+            "reactName": "eventraider",
+            "prettyName": "All Events",
+            "react": "<:oryx:723009084814524449>"
+        }
+	]
 }

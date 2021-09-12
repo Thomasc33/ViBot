@@ -21,7 +21,7 @@ module.exports = {
             if (!channel || !lounge) return message.channel.send('I could not find one of the voice channels (channel or lounge)')
             await this.clean(channel, lounge, message, settings)
         } else if (message.channel.parent.name.toLowerCase() === settings.categories.raiding) {
-            let channel = message.guild.channels.cache.find(c => c.type == 'category' && c.name == settings.categories.event).children.find(c => c.name.includes(args[0]))
+            let channel = message.guild.channels.cache.find(c => c.type == 'GUILD_CATEGORY' && c.name == settings.categories.event).children.find(c => c.name.includes(args[0]))
             let lounge = message.guild.channels.cache.get(settings.voice.eventlounge)
             if (!channel || !lounge) return message.channel.send('I could not find one of the voice channels (channel or lounge)')
             await this.clean(channel, lounge, message, settings)

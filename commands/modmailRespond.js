@@ -34,9 +34,9 @@ module.exports = {
         originalMessage = originalMessage.substring(originalMessage.indexOf(':') + 3, originalMessage.length - 1)
         let responseEmbed = new Discord.MessageEmbed()
             .setDescription(`__How would you like to respond to ${raider}'s [message](${m.url})__\n${originalMessage}`)
-        let responseEmbedMessage = await message.channel.send(responseEmbed)
+        let responseEmbedMessage = await message.channel.send({ embeds: [responseEmbed] })
         let responseCollector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id)
-        responseCollector.on('collect', async function(mes) {
+        responseCollector.on('collect', async function (mes) {
             let response = mes.content.trim()
             if (response == '') return mes.channel.send(`Invalid response. Please provide text. If you attached an image, please copy the URL and send that`)
             responseCollector.stop()
@@ -44,11 +44,11 @@ module.exports = {
             if (!checkInServer())
                 return responseEmbedMessage.delete();
             responseEmbed.setDescription(`__Are you sure you want to respond with the following?__\n${response}`)
-            await responseEmbedMessage.edit(responseEmbed)
+            await responseEmbedMessage.edit({ embeds: [responseEmbed] })
             await responseEmbedMessage.react('✅')
             await responseEmbedMessage.react('❌')
-            let ConfirmReactionCollector = new Discord.ReactionCollector(responseEmbedMessage, (r, u) => !u.bot && (r.emoji.name === '❌' || r.emoji.name === '✅'))
-            ConfirmReactionCollector.on('collect', async function(r, u) {
+            let ConfirmReactionCollector = new Discord.ReactionCollector(responseEmbedMessage, { filter: (r, u) => !u.bot && (r.emoji.name === '❌' || r.emoji.name === '✅') })
+            ConfirmReactionCollector.on('collect', async function (r, u) {
                 if (u.id !== message.author.id) return;
                 if (r.emoji.name === '✅') {
                     ConfirmReactionCollector.stop()
@@ -57,7 +57,7 @@ module.exports = {
                     await dms.send(response)
                     responseEmbedMessage.delete()
                     embed.addField(`Response by ${message.member.nickname}:`, response)
-                    m.edit(embed)
+                    m.edit({ embeds: [embed] })
                 } else if (r.emoji.name === '❌') {
                     ConfirmReactionCollector.stop()
                     await responseEmbedMessage.delete()

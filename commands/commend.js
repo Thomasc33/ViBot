@@ -43,17 +43,21 @@ module.exports = {
                     let minRole = message.guild.roles.cache.get(settings.roles[i.minimumRole])
                     if (minRole && message.member.roles.highest.position < minRole.position) return message.channel.send(`The minimum role to commend this role is \`${minRole.name}\``)
                 }
-                let role = message.guild.roles.cache.get(settings.roles[i.roleName])
-                if (!role) return message.channel.send(`\`${i.roleName}\` not found in setup`)
+                let role = message.guild.roles.cache.get(i.roleId)
+                if (!role) return message.channel.send(`\`${i.roleId}\` not found`)
                 if (member.roles.cache.has(role.id)) return message.channel.send(`${member} already has \`${role.name}\``)
                 let modlog = message.guild.channels.cache.get(settings.channels.modlogs)
-                if (modlog) await modlog.send(new Discord.MessageEmbed()
-                    .setTitle(`${role.name} Commendation`)
-                    .addField('Commender', `${message.author} \`${message.author.tag}\``)
-                    .addField('Commended', `${member} \`${member.user.tag}\``)
-                    .addField('Role', `${role}`)
-                    .setColor(role.hexColor)
-                    .setTimestamp());
+                if (modlog) await modlog.send({
+                    embeds: [
+                        new Discord.MessageEmbed()
+                            .setTitle(`${role.name} Commendation`)
+                            .addField('Commender', `${message.author} \`${message.author.tag}\``)
+                            .addField('Commended', `${member} \`${member.user.tag}\``)
+                            .addField('Role', `${role}`)
+                            .setColor(role.hexColor)
+                            .setTimestamp()
+                    ]
+                });
                 member.roles.add(role.id)
                 if (i.dbName) db.query(`UPDATE users SET ${i.dbName} = true WHERE id = '${member.id}'`)
                 if (i.prefix) addPrefix(i.prefix, member)

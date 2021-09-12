@@ -27,7 +27,7 @@ module.exports = {
         switch (args[0].toLowerCase()) {
             case 'send':
                 //send to channel and add reacts
-                let m = await channel.send(embed)
+                let m = await channel.send({ embeds: [embed] })
                 for (let i of guildReacts) {
                     await m.react(i.react.replace(/[^0-9]/gi, ''))
                 }
@@ -37,12 +37,12 @@ module.exports = {
                 let mC = await channel.messages.fetch({ limit: 1 })
                 let me = mC.first()
                 if (me.author.id !== bot.user.id) return ErrorLogger.log(new Error('Role Assignment message author id is not bots id'), bot)
-                me.edit(embed)
+                me.edit({ embeds: [embed] })
                 for (let i of guildReacts) {
                     await me.react(i.react.replace(/[^0-9]/gi, ''))
                 }
                 return this.init(message.guild, bot)
-                
+
             case 'init':
                 return this.init(message.guild, bot)
         }
@@ -61,7 +61,7 @@ module.exports = {
         let mC = await channel.messages.fetch({ limit: 1 })
         let m = mC.first()
         if (m.author.id !== bot.user.id) return ErrorLogger.log(new Error('Role Assignment message author id is not bots id'), bot)
-        let reactionCollector = new Discord.ReactionCollector(m, (r, u) => !u.bot, { dispose: true })
+        let reactionCollector = new Discord.ReactionCollector(m, { filter: (r, u) => !u.bot, dispose: true })
         reactionCollector.on('collect', (r, u) => { handleReact(r, u, false) })
         reactionCollector.on('remove', (r, u) => { handleReact(r, u, true) })
         async function handleReact(r, u, isRemove) {

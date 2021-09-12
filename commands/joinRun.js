@@ -30,7 +30,7 @@ module.exports = {
                 if (!guild.channels.cache.get(runsIn[i])) continue
                 fitStringIntoEmbed(runEmbed, `**${parseInt(i) + 1}:** ${guild.channels.cache.get(runsIn[i]).name}\n*${Math.round((Date.now() - bot.afkChecks[runsIn[i]].time) / 60000)} minutes ago*\n`, message.channel)
             }
-            let joinEmbedMessage = await message.channel.send(runEmbed)
+            let joinEmbedMessage = await message.channel.send({ embeds: [runEmbed] })
             let runMessageCollector = new Discord.MessageCollector(message.channel, m => m.author.id == message.author.id)
             runMessageCollector.on('collect', async m => {
                 if (m.content.replace(/[^0-9]/g, '') != m.content) {
@@ -88,7 +88,7 @@ function fitStringIntoEmbed(embed, string, channel) {
             embed.addField('-', string)
         } else if (embed.fields[embed.fields.length - 1].value.length + `\n${string}`.length >= 1024) {
             if (embed.length + `\n${string}`.length >= 6000) {
-                channel.send(embed)
+                channel.send({ embeds: [embed] })
                 embed.setDescription('None!')
                 embed.fields = []
             } else {
@@ -96,7 +96,7 @@ function fitStringIntoEmbed(embed, string, channel) {
             }
         } else {
             if (embed.length + `\n${string}`.length >= 6000) {
-                channel.send(embed)
+                channel.send({ embeds: [embed] })
                 embed.setDescription('None!')
                 embed.fields = []
             } else {

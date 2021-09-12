@@ -95,7 +95,7 @@ module.exports = {
                     if (overwrite) {
                         db.query(`UPDATE suspensions SET uTime = '${Date.now() + time}' WHERE id = '${member.id}' AND suspended = true`)
                         embed.fields[3].value = `Overwritten suspensions. Roles the same as prior suspension`
-                        suspensionLog.send(embed).then(member.user.send(embed))
+                        suspensionLog.send({ embeds: [embed] }).then(member.user.send({ embeds: [embed] }))
                     } else {
                         let userRolesString = '', userRoles = []
                         const roles = [...member.roles.cache.filter(r => !r.managed && r.id != settings.roles.nitro).values()];
@@ -106,10 +106,10 @@ module.exports = {
                                 userRolesString = userRolesString.concat(`${r.id} `)
                             }
                         })
-                        messageId = await suspensionLog.send(embed);
+                        messageId = await suspensionLog.send({ embeds: [embed] });
                         await member.roles.remove(userRoles)
                         setTimeout(() => { member.roles.add(suspendedRole.id); }, 1000)
-                        await member.user.send(embed)
+                        await member.user.send({ embeds: [embed] })
                         db.query(`INSERT INTO suspensions (id, guildid, suspended, uTime, reason, modid, roles, logmessage) VALUES ('${member.id}', '${message.guild.id}', true, '${Date.now() + time}', ${db.escape(reason)}, '${message.author.id}', '${userRolesString}', '${messageId.id}');`)
                     }
                     message.channel.send(`${member} has been suspended`)

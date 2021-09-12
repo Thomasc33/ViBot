@@ -38,7 +38,7 @@ module.exports = {
             .setFooter(`User ID: ${message.author.id} MSG ID: ${message.id}`)
             .setTimestamp()
         let modMailChannel = guild.channels.cache.get(settings.channels.modmail)
-        let embedMessage = await modMailChannel.send(embed).catch(er => ErrorLogger.log(er, bot))
+        let embedMessage = await modMailChannel.send({ embeds: [embed] }).catch(er => ErrorLogger.log(er, bot))
         await embedMessage.react('🔑')
         //setTimeout(() => module.exports.watchMessage(embedMessage, db), 1000)
         if (message.attachments.first()) modMailChannel.send(message.attachments.first().proxyURL)
@@ -169,7 +169,7 @@ module.exports = {
     //                     let oldEmbed = m.embeds[0]
     //                     embed.setColor('#ff0000')
     //                     embed.setDescription(oldEmbed.description)
-    //                     let me = await botReco.send(embed)
+    //                     let me = await botReco.send({ embeds: [embed] })
     //                     await me.react('👍')
     //                     await me.react('👎')
     //                 }
@@ -207,7 +207,7 @@ module.exports = {
         let modMailMessage = await dms.messages.fetch(modMailMessageID)
 
         let reactor = guild.members.cache.get(u.id)
-        let choiceCollector = new Discord.ReactionCollector(m, choiceFilter)
+        let choiceCollector = new Discord.ReactionCollector(m, { filter: choiceFilter })
         let collected = false;
         choiceCollector.on('collect', async function (r, u) {
             collected = true;
@@ -224,7 +224,7 @@ module.exports = {
                     originalMessage = originalMessage.substring(originalMessage.indexOf(':') + 3, originalMessage.length - 1)
                     let responseEmbed = new Discord.MessageEmbed()
                         .setDescription(`__How would you like to respond to ${raider}'s [message](${m.url})__\n${originalMessage}`)
-                    let responseEmbedMessage = await modMailChannel.send(responseEmbed)
+                    let responseEmbedMessage = await modMailChannel.send({ embeds: [responseEmbed] })
                     let responseCollector = new Discord.MessageCollector(modMailChannel, m => m.author.id === reactor.id)
                     responseCollector.on('collect', async function (mes) {
                         let response = mes.content.trim()
@@ -237,10 +237,10 @@ module.exports = {
                             return;
                         }
                         responseEmbed.setDescription(`__Are you sure you want to respond with the following?__\n${response}`)
-                        await responseEmbedMessage.edit(responseEmbed)
+                        await responseEmbedMessage.edit({ embeds: [responseEmbed] })
                         await responseEmbedMessage.react('✅')
                         await responseEmbedMessage.react('❌')
-                        let ConfirmReactionCollector = new Discord.ReactionCollector(responseEmbedMessage, ConfirmationFilter)
+                        let ConfirmReactionCollector = new Discord.ReactionCollector(responseEmbedMessage, { filter: ConfirmationFilter })
                         ConfirmReactionCollector.on('collect', async function (r, u) {
                             if (u.id !== reactor.id) return;
                             if (r.emoji.name === '✅') {
@@ -254,7 +254,7 @@ module.exports = {
                                 await dms.send(response)
                                 responseEmbedMessage.delete()
                                 embed.addField(`Response by ${reactor.nickname}:`, response)
-                                m.edit(embed)
+                                m.edit({ embeds: [embed] })
                                 await m.reactions.removeAll()
                                 await m.react('📫')
                             } else if (r.emoji.name === '❌') {
@@ -271,7 +271,7 @@ module.exports = {
                         .setDescription(`Your [message](${modMailMessage.url}) has been recieved and read`)
                     await m.reactions.removeAll()
                     if (checkInServer()) {
-                        await dms.send(eyesEmbed)
+                        await dms.send({ embeds: [eyesEmbed] })
                         await m.react('👀')
                     } else
                         await m.react('🚫');
@@ -302,7 +302,7 @@ module.exports = {
                     let oldEmbed = m.embeds[0]
                     embed.setColor('#ff0000')
                     embed.setDescription(oldEmbed.description)
-                    let me = await botReco.send(embed)
+                    let me = await botReco.send({ embeds: [embed] })
                     await me.react('👍')
                     await me.react('👎')
                 }
@@ -322,7 +322,7 @@ module.exports = {
             .setTitle(`Mod Mail`)
             .setColor(`#0000ff`)
             .setDescription(`**DM me (the bot) to send feedback directly to the mod team!**\n\nI am here to pass along any questions, comments, or concerns you may have about anything in the server directly to the mod team (Security+)\n\n*Any feedback on RL's is not visible by RL's*\n*Rules found in #rules still apply in modmail. Breaking them may result in being banned from the server or being blacklisted from sending further modmail*`)
-        message.guild.channels.cache.get(message.client.settings[message.guild.id].channels.modmailinfo).send(embed)
+        message.guild.channels.cache.get(message.client.settings[message.guild.id].channels.modmailinfo).send({ embeds: [embed] })
     }
 }
 

@@ -26,8 +26,8 @@ module.exports = {
             if (embed.description == 'None!') embed.description = `**${i}:** ${names[i]}`
             else embed.description += `\n**${i}:** ${names[i]}`
         }
-        let mes = await message.channel.send(embed)
-        let reactionCollector = new Discord.ReactionCollector(mes, (r, u) => !u.bot)
+        let mes = await message.channel.send({ embeds: [embed] })
+        let reactionCollector = new Discord.ReactionCollector(mes, { filter: (r, u) => !u.bot })
         let choice
         reactionCollector.on('collect', async (r, u) => {
             switch (r.emoji.name) {
@@ -62,7 +62,7 @@ module.exports = {
                 let embed = new Discord.MessageEmbed()
                     .setTitle('Alt Removed')
                     .setColor('#fefefe')
-                    .setDescription(member)
+                    .setDescription(member.toString())
                     .addField('Main', member.nickname, true)
                     .addField('Alt Removed', names[choice], true)
                     .addField('Removed By', `<@!${message.author.id}> `)
@@ -74,7 +74,7 @@ module.exports = {
                         embed.addField('Reason 1', reason.substring(0, 1024))
                         embed.addField('Reason Cont', reason.substring(1024, reason.length))
                     } else embed.addField('Reason', reason)
-                await message.guild.channels.cache.get(settings.channels.modlogs).send(embed);
+                await message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });
             }
         })
         for (let i = 1; i < names.length; i++) {

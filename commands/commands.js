@@ -21,29 +21,25 @@ module.exports = {
                     }
                 }
             })
-            if (!command) {
-                message.channel.send('Command doesnt exist, check \`commands\` and try again');
-                return;
-            }
+            if (!command) return message.channel.send('Command doesnt exist, check \`commands\` and try again');
+
             if (!message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role])) return message.channel.send('Permissions not setup for that commands role')
-            if ((message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role]).position 
-            && !override) || !bot.settings[message.guild.id].commands[command.name])
+            if ((message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role]).position
+                && !override) || !bot.settings[message.guild.id].commands[command.name])
                 return message.channel.send('Command doesnt exist, check \`commands\` and try again');
             var commandPanel = new Discord.MessageEmbed()
                 .setTitle(command.name)
                 .setColor('#ff0000')
-                .setDescription(command.description)
+                .setDescription(command.description || 'No description...')
                 .setFooter('<Required> (Optional) [Item1, Item2, Item3]');
-            if (command.alias != null) {
-                commandPanel.addField('Aliases', command.alias)
-            } if (command.args != null) {
-                commandPanel.addField('Args', command.args)
-            } if (command.getNotes && command.getNotes(message.guild.id, message.member)) {
-                commandPanel.addField('Special Notes', command.getNotes(message.guild.id, message.member))
-            }
+            if (command.alias) commandPanel.addField('Aliases', command.alias.map(a => a).join(', '))
+            if (command.args) commandPanel.addField('Args', command.args)
+            if (command.getNotes && command.getNotes(message.guild.id, message.member)) commandPanel.addField('Special Notes', command.getNotes(message.guild.id, message.member))
+
             var minimumRole = message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role])
-            commandPanel.addField('Minimum Role', minimumRole);
-            message.channel.send(commandPanel);
+            if (minimumRole) commandPanel.addField('Minimum Role', minimumRole.toString());
+            else commandPanel.addField('Minimum Role', 'Role not set up');
+            message.channel.send({ embeds: [commandPanel] });
         } else {
             var commandPanel = new Discord.MessageEmbed()
                 .setTitle('Commands')
@@ -168,7 +164,7 @@ module.exports = {
                 if (line == '') line = 'No role specific commands'
                 commandPanel.addField('Developer', `\`\`\`css\n${line}\`\`\``)
             }
-            message.channel.send(commandPanel);
+            message.channel.send({ embeds: [commandPanel] });
         }
     },
 };
