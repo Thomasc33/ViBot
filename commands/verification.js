@@ -194,7 +194,7 @@ module.exports = {
         ign = await getIgn()
         async function getIgn() {
             return new Promise(async (resolve, reject) => {
-                let ignCollector = new Discord.MessageCollector(dms, m => !m.author.bot)
+                let ignCollector = new Discord.MessageCollector(dms, { filter: m => !m.author.bot })
                 reactionCollectors.push(ignCollector)
                 ignCollector.on("collect", async m => {
                     if (m.content.split(/ +/).length > 1) {

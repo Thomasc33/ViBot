@@ -30,7 +30,7 @@ module.exports = {
             confirmReactionCollector.on('collect', async function (r, u) {
                 await confirmMessage.reactions.removeAll()
                 if (r.emoji.name === '✅') {
-                    db.query(`DELETE FROM warns WHERE reason = '${warn.reason}' AND modid = '${warn.modid}'`)
+                    db.query(`DELETE FROM warns WHERE warn_id = ${warn.warn_id} AND modid = '${warn.modid}'`)
                     confirmReactionCollector.stop()
                     confirmEmbed.setTitle('Warn Removed')
                     confirmMessage.edit({ embeds: [confirmEmbed] })

@@ -21,7 +21,7 @@ module.exports = {
         for (let i = 1; i < args.length; i++) reason = reason.concat(` ${args[i]}`)
         if (reason == '') return message.channel.send('Please provide a reason')
         let errored = false
-        await db.query(`INSERT INTO warns VALUES ('${member.user.id}', '${message.author.id}', ${db.escape(reason)})`, (err, rows) => {
+        await db.query(`INSERT INTO warns (id, modid, reason, time, guildid) VALUES ('${member.user.id}', '${message.author.id}', ${db.escape(reason)}, '${Date.now()}', '${member.guild.id}')`, (err, rows) => {
             if (err) {
                 message.channel.send(`There was an error: ${err}`);
                 errored = true

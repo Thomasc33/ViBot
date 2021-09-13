@@ -28,7 +28,7 @@ module.exports = {
         if (!keyInfo) return message.channel.send(`\`${args[0]}\` not recognized`)
 
         message.channel.send(`Are you sure you want to log ${count} ${keyInfo.name} pops for ${user.nickname}? (Y/N)`)
-        let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 20000 });
+        let collector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id === message.author.id, time: 20000 });
         collector.on('collect', m => {
             if (m.content.charAt(0).toLowerCase() == 'y') {
                 collector.stop()

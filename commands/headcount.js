@@ -58,7 +58,7 @@ module.exports = {
                 if (!event) return rej('No event found')
                 if (!event.enabled) return rej(`${event.name} is currently disabled.`);
 
-                if (!event.name.toLowerCase().includes(['random', 'exalts'])) {
+                if (event.name.toLowerCase() == 'random') { // to do
                     var embed = new Discord.MessageEmbed()
                         .setColor('#8c00ff')
                         .setTitle(`Headcount for ${event.name} started by ${message.guild.members.cache.get(message.author.id).nickname}`)
@@ -85,52 +85,50 @@ module.exports = {
                     var embedMessage = await textChannel.send({ content: `@here ${event.rolePing ? `${settings.roles[event.rolePing] ? `<@&${settings.roles[event.rolePing]}>` : ''}` : ''}`, embeds: [embed] });
                     await eventReact(embedMessage, event);
                     res()
+                }
+                else if (event.name.toLowerCase() == 'exalts') {
+                    var embed = new Discord.MessageEmbed()
+                        .setColor('#8c00ff')
+                        .setTitle(`Headcount for ${event.name} started by ${message.guild.members.cache.get(message.author.id).nickname}`)
+                        .setDescription(`React with with emotes below to indicate what you have`)
+                        .setTimestamp(Date.now())
+                        .addField('Nests', `To participate: <:nest:723001215407095899>\nIf you have a key: <:nestK:723001429693956106>`)
+                        .addField('Fungals', `To participate: <:fungal:723001215696240660>\nIf you have a key: <:fungalK:723001429614395402>`)
+                        .addField('Shatters', `To participate: <:shatters:723001214865899532>\nIf you have a key: <:shattersK:723001429903802478>`)
+                    let embedMessage = await textChannel.send({ content: `@here ${settings.roles.shattsReact ? `<@&${settings.roles.shattsReact}> ` : ''}${settings.roles.fungalReact ? `<@&${settings.roles.fungalReact}> ` : ''}${settings.roles.nestReact? `<@&${settings.roles.nestReact}>` : ''}`, embeds: [embed] })
+                    await embedMessage.react('723001215407095899')
+                    await embedMessage.react('723001215696240660')
+                    await embedMessage.react('723001214865899532')
+                    await embedMessage.react('723001429693956106')
+                    await embedMessage.react('723001429614395402')
+                    await embedMessage.react('723001429903802478')
                 } else {
-                    if (event.name.toLowerCase() == 'random') { // to do
-                        var embed = new Discord.MessageEmbed()
-                            .setColor('#8c00ff')
-                            .setTitle(`Headcount for ${event.name} started by ${message.guild.members.cache.get(message.author.id).nickname}`)
-                            .setDescription(`React with with emotes below to indicate what you have`)
-                            .setTimestamp(Date.now())
-                            .addField('Participate', `<${event.portalEmote}>`, true)
-                            .addField('Key', `<${event.keyEmote}>`, true);
-                        if (event.rushers) embed.addField('Rushers', `<${botSettings.emote.Plane}>`, true)
-                        if (event.stun) embed.addField('Stun', `<${botSettings.emote.Collo}>`, true)
-                        if (event.ogmur) embed.addField('(P)ogmur', `<${botSettings.emote.Ogmur}>`, true)
-                        if (event.fungal) embed.addField('Fungal Tome', `<${botSettings.emote.UTTomeoftheMushroomTribes}>`, true)
-                        if (event.mseal) embed.addField('Mseal', `<${botSettings.emote.MarbleSeal}>`, true)
-                        if (event.brain) embed.addField('Decoy', `<${botSettings.emote.Brain}>`, true)
-                        if (event.stasis) embed.addField('Mystic', `<${botSettings.emote.Mystic}>`, true)
-                        if (event.parylize) embed.addField('Paralyze', `<${botSettings.emote.Paralyze}>`, true)
-                        if (event.slow) embed.addField('Slow', `<${botSettings.emote.Slow}>`, true)
-                        if (event.daze) embed.addField('Daze', `<${botSettings.emote.Qot}>`, true)
-                        if (event.curse) embed.addField('Curse', `<${botSettings.emote.Curse}>`, true)
-                        if (event.expose) embed.addField('Expose', `<${botSettings.emote.Expose}>`, true)
-                        if (event.warrior) embed.addField('Warrior', `<${botSettings.emote.Warrior}>`, true)
-                        if (event.paladin) embed.addField('Paladin', `<${botSettings.emote.Paladin}>`, true)
-                        if (event.bard) embed.addField('Bard', `<${botSettings.emote.Bard}>`, true)
-                        if (event.priest) embed.addField('Priest', `<${botSettings.emote.Priest}>`, true)
-                        var embedMessage = await textChannel.send({ content: `@here ${event.rolePing ? `${settings.roles[event.rolePing] ? `<@&${settings.roles[event.rolePing]}>` : ''}` : ''}`, embeds: [embed] });
-                        await eventReact(embedMessage, event);
-                        res()
-                    }
-                    else if (event.name.toLowerCase() = 'exalts') {
-                        var embed = new Discord.MessageEmbed()
-                            .setColor('#8c00ff')
-                            .setTitle(`Headcount for ${event.name} started by ${message.guild.members.cache.get(message.author.id).nickname}`)
-                            .setDescription(`React with with emotes below to indicate what you have`)
-                            .setTimestamp(Date.now())
-                            .addField('Nests', `To participate: <:nest:723001215407095899>\nIf you have a key: <:nestK:723001429693956106>`)
-                            .addField('Fungals', `To participate: <:fungal:723001215696240660>\nIf you have a key: <:fungalK:723001429614395402>`)
-                            .addField('Shatters', `To participate: <:shatters:723001214865899532>\nIf you have a key: <:shattersK:723001429903802478>`)
-                        let embedMessage = await textChannel.send({ content: `@here ${settings.roles[shattsReact] ? `<@&${settings.roles[shattsReact]}>` : ''} ${settings.roles[fungalReact] ? `<@&${settings.roles[fungalReact]}>` : ''} ${settings.roles[nestReact] ? `<@&${settings.roles[nestReact]}>` : ''}`, embeds: [embed] })
-                        await embedMessage.react('723001215407095899')
-                        await embedMessage.react('723001215696240660')
-                        await embedMessage.react('723001214865899532')
-                        await embedMessage.react('723001429693956106')
-                        await embedMessage.react('723001429614395402')
-                        await embedMessage.react('723001429903802478')
-                    }
+                    var embed = new Discord.MessageEmbed()
+                        .setColor('#8c00ff')
+                        .setTitle(`Headcount for ${event.name} started by ${message.guild.members.cache.get(message.author.id).nickname}`)
+                        .setDescription(`React with with emotes below to indicate what you have`)
+                        .setTimestamp(Date.now())
+                        .addField('Participate', `<${event.portalEmote}>`, true)
+                        .addField('Key', `<${event.keyEmote}>`, true);
+                    if (event.rushers) embed.addField('Rushers', `<${botSettings.emote.Plane}>`, true)
+                    if (event.stun) embed.addField('Stun', `<${botSettings.emote.Collo}>`, true)
+                    if (event.ogmur) embed.addField('(P)ogmur', `<${botSettings.emote.Ogmur}>`, true)
+                    if (event.fungal) embed.addField('Fungal Tome', `<${botSettings.emote.UTTomeoftheMushroomTribes}>`, true)
+                    if (event.mseal) embed.addField('Mseal', `<${botSettings.emote.MarbleSeal}>`, true)
+                    if (event.brain) embed.addField('Decoy', `<${botSettings.emote.Brain}>`, true)
+                    if (event.stasis) embed.addField('Mystic', `<${botSettings.emote.Mystic}>`, true)
+                    if (event.parylize) embed.addField('Paralyze', `<${botSettings.emote.Paralyze}>`, true)
+                    if (event.slow) embed.addField('Slow', `<${botSettings.emote.Slow}>`, true)
+                    if (event.daze) embed.addField('Daze', `<${botSettings.emote.Qot}>`, true)
+                    if (event.curse) embed.addField('Curse', `<${botSettings.emote.Curse}>`, true)
+                    if (event.expose) embed.addField('Expose', `<${botSettings.emote.Expose}>`, true)
+                    if (event.warrior) embed.addField('Warrior', `<${botSettings.emote.Warrior}>`, true)
+                    if (event.paladin) embed.addField('Paladin', `<${botSettings.emote.Paladin}>`, true)
+                    if (event.bard) embed.addField('Bard', `<${botSettings.emote.Bard}>`, true)
+                    if (event.priest) embed.addField('Priest', `<${botSettings.emote.Priest}>`, true)
+                    var embedMessage = await textChannel.send({ content: `@here ${event.rolePing ? `${settings.roles[event.rolePing] ? `<@&${settings.roles[event.rolePing]}>` : ''}` : ''}`, embeds: [embed] });
+                    await eventReact(embedMessage, event);
+                    res()
                 }
             })
         }

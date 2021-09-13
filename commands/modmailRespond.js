@@ -35,7 +35,7 @@ module.exports = {
         let responseEmbed = new Discord.MessageEmbed()
             .setDescription(`__How would you like to respond to ${raider}'s [message](${m.url})__\n${originalMessage}`)
         let responseEmbedMessage = await message.channel.send({ embeds: [responseEmbed] })
-        let responseCollector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id)
+        let responseCollector = new Discord.MessageCollector(message.channel,{filter:  m => m.author.id === message.author.id})
         responseCollector.on('collect', async function (mes) {
             let response = mes.content.trim()
             if (response == '') return mes.channel.send(`Invalid response. Please provide text. If you attached an image, please copy the URL and send that`)

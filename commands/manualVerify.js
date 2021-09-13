@@ -60,7 +60,7 @@ module.exports = {
                 expelMessage.collector.stop();
             })
             expelMessage.collector.on('end', (collected, reason) => {
-                if (collected.size > 0) {
+                if (collected.size == 0) {
                     expelEmbed.setDescription(`The follow expels have been removed from the database tied to ${member}.`);
                     db.query(`DELETE FROM veriblacklist WHERE id = '${member.id}' OR id = '${nick}'`);
                     expelMessage.reactions.removeAll();

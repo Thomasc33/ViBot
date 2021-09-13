@@ -33,7 +33,7 @@ module.exports = {
                 .setFooter(`Type 'cancel' to stop`)
                 .setDescription(`\`\`\`Please select what you wish to edit:\n1: roles\n2: channels\n3: voice\n4: voiceprefixes\n5: backend\n6: numerical\n7: runreqs\n8: autoveri\n9: vetverireqs\n10: points\n11: commands\n12: categories\`\`\``)
             let setupMessage = await message.channel.send({ embeds: [setupEmbed] })
-            let mainMenu = new Discord.MessageCollector(message.channel, m => m.author.id == message.author.id)
+            let mainMenu = new Discord.MessageCollector(message.channel, { filter: m => m.author.id == message.author.id})
             mainMenu.on('collect', async m => {
                 if (m.content.replace(/[^0-9]/g, '') != m.content) {
                     if (m.content = 'cancel') {

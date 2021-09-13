@@ -225,7 +225,7 @@ module.exports = {
                     let responseEmbed = new Discord.MessageEmbed()
                         .setDescription(`__How would you like to respond to ${raider}'s [message](${m.url})__\n${originalMessage}`)
                     let responseEmbedMessage = await modMailChannel.send({ embeds: [responseEmbed] })
-                    let responseCollector = new Discord.MessageCollector(modMailChannel, m => m.author.id === reactor.id)
+                    let responseCollector = new Discord.MessageCollector(modMailChannel, {filter: m => m.author.id === reactor.id})
                     responseCollector.on('collect', async function (mes) {
                         let response = mes.content.trim()
                         if (response == '') return mes.channel.send(`Invalid response. Please provide text. If you attached an image, please copy the URL and send that`)
