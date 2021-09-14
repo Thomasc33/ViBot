@@ -27,26 +27,43 @@ module.exports = {
         let keyInfo = findKey(message.guild.id, args[0].toLowerCase())
         if (!keyInfo) return message.channel.send(`\`${args[0]}\` not recognized`)
 
-        message.channel.send(`Are you sure you want to log ${count} ${keyInfo.name} pops for ${user.nickname}? (Y/N)`)
         let collector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id === message.author.id, time: 20000 });
-        collector.on('collect', m => {
+        let confirmEmbed = new Discord.MessageEmbed()
+            .setColor('#ff0000')
+            .setDescription(`Are you sure you want to log ${count} ${keyInfo.name} pops for ${user.nickname}?\n\nRespond with __**Y**__es or __**N**__o`)
+        let confirmMessage = await message.channel.send({ embeds: [confirmEmbed] })
+        collector.on('collect', async m => {
             if (m.content.charAt(0).toLowerCase() == 'y') {
                 collector.stop()
                 db.query(`SELECT * FROM users WHERE id = '${user.id}'`, (err, rows) => {
                     if (err) ErrorLogger.log(err, bot)
                     if (rows.length == 0) return message.channel.send('User is not logged in the DB')
                     db.query(`UPDATE users SET ${keyInfo.schema} = ${keyInfo.schema} + ${count} WHERE id = '${user.id}'`)
-                    message.channel.send(`Key has been logged. ${user.nickname} now has ${parseInt(rows[0][keyInfo.schema]) + parseInt(count)} pops`)
+                    let embed = new Discord.MessageEmbed()
+                        .setColor('#0000ff')
+                        .setDescription(`Key has been logged.\n${user.nickname} now has ${parseInt(rows[0][keyInfo.schema]) + parseInt(count)} pops`)
+                    message.channel.send({ embeds: [embed] })
                 })
                 if (settings.backend.points && keyInfo.points) {
                     let points = settings.points[keyInfo.points] * count
                     if (user.roles.cache.has(settings.roles.nitro)) points = points * settings.points.nitromultiplier
                     db.query(`UPDATE users SET points = points + ${points} WHERE id = '${user.id}'`)
                 }
+                await confirmMessage.delete()
+                await m.delete()
+                message.react('✅')
             } else if (m.content.charAt(0).toLowerCase() == 'n') {
                 collector.stop()
-                return message.channel.send('Cancelled.')
-            } else return message.channel.send('Response not recognized. Try again (Y/N)')
+                await confirmMessage.delete()
+                await m.delete()
+                let em = new Discord.MessageEmbed().setColor('DARK_RED').setDescription('Key Log Cancelled.')
+                return message.channel.send({ embeds: [em] })
+            } else {
+                let em = new Discord.MessageEmbed().setColor('DARK_RED').setDescription('Response not recognized. Try again (Y/N)')
+                let emm = await message.channel.send({ embeds: [em] })
+                m.delete()
+                setTimeout(() => { emm.delete() }, 5000)
+            }
         })
     }
 }

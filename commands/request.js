@@ -46,6 +46,8 @@ module.exports = {
             m.delete()
         })
         for (let i of reacts) await m.react(i)
+
+        message.react('✅')
     },
     async executeOld(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]

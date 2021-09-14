@@ -48,7 +48,7 @@ module.exports = {
                 if (isVet) raidStatus = message.guild.channels.cache.get(settings.channels.vetstatus)
                 else raidStatus = message.guild.channels.cache.get(settings.channels.eventstatus)
                 if (!raidStatus) return message.channel.send('Could not find raid-status')
-                let m = await raidStatus.send({content: `@here`, embeds: [embed] })
+                let m = await raidStatus.send({ content: `@here`, embeds: [embed] })
 
                 //add to channels array
                 let runInfo = {
@@ -60,6 +60,16 @@ module.exports = {
                     messageID: m.id,
                 }
                 channels.push(runInfo)
+
+                let channelCache = {
+                    channelID: channel.id,
+                    author: message.author.id,
+                    embed: embed,
+                    messageID: m.id,
+                    rsaId: raidStatus.id,
+                    guildId: message.guild.id,
+                }
+                fs.writeFileSync('./createdChannels.json', JSON.stringify(channelCache, null, 4), err => console.log(err))
 
                 let afkInfo = {
                     leader: message.author.id,
@@ -219,6 +229,34 @@ module.exports = {
                 setCap()
                 break;
         }
+    },
+    /**
+     * Initializes and realizes cache of previous channels
+     * @param {Discord.Client} bot 
+     */
+    async init(bot) {
+        if (moduleIsAvailable('../createdChannels.json')) {
+            let c = require('../createdChannels.json')
+            if (require('../data/emojiServers.json').includes(guild.id)) return
+            for (let i of c) {
+                let guild = bot.guilds.cache.get(i.guildId)
+                if (!guild) continue
+                let vc = await guild.channels.fetch(i.channelID)
+                let rsa = await guild.channels.fetch(i.rsaId)
+                if (!vc || !rsa) continue
+                let m = rsa.messages.fetch(i.messageID)
+                if (!m) continue
+
+                channels.push({
+                    channel: vc,
+                    channelID: i.channelID,
+                    author: i.author,
+                    embed: i.embed,
+                    message: m,
+                    messageID: i.messageID
+                })
+            }
+        }
     }
 }
 
@@ -288,4 +326,13 @@ async function createChannel(name, isVet, message, bot) {
         if (!channel) rej('No channel was made')
         res(channel);
     })
+}
+
+function moduleIsAvailable(path) {
+    try {
+        require.resolve(path);
+        return true;
+    } catch (e) {
+        return false;
+    }
 }
