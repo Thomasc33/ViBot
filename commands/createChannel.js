@@ -5,6 +5,7 @@ const dbInfo = require('../data/database.json')
 const afkCheck = require('./afkCheck')
 
 var channels = []
+var channelCache = []
 
 module.exports = {
     name: 'channel',
@@ -61,7 +62,7 @@ module.exports = {
                 }
                 channels.push(runInfo)
 
-                let channelCache = {
+                let cacheData = {
                     channelID: channel.id,
                     author: message.author.id,
                     embed: embed,
@@ -69,7 +70,8 @@ module.exports = {
                     rsaId: raidStatus.id,
                     guildId: message.guild.id,
                 }
-                fs.writeFileSync('./createdChannels.json', JSON.stringify(channelCache, null, 4), err => console.log(err))
+                channelCache.push(cacheData)
+                fs.writeFileSync('./createdChannels.json', JSON.stringify(channelCache, null, 4), err => { if (err) ErrorLogger.log(err, bot) })
 
                 let afkInfo = {
                     leader: message.author.id,
@@ -237,14 +239,13 @@ module.exports = {
     async init(bot) {
         if (moduleIsAvailable('../createdChannels.json')) {
             let c = require('../createdChannels.json')
-            if (require('../data/emojiServers.json').includes(guild.id)) return
             for (let i of c) {
                 let guild = bot.guilds.cache.get(i.guildId)
-                if (!guild) continue
+                if (!guild) return
                 let vc = await guild.channels.fetch(i.channelID)
                 let rsa = await guild.channels.fetch(i.rsaId)
                 if (!vc || !rsa) continue
-                let m = rsa.messages.fetch(i.messageID)
+                let m = await rsa.messages.fetch(i.messageID)
                 if (!m) continue
 
                 channels.push({
@@ -255,6 +256,7 @@ module.exports = {
                     message: m,
                     messageID: i.messageID
                 })
+                channelCache.push(i)
             }
         }
     }
@@ -262,23 +264,19 @@ module.exports = {
 
 function getChannel(message) {
     //get users channel
-    if (!message.member.voice.channel) {
-        message.channel.send('I couldn\'t find what channel you are in')
-        return
-    }
+    if (!message.member.voice.channel) return message.channel.send('I couldn\'t find what channel you are in')
     let uc = message.member.voice.channel
 
     //make sure channel they are in is in channels array
     let channel
     for (let c of channels) {
-        if (c.channelId == uc.id) channel = c;
+
+        if (c.channelID == uc.id) channel = c;
     }
 
     //check results
-    if (!channel) {
-        message.channel.send('I could not edit the channel you are currently in')
-        return;
-    } else return channel;
+    if (!channel) return message.channel.send('I could not edit the channel you are currently in')
+    else return channel;
 }
 
 
