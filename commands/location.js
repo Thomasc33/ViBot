@@ -1,5 +1,6 @@
 const afkCheck = require('./afkCheck.js');
 const EventAFK = require('./eventAfk')
+const Discord = require('discord.js')
 
 module.exports = {
     name: 'location',
@@ -10,7 +11,7 @@ module.exports = {
     role: 'eventrl',
     allowedInRestart: true,
     execute(message, args, bot) {
-        let channel = message.member.voice.channelID
+        let channel = message.member.voice.channelId
         if (!channel) return message.channel.send('Please join a voice channel to change location')
         let location = "";
         for (i = 0; i < args.length; i++) location = location.concat(args[i]) + ' ';

@@ -111,8 +111,8 @@ module.exports = {
                                 channel.embed.fields[0].value = '**Open**'
                                 channel.message.edit({ content: '@here', embeds: [channel.embed] })
 
-                                bot.afkChecks[channel.channelID].active = true;
-                                bot.afkChecks[channel.channelID].started = Date.now();
+                                bot.afkChecks[channel.channelId].active = true;
+                                bot.afkChecks[channel.channelId].started = Date.now();
                                 fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot) })
                                 break;
                         }
@@ -141,8 +141,8 @@ module.exports = {
                     //edit message in raid status
                     channel.embed.fields[0].value = '**Closed**'
                     channel.message.edit({ content: null, embeds: [channel.embed] })
-                    bot.afkChecks[channel.channelID].active = false;
-                    bot.afkChecks[channel.channelID].endedAt = Date.now();
+                    bot.afkChecks[channel.channelId].active = false;
+                    bot.afkChecks[channel.channelId].endedAt = Date.now();
                     fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot) })
                 }
                 close()
@@ -167,8 +167,8 @@ module.exports = {
                     channel.embed.author.text = `${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s ${name}`
                     channel.message.edit({ embeds: [channel.embed] })
 
-                    bot.afkChecks[channel.channelID].runType.runType = name;
-                    bot.afkChecks[channel.channelID].runType.runName = name;
+                    bot.afkChecks[channel.channelId].runType.runType = name;
+                    bot.afkChecks[channel.channelId].runType.runName = name;
                     fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot) })
 
                     //change messages
@@ -233,7 +233,7 @@ function getChannel(message) {
     //make sure channel they are in is in channels array
     let channel
     for (let c of channels) {
-        if (c.channelID == uc.id) channel = c;
+        if (c.channelId == uc.id) channel = c;
     }
 
     //check results

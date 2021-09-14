@@ -425,7 +425,6 @@ class afkCheck {
             for (let r of this.afkInfo.earlyLocationReacts) {
                 if (type == r.shortName) reactInfo = r;
             }
-            //console.log(reactInfo.checkRealmEye.mheal).catch(er => {})
             let DirectMessage = await u.send(`You reacted as ${emote}.${(reactInfo && reactInfo.checkRealmEye) ? ` If you have a(n) ${reactInfo.checkRealmEye.class} that is ${reactInfo.checkRealmEye.ofEight}/8${reactInfo.checkRealmEye.orb ? ` and has a tier ${reactInfo.checkRealmEye.orb} orb` : ''}${reactInfo.checkRealmEye.mheal ? ` and a pet with at least ${reactInfo.checkRealmEye.mheal} mheal` : ``}` : ''}, press :white_check_mark: to confirm your reaction. Otherwise ignore this message`).catch(r => { if (r.message == 'Cannot send messages to this user') this.commandChannel.send(`<@!${u.id}> tried to react with <${emote}> but their DMs are private`) });
             let dmReactionCollector = new Discord.ReactionCollector(DirectMessage, { filter: (r, u) => !u.bot });
 
