@@ -28,7 +28,7 @@ module.exports = {
         } else reason = false
         if (reason && kickTemplates[message.guild.id] && kickTemplates[message.guild.id][reason.toLowerCase()]) reason = kickTemplates[message.guild.id][reason.toLowerCase()]
         message.channel.send(`Are you sure you want to kick ${member.displayName}? Y/N`);
-        let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 10000 });
+        let collector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id === message.author.id, time: 10000 });
         collector.on('collect', async m => {
             if (m.author != message.author) return;
             if (m.content.toLowerCase().charAt(0) == 'y') {

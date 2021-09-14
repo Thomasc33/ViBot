@@ -48,7 +48,7 @@ module.exports = {
                 if (isVet) raidStatus = message.guild.channels.cache.get(settings.channels.vetstatus)
                 else raidStatus = message.guild.channels.cache.get(settings.channels.eventstatus)
                 if (!raidStatus) return message.channel.send('Could not find raid-status')
-                let m = await raidStatus.send(`@here`, embed)
+                let m = await raidStatus.send({content: `@here`, embeds: [embed] })
 
                 //add to channels array
                 let runInfo = {

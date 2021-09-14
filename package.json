@@ -1,13 +1,13 @@
 {
   "name": "vibot",
-  "version": "^4.2.0",
+  "version": "4.2.0",
   "description": "ViBot",
   "main": "index.js",
   "dependencies": {
     "@discordjs/opus": "^0.5.0",
     "@google-cloud/vision": "^2.3.1",
     "@tensorflow/tfjs-node": "^3.8.0",
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "body-parser": "^1.19.0",
     "btoa": "^1.2.1",
     "cheerio": "^1.0.0-rc.6",

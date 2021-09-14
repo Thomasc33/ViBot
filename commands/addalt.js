@@ -22,7 +22,7 @@ module.exports = {
         if (!image) return message.channel.send(`Please provide an image`)
         if (!validURL(image)) return message.channel.send(`Error attaching the image. Please try again`)
         let confirmMessage = await message.channel.send(`Are you sure you want to add the alt ${altName} to ${member}? Y/N`);
-        let collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 10000 });
+        let collector = new Discord.MessageCollector(message.channel, {filter: m => m.author.id === message.author.id, time: 10000 });
         collector.on('collect', async m => {
             try {
                 if (m.content.toLowerCase().charAt(0) == 'y') {

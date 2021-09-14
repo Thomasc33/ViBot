@@ -31,7 +31,7 @@ module.exports = {
                 fitStringIntoEmbed(runEmbed, `**${parseInt(i) + 1}:** ${guild.channels.cache.get(runsIn[i]).name}\n*${Math.round((Date.now() - bot.afkChecks[runsIn[i]].time) / 60000)} minutes ago*\n`, message.channel)
             }
             let joinEmbedMessage = await message.channel.send({ embeds: [runEmbed] })
-            let runMessageCollector = new Discord.MessageCollector(message.channel, m => m.author.id == message.author.id)
+            let runMessageCollector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id == message.author.id})
             runMessageCollector.on('collect', async m => {
                 if (m.content.replace(/[^0-9]/g, '') != m.content) {
                     if (m.content == 'cancel') {

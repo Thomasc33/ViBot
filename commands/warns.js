@@ -1,6 +1,6 @@
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
-
+const moment = require('moment')
 module.exports = {
     name: 'warns',
     description: 'Displays all warns for a user',
@@ -12,7 +12,7 @@ module.exports = {
         if (!member) member = message.guild.members.cache.get(args[0])
         if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
         if (!member) return message.channel.send('Member not found. Please try again')
-        db.query(`SELECT * FROM warns WHERE id = '${member.user.id}'`, async function (err, rows) {
+        db.query(`SELECT * FROM warns WHERE id = '${member.user.id}' and (guildid = '${message.guild.id}' OR guildid is null)`, async function (err, rows) {
             if (err) ErrorLogger.log(err, bot)
             if (rows == []) return message.channel.send(`${member.nickname} has no warns in the database`)
             let embed = new Discord.MessageEmbed()
@@ -21,7 +21,7 @@ module.exports = {
                 .setDescription('None!')
                 .setFooter(member.user.id)
             for (let i in rows) {
-                fitStringIntoEmbed(embed, `${parseInt(i) + 1}:\n${rows[i].reason}\n Mod: <@!${rows[i].modid}>\n`, message.channel)
+                fitStringIntoEmbed(embed, `**\`${parseInt(i) + 1}\`** by <@!${rows[i].modid}>${rows[i].time ? ' '+ moment().to(new Date(parseInt(rows[i].time))) : ''}:\n  \`\`\`${rows[i].reason}\`\`\``, message.channel)
             }
             function fitStringIntoEmbed(embed, string, channel) {
                 if (embed.description == 'None!') {
