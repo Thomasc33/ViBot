@@ -25,7 +25,7 @@ module.exports = {
     description: 'set names of stuff',
     role: 'moderator',
     async execute(message, args, bot, db) {
-        if (!commands) commands = bot.commands.keyArray()
+        if (!commands) commands = Array.from(bot.commands.keys())
         if (args.length == 0) {
             let setupEmbed = new Discord.MessageEmbed()
                 .setTitle('Setup')
@@ -128,7 +128,7 @@ module.exports = {
         }
     },
     autoSetup(guild, bot) {
-        if (commands.length == 0) commands = bot.commands.keys()
+        if (commands.length == 0) commands = Array.from(bot.commands.keys())
         if (!bot.settings[guild.id]) {
             bot.settings[guild.id] = {
                 name: guild.name,
