@@ -58,8 +58,12 @@ module.exports = {
                 }
 
                 await channel.guild.members.cache.filter(m => m.roles.cache.has(settings.roles.eventrl)).each(m => {
-                    if (m.roles.highest.id == settings.roles.eventrl && !settings.backend.eventcurrentweekdisplaysalleventrl)
+                    if (settings.backend.eventcurrentweekdisplaysalleventrl) {
                         if (!logged.includes(m.id)) fitStringIntoEmbed(embed, `<@!${m.id}> has not logged any runs or been assisted this week`)
+                    }
+                    else if (m.roles.highest.id == settings.roles.eventrl) {
+                        if (!logged.includes(m.id)) fitStringIntoEmbed(embed, `<@!${m.id}> has not logged any runs or been assisted this week`)
+                    }
                 })
                 embeds.push(new Discord.MessageEmbed(embed))
                 function fitStringIntoEmbed(embed, string) {
