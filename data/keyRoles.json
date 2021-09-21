@@ -1,5 +1,48 @@
 {
-    "343704644712923138": {
-        "keyName": "Lost Halls Keys"
-    }
+    "343704644712923138": [
+        {
+            "types": [ ["eventpops", "Event Keys"], ["keypops", "Lost Halls Keys"] ],
+            "amount": 15,
+            "role": "bottomkey"
+        },
+        {
+            "types": [ ["eventpops", "Event Keys"], ["keypops", "Lost Halls Keys"] ],
+            "amount": 50,
+            "role": "topkey"
+        },
+        {
+            "types": [ ["eventpops", "Event Keys"], ["keypops", "Lost Halls Keys"] ],
+            "amount": 2000,
+            "role": "keyjesus"
+        }
+    ],
+    "451171819672698920": [
+        {
+            "types": [ ["shatterspops", "Shatters Keys"] ],
+            "amount": 15,
+            "role": "bottomkey"
+        },
+        {
+            "types": [ ["shatterspops" , "Shatters Keys"] ],
+            "amount": 50,
+            "role": "topkey"
+        }
+    ],
+    "701483950559985705": [
+        {
+            "types": [ ["eventpops", "Event Keys"], ["keypops", "Lost Halls Keys"] ],
+            "amount": 15,
+            "role": "bottomkey"
+        },
+        {
+            "types": [ ["eventpops", "Event Keys"], ["keypops", "Lost Halls Keys"] ],
+            "amount": 50,
+            "role": "topkey"
+        },
+        {
+            "types": [ ["eventpops", "Event Keys"], ["keypops", "Lost Halls Keys"] ],
+            "amount": 2000,
+            "role": "keyjesus"
+        }
+    ]
 }

@@ -408,7 +408,7 @@ module.exports = {
         let embed = message.embeds[0]
         watching.push(embed.footer.text)
         let settings = bot.settings[message.guild.id]
-        let member = message.guild.members.cache.get(embed.footer.text)
+        let member = await message.guild.members.fetch(embed.footer.text).catch(e => ErrorLogger.log(e, bot));
         if (!member) {
             message.guild.channels.cache.get(settings.channels.verificationlog).send(`<@!${embed.footer.text}> Left server while under manual review`)
             return message.delete()
@@ -418,7 +418,7 @@ module.exports = {
         //start key reaction collector
         if (!message.reactions.cache.has('🔑')) message.react('🔑')
         let reactionCollector = new Discord.ReactionCollector(message, { filter: (r, u) => !u.bot && r.emoji.name == '🔑' })
-        reactionCollector.on('collect', (r, u) => {
+        reactionCollector.on('collect', async (r, u) => {
             //check to make sure member is still in the server
             if (!member) {
                 message.guild.channels.cache.get(settings.channels.verificationlog).send(`<@!${embed.footer.text}> Left server while under manual review`)

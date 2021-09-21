@@ -79,7 +79,13 @@ for (const file of commandFiles) {
 // Bot Event Handlers
 bot.on('messageCreate', message => {
     try {
-        if (message.channel.type === 'DM') return dmHandler(message);
+        if (!message.channel.type.startsWith('GUILD')) {
+            try {
+                return dmHandler(message);
+            } catch (er) {
+                ErrorLogger.log(er, bot);
+            }
+        }
         if (message.author.bot) return;
         if (!bot.serverWhiteList.includes(message.guild.id)) return
         if (createTemplate.checkActive(message.author.id) && message.channel.id === bot.settings[message.guild.id].channels.vetcommands) return;
