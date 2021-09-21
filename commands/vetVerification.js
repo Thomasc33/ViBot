@@ -224,19 +224,16 @@ module.exports = {
             mainEmbed.addField('Realmeye Logged Runs:', `${realmEyeRuns || 0}`)
                 .addField('Maxed Characters:', `Total: ${maxedChars} | Melee: ${meleeMaxed}`)
                 .addField('Dungeon Specific Gear:', gearString || 'None!')
+                
             for (let i of dungeon.exaltStats) {
-                let count = { none: 0, one: 0, two: 0, three: 0, four: 0, five: 0 }
+                const count = [0, 0, 0, 0, 0, 0];
+                let ishpmana = ['health', 'mana'].includes(i.toLowerCase());
                 for (let j in exaltStats.exaltations) {
-                    if (exaltStats.exaltations[j][i]) switch (exaltStats.exaltations[j][i]) {
-                        case 1: count.one++; break;
-                        case 2: count.two++; break;
-                        case 3: count.three++; break;
-                        case 4: count.four++; break;
-                        case 5: count.five++; break;
-                        default: count.none++; break;
-                    } else count.none++
+                    console.log(i, j, exaltStats.exaltations[j][i])
+                    count[(exaltStats.exaltations[j][i] || 0) / (ishpmana ? 5 : 1)]++;
                 }
-                mainEmbed.addField(`${i.charAt(0).toUpperCase() + i.slice(1)} Exaltations:`, `+0 \`${count.none}\` | +1 \`${count.one}\` | +2 \`${count.two}\` | +3 \`${count.three}\` | +4 \`${count.four}\` | +5 \`${count.five}\``)
+                console.log(count);
+                mainEmbed.addField(`${i.charAt(0).toUpperCase() + i.slice(1)} Exaltations:`, count.map((val, idx) => `+${ishpmana? idx * 5 : idx} \`${val}\``).join(' | '))
             }
             mainEmbed.addField('Problems:', problemString)
                 .setFooter(u.id)
