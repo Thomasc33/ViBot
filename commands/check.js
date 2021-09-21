@@ -89,7 +89,7 @@ module.exports = {
                             eventBoiAndVerified.push(`<@!${member.id}>`);
 
                         //verified without nickname
-                        if (member.roles.cache.size && (member.nickname === null || member.nickname === ''))
+                        if ((isVerified || isEBoy) && (member.nickname === null || member.nickname === ''))
                             verifiedWithoutNickname.push(`<@!${member.id}>`);
 
                         //unverified with nickname
@@ -108,7 +108,7 @@ module.exports = {
             updateEmbed(`Temporary Key Poppers`, temporaryKeyPoppers, ', ');
             updateEmbed(`Both Verified Raider and Event Boi`, eventBoiAndVerified, ', ');
             updateEmbed(`Duplicate Names`, dupeNameStrings, '\n');
-            updateEmbed(`Verified Without Nickname`, verifiedWithoutNickname, ', ');
+            updateEmbed(`No Nickname`, verifiedWithoutNickname, ', ');
             updateEmbed(`Unverified With Nickname`, unverifiedWithNickname, ', ');
 
             //unanswered modmails
