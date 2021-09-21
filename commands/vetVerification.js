@@ -63,6 +63,7 @@ module.exports = {
         if (!member) return;
         if (watching.includes(u.id)) return
         if (member.roles.cache.has(vetRaider)) return
+
         let loggedRuns = 0
         let profile;
         if (!dungeon.webdata) {
@@ -94,8 +95,8 @@ module.exports = {
         }
         if (dungeon.realmeyestring) {
             let graveyard = await realmEyeScrape.getGraveyardSummary(ign).catch(er => null)
-            for (let i in graveyard.achievements) {
-                let achievement = graveyard.achievements[i]
+            for (let i in graveyard.dungeonCompletes) {
+                let achievement = graveyard.dungeonCompletes[i]
                 if (dungeon.realmeyestring.includes(achievement.type)) {
                     realmEyeRuns += parseInt(achievement.total)
                 }
@@ -106,16 +107,21 @@ module.exports = {
         if (dungeon.exaltStats.length > 0) {
             exaltStats = await realmEyeScrape.getExaltationHistory(ign)
             for (let i of dungeon.exaltStats) {
-                if (i == 'defense') continue
-                for (let j in exaltStats.exalts) {
-                    let e = exaltStats.exalts[j]
-                    if (e[i]) switch (e[i].replace('+', '')) {
-                        case '1': exaltCounts += 5; break;
-                        case '2': exaltCounts += 15; break;
-                        case '3': exaltCounts += 30; break;
-                        case '4': exaltCounts += 50; break;
-                        case '5': exaltCounts += 75; break;
-                        default: continue;
+                for (let j in exaltStats.exaltations) {
+                    let e = exaltStats.exaltations[j]
+                    
+                    if (e[i]) {
+                        e[i] = parseInt(e[i].toLowerCase().replace('+', ''));
+                        if (['health', 'mana'].includes(e[i]))
+                            e[i] = e[i] / 5;
+                        switch (e[i]) {
+                            case 1: exaltCounts += 5; break;
+                            case 2: exaltCounts += 15; break;
+                            case 3: exaltCounts += 30; break;
+                            case 4: exaltCounts += 50; break;
+                            case 5: exaltCounts += 75; break;
+                            default: continue;
+                        }
                     }
                 }
             }
@@ -210,7 +216,6 @@ module.exports = {
             let mainEmbed = new Discord.MessageEmbed()
                 .setAuthor(`${u.tag} tried to verify as a veteran under: ${ign}`, u.avatarURL())
                 .setDescription(description);
-            console.log(profile);
             if (!profile)
                 mainEmbed.addField('Bot-Logged Runs:', `${loggedRuns || 0}`);
             else
@@ -222,12 +227,12 @@ module.exports = {
             for (let i of dungeon.exaltStats) {
                 let count = { none: 0, one: 0, two: 0, three: 0, four: 0, five: 0 }
                 for (let j in exaltStats.exaltations) {
-                    if (exaltStats.exaltations[j][i]) switch (exaltStats.exaltations[j][i].replace('+', '')) {
-                        case '1': count.one++; break;
-                        case '2': count.two++; break;
-                        case '3': count.three++; break;
-                        case '4': count.four++; break;
-                        case '5': count.five++; break;
+                    if (exaltStats.exaltations[j][i]) switch (exaltStats.exaltations[j][i]) {
+                        case 1: count.one++; break;
+                        case 2: count.two++; break;
+                        case 3: count.three++; break;
+                        case 4: count.four++; break;
+                        case 5: count.five++; break;
                         default: count.none++; break;
                     } else count.none++
                 }
