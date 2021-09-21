@@ -27,13 +27,17 @@
                     "pointsGiven": 2,
                     "limit": 3,
                     "shortName": "rusher",
-                    "requiredRole": "rusher"
+                    "requiredRole": "rusher",
+                    "noConfirm": false,
+                    "noLocation": false
                 },
                 {
                     "emoteID": "723019533597802507",
                     "pointsGiven": 1,
                     "limit": 1,
-                    "shortName": "armorbreak"
+                    "shortName": "armorbreak",
+                    "noConfirm": false,
+                    "noLocation": false
                 }
             ],
             "reacts": [
@@ -80,7 +84,9 @@
                     "emoteID": "723019533597802507",
                     "pointsGiven": 1,
                     "limit": 1,
-                    "shortName": "armorbreak"
+                    "shortName": "armorbreak",
+                    "noConfirm": false,
+                    "noLocation": false
                 }
             ],
             "reacts": [
@@ -132,19 +138,25 @@
                         "class": "mystic",
                         "mheal": "85",
                         "orb": "2"
-                    }
+                    },
+                    "noConfirm": false,
+                    "noLocation": false
                 },
                 {
                     "emoteID": "720263764309704704",
                     "pointsGiven": 2,
                     "limit": 3,
-                    "shortName": "brain"
+                    "shortName": "brain",
+                    "noConfirm": false,
+                    "noLocation": false
                 },
                 {
                     "emoteID": "723019533597802507",
                     "pointsGiven": 1,
                     "limit": 1,
-                    "shortName": "armorbreak"
+                    "shortName": "armorbreak",
+                    "noConfirm": false,
+                    "noLocation": false
                 }
             ],
             "reacts": [
@@ -190,13 +202,17 @@
                     "emoteID": "720404844187353099",
                     "pointsGiven": 2,
                     "limit": 3,
-                    "shortName": "rusher"
+                    "shortName": "rusher",
+                    "noConfirm": false,
+                    "noLocation": false
                 },
                 {
                     "emoteID": "723019533597802507",
                     "pointsGiven": 1,
                     "limit": 1,
-                    "shortName": "armorbreak"
+                    "shortName": "armorbreak",
+                    "noConfirm": false,
+                    "noLocation": false
                 }
             ],
             "reacts": [
@@ -463,32 +479,44 @@
                     "pointsGiven": 2,
                     "limit": 3,
                     "shortName": "Switch Rusher",
-                    "requiredRole": "rusher"
+                    "requiredRole": "rusher",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emoteID": "888887797530918952",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Puzzle",
+                    "requiredRole": "rusher",
+                    "noConfirm": true,
+                    "noLocation": true
                 },
                 {
                     "emoteID": "888890099511734312",
                     "pointsGiven": 2,
                     "limit": 3,
                     "shortName": "Fungal Tome",
-                    "requiredRole": "priest"
+                    "requiredRole": "priest",
+                    "noConfirm": false,
+                    "noLocation": false
                 }
             ],
             "reacts": [
-                "723018431489900595", 
-                "723018431296831539", 
-                "723018431598952498", 
-                "720401153140981890", 
-                "720401067086446672", 
-                "888887797530918952", 
-                "888985633270423584",  
-                "723019533580894279", 
-                "723019533681426472", 
+                "723018431489900595",
+                "723018431296831539",
+                "723018431598952498",
+                "720401153140981890",
+                "720401067086446672",
+                "888985633270423584",
+                "723019533580894279",
+                "723019533681426472",
                 "723019533555597332"
             ],
             "embed": {
                 "color": "#015c21",
                 "description": "To join, **connect to the raiding channel by clicking its name**\nIf you have a key react with <:shattersK:723001429903802478>\nTo indicate your class or gear choices, react with <:Warrior:723018431489900595> <:Paladin:723018431296831539> <:Knight:723018431598952498> <:Assassin:723018431531581470> <:UTScholarsSeal:720401067300356196> <:UTTomeoftheMushroomTribes:720404621331267697> <:UTShieldofOgmur:720401153140981890>\nIf you plan on rushing, react with the switch you are going to clear <:switch1:723018852862001152> <:switch2:723018852853612614> <:switchS:723018852929372270>\nIf you plan on bringing a mystic, react with the <:Mystic:723018431275859969>\nIf you have the role <@&585542641975033859> react with <:nitro:701491230349066261> to get into VC",
-                "thumbnail": "https://cdn.discordapp.com/emojis/849406533435523093.png?v=1",
+                "thumbnail": "https://cdn.discordapp.com/attachments/748200247716479159/890001562620035122/unknown.png",
                 "removeThumbnail": false
             },
             "font-color": "#fefefe"
@@ -520,27 +548,44 @@
                     "pointsGiven": 2,
                     "limit": 3,
                     "shortName": "Switch Rusher",
-                    "requiredRole": "rusher"
+                    "requiredRole": "rusher",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emoteID": "888887797530918952",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Puzzle",
+                    "requiredRole": "rusher",
+                    "noConfirm": true,
+                    "noLocation": true
                 },
                 {
                     "emoteID": "888890099511734312",
                     "pointsGiven": 2,
                     "limit": 3,
                     "shortName": "Fungal Tome",
-                    "requiredRole": "priest"
+                    "requiredRole": "priest",
+                    "noConfirm": false,
+                    "noLocation": false
                 }
             ],
             "reacts": [
                 "723018431489900595",
                 "723018431296831539",
                 "723018431598952498",
-                "720401067300356196",
-                "720401153140981890"
+                "720401153140981890",
+                "720401067086446672",
+                "888985633270423584",
+                "723019533580894279",
+                "723019533681426472",
+                "723019533555597332"
             ],
             "embed": {
                 "color": "#015c21",
                 "description": "To join, wait for an indication the channel is open, then **connect to the raiding channel by clicking its name**\nIf you have a key react with <:shattersK:723001429903802478>\nTo indicate your class or gear choices, react with <:Warrior:723018431489900595> <:Paladin:723018431296831539> <:Knight:723018431598952498> <:Assassin:723018431531581470> <:UTScholarsSeal:720401067300356196> <:UTTomeoftheMushroomTribes:720404621331267697> <:UTShieldofOgmur:720401153140981890>\nIf you plan on rushing, react with the switch you are going to clear <:switch1:723018852862001152> <:switch2:723018852853612614> <:switchS:723018852929372270>\nIf you plan on bringing a mystic, react with the <:Mystic:723018431275859969>\nIf you have the role <@&585542641975033859> react with <:nitro:701491230349066261> to get into VC",
-                "thumbnail": "https://cdn.discordapp.com/emojis/849406533435523093.png?v=1",
+                "thumbnail": "https://cdn.discordapp.com/attachments/748200247716479159/890001562620035122/unknown.png",
                 "removeThumbnail": false
             },
             "font-color": "#fefefe"

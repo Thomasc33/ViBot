@@ -356,7 +356,7 @@ class afkCheck {
             let react = this.afkInfo.earlyLocationReacts[i]
             if (react.emoteID == r.emoji.id) {
                 if (react.requiredRole && !this.guild.members.cache.get(u.id).roles.cache.has(this.settings.roles[react.requiredRole])) return
-                this.confirmSelection(u, r, +i + +1, react.shortName, react.limit)
+                this.confirmSelection(u, r, +i + +1, react.shortName, react.limit, react.noConfirm, react.noLocation)
             }
         }
         if (r.emoji.name.toLowerCase() == 'knight') this.knights.push(u)
@@ -397,7 +397,7 @@ class afkCheck {
         if (!this.afkInfo.twoPhase) for (let i of this.afkInfo.reacts) await this.raidStatusMessage.react(i)
         await this.raidStatusMessage.react('701491230349066261')
         if (this.settings.backend.supporter) await this.raidStatusMessage.react('752368122551337061')
-        await this.raidStatusMessage.react('🎟️')
+        if (this.settings.backend.points) await this.raidStatusMessage.react('🎟️')
         await this.raidStatusMessage.react('❌')
     }
 
@@ -409,7 +409,66 @@ class afkCheck {
      * @param {String} type 
      * @param {Number} limit
      */
-    async confirmSelection(u, r, index, type, limit) {
+    async confirmSelection(u, r, index, type, limit, noConfirm = false, noLocation = false) {
+        // Functions Used inside of the logic
+        /**
+         * 
+         * @param {afkCheck} afk 
+         * @returns Nothing
+         */
+        function sendLocation(afk) {
+            //check for full
+            if (!checkType(afk)) return
+            //set into type
+            setType(afk)
+            function setType(afk) {
+                //key, vial, other
+                switch (type.toLowerCase()) {
+                    case 'key':
+                        afk.keys.push(u.id)
+                        break;
+                    case 'vial':
+                        afk.vials.push(u.id)
+                        break;
+                    default:
+                        afk.reactables[type].users.push(u.id)
+                        break;
+                }
+                afk.earlyLocation.push(u);
+            }
+            //give location
+            if (!noLocation) u.send(`The location for this run has been set to \`${afk.afkInfo.location}\`, get there ASAP! Join lounge to be moved into the channel.`);
+            //add to leader embed
+            if (afk.afkInfo.vialReact && !(type == 'key' || type == 'vial')) index++;
+            if (afk.leaderEmbed.fields[index].value == `None!`) {
+                afk.leaderEmbed.fields[index].value = `${emote}: <@!${u.id}>`;
+            } else afk.leaderEmbed.fields[index].value += `\n${emote}: ${`<@!${u.id}>`}`
+            afk.leaderEmbedMessage.edit({ embeds: [afk.leaderEmbed] }).catch(er => ErrorLogger.log(er, afk.bot));
+            afk.runInfoMessage.edit({ embeds: [afk.leaderEmbed] }).catch(er => ErrorLogger.log(er, afk.bot));
+            //end collectors
+            clearInterval(endAfter);
+            dmReactionCollector.stop();
+        }
+        function checkType(afk) { //true = spot open
+            //key, vial, other
+            switch (type) {
+                case 'key':
+                    if (afk.keys.length >= limit || afk.keys.includes(u.id)) return false; else return true;
+                case 'vial':
+                    if (afk.vials.length >= limit || afk.vials.includes(u.id)) return false; else return true;
+                default:
+                    if (afk.reactables[type].users.length >= limit || afk.reactables[type].users.includes(u.id)) return false; else return true;
+            }
+        }
+
+        
+
+        // If confirmation not needed, just send the location
+        if (noConfirm) return sendLocation(this)
+
+        // Otherwise prompt for confirmation
+
+        // Will end the confirmation automatically after 60s to save resources
         let endAfter = setInterval(() => {
             try {
                 dmReactionCollector.stop();
@@ -421,6 +480,8 @@ class afkCheck {
                 return;
             }
         }, 60000)
+
+        // Prompt
         let emote = r.emoji
         try {
             if (!checkType(this)) return
@@ -455,55 +516,8 @@ class afkCheck {
                         })
                     } else sendLocation(this)
                 } else sendLocation(this)
-                /**
-                 * 
-                 * @param {afkCheck} afk 
-                 */
-                function sendLocation(afk) {
-                    //check for full
-                    if (!checkType(afk)) return
-                    //set into type
-                    setType(afk)
-                    function setType(afk) {
-                        //key, vial, other
-                        switch (type.toLowerCase()) {
-                            case 'key':
-                                afk.keys.push(u.id)
-                                break;
-                            case 'vial':
-                                afk.vials.push(u.id)
-                                break;
-                            default:
-                                afk.reactables[type].users.push(u.id)
-                                break;
-                        }
-                        afk.earlyLocation.push(u);
-                    }
-                    //give location
-                    u.send(`The location for this run has been set to \`${afk.afkInfo.location}\`, get there ASAP! Join lounge to be moved into the channel.`);
-                    //add to leader embed
-                    if (afk.afkInfo.vialReact && !(type == 'key' || type == 'vial')) index++;
-                    if (afk.leaderEmbed.fields[index].value == `None!`) {
-                        afk.leaderEmbed.fields[index].value = `${emote}: <@!${u.id}>`;
-                    } else afk.leaderEmbed.fields[index].value += `\n${emote}: ${`<@!${u.id}>`}`
-                    afk.leaderEmbedMessage.edit({ embeds: [afk.leaderEmbed] }).catch(er => ErrorLogger.log(er, afk.bot));
-                    afk.runInfoMessage.edit({ embeds: [afk.leaderEmbed] }).catch(er => ErrorLogger.log(er, afk.bot));
-                    //end collectors
-                    clearInterval(endAfter);
-                    dmReactionCollector.stop();
-                }
             });
-            function checkType(afk) { //true = spot open
-                //key, vial, other
-                switch (type) {
-                    case 'key':
-                        if (afk.keys.length >= limit || afk.keys.includes(u.id)) return false; else return true;
-                    case 'vial':
-                        if (afk.vials.length >= limit || afk.vials.includes(u.id)) return false; else return true;
-                    default:
-                        if (afk.reactables[type].users.length >= limit || afk.reactables[type].users.includes(u.id)) return false; else return true;
-                }
-            }
+
         } catch (er) { console.log(er) }
     }
 
