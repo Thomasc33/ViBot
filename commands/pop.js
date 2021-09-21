@@ -1,7 +1,7 @@
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
-
 const keypops = require('../data/keypop.json')
+const keyRoles = require('./keyRoles')
 
 module.exports = {
     name: 'pop',
@@ -35,10 +35,26 @@ module.exports = {
         collector.on('collect', async m => {
             if (m.content.charAt(0).toLowerCase() == 'y') {
                 collector.stop()
-                db.query(`SELECT * FROM users WHERE id = '${user.id}'`, (err, rows) => {
+                db.query(`SELECT * FROM users WHERE id = '${user.id}'`, async(err, rows) => {
                     if (err) ErrorLogger.log(err, bot)
-                    if (rows.length == 0) return message.channel.send('User is not logged in the DB')
-                    db.query(`UPDATE users SET ${keyInfo.schema} = ${keyInfo.schema} + ${count} WHERE id = '${user.id}'`)
+                    if (rows.length == 0) {
+                        const success = await new Promise((res) => {
+                            db.query(`INSERT INTO users (id) VALUES ('${user.id}')`, (err, rows) => {
+                                if (err || !rows || rows.length == 0) {
+                                    message.channel.send({
+                                        embeds: [
+                                            new Discord.MessageEmbed().setDescription(`Unable to add <@!${user.id}> to the database.`).addField(`Error`, `${err || "Unknown reason"}`)
+                                        ]
+                                    });
+                                    res(false);
+                                } else res(true);
+                            });
+                        })
+                        if (!success) return;
+                    }
+                    db.query(`UPDATE users SET ${keyInfo.schema} = ${keyInfo.schema} + ${count} WHERE id = '${user.id}'`, (err, rows) => {
+                        keyRoles.checkUser(user, bot, db);
+                    });
                     let embed = new Discord.MessageEmbed()
                         .setColor('#0000ff')
                         .setDescription(`Key has been logged.\n${user.nickname} now has ${parseInt(rows[0][keyInfo.schema]) + parseInt(count)} pops`)
@@ -71,6 +87,7 @@ module.exports = {
 function findKey(guildid, key) {
     let info = keypops[guildid]
     if (Object.keys(info).includes(key)) return info[key]
-    for (let i in info) if (info[i].alias.includes(key)) return info[i]
+    for (let i in info)
+        if (info[i].alias.includes(key)) return info[i]
     return null
 }

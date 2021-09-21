@@ -10,6 +10,18 @@ const promoTypes = {
             toAdd: 'lol',
             toRemove: 'eventrl'
         }
+    ],
+    "708026927721480254": [
+        {
+            key: 'e',
+            toAdd: 'eventrl',
+            toRemove: 'lol'
+        },
+        {
+            key: 'l',
+            toAdd: 'lol',
+            toRemove: 'eventrl'
+        }
     ]
 }
 

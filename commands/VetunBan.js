@@ -7,7 +7,7 @@ module.exports = {
     description: 'Removes the banned veteran raider role manually',
     args: '<user in game name> (reason)',
     requiredArgs: 1,
-    role: 'vetrl',
+    role: 'veteventrl',
     execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         var raider = args.shift();
