@@ -344,6 +344,10 @@ bot.on("ready", async () => {
         }
     })
 
+    //initialize channels from createchannel.js
+    require('./commands/createChannel').init(bot)
+
+
     //reset currentweek
     const currentWeekReset = cron.job('0 0 * * SUN', () => {
         bot.guilds.cache.each(g => {

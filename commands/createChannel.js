@@ -5,6 +5,7 @@ const dbInfo = require('../data/database.json')
 const afkCheck = require('./afkCheck')
 
 var channels = []
+var channelCache = []
 
 module.exports = {
     name: 'channel',
@@ -48,7 +49,7 @@ module.exports = {
                 if (isVet) raidStatus = message.guild.channels.cache.get(settings.channels.vetstatus)
                 else raidStatus = message.guild.channels.cache.get(settings.channels.eventstatus)
                 if (!raidStatus) return message.channel.send('Could not find raid-status')
-                let m = await raidStatus.send({content: `@here`, embeds: [embed] })
+                let m = await raidStatus.send({ content: `@here`, embeds: [embed] })
 
                 //add to channels array
                 let runInfo = {
@@ -60,6 +61,17 @@ module.exports = {
                     messageID: m.id,
                 }
                 channels.push(runInfo)
+
+                let cacheData = {
+                    channelID: channel.id,
+                    author: message.author.id,
+                    embed: embed,
+                    messageID: m.id,
+                    rsaId: raidStatus.id,
+                    guildId: message.guild.id,
+                }
+                channelCache.push(cacheData)
+                fs.writeFileSync('./createdChannels.json', JSON.stringify(channelCache, null, 4), err => { if (err) ErrorLogger.log(err, bot) })
 
                 let afkInfo = {
                     leader: message.author.id,
@@ -219,28 +231,52 @@ module.exports = {
                 setCap()
                 break;
         }
+    },
+    /**
+     * Initializes and realizes cache of previous channels
+     * @param {Discord.Client} bot 
+     */
+    async init(bot) {
+        if (moduleIsAvailable('../createdChannels.json')) {
+            let c = require('../createdChannels.json')
+            for (let i of c) {
+                let guild = bot.guilds.cache.get(i.guildId)
+                if (!guild) return
+                let vc = await guild.channels.fetch(i.channelID)
+                let rsa = await guild.channels.fetch(i.rsaId)
+                if (!vc || !rsa) continue
+                let m = await rsa.messages.fetch(i.messageID)
+                if (!m) continue
+
+                channels.push({
+                    channel: vc,
+                    channelID: i.channelID,
+                    author: i.author,
+                    embed: i.embed,
+                    message: m,
+                    messageID: i.messageID
+                })
+                channelCache.push(i)
+            }
+        }
     }
 }
 
 function getChannel(message) {
     //get users channel
-    if (!message.member.voice.channel) {
-        message.channel.send('I couldn\'t find what channel you are in')
-        return
-    }
+    if (!message.member.voice.channel) return message.channel.send('I couldn\'t find what channel you are in')
     let uc = message.member.voice.channel
 
     //make sure channel they are in is in channels array
     let channel
     for (let c of channels) {
-        if (c.channelId == uc.id) channel = c;
+
+        if (c.channelID == uc.id) channel = c;
     }
 
     //check results
-    if (!channel) {
-        message.channel.send('I could not edit the channel you are currently in')
-        return;
-    } else return channel;
+    if (!channel) return message.channel.send('I could not edit the channel you are currently in')
+    else return channel;
 }
 
 
@@ -288,4 +324,13 @@ async function createChannel(name, isVet, message, bot) {
         if (!channel) rej('No channel was made')
         res(channel);
     })
+}
+
+function moduleIsAvailable(path) {
+    try {
+        require.resolve(path);
+        return true;
+    } catch (e) {
+        return false;
+    }
 }

@@ -269,7 +269,7 @@ class afkCheck {
                 .setDescription(`A \`${this.afkInfo.runName}\`${flag ? `in (${flag})` : ''} will begin in ${Math.round(this.afkInfo.startDelay / 1000)} seconds. ${this.afkInfo.twoPhase ? `Only reactables will be moved in at first. After everything is confirmed, the channel will open up.` : `Be prepared to join \`${this.channel.name}\``}`)
             if (this.afkInfo.embed.thumbnail) embed.setThumbnail(this.afkInfo.embed.thumbnail)
             this.raidStatusMessage = await this.raidStatus.send({
-                content: `${this.settings.roles[this.afkInfo.pingRole] ? `<@&${this.settings.roles[this.afkInfo.pingRole]}> @here` : `@here`}, ${this.afkInfo.runName}${flag ? ` (${flag})` : ''}. ${this.afkInfo.twoPhase ? `Only reactables will be moved in at first. After everything is confirmed, the channel will open up.` : ''}`, 
+                content: `${this.settings.roles[this.afkInfo.pingRole] ? `<@&${this.settings.roles[this.afkInfo.pingRole]}> @here` : `@here`}, ${this.afkInfo.runName}${flag ? ` (${flag})` : ''}. ${this.afkInfo.twoPhase ? `Only reactables will be moved in at first. After everything is confirmed, the channel will open up.` : ''}`,
                 embeds: [embed]
             })
         } else {
@@ -821,7 +821,7 @@ class afkCheck {
                 let dbIds = []
                 for (let i in rows) dbIds.push(rows[i].id)
                 if (rows.length < this.channel.members.size) {
-                    let unlogged = this.channel.members.keyArray().filter(e => !dbIds.includes(e))
+                    let unlogged = Array.from(this.channel.members.keys()).filter(e => !dbIds.includes(e))
                     for (let i in unlogged) {
                         this.db.query(`INSERT INTO users (id) VALUES('${unlogged[i]}')`, er => { if (er) console.log('error inserting unlogged members in ', this.guild.id) })
                     }
@@ -862,7 +862,7 @@ class afkCheck {
         //log key
         for (let u of this.keys) {
             if (this.afkInfo.keyLogName) this.db.query(`UPDATE users SET ${this.afkInfo.keyLogName} = ${this.afkInfo.keyLogName} + 1 WHERE id = '${u}'`, er => {
-                console.log(`${this.afkInfo.keyLogName} missing from ${this.guild.name} ${this.guild.id}`)
+                if (er) console.log(`${this.afkInfo.keyLogName} missing from ${this.guild.name} ${this.guild.id}`)
             })
             keyRoles.checkUser(this.guild.members.cache.get(u), this.bot, this.db)
         }

@@ -132,6 +132,9 @@ module.exports = {
                 }
             })
         }
+
+        // add indicator that command was a success
+        message.react('✅')
     }
 }
 

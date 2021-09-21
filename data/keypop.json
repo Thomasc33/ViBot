@@ -25,6 +25,32 @@
             "name": "exaltation key"
         }
     },
+    "701483950559985705": {
+        "losthalls": {
+            "alias": [
+                "lh"
+            ],
+            "points": "keypop",
+            "schema": "keypops",
+            "name": "lost halls"
+        },
+        "event": {
+            "alias": [
+                "e"
+            ],
+            "points": "eventkey",
+            "schema": "eventpops",
+            "name": "event key"
+        },
+        "exaltation": {
+            "alias": [
+                "ex"
+            ],
+            "points": "exaltkey",
+            "schema": "eventpops",
+            "name": "exaltation key"
+        }
+    },
     "451171819672698920": {
         "shatters": {
             "alias": [

@@ -1360,6 +1360,37 @@
         "trickster": true,
         "priest": true
     },
+    "oryx3": {
+        "enabled": false,
+        "aliases": [
+            "oryx",
+            "o3",
+            "osanc"
+        ],
+        "keyEmojiId": "723009084814524449",
+        "keyEmote": ":oryx:723009084814524449",
+        "portalEmojiId": "723001215184535553",
+        "portalEmote": ":pcave:723001215184535553",
+        "color": "#010101",
+        "rushers": false,
+        "stun": false,
+        "ogmur": false,
+        "fungal": true,
+        "mseal": true,
+        "brain": false,
+        "stasis": false,
+        "parylize": false,
+        "slow": true,
+        "daze": true,
+        "curse": true,
+        "expose": true,
+        "warrior": true,
+        "paladin": true,
+        "knight": true,
+        "bard": true,
+        "trickster": false,
+        "priest": true
+    },
     "random": {
         "name": "Random",
         "aliases": [],
