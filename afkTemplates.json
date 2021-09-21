@@ -441,10 +441,10 @@
             "runName": "Shatters",
             "symbol": "s",
             "reqsImageUrl": "",
-            "keyEmoteID": "723001429903802478",
+            "keyEmoteID": "888891037802696704",
             "runLogName": "runs",
             "keyLogName": "keypops",
-            "headcountEmote": "723001214865899532",
+            "headcountEmote": "888890697653047307",
             "headcountOnAfk": true,
             "pingRole": null,
             "isSplit": false,
@@ -459,14 +459,14 @@
             "earlyLocationCost": 20,
             "earlyLocationReacts": [
                 {
-                    "emoteID": "883780914134540328",
+                    "emoteID": "888889860964892693",
                     "pointsGiven": 2,
                     "limit": 3,
                     "shortName": "Switch Rusher",
                     "requiredRole": "rusher"
                 },
                 {
-                    "emoteID": "720404621331267697",
+                    "emoteID": "888890099511734312",
                     "pointsGiven": 2,
                     "limit": 3,
                     "shortName": "Fungal Tome",
@@ -474,11 +474,16 @@
                 }
             ],
             "reacts": [
-                "723018431489900595",
-                "723018431296831539",
-                "723018431598952498",
-                "720401067300356196",
-                "720401153140981890"
+                "723018431489900595", 
+                "723018431296831539", 
+                "723018431598952498", 
+                "720401153140981890", 
+                "720401067086446672", 
+                "888887797530918952", 
+                "888985633270423584",  
+                "723019533580894279", 
+                "723019533681426472", 
+                "723019533555597332"
             ],
             "embed": {
                 "color": "#015c21",
@@ -493,10 +498,10 @@
             "runName": "Shatters",
             "symbol": "z",
             "reqsImageUrl": "",
-            "keyEmoteID": "723001429903802478",
+            "keyEmoteID": "888891037802696704",
             "runLogName": "runs",
             "keyLogName": "shatterspops",
-            "headcountEmote": "723001214865899532",
+            "headcountEmote": "888890697653047307",
             "headcountOnAfk": true,
             "pingRole": null,
             "isSplit": false,
@@ -511,14 +516,14 @@
             "earlyLocationCost": 20,
             "earlyLocationReacts": [
                 {
-                    "emoteID": "883780914134540328",
+                    "emoteID": "888889860964892693",
                     "pointsGiven": 2,
                     "limit": 3,
                     "shortName": "Switch Rusher",
                     "requiredRole": "rusher"
                 },
                 {
-                    "emoteID": "720404621331267697",
+                    "emoteID": "888890099511734312",
                     "pointsGiven": 2,
                     "limit": 3,
                     "shortName": "Fungal Tome",

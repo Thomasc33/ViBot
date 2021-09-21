@@ -45,22 +45,20 @@
             "roleName": "mystic",
             "roleId": "751927822477688903",
             "dbName": null,
-            "minimumRole": "vetrl",
-            "prefix": "="
+            "minimumRole": "vetrl"
         },
         {
             "roleName": "priest",
             "roleId": "451179020655263754",
             "dbName": null,
             "minimumRole": null,
-            "prefix": null
+            "prefix": "+"
         },
         {
             "roleName": "trickster",
             "roleId": "769988745733996564",
             "dbName": null,
-            "minimumRole": null,
-            "prefix": "+"
+            "minimumRole": null
         }
     ]
 }
