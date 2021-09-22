@@ -43,7 +43,7 @@ module.exports = {
             db.query(`SELECT * FROM veriblacklist WHERE id IN (${args.map(a => `'${a}'`).join(', ')})`, async(err, rows) => {
             if (err) ErrorLogger.log(err, bot);
             let embed = new Discord.MessageEmbed()
-                .setTitle(`Epelled / Veriblacklisted users`)
+                .setTitle(`Expelled / Veriblacklisted users`)
                 .setDescription('None!');
 
             for (const row of rows)

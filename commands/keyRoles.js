@@ -123,17 +123,17 @@ module.exports = {
         db.query(`SELECT id, ${rows} FROM users WHERE id = '${member.id}'`, (err, rows) => {
             if (err) ErrorLogger.log(err, bot)
             if (!rows || !rows[0]) return db.query(`INSERT INTO users (id) VALUES ('${member.id}')`)
-            checkRow(member.guild, bot, rows[0]);
+            checkRow(member.guild, bot, rows[0], member);
         })
     }
 }
 
 function checkRow(guild, bot, row, member) {
-    return new Promise((res) => {
+    return new Promise(async(res) => {
         const settings = bot.settings[guild.id];
         const popInfo = data[guild.id];
-        member = member || guild.members.cache.get(row.id);
-        if (!settings || !popInfo) return;
+        member = member || await guild.members.fetch(row.id);
+        if (!settings || !popInfo || !member) return;
         const rolesToAdd = [];
         for (const keyInfo of popInfo) {
             if (!settings.roles[keyInfo.role]) continue;
