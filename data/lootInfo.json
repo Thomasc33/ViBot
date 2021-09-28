@@ -53,19 +53,21 @@
         ]
     },
     "shatters": {
-        "whites": [
+        "oldWhites": [
             "The Forgotten Crown",
+            "Bracer of the Guardian",
+            "The Twilight Gemstone"
+        ],
+        "whites": [
             "Dusky Catalyst",
             "Primal Arcana",
             "Polarity Poison",
             "Vest of Abandoned Shadows",
-            "The Twilight Gemstone",
             "Mantle of the Monarchy",
             "Warmonger",
             "Valor",
             "Vanguard's Visage",
             "Sentinel's Sidearm",
-            "Bracer of the Guardian",
             "Peacekeeper",
             "Royal Guard's Cuirass",
             "Noble Mandolin"
