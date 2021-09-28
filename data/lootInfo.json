@@ -54,25 +54,29 @@
     },
     "shatters": {
         "whites": [
-            "Sword of the Colossus",
-            "Marble Seal",
-            "Breastplate of New Life",
-            "Magical Lodestone",
-            "Bow of the Void",
-            "Quiver of the Shadows",
-            "Armor of Nil",
-            "Sourcestone",
-            "Staff of Unholy Sacrifice",
-            "Skull of Corrupted Souls",
-            "Ritual Robe",
-            "Bloodshed Ring",
-            "Omnipotence Ring"
+            "The Forgotten Crown",
+            "Dusky Catalyst",
+            "Primal Arcana",
+            "Polarity Poison",
+            "Vest of Abandoned Shadows",
+            "The Twilight Gemstone",
+            "Mantle of the Monarchy",
+            "Warmonger",
+            "Valor",
+            "Vanguard's Visage",
+            "Sentinel's Sidearm",
+            "Bracer of the Guardian",
+            "Peacekeeper",
+            "Royal Guard's Cuirass",
+            "Noble Mandolin"
         ],
         "STs": [
-            "Carved Golem Remains",
-            "Brain of the Golem",
-            "Golem Garments",
-            "Rusty Cuffs"
+            "Archangel's Judgement",
+            "Corruption Tether",
+            "Ancient Eminence",
+            "Twilight Shroud",
+            "Defiled Equilibrium",
+            "Abyssal Insignia"
         ]
     }
 }
