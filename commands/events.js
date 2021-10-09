@@ -19,13 +19,13 @@ module.exports = {
     },
     find(name) {
         name = name.toLowerCase();
-        for (const e in Events)
-        {
+        for (const e in Events) {
             if (!Events[e].enabled)
                 continue;
             if (e == name || (Events[e].aliases && Events[e].aliases.includes(name)))
                 return { eventId: e, event: Events[e] };
         }
+        return { eventId: null, event: null }
     }
 }
 

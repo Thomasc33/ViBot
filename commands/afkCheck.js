@@ -447,7 +447,6 @@ class afkCheck {
             afk.runInfoMessage.edit({ embeds: [afk.leaderEmbed] }).catch(er => ErrorLogger.log(er, afk.bot));
             //end collectors
             clearInterval(endAfter);
-            dmReactionCollector.stop();
         }
         function checkType(afk) { //true = spot open
             //key, vial, other
@@ -461,7 +460,7 @@ class afkCheck {
             }
         }
 
-        
+
 
         // If confirmation not needed, just send the location
         if (noConfirm) return sendLocation(this)
@@ -496,6 +495,7 @@ class afkCheck {
             await dmReactionCollector.on("collect", async (r, u) => {
                 //check type
                 if (!checkType(this)) return clearInterval(endAfter);
+                dmReactionCollector.stop();
 
                 //check realmeye if applicable
                 if (reactInfo && reactInfo.checkRealmEye) {
@@ -511,8 +511,7 @@ class afkCheck {
                         let reactionCollector = new Discord.ReactionCollector(prompt, { filter: (r, u) => !u.bot });
                         await prompt.react('✅')
                         reactionCollector.on('collect', (r, u) => {
-                            if (r.emoji.name == '✅')
-                                sendLocation(this)
+                            if (r.emoji.name == '✅') sendLocation(this)
                         })
                     } else sendLocation(this)
                 } else sendLocation(this)

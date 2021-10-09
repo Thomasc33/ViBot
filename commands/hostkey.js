@@ -106,7 +106,7 @@ module.exports = {
                         .setDescription(`Please select a dungeon by typing the name from the [list above](${eventsLink}). Type 'cancel' to cancel this key.`);
 
                     request = await dm.send({ embeds: [embed] });
-                    request.collector = dm.createMessageCollector(m => !m.author.bot && (m.content.toLowerCase() == 'cancel' || !!events.find(m.content)));
+                    request.collector = dm.createMessageCollector({filter: m => !m.author.bot && (m.content.toLowerCase() == 'cancel' || !!events.find(m.content))});
                     const reply = await new Promise(async res => {
                         request.collector.on('collect', async message => {
                             const content = message.content.toLowerCase();
