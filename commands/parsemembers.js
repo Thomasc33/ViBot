@@ -5,6 +5,7 @@ const realmEyeScrape = require('../lib/realmEyeScrape');
 const charStats = require('../data/charStats.json')
 const botSettings = require('../settings.json')
 const ParseCurrentWeek = require('../data/currentweekInfo.json').parsecurrentweek
+const pcw = require('./parseCurrentWeek')
 const client = new vision.ImageAnnotatorClient(botSettings.gcloudOptions);
 
 
@@ -296,12 +297,19 @@ module.exports = {
 
         parseStatusEmbed.fields[1].value = `Parse Completed\nParse took ${(Date.now() - started) / 1000} seconds`
         await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
-
+        
         let currentweekparsename, parsetotalname
-        for (let i in ParseCurrentWeek.tables) if (message.guild.id == i.id && !i.disabled) { currentweekparsename = ParseCurrentWeek.tables[i].parsecurrentweek; parsetotalname = ParseCurrentWeek.tables[i].parsetotal }
+        for (let i in ParseCurrentWeek) 
+        {
+            i = ParseCurrentWeek[i];
+            if (message.guild.id == i.id && !i.disabled) { 
+                currentweekparsename = i.parsecurrentweek; 
+                parsetotalname = i.parsetotal 
+            }
+        }
         if (!currentweekparsename || !parsetotalname) return
         db.query(`UPDATE users SET ${parsetotalname} = ${parsetotalname} + 1, ${currentweekparsename} = ${currentweekparsename} + 1 WHERE id = '${message.author.id}'`)
-        ParseCurrentWeek.update(message.guild, db, bot)
+        pcw.update(message.guild, db, bot)
     }
 }
 
