@@ -429,7 +429,7 @@ bot.on('messageReactionAdd', (r, u) => {
     if (u.bot) return
 
     //modmail
-    if (r.emoji.name == '🔑' && !(r.message.channel instanceof Discord.DMChannel) && r.message.author.id == bot.user.id && r.message.channel.id == bot.settings[r.message.guild.id].channels.modmail) {
+    if (r.emoji.name == '🔑' && r.message.guild && r.message.author.id == bot.user.id && r.message.guild && bot.settings[r.message.guild.id] && r.message.channel.id == bot.settings[r.message.guild.id].channels.modmail) {
         modmail.modmailLogic(r.message, bot.dbs[r.message.guild.id], u)
     }
     //spongemock

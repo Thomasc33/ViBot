@@ -29,6 +29,15 @@ module.exports = {
 
             let report = await channel.send({ embeds: [embed] })
 
+            function debounceEdit() {
+                if (!debounceEdit.timeout) {
+                    debounceEdit.timeout = setTimeout(() => {
+                        debounceEdit.timeout = null;
+                        report.edit({ embeds: [embed] });
+                    }, 750);
+                }
+            }
+
             async function updateEmbed(title, array, join) {
 
                 embed.addField(title, 'None!');
@@ -40,14 +49,14 @@ module.exports = {
                         }];
                         report = await channel.send({ embeds: [embed] });
                     } else {
-                        await report.edit({ embeds: [embed] })
+                        debounceEdit();
                     }
                     return;
                 }
                 embed.fields[embed.fields.length - 1].value = '';
                 for (const item of array) {
                     if (embed.length + item.length + join.length >= 6000) {
-                        await report.edit({ embeds: [embed] })
+                        debounceEdit();
                         embed.fields = [{
                             name: title,
                             value: `${item}`
@@ -61,13 +70,13 @@ module.exports = {
                     }
                 }
                 embed.fields[embed.fields.length - 1].value = embed.fields[embed.fields.length - 1].value.substring(join.length);
-                await report.edit({ embeds: [embed] })
+                debounceEdit();
             }
 
             //duplicate nickname, temporary key popper, event raider + verified raider, unverified with nickname, false suspensions
             await new Promise(res => {
                 guild.members.cache.forEach(member => {
-                    if (ignores[guild.id].includes(member.id))
+                    if (ignores[guild.id] && ignores[guild.id].includes(member.id))
                         return;
                     //duplicate nickname
                     if (member.nickname !== null && member.nickname !== '') {
