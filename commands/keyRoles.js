@@ -132,7 +132,7 @@ function checkRow(guild, bot, row, member) {
     return new Promise(async(res) => {
         const settings = bot.settings[guild.id];
         const popInfo = data[guild.id];
-        member = member || await guild.members.fetch(row.id);
+        member = member || await guild.members.fetch(row.id).catch(e => {});
         if (!settings || !popInfo || !member) return;
         const rolesToAdd = [];
         for (const keyInfo of popInfo) {

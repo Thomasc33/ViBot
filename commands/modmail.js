@@ -210,9 +210,9 @@ module.exports = {
         let choiceCollector = new Discord.ReactionCollector(m, { filter: choiceFilter })
         let collected = false;
         choiceCollector.on('collect', async function (r, u) {
+            if (reactor.id !== u.id) return;
             collected = true;
             choiceCollector.stop()
-            if (reactor.id !== u.id) return;
             if (!checkInServer()) {
                 await m.reactions.removeAll();
                 await m.react('🚫');
