@@ -2,9 +2,7 @@ const Discord = require('discord.js')
 const CurrentWeek = require('./currentWeek')
 const eCurrentWeek = require('./eventCurrentWeek')
 const pCurrentWeek = require('./parseCurrentWeek')
-
 const logs = require('../data/logInfo.json')
-
 
 module.exports = {
     name: 'log',
@@ -34,6 +32,7 @@ module.exports = {
         //count
         if (args[args.length - 1].replace(/^\d{1,2}$/, '') == '') {
             count = args[args.length - 1]
+            if (run.weight) count = count * run.weight
         }
 
         //confirm if needed

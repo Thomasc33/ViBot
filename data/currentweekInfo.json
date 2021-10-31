@@ -76,7 +76,11 @@
         {
             "id": "343704644712923138",
             "eventcurrentweek": "currentweekEvents",
+            "exaltcurrentweek": "currentweekExalts",
+            "exaltfeedbackcurrentweek": "currentweekExaltFeedback",
             "eventtotal": "eventsLead",
+            "exalttotal": "exaltsLead",
+            "exaltfeedbacktotal": "exaltFeedback",
             "dontReset": false
         },
         {

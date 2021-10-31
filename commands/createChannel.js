@@ -156,9 +156,11 @@ module.exports = {
                     //edit message in raid status
                     channel.embed.fields[0].value = '**Closed**'
                     channel.message.edit({ content: null, embeds: [channel.embed] })
-                    bot.afkChecks[channel.channelId].active = false;
-                    bot.afkChecks[channel.channelId].endedAt = Date.now();
-                    fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot) })
+                    if (bot.afkChecks[channel.channelId]) {
+                        bot.afkChecks[channel.channelId].active = false;
+                        bot.afkChecks[channel.channelId].endedAt = Date.now();
+                        fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot) })
+                    }
                 }
                 close()
                 break;

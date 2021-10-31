@@ -359,9 +359,19 @@ bot.on("ready", async () => {
     const currentWeekReset = cron.job('0 0 * * SUN', () => {
         bot.guilds.cache.each(g => {
             if (!emojiServers.includes(g.id)) {
-                if (bot.settings[g.id].backend.currentweek) currentWeek.newWeek(g, bot, bot.dbs[g.id]);
-                if (bot.settings[g.id].backend.eventcurrentweek) ecurrentWeek.newWeek(g, bot, bot.dbs[g.id])
-                if (bot.settings[g.id].backend.parsecurrentweek) pcurrentWeek.newWeek(g, bot, bot.dbs[g.id])
+                if (bot.settings[g.id].backend.currentweek && !bot.settings[g.id].backend.raidResetMonthly) currentWeek.newWeek(g, bot, bot.dbs[g.id]);
+                if (bot.settings[g.id].backend.eventcurrentweek && !bot.settings[g.id].backend.eventResetMonthly) ecurrentWeek.newWeek(g, bot, bot.dbs[g.id])
+                if (bot.settings[g.id].backend.parsecurrentweek && !bot.settings[g.id].backend.parseResetMonthly) pcurrentWeek.newWeek(g, bot, bot.dbs[g.id])
+            }
+        })
+    }, null, true, 'America/New_York', null, false)
+
+    const currentMonthReset = cron.job('0 0 1 * *', () => {
+        bot.guilds.cache.each(g => {
+            if (!emojiServers.includes(g.id)) {
+                if (bot.settings[g.id].backend.currentweek && bot.settings[g.id].backend.raidResetMonthly) currentWeek.newWeek(g, bot, bot.dbs[g.id]);
+                if (bot.settings[g.id].backend.eventcurrentweek && bot.settings[g.id].backend.eventResetMonthly) ecurrentWeek.newWeek(g, bot, bot.dbs[g.id])
+                if (bot.settings[g.id].backend.parsecurrentweek && bot.settings[g.id].backend.parseResetMonthly) pcurrentWeek.newWeek(g, bot, bot.dbs[g.id])
             }
         })
     }, null, true, 'America/New_York', null, false)

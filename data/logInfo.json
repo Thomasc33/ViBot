@@ -84,7 +84,53 @@
                 "desc": "`Event` run",
                 "toUpdate": 2,
                 "toDisplay": [
-                    "currentweekEvents"
+                    "currentweekEvents",
+                    "currentweekExalts",
+                    "currentweekExaltFeedback"
+                ]
+            },
+            {
+                "key": "ex",
+                "alias": [
+                    "exalt",
+                    "exalted"
+                ],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": true,
+                "main": "exaltsLead",
+                "currentweek": "currentweekExalts",
+                "color": "#00FF00",
+                "icon": "https://cdn.discordapp.com/emojis/831052176507535360.png?v=1",
+                "desc": "`Exalt` run",
+                "toUpdate": 2,
+                "toDisplay": [
+                    "currentweekEvents",
+                    "currentweekExalts",
+                    "currentweekExaltFeedback"
+                ]
+            },
+            {
+                "key": "ef",
+                "alias": [
+                    "exaltfeedback",
+                    "exaltedfb",
+                    "exaltfb",
+                    "exaltedfeedback"
+                ],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": false,
+                "main": "exaltFeedback",
+                "currentweek": "currentweekExaltFeedback",
+                "color": "#00FF00",
+                "icon": "https://cdn.discordapp.com/emojis/858920770806087710.png?v=1",
+                "desc": "`Exalt Feedback`",
+                "toUpdate": 2,
+                "toDisplay": [
+                    "currentweekEvents",
+                    "currentweekExalts",
+                    "currentweekExaltFeedback"
                 ]
             }
         ],

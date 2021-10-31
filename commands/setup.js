@@ -10,7 +10,7 @@ const categories = ['raiding', 'veteran', 'event']
 const voice = ['raidingtemplate', 'eventtemplate', 'vettemplate', 'veteventtemplate', 'lounge', 'vetlounge', 'eventlounge', 'afk']
 const voiceprefixes = ['raidingprefix', 'vetprefix']
 const backend = ['modmail', 'currentweek', 'eventcurrentweek', 'parsecurrentweek', 'verification', 'vetverification', 'points', 'supporter', 'roleassignment', 'realmeyestats', 'automod', 'nitroearlylocation', 'removekeyreacts', 'characterparse',
-	'giveeventroleonverification', 'eventcurrentweekdisplaysalleventrl', 'upgradedCheck']
+    'giveeventroleonverification', 'eventcurrentweekdisplaysalleventrl', 'upgradedCheck', 'raidResetMonthly', 'eventResetMonthly', 'parseResetMonthly', 'exaltedEvents']
 const numerical = ['afktime', 'eventafktime', 'nitrocount', 'nitrocooldown', 'topkey', 'bottomkey', 'ticketlimit', 'supporterlimit', 'keyalertsage', 'waitnewkeyalert']
 const runreqs = ['weapon', 'ability', 'armor', 'ring']
 const autoveri = ['fame', 'stars', 'realmage', 'discordage', 'deathcount']
@@ -33,7 +33,7 @@ module.exports = {
                 .setFooter(`Type 'cancel' to stop`)
                 .setDescription(`\`\`\`Please select what you wish to edit:\n1: roles\n2: channels\n3: voice\n4: voiceprefixes\n5: backend\n6: numerical\n7: runreqs\n8: autoveri\n9: vetverireqs\n10: points\n11: commands\n12: categories\`\`\``)
             let setupMessage = await message.channel.send({ embeds: [setupEmbed] })
-            let mainMenu = new Discord.MessageCollector(message.channel, { filter: m => m.author.id == message.author.id})
+            let mainMenu = new Discord.MessageCollector(message.channel, { filter: m => m.author.id == message.author.id })
             mainMenu.on('collect', async m => {
                 if (m.content.replace(/[^0-9]/g, '') != m.content) {
                     if (m.content = 'cancel') {
