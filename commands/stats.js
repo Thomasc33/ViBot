@@ -161,7 +161,7 @@ function getFields(row, schema) {
             name: `<${botSettings.emote.hallsPortal}> __**Runs Led**__ <${botSettings.emote.hallsPortal}>`,
             value: `<${botSettings.emote.malus}> ${row.cultsLead}\n` +
                 `<${botSettings.emote.voidd}> ${row.voidsLead}\n` +
-                `<:feedback:858920770806087710> ${row.feedback}` +
+                `<:feedback:858920770806087710> ${row.feedback}\n` +
                 `<:epicMysteryKey:831051424187940874> ${parseInt(row.eventsLead) * 10} Minutes\n` +
                 `<:legendaryMysteryKey:831052176507535360> ${row.exaltsLead}\n` +
                 `<:legendaryMysteryKey:831052176507535360><:feedback:858920770806087710> ${row.exaltFeedback}\n` +
