@@ -51,7 +51,6 @@ module.exports = {
                     if (settings.backend.exaltedEvents) {
                         let atot = parseInt(a[table.eventcurrentweek]) + (parseInt(a[table.exaltcurrentweek]) * 2) + (parseInt(a[table.exaltfeedbackcurrentweek]) * 2)
                         let btot = parseInt(b[table.eventcurrentweek]) + (parseInt(b[table.exaltcurrentweek]) * 2) + (parseInt(b[table.exaltfeedbackcurrentweek]) * 2)
-                        console.log(atot, btot)
                         if (atot < btot) return 1
                         else return -1
                     } else {

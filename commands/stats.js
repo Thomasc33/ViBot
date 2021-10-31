@@ -161,7 +161,10 @@ function getFields(row, schema) {
             name: `<${botSettings.emote.hallsPortal}> __**Runs Led**__ <${botSettings.emote.hallsPortal}>`,
             value: `<${botSettings.emote.malus}> ${row.cultsLead}\n` +
                 `<${botSettings.emote.voidd}> ${row.voidsLead}\n` +
+                `<:feedback:858920770806087710> ${row.feedback}` +
                 `<:epicMysteryKey:831051424187940874> ${parseInt(row.eventsLead) * 10} Minutes\n` +
+                `<:legendaryMysteryKey:831052176507535360> ${row.exaltsLead}\n` +
+                `<:legendaryMysteryKey:831052176507535360><:feedback:858920770806087710> ${row.exaltFeedback}\n` +
                 `🤝 ${row.assists} Assists\n` +
                 `🔎 ${row.parses} Parses`,
             inline: true
@@ -190,9 +193,9 @@ function getFields(row, schema) {
             value: `<:forgottenKing:849406533435523093> ${row.successruns}\n` +
                 `❌ ${row.failruns}\n` +
                 `<:epicMysteryKey:831051424187940874> ${parseInt(row.eventslead) * 10} Minutes\n` +
-                `🤝 ${row.assists} Assists\n` + 
-                `<:forgottenKing:849406533435523093> ${row.oldsuccessruns} *Legacy*\n` + 
-				`🤝 ${row.oldassists} *Legacy Assists*`,
+                `🤝 ${row.assists} Assists\n` +
+                `<:forgottenKing:849406533435523093> ${row.oldsuccessruns} *Legacy*\n` +
+                `🤝 ${row.oldassists} *Legacy Assists*`,
             inline: true
         }
     ]
