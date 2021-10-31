@@ -114,7 +114,8 @@ module.exports = {
                         }
                         async function editMessages() {
                             for (let i in CachedMessages[channel.guild.id]) {
-                                CachedMessages[channel.guild.id][i].edit({ embeds: [embeds[i]] })
+                                let t = await CachedMessages[channel.guild.id][i].edit({ embeds: [embeds[i]] }).catch(er => { return { isErrored: true } })
+                                if (t.isErrored) { resendMessages(); break; }
                             }
                         }
                     } catch (er) { console.log(er) }
