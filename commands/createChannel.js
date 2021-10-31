@@ -95,6 +95,9 @@ module.exports = {
                     let channel = getChannel(message)
                     if (!channel) return
 
+                    if (!channel.message) return message.channel.send(`Error finding the message in RSA, try recreating the channel`)
+                    if (!channel.channel) return message.channel.send(`Voice channel not found, try recreating it`)
+
                     //10 second timer
                     let iteration = 0;
                     let timer = setInterval(unlockInterval, 5000)
