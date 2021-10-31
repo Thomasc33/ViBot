@@ -48,7 +48,7 @@ module.exports = {
                     .setTitle('This weeks current logged runs!')
                     .setDescription('None!')
                 rows.sort((a, b) => (settings.backend.exaltedEvents ?
-                    (parseInt(a[table.eventcurrentweek]) + parseInt(a[table.exaltcurrentweek]) * 2 + parseInt(a[table.exaltfeedbackcurrentweek]) * 2) < (parseInt(b[table.eventcurrentweek]) + parseInt(b[table.exaltcurrentweek]) * 2 + parseInt(b[table.exaltfeedbackcurrentweek]) * 2) ? 1 : -1 :
+                    (parseInt(a[table.eventcurrentweek]) + (parseInt(a[table.exaltcurrentweek]) * 2) + (parseInt(a[table.exaltfeedbackcurrentweek]) * 2)) < (parseInt(b[table.eventcurrentweek]) + (parseInt(b[table.exaltcurrentweek]) * 2) + (parseInt(b[table.exaltfeedbackcurrentweek]) * 2)) ? 1 : -1 :
                     parseInt(a[table.eventcurrentweek]) < parseInt(b[table.eventcurrentweek])) ? 1 : -1)
                 let index = 0
                 let embeds = []
