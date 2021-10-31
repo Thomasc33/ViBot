@@ -97,7 +97,7 @@
                 ],
                 "multiply": null,
                 "allowAssists": false,
-                "confirm": true,
+                "confirm": false,
                 "main": "exaltsLead",
                 "currentweek": "currentweekExalts",
                 "color": "#00FF00",
