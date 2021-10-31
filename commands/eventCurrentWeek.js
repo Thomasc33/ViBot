@@ -48,13 +48,13 @@ module.exports = {
                     .setTitle('This weeks current logged runs!')
                     .setDescription('None!')
                 rows.sort((a, b) => (settings.backend.exaltedEvents ?
-                    parseInt(a[table.eventcurrentweek]) + parseInt(a[table.exaltfeedbackcurrentweek]) * 2 + parseInt(a[table.exaltfeedbackcurrentweek]) * 2 < parseInt(b[table.eventcurrentweek]) + parseInt(b[table.exaltfeedbackcurrentweek]) * 2 + parseInt(b[table.exaltfeedbackcurrentweek]) * 2 ? 1 : -1 :
+                    (parseInt(a[table.eventcurrentweek]) + parseInt(a[table.exaltcurrentweek]) * 2 + parseInt(a[table.exaltfeedbackcurrentweek]) * 2) < (parseInt(b[table.eventcurrentweek]) + parseInt(b[table.exaltcurrentweek]) * 2 + parseInt(b[table.exaltfeedbackcurrentweek]) * 2) ? 1 : -1 :
                     parseInt(a[table.eventcurrentweek]) < parseInt(b[table.eventcurrentweek])) ? 1 : -1)
                 let index = 0
                 let embeds = []
                 for (let i of rows) {
                     let string
-                    if (settings.backend.exaltedEvents) string = `**[${index + 1}]** <@!${i.id}>: Points: **${parseInt(i[table.eventcurrentweek]) + parseInt(i[table.exaltfeedbackcurrentweek]) * 2 + parseInt(i[table.exaltfeedbackcurrentweek]) * 2}**\nMinutes Lead: \`${parseInt(i[table.eventcurrentweek]) * 10}\`, Exalts Lead: \`${i[table.exaltcurrentweek]}\`, Exalt Feedback: \`${i[table.exaltfeedbackcurrentweek]}\``
+                    if (settings.backend.exaltedEvents) string = `**[${index + 1}]** <@!${i.id}>: Points: **${parseInt(i[table.eventcurrentweek]) + (parseInt(i[table.exaltcurrentweek]) * 2) + parseInt(i[table.exaltfeedbackcurrentweek]) * 2}**\nMinutes Lead: \`${parseInt(i[table.eventcurrentweek]) * 10}\`, Exalts Lead: \`${i[table.exaltcurrentweek]}\`, Exalt Feedback: \`${i[table.exaltfeedbackcurrentweek]}\``
                     else string = `**[${index + 1}]** <@!${i.id}>:\nMinutes Lead: \`${parseInt(i[table.eventcurrentweek]) * 10}\``
                     fitStringIntoEmbed(embed, string)
                     logged.push(i.id)
