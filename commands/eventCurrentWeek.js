@@ -47,9 +47,18 @@ module.exports = {
                     .setColor('#00ff00')
                     .setTitle('This weeks current logged runs!')
                     .setDescription('None!')
-                rows.sort((a, b) => (settings.backend.exaltedEvents ?
-                    (parseInt(a[table.eventcurrentweek]) + (parseInt(a[table.exaltcurrentweek]) * 2) + (parseInt(a[table.exaltfeedbackcurrentweek]) * 2)) < (parseInt(b[table.eventcurrentweek]) + (parseInt(b[table.exaltcurrentweek]) * 2) + (parseInt(b[table.exaltfeedbackcurrentweek]) * 2)) ? 1 : -1 :
-                    parseInt(a[table.eventcurrentweek]) < parseInt(b[table.eventcurrentweek])) ? 1 : -1)
+                rows.sort((a, b) => {
+                    if (settings.backend.exaltedEvents) {
+                        let atot = parseInt(a[table.eventcurrentweek]) + (parseInt(a[table.exaltcurrentweek]) * 2) + (parseInt(a[table.exaltfeedbackcurrentweek]) * 2)
+                        let btot = parseInt(b[table.eventcurrentweek]) + (parseInt(b[table.exaltcurrentweek]) * 2) + (parseInt(b[table.exaltfeedbackcurrentweek]) * 2)
+                        console.log(atot, btot)
+                        if (atot < btot) return 1
+                        else return -1
+                    } else {
+                        if (parseInt(a[table.eventcurrentweek]) < parseInt(b[table.eventcurrentweek])) return 1
+                        else return -1
+                    }
+                })
                 let index = 0
                 let embeds = []
                 for (let i of rows) {
