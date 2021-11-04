@@ -10,6 +10,10 @@
     "osancStats": false,
     "apiPort": 80,
     "earlyLocationCooldown": 720000,
+    "dynamicDomainCredentials": {
+        "username": "",
+        "password": ""
+    },
     "gcloudOptions": {
         "keyFilename": "",
         "projectId": ""
