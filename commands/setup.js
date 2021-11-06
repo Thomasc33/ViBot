@@ -1,5 +1,6 @@
 const fs = require('fs')
 const Discord = require('discord.js')
+const ErrorLogger = require('../lib/logError')
 const roles = ['moderator', 'officer', 'headrl', 'vetrl', 'fsvrl', 'mrvrl', 'security', 'fullskip', 'developer', 'rl', 'almostrl', 'trialrl', 'headeventrl', 'eventrl', 'rusher', 'nitro', 'lol', 'vetraider', 'raider', 'eventraider', 'muted',
     'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'keyjesus', 'topkey', 'bottomkey', 'cultping', 'voidping', 'shattsReact', 'fungalReact', 'nestReact', 'rcPing', 'o3Ping', 'veteventrl']
 const channels = ['modmail', 'verification', 'manualverification', 'vetverification', 'manualvetverification', 'verificationlog', 'activeverification', 'modlogs', 'history', 'suspendlog',
@@ -16,14 +17,22 @@ const runreqs = ['weapon', 'ability', 'armor', 'ring']
 const autoveri = ['fame', 'stars', 'realmage', 'discordage', 'deathcount']
 const vetverireqs = ['maxed', 'meleemaxed', 'runs']
 const points = ['earlylocation', 'perrun', 'nitromultiplier', 'keypop', 'vialpop', 'rushing', 'brain', 'mystic', 'eventkey', 'cultlocation', 'voidlocation', 'fsvlocation', 'o3streaming', 'o3trickster', 'o3puri', 'exaltkey']
+const lists = ['earlyLocation']
 var commands = []
 
-const menus = ['roles', 'channels', 'voice', 'voiceprefixes', 'backend', 'numerical', 'runreqs', 'autoveri', 'vetverireqs', 'points', 'commands', 'categories']
+const menus = ['roles', 'channels', 'voice', 'voiceprefixes', 'backend', 'numerical', 'runreqs', 'autoveri', 'vetverireqs', 'points', 'commands', 'categories', 'lists']
 
 module.exports = {
     name: 'setup',
     description: 'set names of stuff',
     role: 'moderator',
+    /**
+     * 
+     * @param {Discord.Message} message 
+     * @param {Array} args 
+     * @param {Discord.Client} bot 
+     * @param {*} db 
+     */
     async execute(message, args, bot, db) {
         if (!commands) commands = Array.from(bot.commands.keys())
         if (args.length == 0) {
@@ -31,7 +40,7 @@ module.exports = {
                 .setTitle('Setup')
                 .setColor('#54d1c2')
                 .setFooter(`Type 'cancel' to stop`)
-                .setDescription(`\`\`\`Please select what you wish to edit:\n1: roles\n2: channels\n3: voice\n4: voiceprefixes\n5: backend\n6: numerical\n7: runreqs\n8: autoveri\n9: vetverireqs\n10: points\n11: commands\n12: categories\`\`\``)
+                .setDescription(`\`\`\`Please select what you wish to edit:\n${menus.map((m, i) => `${parseInt(i) + 1}: ${m}`).join('\n')}\`\`\``)
             let setupMessage = await message.channel.send({ embeds: [setupEmbed] })
             let mainMenu = new Discord.MessageCollector(message.channel, { filter: m => m.author.id == message.author.id })
             mainMenu.on('collect', async m => {
@@ -57,44 +66,51 @@ module.exports = {
                         case '10': menu(points, 'points', 'int'); break;
                         case '11': menu(commands, 'commands', 'boolean'); break;
                         case '12': menu(categories, 'categories', 'string'); break;
+                        case '13': menu(lists, 'lists', 'array'); break;
                     }
                 }
+                /**
+                 * 
+                 * @param {Array} array 
+                 * @param {String} arrayName 
+                 * @param {String} type 
+                 */
                 async function menu(array, arrayName, type) {
                     setupEmbed.setTitle(`${arrayName} Menu`)
                         .setDescription(`\`\`\`Please select what you wish to edit`)
                     let fieldIndex = 0;
                     for (let i in array) {
-                        let s = `\n${parseInt(i) + 1}: ${array[i]} '${bot.settings[message.guild.id][arrayName][array[i]]}'`
+                        let s = `\n${parseInt(i) + 1}: ${array[i]} ${type == 'array' ? `- ${bot.settings[message.guild.id][arrayName][array[i]].length} Items` : `'${bot.settings[message.guild.id][arrayName][array[i]]}'`}`
                         if (setupEmbed.description.length + s.length + `\n\`\`\``.length >= 2048) {
-                            if (!setupEmbed.fields[fieldIndex]) setupEmbed.addField('-', `\`\`\`${s}`, false)
+                            if (!setupEmbed.fields[fieldIndex]) setupEmbed.addField('** **', `\`\`\`${s}`, false)
                             else if (setupEmbed.fields[fieldIndex].value.length + s.length + `\n\`\`\``.length >= 1024) {
                                 fieldIndex++
-                                setupEmbed.addField('-', s, false)
+                                setupEmbed.addField('** **', s, false)
                             } else setupEmbed.fields[fieldIndex].value += s;
                         } else setupEmbed.description += s
                     }
                     setupEmbed.description += `\n\`\`\``
                     for (let i = 0; i < fieldIndex + 1; i++) if (setupEmbed.fields[i]) setupEmbed.fields[i].value += '```'
                     await setupMessage.edit({ embeds: [setupEmbed] })
-                    let rolesMenu = new Discord.MessageCollector(message.channel, m => m.author.id == message.author.id)
-                    rolesMenu.on('collect', async m => {
+                    let menuCollector = new Discord.MessageCollector(message.channel, m => m.author.id == message.author.id)
+                    menuCollector.on('collect', async m => {
                         let num = m.content
                         if (m.content.replace(/[^0-9]/g, '') != m.content) {
                             if (m.content = 'cancel') {
                                 setupMessage.delete()
                                 message.react('✅')
-                                rolesMenu.stop()
+                                menuCollector.stop()
                             } else message.channel.send('Invalid number recieved. Please try again')
-                        } else {
-                            rolesMenu.stop()
+                        } else if (['string', 'boolean', 'int'].includes(type)) {
+                            menuCollector.stop()
                             setupEmbed.setDescription(`\`\`\`Please enter in the new value\`\`\`\nCurrent Value:\n**${array[parseInt(num) - 1]}** = ${bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]]}`)
                             setupMessage.edit({ embeds: [setupEmbed] })
-                            let newRoleNameCollector = new Discord.MessageCollector(message.channel, m => m.author.id == message.author.id)
-                            newRoleNameCollector.on('collect', async mes => {
+                            let menuMessageCollector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id == message.author.id })
+                            menuMessageCollector.on('collect', async mes => {
                                 if (mes.content.toLowerCase() == 'cancel') {
                                     setupMessage.delete()
                                     message.react('✅')
-                                    rolesMenu.stop()
+                                    menuCollector.stop()
                                 } else {
                                     let change = `\`\`\`${array[parseInt(num) - 1]}: ${bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]]} -> ${mes.content}\`\`\``
                                     switch (type) {
@@ -117,10 +133,103 @@ module.exports = {
                                     await setupMessage.edit({ embeds: [setupEmbed] })
                                     message.react('✅')
                                     mes.delete()
-                                    newRoleNameCollector.stop()
+                                    menuMessageCollector.stop()
                                 }
                             })
                             m.delete()
+                        } else if (['array'].includes(type)) {
+                            // Stop collector
+                            menuCollector.stop()
+
+                            // Get array value
+                            let cur = bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]]
+                            if (!cur) { message.channel.send(`Error: Menu type not recognized`); return ErrorLogger.log(`Setup error:\ntype ${type}\narray name: ${arrayName}\nArray Info: ${array}`, bot) }
+
+                            // Send current value and prompt for what to edit
+                            // Create String of current values
+                            let str = cur.map((v, i) => `${parseInt(i) + 1}: ${v}`).join('\n')
+
+                            // Send
+                            setupEmbed.setDescription(`\`\`\`Please select a value to REMOVE\n\nCurrent Values:\n${str}\`\`\`\nOr Say "add", "new", or "clear"`)
+                            setupMessage.edit({ embeds: [setupEmbed] })
+
+                            // Add reaction collector
+                            const collector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id == message.author.id })
+                            collector.on('collect', async m => {
+                                let change = '\`\`\`Errored\`\`\`'
+                                if (m.content.toLowerCase() == 'add' || m.content.toLowerCase() == 'new') {
+                                    // End collector
+                                    collector.stop()
+
+                                    // Prompt for new value
+                                    setupEmbed.setDescription(`\`\`\`Please enter in the new value\`\`\`\nCurrent Value:\n**${array[parseInt(num) - 1]}** = ${bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]]}`)
+                                    setupMessage.edit({ embeds: [setupEmbed] })
+                                    const newCollector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id == message.author.id })
+                                    newCollector.on('collect', async mes => {
+                                        if (mes.content.toLowerCase() == 'cancel') {
+                                            setupMessage.delete()
+                                            message.react('✅')
+                                            collector.stop()
+                                        } else {
+                                            change = `\`\`\`${mes.content} added to ${arrayName}\`\`\``
+                                            bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]].push(mes.content)
+                                            newCollector.stop()
+                                            exit()
+                                        }
+                                    })
+
+                                } else if (m.content.toLowerCase() == 'clear') {
+                                    // End collector
+                                    collector.stop()
+
+                                    // Clear array
+                                    bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]] = []
+
+                                    // Update embed/Return
+                                    change = `\`\`\`Cleared Array ${arrayName}\`\`\``
+                                    exit()
+                                } else if (m.content.toLowerCase() == 'cancel') {
+                                    setupMessage.delete()
+                                    message.react('✅')
+                                    collector.stop()
+                                } else {
+                                    // Send and delete try again prompt if not valid number
+                                    if (isNaN(parseInt(m.content))) { let m = await message.channel.send(`Response not recognized. Try again.`); setTimeout(() => m.delete(), 5000); return }
+
+                                    // Proceed with Deletion
+                                    collector.stop()
+                                    let selectionIndex = parseInt(m.content) - 1
+
+                                    // Ensure selection is in range
+                                    let selection = cur[selectionIndex]
+                                    if (!selection) { change = `Value not found. Assuming it was already deleted.`; return exit() }
+
+                                    // Delete
+                                    try {
+                                        bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]].splice(selectionIndex, 1)
+                                        change = `\`\`\`Removed ${selection}\`\`\``
+                                    } catch (er) {
+                                        change = `\`\`\`Error removing from list. Try again\`\`\``
+                                    } finally { exit() }
+                                }
+                                async function exit() {
+                                    fs.writeFileSync('./guildSettings.json', JSON.stringify(bot.settings, null, 4), err => message.channel.send(err.toString()))
+                                    setupEmbed.setDescription(change)
+                                        .setTitle(`Changes Made`)
+                                        .setFooter(`Setup completed`)
+                                    await setupMessage.edit({ embeds: [setupEmbed] })
+                                    message.react('✅')
+                                    m.delete()
+                                }
+                            })
+
+                        } else if (['object'].includes(type)) {
+                            //soon:tm:
+                            message.channel.send(`Error: Menu type not implemented`)
+                            ErrorLogger.log(`Setup error:\ntype ${type}\narray name: ${arrayName}\nArray Info: ${array}`, bot)
+                        } else {
+                            message.channel.send(`Error: Menu type not recognized`)
+                            ErrorLogger.log(`Setup error:\ntype ${type}\narray name: ${arrayName}\nArray Info: ${array}`, bot)
                         }
                     })
                 }
@@ -143,7 +252,8 @@ module.exports = {
                 vetverireqs: {},
                 points: {},
                 commands: {},
-                categories: {}
+                categories: {},
+                lists: {}
             }
         }
         for (let i of menus) {
@@ -219,6 +329,10 @@ module.exports = {
         }
         for (let i of categories) {
             if (!bot.settings[guild.id].categories[i]) bot.settings[guild.id].categories[i] = getDefaultCategoryName(i)
+        }
+        if (!bot.settings[guild.id].lists) bot.settings[guild.id].lists = {}
+        for (let i of lists) {
+            if (!bot.settings[guild.id].lists[i]) bot.settings[guild.id].lists[i] = []
         }
         fs.writeFileSync('./guildSettings.json', JSON.stringify(bot.settings, null, 4), err => message.channel.send(err.toString()))
     }
