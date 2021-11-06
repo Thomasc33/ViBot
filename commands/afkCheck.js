@@ -531,6 +531,12 @@ class afkCheck {
             this.earlyLocation.push(u);
             return;
         }
+        for (let i of this.settings.lists.earlyLocation) {
+            if (reactor.roles.cache.has(i)) {
+                this.earlyLocation.push(u);
+                return
+            }
+        }
         if (this.nitro.length + 1 > this.settings.numerical.nitrocount) return reactor.send('Too many Nitro Boosters have already received location for this run. Try again in the next run!');
         if (reactor.roles.cache.has(this.nitroBooster.id)) {
             if (reactor.voice.channel && reactor.voice.channel.id == this.channel.id) {
