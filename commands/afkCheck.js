@@ -41,11 +41,17 @@ module.exports = {
     async execute(message, args, bot, db, tokenDB, event) {
         //clear out runs array
         destroyInactiveRuns();
-
+        let shift = args.shift();
+        let symbol = shift.charAt(0).toLowerCase();
+        let isAdvanced = false;
+        if (symbol == 'a') {
+            symbol += shift.charAt(1).toLowerCase();
+            isAdvanced = true;
+        }
         //Check Run Type
-        let runType = getRunType(args.shift().charAt(0).toLowerCase(), message.guild.id);
+        let runType = getRunType(symbol, message.guild.id);
         if (!runType && message.member.roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles.vetrl).position) return message.channel.send('Run Type Not Recognized')
-        if (!runType) runType = await getTemplate(message, afkTemplates, args[0]).catch(er => message.channel.send(`Unable to get template. Error: \`${er}\``))
+        if (!runType) runType = await getTemplate(message, afkTemplates, shift).catch(er => message.channel.send(`Unable to get template. Error: \`${er}\``))
         if (!runType) return
 
         //Check for keycount
@@ -58,6 +64,9 @@ module.exports = {
         //create afkInfo from templates
         let runInfo = { ...runType }
         if (keyCount) runInfo.keyCount = keyCount
+
+        //is advanced run
+        runInfo.isAdvanced = isAdvanced;
 
         //isVet
         runInfo.isVet = message.channel.parent.name.toLowerCase() == bot.settings[message.guild.id].categories.veteran ? true : false;
@@ -162,6 +171,7 @@ class afkCheck {
      * @param {Boolean} afkInfo.isVet
      * @param {Boolean} afkInfo.twoPhase
      * @param {Boolean} afkInfo.isEvent
+     * @param {Boolean} afkInfo.isAdvanced
      * @param {Boolean} afkInfo.isSplit
      * @param {Boolean} afkInfo.newChannel
      * @param {Boolean} afkInfo.vialReact
@@ -309,6 +319,10 @@ class afkCheck {
         if (this.afkInfo.reqsImageUrl) this.mainEmbed.setImage(this.afkInfo.reqsImageUrl)
         if (this.afkInfo.embed.thumbnail && !this.afkInfo.embed.removeThumbnail) this.mainEmbed.setThumbnail(this.afkInfo.embed.thumbnail)
         this.mainEmbed.description = this.mainEmbed.description.replace('{voicechannel}', `${this.channel}`)
+
+        if (this.afkInfo.isAdvanced)
+            this.mainEmbed.description += `\n\n**__Advanced Runs__**\nThis is an **advanced run**, meaning there are extended requirements. You must have __at least one__ piece of gear listed as a DPS item from the [image](${this.afkInfo.reqsImageUrl}) below.\n\nThis is a hard requirement; if you are found not meeting it you will be removed from the run and potentially suspended.`
+
         this.raidStatusMessage.edit({ embeds: [this.mainEmbed] })
         if (this.bot.afkChecks[this.channel.id])
             this.bot.afkChecks[this.channel.id].url = this.raidStatusMessage.url
@@ -760,6 +774,10 @@ class afkCheck {
         //update embeds/messages
         this.mainEmbed.setDescription(`This afk check has been ended.\n${this.keys.length > 0 ? `Thank you to ${this.keys.map(k => `<@!${k}> `)} for popping a ${this.bot.emojis.cache.get(this.afkInfo.keyEmoteID)} for us!\n` : ''}${this.simp ? `Thank you to <@!${this.simp.id}> for being a ViBot SIMP` : ''}If you get disconnected during the run, **JOIN LOUNGE** *then* DM me \`join\` to get back in`)
             .setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
+        
+        if (this.afkInfo.isAdvanced)
+            this.mainEmbed.description += `\n\n**__Advanced Runs__**\nThis is an **advanced run**, meaning there are extended requirements. You must have __at least one__ piece of gear listed as a DPS item from the [image](${this.afkInfo.reqsImageUrl}) below.\n\nThis is a hard requirement; if you are found not meeting it you will be removed from the run and potentially suspended.`
+
         this.leaderEmbed.setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname} at`)
             .setTimestamp();
         this.raidStatusMessage.edit({ content: null, embeds: [this.mainEmbed] }).catch(er => ErrorLogger.log(er, this.bot))
@@ -936,7 +954,7 @@ class afkCheck {
         if (this.afkInfo.newChannel && !this.isVet) {
             this.channel.setPosition(this.afkChannel.position)
         }
-
+        this.mainEmbed.setImage(null);
         this.mainEmbed.setDescription(`This afk check has been aborted`)
             .setFooter(`The afk check has been aborted by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
         this.leaderEmbed.setFooter(`The afk check has been aborted by ${this.message.guild.members.cache.get(this.endedBy.id).nickname} at`)
