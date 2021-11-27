@@ -5,6 +5,7 @@ const cron = require('cron')
 const mysql = require('mysql')
 const express = require('express')
 const https = require('https')
+const http = require('http')
 const bodyParser = require('body-parser')
 const rateLimit = require('express-rate-limit')
 const cookieParser = require('cookie-parser')
@@ -67,7 +68,6 @@ bot.settings = moduleIsAvailable('./guildSettings.json') ? require('./guildSetti
 bot.serverWhiteList = moduleIsAvailable('./data/serverWhiteList.json') ? require('./data/serverWhiteList.json') : {}
 const emojiServers = moduleIsAvailable('./data/emojiServers.json') ? require('./data/emojiServers.json') : {}
 const dbSchemas = require('./data/schemas.json')
-const router = express.Router()
 const app = express();
 const rootCas = require('ssl-root-cas').create();
 require('https').globalAgent.options.ca = rootCas;
@@ -855,225 +855,39 @@ function moduleIsAvailable(path) {
 function startAPI() {
     if (botSettings.api) {
         console.log('api starting')
-        var credentials = {
-            key: fs.readFileSync('./public/privkey.pem', 'utf8'),
-            cert: fs.readFileSync('./public/cert.pem', 'utf8')
-        }
-
-        app.use(bodyParser.urlencoded({ extended: true }));
-        app.use(bodyParser.json());
-        app.use(cookieParser())
-        app.use(cors())
+        var credentials = {}
+        try {
+            credentials.key = fs.readFileSync('C:\\Certbot\\live\\a.vibot.tech\\privkey.pem', 'utf8')
+            credentials.cert = fs.readFileSync('C:\\Certbot\\live\\a.vibot.tech\\cert.pem', 'utf8')
+        } catch (e) { }
 
         const apiLimit = rateLimit({
             windowMs: 1 * 10 * 1000,
             max: 10
         })
+
+        app.use(express.urlencoded({ extended: true }));
+        app.use(express.json());
+        app.use(cookieParser())
+        app.use(cors())
         app.use('/api/', apiLimit)
+        app.use('/api', require('./lib/API'))
 
-        router.get('/', function (req, res) {
-            res.json({ message: 'hooray! welcome to our api!' });
-        });
-
-        router.get('/user/id/:uid', (req, res) => {
-            if (!db) {
-                res.status(401)
-                res.json({ code: 401, message: 'DB Not Initiated' })
-            }
-            let id = req.params.uid
-            if (!id || id == '' || isNaN(id)) {
-                res.status(402)
-                res.json({ code: 402, message: 'UID Invalid' })
-            }
-            db.query(`SELECT * FROM users WHERE id = '${id}'`, (err, rows) => {
-                if (err) return ErrorLogger.log(err, bot)
-                if (!rows || rows.length == 0) {
-                    res.status(403)
-                    res.json({ code: 403, message: 'User not found' })
-                    return
-                }
-                let data = {
-                    id: rows[0].id,
-                    eventruns: rows[0].eventruns,
-                    keypops: rows[0].keypops,
-                    eventpops: rows[0].eventpops,
-                    cultsLead: rows[0].cultsLead,
-                    voidsLead: rows[0].voidsLead,
-                    assists: rows[0].assists,
-                    currentweekCult: rows[0].currentweekCult,
-                    currentweekVoid: rows[0].currentweekVoid,
-                    currentweekAssists: rows[0].currentweekAssists,
-                    solocult: rows[0].solocult,
-                    vialStored: rows[0].vialStored,
-                    vialUsed: rows[0].vialUsed,
-                    cultRuns: rows[0].cultRuns,
-                    voidRuns: rows[0].voidRuns,
-                    isVet: rows[0].isVet,
-                    eventsLead: rows[0].eventsLead,
-                    currentweekEvents: rows[0].currentweekEvents,
-                    o3runs: rows[0].o3runs,
-                    o3leads: rows[0].o3leads,
-                    points: rows[0].points,
-                    lastnitrouse: rows[0].lastnitrouse,
-                    runesused: rows[0].runesused,
-                    currentweeko3: rows[0].currentweeko3,
-                    assistso3: rows[0].assistso3,
-                    currentweekAssistso3: rows[0].currentweekAssistso3,
-                    isRusher: rows[0].isRusher,
-                    veriBlacklisted: rows[0].veriBlacklisted
-                }
-                res.json(data)
-            })
+        app.use((req, res, next) => {
+            let d = new Date();
+            let formatted_date = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+            let log = `[${formatted_date}] ${req.method}:${req.url} ${res.statusCode}`;
+            console.log(log);
+            next();
         })
 
-        router.get('/user/nick/:uid/:guild', (req, res) => {
-            if (!bot) {
-                res.status(400)
-                return res.json(JSON.stringify('Bot not instantiated'))
-            }
-            if (!db) {
-                res.status(401)
-                return res.json(JSON.stringify('DB not initiated'))
-            }
-            let guildid = req.params.guild
-            if (!guildid || isNaN(guildid) || guildid == '') {
-                res.status(402)
-                return res.json({ code: 402, message: 'Guild ID Invalid' })
-            }
-            let uid = req.params.uid
-            if (!uid || uid == '') {
-                res.status(402)
-                return res.json({ code: 402, message: 'UID Invalid' })
-            }
-            let guild = bot.guilds.cache.get(guildid)
-            if (!guild) {
-                res.status(403)
-                return res.json({ code: 403, message: 'Guild Not Found' })
-            }
-            let member = guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(uid.toLowerCase()));
-            if (!member) {
-                res.status(403)
-                return res.json({ code: 403, message: 'User not found' })
-            }
-            db.query(`SELECT * FROM users WHERE id = '${member.id}'`, (err, rows) => {
-                if (err) return ErrorLogger.log(err, bot)
-                if (!rows || rows.length == 0) {
-                    res.status(403)
-                    res.json({ code: 403, message: 'User not found' })
-                    return
-                }
-                let data = {
-                    nick: member.nickname,
-                    id: rows[0].id,
-                    eventruns: rows[0].eventruns,
-                    keypops: rows[0].keypops,
-                    eventpops: rows[0].eventpops,
-                    cultsLead: rows[0].cultsLead,
-                    voidsLead: rows[0].voidsLead,
-                    assists: rows[0].assists,
-                    currentweekCult: rows[0].currentweekCult,
-                    currentweekVoid: rows[0].currentweekVoid,
-                    currentweekAssists: rows[0].currentweekAssists,
-                    solocult: rows[0].solocult,
-                    vialStored: rows[0].vialStored,
-                    vialUsed: rows[0].vialUsed,
-                    cultRuns: rows[0].cultRuns,
-                    voidRuns: rows[0].voidRuns,
-                    isVet: rows[0].isVet,
-                    eventsLead: rows[0].eventsLead,
-                    currentweekEvents: rows[0].currentweekEvents,
-                    o3runs: rows[0].o3runs,
-                    o3leads: rows[0].o3leads,
-                    points: rows[0].points,
-                    lastnitrouse: rows[0].lastnitrouse,
-                    runesused: rows[0].runesused,
-                    currentweeko3: rows[0].currentweeko3,
-                    assistso3: rows[0].assistso3,
-                    currentweekAssistso3: rows[0].currentweekAssistso3,
-                    isRusher: rows[0].isRusher,
-                    veriBlacklisted: rows[0].veriBlacklisted
-                }
-                res.json(data)
-            })
-        })
-
-        router.get('/afkchecks', (req, res) => {
-            res.json(bot.afkChecks)
-        })
-
-        router.post('/currentweek/update', (req, res) => {
-            if (!req.body) {
-                res.status(400)
-                return res.json(JSON.stringify('No body'))
-            }
-            if (!req.body.guildid) {
-                res.status(400)
-                return res.json(JSON.stringify('No guildid'))
-            }
-            if (!req.body.currentweektype) {
-                res.status(400)
-                return res.json(JSON.stringify('No currentweektype'))
-            }
-            let found = false
-            for (let i of bot.guilds.cache.keys()) if (i == req.body.guildid) found = true
-            if (!found) {
-                res.status(400)
-                return res.json(JSON.stringify('Bad guildid'))
-            }
-            let guild = bot.guilds.cache.get(req.body.guildid)
-            let currentweektypes = ['currentweek', 'eventcurrentweek', 'parsecurrentweek']
-            let index = req.body.currentweektype
-            if (isNaN(parseInt(index)) || parseInt(index) >= currentweektypes.length) {
-                res.status(400)
-                return res.json(JSON.stringify('Bad currentweektype'))
-            }
-            let currentweektype = currentweektypes[parseInt(index)]
-            if (!bot.settings[guild.id].backend[currentweektype]) {
-                res.status(403)
-                return res.json(JSON.stringify('Currentweek type disabled'))
-            }
-            switch (parseInt(index)) {
-                case 0:
-                    currentWeek.update(guild, bot.dbs[guild.id], bot)
-                    res.status(200)
-                    return res.json(JSON.stringify('Success'))
-                case 1:
-                    ecurrentWeek.update(guild, bot.dbs[guild.id], bot)
-                    res.status(200)
-                    return res.json(JSON.stringify('Success'))
-                case 2:
-                    pcurrentWeek.update(guild, bot.dbs[guild.id], bot)
-                    res.status(200)
-                    return res.json(JSON.stringify('Success'))
-                default:
-                    res.status(404)
-                    return res.json(JSON.stringify('Default statement hit on currentweek type'))
-            }
-        })
-
-        app.use('/api', router)
-        app.use((err, req, res, next) => {
-            switch (err.message) {
-                case 'NoCodeProvided':
-                    return res.status(400).send({
-                        status: 'ERROR',
-                        error: err.message,
-                    });
-                default:
-                    return res.status(500).send({
-                        status: 'ERROR',
-                        error: err.message,
-                    });
-            }
-        });
-        app.use((err, req, res) => {
-            console.log(req)
-        })
-
-        const httpsServer = https.createServer(credentials, app)
-
-        const port = botSettings.apiPort //move to settings soon:tm:
-
+        const httpsServer = credentials.key && credentials.cert ? https.createServer(credentials, app) : http.createServer(app)
+        const port = botSettings.apiPort
         httpsServer.listen(port)
     }
+}
+
+
+module.exports = {
+    bot
 }

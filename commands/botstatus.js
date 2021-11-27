@@ -80,6 +80,7 @@ module.exports = {
     StatusEmbed,
     async checkDataBase() {
         return new Promise((res) => {
+            if (!DB) DB = require('../index').bot.dbs['343704644712923138']
             DB.query('SELECT id FROM users LIMIT 1', (err, rows) => {
                 if (!err || (rows && rows.length > 0)) return res(true)
                 else return res(false)

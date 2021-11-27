@@ -126,6 +126,7 @@ module.exports = {
                                 channel.embed.fields[0].value = '**Open**'
                                 channel.message.edit({ content: '@here', embeds: [channel.embed] })
 
+                                if (!bot.afkChecks[channel.channelId]) bot.afkChecks[channel.channelId] = {}
                                 bot.afkChecks[channel.channelId].active = true;
                                 bot.afkChecks[channel.channelId].started = Date.now();
                                 fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot) })
@@ -184,6 +185,7 @@ module.exports = {
                     channel.embed.author.text = `${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s ${name}`
                     channel.message.edit({ embeds: [channel.embed] })
 
+                    if (!bot.afkChecks[channel.channelId].runType) bot.afkChecks[channel.channelId].runType = {}
                     bot.afkChecks[channel.channelId].runType.runType = name;
                     bot.afkChecks[channel.channelId].runType.runName = name;
                     fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot) })
