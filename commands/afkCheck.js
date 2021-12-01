@@ -325,7 +325,7 @@ class afkCheck {
         this.mainEmbed.description = this.mainEmbed.description.replace('{voicechannel}', `${this.channel}`)
 
         if (this.afkInfo.isAdvanced)
-            this.mainEmbed.description += `\n\n**__Advanced Runs__**\nThis is an **advanced run**, meaning there are extended requirements you **MUST** meet. If you are caught not meeting these requirements, you will be removed from the run and suspended.`
+            this.mainEmbed.description += `\n\n**__Advanced Runs__**\nThis is an **advanced run**, meaning there are extended requirements you **MUST** meet. You must be both **__8/8__** and follow the requirements sheet listed below.\n\nIf you are caught not meeting these requirements, you will be removed from the run and suspended.`
 
         this.raidStatusMessage.edit({ embeds: [this.mainEmbed] })
         if (this.bot.afkChecks[this.channel.id])
@@ -780,7 +780,7 @@ class afkCheck {
             .setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
         
         if (this.afkInfo.isAdvanced)
-            this.mainEmbed.description += `\n\n**__Advanced Runs__**\nThis is an **advanced run**, meaning there are extended requirements you **MUST** meet. If you are caught not meeting these requirements, you will be removed from the run and suspended.`
+            this.mainEmbed.description += `\n\n**__Advanced Runs__**\nThis is an **advanced run**, meaning there are extended requirements you **MUST** meet. You must be both **__8/8__** and follow the requirements sheet listed below.\n\nIf you are caught not meeting these requirements, you will be removed from the run and suspended.`
 
         this.leaderEmbed.setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname} at`)
             .setTimestamp();
