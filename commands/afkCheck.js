@@ -274,9 +274,11 @@ class afkCheck {
                 break;
         }
         if (this.afkInfo.startDelay > 0) {
+            const avsan = /^[aeiou]/i.test(this.afkInfo.runName) ? 'An' : 'A';
+
             let embed = new Discord.MessageEmbed()
                 .setColor(this.afkInfo.embed.color)
-                .setDescription(`A \`${this.afkInfo.runName}\`${flag ? `in (${flag})` : ''} will begin in ${Math.round(this.afkInfo.startDelay / 1000)} seconds. ${this.afkInfo.twoPhase ? `Only reactables will be moved in at first. After everything is confirmed, the channel will open up.` : `Be prepared to join \`${this.channel.name}\``}`)
+                .setDescription(`${avsan} \`${this.afkInfo.runName}\`${flag ? `in (${flag})` : ''} will begin in ${Math.round(this.afkInfo.startDelay / 1000)} seconds. ${this.afkInfo.twoPhase ? `Only reactables will be moved in at first. After everything is confirmed, the channel will open up.` : `Be prepared to join \`${this.channel.name}\``}`)
             if (this.afkInfo.embed.thumbnail) embed.setThumbnail(this.afkInfo.embed.thumbnail)
             this.raidStatusMessage = await this.raidStatus.send({
                 content: `${this.settings.roles[this.afkInfo.pingRole] ? `<@&${this.settings.roles[this.afkInfo.pingRole]}> @here` : `@here`}, ${this.afkInfo.runName}${flag ? ` (${flag})` : ''}. ${this.afkInfo.twoPhase ? `Only reactables will be moved in at first. After everything is confirmed, the channel will open up.` : ''}`,
@@ -309,9 +311,11 @@ class afkCheck {
         this.leaderReactionCollector = new Discord.ReactionCollector(this.leaderEmbedMessage, { filter: (r, u) => !u.bot })
         this.leaderReactionCollector.on('collect', (r, u) => this.leaderReactionHandler(r, u))
 
+        const avsan = /^[aeiou]/i.test(this.afkInfo.runName) ? 'An' : 'A';
+
         //send messages
         this.mainEmbed = new Discord.MessageEmbed(this.afkInfo.embed);
-        this.mainEmbed.setAuthor(`A ${this.afkInfo.runName} Has Been Started in ${this.channel.name}`)
+        this.mainEmbed.setAuthor(`${avsan} ${this.afkInfo.runName} Has Been Started in ${this.channel.name}`)
             .setColor(this.afkInfo.embed.color)
             .setFooter(`Time Remaining: ${Math.floor(this.time / 60)} minutes and ${this.time % 60} seconds`)
             .setTimestamp(Date.now())
@@ -321,7 +325,7 @@ class afkCheck {
         this.mainEmbed.description = this.mainEmbed.description.replace('{voicechannel}', `${this.channel}`)
 
         if (this.afkInfo.isAdvanced)
-            this.mainEmbed.description += `\n\n**__Advanced Runs__**\nThis is an **advanced run**, meaning there are extended requirements. You must have __at least one__ piece of gear listed as a DPS item from the [image](${this.afkInfo.reqsImageUrl}) below.\n\nThis is a hard requirement; if you are found not meeting it you will be removed from the run and potentially suspended.`
+            this.mainEmbed.description += `\n\n**__Advanced Runs__**\nThis is an **advanced run**, meaning there are extended requirements you **MUST** meet. If you are caught not meeting these requirements, you will be removed from the run and suspended.`
 
         this.raidStatusMessage.edit({ embeds: [this.mainEmbed] })
         if (this.bot.afkChecks[this.channel.id])
@@ -772,11 +776,11 @@ class afkCheck {
         }
 
         //update embeds/messages
-        this.mainEmbed.setDescription(`This afk check has been ended.\n${this.keys.length > 0 ? `Thank you to ${this.keys.map(k => `<@!${k}> `)} for popping a ${this.bot.emojis.cache.get(this.afkInfo.keyEmoteID)} for us!\n` : ''}${this.simp ? `Thank you to <@!${this.simp.id}> for being a ViBot SIMP` : ''}If you get disconnected during the run, **JOIN LOUNGE** *then* DM me \`join\` to get back in`)
+        this.mainEmbed.setDescription(`This afk check has been ended.\n${this.keys.length > 0 ? `Thank you to ${this.keys.map(k => `<@!${k}> `)} for popping a ${this.bot.emojis.cache.get(this.afkInfo.keyEmoteID)} for us!\n` : ''}${this.simp ? `Thank you to <@!${this.simp.id}> for being a ViBot SIMP` : ''}If you get disconnected during the run, **JOIN LOUNGE** *then* DM ${this.bot.user} \`join\` to get back in`)
             .setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
         
         if (this.afkInfo.isAdvanced)
-            this.mainEmbed.description += `\n\n**__Advanced Runs__**\nThis is an **advanced run**, meaning there are extended requirements. You must have __at least one__ piece of gear listed as a DPS item from the [image](${this.afkInfo.reqsImageUrl}) below.\n\nThis is a hard requirement; if you are found not meeting it you will be removed from the run and potentially suspended.`
+            this.mainEmbed.description += `\n\n**__Advanced Runs__**\nThis is an **advanced run**, meaning there are extended requirements you **MUST** meet. If you are caught not meeting these requirements, you will be removed from the run and suspended.`
 
         this.leaderEmbed.setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname} at`)
             .setTimestamp();

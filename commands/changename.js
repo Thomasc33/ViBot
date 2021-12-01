@@ -33,13 +33,15 @@ module.exports = {
                 await this.change(message, member, args.shift(), args, bot, settings, staff);
             }
         } catch (err) {
-            message.channel.send(err.toString());
+            message.channel.send({ embeds: [new Discord.MessageEmbed().setDescription(err.toString())] });
         }
     },
     async change(message, member, altName, args, bot, settings, staff) {
-        return new Promise(async (resolve, reject) => {
+        return new Promise(async(resolve, reject) => {
             const own = message.member == member;
             altName = altName.replace(/[^a-z]/gi, '');
+            if (!altName)
+                return reject(`An IGN was not provided.`);
             if (!staff && altName.length > 10)
                 return reject(`An IGN cannot be more than 10 characters under normal circumstances. If you are an exception, please contact a Security+ staff member.`);
 
@@ -97,14 +99,14 @@ module.exports = {
             }
             //new name length greater than 32?
             if ([altName, ...names.slice(0, idx), ...names.slice(idx + 1)].join(' | ').length > 32)
-                return message.channel.send(`Changing ${own ? 'your' : '<@!' + member.id + ">'s"} name from \`${names[idx]}\` to \`${userPrefix}${altName}\` will exceed the maximum nickname length of 32. Please${own ? ' ' : ' ask staff to '}remove an alt before proceeding.`);
+                return reject(`Changing ${own ? 'your' : '<@!' + member.id + ">'s"} name from \`${names[idx]}\` to \`${userPrefix}${altName}\` will exceed the maximum nickname length of 32. Please${own ? ' ' : ' ask staff to '}remove an alt before proceeding.`);
 
             //anyone in the server with the name requested? Warn if so, but do not fail outright
             const dupe = message.guild.members.cache.find(m => m.nickname && m != member && m.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(altName.toLowerCase()));
             if (dupe) {
                 if (!staff)
                     return reject(`There is already a user with the IGN ${altName} in the server. If this is in fact your name, please contact a Security+ staff member to resolve the issue immediately.`);
-                await message.channel.send(`Warning: Member ${dupe} already has the IGN ${altName}.`);
+                await message.channel.send({ embeds: [new Discord.MessageEmbed().setDescription(`Warning: Member ${dupe} already has the IGN ${altName}.`)] });
 
             }
             const { historyName, history } = data;
@@ -113,7 +115,7 @@ module.exports = {
     }
 }
 
-const nameHistory = async (altName, names) => {
+const nameHistory = async(altName, names) => {
     let historyName;
     let history;
     let memberPrefix = '';
@@ -131,8 +133,8 @@ const nameHistory = async (altName, names) => {
     } catch (err) { console.log(err) }
 }
 
-const changeName = async (message, bot, settings, member, names, idx, altName, userPrefix, image, historyName, history) => {
-    return new Promise(async (resolve, reject) => {
+const changeName = async(message, bot, settings, member, names, idx, altName, userPrefix, image, historyName, history) => {
+    return new Promise(async(resolve, reject) => {
         const oldName = names[idx];
         names[idx] = altName;
         //if username is `Husky#1234` and ign is Husky, name change => husky, if name is huskY and ign is huskY, name change => husky
@@ -146,8 +148,8 @@ const changeName = async (message, bot, settings, member, names, idx, altName, u
             names[idx] = altName;
             names[idx] = names[idx].slice(0, i) + names[idx][i].toUpperCase() + names[idx].slice(i + 1);
         }
-
-        const confirm = await message.channel.send(`Are you sure you want to change ${member}'s name from \`${oldName || ' '}\` to \`${names[idx]}\`?`);
+        const confirmEmbed = new Discord.MessageEmbed().setDescription(`Are you sure you want to change ${member}'s name from \`${oldName || ' '}\` to \`${names[idx]}\`?`);
+        const confirm = await message.channel.send({ embeds: [confirmEmbed] });
         try {
             if (await confirm.confirm(message.author.id)) {
                 const oldNickname = member.nickname;
@@ -180,9 +182,11 @@ const changeName = async (message, bot, settings, member, names, idx, altName, u
                 }
                 message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });
                 confirm.react('✅')
-                confirm.edit(`Successfully changed name for ${member} from \`${oldName || ' '}\` to \`${names[idx]}\`.`);
+                confirmEmbed.setDescription(`Successfully changed name for ${member} from \`${oldName || ' '}\` to \`${names[idx]}\`.`)
+                confirm.edit({ embeds: [confirmEmbed] });
             } else {
-                confirm.edit(`Change name cancelled for ${member}.`);
+                confirmEmbed.setDescription(`Change name cancelled for ${member}.`);
+                confirm.edit({ embeds: [confirmEmbed] });
             }
             resolve();
         } catch (err) {
