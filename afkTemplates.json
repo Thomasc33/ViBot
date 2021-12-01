@@ -21,8 +21,7 @@
             "timeLimit": 360,
             "keyCount": 1,
             "earlyLocationCost": 20,
-            "earlyLocationReacts": [
-                {
+            "earlyLocationReacts": [{
                     "emoteID": "720404844187353099",
                     "pointsGiven": 2,
                     "limit": 3,
@@ -51,7 +50,7 @@
             ],
             "embed": {
                 "color": "#ff0000",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:LostHallsKey:701491230260985877>\nTo indicate your class or gear choices, react with <:Warrior:723018431489900595> <:Paladin:723018431296831539> <:Knight:723018431598952498> <:Wizard:723018431573655643> <:UTMarbleSeal:720401067086446672> <:UTTomeoftheMushroomTribes:720404621331267697>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:720404844187353099>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
+                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:LostHallsKey:701491230260985877>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:720404844187353099>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230332157972.png?v=1",
                 "removeThumbnail": true
             },
@@ -61,7 +60,7 @@
             "runType": "Advanced Cult",
             "runName": "Advanced Cult",
             "symbol": "ac",
-            "reqsImageUrl": "https://cdn.discordapp.com/attachments/556934789953749002/776516701272539146/vetreqs.png",
+            "reqsImageUrl": "https://cdn.discordapp.com/attachments/628292030119804959/915353084497129522/pub_advanced_reqs_v1no_squares.png",
             "keyEmoteID": "701491230260985877",
             "pingRole": "cultping",
             "keyLogName": "keypops",
@@ -78,8 +77,7 @@
             "timeLimit": 360,
             "keyCount": 1,
             "earlyLocationCost": 20,
-            "earlyLocationReacts": [
-                {
+            "earlyLocationReacts": [{
                     "emoteID": "720404844187353099",
                     "pointsGiven": 2,
                     "limit": 3,
@@ -108,7 +106,7 @@
             ],
             "embed": {
                 "color": "#ff0000",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:LostHallsKey:701491230260985877>\nTo indicate your class or gear choices, react with <:Warrior:723018431489900595> <:Paladin:723018431296831539> <:Knight:723018431598952498> <:Wizard:723018431573655643> <:UTMarbleSeal:720401067086446672> <:UTTomeoftheMushroomTribes:720404621331267697>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:720404844187353099>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
+                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:LostHallsKey:701491230260985877>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:720404844187353099>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230332157972.png?v=1",
                 "removeThumbnail": true
             },
@@ -136,16 +134,14 @@
             "timeLimit": 360,
             "keyCount": 1,
             "earlyLocationCost": 25,
-            "earlyLocationReacts": [
-                {
-                    "emoteID": "723019533597802507",
-                    "pointsGiven": 1,
-                    "limit": 1,
-                    "shortName": "armorbreak",
-                    "noConfirm": false,
-                    "noLocation": false
-                }
-            ],
+            "earlyLocationReacts": [{
+                "emoteID": "723019533597802507",
+                "pointsGiven": 1,
+                "limit": 1,
+                "shortName": "armorbreak",
+                "noConfirm": false,
+                "noLocation": false
+            }],
             "reacts": [
                 "723018431489900595",
                 "723018431296831539",
@@ -157,7 +153,7 @@
             ],
             "embed": {
                 "color": "#2f075c",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:701491230260985877> or <:Vial:701491230567039018>\nTo indicate your class or gear choices, react with <:Warrior:723018431489900595> <:Paladin:723018431296831539> <:Knight:723018431598952498> <:Wizard:723018431573655643> <:UTMarbleSeal:720401067086446672> <:UTTomeoftheMushroomTribes:720404621331267697>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
+                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:701491230260985877> or <:Vial:701491230567039018>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230210523247.png?v=1",
                 "removeThumbnail": true
             },
@@ -167,7 +163,7 @@
             "runType": "Advanced Void",
             "runName": "Advanced Void",
             "symbol": "av",
-            "reqsImageUrl": "https://cdn.discordapp.com/attachments/556934789953749002/776516701272539146/vetreqs.png",
+            "reqsImageUrl": "https://cdn.discordapp.com/attachments/628292030119804959/915353084497129522/pub_advanced_reqs_v1no_squares.png",
             "keyEmoteID": "701491230260985877",
             "vialEmoteID": "701491230567039018",
             "pingRole": "voidping",
@@ -185,16 +181,14 @@
             "timeLimit": 360,
             "keyCount": 1,
             "earlyLocationCost": 25,
-            "earlyLocationReacts": [
-                {
-                    "emoteID": "723019533597802507",
-                    "pointsGiven": 1,
-                    "limit": 1,
-                    "shortName": "armorbreak",
-                    "noConfirm": false,
-                    "noLocation": false
-                }
-            ],
+            "earlyLocationReacts": [{
+                "emoteID": "723019533597802507",
+                "pointsGiven": 1,
+                "limit": 1,
+                "shortName": "armorbreak",
+                "noConfirm": false,
+                "noLocation": false
+            }],
             "reacts": [
                 "723018431489900595",
                 "723018431296831539",
@@ -206,7 +200,7 @@
             ],
             "embed": {
                 "color": "#2f075c",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:701491230260985877> or <:Vial:701491230567039018>\nTo indicate your class or gear choices, react with <:Warrior:723018431489900595> <:Paladin:723018431296831539> <:Knight:723018431598952498> <:Wizard:723018431573655643> <:UTMarbleSeal:720401067086446672> <:UTTomeoftheMushroomTribes:720404621331267697>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
+                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:701491230260985877> or <:Vial:701491230567039018>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230210523247.png?v=1",
                 "removeThumbnail": true
             },
@@ -234,8 +228,7 @@
             "timeLimit": 360,
             "keyCount": 1,
             "earlyLocationCost": 30,
-            "earlyLocationReacts": [
-                {
+            "earlyLocationReacts": [{
                     "emoteID": "723018431275859969",
                     "pointsGiven": 2,
                     "limit": 3,
@@ -276,7 +269,7 @@
             ],
             "embed": {
                 "color": "#2f075c",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:701491230260985877> or <:Vial:701491230567039018>\nTo indicate your class or gear choices, react with <:Warrior:723018431489900595> <:Paladin:723018431296831539> <:Knight:723018431598952498> <:Wizard:723018431573655643> <:UTMarbleSeal:720401067086446672> <:UTTomeoftheMushroomTribes:720404621331267697>\nIf you are bringing an 8/8 mystic for the skip, react with <:Mystic:723018431275859969>\nIf you are bringing an 8/8 trickster with a Brain for the skip, react with <:STBrainoftheGolem:720263764309704704>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
+                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:701491230260985877> or <:Vial:701491230567039018>\nIf you are bringing an 8/8 mystic for the skip, react with <:Mystic:723018431275859969>\nIf you are bringing an 8/8 trickster with a Brain for the skip, react with <:STBrainoftheGolem:720263764309704704>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230391140453.png?v=1",
                 "removeThumbnail": true
             },
@@ -286,7 +279,7 @@
             "runType": "Advanced Full-Skip Void",
             "runName": "Advanced Full-Skip Void",
             "symbol": "af",
-            "reqsImageUrl": "https://cdn.discordapp.com/attachments/556934789953749002/776516701272539146/vetreqs.png",
+            "reqsImageUrl": "https://cdn.discordapp.com/attachments/628292030119804959/915353084497129522/pub_advanced_reqs_v1no_squares.png",
             "keyEmoteID": "701491230260985877",
             "vialEmoteID": "701491230567039018",
             "pingRole": "voidping",
@@ -304,8 +297,7 @@
             "timeLimit": 360,
             "keyCount": 1,
             "earlyLocationCost": 30,
-            "earlyLocationReacts": [
-                {
+            "earlyLocationReacts": [{
                     "emoteID": "723018431275859969",
                     "pointsGiven": 2,
                     "limit": 3,
@@ -346,7 +338,7 @@
             ],
             "embed": {
                 "color": "#2f075c",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:701491230260985877> or <:Vial:701491230567039018>\nTo indicate your class or gear choices, react with <:Warrior:723018431489900595> <:Paladin:723018431296831539> <:Knight:723018431598952498> <:Wizard:723018431573655643> <:UTMarbleSeal:720401067086446672> <:UTTomeoftheMushroomTribes:720404621331267697>\nIf you are bringing an 8/8 mystic for the skip, react with <:Mystic:723018431275859969>\nIf you are bringing an 8/8 trickster with a Brain for the skip, react with <:STBrainoftheGolem:720263764309704704>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
+                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:701491230260985877> or <:Vial:701491230567039018>\nIf you are bringing an 8/8 mystic for the skip, react with <:Mystic:723018431275859969>\nIf you are bringing an 8/8 trickster with a Brain for the skip, react with <:STBrainoftheGolem:720263764309704704>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230391140453.png?v=1",
                 "removeThumbnail": true
             },
@@ -373,8 +365,7 @@
             "timeLimit": 360,
             "keyCount": 1,
             "earlyLocationCost": 30,
-            "earlyLocationReacts": [
-                {
+            "earlyLocationReacts": [{
                     "emoteID": "720404844187353099",
                     "pointsGiven": 2,
                     "limit": 3,
@@ -402,7 +393,7 @@
             ],
             "embed": {
                 "color": "#ff0000",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:LostHallsKey:701491230260985877>\nTo indicate your class or gear choices, react with <:Warrior:723018431489900595> <:Paladin:723018431296831539> <:Knight:723018431598952498> <:Wizard:723018431573655643> <:UTMarbleSeal:720401067086446672> <:UTTomeoftheMushroomTribes:720404621331267697> \nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:720404844187353099>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
+                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:LostHallsKey:701491230260985877>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:720404844187353099>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230332157972.png?v=1",
                 "removeThumbnail": true
             },
@@ -427,65 +418,11 @@
             "postAfkCheck": false,
             "twoPhase": true,
             "startDelay": 10000,
-            "vcCap": 50,
+            "vcCap": 45,
             "timeLimit": 360,
             "keyCount": 1,
             "earlyLocationCost": 20,
-            "earlyLocationReacts": [
-                {
-                    "emoteID": "720404844187353099",
-                    "pointsGiven": 2,
-                    "limit": 3,
-                    "shortName": "rusher",
-                    "requiredRole": "rusher"
-                },
-                {
-                    "emoteID": "723019533597802507",
-                    "pointsGiven": 1,
-                    "limit": 1,
-                    "shortName": "armorbreak"
-                }
-            ],
-            "reacts": [
-                "723018431489900595",
-                "723018431296831539",
-                "723018431598952498",
-                "723018431573655643",
-                "720401067086446672",
-                "720404621331267697",
-                "723018431275728918"
-            ],
-            "embed": {
-                "color": "#ff0000",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:LostHallsKey:701491230260985877>\nTo indicate your class or gear choices, react with <:Warrior:723018431489900595> <:Paladin:723018431296831539> <:Knight:723018431598952498> <:Wizard:723018431573655643> <:UTMarbleSeal:720401067086446672> <:UTTomeoftheMushroomTribes:720404621331267697>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:720404844187353099>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
-                "thumbnail": "https://cdn.discordapp.com/emojis/701491230332157972.png?v=1",
-                "removeThumbnail": true
-            },
-            "font-color": "#000000"
-        },
-        "advancedCult": {
-            "runType": "Advanced Cult",
-            "runName": "Advanced Cult",
-            "symbol": "ac",
-            "reqsImageUrl": "https://cdn.discordapp.com/attachments/556934789953749002/776516701272539146/vetreqs.png",
-            "keyEmoteID": "701491230260985877",
-            "pingRole": "cultping",
-            "keyLogName": "keypops",
-            "runLogName": "cultRuns",
-            "headcountEmote": "701491230332157972",
-            "headcountOnAfk": false,
-            "isSplit": false,
-            "newChannel": true,
-            "vialReact": false,
-            "postAfkCheck": false,
-            "twoPhase": true,
-            "startDelay": 10000,
-            "vcCap": 30,
-            "timeLimit": 360,
-            "keyCount": 1,
-            "earlyLocationCost": 20,
-            "earlyLocationReacts": [
-                {
+            "earlyLocationReacts": [{
                     "emoteID": "720404844187353099",
                     "pointsGiven": 2,
                     "limit": 3,
@@ -514,7 +451,63 @@
             ],
             "embed": {
                 "color": "#ff0000",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:LostHallsKey:701491230260985877>\nTo indicate your class or gear choices, react with <:Warrior:723018431489900595> <:Paladin:723018431296831539> <:Knight:723018431598952498> <:Wizard:723018431573655643> <:UTMarbleSeal:720401067086446672> <:UTTomeoftheMushroomTribes:720404621331267697>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:720404844187353099>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
+                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:LostHallsKey:701491230260985877>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:720404844187353099>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
+                "thumbnail": "https://cdn.discordapp.com/emojis/701491230332157972.png?v=1",
+                "removeThumbnail": true
+            },
+            "font-color": "#000000"
+        },
+        "advancedCult": {
+            "runType": "Advanced Cult",
+            "runName": "Advanced Cult",
+            "symbol": "ac",
+            "reqsImageUrl": "https://cdn.discordapp.com/attachments/628292030119804959/915353084497129522/pub_advanced_reqs_v1no_squares.png",
+            "keyEmoteID": "701491230260985877",
+            "pingRole": "cultping",
+            "keyLogName": "keypops",
+            "runLogName": "cultRuns",
+            "headcountEmote": "701491230332157972",
+            "headcountOnAfk": false,
+            "isSplit": false,
+            "newChannel": true,
+            "vialReact": false,
+            "postAfkCheck": false,
+            "twoPhase": true,
+            "startDelay": 10000,
+            "vcCap": 30,
+            "timeLimit": 360,
+            "keyCount": 1,
+            "earlyLocationCost": 20,
+            "earlyLocationReacts": [{
+                    "emoteID": "720404844187353099",
+                    "pointsGiven": 2,
+                    "limit": 3,
+                    "shortName": "rusher",
+                    "requiredRole": "rusher",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emoteID": "723019533597802507",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "armorbreak",
+                    "noConfirm": false,
+                    "noLocation": false
+                }
+            ],
+            "reacts": [
+                "723018431489900595",
+                "723018431296831539",
+                "723018431598952498",
+                "723018431573655643",
+                "720401067086446672",
+                "720404621331267697",
+                "723018431275728918"
+            ],
+            "embed": {
+                "color": "#ff0000",
+                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:LostHallsKey:701491230260985877>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:720404844187353099>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230332157972.png?v=1",
                 "removeThumbnail": true
             },
@@ -542,14 +535,14 @@
             "timeLimit": 360,
             "keyCount": 1,
             "earlyLocationCost": 25,
-            "earlyLocationReacts": [
-                {
-                    "emoteID": "723019533597802507",
-                    "pointsGiven": 1,
-                    "limit": 1,
-                    "shortName": "armorbreak"
-                }
-            ],
+            "earlyLocationReacts": [{
+                "emoteID": "723019533597802507",
+                "pointsGiven": 1,
+                "limit": 1,
+                "shortName": "armorbreak",
+                "noConfirm": false,
+                "noLocation": false
+            }],
             "reacts": [
                 "723018431489900595",
                 "723018431296831539",
@@ -561,7 +554,7 @@
             ],
             "embed": {
                 "color": "#2f075c",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:701491230260985877> or <:Vial:701491230567039018>\nTo indicate your class or gear choices, react with <:Warrior:723018431489900595> <:Paladin:723018431296831539> <:Knight:723018431598952498> <:Wizard:723018431573655643> <:UTMarbleSeal:720401067086446672> <:UTTomeoftheMushroomTribes:720404621331267697>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
+                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:701491230260985877> or <:Vial:701491230567039018>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230210523247.png?v=1",
                 "removeThumbnail": true
             },
@@ -571,7 +564,7 @@
             "runType": "Advanced Void",
             "runName": "Advanced Void",
             "symbol": "av",
-            "reqsImageUrl": "https://cdn.discordapp.com/attachments/556934789953749002/776516701272539146/vetreqs.png",
+            "reqsImageUrl": "https://cdn.discordapp.com/attachments/628292030119804959/915353084497129522/pub_advanced_reqs_v1no_squares.png",
             "keyEmoteID": "701491230260985877",
             "vialEmoteID": "701491230567039018",
             "pingRole": "voidping",
@@ -589,16 +582,14 @@
             "timeLimit": 360,
             "keyCount": 1,
             "earlyLocationCost": 25,
-            "earlyLocationReacts": [
-                {
-                    "emoteID": "723019533597802507",
-                    "pointsGiven": 1,
-                    "limit": 1,
-                    "shortName": "armorbreak",
-                    "noConfirm": false,
-                    "noLocation": false
-                }
-            ],
+            "earlyLocationReacts": [{
+                "emoteID": "723019533597802507",
+                "pointsGiven": 1,
+                "limit": 1,
+                "shortName": "armorbreak",
+                "noConfirm": false,
+                "noLocation": false
+            }],
             "reacts": [
                 "723018431489900595",
                 "723018431296831539",
@@ -610,7 +601,7 @@
             ],
             "embed": {
                 "color": "#2f075c",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:701491230260985877> or <:Vial:701491230567039018>\nTo indicate your class or gear choices, react with <:Warrior:723018431489900595> <:Paladin:723018431296831539> <:Knight:723018431598952498> <:Wizard:723018431573655643> <:UTMarbleSeal:720401067086446672> <:UTTomeoftheMushroomTribes:720404621331267697>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
+                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:701491230260985877> or <:Vial:701491230567039018>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230210523247.png?v=1",
                 "removeThumbnail": true
             },
@@ -638,72 +629,7 @@
             "timeLimit": 360,
             "keyCount": 1,
             "earlyLocationCost": 30,
-            "earlyLocationReacts": [
-                {
-                    "emoteID": "723018431275859969",
-                    "pointsGiven": 2,
-                    "limit": 3,
-                    "shortName": "mystic",
-                    "checkRealmEye": {
-                        "class": "mystic",
-                        "mheal": "85",
-                        "orb": "2"
-                    }
-                },
-                {
-                    "emoteID": "720263764309704704",
-                    "pointsGiven": 2,
-                    "limit": 3,
-                    "shortName": "brain"
-                },
-                {
-                    "emoteID": "723019533597802507",
-                    "pointsGiven": 1,
-                    "limit": 1,
-                    "shortName": "armorbreak"
-                }
-            ],
-            "reacts": [
-                "723018431489900595",
-                "723018431296831539",
-                "723018431598952498",
-                "723018431573655643",
-                "720401067086446672",
-                "720404621331267697",
-                "723018431275728918"
-            ],
-            "embed": {
-                "color": "#2f075c",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:701491230260985877> or <:Vial:701491230567039018>\nTo indicate your class or gear choices, react with <:Warrior:723018431489900595> <:Paladin:723018431296831539> <:Knight:723018431598952498> <:Wizard:723018431573655643> <:UTMarbleSeal:720401067086446672> <:UTTomeoftheMushroomTribes:720404621331267697>\nIf you are bringing an 8/8 mystic for the skip, react with <:Mystic:723018431275859969>\nIf you are bringing an 8/8 trickster with a Brain for the skip, react with <:STBrainoftheGolem:720263764309704704>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
-                "thumbnail": "https://cdn.discordapp.com/emojis/701491230391140453.png?v=1",
-                "removeThumbnail": true
-            },
-            "font-color": "#eeeeee"
-        },
-        "advancedFullSkipVoid": {
-            "runType": "Advanced Full-Skip Void",
-            "runName": "Advanced Full-Skip Void",
-            "symbol": "af",
-            "reqsImageUrl": "https://cdn.discordapp.com/attachments/556934789953749002/776516701272539146/vetreqs.png",
-            "keyEmoteID": "701491230260985877",
-            "vialEmoteID": "701491230567039018",
-            "pingRole": "voidping",
-            "keyLogName": "keypops",
-            "runLogName": "voidRuns",
-            "headcountEmote": "701491230391140453",
-            "headcountOnAfk": false,
-            "isSplit": false,
-            "newChannel": true,
-            "vialReact": true,
-            "postAfkCheck": false,
-            "twoPhase": true,
-            "startDelay": 10000,
-            "vcCap": 30,
-            "timeLimit": 360,
-            "keyCount": 1,
-            "earlyLocationCost": 30,
-            "earlyLocationReacts": [
-                {
+            "earlyLocationReacts": [{
                     "emoteID": "723018431275859969",
                     "pointsGiven": 2,
                     "limit": 3,
@@ -744,7 +670,76 @@
             ],
             "embed": {
                 "color": "#2f075c",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:701491230260985877> or <:Vial:701491230567039018>\nTo indicate your class or gear choices, react with <:Warrior:723018431489900595> <:Paladin:723018431296831539> <:Knight:723018431598952498> <:Wizard:723018431573655643> <:UTMarbleSeal:720401067086446672> <:UTTomeoftheMushroomTribes:720404621331267697>\nIf you are bringing an 8/8 mystic for the skip, react with <:Mystic:723018431275859969>\nIf you are bringing an 8/8 trickster with a Brain for the skip, react with <:STBrainoftheGolem:720263764309704704>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
+                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:701491230260985877> or <:Vial:701491230567039018>\nIf you are bringing an 8/8 mystic for the skip, react with <:Mystic:723018431275859969>\nIf you are bringing an 8/8 trickster with a Brain for the skip, react with <:STBrainoftheGolem:720263764309704704>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
+                "thumbnail": "https://cdn.discordapp.com/emojis/701491230391140453.png?v=1",
+                "removeThumbnail": true
+            },
+            "font-color": "#eeeeee"
+        },
+        "advancedFullSkipVoid": {
+            "runType": "Advanced Full-Skip Void",
+            "runName": "Advanced Full-Skip Void",
+            "symbol": "af",
+            "reqsImageUrl": "https://cdn.discordapp.com/attachments/628292030119804959/915353084497129522/pub_advanced_reqs_v1no_squares.png",
+            "keyEmoteID": "701491230260985877",
+            "vialEmoteID": "701491230567039018",
+            "pingRole": "voidping",
+            "keyLogName": "keypops",
+            "runLogName": "voidRuns",
+            "headcountEmote": "701491230391140453",
+            "headcountOnAfk": false,
+            "isSplit": false,
+            "newChannel": true,
+            "vialReact": true,
+            "postAfkCheck": false,
+            "twoPhase": true,
+            "startDelay": 10000,
+            "vcCap": 30,
+            "timeLimit": 360,
+            "keyCount": 1,
+            "earlyLocationCost": 30,
+            "earlyLocationReacts": [{
+                    "emoteID": "723018431275859969",
+                    "pointsGiven": 2,
+                    "limit": 3,
+                    "shortName": "mystic",
+                    "checkRealmEye": {
+                        "class": "mystic",
+                        "mheal": "85",
+                        "orb": "2"
+                    },
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emoteID": "720263764309704704",
+                    "pointsGiven": 2,
+                    "limit": 3,
+                    "shortName": "brain",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emoteID": "723019533597802507",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "armorbreak",
+                    "noConfirm": false,
+                    "noLocation": false
+                }
+            ],
+            "reacts": [
+                "723018431489900595",
+                "723018431296831539",
+                "723018431598952498",
+                "723018431573655643",
+                "720401067086446672",
+                "720404621331267697",
+                "723018431275728918"
+            ],
+            "embed": {
+                "color": "#2f075c",
+                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:701491230260985877> or <:Vial:701491230567039018>\nIf you are bringing an 8/8 mystic for the skip, react with <:Mystic:723018431275859969>\nIf you are bringing an 8/8 trickster with a Brain for the skip, react with <:STBrainoftheGolem:720263764309704704>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230391140453.png?v=1",
                 "removeThumbnail": true
             },
@@ -767,22 +762,25 @@
             "postAfkCheck": false,
             "twoPhase": false,
             "startDelay": 10000,
-            "vcCap": 50,
+            "vcCap": 45,
             "timeLimit": 360,
             "keyCount": 1,
             "earlyLocationCost": 30,
-            "earlyLocationReacts": [
-                {
+            "earlyLocationReacts": [{
                     "emoteID": "720404844187353099",
                     "pointsGiven": 2,
                     "limit": 3,
-                    "shortName": "rusher"
+                    "shortName": "rusher",
+                    "noConfirm": false,
+                    "noLocation": false
                 },
                 {
                     "emoteID": "723019533597802507",
                     "pointsGiven": 1,
                     "limit": 1,
-                    "shortName": "armorbreak"
+                    "shortName": "armorbreak",
+                    "noConfirm": false,
+                    "noLocation": false
                 }
             ],
             "reacts": [
@@ -796,7 +794,7 @@
             ],
             "embed": {
                 "color": "#ff0000",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:LostHallsKey:701491230260985877>\nTo indicate your class or gear choices, react with <:Warrior:723018431489900595> <:Paladin:723018431296831539> <:Knight:723018431598952498> <:Wizard:723018431573655643> <:UTMarbleSeal:720401067086446672> <:UTTomeoftheMushroomTribes:720404621331267697> \nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:720404844187353099>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
+                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:LostHallsKey:701491230260985877>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:720404844187353099>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230332157972.png?v=1",
                 "removeThumbnail": true
             },
@@ -825,8 +823,7 @@
             "timeLimit": 360,
             "keyCount": 2,
             "earlyLocationCost": 20,
-            "earlyLocationReacts": [
-                {
+            "earlyLocationReacts": [{
                     "emoteID": "888889860964892693",
                     "pointsGiven": 2,
                     "limit": 3,
@@ -894,8 +891,7 @@
             "timeLimit": 360,
             "keyCount": 2,
             "earlyLocationCost": 20,
-            "earlyLocationReacts": [
-                {
+            "earlyLocationReacts": [{
                     "emoteID": "888889860964892693",
                     "pointsGiven": 2,
                     "limit": 3,

@@ -31,7 +31,10 @@ module.exports = {
         //check to see if an event exists under args[0]
         if (message.channel.parent.name.toLowerCase() !== settings.categories.raiding && eventAfk.getEventType(args[0], eventFile)) return eventHC()
         if (message.channel.parent.name.toLowerCase() !== 'events') {
-            let runType = afkCheck.getRunType(args[0].charAt(0).toLowerCase(), message.guild.id)
+            let symbol = args[0].charAt(0).toLowerCase();
+            if (symbol == 'a' && args[0].length > 1)
+                symbol += args[0].charAt(1).toLowerCase();
+            let runType = afkCheck.getRunType(symbol, message.guild.id)
             if (!runType) return message.channel.send('Run Type not recognized')
 
             let embed = new Discord.MessageEmbed()
@@ -39,6 +42,10 @@ module.exports = {
                 .setDescription(`${runType.headcountEmote ? `React with ${bot.emojis.cache.get(runType.headcountEmote)} if you are coming\n` : ''}React with ${bot.emojis.cache.get(runType.keyEmoteID)} if you have a key\nOtherwise react with your gear/class choices below`)
                 .setColor(runType.embed.color)
                 .setTimestamp()
+
+            if (symbol.charAt(0) == 'a')
+                embed.description += `\n\n**__Advanced Runs__**\nThis is an **advanced run**, meaning there are extended requirements you **MUST** meet. If you are caught not meeting these requirements, you will be removed from the run and suspended.`;
+
             if (message.author.avatarURL()) embed.author.iconURL = message.author.avatarURL()
             const pingRole = runType.pingRole || runType.rolePing;
             let m = await textChannel.send({ content: `${pingRole ? '<@&' + settings.roles[pingRole] + '> ' : ''}@here`, embeds: [embed] })
