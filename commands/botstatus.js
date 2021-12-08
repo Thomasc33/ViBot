@@ -36,7 +36,7 @@ module.exports = {
                 //.setDescription('i put real shit in here :wink:')
                 .addField('Status', 'Initializing', false)
                 .addField('DB OK', await this.checkDataBase() ? '✅' : '❌', true)
-                .addField('RealmEye', await reScrape.checkProxy() ? '✅' : '❌', true)
+                .addField('RealmEye', await reScrape.handler.next() ? '✅' : '❌', true)
                 .setTimestamp()
         }
         let settings = bot.settings[guild.id]
@@ -68,7 +68,7 @@ module.exports = {
             StatusEmbed.setColor('#00ff00')
         }
         StatusEmbed.fields[1].value = await this.checkDataBase() ? '✅' : '❌'
-        StatusEmbed.fields[2].value = await reScrape.checkProxy() ? '✅' : '❌'
+        StatusEmbed.fields[2].value = await reScrape.handler.next() ? '✅' : '❌'
         for (let i in statusMessages) {
             await statusMessages[i].edit({ embeds: [StatusEmbed] })
         }
