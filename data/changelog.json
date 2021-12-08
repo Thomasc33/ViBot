@@ -46,7 +46,7 @@
             "eventpops",
             "eventsLead",
             "o3parses",
-            "o3assists",
+            "assistso3",
             "o3runs",
             "o3feedback"
         ],
@@ -60,7 +60,7 @@
                 "currentWeekName": "o3currentweekparses"
             },
             {
-                "case": "o3assists",
+                "case": "assistso3",
                 "currentWeekName": "currentweekAssistso3"
             },
             {
