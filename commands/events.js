@@ -13,6 +13,7 @@ module.exports = {
             .setColor('#ff0000')
             .setTitle('Current event run types')
         for (let x in Events) if (Events[x].enabled) {
+            if (Events[x].isAdvanced && !bot.settings[message.guild.id].backend.allowAdvancedRuns) continue
             fitStringIntoEmbed(embed, `<${Events[x].keyEmote}><${Events[x].portalEmote}> **${x}**${Events[x].aliases.length > 0 ? `\n*Aliases:${Events[x].aliases.map(a => `${` ${a}`}`)}*` : ''}`)
         }
         return channel.send({ embeds: [embed] })

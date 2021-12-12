@@ -16,13 +16,15 @@ module.exports = {
         let settings = bot.settings[message.guild.id]
 
         //check for vet run
-        let isVet
-        if (message.channel.id == settings.channels.eventcommands) isVet = false
-        else if (message.channel.id == settings.channels.vetcommands) isVet = true
-        else return;
         var eventType = args[0]
         let event = getEventType(eventType, eventFile)
         if (!event) return message.channel.send(`${eventType} does not exist.`);
+
+        let isVet
+        if (event.isAdvanced && !settings.backend.allowAdvancedRuns) return message.channel.send(`Advanced runs are not enabled for this server.`);
+        if (message.channel.id == settings.channels.eventcommands) isVet = false
+        else if (message.channel.id == settings.channels.vetcommands) isVet = true
+        else if (!(event.isExalt && settings.backend.exaltsInRSA && message.channel.id == settings.channels.raidcommands)) return;
         if (!event.enabled) return message.channel.send(`${event.name} is currently disabled.`);
 
         //create template from event info
@@ -30,7 +32,7 @@ module.exports = {
             isEvent: true,
             runType: event.name,
             runName: event.name,
-            reqsImageUrl: "",
+            reqsImageUrl: event.reqsImageUrl || "",
             keyEmoteID: event.keyEmojiId,
             vialEmoteID: event.portalEmojiId,
             keyLogName: dbInfo[message.guild.id] ? dbInfo[message.guild.id].eventInfo.eventpops || null : null,
@@ -43,6 +45,8 @@ module.exports = {
             timeLimit: 300,
             keyCount: 3,
             earlyLocationCost: 15,
+            isAdvanced: settings.backend.allowAdvancedRuns && event.isAdvanced,
+            isExalt: event.isExalt,
             earlyLocationReacts: [{
                 "emoteID": "723018431275859969",
                 "pointsGiven": 2,
@@ -54,9 +58,7 @@ module.exports = {
                     "mheal": "85",
                     "orb": "2"
                 }
-            },
-
-            ],
+            }],
             reacts: [],
             embed: {
                 color: event.color,
