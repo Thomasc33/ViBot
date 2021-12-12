@@ -80,13 +80,13 @@ module.exports = {
                     let result = `**[${idx + 1}]** <@!${user.id}>:\nRaids: \`${user.total}\` (` +
                         quota.values.map(v => `${v.name}: \`${user[v.column]||0}\``).join(', ') + ')';
                     runCount += quota.values.map(v => v.isRun ? user[v.column] : 0).reduce((a, b) => a+b, 0);
-                    fitStringIntoEmbed(embed, result);
+                    fitStringIntoEmbed(embeds, embed, result);
                 }
 
                 rows = rows.map(r => r.id);
                 await channel.guild.members.cache.filter(m => m.roles.cache.has(settings.roles.almostrl) || m.roles.cache.has(settings.roles.rl)).each(m => {
                     if (!rows.includes(m.id)) {
-                        fitStringIntoEmbed(embed, `<@!${m.id}> has not logged any runs or been assisted this week`)
+                        fitStringIntoEmbed(embeds, embed, `<@!${m.id}> has not logged any runs or been assisted this week`)
                     }
                 })
                 embed.setFooter(`${runCount} Total Runs`)
@@ -136,7 +136,7 @@ module.exports = {
     }
 }
 
-function fitStringIntoEmbed(embed, string) {
+function fitStringIntoEmbed(embeds, embed, string) {
     if (embed.description == 'None!') embed.setDescription(string)
     else if (embed.description.length + `\n${string}`.length >= 2048) {//change to 2048
         if (embed.fields.length == 0) embed.addField('-', string)

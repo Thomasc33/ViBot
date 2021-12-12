@@ -11,6 +11,7 @@ const rateLimit = require('express-rate-limit')
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
 const path = require('path');
+
 global.appRoot = path.resolve(__dirname); //put here so verification ml doenst break
 
 
@@ -33,7 +34,7 @@ const setup = require('./commands/setup')
 const restarting = require('./commands/restart')
 const createTemplate = require('./commands/createTemplate')
 const hostkeys = require('./commands/hostkey');
-
+const excuses = require('./commands/excuse');
 // Global Variables/Data
 const botSettings = require('./settings.json')
 const token = require('./botKey.json')
