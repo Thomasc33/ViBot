@@ -359,6 +359,10 @@ bot.on("ready", async () => {
     const currentWeekReset = cron.job('0 0 * * SUN', () => {
         bot.guilds.cache.each(g => {
             if (!emojiServers.includes(g.id)) {
+                if (bot.settings[g.id].backend.sendmissedquota) {
+                    excuses.calculateMissed(g, bot, bot.dbs[g.id], null, true);
+                    excuses.resetExcuses(g, bot, bot.dbs[g.id], true);
+                }
                 if (bot.settings[g.id].backend.currentweek && !bot.settings[g.id].backend.raidResetMonthly) currentWeek.newWeek(g, bot, bot.dbs[g.id]);
                 if (bot.settings[g.id].backend.eventcurrentweek && !bot.settings[g.id].backend.eventResetMonthly) ecurrentWeek.newWeek(g, bot, bot.dbs[g.id])
                 if (bot.settings[g.id].backend.parsecurrentweek && !bot.settings[g.id].backend.parseResetMonthly) pcurrentWeek.newWeek(g, bot, bot.dbs[g.id])

@@ -6,21 +6,22 @@ const roles = ['moderator', 'officer', 'headrl', 'vetrl', 'fsvrl', 'mrvrl', 'sec
 const channels = ['modmail', 'verification', 'manualverification', 'vetverification', 'manualvetverification', 'verificationlog', 'activeverification', 'modlogs', 'history', 'suspendlog',
     'viallog', 'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel', 'raidstatus', 'eventstatus',
     'vetstatus', 'raidcommands', 'eventcommands', 'vetcommands', 'raidingchannels', 'eventchannels', 'vetchannels', 'runlogs', 'dmcommands', 'veriactive', 'pointlogging', 'veriattempts',
-    'modmailinfo', 'parsecurrentweek', 'pastparseweeks', 'roleassignment', 'botstatus', 'keyalerts']
+    'modmailinfo', 'parsecurrentweek', 'pastparseweeks', 'roleassignment', 'botstatus', 'keyalerts', 'activitylog']
 const categories = ['raiding', 'veteran', 'event']
 const voice = ['raidingtemplate', 'eventtemplate', 'vettemplate', 'veteventtemplate', 'lounge', 'vetlounge', 'eventlounge', 'afk']
 const voiceprefixes = ['raidingprefix', 'vetprefix']
 const backend = ['modmail', 'currentweek', 'eventcurrentweek', 'parsecurrentweek', 'verification', 'vetverification', 'points', 'supporter', 'roleassignment', 'realmeyestats', 'automod', 'nitroearlylocation', 'removekeyreacts', 'characterparse',
-    'giveeventroleonverification', 'eventcurrentweekdisplaysalleventrl', 'upgradedCheck', 'raidResetMonthly', 'eventResetMonthly', 'parseResetMonthly', 'exaltedEvents']
+    'giveeventroleonverification', 'eventcurrentweekdisplaysalleventrl', 'upgradedCheck', 'raidResetMonthly', 'eventResetMonthly', 'parseResetMonthly', 'exaltedEvents', 'sendmissedquota', 'exaltsInRSA', 'allowAdvancedRuns']
 const numerical = ['afktime', 'eventafktime', 'nitrocount', 'nitrocooldown', 'topkey', 'bottomkey', 'ticketlimit', 'supporterlimit', 'keyalertsage', 'waitnewkeyalert']
 const runreqs = ['weapon', 'ability', 'armor', 'ring']
 const autoveri = ['fame', 'stars', 'realmage', 'discordage', 'deathcount']
 const vetverireqs = ['maxed', 'meleemaxed', 'runs']
 const points = ['earlylocation', 'perrun', 'nitromultiplier', 'keypop', 'vialpop', 'rushing', 'brain', 'mystic', 'eventkey', 'cultlocation', 'voidlocation', 'fsvlocation', 'o3streaming', 'o3trickster', 'o3puri', 'exaltkey']
-const lists = ['earlyLocation']
+const lists = ['earlyLocation', 'runningEvents']
+const strings = ['advancedReqsImage']
 var commands = []
 
-const menus = ['roles', 'channels', 'voice', 'voiceprefixes', 'backend', 'numerical', 'runreqs', 'autoveri', 'vetverireqs', 'points', 'commands', 'categories', 'lists']
+const menus = ['roles', 'channels', 'voice', 'voiceprefixes', 'backend', 'numerical', 'runreqs', 'autoveri', 'vetverireqs', 'points', 'commands', 'categories', 'lists', 'strings']
 
 module.exports = {
     name: 'setup',
@@ -67,6 +68,7 @@ module.exports = {
                         case '11': menu(commands, 'commands', 'boolean'); break;
                         case '12': menu(categories, 'categories', 'string'); break;
                         case '13': menu(lists, 'lists', 'array'); break;
+                        case '14': menu(strings, 'strings', 'string'); break;
                     }
                 }
                 /**
@@ -253,7 +255,8 @@ module.exports = {
                 points: {},
                 commands: {},
                 categories: {},
-                lists: {}
+                lists: {},
+                strings: {}
             }
         }
         for (let i of menus) {
@@ -333,6 +336,10 @@ module.exports = {
         if (!bot.settings[guild.id].lists) bot.settings[guild.id].lists = {}
         for (let i of lists) {
             if (!bot.settings[guild.id].lists[i]) bot.settings[guild.id].lists[i] = []
+        }
+        if (!bot.settings[guild.id].strings) bot.settings[guild.id].strings = {}
+        for (let i of strings) {
+            if (!bot.settings[guild.id].strings[i]) bot.settings[guild.id].strings[i] = null
         }
         fs.writeFileSync('./guildSettings.json', JSON.stringify(bot.settings, null, 4), err => message.channel.send(err.toString()))
     }
@@ -419,6 +426,7 @@ function getDefaultChannelName(name) {
         case 'roleassignment': return 'role-assignment';
         case 'botstatus': return 'bot-status';
         case 'keyalerts': return 'key-alerts';
+        case 'activitylog': return 'activity-log';
     }
 }
 

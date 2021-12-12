@@ -44,12 +44,13 @@ module.exports = {
         let shift = args.shift();
         let symbol = shift.charAt(0).toLowerCase();
         let isAdvanced = false;
-        if (symbol == 'a') {
+        if (symbol == 'a' ) {
             symbol += shift.charAt(1).toLowerCase();
-            isAdvanced = true;
+            isAdvanced = true ;
         }
         //Check Run Type
         let runType = getRunType(symbol, message.guild.id);
+        if (isAdvanced && !bot.settings[message.guild.id].backend.allowAdvancedRuns) return
         if (!runType && message.member.roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles.vetrl).position) return message.channel.send('Run Type Not Recognized')
         if (!runType) runType = await getTemplate(message, afkTemplates, shift).catch(er => message.channel.send(`Unable to get template. Error: \`${er}\``))
         if (!runType) return
@@ -194,13 +195,15 @@ class afkCheck {
     constructor(afkInfo, bot, db, guild, channel, message, tokenDB) {
         this.settings = bot.settings[guild.id]
         this.afkInfo = afkInfo;
+        if (!this.settings.backend.allowAdvancedRuns)
+            this.afkInfo.isAdvanced = false;
         this.bot = bot;
         this.db = db;
         this.guild = guild;
         this.channel = channel;
         this.message = message;
         this.tokenDB = tokenDB
-        if (this.afkInfo.isEvent) {
+        if (this.afkInfo.isEvent && !(this.afkInfo.isExalt && this.settings.backend.exaltsInRSA)) {
             if (this.afkInfo.isVet) this.raidStatus = this.guild.channels.cache.get(this.settings.channels.vetstatus)
             else this.raidStatus = this.guild.channels.cache.get(this.settings.channels.eventstatus)
             if (this.afkInfo.isVet) this.commandChannel = this.guild.channels.cache.get(this.settings.channels.vetcommands)
@@ -218,7 +221,7 @@ class afkCheck {
             else this.commandChannel = this.guild.channels.cache.get(this.settings.channels.raidcommands)
             if (this.afkInfo.isVet) this.verifiedRaiderRole = this.guild.roles.cache.get(this.settings.roles.vetraider)
             else this.verifiedRaiderRole = this.guild.roles.cache.get(this.settings.roles.raider)
-            this.staffRole = guild.roles.cache.get(this.settings.roles.almostrl)
+            this.staffRole = guild.roles.cache.get(this.afkInfo.isEvent ? this.settings.roles.eventrl : this.settings.roles.almostrl)
         }
         this.afkChannel = guild.channels.cache.find(c => c.name === 'afk')
         this.runInfoChannel = guild.channels.cache.get(this.settings.channels.runlogs)
@@ -321,6 +324,7 @@ class afkCheck {
             .setTimestamp(Date.now())
         if (this.message.author.avatarURL()) this.mainEmbed.author.iconURL = this.message.author.avatarURL()
         if (this.afkInfo.reqsImageUrl) this.mainEmbed.setImage(this.afkInfo.reqsImageUrl)
+        else if (this.afkInfo.isAdvanced && this.settings.strings.advancedReqsImage) this.mainEmbed.setImage(this.settings.strings.advancedReqsImage);
         if (this.afkInfo.embed.thumbnail && !this.afkInfo.embed.removeThumbnail) this.mainEmbed.setThumbnail(this.afkInfo.embed.thumbnail)
         this.mainEmbed.description = this.mainEmbed.description.replace('{voicechannel}', `${this.channel}`)
 
@@ -434,6 +438,9 @@ class afkCheck {
          * @param {afkCheck} afk 
          * @returns Nothing
          */
+
+        // Prompt
+        let emote = r.emoji
         function sendLocation(afk) {
             //check for full
             if (!checkType(afk)) return
@@ -498,8 +505,7 @@ class afkCheck {
             }
         }, 60000)
 
-        // Prompt
-        let emote = r.emoji
+
         try {
             if (!checkType(this)) return
             let reactInfo
@@ -1088,7 +1094,7 @@ async function createChannel(runInfo, message, bot) {
             var template = message.guild.channels.cache.get(settings.voice.vettemplate)
             var raider = message.guild.roles.cache.get(settings.roles.vetraider)
             var vibotChannels = message.guild.channels.cache.get(settings.channels.vetchannels)
-        } else if (runInfo.isEvent) {
+        } else if (runInfo.isEvent && !(runInfo.isExalt && settings.backend.exaltsInRSA)) {
             var parent = settings.categories.event;
             var template = message.guild.channels.cache.get(settings.voice.eventtemplate)
             var raider = message.guild.roles.cache.get(settings.roles.raider)
