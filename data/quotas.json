@@ -10,13 +10,6 @@
                 { "column": "currentweekAssists", "name": "Assists", "value": 0.5 },
                 { "column": "currentweekFeedback", "name": "Feedback", "value": 1 }
             ]
-        },
-        {
-            "id": "security",
-            "name": "Security Quota",
-            "roles": ["security"],
-            "quota": 7,
-            "values": [{ "column": "currentweekparses", "name": "parses", "value": 1 }]
         }
     ],
     "343704644712923138": [{
@@ -30,13 +23,6 @@
                 { "column": "currentweekAssists", "name": "assists", "value": 0.5 },
                 { "column": "currentweekFeedback", "name": "feedback", "value": 1 }
             ]
-        },
-        {
-            "id": "security",
-            "name": "Security Quota",
-            "roles": ["security"],
-            "quota": 7,
-            "values": [{ "column": "currentweekparses", "name": "parses", "value": 1 }]
         }
     ],
     "708026927721480254": [{
@@ -49,13 +35,6 @@
             { "column": "currentweeko3Feedback", "name": "Feedback", "value": 1.5 },
             { "column": "currentweekAssistso3", "name": "Assists", "value": 0.5 }
         ]
-    },
-    {
-        "id": "security",
-        "name": "Security Quota",
-        "roles": ["security"],
-        "quota": 15,
-        "values": [{ "column": "currentweekparses", "name": "parses", "value": 1 }]
     }],
     "451171819672698920": [{
         "id": "raiding",
