@@ -5,15 +5,17 @@ module.exports = {
     name: 'events',
     description: 'Shows all current enabled event run types',
     role: 'eventrl',
+    args: '[exalts]',
     execute(message, args, bot) {
-        this.send(message.channel);
+        this.send(message.channel, bot, args.length && args[0].toLowerCase() == 'exalts');
     },
-    send(channel) {
+    send(channel, bot, onlyExalts) {
         let embed = new Discord.MessageEmbed()
             .setColor('#ff0000')
             .setTitle('Current event run types')
         for (let x in Events) if (Events[x].enabled) {
-            if (Events[x].isAdvanced && !bot.settings[message.guild.id].backend.allowAdvancedRuns) continue
+            if (Events[x].isAdvanced && !bot.settings[channel.guild.id].backend.allowAdvancedRuns) continue
+            if (onlyExalts && !Events[x].isExalt) continue;
             fitStringIntoEmbed(embed, `<${Events[x].keyEmote}><${Events[x].portalEmote}> **${x}**${Events[x].aliases.length > 0 ? `\n*Aliases:${Events[x].aliases.map(a => `${` ${a}`}`)}*` : ''}`)
         }
         return channel.send({ embeds: [embed] })
