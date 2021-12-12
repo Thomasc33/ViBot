@@ -324,12 +324,14 @@ class afkCheck {
             .setTimestamp(Date.now())
         if (this.message.author.avatarURL()) this.mainEmbed.author.iconURL = this.message.author.avatarURL()
         if (this.afkInfo.reqsImageUrl) this.mainEmbed.setImage(this.afkInfo.reqsImageUrl)
-        else if (this.afkInfo.isAdvanced && this.settings.strings.advancedReqsImage) this.mainEmbed.setImage(this.settings.strings.advancedReqsImage);
+        else if (this.afkInfo.isAdvanced && !this.afkInfo.isExalt && this.settings.strings.hallsAdvancedReqsImage) this.mainEmbed.setImage(this.settings.strings.hallsAdvancedReqsImage);
+        else if (this.afkInfo.isAdvanced && this.afkInfo.isExalt && this.settings.strings.exaltsAdvancedReqsImage) this.mainEmbed.setImage(this.settings.strings.exaltsAdvancedReqsImage);
         if (this.afkInfo.embed.thumbnail && !this.afkInfo.embed.removeThumbnail) this.mainEmbed.setThumbnail(this.afkInfo.embed.thumbnail)
         this.mainEmbed.description = this.mainEmbed.description.replace('{voicechannel}', `${this.channel}`)
+        const rules = `<#${this.settings.channels.raidingrules}>` || '#raiding-rules';
 
         if (this.afkInfo.isAdvanced)
-            this.mainEmbed.description += `\n\n**__Advanced Runs__**\nThis is an **advanced run**, meaning there are extended requirements you **MUST** meet. You must be both **__8/8__** and follow the requirements sheet listed below.\n\nIf you are caught not meeting these requirements, you will be removed from the run and suspended.`
+            this.mainEmbed.description += `\n\n**__Advanced Runs__**\nThis is an **advanced run**, meaning there are extended requirements you **MUST** meet. You must be both **__8/8__** and follow the requirements sheet listed below.\n\nBasic raiding rules from ${rules} will still apply.\n\nIf you are caught not meeting these requirements, you will be removed from the run and suspended.`
 
         this.raidStatusMessage.edit({ embeds: [this.mainEmbed] })
         if (this.bot.afkChecks[this.channel.id])
@@ -780,13 +782,13 @@ class afkCheck {
         if (this.afkInfo.newChannel && !this.isVet) {
             this.channel.setPosition(this.afkChannel.position)
         }
-
+        const rules = `<#${this.settings.channels.raidingrules}>` || '#raiding-rules';
         //update embeds/messages
         this.mainEmbed.setDescription(`This afk check has been ended.\n${this.keys.length > 0 ? `Thank you to ${this.keys.map(k => `<@!${k}> `)} for popping a ${this.bot.emojis.cache.get(this.afkInfo.keyEmoteID)} for us!\n` : ''}${this.simp ? `Thank you to <@!${this.simp.id}> for being a ViBot SIMP` : ''}If you get disconnected during the run, **JOIN LOUNGE** *then* DM ${this.bot.user} \`join\` to get back in`)
             .setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
         
         if (this.afkInfo.isAdvanced)
-            this.mainEmbed.description += `\n\n**__Advanced Runs__**\nThis is an **advanced run**, meaning there are extended requirements you **MUST** meet. You must be both **__8/8__** and follow the requirements sheet listed below.\n\nIf you are caught not meeting these requirements, you will be removed from the run and suspended.`
+            this.mainEmbed.description += `\n\n**__Advanced Runs__**\nThis is an **advanced run**, meaning there are extended requirements you **MUST** meet. You must be both **__8/8__** and follow the requirements sheet listed below.\n\nBasic raiding rules from ${rules} will still apply.\n\nIf you are caught not meeting these requirements, you will be removed from the run and suspended.`
 
         this.leaderEmbed.setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname} at`)
             .setTimestamp();
