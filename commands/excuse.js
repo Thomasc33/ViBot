@@ -1,6 +1,7 @@
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
 const quotas = require('../data/quotas.json');
+const { handler } = require('../lib/realmEyeScrape');
 import('../lib/types.js')
 module.exports = {
     name: 'excuse',
@@ -171,8 +172,7 @@ module.exports = {
             const unexcused = Object.values(unmet_quotas)
                 .map(u => `'${u.member.id}'`)
                 .filter(u => !excused.includes(u));
-            console.log(excused);
-            console.log(unexcused);
+
             if (excused.length)
                 await new Promise(res => db.query(`UPDATE users SET weeksUnexcused = 0 WHERE id IN (${excused.join(', ')})`, () => res()))
             if (unexcused.length)
@@ -294,7 +294,10 @@ module.exports = {
                     embed.setImage(issues.excuse.image);
                 embed.setColor('#00ff00')
             } else unexcused.push(id);
-            activitylog.send({ embeds: [embed] })
+            try {
+                activitylog.send({ embeds: [embed] })
+            } catch (e) { ErrorLogger.log(e); }
+            
         }
 
         Object.values(unmet_quotas).filter(u => u.leave).map(u => `('', '', '', , null)`)
@@ -309,7 +312,9 @@ function fitStringIntoEmbed(embed, string, channel, join) {
             embed.addField('-', string)
         } else if (embed.fields[embed.fields.length - 1].value.length + `${join}${string}`.length >= 1024) {
             if (embed.length + `${join}${string}`.length >= 6000) {
-                channel.send({ embeds: [embed] })
+                try {
+                    channel.send({ embeds: [embed] })
+                } catch (e) { ErrorLogger.log(e); }
                 embed.setDescription('None!')
                 embed.fields = []
             } else {
@@ -317,7 +322,9 @@ function fitStringIntoEmbed(embed, string, channel, join) {
             }
         } else {
             if (embed.length + `${join}${string}`.length >= 6000) {
-                channel.send({ embeds: [embed] })
+                try {
+                    channel.send({ embeds: [embed] })
+                } catch (e) { ErrorLogger.log(e); }
                 embed.setDescription('None!')
                 embed.fields = []
             } else {

@@ -11,7 +11,6 @@ module.exports = {
     role: 'developer',
     async execute(message, args, bot, db) {
         if (args.length == 0) {
-            console.log('go');
             this.sendEmbed(message.channel, db, bot)
             return;
         }
