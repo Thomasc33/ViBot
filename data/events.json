@@ -890,7 +890,7 @@
     },
     "advancedfungal": {
         "name": "Advanced Fungal Cavern",
-        "aliases": ["af", "afun", "afungal"],
+        "aliases": ["af", "afun", "afungal", "advf", "advfungal"],
         "enabled": true,
         "keyEmojiId": "723001429614395402",
         "keyEmote": ":fungalK:723001429614395402",
