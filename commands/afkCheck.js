@@ -44,9 +44,9 @@ module.exports = {
         let shift = args.shift();
         let symbol = shift.charAt(0).toLowerCase();
         let isAdvanced = false;
-        if (symbol == 'a' ) {
+        if (symbol == 'a') {
             symbol += shift.charAt(1).toLowerCase();
-            isAdvanced = true ;
+            isAdvanced = true;
         }
         //Check Run Type
         let runType = getRunType(symbol, message.guild.id);
@@ -786,7 +786,7 @@ class afkCheck {
         //update embeds/messages
         this.mainEmbed.setDescription(`This afk check has been ended.\n${this.keys.length > 0 ? `Thank you to ${this.keys.map(k => `<@!${k}> `)} for popping a ${this.bot.emojis.cache.get(this.afkInfo.keyEmoteID)} for us!\n` : ''}${this.simp ? `Thank you to <@!${this.simp.id}> for being a ViBot SIMP` : ''}If you get disconnected during the run, **JOIN LOUNGE** *then* DM ${this.bot.user} \`join\` to get back in`)
             .setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
-        
+
         if (this.afkInfo.isAdvanced)
             this.mainEmbed.description += `\n\n**__Advanced Runs__**\nThis is an **advanced run**, meaning there are extended requirements you **MUST** meet. You must be both **__8/8__** and follow the requirements sheet listed below.\n\nBasic raiding rules from ${rules} will still apply.\n\nIf you are caught not meeting these requirements, you will be removed from the run and suspended.`
 
@@ -1096,7 +1096,13 @@ async function createChannel(runInfo, message, bot) {
             var template = message.guild.channels.cache.get(settings.voice.vettemplate)
             var raider = message.guild.roles.cache.get(settings.roles.vetraider)
             var vibotChannels = message.guild.channels.cache.get(settings.channels.vetchannels)
-        } else if (runInfo.isEvent && !(runInfo.isExalt && settings.backend.exaltsInRSA)) {
+        } else if (runInfo.isEvent) {
+            if (runInfo.isExalt && settings.backend.exaltsInRSA) {
+                var parent = settings.categories.raiding;
+                var template = message.guild.channels.cache.get(settings.voice.eventtemplate)
+                var raider = message.guild.roles.cache.get(settings.roles.raider)
+                var vibotChannels = message.guild.channels.cache.get(settings.channels.raidingchannels)
+            }
             var parent = settings.categories.event;
             var template = message.guild.channels.cache.get(settings.voice.eventtemplate)
             var raider = message.guild.roles.cache.get(settings.roles.raider)
