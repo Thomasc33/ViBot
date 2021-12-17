@@ -1102,12 +1102,13 @@ async function createChannel(runInfo, message, bot) {
                 var template = message.guild.channels.cache.get(settings.voice.eventtemplate)
                 var raider = message.guild.roles.cache.get(settings.roles.raider)
                 var vibotChannels = message.guild.channels.cache.get(settings.channels.raidingchannels)
+            } else {
+                var parent = settings.categories.event;
+                var template = message.guild.channels.cache.get(settings.voice.eventtemplate)
+                var raider = message.guild.roles.cache.get(settings.roles.raider)
+                var eventBoi = message.guild.roles.cache.get(settings.roles.eventraider)
+                var vibotChannels = message.guild.channels.cache.get(settings.channels.eventchannels)
             }
-            var parent = settings.categories.event;
-            var template = message.guild.channels.cache.get(settings.voice.eventtemplate)
-            var raider = message.guild.roles.cache.get(settings.roles.raider)
-            var eventBoi = message.guild.roles.cache.get(settings.roles.eventraider)
-            var vibotChannels = message.guild.channels.cache.get(settings.channels.eventchannels)
         } else {
             var parent = settings.categories.raiding;
             var template = message.guild.channels.cache.get(settings.voice.raidingtemplate)
