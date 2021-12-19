@@ -283,14 +283,14 @@
                 "multiply": 10,
                 "allowAssists": false,
                 "confirm": true,
-                "main": "eventsLead",
-                "currentweek": "currentweekEvents",
+                "main": "o3eventsLead",
+                "currentweek": "currentweekEventso3",
                 "color": "#00FF00",
                 "icon": "https://cdn.discordapp.com/emojis/831052176507535360.png?v=1",
                 "desc": "`Event` run",
                 "toUpdate": 2,
                 "toDisplay": [
-                    "currentweekEvents"
+                    "currentweekEventso3"
                 ]
             },
             {
