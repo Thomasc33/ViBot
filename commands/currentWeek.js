@@ -77,7 +77,7 @@ module.exports = {
                 let runCount = 0;
                 for (const idx in rows) {
                     const user = rows[idx];
-                    let result = `**[${idx + 1}]** <@!${user.id}>:\nRaids: \`${user.total}\` (` +
+                    let result = `**[${parseInt(idx) + 1}]** <@!${user.id}>:\nRaids: \`${user.total}\` (` +
                         quota.values.map(v => `${v.name}: \`${user[v.column]||0}\``).join(', ') + ')';
                     runCount += quota.values.map(v => v.isRun ? user[v.column] : 0).reduce((a, b) => a+b, 0);
                     fitStringIntoEmbed(embeds, embed, result);
