@@ -142,7 +142,7 @@ module.exports = {
                 function close() {
                     let channel = getChannel(message)
                     if (!channel) return
-
+                    if (!channel.channel) return message.channel.send("Could not find your channel");
                     //lock the channel (event boi for events :^))
                     if (channel.channel.parent.name.toLowerCase() == 'events') {
                         var eventBoi = message.guild.roles.cache.get(settings.roles.eventraider)
@@ -227,13 +227,13 @@ module.exports = {
                     //get channel info
                     let channel = getChannel(message)
                     if (!channel) return
-
+                    if (!channel.channel) return message.channel.send("Could not find the channel")
                     //get cap
                     let cap = parseInt(args[1])
                     if (!cap || cap == NaN) return message.channel.send("Channel cap not recognized")
 
                     //set cap
-                    channel.channel.setUserLimit(cap)
+                    channel.setUserLimit(cap)
                 }
                 setCap()
                 break;

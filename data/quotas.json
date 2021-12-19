@@ -1,30 +1,28 @@
 {
     "701483950559985705": [{
-            "id": "raiding",
-            "name": "Raid Leader Quota",
-            "roles": ["rl", "almostrl", "vetrl"],
-            "quota": 7,
-            "values": [
-                { "column": "currentweekVoid", "name": "Voids", "value": 1, "isRun": true },
-                { "column": "currentweekCult", "name": "Cults", "value": 1, "isRun": true },
-                { "column": "currentweekAssists", "name": "Assists", "value": 0.5 },
-                { "column": "currentweekFeedback", "name": "Feedback", "value": 1 }
-            ]
-        }
-    ],
+        "id": "raiding",
+        "name": "Raid Leader Quota",
+        "roles": ["rl", "almostrl", "vetrl"],
+        "quota": 7,
+        "values": [
+            { "column": "currentweekVoid", "name": "Voids", "value": 1, "isRun": true },
+            { "column": "currentweekCult", "name": "Cults", "value": 1, "isRun": true },
+            { "column": "currentweekAssists", "name": "Assists", "value": 0.5 },
+            { "column": "currentweekFeedback", "name": "Feedback", "value": 0.5 }
+        ]
+    }],
     "343704644712923138": [{
-            "id": "raiding",
-            "name": "Raid Leader Quota",
-            "roles": ["rl", "almostrl"],
-            "quota": 7,
-            "values": [
-                { "column": "currentweekVoid", "name": "voids", "value": 1, "isRun": true },
-                { "column": "currentweekCult", "name": "cults", "value": 1, "isRun": true },
-                { "column": "currentweekAssists", "name": "assists", "value": 0.5 },
-                { "column": "currentweekFeedback", "name": "feedback", "value": 1 }
-            ]
-        }
-    ],
+        "id": "raiding",
+        "name": "Raid Leader Quota",
+        "roles": ["rl", "almostrl"],
+        "quota": 7,
+        "values": [
+            { "column": "currentweekVoid", "name": "voids", "value": 1, "isRun": true },
+            { "column": "currentweekCult", "name": "cults", "value": 1, "isRun": true },
+            { "column": "currentweekAssists", "name": "assists", "value": 0.5 },
+            { "column": "currentweekFeedback", "name": "feedback", "value": 0.5 }
+        ]
+    }],
     "708026927721480254": [{
         "id": "raiding",
         "name": "Raid Leader Quota",
@@ -40,11 +38,11 @@
         "id": "raiding",
         "name": "Raid Leader Quota",
         "roles": ["rl", "almostrl"],
-        "quota": 3, 
+        "quota": 3,
         "values": [
             { "column": "currentweek", "name": "Shatters Runs", "value": 1, "isRun": true },
             { "column": "currentweekfailed", "name": "Failed Runs", "value": 1, "isRun": true },
-            { "column": "currentweekAssistso3", "name": "Assists", "value": 0.5 }
+            { "column": "currentweekAssists", "name": "Assists", "value": 0.5 }
         ]
     }]
 }
