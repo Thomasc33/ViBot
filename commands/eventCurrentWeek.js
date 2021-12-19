@@ -13,21 +13,28 @@ module.exports = {
         }
         switch (args[0].toLowerCase()) {
             case 'reset':
-                this.newWeek(message.guild, bot, db)
+                this.newWeek(message.guild, bot, db, true)
                 break;
             case 'update':
                 this.update(message.guild, db, bot);
                 break;
         }
     },
-    async newWeek(guild, bot, db) {
+    async newWeek(guild, bot, db, override) {
         let settings = bot.settings[guild.id]
         let leaderLog = guild.channels.cache.get(settings.channels.eventpastweeks)
         if (!leaderLog) return console.log('Channel not found')
         let table = getTable(guild.id)
         if (!table) return
         await this.sendEmbed(leaderLog, db, bot)
-        if (!table.dontReset) await db.query(`UPDATE users SET ${table.eventcurrentweek} = 0`)
+        if (override || !table.dontReset) {
+            let query = `UPDATE users SET ${table.eventcurrentweek} = 0`;
+            if (table.exaltcurrentweek)
+                query += `, ${table.exaltcurrentweek} = 0`
+            if (table.exaltfeedbackcurrentweek)
+                query += `, ${table.exaltfeedbackcurrentweek} = 0`
+            await db.query(query)
+        }
         this.update(guild, db, bot)
     },
     async update(guild, db, bot) {
@@ -40,7 +47,12 @@ module.exports = {
         let settings = bot.settings[channel.guild.id]
         let table = getTable(channel.guild.id)
         return new Promise(async function (resolve, reject) {
-            db.query(`SELECT * FROM users WHERE ${table.eventcurrentweek} != 0`, async function (err, rows) {
+            let query = `SELECT * FROM users WHERE ${table.eventcurrentweek} != 0`
+            if (table.exaltcurrentweek)
+                query += ` OR ${table.exaltcurrentweek} != 0`
+            if (table.exaltfeedbackcurrentweek)
+                query += ` OR ${table.exaltfeedbackcurrentweek} != 0`
+            db.query(query, async function (err, rows) {
                 if (err) reject(err)
                 let logged = []
                 let embed = new Discord.MessageEmbed()

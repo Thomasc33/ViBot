@@ -177,7 +177,7 @@ module.exports = {
                 await new Promise(res => db.query(`UPDATE users SET weeksUnexcused = 0 WHERE id IN (${excused.join(', ')})`, () => res()))
             if (unexcused.length)
                 await new Promise(res => db.query(`UPDATE users SET weeksUnexcused = weeksUnexcused+1 WHERE id IN (${unexcused.join(', ')})`, () => res()))
-            await new Promise(res => db.query(`insert into archivedExcuses select *, current_date() as archivedOn from excuses`, () => res()));
+            await new Promise(res => db.query(`insert into archivedExcuses select *, current_date() as archivedOn from excuses where guildid = '${guild.id}'`, () => res()));
         }
         db.query(`delete from excuses where guildid = '${guild.id}'`, e => {
             if (e) ErrorLogger.log(e, bot);
