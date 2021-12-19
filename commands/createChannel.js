@@ -233,7 +233,7 @@ module.exports = {
                     if (!cap || cap == NaN) return message.channel.send("Channel cap not recognized")
 
                     //set cap
-                    channel.setUserLimit(cap)
+                    channel.channel.setUserLimit(cap)
                 }
                 setCap()
                 break;
