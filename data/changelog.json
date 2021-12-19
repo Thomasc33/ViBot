@@ -44,7 +44,7 @@
     "708026927721480254": {
         "logtypes": [
             "eventpops",
-            "eventsLead",
+            "o3eventsLead",
             "o3parses",
             "assistso3",
             "o3runs",
@@ -52,7 +52,7 @@
         ],
         "currentweeks": [
             {
-                "case": "eventsLead",
+                "case": "o3eventsLead",
                 "currentWeekName": "currentweekEventso3"
             },
             {
