@@ -423,7 +423,7 @@ class afkCheck {
         else for (let i in this.afkInfo.earlyLocationReacts) {
             let react = this.afkInfo.earlyLocationReacts[i]
             if (react.emoteID == interaction.customId) {
-                if (react.requiredRole && !this.guild.members.cache.get(u.id).roles.cache.has(this.settings.roles[react.requiredRole])) return
+                if (react.requiredRole && !this.guild.members.cache.get(interaction.user.id).roles.cache.has(this.settings.roles[react.requiredRole])) return
                 this.confirmSelection(interaction, +i++, react.shortName, react.limit, react.noConfirm, react.noLocation)
             }
         }
