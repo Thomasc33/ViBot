@@ -423,8 +423,8 @@ class afkCheck {
         else for (let i in this.afkInfo.earlyLocationReacts) {
             let react = this.afkInfo.earlyLocationReacts[i]
             if (react.emoteID == interaction.customId) {
-                if (react.requiredRole && !this.guild.members.cache.get(interaction.user.id).roles.cache.has(this.settings.roles[react.requiredRole])) return
-                this.confirmSelection(interaction, +i++, react.shortName, react.limit, react.noConfirm, react.noLocation)
+                if (react.requiredRole && !interaction.member.roles.cache.has(this.settings.roles[react.requiredRole])) return
+                this.confirmSelection(interaction, +i + +1, react.shortName, react.limit, react.noConfirm, react.noLocation)
             }
         }
     }
@@ -590,7 +590,8 @@ class afkCheck {
 
         try {
             if (!checkType(this)) {
-                interaction.deferUpdate()
+                embed.setDescription(`Too many people have already reacted and confirmed for that. Try another react or try again next run.`)
+                interaction.reply({ embeds: [embed], ephemeral: true })
                 return this.removeFromActiveInteractions(interaction.member.id)
             }
             let reactInfo
