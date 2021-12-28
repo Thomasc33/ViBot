@@ -380,7 +380,6 @@ class afkCheck {
         if (!interaction.isButton()) return;
         if (this.openInteractions.includes(interaction.user.id)) return interaction.deferUpdate()
         if (interaction.customId == this.afkInfo.keyEmoteID) {
-            if (this.settings.backend.removekeyreacts) r.users.remove(u.id)
             this.confirmSelection(interaction, 0, 'key', this.afkInfo.keyCount)
         }
         else if (this.afkInfo.vialReact && interaction.customId == this.afkInfo.vialEmoteID) this.confirmSelection(interaction, 1, 'vial', 3)
@@ -722,7 +721,7 @@ class afkCheck {
             .setFooter(`React with ✅ to confirm, or ❌ to cancel`)
         let ar = new Discord.MessageActionRow({ components: [{ type: 'BUTTON', customId: 'confirm', style: 'SUCCESS', label: '✅ Confirm' }, { type: 'BUTTON', customId: 'abort', style: 'DANGER', label: '❌ Cancel' }] })
         if (interaction.user.avatarURL()) embed.setAuthor({ name: 'Please Confirm Point Usage', iconURL: interaction.user.avatarURL() })
-        else embed.setAuthor('Please Confirm Point Usage')
+        else embed.setAuthor({ name: 'Please Confirm Point Usage' })
         let earlyLocationCost = this.afkInfo.earlyLocationCost
         this.db.query(`SELECT points FROM users WHERE id = '${interaction.user.id}'`, async (err, rows) => {
             if (err) return
