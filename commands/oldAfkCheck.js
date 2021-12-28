@@ -16,8 +16,8 @@ var emitter = new EventEmitter()
 var runs = [] //{channel: id, afk: afk instance}
 
 module.exports = {
-    name: 'afk',
-    // alias: ['oafk'],
+    name: 'oldafk',
+    alias: ['oafk', 'ofk'],
     description: 'The old version of the afk check',
     requiredArgs: 1,
     args: '<run symbol> (key count) <location>',

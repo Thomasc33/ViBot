@@ -16,8 +16,8 @@ var emitter = new EventEmitter()
 var runs = [] //{channel: id, afk: afk instance}
 
 module.exports = {
-    name: 'newafk',
-    alias: ['nafk'],
+    name: 'afk',
+    // alias: ['nafk'],
     description: 'The new version of the afk check',
     requiredArgs: 1,
     args: '<run symbol> (key count) <location>',
@@ -400,6 +400,26 @@ class afkCheck {
                 return this.abortAfk()
             }
         }
+        else if (interaction.customId === 'openvc') {
+            if (this.afkInfo.twoPhase) {
+                if (this.guild.members.cache.get(interaction.user.id).roles.highest.position >= this.staffRole.position) {
+                    interaction.reply({ content: 'Channel will open shortly...', ephemeral: true })
+                    this.leaderEmbed.footer.text = `React with ❌ to abort, Channel is opening...`
+                    this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] })
+                    let tempM = await this.raidStatus.send(`<#${this.channel.id}> will open in 5 seconds...`)
+                    setTimeout(async (afk) => {
+                        await tempM.edit(`${afk.channel.name} is open!`)
+                        await afk.channel.permissionOverwrites.edit(afk.verifiedRaiderRole.id, { CONNECT: true, VIEW_CHANNEL: true })
+                        if (afk.eventBoi) await afk.channel.permissionOverwrites.edit(afk.eventBoi.id, { CONNECT: true, VIEW_CHANNEL: true })
+                    }, 5000, this)
+                    setTimeout(async tempM => { tempM.delete() }, 20000, tempM)
+                    for (let i of this.afkInfo.reacts) await this.raidStatusMessage.react(i)
+                } else {
+                    interaction.deferUpdate()
+                    this.removeFromActiveInteractions(interaction.user.id)
+                }
+            }
+        }
         else for (let i in this.afkInfo.earlyLocationReacts) {
             let react = this.afkInfo.earlyLocationReacts[i]
             if (react.emoteID == interaction.customId) {
@@ -468,6 +488,7 @@ class afkCheck {
         actionRows.push(curRow); curRow = []
         addButton({ label: '✅ Start Run', style: 'SUCCESS', customId: 'start' })
         addButton({ label: '❌ Abort Run', style: 'DANGER', customId: 'end' })
+        if (this.afkInfo.twoPhase) addButton({ label: '✅ Open Channel', style: 'Success', customId: 'openvc' })
 
         // Add buttons and reacts
         if (curRow.length > 0) actionRows.push(curRow)
