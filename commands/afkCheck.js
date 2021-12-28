@@ -488,7 +488,7 @@ class afkCheck {
         actionRows.push(curRow); curRow = []
         addButton({ label: '✅ Start Run', style: 'SUCCESS', customId: 'start' })
         addButton({ label: '❌ Abort Run', style: 'DANGER', customId: 'end' })
-        if (this.afkInfo.twoPhase) addButton({ label: '✅ Open Channel', style: 'Success', customId: 'openvc' })
+        if (this.afkInfo.twoPhase) addButton({ label: '✅ Open Channel', style: 'SUCCESS', customId: 'openvc' })
 
         // Add buttons and reacts
         if (curRow.length > 0) actionRows.push(curRow)
