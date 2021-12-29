@@ -512,6 +512,12 @@ class afkCheck {
         // Prompt
         let id = interaction.customId
         let emote = this.bot.emojis.cache.get(id)
+        /**
+         * 
+         * @param {afkCheck} afk 
+         * @param {*} firstCall 
+         * @returns 
+         */
         function sendLocation(afk, firstCall = false) {
             //check for full
             if (!checkType(afk)) return
@@ -534,7 +540,13 @@ class afkCheck {
             }
 
             //allow another interaction
+            try{
             afk.removeFromActiveInteractions(interaction.user.id)
+            this.removeFromActiveInteractions(interaction.user.id)
+            afk.removeFromActiveInteractions(interaction.user.id)
+            } catch(er) {
+                console.log('failed to remove from active interactions', er)
+            }
 
             //give location
             if (!noLocation) {
