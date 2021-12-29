@@ -896,5 +896,3 @@ function startAPI() {
 module.exports = {
     bot
 }
-
-bot.on('rateLimit', (rateLimitData) => console.log(`Being Rate Limited:\n${rateLimitData}`))
