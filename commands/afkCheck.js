@@ -540,13 +540,7 @@ class afkCheck {
             }
 
             //allow another interaction
-            try {
-                afk.removeFromActiveInteractions(interaction.user.id)
-                this.removeFromActiveInteractions(interaction.user.id)
-                afk.removeFromActiveInteractions(interaction.user.id)
-            } catch (er) {
-                console.log('failed to remove from active interactions', er)
-            }
+            afk.removeFromActiveInteractions(interaction.user.id)
 
             //give location
             if (!noLocation) {
