@@ -599,9 +599,9 @@ class afkCheck {
                 if (type == r.shortName) reactInfo = r;
             }
 
-            embed.setDescription(`You reacted as ${emote.toString()}\n${(reactInfo && reactInfo.checkRealmEye) ? `If you have a(n) ${reactInfo.checkRealmEye.class} that is ${reactInfo.checkRealmEye.ofEight || 8}/8${reactInfo.checkRealmEye.orb ? ` and has a tier ${reactInfo.checkRealmEye.orb} orb` : ''}${reactInfo.checkRealmEye.mheal ? ` and a pet with at least ${reactInfo.checkRealmEye.mheal} mheal` : ``}` : ''}\nPress ✅ to confirm your reaction. Otherwise press ❌`)
+            embed.setDescription(`You reacted as ${emote}\n${(reactInfo && reactInfo.checkRealmEye) ? `If you have a(n) ${reactInfo.checkRealmEye.class} that is ${reactInfo.checkRealmEye.ofEight || 8}/8${reactInfo.checkRealmEye.orb ? ` and has a tier ${reactInfo.checkRealmEye.orb} orb` : ''}${reactInfo.checkRealmEye.mheal ? ` and a pet with at least ${reactInfo.checkRealmEye.mheal} mheal` : ``}` : ''}\nPress ✅ to confirm your reaction. Otherwise press ❌`)
             let ar = new Discord.MessageActionRow({ components: [{ type: 'BUTTON', customId: 'confirm', style: 'SUCCESS', label: '✅ Confirm' }, { type: 'BUTTON', customId: 'abort', style: 'DANGER', label: '❌ Cancel' }] })
-            interaction.reply({ embeds: [embed], ephemeral: true, components: [ar] })
+            await interaction.reply({ embeds: [embed], ephemeral: true, components: [ar] })
             let em = await interaction.fetchReply()
 
             let dmIntereactionCollector = new Discord.InteractionCollector(this.bot, { message: em, interactionType: 'MESSAGE_COMPONENT', componentType: 'BUTTON' })
