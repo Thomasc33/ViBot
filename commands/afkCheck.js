@@ -378,7 +378,7 @@ class afkCheck {
      */
     async interactionHandler(interaction) {
         if (!interaction.isButton()) return;
-        if (this.openInteractions.includes(interaction.user.id)) { console.log(`${interaction.member.nickname} tried to open another interaction while one was pending`); return interaction.deferUpdate() }
+        if (this.openInteractions.includes(interaction.user.id)) return interaction.deferUpdate()
         if (interaction.customId == this.afkInfo.keyEmoteID) {
             this.confirmSelection(interaction, 0, 'key', this.afkInfo.keyCount)
         }
@@ -423,7 +423,7 @@ class afkCheck {
         else for (let i in this.afkInfo.earlyLocationReacts) {
             let react = this.afkInfo.earlyLocationReacts[i]
             if (react.emoteID == interaction.customId) {
-                if (react.requiredRole && !interaction.member.roles.cache.has(this.settings.roles[react.requiredRole])) { console.log(`${interaction.member.nickname} tried to react but was missing the role`); return interaction.deferUpdate() }
+                if (react.requiredRole && !interaction.member.roles.cache.has(this.settings.roles[react.requiredRole])) return interaction.deferUpdate()
                 this.confirmSelection(interaction, +i + +1, react.shortName, react.limit, react.noConfirm, react.noLocation)
             }
         }
