@@ -378,7 +378,7 @@ class afkCheck {
      */
     async interactionHandler(interaction) {
         if (!interaction.isButton()) return;
-        if (this.openInteractions.includes(interaction.user.id)) return interaction.deferUpdate()
+        if (this.openInteractions.includes(interaction.user.id)) {console.log(`${interaction.member.nickname} tried to open another interaction while one was pending`); return interaction.deferUpdate()}
         if (interaction.customId == this.afkInfo.keyEmoteID) {
             this.confirmSelection(interaction, 0, 'key', this.afkInfo.keyCount)
         }
@@ -423,7 +423,7 @@ class afkCheck {
         else for (let i in this.afkInfo.earlyLocationReacts) {
             let react = this.afkInfo.earlyLocationReacts[i]
             if (react.emoteID == interaction.customId) {
-                if (react.requiredRole && !interaction.member.roles.cache.has(this.settings.roles[react.requiredRole])) return
+                if (react.requiredRole && !interaction.member.roles.cache.has(this.settings.roles[react.requiredRole])) {console.log(`${interaction.member.nickname} tried to react but was missing the role`); return interaction.deferUpdate()}
                 this.confirmSelection(interaction, +i + +1, react.shortName, react.limit, react.noConfirm, react.noLocation)
             }
         }
@@ -440,7 +440,7 @@ class afkCheck {
      * @param {Discord.MessageComponentInteraction} interaction 
      */
     async leaderInteractionHandler(interaction) {
-        if (!interaction.isButton()) return;
+        if (!interaction.isButton()) {console.log(`${interaction.member.nickname} had a non button iteraction`); return interaction.deferUpdate()}
         if (interaction.customId === 'abort') {
             this.endedBy = interaction.user;
             interaction.deferUpdate()
@@ -553,7 +553,7 @@ class afkCheck {
             afk.runInfoMessage.edit({ embeds: [afk.leaderEmbed] }).catch(er => ErrorLogger.log(er, afk.bot));
 
             //end interval
-            clearInterval(endAfter);
+            if (endAfter) clearInterval(endAfter);
         }
         function checkType(afk) { //true = spot open
             //key, vial, other
@@ -606,7 +606,7 @@ class afkCheck {
 
             let dmIntereactionCollector = new Discord.InteractionCollector(this.bot, { message: em, interactionType: 'MESSAGE_COMPONENT', componentType: 'BUTTON' })
 
-            await dmIntereactionCollector.on("collect", async subInteraction => {
+            dmIntereactionCollector.on("collect", async subInteraction => {
                 //Stop collector
                 dmIntereactionCollector.stop();
 
@@ -630,6 +630,7 @@ class afkCheck {
                         })
                         if (!found) {
                             embed.setDescription(`I could not find any 8/8 mystics under \`${this.message.guild.members.cache.get(interaction.user.id).nickname.replace(/[^a-z|]/gi, '').split('|')[0]}\`. React with :white_check_mark: if you do have an 8/8 mystic on another account`)
+                            interaction.editReply({embeds: [embed]})
                             let subInteractionCollector = new Discord.InteractionCollector(this.bot, { message: em, interactionType: 'MESSAGE_COMPONENT', componentType: 'BUTTON' })
                             subInteractionCollector.on('collect', subSubInteraction => {
                                 if (subSubInteraction.customId == 'confirm') sendLocation(this)
