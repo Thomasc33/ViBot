@@ -1,7 +1,7 @@
 const Discord = require('discord.js')
 const tables = require('../data/currentweekInfo.json').currentweek
 const ErrorLogger = require('../lib/logError');
-const quotas = require('../data/quotas.json'); 
+const quotas = require('../data/quotas.json');
 require('../lib/extensions');
 const CachedMessages = {}
 const excuses = require('./excuse');
@@ -38,13 +38,20 @@ module.exports = {
         if (!settings) return;
         const guildQuotas = quotas[guild.id];
         if (!guildQuotas) return;
-        const raidingQuotas = guildQuotas.filter(q => q.id == "raiding");
+        const raidingQuotas = guildQuotas.quotas.filter(q => q.id == "raiding");
         if (!raidingQuotas.length) return;
         const quota = raidingQuotas[0];
         let leaderLog = guild.channels.cache.get(settings.channels.pastweeks)
         if (!leaderLog) return console.log('Channel not found');
-        await this.sendEmbed(leaderLog, db, bot)
-        let q = `UPDATE users SET ${quota.values.map(v => `${v.column} = 0`).join(', ')}`
+        await this.sendEmbed(leaderLog, db, bot, true)
+        const rolling = quota.values.filter(v => v.rolling);
+        if (rolling.length)
+        {
+            const roll = `UPDATE users SET ${rolling[0].column} = GREATEST(` + quota.values.filter(v => !v.rolling).map(v => `(${v.column}*${v.value})`).join(' + ') + ' - ' + quota.quota + ', 0)';
+            const query = await db.query(roll,(err, rows) => { console.log(err)});
+            console.log(query.sql);
+        }
+        let q = `UPDATE users SET ${quota.values.filter(v => !v.rolling).map(v => `${v.column} = 0`).join(', ')}`
         await db.query(q)
         this.update(guild, db, bot)
     },
@@ -54,17 +61,18 @@ module.exports = {
         if (!currentweek) return;
         this.sendEmbed(currentweek, db, bot)
     },
-    sendEmbed(channel, db, bot) {
+    sendEmbed(channel, db, bot, nw) {
         const guild = channel.guild;
         if (!guild) return;
         const settings = bot.settings[guild.id];
         if (!settings) return;
         const guildQuotas = quotas[guild.id];
         if (!guildQuotas) return;
-        const raidingQuotas = guildQuotas.filter(q => q.id == "raiding");
+        const raidingQuotas = guildQuotas.quotas.filter(q => q.id == "raiding");
         if (!raidingQuotas.length) return;
 
         const quota = raidingQuotas[0];
+        let csvData = 'Leader ID,Leader Nickname,Total\n';
         return new Promise(async (resolve, reject) => {
             let embed = new Discord.MessageEmbed()
                 .setColor('#00ff00')
@@ -72,11 +80,13 @@ module.exports = {
                 .setDescription('None!')
                 .setFooter(`##### Total Runs`);
             const embeds = [];
-            const query = db.query(`SELECT id, ` + quota.values.map(v => v.column).join(', ') + `, ` +  '(' + quota.values.map(v => `(${v.column}*${v.value})`).join(' + ') + ')' + ` as total FROM Users WHERE ` + quota.values.map(v => `${v.column} != 0`).join(' OR ') + ` order by total desc`, async (err, rows) => {
+            const combine = quota.values.map(v => `(${v.column}*${v.value})`).join(' + ') + ' as total';
+            const query = db.query(`SELECT id, ` + quota.values.map(v => v.column).join(', ') + `, ${combine} FROM Users WHERE ` + quota.values.map(v => `${v.column} != 0`).join(' OR ') + ` order by total desc`, async (err, rows) => {
                 if (err) return reject(err);
                 let runCount = 0;
                 for (const idx in rows) {
                     const user = rows[idx];
+                    csvData += `${user.id},${channel.guild.members.cache.get(user.id)?.nickname},${user.total}\n`;
                     let result = `**[${parseInt(idx) + 1}]** <@!${user.id}>:\nRaids: \`${user.total}\` (` +
                         quota.values.map(v => `${v.name}: \`${user[v.column]||0}\``).join(', ') + ')';
                     runCount += quota.values.map(v => v.isRun ? user[v.column] : 0).reduce((a, b) => a+b, 0);
@@ -86,6 +96,7 @@ module.exports = {
                 rows = rows.map(r => r.id);
                 await channel.guild.members.cache.filter(m => m.roles.cache.has(settings.roles.almostrl) || m.roles.cache.has(settings.roles.rl)).each(m => {
                     if (!rows.includes(m.id)) {
+                        csvData += `${m.id},${m.nickname},0\n`;
                         fitStringIntoEmbed(embeds, embed, `<@!${m.id}> has not logged any runs or been assisted this week`)
                     }
                 })
@@ -130,6 +141,8 @@ module.exports = {
                         }
                     } catch (er) { console.log(er) }
                 } else for (let i in embeds) channel.send({ embeds: [embeds[i]] })
+                if (nw) 
+                    channel.send({ files: [new Discord.MessageAttachment(Buffer.from(csvData, "utf-8"),"currentweekResetData.csv")] })
                 resolve(true);
             });
         });
