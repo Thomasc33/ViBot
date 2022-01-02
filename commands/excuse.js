@@ -172,8 +172,6 @@ module.exports = {
             const unexcused = Object.values(unmet_quotas)
                 .map(u => `'${u.member.id}'`)
                 .filter(u => !excused.includes(u));
-            console.log(excused);
-            console.log(unexcused);
             if (excused.length)
                 await new Promise(res => db.query(`UPDATE users SET ${guildQuota.consecutiveUnexcused} = 0 WHERE id IN (${excused.join(', ')})`, () => res()))
             if (unexcused.length)
@@ -286,14 +284,12 @@ module.exports = {
         })
     },
     async calculateMissed(guild, bot, db, channel, reset) {
-        console.log(1)
         const settings = bot.settings[guild.id];
         if (!settings || !settings.backend.sendmissedquota) return;
         const activitylog = channel ? channel : guild.channels.cache.get(settings.channels.activitylog);
         if (!activitylog) return;
         const guildQuota = quotas[guild.id];
         if (!guildQuota) return;
-        console.log(2)
         const unmet_quotas = await this.getMissed(guild, bot, db, guildQuota, settings);
         const unexcused = [];
         const keys = Object.values(unmet_quotas).filter(i => !i.leave && i.quotas.length);
@@ -306,7 +302,6 @@ module.exports = {
             const issues = unmet_quotas[id];
             if (issues.leave) continue;
             if (!issues.quotas.length) continue;
-            console.log(id);
             const embed = new Discord.MessageEmbed()
                 .setAuthor(issues.member.nickname || issues.member.user.tag, issues.member.user.displayAvatarURL())
                 .setDescription(`Unmet Quota for ${issues.member}`)
