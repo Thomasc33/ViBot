@@ -35,9 +35,61 @@ module.exports = {
             case 'resetall':
                 this.resetExcuses(message.guild, bot, db, true);
                 break;
+            case 'ignore':
+                this.ignore(message, args, bot, db);
+                break;
+            case 'unignore':
+                this.unignore(message, args, bot, db);
+                break;
+            case 'isignored':
+                this.isignored(message, args, bot, db);
+                break;
             default:
                 return message.channel.send('Invalid arguments: `;excuse <list/remove> [names/ids] | <add> <name/id> <reason> [image]`');
         }
+    },
+    async getIgnore(guildId, db) {
+        return new Promise(res => {
+            db.query(`SELECT * FROM ignoreCurrentWeek WHERE guildId = '${guildId}'`, (err, rows) => {
+                res(rows && rows.length ? rows[0] : null);
+            })
+        })
+    },
+    async isignored(message, args, bot, db) {
+        const ignore = await this.getIgnore(message.guild.id, db);
+        let embed = new Discord.MessageEmbed()
+            .setAuthor(`Ignore Current Week`)
+            .setTitle(ignore ? `Currently Ignored` : `Currently Active`)
+            .setDescription(ignore ? ignore.reason : `To ignore the current week, use \`;excuse ignore [reason]\`.`);
+        message.channel.send({ embeds: [embed] });
+    },
+    async ignore(message, args, bot, db) {
+        const ignore = await this.getIgnore(message.guild.id, db);
+        let embed = new Discord.MessageEmbed()
+            .setAuthor(`Ignore Current Week`);
+        if (ignore) {
+            embed.setDescription(`Current week is already ignored: \`\`\`${ignore.reason}\`\`\``)
+        } else {
+            await db.query(`INSERT INTO ignoreCurrentWeek (guildId, reason) VALUES ('${message.guild.id}', ?)`, [args.join(' ')]);
+            embed.setDescription(`Current week has been ignored for the following reason: \`\`\`${args.join(' ')}\`\`\``)
+                .setColor("#00FF00");
+        }
+
+        message.channel.send({ embeds: [embed] })
+    },
+    async unignore(message, args, bot, db) {
+        const ignore = await this.getIgnore(message.guild.id, db);
+        let embed = new Discord.MessageEmbed()
+            .setAuthor(`Ignore Current Week`);
+        if (!ignore) {
+            embed.setDescription(`Current week is not currently ignored.`)
+        } else {
+            await db.query(`DELETE FROM ignoreCurrentWeek WHERE guildId = '${message.guild.id}'`);
+            embed.setDescription(`Current week has been unignored. It was previously ignored for the following reason: \`\`\`${ignore.reason}\`\`\``)
+                .setColor("#00FF00");
+        }
+        message.channel.send({ embeds: [embed] })
+
     },
     async listAll(message, args, bot, db) {
         db.query(`SELECT * FROM excuses where guildid = '${message.guild.id}''`, async(err, rows) => {
@@ -167,11 +219,16 @@ module.exports = {
             if (!guildQuota) return;
             const unmet_quotas = await this.getMissed(guild, bot, db, guildQuota, settings);
             const excused = Object.values(unmet_quotas)
-                .filter(u => u.leave || u.excuse || !u.quotas.length)
+                .filter(u => u.leave || u.excuse || !u.quotas.length || u.met.length)
                 .map(l => `'${l.member.id}'`);
+            const leave = Object.values(unmet_quotas)
+                .filter(u => u.leave)
+                .map(u => `'${u.member.id}'`);
             const unexcused = Object.values(unmet_quotas)
                 .map(u => `'${u.member.id}'`)
                 .filter(u => !excused.includes(u));
+            const check = leave.length ? `id IN (${leave.join(', ')})` : 'false';
+            await db.query(`UPDATE users SET ${guildQuota.consecutiveLeave} = IF(${check}, ${guildQuota.consecutiveLeave} + 1, 0)`)
             if (excused.length)
                 await new Promise(res => db.query(`UPDATE users SET ${guildQuota.consecutiveUnexcused} = 0 WHERE id IN (${excused.join(', ')})`, () => res()))
             if (unexcused.length)
@@ -205,7 +262,15 @@ module.exports = {
                         const ignore = (guildQuota.ignoreRoles || []).map(r => settings.roles[r]).filter(r => r);
                         if (!member.roles.cache.filter(r => roles.includes(r)).size ||
                             member.roles.cache.filter(r => ignore.includes(r.id)).size) continue;
-                        if (!unmet[member.id]) unmet[member.id] = { member, quotas: [], met: [], consecutive: parseInt(row[guildQuota.consecutiveUnexcused]) + 1, totalMissed: parseInt(row[guildQuota.totalUnexcused]) };
+                        if (!unmet[member.id])
+                            unmet[member.id] = {
+                                member,
+                                quotas: [],
+                                met: [],
+                                consecutive: parseInt(row[guildQuota.consecutiveUnexcused]) + 1,
+                                totalMissed: parseInt(row[guildQuota.totalUnexcused]),
+                                consecutiveLeave: parseInt(row[guildQuota.consecutiveLeave])
+                            };
                         let total = 0;
                         for (const type of quota.values) {
                             total += (row[type.column] || 0) * type.value;
@@ -300,12 +365,16 @@ module.exports = {
         activitylog.send({ embeds: [header] })
         for (const id in unmet_quotas) {
             const issues = unmet_quotas[id];
-            if (issues.leave) continue;
             if (!issues.quotas.length) continue;
             const embed = new Discord.MessageEmbed()
                 .setAuthor(issues.member.nickname || issues.member.user.tag, issues.member.user.displayAvatarURL())
                 .setDescription(`Unmet Quota for ${issues.member}`)
                 .setColor('#ff0000');
+            if (issues.leave) {
+                if (issues.consecutiveLeave < 2)
+                    continue;
+                embed.addField("Consecutive Leave", `${issues.consecutiveLeave} weeks`, true);
+            }
             embed.addField("Total Unexcused", `${issues.totalMissed + (issues.excuse ? 0 : 1)}`, true);
             embed.addField("Consecutive Unexcused", `${issues.excuse ? 0 : issues.consecutive}`, true);
             for (const issue of issues.quotas) {

@@ -24,6 +24,11 @@
             "reactName": "fungalReact",
             "prettyName": "Fungals",
             "react": "<:fungal:723001215696240660>"
+        },
+        {
+            "reactName": "fskipReact",
+            "prettyName": "Full-Skip Voids",
+            "react": "<:SkipBoi:701491230391140453>"
         }
     ],
     "708026927721480254": [

@@ -21,17 +21,23 @@ module.exports = {
             case 'update':
                 this.update(message.guild, db, bot);
                 break;
-            case 'test':
-                this.test(message.guild, db, bot);
+            case 'fullreset':
+                this.fullReset(message.guild, db, bot, true);
                 break;
         }
     },
-    async test(guild, db, bot) {
+    async fullReset(guild, db, bot, doNewWeek) {
         if (bot.settings[guild.id].backend.sendmissedquota) {
-            excuses.calculateMissed(guild, bot, bot.dbs[guild.id], null, true);
-            excuses.resetExcuses(guild, bot, bot.dbs[guild.id], true);
+            const ignore = await excuses.getIgnore(guild.id, db);
+            if (!ignore) {
+                await excuses.calculateMissed(guild, bot, bot.dbs[guild.id], null, true);
+                await excuses.resetExcuses(guild, bot, bot.dbs[guild.id], true);
+            } else {
+                db.query(`DELETE FROM ignoreCurrentWeek WHERE guildId = ${guild.id}`)
+            }
         }
-        this.newWeek(guild, bot, bot.dbs[guild.id]);
+        if (doNewWeek)
+            this.newWeek(guild, bot, bot.dbs[guild.id]);
     },
     async newWeek(guild, bot, db) {
         const settings = bot.settings[guild.id];

@@ -219,7 +219,7 @@
             "reqsImageUrl": "",
             "keyEmoteID": "701491230260985877",
             "vialEmoteID": "701491230567039018",
-            "pingRole": "voidping",
+            "pingRole": ["voidping", "fskipReact"],
             "keyLogName": "keypops",
             "runLogName": "voidRuns",
             "headcountEmote": "701491230391140453",
@@ -240,11 +240,6 @@
                     "pointsGiven": 2,
                     "limit": 3,
                     "shortName": "mystic",
-                    "checkRealmEye": {
-                        "class": "mystic",
-                        "mheal": "85",
-                        "orb": "2"
-                    },
                     "noConfirm": false,
                     "noLocation": false
                 },
@@ -289,7 +284,7 @@
             "reqsImageUrl": "",
             "keyEmoteID": "701491230260985877",
             "vialEmoteID": "701491230567039018",
-            "pingRole": "voidping",
+            "pingRole": ["voidping", "fskipReact"],
             "keyLogName": "keypops",
             "runLogName": "voidRuns",
             "headcountEmote": "701491230391140453",
@@ -310,11 +305,6 @@
                     "pointsGiven": 2,
                     "limit": 3,
                     "shortName": "mystic",
-                    "checkRealmEye": {
-                        "class": "mystic",
-                        "mheal": "85",
-                        "orb": "2"
-                    },
                     "noConfirm": false,
                     "noLocation": false
                 },
@@ -629,7 +619,7 @@
             "reqsImageUrl": "",
             "keyEmoteID": "701491230260985877",
             "vialEmoteID": "701491230567039018",
-            "pingRole": "voidping",
+            "pingRole": ["voidping", "fskipReact"],
             "keyLogName": "keypops",
             "runLogName": "voidRuns",
             "headcountEmote": "701491230391140453",
@@ -650,11 +640,6 @@
                     "pointsGiven": 2,
                     "limit": 3,
                     "shortName": "mystic",
-                    "checkRealmEye": {
-                        "class": "mystic",
-                        "mheal": "85",
-                        "orb": "2"
-                    },
                     "noConfirm": false,
                     "noLocation": false
                 },
@@ -699,7 +684,7 @@
             "reqsImageUrl": "",
             "keyEmoteID": "701491230260985877",
             "vialEmoteID": "701491230567039018",
-            "pingRole": "voidping",
+            "pingRole": ["voidping", "fskipReact"],
             "keyLogName": "keypops",
             "runLogName": "voidRuns",
             "headcountEmote": "701491230391140453",
@@ -720,11 +705,6 @@
                     "pointsGiven": 2,
                     "limit": 3,
                     "shortName": "mystic",
-                    "checkRealmEye": {
-                        "class": "mystic",
-                        "mheal": "85",
-                        "orb": "2"
-                    },
                     "noConfirm": false,
                     "noLocation": false
                 },

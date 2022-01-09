@@ -361,9 +361,9 @@ bot.on("ready", async () => {
         bot.guilds.cache.each(g => {
             if (!emojiServers.includes(g.id)) {
                 if (bot.settings[g.id].backend.sendmissedquota) {
-                    excuses.calculateMissed(g, bot, bot.dbs[g.id], null, true);
-                    excuses.resetExcuses(g, bot, bot.dbs[g.id], true);
+                    currentWeek.fullReset(g, bot.dbs[g.id], bot);
                 }
+                
                 if (bot.settings[g.id].backend.currentweek && !bot.settings[g.id].backend.raidResetMonthly) currentWeek.newWeek(g, bot, bot.dbs[g.id]);
                 if (bot.settings[g.id].backend.eventcurrentweek && !bot.settings[g.id].backend.eventResetMonthly) ecurrentWeek.newWeek(g, bot, bot.dbs[g.id])
                 if (bot.settings[g.id].backend.parsecurrentweek && !bot.settings[g.id].backend.parseResetMonthly) pcurrentWeek.newWeek(g, bot, bot.dbs[g.id])
@@ -440,10 +440,11 @@ bot.on('guildMemberRemove', member => {
     }
 })
 
-bot.on('messageReactionAdd', (r, u) => {
+bot.on('messageReactionAdd', async (r, u) => {
     if (u.bot) return
-
     //modmail
+    if (r.message.partial)
+        r.message = await r.message.fetch();
     if (r.emoji.name == '🔑' && r.message.guild && r.message.author.id == bot.user.id && r.message.guild && bot.settings[r.message.guild.id] && r.message.channel.id == bot.settings[r.message.guild.id].channels.modmail) {
         modmail.modmailLogic(r.message, bot.dbs[r.message.guild.id], u)
     }

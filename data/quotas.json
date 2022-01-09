@@ -34,8 +34,9 @@
         ]
     },
     "343704644712923138": {
-        "totalExcused": "totalUnexcused",
-        "consecutiveExcused": "consecutiveUnexcused",
+        "totalUnexcused": "totalUnexcused",
+        "consecutiveUnexcused": "consecutiveUnexcused",
+        "consecutiveLeave": "consecutiveLeave",
         "ignoreRoles": ["officer", "headrl", "moderator", "headeventrl"],
         "quotas": [{
                 "id": "raiding",
@@ -65,7 +66,8 @@
     },
     "708026927721480254": {
         "totalUnexcused": "totalUnexcusedo3",
-        "consecutiveUnexcused": "consecutiveUnxcusedo3",
+        "consecutiveUnexcused": "consecutiveUnexcusedo3",
+        "consecutiveLeave": "consecutiveLeaveo3",
         "ignoreRoles": ["officer", "headrl", "moderator", "headeventrl"],
         "quotas": [{
             "id": "raiding",
