@@ -10,7 +10,10 @@ module.exports = {
                   \`add <name/id> [reason] [image]\` - Add an excuse for a staff member.
                   \`remove <names/ids...>\` - Removes the listed members' excuses.
                   \`display\` - Forces the display of missed quota embeds into the activity log channel. This will not reset them.
-                  \`resetall\` - Resets all excuses. This will not change the time they reset at weekly and will not archive the excuses removed.`,
+                  \`resetall\` - Resets all excuses. This will not change the time they reset at weekly and will not archive the excuses removed.
+                  \`ignore [reason]\` - Ignore the current week for the guild. This will stop weeks unexcused from updating and no messages in the activity log will be sent.
+                  \`unignore\` - Unignore the current week.
+                  \`isignored\` - List the current ignored status for this week.`,
     requiredArgs: 1,
     guildSpecific: true,
     async execute(message, args, bot, db) {
