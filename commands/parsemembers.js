@@ -141,7 +141,8 @@ module.exports = {
             //post in crasher-list
             let key = null
             if (message.member.voice.channel && bot.afkChecks[message.member.voice.channel.id] && bot.afkChecks[message.member.voice.channel.id].key) key = bot.afkChecks[message.member.voice.channel.id].key
-            postInCrasherList(embed, message.guild.channels.cache.get(settings.channels.parsechannel), message.member, key)
+            if (settings.commands.crasherlist)
+                postInCrasherList(embed, message.guild.channels.cache.get(settings.channels.parsechannel), message.member, key)
         }
         async function characterParse() {
             let unreachable = []
@@ -314,6 +315,7 @@ module.exports = {
 }
 
 async function postInCrasherList(embed, channel, parser, key) {
+    
     let m
     if (key) {
         m = await channel.send(`<@!${key}> please double check with ${parser} \`${parser.nickname}\` before kicking anyone`, embed)
