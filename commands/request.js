@@ -52,7 +52,7 @@ module.exports = {
     async executeOld(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         let isVet
-        if (message.channel.parent.name.toLowerCase() === 'raiding') isVet = false;
+        if (message.channel.parent.name.toLowerCase() === settings.categories.event) isVet = false;
         else if (message.channel.name === 'veteran raiding') isVet = true;
         else return message.channel.send("Try again, but in a correct section");
 

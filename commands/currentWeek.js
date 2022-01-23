@@ -27,17 +27,18 @@ module.exports = {
         }
     },
     async fullReset(guild, db, bot, doNewWeek) {
+        const ignore = await excuses.getIgnore(guild.id, db);
         if (bot.settings[guild.id].backend.sendmissedquota) {
-            const ignore = await excuses.getIgnore(guild.id, db);
             if (!ignore) {
                 await excuses.calculateMissed(guild, bot, bot.dbs[guild.id], null, true);
                 await excuses.resetExcuses(guild, bot, bot.dbs[guild.id], true);
-            } else {
-                db.query(`DELETE FROM ignoreCurrentWeek WHERE guildId = ${guild.id}`)
-            }
+            } 
         }
         if (doNewWeek)
             this.newWeek(guild, bot, bot.dbs[guild.id]);
+        if (ignore)
+            db.query(`DELETE FROM ignoreCurrentWeek WHERE guildId = ${guild.id}`)
+
     },
     async newWeek(guild, bot, db) {
         const settings = bot.settings[guild.id];
@@ -53,9 +54,11 @@ module.exports = {
         const rolling = quota.values.filter(v => v.rolling);
         if (rolling.length)
         {
-            const roll = `UPDATE users SET ${rolling[0].column} = GREATEST(` + quota.values.filter(v => !v.rolling).map(v => `(${v.column}*${v.value})`).join(' + ') + ' - ' + quota.quota + ', 0)';
-            const query = await db.query(roll,(err, rows) => { console.log(err)});
-            console.log(query.sql);
+            const ignore = await excuses.getIgnore(guild.id, db);
+            
+            const query = `UPDATE users SET ${rolling[0].column} = GREATEST(` + quota.values.filter(v => !v.rolling).map(v => `(${v.column}*${v.value})`).join(' + ') + ' - ' + quota.quota + ', 0)';
+            
+            await db.query(ignore ? `UPDATE users SET ${rolling[0].column} = 0` : query ,(err, rows) => { console.log(err) });
         }
         let q = `UPDATE users SET ${quota.values.filter(v => !v.rolling).map(v => `${v.column} = 0`).join(', ')}`
         await db.query(q)

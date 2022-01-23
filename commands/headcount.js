@@ -30,7 +30,7 @@ module.exports = {
 
         //check to see if an event exists under args[0]
         if (message.channel.parent.name.toLowerCase() !== settings.categories.raiding && eventAfk.getEventType(args[0], eventFile)) return eventHC()
-        if (message.channel.parent.name.toLowerCase() !== 'events') {
+        if (message.channel.parent.name.toLowerCase() !== settings.categories.event) {
             let symbol = args[0].charAt(0).toLowerCase();
             if (symbol == 'a' && args[0].length > 1)
                 symbol += args[0].charAt(1).toLowerCase();

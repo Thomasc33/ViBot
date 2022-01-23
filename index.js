@@ -35,6 +35,7 @@ const restarting = require('./commands/restart')
 const createTemplate = require('./commands/createTemplate')
 const hostkeys = require('./commands/hostkey');
 const excuses = require('./commands/excuse');
+const quotas = require('./data/quotas.json');
 // Global Variables/Data
 const botSettings = require('./settings.json')
 const token = require('./botKey.json')
@@ -355,7 +356,8 @@ bot.on("ready", async () => {
     //initialize channels from createchannel.js
     require('./commands/createChannel').init(bot)
 
-
+    
+    
     //reset currentweek
     const currentWeekReset = cron.job('0 0 * * SUN', () => {
         bot.guilds.cache.each(g => {
