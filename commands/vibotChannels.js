@@ -24,7 +24,9 @@ module.exports = {
                 if (m.author.id !== bot.user.id) return;
                 if (m.embeds.length == 0) return;
                 let embed = m.embeds[0]
-                if (!watchedMessages.includes(embed.footer.text)) module.exports.watchMessage(m, bot, settings)
+                if (!watchedMessages.includes(embed.footer.text))  {
+                    module.exports.watchMessage(m, bot, settings)
+                }
             })
         }
         for (let i in bot.afkChecks) {
@@ -51,19 +53,27 @@ module.exports = {
                 await m.reactions.removeAll()
                 await m.react('✅')
                 await m.react('❌')
+                embed.footer.text = `Openned By ${m.guild.members.cache.get(u.id).nickname||u.tag} • ${embed.footer.text}`;
+                message =  m = await m.edit({ embeds: m.embeds })
+                embed = message.embeds[0]
                 let confirmReactionCollector = new Discord.ReactionCollector(m, { filter: (r, uu) => (r.emoji.name === '✅' || r.emoji.name === '❌') && u.id == uu.id })
+                
                 confirmReactionCollector.on('collect', async (r, u) => {
                     if (r.emoji.name == '❌') {
                         await m.reactions.removeAll()
                         confirmReactionCollector.stop()
                         await m.react('❌')
-                        this.update(m.guild, bot)
+                        m.embeds[0].footer.text = embed.footer.text.split(' ').pop()
+                        message = m = await m.edit({ embeds: m.embeds })
+                        embed = message.embeds[0]
+                        await this.update(m.guild, bot)
                     } else remove()
                 })
             }
             async function remove() {
                 for (let i in bot.afkChecks) {
-                    if (i == embed.footer.text) {
+                    const id = embed.footer.text.split(' ').pop()
+                    if (i == id) {
                         let key = await message.guild.members.cache.get(bot.afkChecks[i].key)
                         if (key) {
                             let keyRole = await message.guild.roles.cache.get(settings.roles.tempkey)
