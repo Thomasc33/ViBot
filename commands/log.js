@@ -90,7 +90,9 @@ module.exports = {
 
         embed.setDescription(desc)
         message.channel.send({ embeds: [currentWeekEmbed] })
-        message.guild.channels.cache.get(settings.channels.leadinglog).send({ embeds: [embed] })
+        const logChannel = message.guild.channels.cache.get(settings.channels.leadinglog)
+        if (logChannel) 
+            logChannel.send({ embeds: [embed] })
         if (!toUpdate) return
         if (toUpdate == 1 && settings.backend.currentweek) CurrentWeek.update(message.guild, db, bot)
         if (toUpdate == 2 && settings.backend.eventcurrentweek) eCurrentWeek.update(message.guild, db, bot)
