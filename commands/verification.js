@@ -404,13 +404,14 @@ module.exports = {
         })
     },
     async watchMessage(message, bot, db) {
+        const member_id = embed.footer.text.split(' ').pop()
+        let member = await message.guild.members.fetch(member_id).catch(e => ErrorLogger.log(e, bot));
         //variables
         let embed = message.embeds[0]
-        watching.push(embed.footer.text)
+        watching.push(member.id)
         let settings = bot.settings[message.guild.id]
-        let member = await message.guild.members.fetch(embed.footer.text).catch(e => ErrorLogger.log(e, bot));
         if (!member) {
-            message.guild.channels.cache.get(settings.channels.verificationlog).send(`<@!${embed.footer.text}> Left server while under manual review`)
+            message.guild.channels.cache.get(settings.channels.verificationlog).send(`<@!${member_id}> Left server while under manual review`)
             return message.delete()
         }
         let desc = embed.author.name.split(/ +/)
@@ -421,10 +422,12 @@ module.exports = {
         reactionCollector.on('collect', async (r, u) => {
             //check to make sure member is still in the server
             if (!member) {
-                message.guild.channels.cache.get(settings.channels.verificationlog).send(`<@!${embed.footer.text}> Left server while under manual review`)
+                message.guild.channels.cache.get(settings.channels.verificationlog).send(`<@!${member_id}> Left server while under manual review`)
                 reactionCollector.stop()
                 return message.delete()
             }
+            message.embeds[0].footer.text = `Openned by ${message.guild.members.cache.get(u.id).nickname || u.tag}`
+
             //remove reactions and get reactor
             let reactor = message.guild.members.cache.get(u.id)
             //stop old reaction collector, start new reaction collector

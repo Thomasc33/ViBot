@@ -16,14 +16,14 @@ var emitter = new EventEmitter()
 var runs = [] //{channel: id, afk: afk instance}
 
 module.exports = {
-    name: 'afk',
-    // alias: ['nafk'],
-    description: 'The new version of the afk check',
-    requiredArgs: 1,
-    args: '<run symbol> (key count) <location>',
-    role: 'almostrl',
-    getNotes(guildid, member) {
-        return `${afkTemplates[guildid] ? Object.keys(afkTemplates[guildid]).map(afk => `\`${afkTemplates[guildid][afk].symbol}\``).join(', ') : 'None for guild'}${afkTemplates[member.id] ? `, ${Object.keys(afkTemplates[member.id]).map(afk => `\`${afkTemplates[member.id][afk].symbol}\``).join(', ')}` : ''}`
+        name: 'afk',
+        // alias: ['nafk'],
+        description: 'The new version of the afk check',
+        requiredArgs: 1,
+        args: '<run symbol> (key count) <location>',
+        role: 'almostrl',
+        getNotes(guildid, member) {
+            return `${afkTemplates[guildid] ? Object.keys(afkTemplates[guildid]).map(afk => `\`${afkTemplates[guildid][afk].symbol}\``).join(', ') : 'None for guild'}${afkTemplates[member.id] ? `, ${Object.keys(afkTemplates[member.id]).map(afk => `\`${afkTemplates[member.id][afk].symbol}\``).join(', ')}` : ''}`
     },
     emitter,
     getRunType,
@@ -217,6 +217,7 @@ class afkCheck {
             this.staffRole = guild.roles.cache.get(this.settings.roles.eventrl)
         } else {
             if (this.afkInfo.isVet) this.raidStatus = this.guild.channels.cache.get(this.settings.channels.vetstatus)
+            else if (this.afkInfo.isExalt) this.raidStatus = this.guild.channels.cache.get(!isNaN(this.settings.channels.exaltstatus) ? this.settings.channels.exaltstatus : this.settings.channels.eventstatus)
             else this.raidStatus = this.guild.channels.cache.get(this.settings.channels.raidstatus)
             if (this.afkInfo.isVet) this.commandChannel = this.guild.channels.cache.get(this.settings.channels.vetcommands)
             else this.commandChannel = this.guild.channels.cache.get(this.settings.channels.raidcommands)
@@ -1407,4 +1408,4 @@ function requestReactionHandler(r, u, channelId) {
             return
         }
     }
-}
+}   
