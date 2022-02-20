@@ -11,7 +11,7 @@ const rateLimit = require('express-rate-limit')
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
 const path = require('path');
-
+const moment = require('moment');
 global.appRoot = path.resolve(__dirname); //put here so verification ml doenst break
 
 
@@ -360,15 +360,16 @@ bot.on("ready", async () => {
     
     //reset currentweek
     const currentWeekReset = cron.job('0 0 * * SUN', () => {
+        const biweekly = !(moment().diff(moment(1413378000), 'week') % 2);
         bot.guilds.cache.each(g => {
             if (!emojiServers.includes(g.id)) {
+                const backend = bot.settings[g.id].backend;
                 if (bot.settings[g.id].backend.sendmissedquota) {
                     currentWeek.fullReset(g, bot.dbs[g.id], bot);
                 }
-                
-                if (bot.settings[g.id].backend.currentweek && !bot.settings[g.id].backend.raidResetMonthly) currentWeek.newWeek(g, bot, bot.dbs[g.id]);
-                if (bot.settings[g.id].backend.eventcurrentweek && !bot.settings[g.id].backend.eventResetMonthly) ecurrentWeek.newWeek(g, bot, bot.dbs[g.id])
-                if (bot.settings[g.id].backend.parsecurrentweek && !bot.settings[g.id].backend.parseResetMonthly) pcurrentWeek.newWeek(g, bot, bot.dbs[g.id])
+                if (backend.currentweek && ((!backend.raidResetMonthly && !backend.raidResetBiweekly) || (backend.raidResetBiweekly && biweekly))) currentWeek.newWeek(g, bot, bot.dbs[g.id]);
+                if (backend.eventcurrentweek && ((!backend.eventResetMonthly && !backend.eventResetBiweekly) || (backend.eventResetBiweekly && biweekly))) ecurrentWeek.newWeek(g, bot, bot.dbs[g.id])
+                if (backend.parsecurrentweek && ((!backend.parseResetMonthly && !backend.parseResetBiweekly) || (backend.parseResetBiweekly && biweekly))) pcurrentWeek.newWeek(g, bot, bot.dbs[g.id])
             }
         })
     }, null, true, 'America/New_York', null, false)
