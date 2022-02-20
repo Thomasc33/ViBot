@@ -430,6 +430,7 @@ function getDefaultChannelName(name) {
         case 'keyalerts': return 'key-alerts';
         case 'activitylog': return 'activity-log';
         case 'raidingrules': return 'raiding-rules';
+        case 'exaltstatus': return 'exalt-status-announcements';
     }
 }
 
