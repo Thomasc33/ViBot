@@ -12,7 +12,9 @@
             "voidRuns",
             "eventsLead",
             "parses",
-            "feedback"
+            "feedback",
+            "exaltsLead",
+            "exaltFeedback"
         ],
         "currentweeks": [
             {
@@ -38,6 +40,14 @@
             {
                 "case": "eventsLead",
                 "currentWeekName": "currentweekEvents"
+            },
+            {
+                "case": "exaltsLead",
+                "currentWeekName": "currentweekExalts"
+            },
+            {
+                "case": "exaltFeedback",
+                "currentWeekName": "currentweekExaltFeedback"
             }
         ]
     },
