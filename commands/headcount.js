@@ -27,8 +27,7 @@ module.exports = {
             symbol += args[0].charAt(1).toLowerCase();
         const runType = afkCheck.getRunType(symbol, message.guild.id)
         const eventTypes = eventAfk.getMatchingEvents(args[0], eventFile, message.guild.id)
-        
-        if (runType) {
+        if (runType && message.channel.parent.name.toLowerCase() != settings.categories.event) {
             if (settings.backend.exaltsInRSA)
                 eventTypes.push(runType)
             else return hallsHC()
@@ -54,7 +53,6 @@ module.exports = {
             msg.awaitMessageComponent({ filter: i => i.isSelectMenu() && i.customId == id && i.user.id == message.author.id }).then(i => {
                 i.deferUpdate();
                 msg.delete();
-                console.log(i.values)
                 const val = i.values[0]
                 if (!val) return;
                 const evt = eventTypes.filter(e => e.name == val || e.runName == val)[0]
@@ -93,7 +91,6 @@ module.exports = {
         }
         async function eventHC(event) {
             return new Promise(async (res, rej) => {
-                console.log(event)
                 if (!event) return rej('No event found')
                 if (!event.enabled) return rej(`${event.name} is currently disabled.`);
                 let channel;

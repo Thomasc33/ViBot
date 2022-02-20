@@ -44,6 +44,7 @@ module.exports = {
             vcCap: 45,
             timeLimit: 300,
             keyCount: 3,
+            twoPhase: !!event.twoPhase,
             earlyLocationCost: 15,
             isAdvanced: settings.backend.allowAdvancedRuns && event.isAdvanced,
             isExalt: event.isExalt,
@@ -62,7 +63,7 @@ module.exports = {
             reacts: [],
             embed: {
                 color: event.color,
-                description: `To join, **click here** <#{voiceChannel}>\nIf you have a key react with <${event.keyEmote}>\nTo indicate your class or gear choices, react with ${event.rushers ? `<${botSettings.emote.Plane}>` : ''} ${event.stun ? `<${botSettings.emote.Collo}>` : ''} ${event.ogmur ? `<${botSettings.emote.Ogmur}>` : ''} ${event.fungal ? `<${botSettings.emote.UTTomeoftheMushroomTribes}>` : ''} ${event.mseal ? `<${botSettings.emote.MarbleSeal}>` : ''} ${event.brain ? `<${botSettings.emote.Brain}>` : ''} ${event.mystic ? `<${botSettings.emote.Mystic}>` : ''} ${event.paralyze ? `<${botSettings.emote.Paralyze}>` : ''}${event.slow ? `<${botSettings.emote.Slow}>` : ''} ${event.daze ? `<${botSettings.emote.Qot}>` : ''} ${event.curse ? `<${botSettings.emote.Curse}>` : ''} ${event.expose ? `<${botSettings.emote.Expose}>` : ''} ${event.warrior ? `<${botSettings.emote.Warrior}>` : ''} ${event.paladin ? `<${botSettings.emote.Paladin}>` : ''} ${event.bard ? `<${botSettings.emote.Bard}>` : ''} ${event.priest ? `<${botSettings.emote.Priest}>` : ''} ${event.trickster ? `<${botSettings.emote.trickster}>` : ''} ${event.knight ? `<${botSettings.emote.Knight}>` : ''}\nIf you have the role <@&${settings.roles.nitro}> react with <:nitro:701491230349066261> to get into VC`
+                description: `To join, **click here** {voicechannel}\nIf you have a key react with <${event.keyEmote}>\nTo indicate your class or gear choices, react with ${event.rushers ? `<${botSettings.emote.Plane}>` : ''} ${event.stun ? `<${botSettings.emote.Collo}>` : ''} ${event.ogmur ? `<${botSettings.emote.Ogmur}>` : ''} ${event.fungal ? `<${botSettings.emote.UTTomeoftheMushroomTribes}>` : ''} ${event.mseal ? `<${botSettings.emote.MarbleSeal}>` : ''} ${event.brain ? `<${botSettings.emote.Brain}>` : ''} ${event.mystic ? `<${botSettings.emote.Mystic}>` : ''} ${event.paralyze ? `<${botSettings.emote.Paralyze}>` : ''}${event.slow ? `<${botSettings.emote.Slow}>` : ''} ${event.daze ? `<${botSettings.emote.Qot}>` : ''} ${event.curse ? `<${botSettings.emote.Curse}>` : ''} ${event.expose ? `<${botSettings.emote.Expose}>` : ''} ${event.warrior ? `<${botSettings.emote.Warrior}>` : ''} ${event.paladin ? `<${botSettings.emote.Paladin}>` : ''} ${event.bard ? `<${botSettings.emote.Bard}>` : ''} ${event.priest ? `<${botSettings.emote.Priest}>` : ''} ${event.trickster ? `<${botSettings.emote.trickster}>` : ''} ${event.knight ? `<${botSettings.emote.Knight}>` : ''}\nIf you have the role <@&${settings.roles.nitro}> react with <:nitro:701491230349066261> to get into VC`
             },
         }
         eventTemplate['font-color'] = '#eeeeee'

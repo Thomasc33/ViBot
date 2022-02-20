@@ -44,126 +44,23 @@ module.exports = {
             var commandPanel = new Discord.MessageEmbed()
                 .setTitle('Commands')
                 .setColor('#ff0000')
-            if (message.guild.roles.cache.get(settings.roles.raider) && (override || message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.raider).position)) {
-                let line = ''
+
+            const fields = {};
+            for (const roleName in settings.roles) {
+                const roleID = settings.roles[roleName];
+                if (isNaN(roleID) || roleID == null) continue;
+                const role = message.guild.roles.cache.get(roleID);
+                if (!role) continue;
+                if (message.member.roles.highest.position < role.position && !override) continue;
+                if (!fields[role.name]) fields[role.name] = { position: role.position, commands: [] };
                 bot.commands.each(c => {
-                    if (c.role == 'raider' && bot.settings[message.guild.id].commands[c.name]) {
-                        line = line.concat(`;${c.name} `)
-                    }
+                    if (c.role == roleName && bot.settings[message.guild.id].commands[c.name])
+                        fields[role.name].commands.push(';' + c.name);
                 })
-                if (line == '') line = 'No role specific commands'
-                commandPanel.addField('Verified Raider+', `\`\`\`css\n${line}\`\`\``)
             }
-            if (message.guild.roles.cache.get(settings.roles.eventrl) && (override || message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.eventrl).position)) {
-                let line = ''
-                bot.commands.each(c => {
-                    if (c.role == 'eventrl' && bot.settings[message.guild.id].commands[c.name]) {
-                        line = line.concat(`;${c.name} `)
-                    }
-                })
-                if (line == '') line = 'No role specific commands'
-                commandPanel.addField('Event Organizer+', `\`\`\`css\n${line}\`\`\``)
-            }
-            if (message.guild.roles.cache.get(settings.roles.almostrl) && (override || message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.almostrl).position)) {
-                let line = ''
-                bot.commands.each(c => {
-                    if (c.role == 'almostrl' && bot.settings[message.guild.id].commands[c.name]) {
-                        line = line.concat(`;${c.name} `)
-                    }
-                })
-                if (line == '') line = 'No role specific commands'
-                commandPanel.addField('Almost Raid Leader+', `\`\`\`css\n${line}\`\`\``)
-            }
-            if (message.guild.roles.cache.get(settings.roles.rl) && (override || message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.rl).position)) {
-                let line = ''
-                bot.commands.each(c => {
-                    if (c.role == 'rl' && bot.settings[message.guild.id].commands[c.name]) {
-                        line = line.concat(`;${c.name} `)
-                    }
-                })
-                if (line == '') line = 'No role specific commands'
-                commandPanel.addField('Raid Leader+', `\`\`\`css\n${line}\`\`\``)
-            }
-            if (message.guild.roles.cache.get(settings.roles.fullskip) && (override || message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.fullskip).position)) {
-                let line = ''
-                bot.commands.each(c => {
-                    if (c.role == 'fullskip' && bot.settings[message.guild.id].commands[c.name]) {
-                        line = line.concat(`;${c.name} `)
-                    }
-                })
-                if (line == '') line = 'No role specific commands'
-                commandPanel.addField('Full-Skip+', `\`\`\`css\n${line}\`\`\``)
-            }
-            if (message.guild.roles.cache.get(settings.roles.vetrl) && (override || message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.vetrl).position)) {
-                let line = ''
-                bot.commands.each(c => {
-                    if (c.role == 'vetrl' && bot.settings[message.guild.id].commands[c.name]) {
-                        line = line.concat(`;${c.name} `)
-                    }
-                })
-                if (line == '') line = 'No role specific commands'
-                commandPanel.addField('Veteran Raid Leader+', `\`\`\`css\n${line}\`\`\``)
-            }
-            if (message.guild.roles.cache.get(settings.roles.security) && (override || message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.security).position)) {
-                let line = ''
-                bot.commands.each(c => {
-                    if (c.role == 'security' && bot.settings[message.guild.id].commands[c.name]) {
-                        line = line.concat(`;${c.name} `)
-                    }
-                })
-                if (line == '') line = 'No role specific commands'
-                commandPanel.addField('Security+', `\`\`\`css\n${line}\`\`\``)
-            }
-            if (message.guild.roles.cache.get(settings.roles.headeventrl) && (override || message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.headeventrl).position)) {
-                let line = ''
-                bot.commands.each(c => {
-                    if (c.role == 'headeventrl' && bot.settings[message.guild.id].commands[c.name]) {
-                        line = line.concat(`;${c.name} `)
-                    }
-                })
-                if (line == '') line = 'No role specific commands'
-                commandPanel.addField('Head Event Organizer+', `\`\`\`css\n${line}\`\`\``)
-            }
-            if (message.guild.roles.cache.get(settings.roles.headrl) && (override || message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.headrl).position)) {
-                let line = ''
-                bot.commands.each(c => {
-                    if (c.role == 'headrl' && bot.settings[message.guild.id].commands[c.name]) {
-                        line = line.concat(`;${c.name} `)
-                    }
-                })
-                if (line == '') line = 'No role specific commands'
-                commandPanel.addField('Head Raid Leader+', `\`\`\`css\n${line}\`\`\``)
-            }
-            if (message.guild.roles.cache.get(settings.roles.officer) && (override || message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.officer).position)) {
-                let line = ''
-                bot.commands.each(c => {
-                    if (c.role == 'officer' && bot.settings[message.guild.id].commands[c.name]) {
-                        line = line.concat(`;${c.name} `)
-                    }
-                })
-                if (line == '') line = 'No role specific commands'
-                commandPanel.addField('Officer+', `\`\`\`css\n${line}\`\`\``)
-            }
-            if (message.guild.roles.cache.get(settings.roles.moderator) && (override || message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.moderator).position)) {
-                let line = ''
-                bot.commands.each(c => {
-                    if (c.role == 'moderator' && bot.settings[message.guild.id].commands[c.name]) {
-                        line = line.concat(`;${c.name} `)
-                    }
-                })
-                if (line == '') line = 'No role specific commands'
-                commandPanel.addField('Moderator+', `\`\`\`css\n${line}\`\`\``)
-            }
-            if (message.member.roles.cache.has(settings.roles.developer) || override) {
-                let line = ''
-                bot.commands.each(c => {
-                    if (c.role == 'developer' && bot.settings[message.guild.id].commands[c.name]) {
-                        line = line.concat(`;${c.name} `)
-                    }
-                })
-                if (line == '') line = 'No role specific commands'
-                commandPanel.addField('Developer', `\`\`\`css\n${line}\`\`\``)
-            }
+            for (const name of Object.keys(fields).sort((a, b) => fields[a].position - fields[b].position))
+                if (fields[name].commands.length)
+                    commandPanel.addField(name + '+', '```css\n' + fields[name].commands.join(' ') + '```');
             message.channel.send({ embeds: [commandPanel] });
         }
     },

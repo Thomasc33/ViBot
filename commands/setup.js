@@ -3,7 +3,7 @@ const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
 const roles = ['moderator', 'officer', 'headrl', 'vetrl', 'fsvrl', 'mrvrl', 'security', 'fullskip', 'developer', 'rl', 'almostrl', 'trialrl', 'headeventrl', 'eventrl', 'rusher', 'nitro', 'lol', 'vetraider', 'raider', 'eventraider', 'muted',
     'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'keyjesus', 'topkey', 'bottomkey', 'cultping', 'voidping', 'shattsReact', 'fungalReact', 'nestReact', 'fskipReact', 'rcPing', 'o3Ping', 'veteventrl',
-    'priest']
+    'priest', 'warden']
 const channels = ['modmail', 'verification', 'manualverification', 'vetverification', 'manualvetverification', 'verificationlog', 'activeverification', 'modlogs', 'history', 'suspendlog',
     'viallog', 'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel', 'raidstatus', 'eventstatus',
     'vetstatus', 'exaltstatus', 'raidcommands', 'eventcommands', 'vetcommands', 'raidingchannels', 'eventchannels', 'vetchannels', 'runlogs', 'dmcommands', 'veriactive', 'pointlogging', 'veriattempts',
@@ -358,6 +358,7 @@ function getDefaultRoleName(name) {
         case 'fullskip': return 'Fullskip'
         case 'developer': return 'Developer'
         case 'rl': return 'Raid Leader'
+        case 'warden': return 'Warden'
         case 'almostrl': return 'Almost Raid Leader'
         case 'trialrl': return 'Trial Raid Leader'
         case 'headeventrl': return 'Head Event Organizer'

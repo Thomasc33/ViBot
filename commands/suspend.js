@@ -7,7 +7,7 @@ module.exports = {
     description: 'Suspends user',
     args: '[users] <time> <time type d/m/s/w/y> <reason>',
     requiredArgs: 3,
-    role: 'rl',
+    role: 'warden',
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         const suspendedRole = message.guild.roles.cache.get(settings.roles.tempsuspended)

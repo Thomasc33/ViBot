@@ -4,7 +4,7 @@ const moment = require('moment');
 module.exports = {
     name: 'suspends',
     description: 'Shows all suspends that the bot is currently tracking',
-    role: 'rl',
+    role: 'warden',
     args: '<user>',
     alias: ['suspensions'],
     async execute(message, args, bot, db) {
