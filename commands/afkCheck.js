@@ -217,6 +217,7 @@ class afkCheck {
             this.staffRole = guild.roles.cache.get(this.settings.roles.eventrl)
         } else {
             if (this.afkInfo.isVet) this.raidStatus = this.guild.channels.cache.get(this.settings.channels.vetstatus)
+            else if (this.afkInfo.isExalt && this.settings.channels.exaltstatus) this.raidStatus = this.guild.channels.cache.get(this.settings.channels.exaltstatus)
             else this.raidStatus = this.guild.channels.cache.get(this.settings.channels.raidstatus)
             if (this.afkInfo.isVet) this.commandChannel = this.guild.channels.cache.get(this.settings.channels.vetcommands)
             else this.commandChannel = this.guild.channels.cache.get(this.settings.channels.raidcommands)
