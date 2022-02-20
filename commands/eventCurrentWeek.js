@@ -61,8 +61,8 @@ module.exports = {
                     .setDescription('None!')
                 rows.sort((a, b) => {
                     if (settings.backend.exaltedEvents) {
-                        let atot = parseInt(a[table.eventcurrentweek]) + (parseInt(a[table.exaltcurrentweek]) * 2) + (parseInt(a[table.exaltfeedbackcurrentweek]) * 2)
-                        let btot = parseInt(b[table.eventcurrentweek]) + (parseInt(b[table.exaltcurrentweek]) * 2) + (parseInt(b[table.exaltfeedbackcurrentweek]) * 2)
+                        let atot = parseInt(a[table.eventcurrentweek]) + (parseInt(a[table.exaltcurrentweek]) * 1.5) + (parseInt(a[table.exaltfeedbackcurrentweek]) * 1)
+                        let btot = parseInt(b[table.eventcurrentweek]) + (parseInt(b[table.exaltcurrentweek]) * 1.5) + (parseInt(b[table.exaltfeedbackcurrentweek]) * 1)
                         if (atot < btot) return 1
                         else return -1
                     } else {
@@ -74,7 +74,7 @@ module.exports = {
                 let embeds = []
                 for (let i of rows) {
                     let string
-                    if (settings.backend.exaltedEvents) string = `**[${index + 1}]** <@!${i.id}>: Points: **${parseInt(i[table.eventcurrentweek]) + (parseInt(i[table.exaltcurrentweek]) * 2) + parseInt(i[table.exaltfeedbackcurrentweek]) * 2}**\nMinutes Lead: \`${parseInt(i[table.eventcurrentweek]) * 10}\`, Exalts Lead: \`${i[table.exaltcurrentweek]}\`, Exalt Feedback: \`${i[table.exaltfeedbackcurrentweek]}\``
+                    if (settings.backend.exaltedEvents) string = `**[${index + 1}]** <@!${i.id}>: Points: **${parseInt(i[table.eventcurrentweek]) + (parseInt(i[table.exaltcurrentweek]) * 1.5) + parseInt(i[table.exaltfeedbackcurrentweek]) * 1}**\nMinutes Lead: \`${parseInt(i[table.eventcurrentweek]) * 10}\`, Exalts Lead: \`${i[table.exaltcurrentweek]}\`, Exalt Feedback: \`${i[table.exaltfeedbackcurrentweek]}\``
                     else string = `**[${index + 1}]** <@!${i.id}>:\nMinutes Lead: \`${parseInt(i[table.eventcurrentweek]) * 10}\``
                     fitStringIntoEmbed(embed, string)
                     logged.push(i.id)
