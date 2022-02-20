@@ -3,7 +3,7 @@ const afkCheck = require('./afkCheck')
 const botSettings = require('../settings.json')
 const dbInfo = require('../data/database.json')
 const oldStyleAfkGuilds = ['451171819672698920']
-
+const emojis = require('../data/emojis.json')
 module.exports = {
     name: 'eventafk',
     description: 'Starts a new style afk check for event dungeons',
@@ -17,7 +17,7 @@ module.exports = {
 
         //check for vet run
         var eventType = args[0]
-        let event = getEventType(eventType, eventFile)
+        let event = getEventType(eventType, eventFile, message.guild.id)
         if (!event) return message.channel.send(`${eventType} does not exist.`);
 
         let isVet
@@ -47,7 +47,7 @@ module.exports = {
             earlyLocationCost: 15,
             isAdvanced: settings.backend.allowAdvancedRuns && event.isAdvanced,
             isExalt: event.isExalt,
-            earlyLocationReacts: [{
+            earlyLocationReacts: event.earlyLocationReacts || [{
                 "emoteID": "723018431275859969",
                 "pointsGiven": 2,
                 "limit": 3,
@@ -62,7 +62,7 @@ module.exports = {
             reacts: [],
             embed: {
                 color: event.color,
-                description: `To join, **connect to the raiding channel by clicking its name**\nIf you have a key react with <${event.keyEmote}>\nTo indicate your class or gear choices, react with ${event.rushers ? `<${botSettings.emote.Plane}>` : ''} ${event.stun ? `<${botSettings.emote.Collo}>` : ''} ${event.ogmur ? `<${botSettings.emote.Ogmur}>` : ''} ${event.fungal ? `<${botSettings.emote.UTTomeoftheMushroomTribes}>` : ''} ${event.mseal ? `<${botSettings.emote.MarbleSeal}>` : ''} ${event.brain ? `<${botSettings.emote.Brain}>` : ''} ${event.mystic ? `<${botSettings.emote.Mystic}>` : ''} ${event.paralyze ? `<${botSettings.emote.Paralyze}>` : ''}${event.slow ? `<${botSettings.emote.Slow}>` : ''} ${event.daze ? `<${botSettings.emote.Qot}>` : ''} ${event.curse ? `<${botSettings.emote.Curse}>` : ''} ${event.expose ? `<${botSettings.emote.Expose}>` : ''} ${event.warrior ? `<${botSettings.emote.Warrior}>` : ''} ${event.paladin ? `<${botSettings.emote.Paladin}>` : ''} ${event.bard ? `<${botSettings.emote.Bard}>` : ''} ${event.priest ? `<${botSettings.emote.Priest}>` : ''} ${event.trickster ? `<${botSettings.emote.trickster}>` : ''} ${event.knight ? `<${botSettings.emote.Knight}>` : ''}\nIf you have the role <@&${settings.roles.nitro}> react with <:nitro:701491230349066261> to get into VC`
+                description: `To join, **click here** <#{voiceChannel}>\nIf you have a key react with <${event.keyEmote}>\nTo indicate your class or gear choices, react with ${event.rushers ? `<${botSettings.emote.Plane}>` : ''} ${event.stun ? `<${botSettings.emote.Collo}>` : ''} ${event.ogmur ? `<${botSettings.emote.Ogmur}>` : ''} ${event.fungal ? `<${botSettings.emote.UTTomeoftheMushroomTribes}>` : ''} ${event.mseal ? `<${botSettings.emote.MarbleSeal}>` : ''} ${event.brain ? `<${botSettings.emote.Brain}>` : ''} ${event.mystic ? `<${botSettings.emote.Mystic}>` : ''} ${event.paralyze ? `<${botSettings.emote.Paralyze}>` : ''}${event.slow ? `<${botSettings.emote.Slow}>` : ''} ${event.daze ? `<${botSettings.emote.Qot}>` : ''} ${event.curse ? `<${botSettings.emote.Curse}>` : ''} ${event.expose ? `<${botSettings.emote.Expose}>` : ''} ${event.warrior ? `<${botSettings.emote.Warrior}>` : ''} ${event.paladin ? `<${botSettings.emote.Paladin}>` : ''} ${event.bard ? `<${botSettings.emote.Bard}>` : ''} ${event.priest ? `<${botSettings.emote.Priest}>` : ''} ${event.trickster ? `<${botSettings.emote.trickster}>` : ''} ${event.knight ? `<${botSettings.emote.Knight}>` : ''}\nIf you have the role <@&${settings.roles.nitro}> react with <:nitro:701491230349066261> to get into VC`
             },
         }
         eventTemplate['font-color'] = '#eeeeee'
@@ -86,6 +86,8 @@ module.exports = {
         if (event.priest) eventTemplate.reacts.push(botSettings.emoteIDs.Priest)
         if (event.trickster) eventTemplate.reacts.push(botSettings.emoteIDs.trickster)
         if (event.knight) eventTemplate.reacts.push(botSettings.emoteIDs.Knight)
+        if (event.aether) eventTemplate.reacts.push(botSettings.emoteIDs.UTOrbofAether)
+
         if (event.name.includes('Shatters')) {
             eventTemplate.reacts.push(botSettings.emoteIDs.switch1)
             eventTemplate.reacts.push(botSettings.emoteIDs.switch2)
@@ -110,11 +112,27 @@ module.exports = {
         //start afkcheck
         afkCheck.eventAfkExecute(message, args, bot, db, tokenDB, eventTemplate, isVet)
     },
-    getEventType
+    getEventType,
+    getMatchingEvents
 }
 
-function getEventType(arg, events) {
-    for (let i in events) {
-        if (i.toLowerCase() == arg.toLowerCase() || events[i].aliases.includes(arg.toLowerCase())) return events[i]
+function getMatchingEvents(arg, events, id) {
+    let event = []
+    if (id && events[id]) {
+        for (let i in events[id]) {
+            if (i.toLowerCase() == arg.toLowerCase() || (events[i].aliases && events[i].aliases.includes(arg.toLowerCase()))) event.push(events[id][i])
+        }
     }
+    for (let i in events) {
+        if (i.toLowerCase() == arg.toLowerCase() || (events[i].aliases && events[i].aliases.includes(arg.toLowerCase()))) 
+            if (!event.filter(e => e.name == events[i].name).length) event.push(events[i])
+    }
+
+
+    return event
 }
+
+function getEventType(arg, events, id) {
+    return getMatchingEvents(arg, events, id)[0]
+}
+
