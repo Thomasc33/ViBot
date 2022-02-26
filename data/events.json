@@ -1769,6 +1769,7 @@
             "paladin": true,
             "fungal": true,
             "stasis": true,
+            "aether": true,
             "trickster": true,
             "twoPhase": true,
             "keyCount": 3,
@@ -1943,32 +1944,59 @@
             "keyEmote": ":shattersK:723001429903802478",
             "portalEmojiId": "723001214865899532",
             "portalEmote": ":shatters:723001214865899532",
-            "color": "#015c21",
-            "rushers": true,
-            "stun": true,
-            "ogmur": true,
-            "fungal": false,
-            "mseal": false,
-            "brain": false,
-            "stasis": true,
-            "parylize": false,
-            "slow": false,
-            "daze": false,
-            "curse": true,
+            "color": "#013220",
             "expose": true,
-            "warrior": true,
+            "curse": true,
             "paladin": true,
+            "warrior": true,
             "knight": true,
-            "bard": true,
-            "trickster": true,
-            "priest": true,
             "twoPhase": true,
-            "keyCount": 3,
+            "keyCount": 1,
             "keyPopPoints": 5,
             "earlyLocationCost": 15,
             "vcCap": 40,
             "rolePing": "shattsReact",
-            "isExalt": true
+            "isExalt": true,
+            "earlyLocationReacts": [{
+                "emoteID": "723019533580894279",
+                "pointsGiven": 0,
+                "limit": 1,
+                "shortName": "slow",
+                "noConfirm": false,
+                "noLocation": false
+            },
+            {
+                "emoteID": "723019533597802507",
+                "pointsGiven": 1,
+                "limit": 1,
+                "shortName": "armorbreak",
+                "noConfirm": false,
+                "noLocation": false
+            },
+            {
+                "emoteID": "720401067086446672",
+                "pointsGiven": 0,
+                "limit": 1,
+                "shortName": "mseal",
+                "noConfirm": false,
+                "noLocation": false
+            },
+            {
+                "emoteID": "720404621331267697",
+                "pointsGiven": 0,
+                "limit": 2,
+                "shortName": "fungal",
+                "noConfirm": false,
+                "noLocation": false
+            },
+            {
+                "emoteID": "720404844187353099",
+                "pointsGiven": 0,
+                "limit": 3,
+                "shortName": "rusher",
+                "noConfirm": false,
+                "noLocation": false
+            }]
         },
         "advancedshatters": {
             "name": "Advanced Shatters",
@@ -1982,25 +2010,12 @@
             "keyEmote": ":shattersK:723001429903802478",
             "portalEmojiId": "723001214865899532",
             "portalEmote": ":shatters:723001214865899532",
-            "color": "#015c21",
-            "rushers": true,
-            "stun": true,
-            "ogmur": true,
-            "fungal": false,
-            "mseal": false,
-            "brain": false,
-            "stasis": true,
-            "parylize": false,
-            "slow": false,
-            "daze": false,
-            "curse": true,
+            "color": "#013220",
             "expose": true,
-            "warrior": true,
+            "curse": true,
             "paladin": true,
+            "warrior": true,
             "knight": true,
-            "bard": true,
-            "trickster": true,
-            "priest": true,
             "twoPhase": true,
             "keyCount": 3,
             "keyPopPoints": 5,
@@ -2008,7 +2023,47 @@
             "vcCap": 30,
             "rolePing": "shattsReact",
             "isExalt": true,
-            "isAdvanced": true
+            "isAdvanced": true,
+            "earlyLocationReacts": [{
+                "emoteID": "723019533580894279",
+                "pointsGiven": 0,
+                "limit": 1,
+                "shortName": "slow",
+                "noConfirm": false,
+                "noLocation": false
+            },
+            {
+                "emoteID": "723019533597802507",
+                "pointsGiven": 1,
+                "limit": 1,
+                "shortName": "armorbreak",
+                "noConfirm": false,
+                "noLocation": false
+            },
+            {
+                "emoteID": "720401067086446672",
+                "pointsGiven": 0,
+                "limit": 1,
+                "shortName": "mseal",
+                "noConfirm": false,
+                "noLocation": false
+            },
+            {
+                "emoteID": "720404621331267697",
+                "pointsGiven": 0,
+                "limit": 2,
+                "shortName": "fungal",
+                "noConfirm": false,
+                "noLocation": false
+            },
+            {
+                "emoteID": "720404844187353099",
+                "pointsGiven": 0,
+                "limit": 3,
+                "shortName": "rusher",
+                "noConfirm": false,
+                "noLocation": false
+            }]
         }
     }
 }

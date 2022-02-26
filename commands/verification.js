@@ -166,15 +166,17 @@ module.exports = {
 
                     if (!blGuild)
                         embed.setDescription(`You are currently blacklisted from verifying. Please DM me to contact mod-mail and find out why`);
-                    const staff = blGuild.members.cache.get(info.modid);
-                    const blgsettings = bot.settings[blGuild.id];
-                    const currently = blgsettings && staff && staff.roles.highest.comparePositionTo(blgsettings.roles.security) >= 0;
-                    if (blGuild.id != guild.id)
-                        LoggingEmbed.addField(`Staff?`, currently ? '✅' : '❌', true);
-                    else if (!currently)
-                        embed.setDescription(`You are currently blacklisted from the __${blGuild.name}__ server and cannot verify. The person who blacklisted you is no longer staff. Please DM me and send mod-mail to that server to appeal.`);
-                    else
-                        embed.setDescription(`You are currently blacklisted from the __${blGuild.name}__ server and cannot verify. Please contact ${staff} in order to appeal. If they do not reply within 48 hours, feel free to mod-mail the ${blGuild.name} server to get assistance.`);
+                    else {
+                        const staff = blGuild.members.cache.get(info.modid);
+                        const blgsettings = bot.settings[blGuild.id];
+                        const currently = blgsettings && staff && staff.roles.highest.comparePositionTo(blgsettings.roles.security) >= 0;
+                        if (blGuild.id != guild.id)
+                            LoggingEmbed.addField(`Staff?`, currently ? '✅' : '❌', true);
+                        else if (!currently)
+                            embed.setDescription(`You are currently blacklisted from the __${blGuild.name}__ server and cannot verify. The person who blacklisted you is no longer staff. Please DM me and send mod-mail to that server to appeal.`);
+                        else
+                            embed.setDescription(`You are currently blacklisted from the __${blGuild.name}__ server and cannot verify. Please contact ${staff} in order to appeal. If they do not reply within 48 hours, feel free to mod-mail the ${blGuild.name} server to get assistance.`);
+                    }
                     break;
                 case 3:
                     LoggingEmbed.setDescription(`<@!${u.id}> was auto-denied because ${ign} already exists in the server`)
@@ -404,7 +406,7 @@ module.exports = {
         })
     },
     async watchMessage(message, bot, db) {
-        const member_id = embed.footer.text.split(' ').pop()
+        const member_id = message.embeds[0].footer.text.split(' ').pop()
         let member = await message.guild.members.fetch(member_id).catch(e => ErrorLogger.log(e, bot));
         //variables
         let embed = message.embeds[0]
@@ -426,8 +428,8 @@ module.exports = {
                 reactionCollector.stop()
                 return message.delete()
             }
-            message.embeds[0].footer.text = `Openned by ${message.guild.members.cache.get(u.id).nickname || u.tag}`
-
+            message.embeds[0].footer.text = `Openned by ${message.guild.members.cache.get(u.id).nickname || u.tag} - ${message.embeds[0].footer.text}`
+            message.edit({ embeds: message.embeds })
             //remove reactions and get reactor
             let reactor = message.guild.members.cache.get(u.id)
             //stop old reaction collector, start new reaction collector
@@ -444,7 +446,11 @@ module.exports = {
                 checkXCollector.stop()
                 await message.reactions.removeAll()
                 //lock
-                if (r.emoji.name === '🔒') return module.exports.watchMessage(message, bot, db)
+                if (r.emoji.name === '🔒') {
+                    message.embeds[0].footer.text = message.embeds[0].footer.text.split(' ').pop();
+                    message.edit({ embeds: message.embeds })
+                    return module.exports.watchMessage(message, bot, db)
+                }
                 //check
                 else if (r.emoji.name === '✅') {
                     //add 100 emote

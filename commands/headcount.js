@@ -101,7 +101,7 @@ module.exports = {
 
                 if (event.name.toLowerCase() == 'random') { // to do
                     var embed = new Discord.MessageEmbed()
-                        .setColor('#8c00ff')
+                        .setColor(event.color || '#8c00ff')
                         .setTitle(`Headcount for ${event.name} started by ${message.guild.members.cache.get(message.author.id).nickname}`)
                         .setDescription(`React with with emotes below to indicate what you have`)
                         .setTimestamp(Date.now())

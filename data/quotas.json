@@ -97,6 +97,15 @@
                 { "column": "rollingsecurityquotao3", "name": "Rolled Quota", "value": 1, "rolling": true }
 
             ]
+        }, {
+            "id": "warden",
+            "name": "Warden Quota",
+            "roles": ["warden"],
+            "quota": 30,
+            "values": [
+                { "column": "o3currentweekparses", "name": "Parses", "value": 1 },
+                { "column": "rollingsecurityquotao3", "name": "Rolled Quota", "value": 1, "rolling": true }
+            ]
         }]
     },
     "451171819672698920": {

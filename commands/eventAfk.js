@@ -44,6 +44,7 @@ module.exports = {
             vcCap: 45,
             timeLimit: 300,
             keyCount: 3,
+            color: event.color,
             twoPhase: !!event.twoPhase,
             earlyLocationCost: 15,
             isAdvanced: settings.backend.allowAdvancedRuns && event.isAdvanced,
