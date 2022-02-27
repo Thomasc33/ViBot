@@ -10,6 +10,8 @@
     "osancStats": false,
     "apiPort": 80,
     "earlyLocationCooldown": 720000,
+    "vibotDirectory": "",
+    "openSslLocaiton": "C:/Program Files/OpenSSL-Win64/bin/openssl.exe",
     "dynamicDomainCredentials": {
         "username": "",
         "password": ""
