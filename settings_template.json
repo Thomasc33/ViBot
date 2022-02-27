@@ -59,7 +59,8 @@
         "switchS": ":switchS:723018852929372270",
         "trickster": ":trickster:723018431275728918",
         "hallsPortal": ":hallsPortal:716763303480786968",
-        "o3": ":oryxThree:708043327706103858"
+        "o3": ":oryxThree:708043327706103858",
+        "UTOrbofAether": ":UTOrbofAether:720265038664826959"
     },
     "emoteIDs": {
         "Warrior": "701491230395072522",
@@ -90,6 +91,7 @@
         "switch2": "723018852853612614",
         "switchS": "723018852929372270",
         "trickster": "723018431275728918",
-        "hallsPortal": "716763303480786968"
+        "hallsPortal": "716763303480786968",
+        "UTOrbofAether": "720265038664826959"
     }
 }
