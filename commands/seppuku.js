@@ -5,8 +5,7 @@ module.exports = {
     role: 'eventrl',
     description: '死ぬ',
     async execute(message, args, bot) {
-        let settings = bot.settings[message.guild.id]
         message.channel.send(`死ぬ!`)
-        message.member.ban()
+        message.member.ban({reason: `They seppuku'd`})
     }
 }
