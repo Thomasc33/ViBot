@@ -6,6 +6,7 @@ module.exports = {
     role: 'eventrl',
     description: '死ぬ',
     async execute(message, args, bot) {
+        let settings = bot.settings[message.guild.id]
         message.channel.send(`死ぬ!`)
         let time = 300000 // 5 min
         let reason = 'seppuku'
