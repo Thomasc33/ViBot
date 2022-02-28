@@ -418,8 +418,12 @@ bot.on('guildMemberAdd', member => {
 
 bot.on('guildMemberUpdate', (oldMember, newMember) => {
     const settings = bot.settings[newMember.guild.id];
-    if (settings && settings.backend && settings.backend.trackRushers) {
-        updateRusherTable(settings, oldMember, newMember) // not ready yet, fix something else
+    if (settings && settings.commands.prunerushers && !oldMember.roles.cache.has(settings.roles.rusher) && newMember.roles.cache.has(settings.roles.rusher)) {
+        let today = new Date() 
+        bot.dbs[newMember.guild.id].query(`INSERT IGNORE INTO rushers (id, guildid, time) values ("${newMember.id}", "${newMember.guild.id}", ${today.valueOf()})`)
+    } else if (settings && settings.commands.prunerushers && oldMember.roles.cache.has(settings.roles.rusher) && !newMember.roles.cache.has(settings.roles.rusher)) {
+        let today = new Date() 
+        bot.dbs[newMember.guild.id].query(`DELETE FROM rushers WHERE id = "${newMember.id}"`)
     }
 })
 

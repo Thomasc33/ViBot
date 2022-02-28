@@ -13,7 +13,7 @@ const voice = ['raidingtemplate', 'eventtemplate', 'vettemplate', 'veteventtempl
 const voiceprefixes = ['raidingprefix', 'vetprefix']
 const backend = ['modmail', 'currentweek', 'eventcurrentweek', 'parsecurrentweek', 'verification', 'vetverification', 'points', 'supporter', 'roleassignment', 'realmeyestats', 'automod', 'nitroearlylocation', 'removekeyreacts', 'characterparse',
     'giveeventroleonverification', 'eventcurrentweekdisplaysalleventrl', 'upgradedCheck', 'raidResetMonthly', 'eventResetMonthly', 'parseResetMonthly', 'exaltedEvents', 'sendmissedquota', 'exaltsInRSA', 'allowAdvancedRuns', 'raidResetBiweekly', 'eventResetBiweekly', 'parseResetBiweekly']
-const numerical = ['afktime', 'eventafktime', 'nitrocount', 'nitrocooldown', 'topkey', 'bottomkey', 'ticketlimit', 'supporterlimit', 'keyalertsage', 'waitnewkeyalert']
+const numerical = ['afktime', 'eventafktime', 'nitrocount', 'nitrocooldown', 'topkey', 'bottomkey', 'ticketlimit', 'supporterlimit', 'keyalertsage', 'waitnewkeyalert', 'prunerushersoffset']
 const runreqs = ['weapon', 'ability', 'armor', 'ring']
 const autoveri = ['fame', 'stars', 'realmage', 'discordage', 'deathcount']
 const vetverireqs = ['maxed', 'meleemaxed', 'runs']
@@ -467,6 +467,7 @@ function getDefaultNumericalValue(name) {
         case 'supporterlimit': return 5;
         case 'keyalertsage': return 120;
         case 'waitnewkeyalert': return 30;
+        case 'prunerushersoffset': return 90;
     }
 }
 
