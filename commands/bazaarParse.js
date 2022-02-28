@@ -32,11 +32,11 @@ module.exports = {
         if (image == null) {
             parseStatusEmbed.setColor('#ff0000')
                 .fields[1].value = `Error Getting Image`
-            parseStatusMessage.edit({ embeds: [parseStatusEmbed]})
+            parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
             return;
         }
         parseStatusEmbed.fields[1].value = `Sending Image to Google`
-        parseStatusMessage.edit({ embeds: [parseStatusEmbed]})
+        parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
         const [result] = await client.textDetection(image)
         var players = result.fullTextAnnotation.text.toLowerCase().replace(/[\n,]/g, " ").split(/ +/)
         players.shift()
@@ -44,7 +44,7 @@ module.exports = {
         players.shift()
 
         parseStatusEmbed.fields[1].value = `Processing Results`
-        parseStatusMessage.edit({ embeds: [parseStatusEmbed]})
+        parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
 
         let crashers = []
         let supposedToBeThere = []
@@ -91,7 +91,7 @@ module.exports = {
 
         await message.channel.send({ embeds: [embed] })
         parseStatusEmbed.fields[1].value = 'Parse Complete.'
-        parseStatusMessage.edit({ embeds: [parseStatusEmbed]})
+        parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
 
 
     }
