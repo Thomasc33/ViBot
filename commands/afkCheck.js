@@ -617,6 +617,12 @@ class afkCheck {
             await interaction.reply({ embeds: [embed], ephemeral: true, components: [ar] })
             let em = await interaction.fetchReply()
 
+            //Update Rushers table 
+            let today = new Date()
+            this.db.query(`UPDATE rushers SET time = ${today.valueOf()} WHERE id = '${member.id}'`, (err, rows) => {
+                res(rows && rows.length ? rows : []);
+            })
+
             let dmIntereactionCollector = new Discord.InteractionCollector(this.bot, { message: em, interactionType: 'MESSAGE_COMPONENT', componentType: 'BUTTON' })
 
             dmIntereactionCollector.on("collect", async subInteraction => {
@@ -698,7 +704,7 @@ class afkCheck {
         }
         if (reactor.roles.cache.has(this.nitroBooster.id)) {
             if (reactor.voice.channel && reactor.voice.channel.id == this.channel.id) {
-                embed.setDescription(`Nitro benefits in \`${this.message.guild.name}\` only gives garunteed spot in VC. You are already in the VC so this use hasn\'t been counted`);
+                embed.setDescription(`Nitro benefits in \`${this.message.guild.name}\` only gives guaranteed spot in VC. You are already in the VC so this use hasn\'t been counted`);
                 interaction.reply({ embeds: [embed], ephemeral: true })
                 this.removeFromActiveInteractions(interaction.user.id)
             } else {
