@@ -19,8 +19,7 @@ module.exports = {
             }
         })
         await message.member.roles.remove(userRoles)
-        setTimeout(() => { message.member.roles.add(suspendedRole.id); }, 1000)
-        bot.dbs[message.guild.id].query(`INSERT INTO suspensions (id, guildid, suspended, uTime, reason, modid, roles, logmessage) VALUES ('${message.member.id}', '${message.guild.id}', true, '${Date.now() + time}', ${db.escape(reason)}, '${message.author.id}', '${userRolesString}', '${message.id}');`)
-
+        setTimeout(() => { message.member.roles.add(suspendedRole); }, 1000)
+        bot.dbs[message.guild.id].query(`INSERT INTO suspensions (id, guildid, suspended, uTime, reason, modid, roles, logmessage) VALUES ('${message.member.id}', '${message.guild.id}', true, '${Date.now() + time}', ${bot.dbs[message.guild.id].escape(reason)}, '${message.author.id}', '${userRolesString}', '${message.id}');`)
     }
 }

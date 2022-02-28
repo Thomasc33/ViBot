@@ -618,10 +618,12 @@ class afkCheck {
             let em = await interaction.fetchReply()
 
             //Update Rushers table 
-            let today = new Date()
-            this.db.query(`UPDATE rushers SET time = ${today.valueOf()} WHERE id = '${member.id}'`, (err, rows) => {
-                res(rows && rows.length ? rows : []);
-            })
+            if (reactInfo.requiredRole == 'rusher') {
+                let today = new Date()
+                this.db.query(`UPDATE rushers SET time = ${today.valueOf()} WHERE id = '${interaction.user.id}'`, (err, rows) => {
+                    res(rows && rows.length ? rows : []);
+                })
+            }
 
             let dmIntereactionCollector = new Discord.InteractionCollector(this.bot, { message: em, interactionType: 'MESSAGE_COMPONENT', componentType: 'BUTTON' })
 
