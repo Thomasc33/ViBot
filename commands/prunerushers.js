@@ -15,10 +15,12 @@ module.exports = {
      */
     async execute(message, args, bot, db) {
         //Create lists of rushers
+        let settings = bot.settings[message.guild.id]
+        if (!settings) return message.channel.send("Settings missing")
+
         let today = new Date()
-        const dateOffset = 90
         const rushers = await this.getRushers(message.guild.id, db)
-        const inactiveRushers = rushers.filter(rusher => new Date(parseInt(rusher.time)) < today.setDate(today.getDate() - dateOffset))
+        const inactiveRushers = rushers.filter(rusher => new Date(parseInt(rusher.time)) < today.setDate(today.getDate() - settings.numerical.prunerushersoffset))
 
         if (inactiveRushers.length == 0) {
             message.channel.send(`No rushers to prune!`)
@@ -37,11 +39,16 @@ module.exports = {
         
         let embedMessage = await message.channel.send({ embeds: [embed] })
         if (await embedMessage.confirm( message.author.id)) {
-            this.purgeRushers(message.guild.id, db, dateOffset)
+            this.purgeRushers(message.guild.id, db, settings.numerical.prunerushersoffset)
             //Remove Rusher roles
-            inactiveRushers.forEach(element => {
-                message.guild.members.cache.get(element.id).roles.remove(bot.settings[message.guild.id].roles.rusher)
-            })
+            for (let rusher of inactiveRushers) {
+                await new Promise((res) => {
+                    setTimeout(async () => {
+                        await message.guild.members.cache.get(rusher.id).roles.remove(bot.settings[message.guild.id].roles.rusher)
+                        res()
+                    }, 1500)
+                })
+            }
             embed.setFooter('Purge Completed!')
         } else {
             embed.setFooter('Purge Canceled!')
