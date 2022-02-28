@@ -7,6 +7,7 @@ module.exports = {
     description: '死ぬ',
     async execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
+        let suspendedRole = settings.roles.tempsuspended
         message.channel.send(`死ぬ!`)
         let time = 300000 // 5 min
         let reason = 'seppuku'
@@ -19,7 +20,7 @@ module.exports = {
         })
         await message.member.roles.remove(userRoles)
         setTimeout(() => { message.member.roles.add(suspendedRole.id); }, 1000)
-        db.query(`INSERT INTO suspensions (id, guildid, suspended, uTime, reason, modid, roles, logmessage) VALUES ('${message.member.id}', '${message.guild.id}', true, '${Date.now() + time}', ${db.escape(reason)}, '${message.author.id}', '${userRolesString}', '${message.id}');`)
+        bot.dbs[message.guild.id].query(`INSERT INTO suspensions (id, guildid, suspended, uTime, reason, modid, roles, logmessage) VALUES ('${message.member.id}', '${message.guild.id}', true, '${Date.now() + time}', ${db.escape(reason)}, '${message.author.id}', '${userRolesString}', '${message.id}');`)
 
     }
 }
