@@ -1,4 +1,5 @@
 const Discord = require('discord.js')
+const Suspend = require('./suspend')
 
 module.exports = {
     name: 'seppuku',
@@ -6,6 +7,18 @@ module.exports = {
     description: '死ぬ',
     async execute(message, args, bot) {
         message.channel.send(`死ぬ!`)
-        message.member.ban({reason: `They seppuku'd`})
+        let time = 300000 // 5 min
+        let reason = 'seppuku'
+        let userRolesString = '', userRoles = []
+        message.member.roles.cache.each(r => {
+            if (!r.managed && r.id != settings.roles.nitro) {
+                userRoles.push(r.id)
+                userRolesString = userRolesString.concat(`${r.id} `)
+            }
+        })
+        await message.member.roles.remove(userRoles)
+        setTimeout(() => { message.member.roles.add(suspendedRole.id); }, 1000)
+        db.query(`INSERT INTO suspensions (id, guildid, suspended, uTime, reason, modid, roles, logmessage) VALUES ('${message.member.id}', '${message.guild.id}', true, '${Date.now() + time}', ${db.escape(reason)}, '${message.author.id}', '${userRolesString}', '${message.id}');`)
+
     }
 }
