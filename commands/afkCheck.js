@@ -618,7 +618,7 @@ class afkCheck {
             let em = await interaction.fetchReply()
 
             //Update Rushers table 
-            if (reactInfo.requiredRole == 'rusher') {
+            if (reactInfo && reactInfo.requiredRole == 'rusher') {
                 let today = new Date()
                 this.db.query(`UPDATE rushers SET time = ${today.valueOf()} WHERE id = '${interaction.user.id}'`, (err, rows) => {
                     res(rows && rows.length ? rows : []);
