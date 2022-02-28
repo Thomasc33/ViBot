@@ -4,3 +4,4 @@ settings.json
 guildSettings.json
 afkChecks.json
 createdChannels.json
+package-lock.json
