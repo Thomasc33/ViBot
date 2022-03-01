@@ -1,6 +1,6 @@
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
-
+const moment = require('moment');
 const CachedMessages = {}
 const tables = [
     {
@@ -74,6 +74,34 @@ module.exports = {
                 await rows.sort((a, b) => (parseInt(a[currentweekparsename]) < parseInt(b[currentweekparsename])) ? 1 : -1)
                 let index = 0
                 let embeds = []
+                if(!bot.settings[channel.guild.id].backend.parseResetBiweekly && !bot.settings[channel.guild.id].backend.parseResetMonthly) {
+                    let curtime = moment().unix();
+                    let utc_days_till_sunday = 7-((Math.floor(curtime/86400)+4)%7);
+                    let utc_close_to_next_sunday = curtime + utc_days_till_sunday*86400;
+                    let utc_next_sunday = Math.floor(utc_close_to_next_sunday/86400)*86400;
+                    let est_next_sunday = utc_next_sunday+18000;
+                    fitStringIntoEmbed(embeds,embed,`Quota reset <t:${est_next_sunday}:R>\n`);
+                } else if(bot.settings[channel.guild.id].backend.parseResetBiweekly) {
+                    let curtime = moment().unix();
+                    const day = 60*60*24;
+                    const week = day*7;
+                    const two_week = week*2;
+                    let utc_biweek = Math.floor((curtime-3*day)/two_week);
+                    let utc_next_biweek_sunday = utc_biweek*two_week + 3*day + two_week;
+                    let est_next_biweek_sunday = utc_next_biweek_sunday + 18000;
+                    fitStringIntoEmbed(embeds,embed,`Quota reset <t:${est_next_biweek_sunday}:R>\n`);
+                } else if(bot.settings[channel.guild.id].backend.parseResetMonthly) {
+                    let today = new Date();
+                    let next_month;
+                    if(today.getMonth() == 12) {
+                        next_month = new Date(today.getFullYear() + 1, 0, 1);
+                    } else {
+                        next_month = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+                    }
+                    let next_month_as_unix = ((next_month.getTime()/1000) - 7200).toFixed(0);
+                    fitStringIntoEmbed(embeds,embed,'Quota reset <t:'+next_month_as_unix+':R>\n');
+                }
+                //Timestamp embed end
                 for (let i in rows) {
                     let member = channel.guild.members.cache.get(rows[i].id)
                     if (!member) continue
