@@ -5,6 +5,7 @@ const quotas = require('../data/quotas.json');
 require('../lib/extensions');
 const CachedMessages = {}
 const excuses = require('./excuse');
+const moment = require('moment');
 module.exports = {
     name: 'currentweek',
     description: 'Updates the current week stats or force starts the next week',
@@ -32,7 +33,7 @@ module.exports = {
             if (!ignore) {
                 await excuses.calculateMissed(guild, bot, bot.dbs[guild.id], null, true);
                 await excuses.resetExcuses(guild, bot, bot.dbs[guild.id], true);
-            } 
+            }
         }
         if (doNewWeek)
             this.newWeek(guild, bot, bot.dbs[guild.id]);
@@ -55,15 +56,16 @@ module.exports = {
         if (rolling.length)
         {
             const ignore = await excuses.getIgnore(guild.id, db);
-            
+
             const query = `UPDATE users SET ${rolling[0].column} = GREATEST(` + quota.values.filter(v => !v.rolling).map(v => `(${v.column}*${v.value})`).join(' + ') + ' - ' + quota.quota + ', 0)';
-            
+
             await db.query(ignore ? `UPDATE users SET ${rolling[0].column} = 0` : query ,(err, rows) => { console.log(err) });
         }
         let q = `UPDATE users SET ${quota.values.filter(v => !v.rolling).map(v => `${v.column} = 0`).join(', ')}`
         await db.query(q)
         this.update(guild, db, bot)
     },
+
     async update(guild, db, bot) {
         let settings = bot.settings[guild.id]
         let currentweek = guild.channels.cache.get(settings.channels.currentweek)
@@ -89,6 +91,35 @@ module.exports = {
                 .setDescription('None!')
                 .setFooter(`##### Total Runs`);
             const embeds = [];
+            //Timestamp embed start
+            if(!bot.settings[guild.id].backend.raidResetBiweekly && !bot.settings[guild.id].backend.raidResetMonthly) {
+                let curtime = moment().unix();
+                let utc_days_till_sunday = 7-((Math.floor(curtime/86400)+4)%7);
+                let utc_close_to_next_sunday = curtime + utc_days_till_sunday*86400;
+                let utc_next_sunday = Math.floor(utc_close_to_next_sunday/86400)*86400;
+                let est_next_sunday = utc_next_sunday+18000;
+                fitStringIntoEmbed(embeds,embed,`Quota reset <t:${est_next_sunday}:R>\n`);
+            } else if(bot.settings[guild.id].backend.raidResetBiweekly) {
+                let curtime = moment().unix();
+                const day = 60*60*24;
+                const week = day*7;
+                const two_week = week*2;
+                let utc_biweek = Math.floor((curtime-3*day)/two_week);
+                let utc_next_biweek_sunday = utc_biweek*two_week + 3*day + two_week;
+                let est_next_biweek_sunday = utc_next_biweek_sunday + 18000;
+                fitStringIntoEmbed(embeds,embed,`Quota reset <t:${est_next_biweek_sunday}:R>\n`);
+            } else if(bot.settings[guild.id].backend.raidResetMonthly) {
+                let today = new Date();
+                let next_month;
+                if(today.getMonth() == 12) {
+                    next_month = new Date(today.getFullYear() + 1, 0, 1);
+                } else {
+                    next_month = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+                }
+                let next_month_as_unix = ((next_month.getTime()/1000) - 7200).toFixed(0);
+                fitStringIntoEmbed(embeds,embed,'Quota reset <t:'+next_month_as_unix+':R>\n');
+            }
+            //Timestamp embed end
             const combine = quota.values.map(v => `(${v.column}*${v.value})`).join(' + ') + ' as total';
             const query = db.query(`SELECT id, ` + quota.values.map(v => v.column).join(', ') + `, ${combine} FROM Users WHERE ` + quota.values.map(v => `${v.column} != 0`).join(' OR ') + ` order by total desc`, async (err, rows) => {
                 if (err) return reject(err);
@@ -150,7 +181,7 @@ module.exports = {
                         }
                     } catch (er) { console.log(er) }
                 } else for (let i in embeds) channel.send({ embeds: [embeds[i]] })
-                if (nw) 
+                if (nw)
                     channel.send({ files: [new Discord.MessageAttachment(Buffer.from(csvData, "utf-8"),"currentweekResetData.csv")] })
                 resolve(true);
             });
