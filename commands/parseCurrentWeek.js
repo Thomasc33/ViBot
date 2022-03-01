@@ -80,7 +80,7 @@ module.exports = {
                     let utc_close_to_next_sunday = curtime + utc_days_till_sunday*86400;
                     let utc_next_sunday = Math.floor(utc_close_to_next_sunday/86400)*86400;
                     let est_next_sunday = utc_next_sunday+18000;
-                    fitStringIntoEmbed(embeds,embed,`Quota reset <t:${est_next_sunday}:R>\n`);
+                    fitStringIntoEmbed(embed,`Quota reset <t:${est_next_sunday}:R>\n`);
                 } else if(bot.settings[channel.guild.id].backend.parseResetBiweekly) {
                     let curtime = moment().unix();
                     const day = 60*60*24;
@@ -89,7 +89,7 @@ module.exports = {
                     let utc_biweek = Math.floor((curtime-3*day)/two_week);
                     let utc_next_biweek_sunday = utc_biweek*two_week + 3*day + two_week;
                     let est_next_biweek_sunday = utc_next_biweek_sunday + 18000;
-                    fitStringIntoEmbed(embeds,embed,`Quota reset <t:${est_next_biweek_sunday}:R>\n`);
+                    fitStringIntoEmbed(embed,`Quota reset <t:${est_next_biweek_sunday}:R>\n`);
                 } else if(bot.settings[channel.guild.id].backend.parseResetMonthly) {
                     let today = new Date();
                     let next_month;
@@ -99,7 +99,7 @@ module.exports = {
                         next_month = new Date(today.getFullYear(), today.getMonth() + 1, 1);
                     }
                     let next_month_as_unix = ((next_month.getTime()/1000) - 7200).toFixed(0);
-                    fitStringIntoEmbed(embeds,embed,'Quota reset <t:'+next_month_as_unix+':R>\n');
+                    fitStringIntoEmbed(embed,'Quota reset <t:'+next_month_as_unix+':R>\n');
                 }
                 //Timestamp embed end
                 for (let i in rows) {
