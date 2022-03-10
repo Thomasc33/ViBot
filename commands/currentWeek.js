@@ -104,9 +104,9 @@ module.exports = {
                 const day = 60*60*24;
                 const week = day*7;
                 const two_week = week*2;
-                let utc_biweek = Math.floor((curtime-3*day)/two_week);
-                let utc_next_biweek_sunday = utc_biweek*two_week + 3*day + two_week;
-                let est_next_biweek_sunday = utc_next_biweek_sunday + 18000;
+                let utc_biweek = Math.floor((curtime-18000-3*day-week)/two_week);
+                let utc_next_biweek_sunday = utc_biweek*two_week + 3*day + week + two_week;
+                let est_next_biweek_sunday = utc_next_biweek_sunday + 18000 - 60*60;
                 fitStringIntoEmbed(embeds,embed,`Quota reset <t:${est_next_biweek_sunday}:R>\n`);
             } else if(bot.settings[guild.id].backend.raidResetMonthly) {
                 let today = new Date();
