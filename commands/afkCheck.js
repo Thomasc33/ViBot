@@ -14,6 +14,7 @@ const afkTemplates = require('../afkTemplates.json')
 var emitter = new EventEmitter()
 
 var runs = [] //{channel: id, afk: afk instance}
+var registeredWithRestart = false;
 
 module.exports = {
     name: 'afk',
@@ -33,13 +34,17 @@ module.exports = {
     },
     /**
      * Main Execution Function
-     * @param {Discord.Message} message 
-     * @param {String[]} args 
-     * @param {Discord.Client} bot 
-     * @param {import('mysql').Connection} db 
-     * @param {import('mysql').Connection} tokenDB 
+     * @param {Discord.Message} message
+     * @param {String[]} args
+     * @param {Discord.Client} bot
+     * @param {import('mysql').Connection} db
+     * @param {import('mysql').Connection} tokenDB
      */
     async execute(message, args, bot, db, tokenDB, event) {
+        if(!registeredWithRestart) {
+            restart.registerAFKCheck(module.exports);
+            registeredWithRestart = true;
+        }
         //clear out runs array
         destroyInactiveRuns();
         let shift = args.shift();
@@ -99,6 +104,10 @@ module.exports = {
         if (runInfo.startDelay > 0) setTimeout(begin, runInfo.startDelay, afkModule)
     },
     async eventAfkExecute(message, args, bot, db, tokenDB, event, isVet) {
+        if(!registeredWithRestart) {
+            restart.registerAFKCheck(module.exports);
+            registeredWithRestart = true;
+        }
         //clear out runs array
         destroyInactiveRuns();
 
@@ -156,8 +165,8 @@ function begin(afkModule) {
 
 class afkCheck {
     /**
-     * 
-     * @param {Object} afkInfo 
+     *
+     * @param {Object} afkInfo
      * @param {String} afkInfo.runType
      * @param {String} afkInfo.runName
      * @param {String} afkInfo.guild
@@ -165,7 +174,7 @@ class afkCheck {
      * @param {String} afkInfo.raidLeader
      * @param {String} afkInfo.location
      * @param {String} afkInfo.symbol
-     * @param {String} afkInfo.reqsImageUrl 
+     * @param {String} afkInfo.reqsImageUrl
      * @param {String} afkInfo.keyEmoteID
      * @param {String} afkInfo.vialEmoteID
      * @param {String} afkInfo.keyLogName
@@ -187,11 +196,11 @@ class afkCheck {
      * @param {String} afkInfo.earlyLocationReacts.ofEight
      * @param {String[]} afkInfo.reacts
      * @param {Discord.MessageEmbed} afkInfo.embed
-     * @param {Discord.Client} bot 
-     * @param {import('mysql').Connection} db 
-     * @param {Discord.Guild} guild 
-     * @param {Discord.VoiceChannel} channel 
-     * @param {Discord.Message} message 
+     * @param {Discord.Client} bot
+     * @param {import('mysql').Connection} db
+     * @param {Discord.Guild} guild
+     * @param {Discord.VoiceChannel} channel
+     * @param {Discord.Message} message
      */
     constructor(afkInfo, bot, db, guild, channel, message, tokenDB) {
         this.settings = bot.settings[guild.id]
@@ -376,7 +385,7 @@ class afkCheck {
     }
 
     /**
-     * 
+     *
      * @param {Discord.MessageComponentInteraction} interaction
      */
     async interactionHandler(interaction) {
@@ -439,8 +448,8 @@ class afkCheck {
     }
 
     /**
-     * 
-     * @param {Discord.MessageComponentInteraction} interaction 
+     *
+     * @param {Discord.MessageComponentInteraction} interaction
      */
     async leaderInteractionHandler(interaction) {
         if (!interaction.isButton()) { console.log(`${interaction.member.nickname} had a non button iteraction`); return interaction.deferUpdate() }
@@ -502,10 +511,10 @@ class afkCheck {
     }
 
     /**
-     * 
-     * @param {Discord.MessageComponentInteraction} interaction 
-     * @param {Number} index 
-     * @param {String} type 
+     *
+     * @param {Discord.MessageComponentInteraction} interaction
+     * @param {Number} index
+     * @param {String} type
      * @param {Number} limit
      */
     async confirmSelection(interaction, index, type, limit, noConfirm = false, noLocation = false) {
@@ -516,10 +525,10 @@ class afkCheck {
         let id = interaction.customId
         let emote = this.bot.emojis.cache.get(id)
         /**
-         * 
-         * @param {afkCheck} afk 
-         * @param {*} firstCall 
-         * @returns 
+         *
+         * @param {afkCheck} afk
+         * @param {*} firstCall
+         * @returns
          */
         function sendLocation(afk, firstCall = false) {
             //check for full
@@ -669,9 +678,9 @@ class afkCheck {
     }
 
     /**
-     * 
-     * @param {Discord.MessageComponentInteraction} interaction 
-     * @param {Number} index 
+     *
+     * @param {Discord.MessageComponentInteraction} interaction
+     * @param {Number} index
      */
     async useNitro(interaction, index) {
         let embed = new Discord.MessageEmbed({ color: this.mainEmbed.hexColor, description: 'placeholder' })
@@ -734,7 +743,8 @@ class afkCheck {
                         this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
                         emitter.on('Ended', (channelID, aborted) => {
                             if (channelID == this.channel.id) {
-                                if (!aborted) this.db.query(`UPDATE users SET lastnitrouse = '${Date.now()}' WHERE id = ${interaction.user.id}`)
+                                if (!aborted) this.db.query(`UPDATE users SET lastnitrouse = '${Date.now()}' WHERE id = ${interaction.user.id}`);
+                                else interaction.user.id.send(`The afk check was aborted, you have been refunded your nitro perk use.`);
                             }
                         })
                     } else {
@@ -749,9 +759,9 @@ class afkCheck {
     }
 
     /**
-     * 
-     * @param {Discord.MessageComponentInteraction} interaction 
-     * @param {Number} index 
+     *
+     * @param {Discord.MessageComponentInteraction} interaction
+     * @param {Number} index
      */
     async pointsUse(interaction, index) {
         if (!this.settings.backend.points) {
@@ -808,8 +818,8 @@ class afkCheck {
                         await this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, bot));
                         emitter.on('Ended', (channelID, aborted) => {
                             if (aborted && channelID == this.channel.id) {
-                                dms.send(`The afk check was aborted, you have been refunded ${earlyLocationCost} points`)
-                                this.db.query(`UPDATE users SET points = points + ${earlyLocationCost} WHERE id = ${interaction.user.id}`)
+                                this.db.query(`UPDATE users SET points = points + ${earlyLocationCost} WHERE id = ${interaction.user.id}`);
+                                interaction.user.id.send(`The afk check was aborted, you have been refunded ${earlyLocationCost} points.`);
                             }
                         })
                     }
@@ -826,9 +836,9 @@ class afkCheck {
     }
 
     /**
-     * 
+     *
      * @param {Discord.MessageComponentInteraction} interaction
-     * @param {Number} index 
+     * @param {Number} index
      */
     async supporterUse(interaction, index) {
         let embed = new Discord.MessageEmbed({ color: this.mainEmbed.hexColor, description: 'placeholder', footer: { text: 'Thank you for supporting ViBot ❤️' } })
@@ -1048,18 +1058,32 @@ class afkCheck {
         fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot) })
 
         //send embed to history
+        let history_run_title = "";
+        if(this.afkInfo.runLogName == "voidRuns") history_run_title = " Void"
+        else if(this.afkInfo.runLogName == "cultRuns") history_run_title = " Cult";
+        else if(this.afkInfo.runLogName == "eventruns") history_run_title = " Event";
         let historyEmbed = new Discord.MessageEmbed()
             .setColor(this.mainEmbed.hexColor)
-            .setTitle(this.message.member.nickname)
+            .setTitle(this.message.member.nickname + history_run_title)
             .addField('Leader', `${this.message.member}`)
             .addField('Ended by', `${this.endedBy}`)
             .addField('Key', 'None!')
             .addField('Early Location', 'None!')
             .addField('Raiders', 'None!')
-        if (this.key) historyEmbed.fields[2].value = `<@!${this.key.id}>`
+            .addField('Nitro User', 'None!')
+            .addField(`Points Users ${this.afkInfo.earlyLocationCost}`, 'None!')
+            .addField('Points Log MID', 'None!');
+        this.keys.forEach(m => {
+            if (historyEmbed.fields[2].value == 'None!') historyEmbed.fields[2].value = `<@!${m}>`;
+            else historyEmbed.fields[2].value = `, <@!${m}>`;
+        })
         this.earlyLocation.forEach(m => {
             if (historyEmbed.fields[3].value == `None!`) historyEmbed.fields[3].value = `<@!${m.id}>`
             else historyEmbed.fields[3].value += `, <@!${m.id}>`
+        })
+        this.pointsUsers.forEach(m => {
+            if (historyEmbed.fields[6].value == `None!`) historyEmbed.fields[6].value = `<@!${m.id}>`
+            else historyEmbed.fields[6].value += `, <@!${m.id}>`
         })
         let bigEmbed = false
         let biggerEmbed = false
@@ -1086,10 +1110,11 @@ class afkCheck {
                 }
                 else historyEmbed.fields[4].value == 'None!' ? historyEmbed.fields[4].value = `<@!${m}>` : historyEmbed.fields[4].value += `, <@!${m}>`
             }
-        })
-        historyEmbed.setFooter(`${this.channel.id} • ${this.raidStatusMessage.id} • ${this.leaderEmbedMessage.id} • ${raiders.length} Raiders`)
-        this.message.guild.channels.cache.get(this.settings.channels.history).send({ embeds: [historyEmbed] })
-        this.message.guild.channels.cache.get(this.settings.channels.runlogs).send({ embeds: [historyEmbed] })
+        });
+        this.nitro.forEach(m => {
+            if (historyEmbed.fields[5].value == `None!`) historyEmbed.fields[5].value = `<@!${m.id}>`
+            else historyEmbed.fields[5].value += `, <@!${m.id}>`
+        });
 
         //make sure everyone in run is in db
         if (this.channel.members) {
@@ -1136,8 +1161,14 @@ class afkCheck {
                     })
                 })
             }
-            pointLogger.pointLogging(pointsLog, this.message.guild, this.bot, this.mainEmbed)
+            var pointlog_mid = await pointLogger.pointLogging(pointsLog, this.message.guild, this.bot, this.mainEmbed);
         }
+
+        if(pointlog_mid) historyEmbed.fields[7].value = pointlog_mid;
+
+        historyEmbed.setFooter(`${this.channel.id} • ${this.raidStatusMessage.id} • ${this.leaderEmbedMessage.id} • ${raiders.length} Raiders`)
+        this.message.guild.channels.cache.get(this.settings.channels.history).send({ embeds: [historyEmbed] })
+        this.message.guild.channels.cache.get(this.settings.channels.runlogs).send({ embeds: [historyEmbed] })
 
         //log key
         for (let u of this.keys) {
@@ -1320,10 +1351,10 @@ class afkCheck {
 }
 
 /**
- * 
- * @param {*} runInfo 
- * @param {Discord.Message} message 
- * @param {Discord.Client} bot 
+ *
+ * @param {*} runInfo
+ * @param {Discord.Message} message
+ * @param {Discord.Client} bot
  */
 async function createChannel(runInfo, message, bot) {
     let settings = bot.settings[message.guild.id]
@@ -1382,9 +1413,9 @@ async function createChannel(runInfo, message, bot) {
 }
 
 /**
- * 
- * @param {String} char 
- * @param {String} guildid 
+ *
+ * @param {String} char
+ * @param {String} guildid
  * @returns {Object} RunType
  */
 function getRunType(char, guildid) {
