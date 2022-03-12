@@ -1,4 +1,6 @@
-const afkChecks = require('./afkCheck')
+//const afkChecks = require('./afkCheck')
+//afkCheck includes restart so we will just have afkCheck register at startup
+let afkChecks = undefined;
 const botStatus = require('./botstatus')
 
 module.exports = {
@@ -7,6 +9,7 @@ module.exports = {
     role: 'moderator',
     restarting: false,
     allowedInRestart: true,
+
     async execute(message, args, bot) {
         if (args.length != 0 && args[0].toLowerCase() == 'force') process.exit()
         else module.exports.restarting = true;
@@ -17,16 +20,21 @@ module.exports = {
         let Promises = []
 
         //afk checks
-        let activeRuns = await afkChecks.checkRuns()
-        let afkChecksEmitter = afkChecks.emitter
-        for (let i of activeRuns) {
-            Promises.push(new Promise((res, rej) => {
-                afkChecksEmitter.on('Ended', channelID => {
-                    if (channelID == i) res()
-                })
-            }))
+        if(afkChecks) {
+            let activeRuns = await afkChecks.checkRuns()
+            let afkChecksEmitter = afkChecks.emitter;
+            for (let i of activeRuns) {
+                Promises.push(new Promise((res, rej) => {
+                    afkChecksEmitter.on('Ended', channelID => {
+                        if (channelID == i) res()
+                    })
+                }))
+            }
         }
         if (Promises.length == 0) process.exit()
         await Promise.all(Promises).then(() => { process.exit() })
+    },
+    async registerAFKCheck(afkChecksModule) {
+        afkChecks = afkChecksModule;
     }
 }
