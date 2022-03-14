@@ -1075,7 +1075,7 @@ class afkCheck {
             .addField('Points Log MID', 'None!');
         this.keys.forEach(m => {
             if (historyEmbed.fields[2].value == 'None!') historyEmbed.fields[2].value = `<@!${m}>`;
-            else historyEmbed.fields[2].value = `, <@!${m}>`;
+            else historyEmbed.fields[2].value += `, <@!${m}>`;
         })
         this.earlyLocation.forEach(m => {
             if (historyEmbed.fields[3].value == `None!`) historyEmbed.fields[3].value = `<@!${m.id}>`
