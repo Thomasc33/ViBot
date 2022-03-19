@@ -95,7 +95,7 @@ module.exports = {
 
     },
     async listAll(message, args, bot, db) {
-        db.query(`SELECT * FROM excuses where guildid = '${message.guild.id}''`, async(err, rows) => {
+        db.query(`SELECT * FROM excuses where guildid = '${message.guild.id}'`, async(err, rows) => {
             if (err) ErrorLogger.log(err, bot)
             let embed = new Discord.MessageEmbed()
                 .setTitle(`Excused Staff`)
@@ -261,10 +261,19 @@ module.exports = {
                     const member = guild.members.cache.get(row.id);
                     if (!member) continue;
                     for (const quota of guildQuota.quotas) {
-                        const roles = quota.roles.map(role => guild.roles.cache.get(settings.roles[role]));
+                        if (quota.noexcuses) continue;
+                        const roles = quota.roles.map((role, i) => {
+                            return {
+                                name: role,
+                                role: guild.roles.cache.get(settings.roles[role]),
+                                req: quota.quota[i]
+                            }
+                        })
                         const ignore = (guildQuota.ignoreRoles || []).map(r => settings.roles[r]).filter(r => r);
-                        if (!member.roles.cache.filter(r => roles.includes(r)).size ||
+                        if (!member.roles.cache.filter(r => roles.map(ro => ro.role).includes(r)).size ||
                             member.roles.cache.filter(r => ignore.includes(r.id)).size) continue;
+                        const requirement = roles.filter(role => { if (!role.role) console.log(role); return member.roles.cache.has(role.role.id) })
+                            .reduce((p, c) => p.role.position > c.role.position ? p : c, { role: { position: -Infinity } });
                         if (!unmet[member.id])
                             unmet[member.id] = {
                                 member,
@@ -287,7 +296,8 @@ module.exports = {
                                 }
                             }
                         }
-                        if (total < quota.quota) {
+
+                        if (total < requirement.req) {
                             if (unmet[member.id].leave) continue;
                             if (settings.roles.lol && member.roles.cache.has(settings.roles.lol)) {
                                 unmet[member.id].leave = true;
@@ -310,6 +320,7 @@ module.exports = {
                             const issue = {
                                 name: quota.name,
                                 total,
+                                requirement,
                                 values: quota.values.map(v => {
                                     return { name: v.name, value: row[v.column] }
                                 })
@@ -381,7 +392,7 @@ module.exports = {
             embed.addField("Total Unexcused", `${issues.totalMissed + (issues.excuse ? 0 : 1)}`, true);
             embed.addField("Consecutive Unexcused", `${issues.excuse ? 0 : issues.consecutive}`, true);
             for (const issue of issues.quotas) {
-                embed.addField(issue.name, `\`\`\`\nTotal: ${issue.total}\n${issue.values.map(v => v.name + ": " + v.value).join(", ")}\`\`\``)
+                embed.addField(issue.name, `\`\`\`\nTotal: ${issue.total} | Required: ${issue.requirement.req} (${issue.requirement.role.name})\n${issue.values.map(v => v.name + ": " + v.value).join(", ")}\`\`\``)
             }
             if (issues.excuse) {
                 embed.addField("Excused By", `<@${issues.excuse.modid}>`);

@@ -1,9 +1,7 @@
 const Discord = require('discord.js')
-const CurrentWeek = require('./currentWeek')
-const eCurrentWeek = require('./eventCurrentWeek')
-const pCurrentWeek = require('./parseCurrentWeek')
 const logs = require('../data/logInfo.json')
-
+const quotas = require('../data/quotas.json')
+const quota = require('./quota')
 module.exports = {
     name: 'log',
     description: 'Logs runs',
@@ -94,9 +92,9 @@ module.exports = {
         if (logChannel) 
             logChannel.send({ embeds: [embed] })
         if (!toUpdate) return
-        if (toUpdate == 1 && settings.backend.currentweek) CurrentWeek.update(message.guild, db, bot)
-        if (toUpdate == 2 && settings.backend.eventcurrentweek) eCurrentWeek.update(message.guild, db, bot)
-        if (toUpdate == 3 && settings.backend.parsecurrentweek) pCurrentWeek.update(message.guild, db, bot)
+
+        const runQuota = (quotas[message.guild.id]?.quotas)?.filter(q => q.id == toUpdate)
+        if (runQuota) quota.update(message.guild, db, bot, settings, quotas[message.guild.id], runQuota);
     }
 }
 

@@ -23,7 +23,7 @@ module.exports = {
         for (i = 1; i < args.length; i++) reason = reason.concat(args[i]) + ' '
         if (reason == "") reason = "None"
 
-        if (member.roles.highest.position >= message.member.roles.highest.position) return message.channel.send(`${member} has a role greater than or equal to you and cannot be muted`);
+        if (member.roles.highest.position >= message.member.roles.highest.position) return message.channel.send(`${member} has a role greater than or equal to you and cannot be perma-suspended.`);
         if (member.roles.cache.has(pSuspendRole.id)) return message.channel.send('User is perma suspended already, no need to suspend again')
         if (member.roles.cache.has(suspendedRole.id)) {
             db.query(`SELECT * FROM suspensions WHERE id = '${member.id}' AND suspended = true`, async(err, rows) => {

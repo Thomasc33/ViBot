@@ -24,9 +24,7 @@ const botstatus = require('./commands/botstatus')
 const vibotChannels = require('./commands/vibotChannels')
 const vetVerification = require('./commands/vetVerification')
 const verification = require('./commands/verification')
-const currentWeek = require('./commands/currentWeek')
-const ecurrentWeek = require('./commands/eventCurrentWeek')
-const pcurrentWeek = require('./commands/parseCurrentWeek')
+const quota = require('./commands/quota')
 const roleAssignment = require('./commands/roleAssignment')
 const stats = require('./commands/stats')
 const modmail = require('./commands/modmail')
@@ -356,30 +354,29 @@ bot.on("ready", async () => {
     //initialize channels from createchannel.js
     require('./commands/createChannel').init(bot)
 
-    
-    
     //reset currentweek
     const currentWeekReset = cron.job('0 0 * * SUN', () => {
         const biweekly = !(moment().diff(moment(1413378000), 'week') % 2);
         bot.guilds.cache.each(g => {
-            if (!emojiServers.includes(g.id)) {
-                const backend = bot.settings[g.id].backend;
-                if (bot.settings[g.id].backend.sendmissedquota) {
-                    currentWeek.fullReset(g, bot.dbs[g.id], bot);
-                }
-                if (backend.currentweek && ((!backend.raidResetMonthly && !backend.raidResetBiweekly) || (backend.raidResetBiweekly && biweekly))) currentWeek.newWeek(g, bot, bot.dbs[g.id]);
-                if (backend.eventcurrentweek && ((!backend.eventResetMonthly && !backend.eventResetBiweekly) || (backend.eventResetBiweekly && biweekly))) ecurrentWeek.newWeek(g, bot, bot.dbs[g.id])
-                if (backend.parsecurrentweek && ((!backend.parseResetMonthly && !backend.parseResetBiweekly) || (backend.parseResetBiweekly && biweekly))) pcurrentWeek.newWeek(g, bot, bot.dbs[g.id])
+            const guildQuotas = quotas[g.id];
+            if (!emojiServers.includes(g.id) && guildQuotas) {
+                const quotaList = guildQuotas.quotas.filter(q => q.reset == "weekly" || (q.reset == "biweekly" && biweekly));
+                if (!quotaList.length) return;
+
+                quota.fullReset(g, bot.dbs[g.id], bot, quotaList);
             }
         })
     }, null, true, 'America/New_York', null, false)
 
     const currentMonthReset = cron.job('0 0 1 * *', () => {
         bot.guilds.cache.each(g => {
-            if (!emojiServers.includes(g.id)) {
-                if (bot.settings[g.id].backend.currentweek && bot.settings[g.id].backend.raidResetMonthly) currentWeek.newWeek(g, bot, bot.dbs[g.id]);
-                if (bot.settings[g.id].backend.eventcurrentweek && bot.settings[g.id].backend.eventResetMonthly) ecurrentWeek.newWeek(g, bot, bot.dbs[g.id])
-                if (bot.settings[g.id].backend.parsecurrentweek && bot.settings[g.id].backend.parseResetMonthly) pcurrentWeek.newWeek(g, bot, bot.dbs[g.id])
+            const guildQuotas = quotas[g.id];
+            if (!emojiServers.includes(g.id) && guildQuotas) {
+                const quotaList = guildQuotas.quotas.filter(q => q.reset == "weekly" || (q.reset == "biweekly" && biweekly));
+                if (!quotaList.length) return;
+                for (const q of quotaList)
+                    if (q.reset == "monthly")
+                        quota.newWeek(g, bot, bot.dbs[g.id], bot.settings[g.id], guildQuotas, q);
             }
         })
     }, null, true, 'America/New_York', null, false)

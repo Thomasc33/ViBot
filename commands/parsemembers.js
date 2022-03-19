@@ -5,7 +5,8 @@ const realmEyeScrape = require('../lib/realmEyeScrape');
 const charStats = require('../data/charStats.json')
 const botSettings = require('../settings.json')
 const ParseCurrentWeek = require('../data/currentweekInfo.json').parsecurrentweek
-const pcw = require('./parseCurrentWeek')
+const quota = require('./quota')
+const quotas = require('../data/quotas.json')
 const client = new vision.ImageAnnotatorClient(botSettings.gcloudOptions);
 
 
@@ -310,7 +311,11 @@ module.exports = {
         }
         if (!currentweekparsename || !parsetotalname) return
         db.query(`UPDATE users SET ${parsetotalname} = ${parsetotalname} + 1, ${currentweekparsename} = ${currentweekparsename} + 1 WHERE id = '${message.author.id}'`)
-        pcw.update(message.guild, db, bot)
+        const guildQuota = quotas[message.guild.id];
+        if (!guildQuota) return;
+        const parseQuota = guildQuota.quotas.filter(q => q.id == "security")[0]
+        if (parseQuota)
+            quota.update(message.guild, db, bot, settings, guildQuota, parseQuota)
     }
 }
 

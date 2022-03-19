@@ -15,7 +15,7 @@
                 "color": "#8c00ff",
                 "icon": "https://cdn.discordapp.com/emojis/701491230210523247.png?v=1",
                 "desc": "`Void` Run",
-                "toUpdate": 1,
+                "toUpdate": "raiding",
                 "toDisplay": [
                     "currentweekCult",
                     "currentweekVoid",
@@ -37,7 +37,7 @@
                 "color": "#ff0000",
                 "icon": "https://cdn.discordapp.com/emojis/701491230332157972.png?v=1",
                 "desc": "`Cult` Run",
-                "toUpdate": 1,
+                "toUpdate": "raiding",
                 "toDisplay": [
                     "currentweekCult",
                     "currentweekVoid",
@@ -59,7 +59,7 @@
                 "color": "#8c00ff",
                 "icon": "https://cdn.discordapp.com/emojis/858920770806087710.png?v=1",
                 "desc": "`Feedback`",
-                "toUpdate": 1,
+                "toUpdate": "raiding",
                 "toDisplay": [
                     "currentweekCult",
                     "currentweekVoid",
@@ -82,7 +82,7 @@
                 "color": "#00FF00",
                 "icon": "https://cdn.discordapp.com/emojis/831052176507535360.png?v=1",
                 "desc": "`Event` run",
-                "toUpdate": 2,
+                "toUpdate": "events",
                 "toDisplay": [
                     "currentweekEvents",
                     "currentweekExalts",
@@ -103,7 +103,7 @@
                 "color": "#00FF00",
                 "icon": "https://cdn.discordapp.com/emojis/831052176507535360.png?v=1",
                 "desc": "`Exalt` run",
-                "toUpdate": 2,
+                "toUpdate": "events",
                 "toDisplay": [
                     "currentweekEvents",
                     "currentweekExalts",
@@ -126,7 +126,7 @@
                 "color": "#00FF00",
                 "icon": "https://cdn.discordapp.com/emojis/858920770806087710.png?v=1",
                 "desc": "`Exalt Feedback`",
-                "toUpdate": 2,
+                "toUpdate": "events",
                 "toDisplay": [
                     "currentweekEvents",
                     "currentweekExalts",
@@ -155,7 +155,7 @@
                 "color": "#8c00ff",
                 "icon": "https://cdn.discordapp.com/emojis/701491230210523247.png?v=1",
                 "desc": "`Void` Run",
-                "toUpdate": 1,
+                "toUpdate": "raiding",
                 "toDisplay": [
                     "currentweekCult",
                     "currentweekVoid",
@@ -177,7 +177,7 @@
                 "color": "#ff0000",
                 "icon": "https://cdn.discordapp.com/emojis/701491230332157972.png?v=1",
                 "desc": "`Cult` Run",
-                "toUpdate": 1,
+                "toUpdate": "raiding",
                 "toDisplay": [
                     "currentweekCult",
                     "currentweekVoid",
@@ -199,7 +199,7 @@
                 "color": "#8c00ff",
                 "icon": "https://cdn.discordapp.com/emojis/858920770806087710.png?v=1",
                 "desc": "`Feedback`",
-                "toUpdate": 1,
+                "toUpdate": "raiding",
                 "toDisplay": [
                     "currentweekCult",
                     "currentweekVoid",
@@ -222,7 +222,7 @@
                 "color": "#00FF00",
                 "icon": "https://cdn.discordapp.com/emojis/831052176507535360.png?v=1",
                 "desc": "`Event` run",
-                "toUpdate": 2,
+                "toUpdate": "events",
                 "toDisplay": [
                     "currentweekEvents"
                 ]
@@ -249,7 +249,7 @@
                 "color": "#8c00ff",
                 "icon": "https://cdn.discordapp.com/emojis/831047591096745984.png?v=1",
                 "desc": "`Oryx` Run",
-                "toUpdate": 1,
+                "toUpdate": "raiding",
                 "toDisplay": [
                     "currentweeko3",
                     "currentweekAssistso3",
@@ -269,7 +269,7 @@
                 "color": "#8c00ff",
                 "icon": null,
                 "desc": "`Parse`",
-                "toUpdate": 3,
+                "toUpdate": "security",
                 "toDisplay": [
                     "o3currentweekparses"
                 ]
@@ -288,7 +288,7 @@
                 "color": "#00FF00",
                 "icon": "https://cdn.discordapp.com/emojis/831052176507535360.png?v=1",
                 "desc": "`Event` run",
-                "toUpdate": 2,
+                "toUpdate": "events",
                 "toDisplay": [
                     "currentweekEventso3"
                 ]
@@ -307,7 +307,7 @@
                 "color": "#8c00ff",
                 "icon": "https://cdn.discordapp.com/emojis/858920770806087710.png?v=1",
                 "desc": "`Feedback`",
-                "toUpdate": 1,
+                "toUpdate": "raiding",
                 "toDisplay": [
                     "currentweeko3",
                     "currentweekAssistso3",
@@ -338,7 +338,7 @@
                 "color": "#308a00",
                 "icon": "https://cdn.discordapp.com/emojis/849406533435523093.png?v=1",
                 "desc": "`Successful` Run",
-                "toUpdate": 1,
+                "toUpdate": "raiding",
                 "toDisplay": [
                     "currentweek",
                     "currentweekfailed",
@@ -359,7 +359,7 @@
                 "color": "#ff0000",
                 "icon": "https://cdn.discordapp.com/emojis/849406533435523093.png?v=1",
                 "desc": "`Failed` Run",
-                "toUpdate": 1,
+                "toUpdate": "raiding",
                 "toDisplay": [
                     "currentweek",
                     "currentweekfailed",
@@ -380,7 +380,7 @@
                 "color": "#00FF00",
                 "icon": "https://cdn.discordapp.com/emojis/858920770806087710.png?v=1",
                 "desc": "`Event` run",
-                "toUpdate": 2,
+                "toUpdate": "events",
                 "toDisplay": [
                     "currentweekEvents"
                 ]
