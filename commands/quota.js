@@ -32,7 +32,7 @@ module.exports = {
             }
             if (!args.length) {
                 for (const quota of quotaList)
-                    this.sendEmbed(message.channel, db, bot)
+                    this.sendEmbed(message.channel, db, bot, false, guildQuotas, quota)
                 return;
             }
             const cmd = args.shift().toLowerCase();
@@ -133,7 +133,9 @@ module.exports = {
         if (!currentweek) return;
         this.sendEmbed(currentweek, db, bot, false, guildQuotas, quota)
     },
+    
     sendEmbed(channel, db, bot, nw, guildQuotas, quota) {
+        
         const guild = channel.guild;
         if (!guild) return;
         const settings = bot.settings[guild.id];
@@ -170,7 +172,6 @@ module.exports = {
                     runCount += quota.values.map(v => v.isRun ? user[v.column] : 0).reduce((a, b) => a+b, 0);
                     fitStringIntoEmbed(embeds, embed, result);
                 }
-
                 rows = rows.map(r => r.id);
                 await channel.guild.members.cache.filter(m => m.roles.cache.has(...roles)).each(m => {
                     if (!rows.includes(m.id)) {
@@ -202,7 +203,6 @@ module.exports = {
                             }
                         }
                         async function gatherMessages() {
-                            
                             CachedMessages[guild.id][quota.id] = []
                             
                             let messages = await channel.messages.fetch({ limit: 5 })
