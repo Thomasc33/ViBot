@@ -93,8 +93,11 @@ module.exports = {
             logChannel.send({ embeds: [embed] })
         if (!toUpdate) return
 
-        const runQuota = (quotas[message.guild.id]?.quotas)?.filter(q => q.id == toUpdate)
-        if (runQuota) quota.update(message.guild, db, bot, settings, quotas[message.guild.id], runQuota);
+        if (quotas[message.guild.id]) {
+            const runQuota = quotas[message.guild.id].quotas.filter(q => q.id == toUpdate)
+            if (runQuota)
+                quota.update(message.guild, db, bot, settings, quotas[message.guild.id], runQuota[0]);
+        } 
     }
 }
 

@@ -1,48 +1,59 @@
 {
     "701483950559985705": {
-        "totalUnexcused": "totalUnexcusedo3",
-        "consecutiveUnexcused": "consecutiveUnexcusedo3",
-        "consecutiveLeave": "consecutiveLeaveo3",
+        "totalUnexcused": "totalUnexcused",
+        "consecutiveUnexcused": "consecutiveUnexcused",
+        "consecutiveLeave": "consecutiveLeave",
         "ignoreRoles": ["officer", "headrl", "moderator", "headeventrl"],
         "quotas": [{
-            "id": "raiding",
-            "name": "Raid Leader Quota",
-            "roles": ["rl", "almostrl"],
-            "quota": [3, 3],
-            "reset": "weekly",
-            "currentweek": "currentweek",
-            "pastweeks": "pastweeks",
-            "values": [
-                { "column": "currentweeko3", "name": "Oryx Runs", "value": 1, "isRun": true },
-                { "column": "currentweeko3Feedback", "name": "Feedback", "value": 1.5 },
-                { "column": "currentweekAssistso3", "name": "Assists", "value": 0.5 },
-                { "column": "rollingQuotao3", "name": "Rolled Quota", "value": 1, "rolling": true }
-            ]
-        }, {
-            "id": "security",
-            "name": "Security Quota",
-            "roles": ["security", "warden"],
-            "quota": [20, 30],
-            "reset": "weekly",
-            "currentweek": "parsecurrentweek",
-            "pastweeks": "pastparseweeks",
-            "values": [
-                { "column": "o3currentweekparses", "name": "Parses", "value": 1 },
-                { "column": "rollingsecurityquotao3", "name": "Rolled Quota", "value": 1, "rolling": true }
-            ]
-        }, {
-            "id": "events",
-            "name": "Realm Organizer Quota",
-            "roles": ["eventrl"],
-            "quota": 2,
-            "noexcuses": true,
-            "reset": "never",
-            "currentweek": "eventcurrentweek",
-            "pastweeks": "eventpastweeks",
-            "values": [
-                { "column": "currentweekEventso3", "name": "Events", "value": 1 }
-            ]
-        }]
+                "id": "raiding",
+                "name": "Raid Leader Quota",
+                "roles": ["rl", "almostrl"],
+                "quota": [7, 7],
+                "reset": "weekly",
+                "currentweek": "currentweek",
+                "pastweeks": "pastweeks",
+                "values": [
+                    { "column": "currentweekVoid", "name": "Voids", "value": 1, "isRun": true },
+                    { "column": "currentweekCult", "name": "Cults", "value": 1, "isRun": true },
+                    { "column": "currentweekAssists", "name": "Assists", "value": 0.5 },
+                    { "column": "currentweekFeedback", "name": "Feedback", "value": 0.5 },
+                    { "column": "rollingQuota", "name": "Rolled Quota", "value": 1, "rolling": true }
+
+                ],
+                "voteInfo": {
+                    "roles": ["almostrl"],
+                    "consecutive": 2,
+                    "runsDone": [{ "column": "currentweekVoid", "name": "Voids", "count": 20 }]
+                }
+            },
+            {
+                "id": "security",
+                "name": "Security Quota",
+                "roles": ["security"],
+                "quota": [7],
+                "reset": "weekly",
+                "currentweek": "parsecurrentweek",
+                "pastweeks": "pastparseweeks",
+                "values": [
+                    { "column": "currentweekparses", "name": "Parses", "value": 1 }
+                ]
+            },
+            {
+                "id": "events",
+                "name": "Event Organizer Quota",
+                "noexcuses": true,
+                "roles": ["eventrl", "veteventrl"],
+                "quota": [12, 12],
+                "reset": "biweekly",
+                "currentweek": "eventcurrentweek",
+                "pastweeks": "eventpastweeks",
+                "values": [
+                    { "column": "currentweekEvents", "name": "Events", "value": 1 },
+                    { "column": "currentweekExalts", "name": "Exalts", "value": 1.5 },
+                    { "column": "currentweekExaltFeedback", "name": "Exalt Feedback", "value": 2 }
+                ]
+            }
+        ]
     },
     "343704644712923138": {
         "totalUnexcused": "totalUnexcused",
@@ -135,7 +146,7 @@
             "id": "events",
             "name": "Realm Organizer Quota",
             "roles": ["eventrl"],
-            "quota": 2,
+            "quota": [2],
             "noexcuses": true,
             "reset": "never",
             "currentweek": "eventcurrentweek",
