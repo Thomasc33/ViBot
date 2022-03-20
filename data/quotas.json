@@ -151,6 +151,10 @@
             "name": "Raid Leader Quota",
             "roles": ["rl", "almostrl"],
             "quota": [3, 3],
+            "noexcuses": true,
+            "reset": "weekly",
+            "currentweek": "currentweek",
+            "pastweeks": "pastweeks",
             "values": [
                 { "column": "currentweek", "name": "Shatters Runs", "value": 1, "isRun": true },
                 { "column": "currentweekfailed", "name": "Failed Runs", "value": 1, "isRun": true },
