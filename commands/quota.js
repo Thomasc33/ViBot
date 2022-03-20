@@ -156,9 +156,15 @@ module.exports = {
             const query = db.query(`SELECT id, ` + quota.values.map(v => v.column).join(', ') + `, ${combine}, ${unrolled} FROM Users WHERE ` + quota.values.map(v => `${v.column} != 0`).join(' OR ') + ` order by total desc`, async (err, rows) => {
                 if (err) return reject(err);
                 let runCount = 0;
+                const roles = quota.roles.map(r => channel.guild.roles.cache.get(settings.roles[r])?.id).filter(r => r);
+                const ignore = (guildQuotas.ignoreRoles || []).map(r => settings.roles[r]).filter(r => r);
                 for (const idx in rows) {
                     const user = rows[idx];
-                    csvData += `${user.id},${channel.guild.members.cache.get(user.id)?.nickname},${user.unrolled},${user.total}\n`;
+                    const member = channel.guild.members.cache.get(user.id);
+                    if (member && (!member.roles.cache.filter(r => roles.includes(r.id)).size ||
+                        member.roles.cache.filter(r => ignore.includes(r.id)).size))
+                        continue;
+                    csvData += `${user.id},${member.nickname},${user.unrolled},${user.total}\n`;
                     let result = `**[${parseInt(idx) + 1}]** <@!${user.id}>:\nPoints: \`${user.total}\` (` +
                         quota.values.map(v => `${v.name}: \`${user[v.column]||0}\``).join(', ') + ')';
                     runCount += quota.values.map(v => v.isRun ? user[v.column] : 0).reduce((a, b) => a+b, 0);
@@ -166,7 +172,6 @@ module.exports = {
                 }
 
                 rows = rows.map(r => r.id);
-                const roles = quota.roles.map(r => channel.guild.roles.cache.get(settings.roles[r])?.id).filter(r => r);
                 await channel.guild.members.cache.filter(m => m.roles.cache.has(...roles)).each(m => {
                     if (!rows.includes(m.id)) {
                         csvData += `${m.id},${m.nickname},0,0\n`;

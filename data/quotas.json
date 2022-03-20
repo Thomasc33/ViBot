@@ -3,14 +3,12 @@
         "totalUnexcused": "totalUnexcused",
         "consecutiveUnexcused": "consecutiveUnexcused",
         "consecutiveLeave": "consecutiveLeave",
-        "highestQuotaMatters": true,
         "quotas": [{
                 "id": "raiding",
                 "name": "Raid Leader Quota",
-                "roles": ["rl", "almostrl", "vetrl"],
-                "quota": [7, 5, 9],
+                "roles": ["rl", "almostrl"],
+                "quota": [7, 7],
                 "reset": "weekly",
-                "consecutiveHit": "consecutiveQuotas",
                 "currentweek": "currentweek",
                 "pastweeks": "pastweeks",
                 "values": [
@@ -19,11 +17,12 @@
                     { "column": "currentweekAssists", "name": "Assists", "value": 0.5 },
                     { "column": "currentweekFeedback", "name": "Feedback", "value": 0.5 },
                     { "column": "rollingQuota", "name": "Rolled Quota", "value": 1, "rolling": true }
+
                 ],
                 "voteInfo": {
                     "roles": ["almostrl"],
                     "consecutive": 2,
-                    "runsDone": [{ "column": "currentweekVoid", "name": "Voids", "count": 30 }]
+                    "runsDone": [{ "column": "currentweekVoid", "name": "Voids", "count": 20 }]
                 }
             },
             {
@@ -33,8 +32,10 @@
                 "quota": [7],
                 "reset": "weekly",
                 "currentweek": "parsecurrentweek",
-                "pastweeks": "pastparseweeks",
-                "values": [{ "column": "currentweekparses", "name": "Parses", "value": 1 }]
+                "pastweeks": "parsepastweeks",
+                "values": [
+                    { "column": "currentweekparses", "name": "Parses", "value": 1 }
+                ]
             },
             {
                 "id": "events",
