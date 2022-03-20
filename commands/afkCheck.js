@@ -629,7 +629,7 @@ class afkCheck {
             //Update Rushers table 
             if (reactInfo && reactInfo.requiredRole == 'rusher') {
                 let today = new Date()
-                this.db.query(`UPDATE rushers SET time = ${today.valueOf()} WHERE id = '${interaction.user.id}'`)
+                this.db.query(`UPDATE rushers SET time = ${today.valueOf()} WHERE id = '${interaction.user.id}' and guildid = '${this.guild.id}'`)
             }
 
             let dmIntereactionCollector = new Discord.InteractionCollector(this.bot, { message: em, interactionType: 'MESSAGE_COMPONENT', componentType: 'BUTTON' })
