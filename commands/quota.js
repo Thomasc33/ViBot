@@ -39,7 +39,7 @@ module.exports = {
             for (const quota of quotaList) {
                 switch (cmd) {
                     case 'reset':
-                        this.newWeek(message.guild, bot, db, false, guildQuotas, quota);
+                        this.newWeek(message.guild, bot, db, settings, guildQuotas, quota);
                         break;
                     case 'update':
                         await this.update(message.guild, db, bot, settings, guildQuotas, quota);
