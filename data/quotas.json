@@ -16,9 +16,8 @@
                     { "column": "currentweekVoid", "name": "Voids", "value": 1, "isRun": true },
                     { "column": "currentweekCult", "name": "Cults", "value": 1, "isRun": true },
                     { "column": "currentweekAssists", "name": "Assists", "value": 0.5 },
-                    { "column": "currentweekFeedback", "name": "Feedback", "value": 0.5 },
+                    { "column": "currentweekFeedback", "name": "Feedback", "value": 1 },
                     { "column": "rollingQuota", "name": "Rolled Quota", "value": 1, "rolling": true }
-
                 ],
                 "voteInfo": {
                     "roles": ["almostrl"],
@@ -72,7 +71,7 @@
                     { "column": "currentweekVoid", "name": "Voids", "value": 1, "isRun": true },
                     { "column": "currentweekCult", "name": "Cults", "value": 1, "isRun": true },
                     { "column": "currentweekAssists", "name": "Assists", "value": 0.5 },
-                    { "column": "currentweekFeedback", "name": "Feedback", "value": 0.5 },
+                    { "column": "currentweekFeedback", "name": "Feedback", "value": 1 },
                     { "column": "rollingQuota", "name": "Rolled Quota", "value": 1, "rolling": true }
 
                 ],
