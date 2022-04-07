@@ -21,7 +21,8 @@
                     "currentweekVoid",
                     "currentweekAssists",
                     "currentweekFeedback"
-                ]
+                ],
+                "logVet": true,
             },
             {
                 "key": "c",
@@ -43,7 +44,8 @@
                     "currentweekVoid",
                     "currentweekAssists",
                     "currentweekFeedback"
-                ]
+                ],
+                "logVet": true
             },
             {
                 "key": "f",
@@ -65,7 +67,8 @@
                     "currentweekVoid",
                     "currentweekAssists",
                     "currentweekFeedback"
-                ]
+                ],
+                "logVet": true
             },
             {
                 "key": "e",
