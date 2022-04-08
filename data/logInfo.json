@@ -22,7 +22,7 @@
                     "currentweekAssists",
                     "currentweekFeedback"
                 ],
-                "logVet": true,
+                "logVet": true
             },
             {
                 "key": "c",
