@@ -324,7 +324,7 @@ class afkCheck {
                 type: 'BUTTON',
                 label: '❌ Abort',
                 style: 'DANGER',
-                customId: 'abort'
+                customId: 'end'
             }]
         })
         if (this.afkInfo.twoPhase) lar.addComponents({
@@ -333,12 +333,18 @@ class afkCheck {
             style: 'SUCCESS',
             customId: 'openvc'
         })
+        else lar.addComponents({
+            type: 'BUTTON',
+            label: '✅ Start Run',
+            style: 'SUCCESS',
+            customId: 'start'
+        })
         this.leaderEmbedMessage = await this.commandChannel.send({ embeds: [this.leaderEmbed], components: [lar] })
         this.runInfoMessage = await this.runInfoChannel.send({ embeds: [this.leaderEmbed] })
 
         //add interaction collectors
         this.leaderInteractionCollector = new Discord.InteractionCollector(this.bot, { message: this.leaderEmbedMessage, interactionType: 'MESSAGE_COMPONENT', componentType: 'BUTTON' })
-        this.leaderInteractionCollector.on('collect', (interaction) => this.leaderInteractionHandler(interaction))
+        this.leaderInteractionCollector.on('collect', (interaction) => this.interactionHandler(interaction))
 
         const avsan = /^[aeiou]/i.test(this.afkInfo.runName) ? 'An' : 'A';
 
@@ -353,7 +359,10 @@ class afkCheck {
         else if (this.afkInfo.isAdvanced && !this.afkInfo.isExalt && this.settings.strings.hallsAdvancedReqsImage) this.mainEmbed.setImage(this.settings.strings.hallsAdvancedReqsImage);
         else if (this.afkInfo.isAdvanced && this.afkInfo.isExalt && this.settings.strings.exaltsAdvancedReqsImage) this.mainEmbed.setImage(this.settings.strings.exaltsAdvancedReqsImage);
         if (this.afkInfo.embed.thumbnail && !this.afkInfo.embed.removeThumbnail) this.mainEmbed.setThumbnail(this.afkInfo.embed.thumbnail)
-        this.mainEmbed.description = this.mainEmbed.description.replace('{voicechannel}', `${this.channel}`)
+        if (this.afkInfo.twoPhase)
+            this.mainEmbed.description = this.mainEmbed.description.replace("To join, **click here** {voicechannel}\n", "");
+        else
+            this.mainEmbed.description = this.mainEmbed.description.replace('{voicechannel}', `${this.channel}`);
         const rules = `<#${this.settings.channels.raidingrules}>` || '#raiding-rules';
 
         if (this.afkInfo.isAdvanced)
@@ -415,16 +424,37 @@ class afkCheck {
         else if (interaction.customId === 'openvc') {
             if (this.afkInfo.twoPhase) {
                 if (this.guild.members.cache.get(interaction.user.id).roles.highest.position >= this.staffRole.position) {
-                    interaction.reply({ content: 'Channel will open shortly...', ephemeral: true })
-                    this.leaderEmbed.footer.text = `React with ❌ to abort, Channel is opening...`
-                    this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] })
-                    let tempM = await this.raidStatus.send(`<#${this.channel.id}> will open in 5 seconds...`)
+                    interaction.deferUpdate();
+                    let temp_rs_components = this.raidStatusMessage.components;
+                    for(let i = 0; i < temp_rs_components.length; i++) {
+                        for (let j = 0; j < temp_rs_components[i].components.length; j++) {
+                            if(temp_rs_components[i].components[j].customId === 'openvc') {
+                                temp_rs_components[i].components[j] = new Discord.MessageButton({label: '✅ Start Run', style: 'SUCCESS', customId: 'start'});
+                            }
+                        }
+                    }
+                    let temp_leader_components = this.leaderEmbedMessage.components;
+                    for(let i = 0; i < temp_leader_components.length; i++) {
+                        for (let j = 0; j < temp_leader_components[i].components.length; j++) {
+                            if(temp_leader_components[i].components[j].customId === 'openvc') {
+                                temp_leader_components[i].components[j] = new Discord.MessageButton({label: '✅ Start Run', style: 'SUCCESS', customId: 'start'});
+                            }
+                        }
+                    }
+                    this.raidStatusMessage = await this.raidStatusMessage.edit({components: temp_rs_components});
+                    this.leaderEmbed.footer.text = `Channel is opening...`
+                    this.leaderEmbedMessage = await this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed], components: temp_leader_components})
+                    let tempM = await this.raidStatus.send(`${this.channel.name} will open in 5 seconds...`);
                     setTimeout(async (afk) => {
-                        await tempM.edit(`${afk.channel.name} is open!`)
                         await afk.channel.permissionOverwrites.edit(afk.verifiedRaiderRole.id, { CONNECT: true, VIEW_CHANNEL: true })
                         if (afk.eventBoi) await afk.channel.permissionOverwrites.edit(afk.eventBoi.id, { CONNECT: true, VIEW_CHANNEL: true })
+                        afk.mainEmbed.description = `To join, **click here** <#${afk.channel.id}>\n` + afk.mainEmbed.description;
+                        afk.raidStatusMessage = await afk.raidStatusMessage.edit({embed: afk.mainEmbed});
+                        await tempM.edit(`<#${this.channel.id}> is open!`);
+                        this.leaderEmbed.footer.text = `Channel is open.`
+                        this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] })
                     }, 5000, this)
-                    setTimeout(async tempM => { tempM.delete() }, 20000, tempM)
+                    setTimeout(async tempM => { tempM.delete(); }, 20000, tempM);
                     for (let i of this.afkInfo.reacts) await this.raidStatusMessage.react(i)
                 } else {
                     interaction.deferUpdate()
@@ -445,33 +475,6 @@ class afkCheck {
         if (r.emoji.name.toLowerCase() == 'knight') this.knights.push(u)
         else if (r.emoji.name.toLowerCase() == 'warrior') this.warriors.push(u)
         else if (r.emoji.name.toLowerCase() == 'paladin') this.pallies.push(u)
-    }
-
-    /**
-     *
-     * @param {Discord.MessageComponentInteraction} interaction
-     */
-    async leaderInteractionHandler(interaction) {
-        if (!interaction.isButton()) { console.log(`${interaction.member.nickname} had a non button iteraction`); return interaction.deferUpdate() }
-        if (interaction.customId === 'abort') {
-            this.endedBy = interaction.user;
-            interaction.deferUpdate()
-            this.abortAfk()
-        } else if (interaction.customId === 'openvc') {
-            if (this.afkInfo.twoPhase) {
-                interaction.reply({ content: 'Channel will open shortly...', ephemeral: true })
-                this.leaderEmbed.footer.text = `React with ❌ to abort, Channel is opening...`
-                this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] })
-                let tempM = await this.raidStatus.send(`<#${this.channel.id}> will open in 5 seconds...`)
-                setTimeout(async (afk) => {
-                    await tempM.edit(`${afk.channel.name} is open!`)
-                    await afk.channel.permissionOverwrites.edit(afk.verifiedRaiderRole.id, { CONNECT: true, VIEW_CHANNEL: true })
-                    if (afk.eventBoi) await afk.channel.permissionOverwrites.edit(afk.eventBoi.id, { CONNECT: true, VIEW_CHANNEL: true })
-                }, 5000, this)
-                setTimeout(async tempM => { tempM.delete() }, 20000, tempM)
-                for (let i of this.afkInfo.reacts) await this.raidStatusMessage.react(i)
-            }
-        }
     }
 
     async addButtons() {
@@ -498,9 +501,9 @@ class afkCheck {
         if (this.settings.backend.points) addButton({ label: '🎟️ Use Tickets', style: 'SECONDARY', customId: 'points' })
         //split row
         actionRows.push(curRow); curRow = []
-        addButton({ label: '✅ Start Run', style: 'SUCCESS', customId: 'start' })
-        addButton({ label: '❌ Abort Run', style: 'DANGER', customId: 'end' })
         if (this.afkInfo.twoPhase) addButton({ label: '✅ Open Channel', style: 'SUCCESS', customId: 'openvc' })
+        else addButton({ label: '✅ Start Run', style: 'SUCCESS', customId: 'start' })
+        addButton({ label: '❌ Abort Run', style: 'DANGER', customId: 'end' })
 
         // Add buttons and reacts
         if (curRow.length > 0) actionRows.push(curRow)
@@ -626,7 +629,7 @@ class afkCheck {
             await interaction.reply({ embeds: [embed], ephemeral: true, components: [ar] })
             let em = await interaction.fetchReply()
 
-            //Update Rushers table 
+            //Update Rushers table
             if (reactInfo && reactInfo.requiredRole == 'rusher') {
                 let today = new Date()
                 this.db.query(`UPDATE rushers SET time = ${today.valueOf()} WHERE id = '${interaction.user.id}' and guildid = '${this.guild.id}'`)
