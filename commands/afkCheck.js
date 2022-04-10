@@ -333,6 +333,12 @@ class afkCheck {
             style: 'SUCCESS',
             customId: 'openvc'
         })
+        else lar.addComponents({
+            type: 'BUTTON',
+            label: '✅ Start Run',
+            style: 'SUCCESS',
+            customId: 'start'
+        })
         this.leaderEmbedMessage = await this.commandChannel.send({ embeds: [this.leaderEmbed], components: [lar] })
         this.runInfoMessage = await this.runInfoChannel.send({ embeds: [this.leaderEmbed] })
 
@@ -353,7 +359,10 @@ class afkCheck {
         else if (this.afkInfo.isAdvanced && !this.afkInfo.isExalt && this.settings.strings.hallsAdvancedReqsImage) this.mainEmbed.setImage(this.settings.strings.hallsAdvancedReqsImage);
         else if (this.afkInfo.isAdvanced && this.afkInfo.isExalt && this.settings.strings.exaltsAdvancedReqsImage) this.mainEmbed.setImage(this.settings.strings.exaltsAdvancedReqsImage);
         if (this.afkInfo.embed.thumbnail && !this.afkInfo.embed.removeThumbnail) this.mainEmbed.setThumbnail(this.afkInfo.embed.thumbnail)
-        this.mainEmbed.description = this.mainEmbed.description.replace("To join, **click here** {voicechannel}\n", "");
+        if (this.afkInfo.twoPhase)
+            this.mainEmbed.description = this.mainEmbed.description.replace("To join, **click here** {voicechannel}\n", "");
+        else
+            this.mainEmbed.description = this.mainEmbed.description.replace('{voicechannel}', `${this.channel}`);
         const rules = `<#${this.settings.channels.raidingrules}>` || '#raiding-rules';
 
         if (this.afkInfo.isAdvanced)
