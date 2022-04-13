@@ -133,7 +133,7 @@
             "id": "security",
             "name": "Security Quota",
             "roles": ["security", "warden"],
-            "quota": [20, 30],
+            "quota": [22, 30],
             "reset": "weekly",
             "currentweek": "parsecurrentweek",
             "pastweeks": "pastparseweeks",
