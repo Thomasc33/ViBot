@@ -1441,7 +1441,7 @@ async function createChannel(runInfo, message, bot) {
         //Embed to remove
         let embed = new Discord.MessageEmbed()
             .setDescription(`Whenever the run is over. Click the button to delete the channel. View the timestamp for more information\nLocation: \`${runInfo.location}\``)
-            .setFooter({text: channel.id})
+            .setFooter({text: `${channel.id}`})
             .setTimestamp()
             .setTitle(channel.name)
             .setColor(runInfo.embed.color)
