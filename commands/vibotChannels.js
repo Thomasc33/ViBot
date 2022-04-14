@@ -45,7 +45,11 @@ module.exports = {
             })
         }
         for (let i in bot.afkChecks) {
-            if (!guild.channels.cache.get(i)) delete bot.afkChecks[i]
+            if (!guild.channels.cache.get(i)) delete bot.afkChecks[i];
+            if(watchedButtons[i] && bot.afkChecks[i].RSAMessagePacket) {
+                let rsa_m = await getAFKChannelMessage(bot, guild, i);
+                if(rsa_m) module.exports.addReconnectButton(bot, rsa_m, i);
+            }
         }
         fs.writeFile('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => {
             if (err) ErrorLogger.log(err, bot)
@@ -125,13 +129,37 @@ module.exports = {
         m = await m.edit({components: [ar]});
         let hndlr = m.createMessageComponentCollector({componentType: 'BUTTON'});
         hndlr.on('collect', async (interaction) => closeChannelButtonsHandler(interaction, bot));
-        let button_manager = {hndlr: hndlr, confirm_hndlrs: []};
+        let button_manager = {hndlr: hndlr, confirm_hndlrs: [], RSAMessage: undefined, reconnect_hndlr: undefined};
         watchedButtons[m.embeds[0].footer.text] = button_manager;
+    },
+
+    async addReconnectButton(bot, rsa_message, vc_channel_id) {
+        let reconnect_button = new Discord.MessageActionRow({
+            components: [{
+                type: 'BUTTON',
+                label: 'Reconnect',
+                style: 'PRIMARY',
+                customId: 'reconnect_raider'
+            }]
+        });
+        rsa_message = await rsa_message.edit({components: [reconnect_button]});
+        let reconnect_hndlr = rsa_message.createMessageComponentCollector({componentType: 'BUTTON'});
+        reconnect_hndlr.on('collect', async (interaction) => reconnectButtonHandler(interaction, vc_channel_id, bot));
+        watchedButtons[vc_channel_id].RSAMessage = rsa_message;
+        watchedButtons[vc_channel_id].reconnect_hndlr = reconnect_hndlr;
     },
 
     async registerAFKCheck(afkCheckMod) {
         afkCheckModule = afkCheckMod;
     }
+}
+
+async function getAFKChannelMessage(bot, guild, vc_channel_id) {
+    rsaMessageId = bot.afkChecks[vc_channel_id].RSAMessagePacket.messageId;
+    rsaChannelId = bot.afkChecks[vc_channel_id].RSAMessagePacket.channelId;
+    c = guild.channels.cache.get(rsaChannelId);
+    if (!c) return undefined;
+    return await c.messages.fetch(rsaMessageId);
 }
 
 async function closeChannelButtonsHandler(interaction, bot) {
@@ -164,11 +192,16 @@ async function closeChannelButtonsHandler(interaction, bot) {
 
 async function watchConfirmButtonsHandler(interaction, prev_interaction, bot, this_hndlr) {
     if(!interaction.isButton()) return;
-    let debug = 1;
     if(interaction.customId === 'delete_confirmed') {
         watchedButtons[prev_interaction.message.embeds[0].footer.text].hndlr.stop();
         for (let i of watchedButtons[prev_interaction.message.embeds[0].footer.text].confirm_hndlrs) {
             i.stop();
+        }
+        if(watchedButtons[prev_interaction.message.embeds[0].footer.text].reconnect_hndlr) {
+            watchedButtons[prev_interaction.message.embeds[0].footer.text].reconnect_hndlr.stop()
+        }
+        if(watchedButtons[prev_interaction.message.embeds[0].footer.text].RSAMessage) {
+            watchedButtons[prev_interaction.message.embeds[0].footer.text].RSAMessage.edit({components: []});
         }
         await prev_interaction.message.delete().then().catch(console.error);
         await interaction.update({content: `${prev_interaction.message.embeds[0].title} has been deleted. Have a nice day!`, components: []});
@@ -204,6 +237,18 @@ async function watchConfirmButtonsHandler(interaction, prev_interaction, bot, th
             }
         }
     }
+}
+
+async function reconnectButtonHandler(interaction, vc_channel_id, bot) {
+    if(!interaction.isButton()) return;
+    if((bot.afkChecks[vc_channel_id].raiders && bot.afkChecks[vc_channel_id].raiders.includes(interaction.member.id)) || (bot.afkChecks[vc_channel_id].earlyLocation && bot.afkChecks[vc_channel_id].earlyLocation.includes(interaction.member.id))) {
+        if(interaction.member.voice.channel) {
+            if(interaction.member.voice.channel.id == vc_channel_id) interaction.reply({content: 'It looks like you are already in the channel. ඞ', ephemeral: true});
+            else interaction.member.voice.setChannel(vc_channel_id, 'reconnect').then(interaction.reply({content: 'You have been dragged back in. Enjoy!', ephemeral: true})).catch(er => interaction.reply({content: 'Please connect to lounge and try again.', ephemeral: true}));
+        }
+        else interaction.reply({content: 'Please connect to lounge and try again.', ephemeral: true});
+    }
+    else interaction.reply({content: 'You were not part of this run when the afk check ended. Another run will be posted soon. Join that one!', ephemeral: true});
 }
 
 const xFilter = (r, u) => r.emoji.name === '❌' && !u.bot
