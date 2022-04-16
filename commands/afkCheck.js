@@ -15,7 +15,8 @@ var emitter = new EventEmitter()
 
 var runs = [] //{channel: id, afk: afk instance}
 var registeredWithRestart = false;
-
+var registeredWithVibotChannels = false;
+//
 module.exports = {
     name: 'afk',
     // alias: ['nafk'],
@@ -44,6 +45,10 @@ module.exports = {
         if(!registeredWithRestart) {
             restart.registerAFKCheck(module.exports);
             registeredWithRestart = true;
+        }
+        if(!registeredWithVibotChannels) {
+            Channels.registerAFKCheck(module.exports);
+            registeredWithVibotChannels = true;
         }
         //clear out runs array
         destroyInactiveRuns();
@@ -108,6 +113,10 @@ module.exports = {
             restart.registerAFKCheck(module.exports);
             registeredWithRestart = true;
         }
+        if(!registeredWithVibotChannels) {
+            Channels.registerAFKCheck(module.exports);
+            registeredWithVibotChannels = true;
+        }
         //clear out runs array
         destroyInactiveRuns();
 
@@ -157,6 +166,13 @@ module.exports = {
             if (i.afk.active) activeRuns.push(i.channel)
         return activeRuns
     },
+    //used by vibotChannels to abort runs when channels are closed
+    async returnRunByID(channel_id) {
+        for (let i of runs) {
+            if(i.afk.active && i.channel == channel_id) { return i.afk; }
+        }
+        return undefined;
+    }
 }
 
 function begin(afkModule) {
@@ -313,32 +329,42 @@ class afkCheck {
             .setColor(this.afkInfo.embed.color || "#fefefe")
             .setTitle(`${this.message.member.nickname}'s ${this.afkInfo.runName}`)
             .addField('Our current keys', 'None!')
-            .setFooter(`Click ❌ to abort${this.afkInfo.twoPhase ? ', Click ✅ to open the channel' : ''}`)
+            .setFooter({text: `${this.afkInfo.twoPhase ? 'Click ✅ to open the channel, ' : ''}Click ❌ to abort`})
         if (this.afkInfo.vialReact) this.leaderEmbed.addField('Our current vials', 'None!')
         this.afkInfo.earlyLocationReacts.forEach(r => this.leaderEmbed.addField(`Our current ${r.shortName}`, 'None!'))
         this.leaderEmbed.addField('Location', this.afkInfo.location)
             .addField('Other Early Location', 'None!')
             .addField('Nitro', 'None!')
-        let lar = new Discord.MessageActionRow({
-            components: [{
-                type: 'BUTTON',
-                label: '❌ Abort',
-                style: 'DANGER',
-                customId: 'end'
-            }]
-        })
-        if (this.afkInfo.twoPhase) lar.addComponents({
-            type: 'BUTTON',
-            label: '✅ Open Channel',
-            style: 'SUCCESS',
-            customId: 'openvc'
-        })
-        else lar.addComponents({
-            type: 'BUTTON',
-            label: '✅ Start Run',
-            style: 'SUCCESS',
-            customId: 'start'
-        })
+        let lar;
+        if (this.afkInfo.twoPhase) {
+            lar = new Discord.MessageActionRow({
+                components: [{
+                    type: 'BUTTON',
+                    label: '✅ Open Channel',
+                    style: 'SUCCESS',
+                    customId: 'openvc'
+                }, {
+                    type: 'BUTTON',
+                    label: '❌ Abort',
+                    style: 'DANGER',
+                    customId: 'end'
+                }]
+            })
+        } else {
+            lar = new Discord.MessageActionRow({
+                components: [{
+                    type: 'BUTTON',
+                    label: '✅ Start Run',
+                    style: 'SUCCESS',
+                    customId: 'start'
+                }, {
+                    type: 'BUTTON',
+                    label: '❌ Abort',
+                    style: 'DANGER',
+                    customId: 'end'
+                }]
+            })
+        }
         this.leaderEmbedMessage = await this.commandChannel.send({ embeds: [this.leaderEmbed], components: [lar] })
         this.runInfoMessage = await this.runInfoChannel.send({ embeds: [this.leaderEmbed] })
 
@@ -350,9 +376,9 @@ class afkCheck {
 
         //send messages
         this.mainEmbed = new Discord.MessageEmbed(this.afkInfo.embed);
-        this.mainEmbed.setAuthor(`${avsan} ${this.afkInfo.runName} Has Been Started in ${this.channel.name}`)
+        this.mainEmbed.setAuthor({name: `${avsan} ${this.afkInfo.runName} Has Been Started in ${this.channel.name}`})
             .setColor(this.afkInfo.embed.color)
-            .setFooter(`Time Remaining: ${Math.floor(this.time / 60)} minutes and ${this.time % 60} seconds`)
+            .setFooter({text: `Time Remaining: ${Math.floor(this.time / 60)} minutes and ${this.time % 60} seconds`})
             .setTimestamp(Date.now())
         if (this.message.author.avatarURL()) this.mainEmbed.author.iconURL = this.message.author.avatarURL()
         if (this.afkInfo.reqsImageUrl) this.mainEmbed.setImage(this.afkInfo.reqsImageUrl)
@@ -773,7 +799,7 @@ class afkCheck {
         if (this.pointsUsers.length >= ticketLimit) return;
         let embed = new Discord.MessageEmbed()
             .setColor(this.mainEmbed.hexColor)
-            .setFooter(`React with ✅ to confirm, or ❌ to cancel`)
+            .setFooter({text: `React with ✅ to confirm, or ❌ to cancel`})
         let ar = new Discord.MessageActionRow({ components: [{ type: 'BUTTON', customId: 'confirm', style: 'SUCCESS', label: '✅ Confirm' }, { type: 'BUTTON', customId: 'abort', style: 'DANGER', label: '❌ Cancel' }] })
         if (interaction.user.avatarURL()) embed.setAuthor({ name: 'Please Confirm Point Usage', iconURL: interaction.user.avatarURL() })
         else embed.setAuthor({ name: 'Please Confirm Point Usage' })
@@ -904,7 +930,7 @@ class afkCheck {
             return;
         }
         if (!this.mainEmbed) return;
-        this.mainEmbed.setFooter(`Time Remaining: ${Math.floor(this.time / 60)} minutes and ${this.time % 60} seconds`);
+        this.mainEmbed.setFooter({text: `Time Remaining: ${Math.floor(this.time / 60)} minutes and ${this.time % 60} seconds`});
         this.raidStatusMessage.edit({ embeds: [this.mainEmbed] })
         if (!this.bot.afkChecks[this.channel.id])
             return clearInterval(this.timerInterval);
@@ -977,7 +1003,7 @@ class afkCheck {
 
         //post afk check embed
         this.mainEmbed.setDescription(`__**Post AFK Move-in**__\nIf you got moved out of vc, or missed the afk check:\n**1.** Join lounge\n**2** Click on ${this.bot.emojis.cache.get(this.afkInfo.headcountEmote)} to get moved in.\n__Time Remaining:__ ${this.postTime} seconds.`)
-            .setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`);
+            .setFooter({text:`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`});
         this.raidStatusMessage.edit({ content: null, embeds: [this.mainEmbed], components: [ar] }).catch(er => console.log(er));
 
         this.postAfkInteractionCollector = new Discord.InteractionCollector(this.bot, { message: this.raidStatusMessage, interactionType: 'MESSAGE_COMPONENT', componentType: 'BUTTON' })
@@ -1027,17 +1053,20 @@ class afkCheck {
         const rules = `<#${this.settings.channels.raidingrules}>` || '#raiding-rules';
         //update embeds/messages
         this.mainEmbed.setDescription(`This afk check has been ended.\n${this.keys.length > 0 ? `Thank you to ${this.keys.map(k => `<@!${k}> `)} for popping a ${this.bot.emojis.cache.get(this.afkInfo.keyEmoteID)} for us!\n` : ''}${this.simp ? `Thank you to <@!${this.simp.id}> for being a ViBot SIMP` : ''}If you get disconnected during the run, **JOIN LOUNGE** *then* DM ${this.bot.user} \`join\` to get back in`)
-            .setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
+            .setFooter({text: `The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`})
 
         if (this.afkInfo.isAdvanced)
             this.mainEmbed.description += `\n\n**__Advanced Runs__**\nThis is an **advanced run**, meaning there are extended requirements you **MUST** meet. You must be both **__8/8__** and follow the requirements sheet listed below.\n\nBasic raiding rules from ${rules} will still apply.\n\nIf you are caught not meeting these requirements, you will be removed from the run and suspended.`
 
-        this.leaderEmbed.setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname} at`)
+        this.leaderEmbed.setFooter({text: `The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname} at`})
             .setTimestamp();
+
         this.raidStatusMessage.edit({ content: null, embeds: [this.mainEmbed], components: [] }).catch(er => ErrorLogger.log(er, this.bot))
             .then(this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed], components: [] }).catch(er => ErrorLogger.log(er, this.bot)))
             .then(this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot)))
             .then(this.leaderEmbedMessage.reactions.removeAll())
+
+        Channels.addReconnectButton(this.bot, this.raidStatusMessage, this.channel.id);
 
         //store afk check information
         let earlyLocationIDS = []
@@ -1049,6 +1078,7 @@ class afkCheck {
         this.bot.afkChecks[this.channel.id].raiders = raiders
         this.bot.afkChecks[this.channel.id].active = false
         this.bot.afkChecks[this.channel.id].endedAt = Date.now()
+        this.bot.afkChecks[this.channel.id].RSAMessagePacket = {messageId: this.raidStatusMessage.id, channelId: this.raidStatusMessage.channelId};
         if (this.keys.length > 0) for (let u in this.keys) this.bot.afkChecks[this.channel.id].keys.push(u)
         if (this.afkInfo.isSplit) {
             this.bot.afkChecks[this.channel.id].split = true
@@ -1167,7 +1197,7 @@ class afkCheck {
 
         if(pointlog_mid) historyEmbed.fields[7].value = pointlog_mid;
 
-        historyEmbed.setFooter(`${this.channel.id} • ${this.raidStatusMessage.id} • ${this.leaderEmbedMessage.id} • ${raiders.length} Raiders`)
+        historyEmbed.setFooter({text: `${this.channel.id} • ${this.raidStatusMessage.id} • ${this.leaderEmbedMessage.id} • ${raiders.length} Raiders`})
         this.message.guild.channels.cache.get(this.settings.channels.history).send({ embeds: [historyEmbed] })
         this.message.guild.channels.cache.get(this.settings.channels.runlogs).send({ embeds: [historyEmbed] })
 
@@ -1197,15 +1227,17 @@ class afkCheck {
                         else regular.push(m)
                     })
                     //regular raiders point logging
-                    if (afkCheck.settings.points.perrun != 0) {
+                    if (afkCheck.settings.points.perrun != 0 && regular.length != 0) {
                         let regularQuery = `UPDATE users SET points = points + ${afkCheck.settings.points.perrun} WHERE `
                         regular.forEach(m => { regularQuery = regularQuery.concat(`id = '${m.id}' OR `) })
                         regularQuery = regularQuery.substring(0, regularQuery.length - 4)
                         afkCheck.db.query(regularQuery, er => { if (er) console.log('error logging points for run completes in ', afkCheck.guild.id) })
+                    }
+                    if (afkCheck.settings.points.perrun != 0 && nitros.length != 0) {
                         //nitro raiders point logging
-                        let nitroQuery = `UPDATE users SET points = points + ${afkCheck.settings.points.perrun * afkCheck.settings.points.nitromultiplier} WHERE `
-                        nitros.forEach(m => nitroQuery = nitroQuery.concat(`id = '${m.id}' OR `))
-                        nitroQuery = nitroQuery.substring(0, nitroQuery.length - 4)
+                        let nitroQuery = `UPDATE users SET points = points + ${afkCheck.settings.points.perrun * afkCheck.settings.points.nitromultiplier} WHERE `;
+                        nitros.forEach(m => nitroQuery = nitroQuery.concat(`id = '${m.id}' OR `));
+                        nitroQuery = nitroQuery.substring(0, nitroQuery.length - 4);
                         afkCheck.db.query(nitroQuery, er => { if (er) console.log('error logging points for run (nitro) completes in ', afkCheck.guild.id) })
                     }
                 }
@@ -1217,7 +1249,7 @@ class afkCheck {
         this.active = false;
     }
 
-    async abortAfk() {
+    async abortAfk(aborted_by_vibotChannels_name) {
         this.ended = true
         if (this.raidStatusInteractionCollector) this.raidStatusInteractionCollector.stop();
         if (this.leaderInteractionCollector) this.leaderInteractionCollector.stop();
@@ -1232,10 +1264,18 @@ class afkCheck {
             this.channel.setPosition(this.afkChannel.position)
         }
         this.mainEmbed.setImage(null);
-        this.mainEmbed.setDescription(`This afk check has been aborted`)
-            .setFooter(`The afk check has been aborted by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
-        this.leaderEmbed.setFooter(`The afk check has been aborted by ${this.message.guild.members.cache.get(this.endedBy.id).nickname} at`)
-            .setTimestamp();
+        if(!aborted_by_vibotChannels_name) {
+            this.mainEmbed.setDescription(`This afk check has been aborted`)
+                .setFooter({text: `The afk check has been aborted by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`})
+            this.leaderEmbed.setFooter({text: `The afk check has been aborted by ${this.message.guild.members.cache.get(this.endedBy.id).nickname} at`})
+                .setTimestamp();
+        } else {
+            this.mainEmbed.setDescription(`This afk check has been aborted`)
+                .setFooter({text: `The afk check has been aborted by ${this.message.guild.members.cache.get(aborted_by_vibotChannels_name.id).nickname}`})
+            this.leaderEmbed.setFooter({text: `The afk check was aborted because the channel was closed by ${this.message.guild.members.cache.get(aborted_by_vibotChannels_name.id).nickname} at`})
+                .setTimestamp();
+        }
+        this.raidStatusMessage.reactions.removeAll();
 
         this.raidStatusMessage.edit({ content: null, embeds: [this.mainEmbed], components: [] }).catch(er => ErrorLogger.log(er, this.bot))
         this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed], components: [] }).catch(er => ErrorLogger.log(er, this.bot))
@@ -1312,7 +1352,7 @@ class afkCheck {
             else this.splitGroup.push(id)
         }
         let groupEmbed = new Discord.MessageEmbed()
-            .setAuthor(`Split Groups for ${this.channel.name}`)
+            .setAuthor({name: `Split Groups for ${this.channel.name}`})
             .addField('Main', 'None!')
             .addField('Split', 'None!')
         if (this.message.author.avatarURL()) groupEmbed.author.iconURL = this.message.author.avatarURL()
@@ -1400,14 +1440,15 @@ async function createChannel(runInfo, message, bot) {
 
         //Embed to remove
         let embed = new Discord.MessageEmbed()
-            .setDescription(`Whenever the run is over. React with the ❌ to delete the channel. View the timestamp for more information\nLocation: \`${runInfo.location}\``)
-            .setFooter(channel.id)
+            .setDescription(`Whenever the run is over. Click the button to delete the channel. View the timestamp for more information\nLocation: \`${runInfo.location}\``)
+            .setFooter({text: channel.id})
             .setTimestamp()
             .setTitle(channel.name)
             .setColor(runInfo.embed.color)
-        let m = await vibotChannels.send({ content: `${message.member}`, embeds: [embed] })
-        await m.react('❌')
-        setTimeout(() => { Channels.watchMessage(m, bot, settings) }, 5000)
+        setTimeout(async () => {
+            let m = await vibotChannels.send({ content: `${message.member}`, embeds: [embed]});
+            await Channels.addCloseChannelButtons(bot, m);
+        }, 12000);
         if (!channel) rej('No channel was made')
         res(channel);
     })
