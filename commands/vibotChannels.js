@@ -221,6 +221,103 @@ async function deleteChannel(bot, vc_channel_id, run_title, who_closed, guild, a
     }
     if(watchedButtons[vc_channel_id].RSAMessage) {
         watchedButtons[vc_channel_id].RSAMessage.edit({components: []});
+
+    }
+    await active_channel_msg.delete().then().catch(console.error);
+    if(ephemeral_response_interaction) {
+        await ephemeral_response_interaction.update({content: `${run_title} has been deleted. Have a nice day!`, components: []});
+    }
+    if(afkCheckModule) {
+        let active_run = await afkCheckModule.returnRunByID(vc_channel_id);
+        if(active_run) {
+            await active_run.abortAfk(who_closed);
+        }
+    }
+    delete(bot.afkChecks[vc_channel_id]);
+    fs.writeFile('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => {
+        if (err) ErrorLogger.log(err, bot)
+    });
+    let channel = guild.channels.cache.get(vc_channel_id);
+    if (!channel) return
+    await channel.delete().catch(er => { })
+    if(bot.settings[guild.id].channels.history) {
+        guild.channels.cache.get(bot.settings[guild.id].channels.history).send({
+            embeds: [
+                new Discord.MessageEmbed()
+                    .setDescription(`${channel.name} deleted by ${who_closed}`)
+            ]
+        });
+    }
+    delete(watchedButtons[vc_channel_id]);
+}
+
+async function getAFKChannelMessage(bot, guild, vc_channel_id) {
+    rsaMessageId = bot.afkChecks[vc_channel_id].RSAMessagePacket.messageId;
+    rsaChannelId = bot.afkChecks[vc_channel_id].RSAMessagePacket.channelId;
+    c = guild.channels.cache.get(rsaChannelId);
+    if (!c) return undefined;
+    return await c.messages.fetch(rsaMessageId);
+}
+
+async function closeChannelButtonsHandler(interaction, bot) {
+    if(!interaction.isButton()) return;
+    if(interaction.customId === 'delete') {
+        let confirm_buttons = new Discord.MessageActionRow({
+            components: [{
+                type: 'BUTTON',
+                label: 'Delete Channel',
+                style: 'DANGER',
+                customId: 'delete_confirmed'
+            }, {
+                type: 'BUTTON',
+                label: 'Cancel',
+                style: 'SECONDARY',
+                customId: 'delete_cancel'
+            }]
+        })
+        if(bot.afkChecks[interaction.message.embeds[0].footer.text].runType.raidLeader === interaction.member.id) {
+            interaction.deferUpdate();
+            deleteChannel(bot, interaction.message.embeds[0].footer.text, interaction.message.embeds[0].title, interaction.member, interaction.guild, interaction.message);
+        } else {
+            await interaction.reply({
+                content: `Are you sure you want to delete <#${interaction.message.embeds[0].footer.text}>? Only do this if the run is over.`,
+                components: [confirm_buttons],
+                ephemeral: true
+            });
+            let confirm_m = await interaction.fetchReply();
+            let confirm_hndlr = confirm_m.createMessageComponentCollector({componentType: 'BUTTON', time: 30000});
+            confirm_hndlr.on('collect', async (new_interaction) => watchConfirmButtonsHandler(new_interaction, interaction, bot, confirm_hndlr))
+            watchedButtons[interaction.message.embeds[0].footer.text].confirm_hndlrs.push(confirm_hndlr);
+        }
+    }
+}
+
+async function watchConfirmButtonsHandler(interaction, prev_interaction, bot, this_hndlr) {
+    if(!interaction.isButton()) return;
+    if(interaction.customId === 'delete_confirmed') {
+        deleteChannel(bot, prev_interaction.message.embeds[0].footer.text, prev_interaction.message.embeds[0].title, interaction.member, interaction.guild, prev_interaction.message, interaction);
+    } else if(interaction.customId === 'delete_cancel') {
+        await interaction.update({content: `ඞ`, components: []});
+        for (let i = 0; i < watchedButtons[prev_interaction.message.embeds[0].footer.text].confirm_hndlrs.length; i++) {
+            if(watchedButtons[prev_interaction.message.embeds[0].footer.text].confirm_hndlrs[i] === this_hndlr) {
+                this_hndlr.stop();
+                watchedButtons[prev_interaction.message.embeds[0].footer.text].confirm_hndlrs.splice(i, 1);
+                return;
+            }
+        }
+    }
+}
+
+async function deleteChannel(bot, vc_channel_id, run_title, who_closed, guild, active_channel_msg, ephemeral_response_interaction) {
+    watchedButtons[vc_channel_id].hndlr.stop();
+    for (let i of watchedButtons[vc_channel_id].confirm_hndlrs) {
+        i.stop();
+    }
+    if(watchedButtons[vc_channel_id].reconnect_hndlr) {
+        watchedButtons[vc_channel_id].reconnect_hndlr.stop()
+    }
+    if(watchedButtons[vc_channel_id].RSAMessage) {
+        watchedButtons[vc_channel_id].RSAMessage.edit({components: []});
     }
     await active_channel_msg.delete().then().catch(console.error);
     if(ephemeral_response_interaction) {
