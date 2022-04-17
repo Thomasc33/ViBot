@@ -22,7 +22,8 @@
                     "currentweekAssists",
                     "currentweekFeedback"
                 ],
-                "logVet": true
+                "logVet": true,
+                "promotable": [ { "roles": ["almostrl"], "column": "arlRollingQuotaVoids" } ]
             },
             {
                 "key": "c",

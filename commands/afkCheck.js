@@ -334,6 +334,8 @@ class afkCheck {
         this.afkInfo.earlyLocationReacts.forEach(r => this.leaderEmbed.addField(`${r.shortName}`, 'None!', true))
         this.leaderEmbed.addField('Location', this.afkInfo.location)
         this.afkInfo.reacts.forEach(r => this.leaderEmbed.addField(`${this.bot.emojis.cache.get(r)}`, '0', true))
+        this.leaderEmbed.addField('Other Early Location', 'None!')
+            .addField('Nitro', 'None!')
         let lar;
         if (this.afkInfo.twoPhase) {
             lar = new Discord.MessageActionRow({
