@@ -329,12 +329,11 @@ class afkCheck {
             .setColor(this.afkInfo.embed.color || "#fefefe")
             .setTitle(`${this.message.member.nickname}'s ${this.afkInfo.runName}`)
             .addField('Our current keys', 'None!')
-            .setFooter({text: `${this.afkInfo.twoPhase ? 'Click ✅ to open the channel, ' : ''}Click ❌ to abort`})
+            .setFooter({ text: `${this.afkInfo.twoPhase ? 'Click ✅ to open the channel, ' : ''}Click ❌ to abort` })
         if (this.afkInfo.vialReact) this.leaderEmbed.addField('Our current vials', 'None!')
-        this.afkInfo.earlyLocationReacts.forEach(r => this.leaderEmbed.addField(`Our current ${r.shortName}`, 'None!'))
+        this.afkInfo.earlyLocationReacts.forEach(r => this.leaderEmbed.addField(`${r.shortName}`, 'None!', true))
         this.leaderEmbed.addField('Location', this.afkInfo.location)
-            .addField('Other Early Location', 'None!')
-            .addField('Nitro', 'None!')
+        this.afkInfo.reacts.forEach(r => this.leaderEmbed.addField(`${this.bot.emojis.cache.get(r)}`, '0', true))
         let lar;
         if (this.afkInfo.twoPhase) {
             lar = new Discord.MessageActionRow({
@@ -371,6 +370,27 @@ class afkCheck {
         //add interaction collectors
         this.leaderInteractionCollector = new Discord.InteractionCollector(this.bot, { message: this.leaderEmbedMessage, interactionType: 'MESSAGE_COMPONENT', componentType: 'BUTTON' })
         this.leaderInteractionCollector.on('collect', (interaction) => this.interactionHandler(interaction))
+        
+        const filter = (m, u) => !u.bot
+        this.emoteInteractionCollector = new Discord.ReactionCollector(this.raidStatusMessage, {filter})
+        this.emoteInteractionCollector.on('collect', () => {debounceEdit(this)})
+
+        function debounceEdit(afk) {
+            if (!debounceEdit.timeout) {
+                debounceEdit.timeout = setTimeout(() => {
+                    debounceEdit.timeout = null;
+                    afk.afkInfo.reacts.forEach(async r => {
+                        const field = afk.leaderEmbed.fields.find(f =>
+                            f.name.includes(r));
+                        let reaction = afk.raidStatusMessage.reactions.cache.get(r)
+                        await reaction.users.fetch()
+                        field.value = `${reaction.users.cache.size - 1}`;
+                        afk.leaderEmbedMessage.edit({ embeds: [afk.leaderEmbed] })
+                    })
+                    
+                }, 750);
+            }
+        }
 
         const avsan = /^[aeiou]/i.test(this.afkInfo.runName) ? 'An' : 'A';
 
@@ -525,11 +545,11 @@ class afkCheck {
         addButton({ emoji: '701491230349066261', style: 'SECONDARY', label: 'Nitro', customId: 'nitro' })
         if (this.settings.backend.supporter) addButton({ emoji: '752368122551337061', label: 'ViBot Supporter', style: 'SUCCESS', customId: 'supporter' })
         if (this.settings.backend.points) addButton({ label: '🎟️ Use Tickets', style: 'SECONDARY', customId: 'points' })
-        //split row
-        actionRows.push(curRow); curRow = []
-        if (this.afkInfo.twoPhase) addButton({ label: '✅ Open Channel', style: 'SUCCESS', customId: 'openvc' })
-        else addButton({ label: '✅ Start Run', style: 'SUCCESS', customId: 'start' })
-        addButton({ label: '❌ Abort Run', style: 'DANGER', customId: 'end' })
+        // //split row
+        // actionRows.push(curRow); curRow = []
+        // if (this.afkInfo.twoPhase) addButton({ label: '✅ Open Channel', style: 'SUCCESS', customId: 'openvc' })
+        // else addButton({ label: '✅ Start Run', style: 'SUCCESS', customId: 'start' })
+        // addButton({ label: '❌ Abort Run', style: 'DANGER', customId: 'end' })
 
         // Add buttons and reacts
         if (curRow.length > 0) actionRows.push(curRow)
