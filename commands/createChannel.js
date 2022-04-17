@@ -40,7 +40,7 @@ module.exports = {
                 //post a message in raid status
                 let embed = new Discord.MessageEmbed()
                     .setColor('#eeeeee')
-                    .setAuthor(`${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s ${name}`)
+                    .setAuthor(`${name}`)
                     .setDescription(`Join \`${channel.name}\` to participate`)
                     .addField('Status', '**Closed**')
                     .setFooter('Started at')
@@ -179,10 +179,10 @@ module.exports = {
                     name = name.trim();
 
                     //change name
-                    channel.channel.setName(`${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s ${name}`)
+                    channel.channel.setName(`${name}`)
 
                     //update message in raid-status
-                    channel.embed.author.text = `${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s ${name}`
+                    channel.embed.author.text = `${name}`
                     channel.message.edit({ embeds: [channel.embed] })
 
                     if (!bot.afkChecks[channel.channelId].runType) bot.afkChecks[channel.channelId].runType = {}
@@ -307,7 +307,7 @@ async function createChannel(name, isVet, message, bot) {
         }
         if (!template) return rej(`Template channel not found`)
         let channel = await template.clone({
-            name: `${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s ${name}`,
+            name: `${name}`,
             parent: message.guild.channels.cache.filter(c => c.type == 'GUILD_CATEGORY').find(c => c.name.toLowerCase() === parent).id,
             userLimit: 50
         }).then(c => c.setPosition(lounge.position + 1))
