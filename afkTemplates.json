@@ -57,8 +57,8 @@
             "font-color": "#000000"
         },
         "advancedCult": {
-            "runType": "Advanced Cult",
-            "runName": "Advanced Cult",
+            "runType": "Adv. Cult",
+            "runName": "Adv. Cult",
             "symbol": "ac",
             "reqsImageUrl": "",
             "keyEmoteID": "701491230260985877",
@@ -160,8 +160,8 @@
             "font-color": "#eeeeee"
         },
         "advancedVoid": {
-            "runType": "Advanced Void",
-            "runName": "Advanced Void",
+            "runType": "Adv. Void",
+            "runName": "Adv. Void",
             "symbol": "av",
             "reqsImageUrl": "",
             "keyEmoteID": "701491230260985877",
@@ -271,8 +271,8 @@
             "font-color": "#eeeeee"
         },
         "advancedFullSkipVoid": {
-            "runType": "Advanced Full-Skip Void",
-            "runName": "Advanced Full-Skip Void",
+            "runType": "Adv. Full-Skip Void",
+            "runName": "Adv. Full-Skip Void",
             "symbol": "af",
             "reqsImageUrl": "",
             "keyEmoteID": "701491230260985877",
@@ -448,8 +448,8 @@
             "font-color": "#000000"
         },
         "advancedCult": {
-            "runType": "Advanced Cult",
-            "runName": "Advanced Cult",
+            "runType": "Adv. Cult",
+            "runName": "Adv. Cult",
             "symbol": "ac",
             "reqsImageUrl": "",
             "keyEmoteID": "701491230260985877",
@@ -551,8 +551,8 @@
             "font-color": "#eeeeee"
         },
         "advancedVoid": {
-            "runType": "Advanced Void",
-            "runName": "Advanced Void",
+            "runType": "Adv. Void",
+            "runName": "Adv. Void",
             "symbol": "av",
             "reqsImageUrl": "",
             "keyEmoteID": "701491230260985877",
@@ -662,8 +662,8 @@
             "font-color": "#eeeeee"
         },
         "advancedFullSkipVoid": {
-            "runType": "Advanced Full-Skip Void",
-            "runName": "Advanced Full-Skip Void",
+            "runType": "Adv. Full-Skip Void",
+            "runName": "Adv. Full-Skip Void",
             "symbol": "af",
             "reqsImageUrl": "",
             "keyEmoteID": "701491230260985877",
