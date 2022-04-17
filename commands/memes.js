@@ -1,8 +1,9 @@
 module.exports = {
     name: 'memes',
-    alias: ['phd', 'xbox', 'cwinner', 'eury', 'nefiah', 'abysm', 'drunkdevil', 'shiba', 'rj'],
+    alias: ['phd', 'xbox', 'cwinner', 'eury', 'nefiah', 'abysm', 'drunkdevil', 'shiba', 'rj', 'vr'],
     role: 'eventrl',
     async execute(message, args, bot) {
+        const settings = bot.settings[message.guild.id]
         switch (message.content.split(/ +/)[0].replace(/[^a-z]/gi, '').toLowerCase()) {
             case 'phd':
                 message.channel.send({ files: ['https://cdn.discordapp.com/attachments/488881485366165515/733195330287304734/unknown.png'] })
@@ -33,6 +34,8 @@ module.exports = {
             case 'rj':
                 message.channel.send({ files: ['https://media.discordapp.net/attachments/488881485366165515/795036389834096640/20210102_151014.jpg?width=811&height=1081'] })
                 break;
+            case 'vr':
+                message.channel.send(message.author.id == '277636691227836419' ? `<@&${settings.roles.raider}>` : '@verified raider')
         }
     }
 }
