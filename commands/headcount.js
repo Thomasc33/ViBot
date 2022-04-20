@@ -80,14 +80,14 @@ module.exports = {
                 const pingRole = runType.pingRole || runType.rolePing;
                 const pings = pingRole ? (typeof pingRole != "string" ? pingRole.map(r => `<@&${settings.roles[r]}>`).join(' ') : `<@&${settings.roles[pingRole]}>`) + ' @here' : '@here';
 
-                const row = new Discord.MessageActionRow().addComponents(
+                let button = new Discord.MessageActionRow().addComponents(
                     new Discord.MessageButton()
                         .setCustomId('Upgrade')
                         .setLabel('Upgrade')
                         .setStyle('PRIMARY')
                 )
 
-                let m = await channel.send({ content: `${pings}`, embeds: [embed] , components: [row]})
+                let m = await channel.send({ content: `${pings}`, embeds: [embed] , components: [button]})
                 if (runType.headcountEmote)
                     m.react(runType.headcountEmote)
                 await m.react(runType.keyEmoteID)
@@ -95,16 +95,21 @@ module.exports = {
                 for (let i of runType.earlyLocationReacts) await m.react(i.emoteID)
                 for (let i of runType.reacts) await m.react(i)
                 
-                //Broke here
-                const filter = i => i.customId === 'Upgrade' && i.user.id === message.author.id
-                
-                const interaction = Discord.MessageComponentInteraction({filter, time: 60000})
-                interaction.reply({ content: 'Upgrade to AFK Check' })
-                    .then(() => {
-                        console("Hello something worked!")
-                    })
-                    .catch(console.error)
+                this.hcInteractionCollector = new Discord.InteractionCollector(this.bot, { message: m, interactionType: 'MESSAGE_COMPONENT', componentType: 'BUTTON' })
+                this.leaderInteractionCollector.on('collect', (interaction) => this.interactionHandler(interaction))
             }
+        }
+
+        /**
+         *
+         * @param {Discord.MessageComponentInteraction} interaction
+         */
+        async function interactionHandler(interaction){
+            if (!interaction.isButton()) return;
+            if (interaction.customId === 'Upgrade'){
+                console.log("Hello!")
+            }
+
         }
         async function eventHC(event) {
             return new Promise(async (res, rej) => {
