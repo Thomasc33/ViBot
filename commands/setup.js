@@ -12,7 +12,7 @@ const categories = ['raiding', 'veteran', 'event']
 const voice = ['raidingtemplate', 'eventtemplate', 'vettemplate', 'veteventtemplate', 'lounge', 'vetlounge', 'eventlounge', 'afk']
 const voiceprefixes = ['raidingprefix', 'vetprefix']
 const backend = ['modmail', 'currentweek', 'eventcurrentweek', 'parsecurrentweek', 'verification', 'vetverification', 'points', 'supporter', 'roleassignment', 'realmeyestats', 'automod', 'nitroearlylocation', 'removekeyreacts', 'characterparse',
-    'giveeventroleonverification', 'eventcurrentweekdisplaysalleventrl', 'upgradedCheck', 'raidResetMonthly', 'eventResetMonthly', 'parseResetMonthly', 'exaltedEvents', 'sendmissedquota', 'exaltsInRSA', 'allowAdvancedRuns', 'raidResetBiweekly', 'eventResetBiweekly', 'parseResetBiweekly']
+    'giveeventroleonverification', 'eventcurrentweekdisplaysalleventrl', 'upgradedCheck', 'raidResetMonthly', 'eventResetMonthly', 'parseResetMonthly', 'exaltedEvents', 'sendmissedquota', 'exaltsInRSA', 'allowAdvancedRuns', 'raidResetBiweekly', 'eventResetBiweekly', 'parseResetBiweekly', 'onlyUpperStaffWarnStaff']
 const numerical = ['afktime', 'eventafktime', 'nitrocount', 'nitrocooldown', 'topkey', 'bottomkey', 'ticketlimit', 'supporterlimit', 'keyalertsage', 'waitnewkeyalert', 'prunerushersoffset']
 const runreqs = ['weapon', 'ability', 'armor', 'ring']
 const autoveri = ['fame', 'stars', 'realmage', 'discordage', 'deathcount']
@@ -29,11 +29,11 @@ module.exports = {
     description: 'set names of stuff',
     role: 'moderator',
     /**
-     * 
-     * @param {Discord.Message} message 
-     * @param {Array} args 
-     * @param {Discord.Client} bot 
-     * @param {*} db 
+     *
+     * @param {Discord.Message} message
+     * @param {Array} args
+     * @param {Discord.Client} bot
+     * @param {*} db
      */
     async execute(message, args, bot, db) {
         if (!commands) commands = Array.from(bot.commands.keys())
@@ -73,10 +73,10 @@ module.exports = {
                     }
                 }
                 /**
-                 * 
-                 * @param {Array} array 
-                 * @param {String} arrayName 
-                 * @param {String} type 
+                 *
+                 * @param {Array} array
+                 * @param {String} arrayName
+                 * @param {String} type
                  */
                 async function menu(array, arrayName, type) {
                     setupEmbed.setTitle(`${arrayName} Menu`)
