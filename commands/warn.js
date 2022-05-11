@@ -19,7 +19,7 @@ module.exports = {
         if (!member) return message.channel.send('Member not found. Please try again')
         //check if person being warned is staff
         if(bot.settings[message.guild.id].backend.onlyUpperStaffWarnStaff) {
-            let lowest_staff_role = bot.settings[message.guild.id].roles["eventrl"];
+            let lowest_staff_role = bot.settings[message.guild.id].roles["lol"];
             if(lowest_staff_role) {
                     let member_is_staff = member.roles.highest.comparePositionTo(lowest_staff_role);
                     //if member_is_staff >= 0 then the member to be warned is staff
