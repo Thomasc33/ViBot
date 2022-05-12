@@ -771,7 +771,7 @@ class afkCheck {
                         emitter.on('Ended', (channelID, aborted) => {
                             if (channelID == this.channel.id) {
                                 if (!aborted) this.db.query(`UPDATE users SET lastnitrouse = '${Date.now()}' WHERE id = ${interaction.user.id}`);
-                                else interaction.user.id.send(`The afk check was aborted, you have been refunded your nitro perk use.`);
+                                else interaction.user.send(`The afk check was aborted, you have been refunded your nitro perk use.`);
                             }
                         })
                     } else {
@@ -846,7 +846,7 @@ class afkCheck {
                         emitter.on('Ended', (channelID, aborted) => {
                             if (aborted && channelID == this.channel.id) {
                                 this.db.query(`UPDATE users SET points = points + ${earlyLocationCost} WHERE id = ${interaction.user.id}`);
-                                interaction.user.id.send(`The afk check was aborted, you have been refunded ${earlyLocationCost} points.`);
+                                interaction.user.send(`The afk check was aborted, you have been refunded ${earlyLocationCost} points.`);
                             }
                         })
                     }
