@@ -23,11 +23,11 @@ module.exports = {
         if (bot.settings[message.guild.id].backend.onlyUpperStaffWarnStaff) {
             let lowest_staff_role = bot.settings[message.guild.id].roles["lol"];
             if (lowest_staff_role) {
-                if (member.roles.highest.comparePositionTo(lowest_staff_role)) {
+                if (member.roles.highest.comparePositionTo(lowest_staff_role) >= 0) {
                     //the warn should only happen if message.member is like an admin or something
                     let warningRoles = settings.lists.warningRoles.length ? settings.lists.warningRoles : ['moderator', 'headrl', 'headeventrl', 'officer', 'developer']
                     let warningIds = warningRoles.map(m => settings.roles[m])
-                    if (message.member.roles.cache.filter(role => warningIds.includes(role.id)).size) return message.channel.send("Could not warn that user as they are staff and your highest role isn't high enough. Ask for a promotion and then try again.");
+                    if (!message.member.roles.cache.filter(role => warningIds.includes(role.id)).size) return message.channel.send("Could not warn that user as they are staff and your highest role isn't high enough. Ask for a promotion and then try again.");
                 }
             }
         }
