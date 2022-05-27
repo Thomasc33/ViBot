@@ -1436,6 +1436,7 @@ async function createChannel(runInfo, message, bot) {
 
         //allows raiders to view
         channel.permissionOverwrites.edit(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+        channel.permissionOverwrites.edit(runInfo.raidLeader, { CONNECT: true, VIEW_CHANNEL: true, SPEAK: true }).catch(er => ErrorLogger.log(er, bot))
         if (eventBoi) channel.permissionOverwrites.edit(eventBoi.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
 
         //Embed to remove
