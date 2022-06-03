@@ -566,7 +566,10 @@ async function dmHandler(message) {
         let commandName = args.shift().toLowerCase().replace(prefix, '')
         const command = bot.commands.get(commandName) || bot.commands.find(c => c.alias && c.alias.includes(commandName))
         if (!command) {
-            sendModMail()
+            let guild = await getGuild(message).catch(er => { cancelled = true })
+            let blacklisted = await !checkBlacklist(message.author, bot.dbs[guild.id])
+            if(blacklisted)
+                sendModMail()
         } else if (command.dms) {
             let guild
             if (command.dmNeedsGuild) {
@@ -591,12 +594,14 @@ async function dmHandler(message) {
                 .setTitle('Are you sure you want to message modmail?')
                 .setFooter('Spamming modmail with junk will result in being modmail blacklisted')
                 .setDescription(`\`\`\`${message.content}\`\`\``)
+            let guild = await getGuild(message).catch(er => { cancelled = true })
             let confirmModMailMessage = await message.channel.send({ embeds: [confirmModMailEmbed] })
             let reactionCollector = new Discord.ReactionCollector(confirmModMailMessage, { filter: (r, u) => u.id == message.author.id && (r.emoji.name == '✅' || r.emoji.name == '❌') })
+
+            //Check blacklist 
             reactionCollector.on('collect', async (r, u) => {
                 reactionCollector.stop()
                 if (r.emoji.name == '✅') {
-                    let guild = await getGuild(message).catch(er => { cancelled = true })
                     if (!cancelled) {
                         if (r.emoji.name == '✅') modmail.sendModMail(message, guild, bot, bot.dbs[guild.id])
                         confirmModMailMessage.delete()
@@ -620,6 +625,18 @@ async function dmHandler(message) {
             .setTimestamp()
         if (message.author.avatarURL()) logEmbed.author.iconURL = message.author.avatarURL()
         guild.channels.cache.get(bot.settings[guild.id].channels.dmcommands).send({ embeds: [logEmbed] }).catch(er => { ErrorLogger.log(new Error(`Unable to find/send in settings.channels.dmcommands channel for ${guild.id}`), bot) })
+    }
+    async function checkBlacklist(member, db) {
+        return new Promise(async (res, rej) => {
+            db.query(`SELECT * FROM modmailblacklist WHERE id = '${member.id}'`, (err, rows) => {
+                if (err) return rej(err)
+                if (rows.length == 0) {
+                    res(false)
+                } else {
+                    res(true)
+                }
+            })
+        })
     }
 }
 

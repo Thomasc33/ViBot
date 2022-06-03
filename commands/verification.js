@@ -428,7 +428,7 @@ module.exports = {
                 reactionCollector.stop()
                 return message.delete()
             }
-            message.embeds[0].footer.text = `Openned by ${message.guild.members.cache.get(u.id).nickname || u.tag} - ${message.embeds[0].footer.text}`
+            message.embeds[0].footer.text = `Opened by ${message.guild.members.cache.get(u.id).nickname || u.tag} - ${message.embeds[0].footer.text}`
             message.edit({ embeds: message.embeds })
             //remove reactions and get reactor
             let reactor = message.guild.members.cache.get(u.id)

@@ -68,10 +68,10 @@ module.exports = {
             else if (message.channel.parent.name.toLowerCase() == settings.categories.veteran) channel = message.guild.channels.cache.get(settings.channels.vetstatus)
             if (channel) {
                 let embed = new Discord.MessageEmbed()
-                .setAuthor(`Headcount for ${runType.runName} by ${message.member.nickname}`)
-                .setDescription(`${runType.headcountEmote ? `React with ${bot.emojis.cache.get(runType.headcountEmote)} if you are coming\n` : ''}React with ${bot.emojis.cache.get(runType.keyEmoteID)} if you have a key\nOtherwise react with your gear/class choices below`)
-                .setColor(runType.embed.color)
-                .setTimestamp()
+                    .setAuthor(`Headcount for ${runType.runName} by ${message.member.nickname}`)
+                    .setDescription(`${runType.headcountEmote ? `React with ${bot.emojis.cache.get(runType.headcountEmote)} if you are coming\n` : ''}React with ${bot.emojis.cache.get(runType.keyEmoteID)} if you have a key\nOtherwise react with your gear/class choices below`)
+                    .setColor(runType.embed.color)
+                    .setTimestamp()
 
                 if (symbol.charAt(0) == 'a')
                     embed.description += `\n\n**__Advanced Runs__**\nThis is an **advanced run**, meaning there are extended requirements you **MUST** meet. You must be both **__8/8__** and follow the requirements sheet listed in the afk check.\n\nIf you are caught not meeting these requirements, you will be removed from the run and suspended.`;
@@ -80,14 +80,36 @@ module.exports = {
                 const pingRole = runType.pingRole || runType.rolePing;
                 const pings = pingRole ? (typeof pingRole != "string" ? pingRole.map(r => `<@&${settings.roles[r]}>`).join(' ') : `<@&${settings.roles[pingRole]}>`) + ' @here' : '@here';
 
-                let m = await channel.send({ content: `${pings}`, embeds: [embed] })
+                let button = new Discord.MessageActionRow().addComponents(
+                    new Discord.MessageButton()
+                        .setCustomId('Upgrade')
+                        .setLabel('Upgrade')
+                        .setStyle('PRIMARY')
+                )
+
+                let m = await channel.send({ content: `${pings}`, embeds: [embed] , components: [button]})
                 if (runType.headcountEmote)
                     m.react(runType.headcountEmote)
                 await m.react(runType.keyEmoteID)
                 if (runType.vialReact) await m.react(botSettings.emoteIDs.Vial)
                 for (let i of runType.earlyLocationReacts) await m.react(i.emoteID)
                 for (let i of runType.reacts) await m.react(i)
+                
+                this.hcInteractionCollector = new Discord.InteractionCollector(this.bot, { message: m, interactionType: 'MESSAGE_COMPONENT', componentType: 'BUTTON' })
+                this.leaderInteractionCollector.on('collect', (interaction) => this.interactionHandler(interaction))
             }
+        }
+
+        /**
+         *
+         * @param {Discord.MessageComponentInteraction} interaction
+         */
+        async function interactionHandler(interaction){
+            if (!interaction.isButton()) return;
+            if (interaction.customId === 'Upgrade'){
+                console.log("Hello!")
+            }
+
         }
         async function eventHC(event) {
             return new Promise(async (res, rej) => {
