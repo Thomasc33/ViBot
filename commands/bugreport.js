@@ -1,7 +1,7 @@
 const { Discord, MessageEmbed } = require('discord.js')
-const { response } = require('express')
 require('../lib/extensions.js')
 const ErrorLogger = require('../lib/logError')
+// import { dmHandler } from '/index.js';
 
 module.exports = {
     name: 'bugreport',
@@ -17,14 +17,10 @@ module.exports = {
             .setTitle('Bug Report')
             .setAuthor({ name: message.member.nickname, iconURL: message.author.displayAvatarURL() })
             .setFooter(`Type 'cancel' to stop`)
-        
-        db.query(`INSERT INTO modmailblacklist (id) VALUES ('${message.author.id}')`, (err, rows) => {
-            if (err) ErrorLogger.log(err, bot)
-        })
 
         //Ask for the current bugged command
-        message.author.send("Hello " + message.member.nickname + "!")
-        message.author.send("What command caused the problem?")
+        dm.send("Hello " + message.member.nickname + "!")
+        dmHandler("What command caused the problem?")
         response = (await dm.then(c => c.next(null, null, message.author.id))).content;
         embed.addField('Command:', response)
         await message.author.send({embeds: [embed] })
@@ -117,10 +113,6 @@ module.exports = {
                 message.author.send("Bug report aborted.")
 
             }
-
-            db.query(`DELETE FROM modmailblacklist WHERE id = '${message.author.id}'`, (err, rows) => {
-                if (err) ErrorLogger.log(err, bot)
-            })
         })
     }
 }

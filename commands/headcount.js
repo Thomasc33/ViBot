@@ -80,14 +80,7 @@ module.exports = {
                 const pingRole = runType.pingRole || runType.rolePing;
                 const pings = pingRole ? (typeof pingRole != "string" ? pingRole.map(r => `<@&${settings.roles[r]}>`).join(' ') : `<@&${settings.roles[pingRole]}>`) + ' @here' : '@here';
 
-                let button = new Discord.MessageActionRow().addComponents(
-                    new Discord.MessageButton()
-                        .setCustomId('Upgrade')
-                        .setLabel('Upgrade')
-                        .setStyle('PRIMARY')
-                )
-
-                let m = await channel.send({ content: `${pings}`, embeds: [embed] , components: [button]})
+                let m = await channel.send({ content: `${pings}`, embeds: [embed] , components: []})
                 if (runType.headcountEmote)
                     m.react(runType.headcountEmote)
                 await m.react(runType.keyEmoteID)
@@ -100,17 +93,6 @@ module.exports = {
             }
         }
 
-        /**
-         *
-         * @param {Discord.MessageComponentInteraction} interaction
-         */
-        async function interactionHandler(interaction){
-            if (!interaction.isButton()) return;
-            if (interaction.customId === 'Upgrade'){
-                console.log("Hello!")
-            }
-
-        }
         async function eventHC(event) {
             return new Promise(async (res, rej) => {
                 if (!event) return rej('No event found')
