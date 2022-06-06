@@ -37,6 +37,14 @@
                     "shortName": "armorbreak",
                     "noConfirm": false,
                     "noLocation": false
+                },
+                {
+                    "emoteID": "723019533555597332",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "expose",
+                    "noConfirm": false,
+                    "noLocation": false
                 }
             ],
             "reacts": [
@@ -93,6 +101,14 @@
                     "shortName": "armorbreak",
                     "noConfirm": false,
                     "noLocation": false
+                },
+                {
+                    "emoteID": "723019533555597332",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "expose",
+                    "noConfirm": false,
+                    "noLocation": false
                 }
             ],
             "reacts": [
@@ -135,13 +151,22 @@
             "keyCount": 1,
             "earlyLocationCost": 25,
             "earlyLocationReacts": [{
-                "emoteID": "723019533597802507",
-                "pointsGiven": 1,
-                "limit": 1,
-                "shortName": "armorbreak",
-                "noConfirm": false,
-                "noLocation": false
-            }],
+                    "emoteID": "723019533597802507",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "armorbreak",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emoteID": "723019533555597332",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "expose",
+                    "noConfirm": false,
+                    "noLocation": false
+                }
+            ],
             "reacts": [
                 "723018431489900595",
                 "723018431296831539",
@@ -182,13 +207,22 @@
             "keyCount": 1,
             "earlyLocationCost": 25,
             "earlyLocationReacts": [{
-                "emoteID": "723019533597802507",
-                "pointsGiven": 1,
-                "limit": 1,
-                "shortName": "armorbreak",
-                "noConfirm": false,
-                "noLocation": false
-            }],
+                    "emoteID": "723019533597802507",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "armorbreak",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emoteID": "723019533555597332",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "expose",
+                    "noConfirm": false,
+                    "noLocation": false
+                }
+            ],
             "reacts": [
                 "723018431489900595",
                 "723018431296831539",
@@ -249,6 +283,14 @@
                     "pointsGiven": 1,
                     "limit": 1,
                     "shortName": "armorbreak",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emoteID": "723019533555597332",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "expose",
                     "noConfirm": false,
                     "noLocation": false
                 }
@@ -313,6 +355,14 @@
                     "pointsGiven": 1,
                     "limit": 1,
                     "shortName": "armorbreak",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emoteID": "723019533555597332",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "expose",
                     "noConfirm": false,
                     "noLocation": false
                 }
