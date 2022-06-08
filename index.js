@@ -567,9 +567,7 @@ async function dmHandler(message) {
         const command = bot.commands.get(commandName) || bot.commands.find(c => c.alias && c.alias.includes(commandName))
         if (!command) {
             let guild = await getGuild(message).catch(er => { cancelled = true })
-            let blacklisted = await !checkBlacklist(message.author, bot.dbs[guild.id])
-            if(blacklisted)
-                sendModMail()
+            sendModMail()
         } else if (command.dms) {
             let guild
             if (command.dmNeedsGuild) {
