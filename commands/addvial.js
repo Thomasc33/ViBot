@@ -9,7 +9,7 @@ module.exports = {
     guildSpecific: true,
     args: '<user>',
     requiredArgs: 1,
-    role: 'almostrl',
+    role: 'vetaffiliate',
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         let vialStoredName = dbInfo[message.guild.id] ? dbInfo[message.guild.id].userInfo.vialStored : null
