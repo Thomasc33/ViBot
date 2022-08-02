@@ -238,14 +238,16 @@ function fitStringIntoEmbed(embeds, embed, string) {
         else if (embed.fields[embed.fields.length - 1].value.length + `\n${string}`.length >= 1000) { //change to 1024
             if (embed.length + `\n${string}`.length >= 5950) {//change back to 6k
                 embeds.push(new Discord.MessageEmbed(embed))
-                embed.setDescription('None!')
+                embed.setDescription(`${string}`)
                 embed.fields = []
-            } else embed.addField('-', string)
+            } 
+            else embed.addField('-', string)
         } else {
             if (embed.length + `\n${string}`.length >= 5950) { //change back to 6k
                 embeds.push(new Discord.MessageEmbed(embed))
-                embed.setDescription('None!')
+                embed.setDescription(`${string}`)
                 embed.fields = []
+
             } else embed.fields[embed.fields.length - 1].value = embed.fields[embed.fields.length - 1].value.concat(`\n${string}`)
         }
     } else embed.setDescription(embed.description.concat(`\n${string}`))

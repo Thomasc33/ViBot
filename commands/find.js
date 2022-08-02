@@ -80,7 +80,7 @@ async function checkBlackList(args, db) {
         for (let i in args) {
             promises.push(new Promise((res, rej) => {
                 db.query(`SELECT * FROM veriblacklist WHERE id = '${args[i]}'`, (err, rows) => {
-                    if (rows.length != 0) expelled.push(args[i])
+                    if (rows && rows.length != 0) expelled.push(args[i])
                     res()
                 })
             }))
