@@ -533,7 +533,7 @@ module.exports = {
 
                             let er_msg = '';
                             const role = member.guild.roles.cache.get(settings.roles.eventraider);
-                            if (role) {
+                            if (role && settings.backend.giveEventRoleOnDenial2) {
                                 await member.setNickname(nick)
                                 //give user event raider role
                                 setTimeout(() => { member.roles.add(settings.roles.eventraider) }, 1000)
