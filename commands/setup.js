@@ -2,7 +2,7 @@ const fs = require('fs')
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
 const roles = ['moderator', 'officer', 'headrl', 'vetrl', 'fsvrl', 'mrvrl', 'security', 'fullskip', 'developer', 'rl', 'almostrl', 'trialrl', 'headeventrl', 'eventrl', 'rusher', 'nitro', 'lol', 'vetraider', 'raider', 'eventraider', 'muted',
-    'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'keyjesus', 'topkey', 'bottomkey', 'cultping', 'voidping', 'shattsReact', 'fungalReact', 'nestReact', 'fskipReact', 'fameReact', 'rcPing', 'o3Ping', 'veteventrl',
+    'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'keyjesus', 'topkey', 'bottomkey', 'cultping', 'voidping', 'shattsReact', 'fungalReact', 'nestReact', 'fskipReact', 'fameReact', 'rcPing', 'o3Ping', 'eventBoi',  'veteventrl',
     'priest', 'warden', 'vetaffiliate']
 const channels = ['modmail', 'verification', 'manualverification', 'vetverification', 'manualvetverification', 'verificationlog', 'activeverification', 'modlogs', 'history', 'suspendlog',
     'viallog', 'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel', 'raidstatus', 'eventstatus',
@@ -384,6 +384,7 @@ function getDefaultRoleName(name) {
         case 'fameReact': return 'Fame Boi'
         case 'rcPing': return 'RC Boi'
         case 'o3Ping': return 'Oryx Boi'
+        case 'eventBoi': return 'Event Boi'
         case 'priest': return 'Supreme Priest'
         case 'vetaffiliate': return 'Veteran Affiliate Staff'
     }

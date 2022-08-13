@@ -96,6 +96,9 @@ module.exports = {
         //set guildid
         runInfo.guild = message.guild.id;
 
+        if (!runInfo.pingRole && settings.roles.eventBoi)
+            runInfo.pingRole = settings.roles.eventBoi
+
         //get/set channel
         let channel = null;
         if (runInfo.newChannel) channel = await createChannel(runInfo, message, bot)
@@ -1400,30 +1403,31 @@ class afkCheck {
 async function createChannel(runInfo, message, bot) {
     let settings = bot.settings[message.guild.id]
     return new Promise(async (res, rej) => {
+        let parent, template, raider, vibotChannels;
         //channel creation
         if (runInfo.isVet) {
-            var parent = settings.categories.veteran;
-            var template = message.guild.channels.cache.get(settings.voice.vettemplate)
-            var raider = message.guild.roles.cache.get(settings.roles.vetraider)
-            var vibotChannels = message.guild.channels.cache.get(settings.channels.vetchannels)
+            parent = settings.categories.veteran;
+            template = message.guild.channels.cache.get(settings.voice.vettemplate)
+            raider = message.guild.roles.cache.get(settings.roles.vetraider)
+            vibotChannels = message.guild.channels.cache.get(settings.channels.vetchannels)
         } else if (runInfo.isEvent) {
             if (runInfo.isExalt && settings.backend.exaltsInRSA) {
-                var parent = settings.categories.raiding;
-                var template = message.guild.channels.cache.get(settings.voice.eventtemplate)
-                var raider = message.guild.roles.cache.get(settings.roles.raider)
-                var vibotChannels = message.guild.channels.cache.get(settings.channels.raidingchannels)
+                parent = settings.categories.raiding;
+                template = message.guild.channels.cache.get(settings.voice.eventtemplate)
+                raider = message.guild.roles.cache.get(settings.roles.raider)
+                vibotChannels = message.guild.channels.cache.get(settings.channels.raidingchannels)
             } else {
-                var parent = settings.categories.event;
-                var template = message.guild.channels.cache.get(settings.voice.eventtemplate)
-                var raider = message.guild.roles.cache.get(settings.roles.raider)
-                var eventBoi = message.guild.roles.cache.get(settings.roles.eventraider)
-                var vibotChannels = message.guild.channels.cache.get(settings.channels.eventchannels)
+                parent = settings.categories.event;
+                template = message.guild.channels.cache.get(settings.voice.eventtemplate)
+                raider = message.guild.roles.cache.get(settings.roles.raider)
+                eventBoi = message.guild.roles.cache.get(settings.roles.eventraider)
+                vibotChannels = message.guild.channels.cache.get(settings.channels.eventchannels)
             }
         } else {
-            var parent = settings.categories.raiding;
-            var template = message.guild.channels.cache.get(settings.voice.raidingtemplate)
-            var raider = message.guild.roles.cache.get(settings.roles.raider)
-            var vibotChannels = message.guild.channels.cache.get(settings.channels.raidingchannels)
+            parent = settings.categories.raiding;
+            template = message.guild.channels.cache.get(settings.voice.raidingtemplate)
+            raider = message.guild.roles.cache.get(settings.roles.raider)
+            vibotChannels = message.guild.channels.cache.get(settings.channels.raidingchannels)
         }
         if (!template) return rej(`Template channel not found`)
         let channel = await template.clone({
