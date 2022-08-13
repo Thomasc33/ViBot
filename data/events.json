@@ -1073,8 +1073,8 @@
             "shatts"
         ],
         "enabled": true,
-        "keyEmojiId": "723001429903802478",
-        "keyEmote": ":shattersK:723001429903802478",
+        "keyEmojiId": "1008104345197346817",
+        "keyEmote": ":shattersKey:1008104345197346817",
         "portalEmojiId": "723001214865899532",
         "portalEmote": ":shatters:723001214865899532",
         "color": "#015c21",
@@ -1946,8 +1946,8 @@
                 "shatts"
             ],
             "enabled": true,
-            "keyEmojiId": "723001429903802478",
-            "keyEmote": ":shattersK:723001429903802478",
+            "keyEmojiId": "1008104345197346817",
+            "keyEmote": ":ShattersKey:1008104345197346817",
             "portalEmojiId": "723001214865899532",
             "portalEmote": ":shatters:723001214865899532",
             "runLogName": "shattersRuns",
@@ -2013,8 +2013,8 @@
                 "advshatts"
             ],
             "enabled": true,
-            "keyEmojiId": "723001429903802478",
-            "keyEmote": ":shattersK:723001429903802478",
+            "keyEmojiId": "1008104345197346817",
+            "keyEmote": ":shattersKey:1008104345197346817",
             "portalEmojiId": "723001214865899532",
             "portalEmote": ":shatters:723001214865899532",
             "runLogName": "shattersRuns",
