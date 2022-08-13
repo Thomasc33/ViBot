@@ -91,7 +91,7 @@ module.exports = {
                             temporaryKeyPoppers.push(`<@!${member.id}>`);
 
                         const isVerified = settings.roles.raider && member.roles.cache.has(settings.roles.raider);
-                        const isEBoy = settings.roles.eventraider && member.roles.cache.has(settings.roles.eventraider);
+                        const isEBoy = settings.roles.eventraider && member.roles.cache.has(settings.roles.eventraider) && settings.backend.giveEventRoleOnDenial2;
 
                         //event raider + verified raider
                         if (settings.roles.eventraider && settings.roles.raider && isVerified && isEBoy)
@@ -197,8 +197,8 @@ module.exports = {
                 //people with same name
             let dupesArray = []
 
-            let allMembers = message.guild.members.cache.filter(u => u.nickname && (u.roles.cache.has(settings.roles.raider) || u.roles.cache.has(settings.roles.eventraider))).map(m => m)
-            let allNames = message.guild.members.cache.filter(u => u.nickname && (u.roles.cache.has(settings.roles.raider) || u.roles.cache.has(settings.roles.eventraider))).map(m => m.nickname.toLowerCase().replace(/[^a-z|]/gi, "").split("|"))
+            let allMembers = message.guild.members.cache.filter(u => u.nickname && (u.roles.cache.has(settings.roles.raider) || (u.roles.cache.has(settings.roles.eventraider) && settings.backend.giveEventRoleOnDenial2))).map(m => m)
+            let allNames = message.guild.members.cache.filter(u => u.nickname && (u.roles.cache.has(settings.roles.raider) || (u.roles.cache.has(settings.roles.eventraider) && settings.backend.giveEventRoleOnDenial2))).map(m => m.nickname.toLowerCase().replace(/[^a-z|]/gi, "").split("|"))
             allNames = allNames.flat()
             let uniqueNames = [...new Set(allNames)]
             for (var i in uniqueNames) {
@@ -258,7 +258,7 @@ module.exports = {
             let nn = []
             let noNickname = message.guild.members.cache.filter(m => m.nickname == null);
             noNickname.each(user => {
-                if (user.roles.cache.has(settings.roles.raider) || user.roles.cache.has(settings.roles.eventraider)) {
+                if (user.roles.cache.has(settings.roles.raider) || (user.roles.cache.has(settings.roles.eventraider) && settings.backend.giveEventRoleOnDenial2)) {
                     nn.push(user)
                 }
             })

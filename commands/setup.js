@@ -2,7 +2,7 @@ const fs = require('fs')
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
 const roles = ['moderator', 'officer', 'headrl', 'vetrl', 'fsvrl', 'mrvrl', 'security', 'fullskip', 'developer', 'rl', 'almostrl', 'trialrl', 'headeventrl', 'eventrl', 'rusher', 'nitro', 'lol', 'vetraider', 'raider', 'eventraider', 'muted',
-    'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'keyjesus', 'topkey', 'bottomkey', 'cultping', 'voidping', 'shattsReact', 'fungalReact', 'nestReact', 'fskipReact', 'rcPing', 'o3Ping', 'veteventrl',
+    'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'keyjesus', 'topkey', 'bottomkey', 'cultping', 'voidping', 'shattsReact', 'fungalReact', 'nestReact', 'fskipReact', 'fameReact', 'rcPing', 'o3Ping', 'eventBoi',  'veteventrl',
     'priest', 'warden', 'vetaffiliate']
 const channels = ['modmail', 'verification', 'manualverification', 'vetverification', 'manualvetverification', 'verificationlog', 'activeverification', 'modlogs', 'history', 'suspendlog',
     'viallog', 'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel', 'raidstatus', 'eventstatus',
@@ -12,7 +12,7 @@ const categories = ['raiding', 'veteran', 'event']
 const voice = ['raidingtemplate', 'eventtemplate', 'vettemplate', 'veteventtemplate', 'lounge', 'vetlounge', 'eventlounge', 'afk']
 const voiceprefixes = ['raidingprefix', 'vetprefix']
 const backend = ['modmail', 'currentweek', 'eventcurrentweek', 'parsecurrentweek', 'verification', 'vetverification', 'points', 'supporter', 'roleassignment', 'realmeyestats', 'automod', 'nitroearlylocation', 'removekeyreacts', 'characterparse',
-    'giveeventroleonverification', 'eventcurrentweekdisplaysalleventrl', 'upgradedCheck', 'raidResetMonthly', 'eventResetMonthly', 'parseResetMonthly', 'exaltedEvents', 'sendmissedquota', 'exaltsInRSA', 'allowAdvancedRuns', 'raidResetBiweekly', 'eventResetBiweekly', 'parseResetBiweekly', 'onlyUpperStaffWarnStaff']
+    'giveeventroleonverification', 'eventcurrentweekdisplaysalleventrl', 'upgradedCheck', 'raidResetMonthly', 'eventResetMonthly', 'parseResetMonthly', 'exaltedEvents', 'sendmissedquota', 'exaltsInRSA', 'allowAdvancedRuns', 'raidResetBiweekly', 'eventResetBiweekly', 'parseResetBiweekly', 'onlyUpperStaffWarnStaff', 'giveEventRoleOnDenial2']
 const numerical = ['afktime', 'eventafktime', 'nitrocount', 'nitrocooldown', 'topkey', 'bottomkey', 'ticketlimit', 'supporterlimit', 'keyalertsage', 'waitnewkeyalert', 'prunerushersoffset']
 const runreqs = ['weapon', 'ability', 'armor', 'ring']
 const autoveri = ['fame', 'stars', 'realmage', 'discordage', 'deathcount']
@@ -381,8 +381,10 @@ function getDefaultRoleName(name) {
         case 'shattsReact': return 'Shatters boi'
         case 'fungalReact': return 'Fungal boi'
         case 'nestReact': return 'Nest boi'
+        case 'fameReact': return 'Fame Boi'
         case 'rcPing': return 'RC Boi'
         case 'o3Ping': return 'Oryx Boi'
+        case 'eventBoi': return 'Event Boi'
         case 'priest': return 'Supreme Priest'
         case 'vetaffiliate': return 'Veteran Affiliate Staff'
     }

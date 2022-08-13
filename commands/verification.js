@@ -409,13 +409,14 @@ module.exports = {
         const member_id = message.embeds[0].footer.text.split(' ').pop()
         let member = await message.guild.members.fetch(member_id).catch(e => ErrorLogger.log(e, bot));
         //variables
-        let embed = message.embeds[0]
-        watching.push(member.id)
+
         let settings = bot.settings[message.guild.id]
         if (!member) {
             message.guild.channels.cache.get(settings.channels.verificationlog).send(`<@!${member_id}> Left server while under manual review`)
             return message.delete()
         }
+        let embed = message.embeds[0]
+        watching.push(member.id)
         let desc = embed.author.name.split(/ +/)
         let ign = desc[desc.length - 1]
         //start key reaction collector
@@ -532,7 +533,7 @@ module.exports = {
 
                             let er_msg = '';
                             const role = member.guild.roles.cache.get(settings.roles.eventraider);
-                            if (role) {
+                            if (role && settings.backend.giveEventRoleOnDenial2) {
                                 await member.setNickname(nick)
                                 //give user event raider role
                                 setTimeout(() => { member.roles.add(settings.roles.eventraider) }, 1000)
