@@ -5,15 +5,18 @@ const quota = require('./quota')
 module.exports = {
     name: 'log',
     description: 'Logs runs',
-    args: '<c/v/o/e> [mention for assists] (#)',
+    args: '<type> [mention for assists] (#)',
     requiredArgs: 1,
     role: 'eventrl',
+    getNotes(guildid, member) {
+        return `Types: ${logs[guildid].main.map(log => log.key + ' (' + log.name + ')').join(', ')}`
+    },
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         let toUpdate = 0
         var embed = new Discord.MessageEmbed().setAuthor(message.member.nickname, message.author.avatarURL() || null)
         let currentWeekEmbed = new Discord.MessageEmbed()
-        var count = 1;
+        let count = 1;
         var desc = '`Successful` Run'
         let promises = []
 
@@ -21,7 +24,7 @@ module.exports = {
         let guildInfo = logs[message.guild.id]
         if (!guildInfo) return message.channel.send('Logging isn\'t setup on this server yet')
         let run = getRunInfo(guildInfo, args[0])
-        if (!run) return message.channel.send('Run Type not recognized')
+        if (!run) return message.channel.send('Run Type not recognized\n' + this.getNotes(message.guild.id))
 
 
 
@@ -29,6 +32,7 @@ module.exports = {
 
         //count
         if (args[args.length - 1].replace(/^\d{1,2}$/, '') == '') {
+            console.log('found ' + args[args.length - 1]);
             count = args[args.length - 1]
             if (run.weight) count = count * run.weight
         }
@@ -103,10 +107,11 @@ module.exports = {
 
 function confirm(runInfo, message, count) {
     return new Promise(async (res, rej) => {
+        const multiplier = runInfo.multiply === null ? 1 : runInfo.multiply;
         let confirmEmbed = new Discord.MessageEmbed()
             .setColor(runInfo.color)
             .setTitle('Confirm')
-            .setDescription(`Are you sure that you lead for around ${parseInt(count) * runInfo.multiply} minutes?`)
+            .setDescription(`Are you sure you want to log ${parseInt(count) * multiplier} ${runInfo.confirmSuffix}?`)
             .setFooter(message.member.nickname)
             .setTimestamp()
         let confirmMessage = await message.channel.send({ embeds: [confirmEmbed] })

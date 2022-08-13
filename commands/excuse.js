@@ -1,7 +1,6 @@
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
 const quotas = require('../data/quotas.json');
-const { handler } = require('../lib/realmEyeScrape');
 import ('../lib/types.js')
 module.exports = {
     name: 'excuse',

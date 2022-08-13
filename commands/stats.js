@@ -145,6 +145,9 @@ function getFields(row, schema) {
         {
             name: `<:legendaryMysteryKey:831052176507535360> __**Keys Popped**__ <:legendaryMysteryKey:831052176507535360>`,
             value: `<${botSettings.emote.LostHallsKey}> ${row.keypops}\n` +
+                `<:shattersKey:1008104345197346817> ${row.shattersPops}\n` +
+                `<:fungalK:723001429614395402> ${row.fungalPops}\n` +
+                `<:nestK:723001429693956106> ${row.nestPops}\n` +
                 `<:epicMysteryKey:831051424187940874> ${row.eventpops}\n` +
                 `<${botSettings.emote.Vial}> ${row.vialStored} Dropped\n` +
                 `<${botSettings.emote.Vial}> ${row.vialUsed} Used`,
@@ -154,6 +157,9 @@ function getFields(row, schema) {
             name: `<${botSettings.emote.hallsPortal}> __**Runs Done**__ <${botSettings.emote.hallsPortal}>`,
             value: `<${botSettings.emote.malus}> ${row.cultRuns}\n` +
                 `<${botSettings.emote.voidd}> ${row.voidRuns}\n` +
+                `<:forgottenking:1008068892071055512> ${row.shattersRuns}\n` +
+                `<:crystal:1008068893056696410> ${row.fungalRuns}\n` +
+                `<:queenbee:1008068890791780433> ${row.nestRuns}\n` +
                 `<:epicMysteryKey:831051424187940874> ${row.eventruns}`,
             inline: true
         },
@@ -161,10 +167,11 @@ function getFields(row, schema) {
             name: `<${botSettings.emote.hallsPortal}> __**Runs Led**__ <${botSettings.emote.hallsPortal}>`,
             value: `<${botSettings.emote.malus}> ${row.cultsLead}\n` +
                 `<${botSettings.emote.voidd}> ${row.voidsLead}\n` +
-                `<:feedback:858920770806087710> ${row.feedback}\n` +
+                `<:forgottenking:1008068892071055512> ${row.shattersLead}\n` +
+                `<:crystal:1008068893056696410> ${row.fungalsLead}\n` +
+                `<:queenbee:1008068890791780433> ${row.nestsLead}\n` +
                 `<:epicMysteryKey:831051424187940874> ${parseInt(row.eventsLead) * 10} Minutes\n` +
-                `<:legendaryMysteryKey:831052176507535360> ${row.exaltsLead}\n` +
-                `<:legendaryMysteryKey:831052176507535360><:feedback:858920770806087710> ${row.exaltFeedback}\n` +
+                `<:feedback:858920770806087710> ${row.feedback + row.exaltFeedback}\n` +
                 `🤝 ${row.assists} Assists\n` +
                 `🔎 ${row.parses} Parses`,
             inline: true

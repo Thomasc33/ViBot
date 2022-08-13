@@ -81,12 +81,12 @@ module.exports = {
                 const pings = pingRole ? (typeof pingRole != "string" ? pingRole.map(r => `<@&${settings.roles[r]}>`).join(' ') : `<@&${settings.roles[pingRole]}>`) + ' @here' : '@here';
 
                 let m = await channel.send({ content: `${pings}`, embeds: [embed] , components: []})
-                if (run.headcountEmote)
-                    m.react(run.headcountEmote)
-                await m.react(run.keyEmoteID)
-                if (run.vialReact) await m.react(botSettings.emoteIDs.Vial)
-                for (let i of run.earlyLocationReacts) await m.react(i.emoteID)
-                for (let i of run.reacts) await m.react(i)
+                if (runType.headcountEmote)
+                    m.react(runType.headcountEmote)
+                await m.react(runType.keyEmoteID)
+                if (runType.vialReact) await m.react(botSettings.emoteIDs.Vial)
+                for (let i of runType.earlyLocationReacts) await m.react(i.emoteID)
+                for (let i of runType.reacts) await m.react(i)
             }
         }
 
