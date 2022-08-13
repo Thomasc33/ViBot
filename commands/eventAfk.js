@@ -40,6 +40,7 @@ module.exports = {
             newChannel: oldStyleAfkGuilds.includes(message.guild.id) ? false : true,
             vialReact: false,
             postAfkCheck: oldStyleAfkGuilds.includes(message.guild.id) ? true : false,
+            runLogName: event.runLogName,
             startDelay: 5000,
             vcCap: 45,
             timeLimit: 300,

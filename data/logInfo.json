@@ -3,6 +3,7 @@
         "main": [
             {
                 "key": "v",
+                "name": "void",
                 "alias": [
                     "void",
                     "voids"
@@ -19,6 +20,9 @@
                 "toDisplay": [
                     "currentweekCult",
                     "currentweekVoid",
+                    "currentweekShatters",
+                    "currentweekFungals",
+                    "currentweekNests",
                     "currentweekAssists",
                     "currentweekFeedback"
                 ],
@@ -27,6 +31,7 @@
             },
             {
                 "key": "c",
+                "name": "cult",
                 "alias": [
                     "cult",
                     "cults"
@@ -43,6 +48,37 @@
                 "toDisplay": [
                     "currentweekCult",
                     "currentweekVoid",
+                    "currentweekShatters",
+                    "currentweekFungals",
+                    "currentweekNests",
+                    "currentweekAssists",
+                    "currentweekFeedback"
+                ],
+                "logVet": true
+            },
+            {
+                "key": "s",
+                "name": "shatters",
+                "alias": [
+                    "shatt",
+                    "shatts",
+                    "shatters"
+                ],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "shattersLead",
+                "currentweek": "currentweekShatters",
+                "color": "#ff0000",
+                "icon": "https://cdn.discordapp.com/emojis/924899045154103296.webp",
+                "desc": "`Shatters` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweekCult",
+                    "currentweekVoid",
+                    "currentweekShatters",
+                    "currentweekFungals",
+                    "currentweekNests",
                     "currentweekAssists",
                     "currentweekFeedback"
                 ],
@@ -50,13 +86,15 @@
             },
             {
                 "key": "f",
+                "name": "feedback",
                 "alias": [
                     "feedback",
                     "fb"
                 ],
                 "multiply": null,
                 "allowAssists": false,
-                "confirm": false,
+                "confirm": true,
+                "confirmSuffix": "feedbacks",
                 "main": "feedback",
                 "currentweek": "currentweekFeedback",
                 "color": "#8c00ff",
@@ -66,6 +104,66 @@
                 "toDisplay": [
                     "currentweekCult",
                     "currentweekVoid",
+                    "currentweekShatters",
+                    "currentweekFungals",
+                    "currentweekNests",
+                    "currentweekAssists",
+                    "currentweekFeedback"
+                ],
+                "logVet": true
+            },
+            {
+                "key": "n",
+                "name": "nest",
+                "alias": [
+                    "nest",
+                    "nests"
+                ],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "nestsLead",
+                "currentweek": "currentweekNests",
+                "color": "#ff0000",
+                "icon": "https://cdn.discordapp.com/emojis/926313806567719032.webp",
+                "desc": "`Nest` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweekCult",
+                    "currentweekVoid",
+                    "currentweekShatters",
+                    "currentweekFungals",
+                    "currentweekNests",
+                    "currentweekAssists",
+                    "currentweekFeedback"
+                ],
+                "logVet": true
+            },
+            {
+                "key": "fc",
+                "name": "fungal",
+                "alias": [
+                    "fun",
+                    "fungal",
+                    "cavern",
+                    "fcavern",
+                    "funcave"
+                ],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "fungalsLead",
+                "currentweek": "currentweekFungals",
+                "color": "#ff0000",
+                "icon": "https://cdn.discordapp.com/emojis/926313805888225342.webp",
+                "desc": "`Cult` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweekCult",
+                    "currentweekVoid",
+                    "currentweekShatters",
+                    "currentweekFungals",
+                    "currentweekNests",
                     "currentweekAssists",
                     "currentweekFeedback"
                 ],
@@ -73,6 +171,7 @@
             },
             {
                 "key": "e",
+                "name": "events",
                 "alias": [
                     "event",
                     "events",
@@ -81,6 +180,7 @@
                 "multiply": 10,
                 "allowAssists": false,
                 "confirm": true,
+                "confirmSuffix": "minutes",
                 "main": "eventsLead",
                 "currentweek": "currentweekEvents",
                 "color": "#00FF00",
@@ -88,53 +188,7 @@
                 "desc": "`Event` run",
                 "toUpdate": "events",
                 "toDisplay": [
-                    "currentweekEvents",
-                    "currentweekExalts",
-                    "currentweekExaltFeedback"
-                ]
-            },
-            {
-                "key": "ex",
-                "alias": [
-                    "exalt",
-                    "exalted"
-                ],
-                "multiply": null,
-                "allowAssists": false,
-                "confirm": false,
-                "main": "exaltsLead",
-                "currentweek": "currentweekExalts",
-                "color": "#00FF00",
-                "icon": "https://cdn.discordapp.com/emojis/831052176507535360.png?v=1",
-                "desc": "`Exalt` run",
-                "toUpdate": "events",
-                "toDisplay": [
-                    "currentweekEvents",
-                    "currentweekExalts",
-                    "currentweekExaltFeedback"
-                ]
-            },
-            {
-                "key": "ef",
-                "alias": [
-                    "exaltfeedback",
-                    "exaltedfb",
-                    "exaltfb",
-                    "exaltedfeedback"
-                ],
-                "multiply": null,
-                "allowAssists": false,
-                "confirm": false,
-                "main": "exaltFeedback",
-                "currentweek": "currentweekExaltFeedback",
-                "color": "#00FF00",
-                "icon": "https://cdn.discordapp.com/emojis/858920770806087710.png?v=1",
-                "desc": "`Exalt Feedback`",
-                "toUpdate": "events",
-                "toDisplay": [
-                    "currentweekEvents",
-                    "currentweekExalts",
-                    "currentweekExaltFeedback"
+                    "currentweekEvents"
                 ]
             }
         ],
@@ -147,6 +201,7 @@
         "main": [
             {
                 "key": "v",
+                "name": "void",
                 "alias": [
                     "void",
                     "voids"
@@ -163,12 +218,18 @@
                 "toDisplay": [
                     "currentweekCult",
                     "currentweekVoid",
+                    "currentweekShatters",
+                    "currentweekFungals",
+                    "currentweekNests",
                     "currentweekAssists",
                     "currentweekFeedback"
-                ]
+                ],
+                "logVet": true,
+                "promotable": [ { "roles": ["almostrl"], "column": "arlRollingQuotaVoids" } ]
             },
             {
                 "key": "c",
+                "name": "cult",
                 "alias": [
                     "cult",
                     "cults"
@@ -185,19 +246,53 @@
                 "toDisplay": [
                     "currentweekCult",
                     "currentweekVoid",
+                    "currentweekShatters",
+                    "currentweekFungals",
+                    "currentweekNests",
                     "currentweekAssists",
                     "currentweekFeedback"
-                ]
+                ],
+                "logVet": true
+            },
+            {
+                "key": "s",
+                "name": "shatters",
+                "alias": [
+                    "shatt",
+                    "shatts",
+                    "shatters"
+                ],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "shattersLead",
+                "currentweek": "currentweekShatters",
+                "color": "#013220",
+                "icon": "https://cdn.discordapp.com/emojis/924899045154103296.webp",
+                "desc": "`Shatters` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweekCult",
+                    "currentweekVoid",
+                    "currentweekShatters",
+                    "currentweekFungals",
+                    "currentweekNests",
+                    "currentweekAssists",
+                    "currentweekFeedback"
+                ],
+                "logVet": true
             },
             {
                 "key": "f",
+                "name": "feedback",
                 "alias": [
                     "feedback",
                     "fb"
                 ],
                 "multiply": null,
                 "allowAssists": false,
-                "confirm": false,
+                "confirm": true,
+                "confirmSuffix": "feedbacks",
                 "main": "feedback",
                 "currentweek": "currentweekFeedback",
                 "color": "#8c00ff",
@@ -207,12 +302,74 @@
                 "toDisplay": [
                     "currentweekCult",
                     "currentweekVoid",
+                    "currentweekShatters",
+                    "currentweekFungals",
+                    "currentweekNests",
                     "currentweekAssists",
                     "currentweekFeedback"
-                ]
+                ],
+                "logVet": true
+            },
+            {
+                "key": "n",
+                "name": "nest",
+                "alias": [
+                    "nest",
+                    "nests"
+                ],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "nestsLead",
+                "currentweek": "currentweekNests",
+                "color": "#ffd700",
+                "icon": "https://cdn.discordapp.com/emojis/926313806567719032.webp",
+                "desc": "`Nest` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweekCult",
+                    "currentweekVoid",
+                    "currentweekShatters",
+                    "currentweekFungals",
+                    "currentweekNests",
+                    "currentweekAssists",
+                    "currentweekFeedback"
+                ],
+                "logVet": true
+            },
+            {
+                "key": "fc",
+                "name": "fungal",
+                "alias": [
+                    "fun",
+                    "fungal",
+                    "cavern",
+                    "fcavern",
+                    "funcave"
+                ],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "fungalsLead",
+                "currentweek": "currentweekFungals",
+                "color": "#fefefe",
+                "icon": "https://cdn.discordapp.com/emojis/926313805888225342.webp",
+                "desc": "`Fungal` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweekCult",
+                    "currentweekVoid",
+                    "currentweekShatters",
+                    "currentweekFungals",
+                    "currentweekNests",
+                    "currentweekAssists",
+                    "currentweekFeedback"
+                ],
+                "logVet": true
             },
             {
                 "key": "e",
+                "name": "events",
                 "alias": [
                     "event",
                     "events",
@@ -221,6 +378,7 @@
                 "multiply": 10,
                 "allowAssists": false,
                 "confirm": true,
+                "confirmSuffix": "minutes",
                 "main": "eventsLead",
                 "currentweek": "currentweekEvents",
                 "color": "#00FF00",
@@ -241,6 +399,7 @@
         "main": [
             {
                 "key": "o",
+                "name": "o3",
                 "alias": [
                     "o3",
                     "oryx"
@@ -262,6 +421,7 @@
             },
             {
                 "key": "p",
+                "name": "parse",
                 "alias": [
                     "parse"
                 ],
@@ -280,6 +440,7 @@
             },
             {
                 "key": "e",
+                "name": "events",
                 "alias": [
                     "event",
                     "events"
@@ -287,6 +448,7 @@
                 "multiply": 10,
                 "allowAssists": false,
                 "confirm": true,
+                "confirmSuffix": "minutes",
                 "main": "o3eventsLead",
                 "currentweek": "currentweekEventso3",
                 "color": "#00FF00",
@@ -299,6 +461,7 @@
             },
             {
                 "key": "f",
+                "name": "feedback",
                 "alias": [
                     "feedback",
                     "fb"
@@ -328,6 +491,7 @@
         "main": [
             {
                 "key": "s",
+                "name": "success",
                 "alias": [
                     "shatters",
                     "shatt",
@@ -351,6 +515,7 @@
             },
             {
                 "key": "f",
+                "name": "failed",
                 "alias": [
                     "fail",
                     "failed"
@@ -372,6 +537,7 @@
             },
             {
                 "key": "e",
+                "name": "events",
                 "alias": [
                     "event",
                     "events"
@@ -379,6 +545,7 @@
                 "multiply": 10,
                 "allowAssists": false,
                 "confirm": true,
+                "confirmSuffix": "minutes",
                 "main": "eventslead",
                 "currentweek": "currentweekEvents",
                 "color": "#00FF00",

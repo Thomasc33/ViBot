@@ -168,7 +168,7 @@ module.exports = {
                         continue;
                     csvData += `${user.id},${member?.nickname},${user.unrolled},${user.total}\n`;
                     let result = `**[${parseInt(idx) + 1}]** <@!${user.id}>:\nPoints: \`${user.total}\` (` +
-                        quota.values.map(v => `${v.name}: \`${user[v.column]||0}\``).join(', ') + ')';
+                        quota.values.map(v => `${v.emoji || v.name}: \`${user[v.column]||0}\``).join(', ') + ')';
                     runCount += quota.values.map(v => v.isRun ? user[v.column] : 0).reduce((a, b) => a+b, 0);
                     fitStringIntoEmbed(embeds, embed, result);
                 }

@@ -87,9 +87,6 @@ module.exports = {
                 if (runType.vialReact) await m.react(botSettings.emoteIDs.Vial)
                 for (let i of runType.earlyLocationReacts) await m.react(i.emoteID)
                 for (let i of runType.reacts) await m.react(i)
-                
-                this.hcInteractionCollector = new Discord.InteractionCollector(this.bot, { message: m, interactionType: 'MESSAGE_COMPONENT', componentType: 'BUTTON' })
-                this.leaderInteractionCollector.on('collect', (interaction) => this.interactionHandler(interaction))
             }
         }
 

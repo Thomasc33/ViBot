@@ -17,7 +17,7 @@ const numerical = ['afktime', 'eventafktime', 'nitrocount', 'nitrocooldown', 'to
 const runreqs = ['weapon', 'ability', 'armor', 'ring']
 const autoveri = ['fame', 'stars', 'realmage', 'discordage', 'deathcount']
 const vetverireqs = ['maxed', 'meleemaxed', 'runs']
-const points = ['earlylocation', 'perrun', 'nitromultiplier', 'keypop', 'vialpop', 'rushing', 'brain', 'mystic', 'eventkey', 'cultlocation', 'voidlocation', 'fsvlocation', 'o3streaming', 'o3trickster', 'o3puri', 'exaltkey']
+const points = ['earlylocation', 'perrun', 'nitromultiplier', 'keypop', 'vialpop', 'rushing', 'brain', 'mystic', 'eventkey', 'cultlocation', 'voidlocation', 'fsvlocation', 'o3streaming', 'o3trickster', 'o3puri', 'exaltkey', 'shattskey', 'fungalkey', 'nestkey']
 const lists = ['earlyLocation', 'runningEvents', 'warningRoles']
 const strings = ['hallsAdvancedReqsImage', 'exaltsAdvancedReqsImage']
 var commands = []
@@ -516,7 +516,10 @@ function getDefaultPointValue(name) {
         case 'o3streaming': return 5;
         case 'o3trickster': return 3;
         case 'o3puri': return 3;
-        case 'exaltkey': return 5
+        case 'exaltkey': return 5;
+        case 'shattskey': return 5;
+        case 'fungalkey': return 5;
+        case 'nestkey': return 5
     }
 }
 

@@ -16,13 +16,32 @@
             "schema": "eventpops",
             "name": "event key"
         },
-        "exaltation": {
+        "shatters": {
             "alias": [
-                "ex"
+                "s",
+                "shatts"
             ],
             "points": "exaltkey",
-            "schema": "eventpops",
-            "name": "exaltation key"
+            "schema": "shattersPops",
+            "name": "shatters"
+        },
+        "fungal": {
+            "alias": [
+                "f",
+                "fun",
+                "fungal"
+            ],
+            "points": "exaltkey",
+            "schema": "fungalPops",
+            "name": "fungal"
+        },
+        "nest": {
+            "alias": [
+                "n"
+            ],
+            "points": "exaltkey",
+            "schema": "nestPops",
+            "name": "nest"
         }
     },
     "701483950559985705": {
@@ -42,13 +61,32 @@
             "schema": "eventpops",
             "name": "event key"
         },
-        "exaltation": {
+        "shatters": {
             "alias": [
-                "ex"
+                "s",
+                "shatts"
             ],
             "points": "exaltkey",
-            "schema": "eventpops",
-            "name": "exaltation key"
+            "schema": "shattersPops",
+            "name": "shatters"
+        },
+        "fungal": {
+            "alias": [
+                "f",
+                "fun",
+                "fungal"
+            ],
+            "points": "exaltkey",
+            "schema": "fungalPops",
+            "name": "fungal"
+        },
+        "nest": {
+            "alias": [
+                "n"
+            ],
+            "points": "exaltkey",
+            "schema": "nestPops",
+            "name": "nest"
         }
     },
     "451171819672698920": {
