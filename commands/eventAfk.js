@@ -4,6 +4,7 @@ const botSettings = require('../settings.json')
 const dbInfo = require('../data/database.json')
 const oldStyleAfkGuilds = ['451171819672698920']
 const emojis = require('../data/emojis.json')
+const { reactNameToId } = require('./headcount')
 module.exports = {
     name: 'eventafk',
     description: 'Starts a new style afk check for event dungeons',
@@ -19,11 +20,11 @@ module.exports = {
         var eventType = args[0]
         let event = getEventType(eventType, eventFile, message.guild.id)
         if (!event) return message.channel.send(`${eventType} does not exist.`);
-        event = { 
+        event = {
             ...event,
             isEvent: true,
-            newChannel: oldStyleAfkGuilds.includes(message.guild.id) ? false : true,
-            postAfkCheck: oldStyleAfkGuilds.includes(message.guild.id) ? true : false,
+            newChannel: !oldStyleAfkGuilds.includes(message.guild.id),
+            postAfkCheck: !!oldStyleAfkGuilds.includes(message.guild.id),
             runLogName: event.runLogName,
             startDelay: 5000,
             vcCap: 45,
@@ -38,14 +39,13 @@ module.exports = {
             pingRole: event.pingRole || settings.roles.eventBoi,
             embed: {
                 color: event.color,
-                description: `To join, **click here** {voicechannel}\nIf you have a key react with <${event.keyEmote}>\nTo indicate your class or gear choices, react with ${event.rushers ? `<${botSettings.emote.Plane}>` : ''} ${event.stun ? `<${botSettings.emote.Collo}>` : ''} ${event.ogmur ? `<${botSettings.emote.Ogmur}>` : ''} ${event.fungal ? `<${botSettings.emote.UTTomeoftheMushroomTribes}>` : ''} ${event.mseal ? `<${botSettings.emote.MarbleSeal}>` : ''} ${event.brain ? `<${botSettings.emote.Brain}>` : ''} ${event.mystic ? `<${botSettings.emote.Mystic}>` : ''} ${event.paralyze ? `<${botSettings.emote.Paralyze}>` : ''}${event.slow ? `<${botSettings.emote.Slow}>` : ''} ${event.daze ? `<${botSettings.emote.Qot}>` : ''} ${event.curse ? `<${botSettings.emote.Curse}>` : ''} ${event.expose ? `<${botSettings.emote.Expose}>` : ''} ${event.warrior ? `<${botSettings.emote.Warrior}>` : ''} ${event.paladin ? `<${botSettings.emote.Paladin}>` : ''} ${event.bard ? `<${botSettings.emote.Bard}>` : ''} ${event.priest ? `<${botSettings.emote.Priest}>` : ''} ${event.trickster ? `<${botSettings.emote.trickster}>` : ''} ${event.knight ? `<${botSettings.emote.Knight}>` : ''}\nIf you have the role <@&${settings.roles.nitro}> react with <:nitro:701491230349066261> to get into VC`
+                description: `To join, **click here** {voicechannel}\nIf you have a key react with <${event.keyEmote}>\nTo indicate your class or gear choices, react with ${event.reacts.map(m => reactNameToId(m)).join(' ')}\nIf you have the role <@&${settings.roles.nitro}> react with <:nitro:701491230349066261> to get into VC`
             }
         }
 
         event.reacts = event.reacts.map(r => botSettings.emoteIDs[r])
 
-        if (!event.earlyLocationReacts) 
-        {
+        if (!event.earlyLocationReacts) {
             event.earlyLocationReacts = [{
                 "emoteID": "723018431275859969",
                 "pointsGiven": 2,
@@ -79,7 +79,7 @@ function getMatchingEvents(arg, events, id) {
         }
     }
     for (let i in events) {
-        if (i.toLowerCase() == arg.toLowerCase() || (events[i].aliases && events[i].aliases.includes(arg.toLowerCase()))) 
+        if (i.toLowerCase() == arg.toLowerCase() || (events[i].aliases && events[i].aliases.includes(arg.toLowerCase())))
             if (!event.filter(e => e.name == events[i].name).length) event.push(events[i])
     }
 

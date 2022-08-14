@@ -81,8 +81,7 @@ module.exports = {
                 const pings = pingRole ? (typeof pingRole != "string" ? pingRole.map(r => `<@&${settings.roles[r]}>`).join(' ') : `<@&${settings.roles[pingRole]}>`) + ' @here' : '@here';
 
                 let m = await channel.send({ content: `${pings}`, embeds: [embed], components: [] })
-                if (run.headcountEmote)
-                    m.react(run.headcountEmote)
+                if (run.headcountEmote) m.react(run.headcountEmote)
                 await m.react(run.keyEmoteID)
                 if (run.vialReact) await m.react(botSettings.emoteIDs.Vial)
                 for (let i of run.earlyLocationReacts) await m.react(i.emoteID)
@@ -95,21 +94,22 @@ module.exports = {
 
         // add indicator that command was a success
         message.react('✅')
-    }
+    },
+    reactNameToId
 }
 
 const reactNameToId = react => {
     switch (react) {
         case 'rushers': return botSettings.emoteIDs.Plane
-        case 'stun': return botSettings.emoteIDs.Collo
+        case 'collo': return botSettings.emoteIDs.Collo
         case 'ogmur': return botSettings.emoteIDs.Ogmur
-        case 'fungal': return botSettings.emoteIDs.UTTomeoftheMushroomTribes
+        case 'UTTomeoftheMushroomTriebs': return botSettings.emoteIDs.UTTomeoftheMushroomTribes
         case 'mseal': return botSettings.emoteIDs.MarbleSeal
         case 'brain': return botSettings.emoteIDs.brain
-        case 'stasis': return botSettings.emoteIDs.mystic
+        case 'mystic': return botSettings.emoteIDs.mystic
         case 'parylize': return botSettings.emoteIDs.Paralyze
         case 'slow': return botSettings.emoteIDs.Slow
-        case 'daze': return botSettings.emoteIDs.Qot
+        case 'qot': return botSettings.emoteIDs.Qot
         case 'curse': return botSettings.emoteIDs.Curse
         case 'expose': return botSettings.emoteIDs.Expose
         case 'warrior': return botSettings.emoteIDs.Warrior
@@ -117,5 +117,7 @@ const reactNameToId = react => {
         case 'bard': return botSettings.emoteIDs.Bard
         case 'priest': return botSettings.emoteIDs.Priest
         case 'aether': return botSettings.emoteIDs.UTOrbofAether
+        case 'knight': return botSettings.emoteIDs.Knight
+        case 'trickster': return botSettings.emoteIDs.trickster
     }
 }
