@@ -86,7 +86,7 @@ module.exports = {
                 if (run.vialReact) await m.react(botSettings.emoteIDs.Vial)
                 for (let i of run.earlyLocationReacts) await m.react(i.emoteID)
                 for (let i of run.reacts) {
-                    if (isNaN(+i)) await m.react(eventAfk.reactNameToId(i.toLowerCase()))
+                    if (isNaN(+i)) await m.react(botSettings.emoteIDs[i])
                     else await m.react(i)
                 }
             }

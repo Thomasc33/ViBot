@@ -4,7 +4,6 @@ const botSettings = require('../settings.json')
 const dbInfo = require('../data/database.json')
 const oldStyleAfkGuilds = ['451171819672698920']
 const emojis = require('../data/emojis.json')
-const { reactNameToId } = require('./headcount')
 module.exports = {
     name: 'eventafk',
     description: 'Starts a new style afk check for event dungeons',
@@ -39,7 +38,7 @@ module.exports = {
             pingRole: event.pingRole || settings.roles.eventBoi,
             embed: {
                 color: event.color,
-                description: `To join, **click here** {voicechannel}\nIf you have a key react with <${event.keyEmote}>\nTo indicate your class or gear choices, react with ${event.reacts.map(m => reactNameToId(m)).join(' ')}\nIf you have the role <@&${settings.roles.nitro}> react with <:nitro:701491230349066261> to get into VC`
+                description: `To join, **click here** {voicechannel}\nIf you have a key react with <${event.keyEmote}>\nTo indicate your class or gear choices, react with ${event.reacts.map(m => botSettings.emoteIDs[m]).join(' ')}\nIf you have the role <@&${settings.roles.nitro}> react with <:nitro:701491230349066261> to get into VC`
             }
         }
 
@@ -61,37 +60,13 @@ module.exports = {
         }
         let isVet = message.channel.id == settings.channels.vetcommands;
         if (event.isAdvanced && !settings.backend.allowAdvancedRuns) return message.channel.send(`Advanced runs are not enabled for this server.`);
-        else if (!(event.isExalt && settings.backend.exaltsInRSA && message.channel.id == settings.channels.raidcommands)) return;
         if (!event.enabled) return message.channel.send(`${event.name} is currently disabled.`);
 
         //start afkcheck
-        afkCheck.eventAfkExecute(message, args, bot, db, tokenDB, eventTemplate, isVet)
+        afkCheck.eventAfkExecute(message, args, bot, db, tokenDB, event, isVet)
     },
     getEventType,
-    getMatchingEvents,
-    reactNameToId: react => {
-        switch (react) {
-            case 'rushers': return botSettings.emoteIDs.Plane
-            case 'collo': return botSettings.emoteIDs.Collo
-            case 'ogmur': return botSettings.emoteIDs.Ogmur
-            case 'UTTomeoftheMushroomTriebs': return botSettings.emoteIDs.UTTomeoftheMushroomTribes
-            case 'mseal': return botSettings.emoteIDs.MarbleSeal
-            case 'brain': return botSettings.emoteIDs.brain
-            case 'mystic': return botSettings.emoteIDs.mystic
-            case 'parylize': return botSettings.emoteIDs.Paralyze
-            case 'slow': return botSettings.emoteIDs.Slow
-            case 'qot': return botSettings.emoteIDs.Qot
-            case 'curse': return botSettings.emoteIDs.Curse
-            case 'expose': return botSettings.emoteIDs.Expose
-            case 'warrior': return botSettings.emoteIDs.Warrior
-            case 'paladin': return botSettings.emoteIDs.Paladin
-            case 'bard': return botSettings.emoteIDs.Bard
-            case 'priest': return botSettings.emoteIDs.Priest
-            case 'aether': return botSettings.emoteIDs.UTOrbofAether
-            case 'knight': return botSettings.emoteIDs.Knight
-            case 'trickster': return botSettings.emoteIDs.trickster
-        }
-    }
+    getMatchingEvents
 }
 
 function getMatchingEvents(arg, events, id) {
