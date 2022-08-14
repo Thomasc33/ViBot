@@ -332,7 +332,7 @@ class afkCheck {
             .setColor(this.afkInfo.embed.color || "#fefefe")
             .setTitle(`${this.message.member.nickname}'s ${this.afkInfo.runName}`)
             .addField('Our current keys', 'None!')
-            .setFooter({text: `${this.afkInfo.twoPhase ? 'Click ✅ to open the channel, ' : ''}Click ❌ to abort`})
+            .setFooter({ text: `${this.afkInfo.twoPhase ? 'Click ✅ to open the channel, ' : ''}Click ❌ to abort` })
         if (this.afkInfo.vialReact) this.leaderEmbed.addField('Our current vials', 'None!')
         this.afkInfo.earlyLocationReacts.forEach(r => this.leaderEmbed.addField(`Our current ${r.shortName}`, 'None!'))
         this.leaderEmbed.addField('Location', this.afkInfo.location)
@@ -1403,7 +1403,7 @@ class afkCheck {
 async function createChannel(runInfo, message, bot) {
     let settings = bot.settings[message.guild.id]
     return new Promise(async (res, rej) => {
-        let parent, template, raider, vibotChannels;
+        let parent, template, raider, vibotChannels, eventBoi;
         //channel creation
         if (runInfo.isVet) {
             parent = settings.categories.veteran;
