@@ -68,7 +68,30 @@ module.exports = {
         afkCheck.eventAfkExecute(message, args, bot, db, tokenDB, eventTemplate, isVet)
     },
     getEventType,
-    getMatchingEvents
+    getMatchingEvents,
+    reactNameToId: react => {
+        switch (react) {
+            case 'rushers': return botSettings.emoteIDs.Plane
+            case 'collo': return botSettings.emoteIDs.Collo
+            case 'ogmur': return botSettings.emoteIDs.Ogmur
+            case 'UTTomeoftheMushroomTriebs': return botSettings.emoteIDs.UTTomeoftheMushroomTribes
+            case 'mseal': return botSettings.emoteIDs.MarbleSeal
+            case 'brain': return botSettings.emoteIDs.brain
+            case 'mystic': return botSettings.emoteIDs.mystic
+            case 'parylize': return botSettings.emoteIDs.Paralyze
+            case 'slow': return botSettings.emoteIDs.Slow
+            case 'qot': return botSettings.emoteIDs.Qot
+            case 'curse': return botSettings.emoteIDs.Curse
+            case 'expose': return botSettings.emoteIDs.Expose
+            case 'warrior': return botSettings.emoteIDs.Warrior
+            case 'paladin': return botSettings.emoteIDs.Paladin
+            case 'bard': return botSettings.emoteIDs.Bard
+            case 'priest': return botSettings.emoteIDs.Priest
+            case 'aether': return botSettings.emoteIDs.UTOrbofAether
+            case 'knight': return botSettings.emoteIDs.Knight
+            case 'trickster': return botSettings.emoteIDs.trickster
+        }
+    }
 }
 
 function getMatchingEvents(arg, events, id) {

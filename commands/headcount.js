@@ -86,7 +86,7 @@ module.exports = {
                 if (run.vialReact) await m.react(botSettings.emoteIDs.Vial)
                 for (let i of run.earlyLocationReacts) await m.react(i.emoteID)
                 for (let i of run.reacts) {
-                    if (isNaN(+i)) await m.react(reactNameToId(i.toLowerCase()))
+                    if (isNaN(+i)) await m.react(eventAfk.reactNameToId(i.toLowerCase()))
                     else await m.react(i)
                 }
             }
@@ -94,28 +94,5 @@ module.exports = {
 
         // add indicator that command was a success
         message.react('✅')
-    },
-    reactNameToId: react => {
-        switch (react) {
-            case 'rushers': return botSettings.emoteIDs.Plane
-            case 'collo': return botSettings.emoteIDs.Collo
-            case 'ogmur': return botSettings.emoteIDs.Ogmur
-            case 'UTTomeoftheMushroomTriebs': return botSettings.emoteIDs.UTTomeoftheMushroomTribes
-            case 'mseal': return botSettings.emoteIDs.MarbleSeal
-            case 'brain': return botSettings.emoteIDs.brain
-            case 'mystic': return botSettings.emoteIDs.mystic
-            case 'parylize': return botSettings.emoteIDs.Paralyze
-            case 'slow': return botSettings.emoteIDs.Slow
-            case 'qot': return botSettings.emoteIDs.Qot
-            case 'curse': return botSettings.emoteIDs.Curse
-            case 'expose': return botSettings.emoteIDs.Expose
-            case 'warrior': return botSettings.emoteIDs.Warrior
-            case 'paladin': return botSettings.emoteIDs.Paladin
-            case 'bard': return botSettings.emoteIDs.Bard
-            case 'priest': return botSettings.emoteIDs.Priest
-            case 'aether': return botSettings.emoteIDs.UTOrbofAether
-            case 'knight': return botSettings.emoteIDs.Knight
-            case 'trickster': return botSettings.emoteIDs.trickster
-        }
     }
 }
