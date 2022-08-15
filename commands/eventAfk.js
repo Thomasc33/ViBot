@@ -72,11 +72,11 @@ function getMatchingEvents(arg, events, id) {
     let event = []
     let guildSpecifics = []
     if (id && events[id]) for (let i in events[id])
-        if (i.toLowerCase() == arg.toLowerCase() || (events[i].aliases && events[i].aliases.includes(arg.toLowerCase()))) { event.push(events[id][i]); event.push(guildSpecifics[id][i]) }
+        if (i.toLowerCase() == arg.toLowerCase() || (events[i].aliases && events[i].aliases.includes(arg.toLowerCase()))) { event.push(events[id][i]); guildSpecifics.push(events[id][i]) }
 
     for (let i in events) if (i.toLowerCase() == arg.toLowerCase() || (events[i].aliases && events[i].aliases.includes(arg.toLowerCase())))
         if (!event.filter(e => e.name == events[i].name).length)
-            if (!guildSpecifics.filter(a => events[i].runName == a.runName || events[i].name == a.name).length) event.push(events[i])
+            if (!guildSpecifics.filter(a => events[i].runName == a.name).length) event.push(events[i])
 
     return event
 }
