@@ -35,29 +35,28 @@ module.exports = {
             isAdvanced: settings.backend.allowAdvancedRuns && event.isAdvanced,
             twoPhase: !!event.twoPhase,
             keyPopPointsOverride: event.keyPopPoints,
-            pingRole: event.pingRole || settings.roles.eventBoi,
             embed: {
                 color: event.color,
-                description: `To join, **click here** {voicechannel}\nIf you have a key react with <${event.keyEmote}>\nTo indicate your class or gear choices, react with ${event.reacts.map(m => botSettings.emoteIDs[m]).join(' ')}\nIf you have the role <@&${settings.roles.nitro}> react with <:nitro:701491230349066261> to get into VC`
+                description: `To join, **click here** {voicechannel}\nIf you have a key react with <${event.keyEmote}>\nTo indicate your class or gear choices, react with ${event.reacts.map(m => `${bot.emojis.cache.get(botSettings.emoteIDs[m])}`).join(' ')}\nIf you have the role <@&${settings.roles.nitro}> react with <:nitro:701491230349066261> to get into VC`
             }
         }
 
+        if (!event.pingRole) event.pingRole = settings.roles.eventBoi
         event.reacts = event.reacts.map(r => botSettings.emoteIDs[r])
 
-        if (!event.earlyLocationReacts) {
-            event.earlyLocationReacts = [{
-                "emoteID": "723018431275859969",
-                "pointsGiven": 2,
-                "limit": 3,
-                "shortName": "mystic",
-                "checkRealmEye": {
-                    "class": "mystic",
-                    "ofEight": "8",
-                    "mheal": "85",
-                    "orb": "2"
-                }
-            }];
-        }
+        if (!event.earlyLocationReacts) event.earlyLocationReacts = [{
+            "emoteID": "723018431275859969",
+            "pointsGiven": 2,
+            "limit": 3,
+            "shortName": "mystic",
+            "checkRealmEye": {
+                "class": "mystic",
+                "ofEight": "8",
+                "mheal": "85",
+                "orb": "2"
+            }
+        }];
+
         let isVet = message.channel.id == settings.channels.vetcommands;
         if (event.isAdvanced && !settings.backend.allowAdvancedRuns) return message.channel.send(`Advanced runs are not enabled for this server.`);
         if (!event.enabled) return message.channel.send(`${event.name} is currently disabled.`);
@@ -71,16 +70,11 @@ module.exports = {
 
 function getMatchingEvents(arg, events, id) {
     let event = []
-    if (id && events[id]) {
-        for (let i in events[id]) {
-            if (i.toLowerCase() == arg.toLowerCase() || (events[i].aliases && events[i].aliases.includes(arg.toLowerCase()))) event.push(events[id][i])
-        }
-    }
-    for (let i in events) {
-        if (i.toLowerCase() == arg.toLowerCase() || (events[i].aliases && events[i].aliases.includes(arg.toLowerCase())))
-            if (!event.filter(e => e.name == events[i].name).length) event.push(events[i])
-    }
+    if (id && events[id]) for (let i in events[id])
+        if (i.toLowerCase() == arg.toLowerCase() || (events[i].aliases && events[i].aliases.includes(arg.toLowerCase()))) event.push(events[id][i])
 
+    for (let i in events) if (i.toLowerCase() == arg.toLowerCase() || (events[i].aliases && events[i].aliases.includes(arg.toLowerCase())))
+        if (!event.filter(e => e.name == events[i].name).length) event.push(events[i])
 
     return event
 }
