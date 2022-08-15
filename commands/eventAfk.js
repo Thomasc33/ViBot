@@ -41,7 +41,7 @@ module.exports = {
             }
         }
 
-        if (!event.pingRole) event.pingRole = settings.roles.eventBoi
+        if (!event.pingRole) 'eventBoi'
         event.reacts = event.reacts.map(r => botSettings.emoteIDs[r])
 
         if (!event.earlyLocationReacts) event.earlyLocationReacts = [{

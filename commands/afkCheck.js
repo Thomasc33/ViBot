@@ -96,9 +96,6 @@ module.exports = {
         //set guildid
         runInfo.guild = message.guild.id;
 
-        if (!runInfo.pingRole && settings.roles.eventBoi)
-            runInfo.pingRole = settings.roles.eventBoi
-
         //get/set channel
         let channel = null;
         if (runInfo.newChannel) channel = await createChannel(runInfo, message, bot)

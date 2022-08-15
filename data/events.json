@@ -1846,7 +1846,7 @@
             "earlyLocationCost": 15,
             "vcCap": 40,
             "twoPhase": true,
-            "rolePing": "fungalReact",
+            "pingRole": "fungalReact",
             "isExalt": true,
             "earlyLocationReacts": [
                 {
@@ -1911,7 +1911,7 @@
             "keyPopPoints": 5,
             "earlyLocationCost": 15,
             "vcCap": 30,
-            "rolePing": "fungalReact",
+            "pingRole": "fungalReact",
             "isExalt": true,
             "isAdvanced": true,
             "earlyLocationReacts": [
@@ -1971,7 +1971,7 @@
             "keyPopPoints": 5,
             "earlyLocationCost": 15,
             "vcCap": 40,
-            "rolePing": "nestReact",
+            "pingRole": "nestReact",
             "isExalt": true,
             "earlyLocationReacts": [
                 {
@@ -2035,7 +2035,7 @@
             "keyPopPoints": 5,
             "earlyLocationCost": 15,
             "vcCap": 30,
-            "rolePing": "nestReact",
+            "pingRole": "nestReact",
             "isExalt": true,
             "isAdvanced": true,
             "earlyLocationReacts": [
@@ -2097,7 +2097,7 @@
             "keyPopPoints": 5,
             "earlyLocationCost": 15,
             "vcCap": 40,
-            "rolePing": "nestReact",
+            "pingRole": "nestReact",
             "isExalt": true,
             "earlyLocationReacts": [
                 {
@@ -2160,7 +2160,7 @@
             "keyPopPoints": 5,
             "earlyLocationCost": 15,
             "vcCap": 30,
-            "rolePing": "nestReact",
+            "pingRole": "nestReact",
             "isExalt": true,
             "isAdvanced": true,
             "earlyLocationReacts": [
@@ -2220,7 +2220,7 @@
             "keyPopPoints": 5,
             "earlyLocationCost": 15,
             "vcCap": 40,
-            "rolePing": "shattsReact",
+            "pingRole": "shattsReact",
             "isExalt": true,
             "earlyLocationReacts": [
                 {
@@ -2289,7 +2289,7 @@
             "keyPopPoints": 5,
             "earlyLocationCost": 15,
             "vcCap": 30,
-            "rolePing": "shattsReact",
+            "pingRole": "shattsReact",
             "isExalt": true,
             "isAdvanced": true,
             "earlyLocationReacts": [
