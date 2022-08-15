@@ -1826,6 +1826,8 @@
     "343704644712923138": {
         "fungal": {
             "name": "Fungal Cavern",
+            "runType": "Fungal Cavern",
+            "runName": "Fungal Cavern",
             "aliases": [],
             "enabled": true,
             "keyEmoteID": "723001429614395402",
@@ -1890,6 +1892,8 @@
         },
         "advancedfungal": {
             "name": "Advanced Fungal Cavern",
+            "runType": "Advanced Fungal Cavern",
+            "runName": "Advanced Fungal Cavern",
             "aliases": [
                 "af",
                 "afun",
@@ -1961,6 +1965,8 @@
         },
         "nest": {
             "name": "Nest",
+            "runType": "Nest",
+            "runName": "Nest",
             "aliases": [],
             "enabled": true,
             "runLogName": "nestRuns",
@@ -2025,6 +2031,8 @@
         },
         "advancednest": {
             "name": "Advanced Nest",
+            "runType": "Advanced Nest",
+            "runName": "Advanced Nest",
             "aliases": [
                 "an",
                 "anest",
@@ -2094,6 +2102,8 @@
         },
         "fullskipnest": {
             "name": "Full-skip Nest",
+            "runType": "Full-skip Nest",
+            "runName": "Full-skip Nest",
             "aliases": [
                 "fsnest"
             ],
@@ -2161,6 +2171,8 @@
         },
         "advancedfullskipnest": {
             "name": "Advanced Full-skip Nest",
+            "runType": "Advanced Full-skip Nest",
+            "runName": "Advanced Full-skip Nest",
             "aliases": [
                 "afn",
                 "afsn",
@@ -2230,6 +2242,8 @@
         },
         "shatters": {
             "name": "Shatters",
+            "runType": "Shatters",
+            "runName": "Shatters",
             "aliases": [
                 "shatts"
             ],
@@ -2303,6 +2317,8 @@
         },
         "advancedshatters": {
             "name": "Advanced Shatters",
+            "runType": "Advanced Shatters",
+            "runName": "Advanced Shatters",
             "aliases": [
                 "as",
                 "ashatts",
