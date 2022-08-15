@@ -1,19 +1,14 @@
 {
     "343704644712923138": [
         {
-            "types": [ ["eventpops", "Event Keys"], ["keypops", "Lost Halls Keys"] ],
+            "types": [ ["eventpops", "Event Keys"], ["keypops", "Lost Halls Keys"], ["nestPops", "Nest Keys"], ["shattersPops", "Shatters Keys"], ["fungalPops", "Fungal Keys"] ],
             "amount": 15,
             "role": "bottomkey"
         },
         {
-            "types": [ ["eventpops", "Event Keys"], ["keypops", "Lost Halls Keys"] ],
+            "types": [ ["eventpops", "Event Keys"], ["keypops", "Lost Halls Keys"], ["nestPops", "Nest Keys"], ["shattersPops", "Shatters Keys"], ["fungalPops", "Fungal Keys"] ],
             "amount": 50,
             "role": "topkey"
-        },
-        {
-            "types": [ ["eventpops", "Event Keys"], ["keypops", "Lost Halls Keys"] ],
-            "amount": 2000,
-            "role": "keyjesus"
         }
     ],
     "451171819672698920": [
