@@ -23,7 +23,7 @@ module.exports = {
             message.channel.send({
                 embeds:
                     [
-                        new Discord.MessageEmbed().setDescription(`${er}`)
+                        new Discord.EmbedBuilder().setDescription(`${er}`)
                     ]
             });
         })
@@ -73,7 +73,7 @@ module.exports = {
             }
 
             //setup embed
-            const embed = new Discord.MessageEmbed()
+            const embed = new Discord.EmbedBuilder()
                 .setColor('#015c21')
                 .setDescription(`__**Stats for**__ <@${id}> ${member ? '\`' + (member.nickname || member.user.tag) + '\`' : ''}`)
 

@@ -28,10 +28,10 @@ module.exports = {
             //if not, add this user
             db.query(`UPDATE tokens SET user = '${message.author.id}', redeemedOn = '${Date.now()}', active = true WHERE token = '${args[0]}'`, err => {
                 if (err) ErrorLogger.log(err, bot)
-                let confirmEmbed = new Discord.MessageEmbed()
-                    .setAuthor(message.author.tag)
+                let confirmEmbed = new Discord.EmbedBuilder()
+                    .setAuthor({ name: message.author.tag })
                     .setDescription(`Token has been redeemed. Thank you for supporting ViBot`)
-                    .setFooter(`Time will expire at`)
+                    .setFooter({ text: `Time will expire at` })
                     .setTimestamp(new Date(parseInt(rows[0].duration) + parseInt(Date.now())))
                 if (message.author.avatarURL()) confirmEmbed.author.iconURL = message.author.avatarURL()
                 if (rows[0].hasCooldown) confirmEmbed.description += `\nCooldown time: \`1 hour\``

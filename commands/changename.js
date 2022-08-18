@@ -33,11 +33,11 @@ module.exports = {
                 await this.change(message, member, args.shift(), args, bot, settings, staff);
             }
         } catch (err) {
-            message.channel.send({ embeds: [new Discord.MessageEmbed().setDescription(err.toString())] });
+            message.channel.send({ embeds: [new Discord.EmbedBuilder().setDescription(err.toString())] });
         }
     },
     async change(message, member, altName, args, bot, settings, staff) {
-        return new Promise(async(resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             const own = message.member == member;
             altName = altName.replace(/[^a-z]/gi, '');
             if (!altName)
@@ -106,7 +106,7 @@ module.exports = {
             if (dupe) {
                 if (!staff)
                     return reject(`There is already a user with the IGN ${altName} in the server. If this is in fact your name, please contact a Security+ staff member to resolve the issue immediately.`);
-                await message.channel.send({ embeds: [new Discord.MessageEmbed().setDescription(`Warning: Member ${dupe} already has the IGN ${altName}.`)] });
+                await message.channel.send({ embeds: [new Discord.EmbedBuilder().setDescription(`Warning: Member ${dupe} already has the IGN ${altName}.`)] });
 
             }
             const { historyName, history } = data;
@@ -115,7 +115,7 @@ module.exports = {
     }
 }
 
-const nameHistory = async(altName, names) => {
+const nameHistory = async (altName, names) => {
     let historyName;
     let history;
     let memberPrefix = '';
@@ -133,8 +133,8 @@ const nameHistory = async(altName, names) => {
     } catch (err) { console.log(err) }
 }
 
-const changeName = async(message, bot, settings, member, names, idx, altName, userPrefix, image, historyName, history) => {
-    return new Promise(async(resolve, reject) => {
+const changeName = async (message, bot, settings, member, names, idx, altName, userPrefix, image, historyName, history) => {
+    return new Promise(async (resolve, reject) => {
         const oldName = names[idx];
         names[idx] = altName;
         //if username is `Husky#1234` and ign is Husky, name change => husky, if name is huskY and ign is huskY, name change => husky
@@ -148,7 +148,7 @@ const changeName = async(message, bot, settings, member, names, idx, altName, us
             names[idx] = altName;
             names[idx] = names[idx].slice(0, i) + names[idx][i].toUpperCase() + names[idx].slice(i + 1);
         }
-        const confirmEmbed = new Discord.MessageEmbed().setDescription(`Are you sure you want to change ${member}'s name from \`${oldName || ' '}\` to \`${names[idx]}\`?`);
+        const confirmEmbed = new Discord.EmbedBuilder().setDescription(`Are you sure you want to change ${member}'s name from \`${oldName || ' '}\` to \`${names[idx]}\`?`);
         const confirm = await message.channel.send({ embeds: [confirmEmbed] });
         try {
             if (await confirm.confirm(message.author.id)) {
@@ -160,12 +160,14 @@ const changeName = async(message, bot, settings, member, names, idx, altName, us
                     reject(`There was an issue changing ${member}'s nickname: \`${err.toString().split('\n')[0]}\``)
                     return ErrorLogger.log(err, bot);
                 }
-                let embed = new Discord.MessageEmbed()
+                let embed = new Discord.EmbedBuilder()
                     .setTitle(image || historyName ? 'Name Changed' : 'Name Adjusted')
                     .setDescription(`${member} \`${member.user.tag}\``)
-                    .addField('Old Name', `\`${oldName || ' '}\` in \`${oldNickname || ' '}\``)
-                    .addField('New Name', `\`${names[idx]}\``)
-                    .addField('Change By', `${message.member} \`${message.member.user.tag}\``)
+                    .addFields([
+                        { name: 'Old Name', value: `\`${oldName || ' '}\` in \`${oldNickname || ' '}\`` },
+                        { name: 'New Name', value: `\`${names[idx]}\`` },
+                        { name: 'Change By', value: `${message.member} \`${message.member.user.tag}\`` },
+                    ])
                     .setTimestamp(Date.now());
                 if (image) //image was provided
                     embed.setImage(image);
@@ -178,7 +180,7 @@ const changeName = async(message, bot, settings, member, names, idx, altName, us
                             break;
                     }
                     //Show name change history between the old name and the new name
-                    embed.addField('Found in Name History', `\`\`\`${total.reverse().join(' => ')}\`\`\``);
+                    embed.addFields({ name: 'Found in Name History', value: `\`\`\`${total.reverse().join(' => ')}\`\`\`` });
                 }
                 message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });
                 confirm.react('✅')

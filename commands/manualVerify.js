@@ -28,14 +28,14 @@ module.exports = {
             }
         } else nick = args[1]
         await member.setNickname(nick)
-        let embed = new Discord.MessageEmbed()
+        let embed = new Discord.EmbedBuilder()
             .setTitle('Manual Verify')
             .setDescription(member.toString())
-            .addField('User', member.displayName, true)
-            .addField('Verified By', `<@!${message.author.id}>`, true)
+            .addFields([{name: 'User', value: member.displayName, inline: true}])
+            .addFields([{name: 'Verified By', value: `<@!${message.author.id}>`, inline: true}])
             .setTimestamp(Date.now());
         message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });
-        let confirmEmbed = new Discord.MessageEmbed().setDescription(`${member} has been given ${raiderRole}`)
+        let confirmEmbed = new Discord.EmbedBuilder().setDescription(`${member} has been given ${raiderRole}`)
         message.channel.send({ embeds: [confirmEmbed] })
 
         member.user.send(`You have been verified on \`${message.guild.name}\`. Please head over to rules, faq, and raiding-rules channels to familiarize yourself with the server. Happy raiding`)
@@ -44,13 +44,13 @@ module.exports = {
             if (!rows || !rows.length)
                 return;
 
-            const expelEmbed = new Discord.MessageEmbed()
+            const expelEmbed = new Discord.EmbedBuilder()
                 .setTitle('Automatic Expel Removal')
                 .setDescription(`The follow expels have been removed from the database tied to ${member}. If these should stick, please react with ❌ in the next 10 seconds.`)
                 .setColor('#E0B0FF');
 
             for (const row of rows) {
-                expelEmbed.addField(`${row.id}`, `Expelled by <@${row.modid}> in ${bot.guilds.cache.get(row.guildid).name || row.guildid}:\`\`\`${row.reason}\`\`\``);
+                expelEmbed.addFields([{name: `${row.id}`, value: `Expelled by <@${row.modid}> in ${bot.guilds.cache.get(row.guildid).name || row.guildid}:\`\`\`${row.reason}\`\`\``}]);
             }
 
             const expelMessage = await message.channel.send({ embeds: [expelEmbed] });

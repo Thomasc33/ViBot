@@ -27,10 +27,10 @@ module.exports = {
         let settings = bot.settings[message.guild.id]
         let vetVeriChannel = message.guild.channels.cache.get(settings.channels.vetverification)
         if (!vetVeriChannel) return message.channel.send(`Vet Verification channel not found`)
-        let vetVeriEmbed = new Discord.MessageEmbed()
+        let vetVeriEmbed = new Discord.EmbedBuilder()
             .setTitle(`Veteran Verification for ${message.guild.name}`)
-            .addField('How to', 'React with the :white_check_mark: to get the role.\nMake sure to make your graveyard and character list public on realmeye before reacting\nAlso run the command ;stats to see your current run total.')
-            .addField('Requirements', `${(settings.vetverireqs.maxed) ? `-${settings.vetverireqs.maxed} 8/8 Characters\n` : ''}${(settings.vetverireqs.meleemaxed) ? `-${settings.vetverireqs.meleemaxed} 8/8 Melee Characters\n` : ''}${(settings.vetverireqs.runs) ? `-${settings.vetverireqs.runs} Completed Runs\n` : ''}`)
+            .addFields([{ name: 'How to', value: 'React with the :white_check_mark: to get the role.\nMake sure to make your graveyard and character list public on realmeye before reacting\nAlso run the command ;stats to see your current run total.' }])
+            .addFields([{ name: 'Requirements', value: `${(settings.vetverireqs.maxed) ? `-${settings.vetverireqs.maxed} 8/8 Characters\n` : ''}${(settings.vetverireqs.meleemaxed) ? `-${settings.vetverireqs.meleemaxed} 8/8 Melee Characters\n` : ''}${(settings.vetverireqs.runs) ? `-${settings.vetverireqs.runs} Completed Runs\n` : ''}` }])
         embedMessage = await vetVeriChannel.send({ embeds: [vetVeriEmbed] })
         embedMessage.react('✅')
         this.init(message.guild, bot, db)
@@ -96,12 +96,12 @@ module.exports = {
         if (dungeon.realmeyestring) {
             let graveyard = await realmEyeScrape.getGraveyardSummary(ign).catch(er => null)
             if (graveyard)
-            for (let i in graveyard.dungeonCompletes) {
-                let achievement = graveyard.dungeonCompletes[i]
-                if (dungeon.realmeyestring.includes(achievement.type)) {
-                    realmEyeRuns += parseInt(achievement.total)
+                for (let i in graveyard.dungeonCompletes) {
+                    let achievement = graveyard.dungeonCompletes[i]
+                    if (dungeon.realmeyestring.includes(achievement.type)) {
+                        realmEyeRuns += parseInt(achievement.total)
+                    }
                 }
-            }
         }
         let exaltCounts = 0
         let exaltStats
@@ -110,7 +110,7 @@ module.exports = {
             for (let i of dungeon.exaltStats) {
                 for (let j in exaltStats.exaltations) {
                     let e = exaltStats.exaltations[j]
-                    
+
                     if (e[i]) {
                         e[i] = parseInt(e[i].toLowerCase().replace('+', ''));
                         if (['health', 'mana'].includes(e[i]))
@@ -214,18 +214,18 @@ module.exports = {
 
             const problemList = ['-Not Enough Runs Completed', '-Not Enough Maxed Characters', '-Not Enough Maxed Melee Characters'];
             const problemString = problems.sort().map(v => problemList[v - 1]).join('\n') || 'None!';
-            let mainEmbed = new Discord.MessageEmbed()
-                .setAuthor(`${u.tag} tried to verify as a veteran under: ${ign}`, u.avatarURL())
+            let mainEmbed = new Discord.EmbedBuilder()
+                .setAuthor({ name: `${u.tag} tried to verify as a veteran under: ${ign}`, iconURL: u.avatarURL() || undefined })
                 .setDescription(description);
             if (!profile)
-                mainEmbed.addField('Bot-Logged Runs:', `${loggedRuns || 0}`);
+                mainEmbed.addFields([{ name: 'Bot-Logged Runs:', value: `${loggedRuns || 0}` }]);
             else
-                mainEmbed.addField('Started Runs', `${profile.participation.reg || 0}`)
-                    .addField('Completed Runs', `${profile.participation.completions || 0}`);
-            mainEmbed.addField('Realmeye Logged Runs:', `${realmEyeRuns || 0}`)
-                .addField('Maxed Characters:', `Total: ${maxedChars} | Melee: ${meleeMaxed}`)
-                .addField('Dungeon Specific Gear:', gearString || 'None!')
-                
+                mainEmbed.addFields([{ name: 'Started Runs', value: `${profile.participation.reg || 0}` }])
+                    .addFields([{ name: 'Completed Runs', value: `${profile.participation.completions || 0}` }]);
+            mainEmbed.addFields([{ name: 'Realmeye Logged Runs:', value: `${realmEyeRuns || 0}` }])
+                .addFields([{ name: 'Maxed Characters:', value: `Total: ${maxedChars} | Melee: ${meleeMaxed}` }])
+                .addFields([{ name: 'Dungeon Specific Gear:', value: gearString || 'None!' }])
+
             for (let i of dungeon.exaltStats) {
                 const count = [0, 0, 0, 0, 0, 0];
                 let ishpmana = ['health', 'mana'].includes(i.toLowerCase());
@@ -234,10 +234,10 @@ module.exports = {
                     count[(exaltStats.exaltations[j][i] || 0) / (ishpmana ? 5 : 1)]++;
                 }
                 console.log(count);
-                mainEmbed.addField(`${i.charAt(0).toUpperCase() + i.slice(1)} Exaltations:`, count.map((val, idx) => `+${ishpmana? idx * 5 : idx} \`${val}\``).join(' | '))
+                mainEmbed.addFields([{ name: `${i.charAt(0).toUpperCase() + i.slice(1)} Exaltations:`, value: count.map((val, idx) => `+${ishpmana ? idx * 5 : idx} \`${val}\``).join(' | ') }])
             }
-            mainEmbed.addField('Problems:', problemString)
-                .setFooter(u.id)
+            mainEmbed.addFields([{ name: 'Problems:', value: problemString }])
+                .setFooter({ text: u.id })
                 .setTimestamp()
 
             let pendingMessage = await veriPending.send({ embeds: [mainEmbed] })
@@ -293,7 +293,7 @@ module.exports = {
                         //verify
                         await message.react('💯')
                         embed.setColor('#00ff00')
-                        embed.setFooter(`Accepted by ${reactor.nickname}`)
+                        embed.setFooter({ text: `Accepted by ${reactor.nickname}` })
                         await message.edit({ embeds: [embed] })
                         await member.roles.add(vetRaider.id)
                         //member.user.send(ext.parse(settings.messages.verifications.acceptvetveri, info))
@@ -311,7 +311,7 @@ module.exports = {
                         //deny
                         await message.react('👋')
                         embed.setColor('#ff0000')
-                        embed.setFooter(`Rejected by ${reactor.nickname}`)
+                        embed.setFooter({ text: `Rejected by ${reactor.nickname}` })
                         await message.edit({ embeds: [embed] })
                         //member.user.send(ext.parse(settings.messages.verifications.deniedvetveri, info))
                         try {

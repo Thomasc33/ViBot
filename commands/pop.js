@@ -28,7 +28,7 @@ module.exports = {
         if (!keyInfo) return message.channel.send(`\`${args[0]}\` not recognized`)
 
         let collector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id === message.author.id, time: 20000 });
-        let confirmEmbed = new Discord.MessageEmbed()
+        let confirmEmbed = new Discord.EmbedBuilder()
             .setColor('#ff0000')
             .setDescription(`Are you sure you want to log ${count} ${keyInfo.name} pops for ${user.nickname}?\n\nRespond with __**Y**__es or __**N**__o`)
         let confirmMessage = await message.channel.send({ embeds: [confirmEmbed] })
@@ -43,7 +43,7 @@ module.exports = {
                                 if (err || !rows || rows.length == 0) {
                                     message.channel.send({
                                         embeds: [
-                                            new Discord.MessageEmbed().setDescription(`Unable to add <@!${user.id}> to the database.`).addField(`Error`, `${err || "Unknown reason"}`)
+                                            new Discord.EmbedBuilder().setDescription(`Unable to add <@!${user.id}> to the database.`).addFields([{name: `Error`, value: `${err || "Unknown reason"}`}])
                                         ]
                                     });
                                     res(false);
@@ -55,7 +55,7 @@ module.exports = {
                     db.query(`UPDATE users SET ${keyInfo.schema} = ${keyInfo.schema} + ${count} WHERE id = '${user.id}'`, (err, rows) => {
                         keyRoles.checkUser(user, bot, db);
                     });
-                    let embed = new Discord.MessageEmbed()
+                    let embed = new Discord.EmbedBuilder()
                         .setColor('#0000ff')
                         .setDescription(`Key has been logged.\n${user.nickname} now has ${parseInt(rows[0][keyInfo.schema]) + parseInt(count)} pops`)
                     message.channel.send({ embeds: [embed] })
@@ -72,10 +72,10 @@ module.exports = {
                 collector.stop()
                 await confirmMessage.delete()
                 await m.delete()
-                let em = new Discord.MessageEmbed().setColor('DARK_RED').setDescription('Key Log Cancelled.')
+                let em = new Discord.EmbedBuilder().setColor('DARK_RED').setDescription('Key Log Cancelled.')
                 return message.channel.send({ embeds: [em] })
             } else {
-                let em = new Discord.MessageEmbed().setColor('DARK_RED').setDescription('Response not recognized. Try again (Y/N)')
+                let em = new Discord.EmbedBuilder().setColor('DARK_RED').setDescription('Response not recognized. Try again (Y/N)')
                 let emm = await message.channel.send({ embeds: [em] })
                 m.delete()
                 setTimeout(() => { emm.delete() }, 5000)

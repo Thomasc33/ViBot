@@ -1,7 +1,7 @@
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
 const quotas = require('../data/quotas.json');
-import ('../lib/types.js')
+import('../lib/types.js')
 module.exports = {
     name: 'excuse',
     role: 'headrl',
@@ -59,16 +59,16 @@ module.exports = {
     },
     async isignored(message, args, bot, db) {
         const ignore = await this.getIgnore(message.guild.id, db);
-        let embed = new Discord.MessageEmbed()
-            .setAuthor(`Ignore Current Week`)
+        let embed = new Discord.EmbedBuilder()
+            .setAuthor({ name: `Ignore Current Week` })
             .setTitle(ignore ? `Currently Ignored` : `Currently Active`)
             .setDescription(ignore ? ignore.reason : `To ignore the current week, use \`;excuse ignore [reason]\`.`);
         message.channel.send({ embeds: [embed] });
     },
     async ignore(message, args, bot, db) {
         const ignore = await this.getIgnore(message.guild.id, db);
-        let embed = new Discord.MessageEmbed()
-            .setAuthor(`Ignore Current Week`);
+        let embed = new Discord.EmbedBuilder()
+            .setAuthor({ name: `Ignore Current Week` });
         if (ignore) {
             embed.setDescription(`Current week is already ignored: \`\`\`${ignore.reason}\`\`\``)
         } else {
@@ -81,8 +81,8 @@ module.exports = {
     },
     async unignore(message, args, bot, db) {
         const ignore = await this.getIgnore(message.guild.id, db);
-        let embed = new Discord.MessageEmbed()
-            .setAuthor(`Ignore Current Week`);
+        let embed = new Discord.EmbedBuilder()
+            .setAuthor({ name: `Ignore Current Week` });
         if (!ignore) {
             embed.setDescription(`Current week is not currently ignored.`)
         } else {
@@ -94,9 +94,9 @@ module.exports = {
 
     },
     async listAll(message, args, bot, db) {
-        db.query(`SELECT * FROM excuses where guildid = '${message.guild.id}'`, async(err, rows) => {
+        db.query(`SELECT * FROM excuses where guildid = '${message.guild.id}'`, async (err, rows) => {
             if (err) ErrorLogger.log(err, bot)
-            let embed = new Discord.MessageEmbed()
+            let embed = new Discord.EmbedBuilder()
                 .setTitle(`Excused Staff`)
                 .setDescription('None!')
             for (let i in rows) {
@@ -112,9 +112,9 @@ module.exports = {
             if (!member) unfound.push(a);
             return member;
         }).filter(m => m).map(m => m.id);
-        db.query(`SELECT * FROM excuses WHERE id IN (${members.map(a => "'" + a + "'").join(', ')}) AND guildid = '${message.guild.id}'`, async(err, rows) => {
+        db.query(`SELECT * FROM excuses WHERE id IN (${members.map(a => "'" + a + "'").join(', ')}) AND guildid = '${message.guild.id}'`, async (err, rows) => {
             if (err) ErrorLogger.log(err, bot);
-            let embed = new Discord.MessageEmbed()
+            let embed = new Discord.EmbedBuilder()
                 .setTitle(`Excused Staff`);
             if (!rows || !rows.length)
                 message.channel.send({ embeds: [embed.setDescription('None!')] });
@@ -124,30 +124,31 @@ module.exports = {
                 if (!member)
                     continue;
                 const modmember = guild.members.cache.get(row.modid);
-                embed.fields = [];
-                embed.addField("Staff Member", `<@${row.id}> \`${member.nickname || member.user.tag}\``)
-                    .addField("Excused By", `<@${row.modid}> \`${modmember.nickname || modmember.user.tag}\``)
-                    .addField("Reason", row.reason ? row.reason : "None");
-                if (row.image)
-                    embed.setImage(row.image);
+                embed.data.fields = [];
+                embed.addFields([
+                    { name: "Staff Member", value: `<@${row.id}> \`${member.nickname || member.user.tag}\`` },
+                    { name: "Excused By", value: `<@${row.modid}> \`${modmember.nickname || modmember.user.tag}\`` },
+                    { name: "Reason", value: row.reason ? row.reason : "None" }
+                ])
+                if (row.image) embed.setImage(row.image);
                 message.channel.send({ embeds: [embed] });
             }
             rows.forEach(row => members = members.filter(m => m != row.id));
             if (members.length) {
                 message.channel.send({
                     embeds: [
-                        new Discord.MessageEmbed()
-                        .setTitle("Excuse List")
-                        .setDescription(`The following members did not have excuses:\n${members.map(m => "<@" + m + ">").join(', ')}`)
+                        new Discord.EmbedBuilder()
+                            .setTitle("Excuse List")
+                            .setDescription(`The following members did not have excuses:\n${members.map(m => "<@" + m + ">").join(', ')}`)
                     ]
                 })
             }
             if (unfound.length) {
                 message.channel.send({
                     embeds: [
-                        new Discord.MessageEmbed()
-                        .setTitle("Excuse List")
-                        .setDescription(`Could not find the following members:\`\`\`\n${unfound.join(', ')}\`\`\``)
+                        new Discord.EmbedBuilder()
+                            .setTitle("Excuse List")
+                            .setDescription(`Could not find the following members:\`\`\`\n${unfound.join(', ')}\`\`\``)
                     ]
                 })
             }
@@ -187,27 +188,27 @@ module.exports = {
                 if (rows.length) {
                     message.channel.send({
                         embeds: [
-                            new Discord.MessageEmbed()
-                            .setTitle("Excuse Removal")
-                            .setDescription(`The following members have had their excuses removed:\n${rows.map(m => "<@" + m.id + ">").join(', ')}`)
+                            new Discord.EmbedBuilder()
+                                .setTitle("Excuse Removal")
+                                .setDescription(`The following members have had their excuses removed:\n${rows.map(m => "<@" + m.id + ">").join(', ')}`)
                         ]
                     })
                 }
                 if (members.length) {
                     message.channel.send({
                         embeds: [
-                            new Discord.MessageEmbed()
-                            .setTitle("Excuse Removal")
-                            .setDescription(`The following members did not have excuses:\n${members.map(m => "<@" + m + ">").join(', ')}`)
+                            new Discord.EmbedBuilder()
+                                .setTitle("Excuse Removal")
+                                .setDescription(`The following members did not have excuses:\n${members.map(m => "<@" + m + ">").join(', ')}`)
                         ]
                     })
                 }
                 if (unfound.length) {
                     message.channel.send({
                         embeds: [
-                            new Discord.MessageEmbed()
-                            .setTitle("Excuse Removal")
-                            .setDescription(`Could not find the following members:\`\`\`\n${unfound.join(', ')}\`\`\``)
+                            new Discord.EmbedBuilder()
+                                .setTitle("Excuse Removal")
+                                .setDescription(`Could not find the following members:\`\`\`\n${unfound.join(', ')}\`\`\``)
                         ]
                     })
                 }
@@ -371,37 +372,37 @@ module.exports = {
         const unmet_quotas = await this.getMissed(guild, bot, db, guildQuota, settings);
         const unexcused = [];
         const keys = Object.values(unmet_quotas).filter(i => !i.leave && i.quotas.length);
-        const header = new Discord.MessageEmbed()
-            .setAuthor(`Weekly Quotas`)
+        const header = new Discord.EmbedBuilder()
+            .setAuthor({ name: `Weekly Quotas` })
             .setDescription(`${keys.length} members have missed quota this week.`)
             .setColor('#0000ff');
         activitylog.send({ embeds: [header] })
         for (const id in unmet_quotas) {
             const issues = unmet_quotas[id];
             if (!issues.quotas.length) continue;
-            const embed = new Discord.MessageEmbed()
-                .setAuthor(issues.member.nickname || issues.member.user.tag, issues.member.user.displayAvatarURL())
+            const embed = new Discord.EmbedBuilder()
+                .setAuthor({ name: issues.member.nickname || issues.member.user.tag, iconURL: issues.member.user.displayAvatarURL() })
                 .setDescription(`Unmet Quota for ${issues.member}`)
                 .setColor('#ff0000');
             if (issues.leave) {
                 if (issues.consecutiveLeave < 2)
                     continue;
-                embed.addField("Consecutive Leave", `${issues.consecutiveLeave} weeks`, true);
+                embed.addFields({ name: "Consecutive Leave", value: `${issues.consecutiveLeave} weeks`, inline: true });
             }
-            embed.addField("Total Unexcused", `${issues.totalMissed + (issues.excuse ? 0 : 1)}`, true);
-            embed.addField("Consecutive Unexcused", `${issues.excuse ? 0 : issues.consecutive}`, true);
+            embed.addFields({ name: "Total Unexcused", value: `${issues.totalMissed + (issues.excuse ? 0 : 1)}`, inline: true });
+            embed.addFields({ name: "Consecutive Unexcused", value: `${issues.excuse ? 0 : issues.consecutive}`, inline: true });
             for (const issue of issues.quotas) {
-                embed.addField(issue.name, `\`\`\`\nTotal: ${issue.total} | Required: ${issue.requirement.req} (${issue.requirement.role.name})\n${issue.values.map(v => v.name + ": " + v.value).join(", ")}\`\`\``)
+                embed.addFields({ name: issue.name, value: `\`\`\`\nTotal: ${issue.total} | Required: ${issue.requirement.req} (${issue.requirement.role.name})\n${issue.values.map(v => v.name + ": " + v.value).join(", ")}\`\`\`` })
             }
             if (issues.excuse) {
-                embed.addField("Excused By", `<@${issues.excuse.modid}>`);
-                embed.addField("Reason", `${issues.excuse.reason}`);
+                embed.addFields({ name: "Excused By", value: `<@${issues.excuse.modid}>` });
+                embed.addFields({ name: "Reason", value: `${issues.excuse.reason}` });
                 if (issues.excuse.image)
                     embed.setImage(issues.excuse.image);
                 embed.setColor('#00ff00')
             }
             if (issues.met.length) {
-                embed.addField("Met Quotas", issues.met.map(m => m.name).join(", "));
+                embed.addFields({ name: "Met Quotas", values: issues.met.map(m => m.name).join(", ") });
                 if (!issues.excuse)
                     embed.setColor("#FFC100");
             }
@@ -415,33 +416,33 @@ module.exports = {
 }
 
 function fitStringIntoEmbed(embed, string, channel, join) {
-    if (embed.description == 'None!') {
+    if (embed.data.description == 'None!') {
         embed.setDescription(string)
-    } else if (embed.description.length + `${join}${string}`.length >= 2048) {
-        if (embed.fields.length == 0) {
-            embed.addField('-', string)
-        } else if (embed.fields[embed.fields.length - 1].value.length + `${join}${string}`.length >= 1024) {
-            if (embed.length + `${join}${string}`.length >= 6000) {
+    } else if (embed.data.description.length + `${join}${string}`.length >= 2048) {
+        if (embed.data.fields.length == 0) {
+            embed.addFields({ name: '-', value: string })
+        } else if (embed.data.fields[embed.data.fields.length - 1].value.length + `${join}${string}`.length >= 1024) {
+            if (embed.data.length + `${join}${string}`.length >= 6000) {
                 try {
                     channel.send({ embeds: [embed] })
                 } catch (e) { ErrorLogger.log(e); }
                 embed.setDescription('None!')
-                embed.fields = []
+                embed.data.fields = []
             } else {
-                embed.addField('-', string)
+                embed.addFields({ name: '-', value: string })
             }
         } else {
-            if (embed.length + `${join}${string}`.length >= 6000) {
+            if (embed.data.length + `${join}${string}`.length >= 6000) {
                 try {
                     channel.send({ embeds: [embed] })
                 } catch (e) { ErrorLogger.log(e); }
                 embed.setDescription('None!')
-                embed.fields = []
+                embed.data.fields = []
             } else {
-                embed.fields[embed.fields.length - 1].value = embed.fields[embed.fields.length - 1].value.concat(`${join}${string}`)
+                embed.data.fields[embed.data.fields.length - 1].value = embed.data.fields[embed.data.fields.length - 1].value.concat(`${join}${string}`)
             }
         }
     } else {
-        embed.setDescription(embed.description.concat(`${join}${string}`))
+        embed.setDescription(embed.data.description.concat(`${join}${string}`))
     }
 }

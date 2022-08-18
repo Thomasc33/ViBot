@@ -29,7 +29,7 @@ module.exports = {
         let settings = bot.settings[message.guild.id]
         verificationChannel = message.guild.channels.cache.get(settings.channels.verification)
         verificationChannel.bulkDelete(100)
-        let verificationEmbed = new Discord.MessageEmbed()
+        let verificationEmbed = new Discord.EmbedBuilder()
             .setColor('#015c21')
             .setTitle('Verification Steps')
             .setDescription(`**1.** Unprivate your discord PM's to ensure bot can reach you
@@ -87,11 +87,11 @@ module.exports = {
         active.push(u.id)
 
         //log that they are attempting to verify
-        let LoggingEmbed = new Discord.MessageEmbed()
+        let LoggingEmbed = new Discord.EmbedBuilder()
             .setColor('#00ff00')
-            .setAuthor(`${u.tag} is attempting to verify`)
+            .setAuthor({ name: `${u.tag} is attempting to verify` })
             .setDescription(`<@!${u.id}> has started the verification process`)
-            .setFooter(`ID: ${u.id}`)
+            .setFooter({ text: `ID: ${u.id}` })
         if (u.avatarURL()) LoggingEmbed.author.iconURL = u.avatarURL()
         veriattempts.send({ embeds: [LoggingEmbed] })
         let activeMessage = await veriactive.send({ embeds: [LoggingEmbed] })
@@ -100,11 +100,11 @@ module.exports = {
         let res = await this.reVerify(u, guild, bot, db) //true = verified, false = not verified
 
         //dm user
-        let embed = new Discord.MessageEmbed()
+        let embed = new Discord.EmbedBuilder()
             .setColor('#015c21')
             .setTitle(`<${botSettings.emote.hallsPortal}> Your verification status! <${botSettings.emote.hallsPortal}>`)
         if (!res) embed.setDescription(`__**You have not been verified yet! Please follow the instructions below**__\n\n**Please enter your in game name** Enter it actually how it is spelled in game (Ex. \`Vi\`).\nCapitalization doesn't matter\n\n*React with ❌ at anytime to cancel*`)
-            .setFooter(`There is a 15 minute timer that updates every 30 seconds...`)
+            .setFooter({ text: `There is a 15 minute timer that updates every 30 seconds...` })
         let dms = await u.createDM()
         let embedMessage = await dms.send({ embeds: [embed] })
 
@@ -140,9 +140,9 @@ module.exports = {
             time -= 30
             let min = Math.floor(time / 60)
             let seconds = time % 60
-            embed.setFooter(`Time remaining: ${min} minutes ${seconds} seconds`)
+            embed.setFooter({ text: `Time remaining: ${min} minutes ${seconds} seconds` })
             embedMessage.edit({ embeds: [embed] })
-            LoggingEmbed.setFooter(`Their verification has ${min} minutes and ${seconds} seconds left`)
+            LoggingEmbed.setFooter({ text: `Their verification has ${min} minutes and ${seconds} seconds left` })
             activeMessage.edit({ embeds: [LoggingEmbed] }).catch(er => { })
         }
 
@@ -161,8 +161,8 @@ module.exports = {
                 case 2:
                     LoggingEmbed.setDescription(`<@!${u.id}> was auto-denied because ${ign} is blacklisted`)
                     const blGuild = bot.guilds.cache.get(info.guildid);
-                    LoggingEmbed.addField('Server', blGuild ? blGuild.name : 'Unknown', true);
-                    LoggingEmbed.addField('Security', `<@!${info.modid}>`, true);
+                    LoggingEmbed.addFields([{name: 'Server', value: blGuild ? blGuild.name : 'Unknown', inline: true}]);
+                    LoggingEmbed.addFields([{name: 'Security', value: `<@!${info.modid}>`, inline: true}]);
 
                     if (!blGuild)
                         embed.setDescription(`You are currently blacklisted from verifying. Please DM me to contact mod-mail and find out why`);
@@ -171,7 +171,7 @@ module.exports = {
                         const blgsettings = bot.settings[blGuild.id];
                         const currently = blgsettings && staff && staff.roles.highest.comparePositionTo(blgsettings.roles.security) >= 0;
                         if (blGuild.id != guild.id)
-                            LoggingEmbed.addField(`Staff?`, currently ? '✅' : '❌', true);
+                            LoggingEmbed.addFields([{name: `Staff?`, value: currently ? '✅' : '❌', inline: true}]);
                         else if (!currently)
                             embed.setDescription(`You are currently blacklisted from the __${blGuild.name}__ server and cannot verify. The person who blacklisted you is no longer staff. Please DM me and send mod-mail to that server to appeal.`);
                         else
@@ -335,8 +335,8 @@ module.exports = {
             veriattempts.send({ embeds: [LoggingEmbed] })
 
             let altDetectionScore = await TestAlt.testFromIGN(ign)
-            let manualEmbed = new Discord.MessageEmbed()
-                .setAuthor(`${u.tag} is attempting to verify as: ${ign}`, u.avatarURL())
+            let manualEmbed = new Discord.EmbedBuilder()
+                .setAuthor({ name: `${u.tag} is attempting to verify as: ${ign}`, iconURL: u.avatarURL() })
                 .setDescription(`<@!${u.id}> : [Realmeye Link](https://www.realmeye.com/player/${ign})`)
                 .addFields(
                     { name: 'Rank', value: `${data.rank || 'Unknown'}`, inline: true },
@@ -352,7 +352,7 @@ module.exports = {
                     { name: 'Alt %', value: altDetectionScore ? `${altDetectionScore.toFixed(20)}%` : 'Error Gathering Data', inline: true },
                     { name: 'Discord account created', value: u.createdAt.toString() || 'Unknown', inline: false }
                 )
-                .setFooter(`${u.id}`)
+                .setFooter({ text: `${u.id}` })
             let reason = ''
             reasons.forEach(r => {
                 reason += `-${r.reason}`
@@ -360,7 +360,7 @@ module.exports = {
                 reason += '\n'
             })
             reason = reason.trim()
-            if (reason && reason != '') manualEmbed.addField('Problems', reason)
+            if (reason && reason != '') manualEmbed.addFields([{name: 'Problems', value: reason}])
             let m = await veripending.send({ embeds: [manualEmbed] })
             await m.react('🔑')
             module.exports.watchMessage(m, bot, db)
@@ -458,11 +458,11 @@ module.exports = {
                     message.react('💯')
                     //set embed color to green
                     embed.setColor('#00ff00')
-                    embed.setFooter(`Accepted by "${reactor.nickname}"`)
+                    embed.setFooter({ text: `Accepted by "${reactor.nickname}"` })
                     embed.setTimestamp()
                     message.edit({ embeds: [embed] })
                     //log in veri-log
-                    let veriEmbed = new Discord.MessageEmbed()
+                    let veriEmbed = new Discord.EmbedBuilder()
                         .setColor('#00ff00')
                         .setDescription(`${member} was manually verified by ${reactor}`)
                     message.guild.channels.cache.get(settings.channels.verificationlog).send({ embeds: [veriEmbed] })
@@ -565,11 +565,11 @@ module.exports = {
                         function denyMessage(e) {
                             //set embed color to red, add wave emote
                             embed.setColor(`#ff0000`)
-                            embed.setFooter(`Denied using ${e} by ${reactor.nickname}`)
+                            embed.setFooter({ text: `Denied using ${e} by ${reactor.nickname}` })
                             message.edit({ embeds: [embed] })
                             message.react('👋')
                             //send to verilog
-                            let denyEmbed = new Discord.MessageEmbed()
+                            let denyEmbed = new Discord.EmbedBuilder()
                                 .setColor(`#ff0000`)
                                 .setDescription(`${member} was denied by ${reactor} using ${e}`)
                                 .setTimestamp()
@@ -607,15 +607,15 @@ module.exports = {
             let uniqueNames = [... new Set(nicks)]
 
             //ask which nick is their main
-            let embed = new Discord.MessageEmbed()
+            let embed = new Discord.EmbedBuilder()
                 .setColor('#015c21')
                 .setTitle('Reverification')
                 .setDescription('You have verified with ViBot before. Would you like to reverify under one of the following names?')
-                .setFooter('React with one of the following numbers, or :x:')
+                .setFooter({ text: 'React with one of the following numbers, or :x:' })
             let i = 0
             uniqueNames.forEach(nick => {
                 if (i >= 9) return
-                embed.addField(numberToEmoji(i), nick, true)
+                embed.addFields([{name: numberToEmoji(i), value: nick, inline: true}])
                 i++;
             })
             let m = await u.send({ embeds: [embed] })

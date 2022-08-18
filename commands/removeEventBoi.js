@@ -21,11 +21,11 @@ module.exports = {
         let image;
         if (message.attachments.first()) image = message.attachments.first().proxyURL
         if (image == null) image = args[1]
-        let embed = new Discord.MessageEmbed()
+        let embed = new Discord.EmbedBuilder()
             .setTitle('Event Boi Removed')
             .setDescription(member.toString())
-            .addField('User', member.displayName, true)
-            .addField('Removed By', `<@!${message.author.id}>`, true)
+            .addFields([{name: 'User', value: member.displayName, inline: true}])
+            .addFields([{name: 'Removed By', value: `<@!${message.author.id}>`, inline: true}])
             .setTimestamp(Date.now());
         try {
             if (validURL(image)) embed.setImage(image)

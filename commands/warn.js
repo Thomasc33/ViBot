@@ -40,7 +40,7 @@ module.exports = {
                 message.channel.send(`There was an error: ${err}`);
                 errored = true
             }
-            let warnEmbed = new Discord.MessageEmbed()
+            let warnEmbed = new Discord.EmbedBuilder()
                 .setColor('#ff0000')
                 .setTitle(`Warning Issued on the Server: ${message.guild.name}`)
                 .setDescription(`__Moderator:__ <@!${message.author.id}> (${message.member.nickname})\n__Reason:__ ${reason}`)

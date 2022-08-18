@@ -28,11 +28,11 @@ module.exports = {
 
         if (!channel) return message.channel.send('Channel not found. Make sure you are in a channel, then try again');
 
-        let parseStatusEmbed = new Discord.MessageEmbed()
+        let parseStatusEmbed = new Discord.EmbedBuilder()
             .setColor(`#00ff00`)
             .setTitle('Parse Status')
-            .addField('Parse By', `${message.member}`)
-            .addField('Status', 'Gathering image')
+            .addFields([{name: 'Parse By', value: `${message.member}`}])
+            .addFields([{name: 'Status', value: 'Gathering image'}])
         let parseStatusMessage = await message.channel.send({ embeds: [parseStatusEmbed] })
         let started = Date.now()
         let image;
@@ -120,12 +120,12 @@ module.exports = {
             if (crashersS == ' ') { crashersS = 'None' }
             if (altsS == ' ') { altsS = 'None' }
             if (movedS == ' ') { movedS = 'None' }
-            let embed = new Discord.MessageEmbed()
+            let embed = new Discord.EmbedBuilder()
                 .setTitle(`Parse for ${channel.name}`)
                 .setColor('#00ff00')
                 .setDescription(`There are ${crashers.length} crashers, ${alts.length} potential alts, and ${otherChannel.length} people in other channels`)
                 .addFields({ name: 'Potential Alts', value: altsS }, { name: 'Other Channels', value: movedS }, { name: 'Crashers', value: crashersS }, { name: 'Find Command', value: `\`\`\`${find}\`\`\`` }, { name: 'Kick List', value: `\`\`\`${kickList}\`\`\`` })
-            if (bot.afkChecks[channel.id]) embed.addField(`Were in VC`, `The following can do \`;join\`:\n${allowedCrashers.map(u => `${u} `)}`)
+            if (bot.afkChecks[channel.id]) embed.addFields([{name: `Were in VC`, value: `The following can do \`;join\`:\n${allowedCrashers.map(u => `${u} `)}`}])
             await message.channel.send({ embeds: [embed] });
             parseStatusEmbed.fields[1].value = `Crasher Parse Completed. See Below. Beginning Character Parse`
             await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
@@ -147,7 +147,7 @@ module.exports = {
         }
         async function characterParse() {
             let unreachable = []
-            let characterParseEmbed = new Discord.MessageEmbed()
+            let characterParseEmbed = new Discord.EmbedBuilder()
                 .setColor('#00ff00')
                 .setTitle('Character Parse')
             let promises = []
@@ -262,7 +262,7 @@ module.exports = {
                                     message.channel.send({ embeds: [characterParseEmbed] })
                                     characterParseEmbed.fields = []
                                 }
-                                characterParseEmbed.addField(players[i], `[Link](https://www.realmeye.com/player/${players[i]}) | ${characterEmote} | LVL: \`${character.level}\` | Fame: \`${character.fame}\` | Stats: \`${character.stats}\` | ${weaponEmoji} ${abilityEmoji} ${armorEmoji} ${ringEmoji}${issueString}`)
+                                characterParseEmbed.addFields([{name: players[i], value: `[Link](https://www.realmeye.com/player/${players[i]}) | ${characterEmote} | LVL: \`${character.level}\` | Fame: \`${character.fame}\` | Stats: \`${character.stats}\` | ${weaponEmoji} ${abilityEmoji} ${armorEmoji} ${ringEmoji}${issueString}`}])
                                 if (i % 5 == 0) {
                                     parseStatusEmbed.fields[1].value = `Parsing Characters (${i}/${players.length})`
                                     parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
@@ -278,7 +278,7 @@ module.exports = {
                 }
             }
             //await Promise.all(promises)
-            let unreachableEmbed = new Discord.MessageEmbed()
+            let unreachableEmbed = new Discord.EmbedBuilder()
                 .setColor('#00ff00')
                 .setTitle('The following were unreachable')
                 .setDescription('None!')

@@ -7,12 +7,12 @@ module.exports = {
     description: 'Begins russian roulette',
     async execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
-        let embed = new Discord.MessageEmbed()
+        let embed = new Discord.EmbedBuilder()
             .setColor('#ff0000')
             .setTitle('Russian Roulette')
             .setDescription(`Started by ${message.member}
             React with 🔫 to join`)
-            .setFooter('Time remaining 30 seconds')
+            .setFooter({ text: 'Time remaining 30 seconds' })
         let embedMessage = await message.channel.send({ embeds: [embed] })
         embedMessage.react('🔫')
         let reactors = []
@@ -29,7 +29,7 @@ module.exports = {
                 shoot()
                 return;
             }
-            embed.setFooter(`Time remaining ${time} seconds`)
+            embed.setFooter({ text: `Time remaining ${time} seconds` })
             embedMessage.edit({ embeds: [embed] })
         }
         async function shoot() {
@@ -46,9 +46,9 @@ module.exports = {
                 else return loser
             }
             if (loser == null) return console.log(`rolled too many times`);
-            embed.setDescription(`${embed.description}\nWinner: <@!${loser.id}> was shot to death!
+            embed.setDescription(`${embed.data.description}\nWinner: <@!${loser.id}> was shot to death!
             They have been muted for 1 minute`)
-            embed.setFooter('Game Over')
+            embed.setFooter({ text: 'Game Over' })
             embedMessage.edit({ embeds: [embed] })
 
             let member = message.guild.members.cache.get(loser.id)

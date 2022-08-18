@@ -14,11 +14,11 @@ module.exports = {
         message.delete()
         switch (args[0].toLowerCase()) {
             case 'c/v':
-                var embed = new Discord.MessageEmbed()
+                var embed = new Discord.EmbedBuilder()
                     .setColor('#fefefe')
                     .setTitle('Cult or Void?')
                     .setDescription(`<${botSettings.emote.malus}> or <${botSettings.emote.voidd}>`)
-                    .setFooter(`Started by ${message.guild.members.cache.get(message.author.id).nickname}`)
+                    .setFooter({ text: `Started by ${message.guild.members.cache.get(message.author.id).nickname}` })
                 var embedMessage = await message.channel.send({ embeds: [embed] });
                 embedMessage.react(botSettings.emote.malus)
                     .then(embedMessage.react(botSettings.emote.voidd))
@@ -26,11 +26,11 @@ module.exports = {
                     .then(embedMessage.react(botSettings.emote.Vial))
                 return;
             case 'us/eu':
-                var embed = new Discord.MessageEmbed()
+                var embed = new Discord.EmbedBuilder()
                     .setColor('#fefefe')
                     .setTitle('US or EU?')
                     .setDescription(`:flag_um: or :flag_eu:`)
-                    .setFooter(`Started by ${message.guild.members.cache.get(message.author.id).nickname}`)
+                    .setFooter({ text: `Started by ${message.guild.members.cache.get(message.author.id).nickname}` })
                 var embedMessage = await message.channel.send({ embeds: [embed] });
                 embedMessage.react('🇺🇲')
                     .then(embedMessage.react(`🇪🇺`))

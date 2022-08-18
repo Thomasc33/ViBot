@@ -18,13 +18,13 @@ module.exports = {
 
         if (names.length <= 1) return message.channel.send(`${member} does not have any alts`)
 
-        let embed = new Discord.MessageEmbed()
+        let embed = new Discord.EmbedBuilder()
             .setTitle('Select an alt to remove')
             .setColor('#ff0000')
             .setDescription('None!')
         for (let i = 1; i < names.length; i++) {
-            if (embed.description == 'None!') embed.description = `**${i}:** ${names[i]}`
-            else embed.description += `\n**${i}:** ${names[i]}`
+            if (embed.data.description == 'None!') embed.data.description = `**${i}:** ${names[i]}`
+            else embed.data.description += `\n**${i}:** ${names[i]}`
         }
         let mes = await message.channel.send({ embeds: [embed] })
         let reactionCollector = new Discord.ReactionCollector(mes, { filter: (r, u) => !u.bot })
@@ -59,21 +59,21 @@ module.exports = {
                 }
                 await member.setNickname(newname, `Old Name: ${member.nickname}\nNew Name: ${newname}\nChange by: ${message.member}`);
                 db.query(`INSERT INTO veriblacklist (id, modid, guildid, reason) VALUES ('${names[choice]}', '${message.author.id}', '${message.guild.id}', 'Alt account removed from user.')`)
-                let embed = new Discord.MessageEmbed()
+                let embed = new Discord.EmbedBuilder()
                     .setTitle('Alt Removed')
                     .setColor('#fefefe')
                     .setDescription(member.toString())
-                    .addField('Main', member.nickname, true)
-                    .addField('Alt Removed', names[choice], true)
-                    .addField('Removed By', `<@!${message.author.id}> `)
+                    .addFields([{ name: 'Main', value: member.nickname, inline: true }])
+                    .addFields([{ name: 'Alt Removed', value: names[choice], inline: true }])
+                    .addFields([{ name: 'Removed By', value: `<@!${message.author.id}> ` }])
                     .setTimestamp(Date.now());
                 let reason = ''
                 for (let i = 1; i < args.length; i++) reason += args[i]
                 if (reason != '')
                     if (reason.length > 1024) {
-                        embed.addField('Reason 1', reason.substring(0, 1024))
-                        embed.addField('Reason Cont', reason.substring(1024, reason.length))
-                    } else embed.addField('Reason', reason)
+                        embed.addFields([{ name: 'Reason 1', value: reason.substring(0, 1024) }])
+                        embed.addFields([{ name: 'Reason Cont', value: reason.substring(1024, reason.length) }])
+                    } else embed.addFields([{ name: 'Reason', value: reason }])
                 await message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });
             }
         })

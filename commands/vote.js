@@ -60,25 +60,25 @@ async function postVote2(message, member, bot, db) {
             if (err) ErrorLogger.log(err, bot);
             const feedback = await getFeedback.getFeedback(member, message.guild, bot);
             const promo_role = message.guild.roles.cache.get(settings.roles[promotion]);
-            const embed = new Discord.MessageEmbed()
+            const embed = new Discord.EmbedBuilder()
                 .setColor('#ff0000')
-                .setAuthor(`${member.nickname} to ${promo_role.name}`, member.user.displayAvatarURL({ dynamic: true }))
+                .setAuthor({ name: `${member.nickname} to ${promo_role.name}`, iconURL: member.user.displayAvatarURL({ dynamic: true }) })
                 .setDescription(`${member}\n`);
 
             const min_role = Object.keys(promos)[Object.keys(promos).length - 2];
             if (rolekey != min_role) {
-                if (rows[0]) embed.description += `Runs Logged: ` + promos.db_rows.map(r => `${rows[0][r[1]]} ${r[0]}`).join(', ');
-                else embed.description += 'Issue getting runs';
-                embed.addField(`Recent Feedback:`, '** **');
-            } else embed.addField('Feedback:', '** **');
+                if (rows[0]) embed.data.description += `Runs Logged: ` + promos.db_rows.map(r => `${rows[0][r[1]]} ${r[0]}`).join(', ');
+                else embed.data.description += 'Issue getting runs';
+                embed.addFields([{name: `Recent Feedback:`, value: '** **'}]);
+            } else embed.addFields([{name: 'Feedback:', value: '** **'}]);
 
             feedback.forEach(m => {
                 const link = `[Link](${m}) `;
-                let field = embed.fields[embed.fields.length - 1];
+                let field = embed.data.fields[embed.data.fields.length - 1];
                 if (field.value.length + link.length < 1024)
                     field.value += link;
-                else if (embed.fields.length < 15)
-                    embed.addField('-', `[Link](${m}) `);
+                else if (embed.data.fields.length < 15)
+                    embed.addFields([{name: '-', value: `[Link](${m}) `}]);
             });
 
             const msg = await message.guild.channels.cache.get(settings.channels[guilds.channels[rolekey]]).send({ embeds: [embed] });
@@ -95,9 +95,9 @@ async function postVote2(message, member, bot, db) {
 
 function retrievePromotionType(settings, channel, author, member, role, info) {
     return new Promise(async (resolve, reject) => {
-        const embed = new Discord.MessageEmbed()
+        const embed = new Discord.EmbedBuilder()
             .setColor('#0000ff')
-            .setAuthor(`Choose Promotion for ${member.nickname}`, member.user.displayAvatarURL({ dynamic: true }))
+            .setAuthor({ name: `Choose Promotion for ${member.nickname}`, iconURL: member.user.displayAvatarURL({ dynamic: true }) })
             .setDescription(`There are multiple promotion paths for ${role}. Choose one of the following:` +
                 info.map((v, i) => `${num_words[i]}: **${member.guild.roles.cache.get(settings.roles[v])}**`).join('\n'));
 
@@ -146,9 +146,9 @@ async function postVote(message, member, bot, db) {
         var channel = message.guild.channels.cache.get(settings.channels.leaderchat)
     } else return message.channel.send(`${member} doesn't have a role eligible for promotion`)
     let feedback = await getFeedback.getFeedback(member, message.guild, bot)
-    let voteEmbed = new Discord.MessageEmbed()
+    let voteEmbed = new Discord.EmbedBuilder()
         .setColor('#ff0000')
-        .setAuthor(`${member.nickname} to ${voteType}`)
+        .setAuthor({ name: `${member.nickname} to ${voteType}` })
         .setDescription(`${member}\n`)
     if (member.user.avatarURL()) voteEmbed.author.iconURL = member.user.avatarURL()
     db.query(`SELECT * FROM users WHERE id = ${member.id}`, async (err, rows) => {

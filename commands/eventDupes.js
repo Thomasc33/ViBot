@@ -11,20 +11,20 @@ module.exports = {
         let raider = message.guild.roles.cache.get(settings.roles.raider)
         if (!eventbois || !raider) return
 
-        let embed = new Discord.MessageEmbed()
+        let embed = new Discord.EmbedBuilder()
             .setTitle('Users with Event bois and Verified Raider')
             .setColor('#ff0000')
             .setDescription('None')
         message.guild.members.cache.each(m => {
             if (m.roles.cache.has(eventbois.id) && m.roles.cache.has(raider.id)) {
-                if (embed.description == 'None') {
+                if (embed.data.description == 'None') {
                     embed.setDescription(`${m}`)
                 } else {
-                    if (embed.description.length > 2048) {
+                    if (embed.data.description.length > 2048) {
                         message.channel.send({ embeds: [embed] })
                         embed.setDescription(`${m}`)
                     } else {
-                        embed.setDescription(`${embed.description}\n${m}`)
+                        embed.setDescription(`${embed.data.description}\n${m}`)
                     }
                 }
             }

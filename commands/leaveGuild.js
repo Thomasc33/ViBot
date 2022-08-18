@@ -6,7 +6,7 @@ module.exports = {
     async execute(message, args, bot) {
         if (message.author.id !== '277636691227836419') return message.channel.send('vi only')
         let guild = bot.guilds.cache.get(args[0])
-        let fancyEmbed = new Discord.MessageEmbed()
+        let fancyEmbed = new Discord.EmbedBuilder()
             .setDescription(`Are you sure you want bot to leave ${guild.name}?`)
         let m = await message.channel.send({ embeds: [fancyEmbed] })
         let reactionCollector = new Discord.ReactionCollector(m, { filter: (r, u) => !u.bot })

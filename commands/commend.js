@@ -49,11 +49,13 @@ module.exports = {
                 let modlog = message.guild.channels.cache.get(settings.channels.modlogs)
                 if (modlog) await modlog.send({
                     embeds: [
-                        new Discord.MessageEmbed()
+                        new Discord.EmbedBuilder()
                             .setTitle(`${role.name} Commendation`)
-                            .addField('Commender', `${message.author} \`${message.author.tag}\``)
-                            .addField('Commended', `${member} \`${member.user.tag}\``)
-                            .addField('Role', `${role}`)
+                            .addFields([
+                                { name: 'Commender', value: `${message.author} \`${message.author.tag}\`` },
+                                { name: 'Commended', value: `${member} \`${member.user.tag}\`` },
+                                { name: 'Role', value: `${role}` }
+                            ])
                             .setColor(role.hexColor)
                             .setTimestamp()
                     ]

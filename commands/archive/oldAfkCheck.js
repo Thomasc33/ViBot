@@ -158,7 +158,7 @@ class afk {
         this.minutes = Math.floor(this.time / 60);
         this.seconds = this.time % 60;
         this.pingingMessage = `@here \`Cult\` started by ${this.message.member} in \`${this.voiceChannel.name}\``;
-        this.embedMessage = new Discord.MessageEmbed()
+        this.embedMessage = new Discord.EmbedBuilder()
             .setColor('#ff0000')
             .setAuthor(`Cult Started by ${this.message.member.nickname} in ${this.voiceChannel.name}`, `${this.message.author.avatarURL()}`)
             .setDescription(`To join, **connect to the raiding channel by clicking its name and react with** <${botSettings.emote.malus}>
@@ -168,7 +168,7 @@ class afk {
             If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.emote.shard}>
             To end the AFK check as a leader, react to ❌`)
             .setTimestamp()
-            .setFooter(`Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds | ${this.raiders} Raiders`);
+            .setFooter({ text: `Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds | ${this.raiders} Raiders` });
         this.afkCheckEmbed = await this.raidStatus.send(this.pingingMessage).catch(er => console.log(er));
         this.afkCheckEmbed.edit(this.embedMessage);
 
@@ -179,10 +179,10 @@ class afk {
 
 
         //bot-info message
-        this.leaderEmbed = new Discord.MessageEmbed()
+        this.leaderEmbed = new Discord.EmbedBuilder()
             .setColor('#ff0000')
             .setTitle(`AFK Check control panel for \`${this.voiceChannel.name}\``)
-            .setFooter(`To abort the afk check, react with ❌ below.`)
+            .setFooter({ text: `To abort the afk check, react with ❌ below.` })
             .addFields(
                 { name: `Our current key`, value: `None yet!` },
                 { name: `Our current rushers`, value: `None yet!` },
@@ -275,7 +275,7 @@ class afk {
         this.minutes = Math.floor(this.time / 60);
         this.seconds = this.time % 60;
         this.pingingMessage = `@here \`Void\` started by ${this.message.member} in \`\`${this.voiceChannel.name}\``;
-        this.embedMessage = new Discord.MessageEmbed()
+        this.embedMessage = new Discord.EmbedBuilder()
             .setColor('#2f075c')
             .setAuthor(`Void Started by ${this.message.member.nickname} in ${this.voiceChannel.name}`, `${this.message.author.avatarURL()}`)
             .setDescription(`To join, **connect to the raiding channel by clicking its name and react with** <${botSettings.emote.voidd}>
@@ -284,7 +284,7 @@ To indicate your class or gear choices, react with <${botSettings.emote.Warrior}
 If you are a ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.emote.shard}>
 To end the AFK check as a leader, react to ❌`)
             .setTimestamp()
-            .setFooter(`Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds | ${this.raiders} Raiders`);
+            .setFooter({ text: `Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds | ${this.raiders} Raiders` });
         this.afkCheckEmbed = await bot.channels.cache.get(this.raidStatus.id).send(this.pingingMessage).catch(er => console.log(er));
         this.afkCheckEmbed.edit(this.embedMessage);
 
@@ -294,7 +294,7 @@ To end the AFK check as a leader, react to ❌`)
         this.icon = botSettings.emote.voidd;
 
         //bot-info message
-        this.leaderEmbed = new Discord.MessageEmbed()
+        this.leaderEmbed = new Discord.EmbedBuilder()
             .setColor('#2f075c')
             .setTitle(`AFK Check control panel for \`${this.voiceChannel.name}\``)
             .addFields(
@@ -303,7 +303,7 @@ To end the AFK check as a leader, react to ❌`)
                 { name: `Location of run`, value: `${this.location}` },
                 { name: `Nitro Boosters`, value: `None yet!` },
             )
-            .setFooter(`To abort the afk check, react with ❌ below.`);
+            .setFooter({ text: `To abort the afk check, react with ❌ below.` });
         this.afkControlPanelInfo = await this.dylanBotInfo.send(this.leaderEmbed).catch(er => console.log(er));
         this.afkControlPanelCommands = await this.dylanBotCommands.send(this.leaderEmbed).catch(er => console.log(er));
 
@@ -380,7 +380,7 @@ To end the AFK check as a leader, react to ❌`)
         this.minutes = Math.floor(this.time / 60);
         this.seconds = this.time % 60;
         this.pingingMessage = `@here \`Fullskip Void\` started by ${this.message.member} in \`${this.voiceChannel.name}\``;
-        this.embedMessage = new Discord.MessageEmbed()
+        this.embedMessage = new Discord.EmbedBuilder()
             .setColor('#2f075c')
             .setAuthor(`Fullskip Void Started by ${this.message.member.nickname} in ${this.voiceChannel.name}`, `${this.message.author.avatarURL()}`)
             .setDescription(`To join, **connect to the raiding channel by clicking its name and react with** <${botSettings.emote.SkipBoi}>
@@ -391,7 +391,7 @@ To end the AFK check as a leader, react to ❌`)
         If you have the role ${`<@&${this.nitroBooster.id}>`} react with <${botSettings.emote.shard}>
         To end the AFK check as a leader, react to ❌`)
             .setTimestamp()
-            .setFooter(`Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds | ${this.raiders} Raiders`);
+            .setFooter({ text: `Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds | ${this.raiders} Raiders` });
         this.afkCheckEmbed = await bot.channels.cache.get(this.raidStatus.id).send(this.pingingMessage).catch(er => console.log(er));
         this.afkCheckEmbed.edit(this.embedMessage);
 
@@ -401,7 +401,7 @@ To end the AFK check as a leader, react to ❌`)
         this.icon = botSettings.emote.SkipBoi;
 
         //bot-info message
-        this.leaderEmbed = new Discord.MessageEmbed()
+        this.leaderEmbed = new Discord.EmbedBuilder()
             .setColor('#2f075c')
             .setTitle(`AFK Check control panel for \`${this.voiceChannel.name}\``)
             .addFields(
@@ -412,7 +412,7 @@ To end the AFK check as a leader, react to ❌`)
                 { name: `Location of run`, value: `${this.location}` },
                 { name: `Nitro Boosters`, value: `None yet!` },
             )
-            .setFooter(`To abort the afk check, react with ❌ below.`);
+            .setFooter({ text: `To abort the afk check, react with ❌ below.` });
         this.afkControlPanelInfo = await this.dylanBotInfo.send(this.leaderEmbed).catch(er => console.log(er));
         this.afkControlPanelCommands = await this.dylanBotCommands.send(this.leaderEmbed).catch(er => console.log(er));
 
@@ -505,7 +505,7 @@ To end the AFK check as a leader, react to ❌`)
         this.minutes = Math.floor(this.time / 60);
         this.seconds = this.time % 60;
         if (this.embedMessage == null) return;
-        this.embedMessage.setFooter(`Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds | ${this.raiders} Raiders`);
+        this.embedMessage.setFooter({ text: `Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds | ${this.raiders} Raiders` });
         this.afkCheckEmbed.edit(this.embedMessage).catch(er => console.log(er));
     }
     async confirmKey(u, r) {
@@ -736,7 +736,7 @@ To end the AFK check as a leader, react to ❌`)
         **1.** Join lounge
         **2** React with <${this.icon}> to get moved in.
         __Time Remaining:__ ${this.postTime} seconds.`)
-            .setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`);
+            .setFooter({ text: `The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}` });
 
         this.afkCheckEmbed.edit("", this.embedMessage).catch(er => console.log(er));
     }
@@ -767,7 +767,7 @@ To end the AFK check as a leader, react to ❌`)
         this.afkCheckEmbed.edit(this.embedMessage).catch(er => console.log(er));
 
         //Update afk control panel
-        this.leaderEmbed.setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`);
+        this.leaderEmbed.setFooter({ text: `The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}` });
         this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => console.log(er));
         this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => console.log(er));
 
@@ -778,14 +778,14 @@ To end the AFK check as a leader, react to ❌`)
         //send embed to history
         let raiders = []
         this.voiceChannel.members.array().forEach(m => raiders.push(m.id))
-        let historyEmbed = new Discord.MessageEmbed()
+        let historyEmbed = new Discord.EmbedBuilder()
             .setColor(this.embedMessage.hexColor)
             .setTitle(this.embedMessage.author.name)
-            .addField('Leader', `${this.message.member}`)
-            .addField('Ended by', `${this.endedBy}`)
-            .addField('Key', 'None!')
-            .addField('Early Location', 'None!')
-            .addField('Raiders', 'None!')
+            .addFields([{name: 'Leader', value: `${this.message.member}`}])
+            .addFields([{name: 'Ended by', value: `${this.endedBy}`}])
+            .addFields([{name: 'Key', value: 'None!'}])
+            .addFields([{name: 'Early Location', value: 'None!'}])
+            .addFields([{name: 'Raiders', value: 'None!'}])
         if (this.key) historyEmbed.fields[2].value = `<@!${this.key.id}>`
         this.earlyLocation.forEach(m => {
             if (historyEmbed.fields[3].value == `None!`) historyEmbed.fields[3].value = `<@!${m.id}>`
@@ -798,13 +798,13 @@ To end the AFK check as a leader, react to ❌`)
             if (bigEmbed) {
                 if (historyEmbed.fields[5].value.length >= 1000) {
                     biggerEmbed = true;
-                    historyEmbed.addField('-', `, <@!${m}>`)
+                    historyEmbed.addFields([{name: '-', `, value: <@!${m}>`}])
                 }
                 else historyEmbed.fields[5].value += `, <@!${m}>`
             } else if (biggerEmbed) {
                 if (historyEmbed.fields[6].value.length >= 1000) {
                     biggestEmbed = true;
-                    historyEmbed.addField('-', `, <@!${m}>`)
+                    historyEmbed.addFields([{name: '-', `, value: <@!${m}>`}])
                 }
                 else historyEmbed.fields[6].value += `, <@!${m}>`
             } else if (biggestEmbed) {
@@ -812,7 +812,7 @@ To end the AFK check as a leader, react to ❌`)
             } else {
                 if (historyEmbed.fields[4].value.length >= 1000) {
                     bigEmbed = true;
-                    historyEmbed.addField('-', `, <@!${m}>`)
+                    historyEmbed.addFields([{name: '-', `, value: <@!${m}>`}])
                 }
                 else historyEmbed.fields[4].value += `, <@!${m}>`
             }
@@ -922,14 +922,14 @@ To end the AFK check as a leader, react to ❌`)
 
         //Update panel
         this.embedMessage.setDescription(`The AFK Check has been aborted.`)
-            .setFooter(`The afk check has been aborted by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`);
+            .setFooter({ text: `The afk check has been aborted by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}` });
         this.afkCheckEmbed.edit("", this.embedMessage).catch(er => console.log(er));
 
         //lock vc
         await lockChannel(this.verifiedRaiderRole, this.voiceChannel, this.channel, this.isVet, this.settings);
 
         //Update afk control panel
-        this.leaderEmbed.setFooter(`The afk check has been aborted by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`);
+        this.leaderEmbed.setFooter({ text: `The afk check has been aborted by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}` });
         this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => console.log(er));
         this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => console.log(er));
 

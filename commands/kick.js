@@ -35,11 +35,13 @@ module.exports = {
                 await message.channel.send(`Kicking now`);
                 await member.send(`You have been kicked from ${message.guild.name} for:\n${reason}`).catch(er => { })
                 await member.kick(reason).catch(er => { ErrorLogger.log(er, bot); message.channel.send(`Could not kick because: \`${er.message}\``); return; })
-                let embed = new Discord.MessageEmbed()
+                let embed = new Discord.EmbedBuilder()
                     .setTitle('User Kicked')
                     .setDescription(member.toString())
-                    .addField('User', member.displayName, true)
-                    .addField('Kicked By', `<@!${m.author.id}>`, true)
+                    .addFields([
+                        { name: 'User', value: member.displayName, inline: true },
+                        { name: 'Kicked By', value: `<@!${m.author.id}>`, inline: true },
+                    ])
                     .setTimestamp(Date.now());
 
                 await message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });

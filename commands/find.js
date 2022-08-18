@@ -28,7 +28,7 @@ module.exports = {
 
                 const nicks = member.nickname ? member.nickname.replace(/[^a-z|]/gi, '').split('|').map(n => `[**${n}**](https://www.realmeye.com/player/${n.replace(/ /g,'')})`).join(' • ') : null;
 
-                var embed = new Discord.MessageEmbed()
+                var embed = new Discord.EmbedBuilder()
                     .setColor('#00ff00')
                     .setDescription(`Search \`${u}\` matched \`${member.nickname || member.user.tag}\`: <@!${member.id}>${nicks ? '\n**IGNS** • ' + nicks : ''}`)
                     .addFields(
@@ -36,21 +36,21 @@ module.exports = {
                         { name: 'Suspended', value: `❌`, inline: true },
                         { name: 'Voice Channel', value: 'Not Connected', inline: true });
                 if (member.roles.cache.has(suspendedButVerifed.id)) {
-                    embed.fields[1].value = `:white_check_mark: \n<@&${suspendedButVerifed.id}>`;
+                    embed.data.fields[1].value = `:white_check_mark: \n<@&${suspendedButVerifed.id}>`;
                     embed.setColor('#ff0000');
                 }
                 if (member.roles.cache.has(suspendedRole.id)) {
-                    embed.fields[1].value = `:white_check_mark: \n<@&${suspendedRole.id}>`;
+                    embed.data.fields[1].value = `:white_check_mark: \n<@&${suspendedRole.id}>`;
                     embed.setColor('#ff0000');
                 }
                 if (member.voice.channel != null) {
-                    embed.fields[2].value = member.voice.channel.name;
+                    embed.data.fields[2].value = member.voice.channel.name;
                 }
                 message.channel.send({ embeds: [embed] });
             }
         }
         if (notFoundString != '') {
-            var embed = new Discord.MessageEmbed()
+            var embed = new Discord.EmbedBuilder()
                 .setColor('#ffff00')
                 .setTitle('Users not found:')
                 .setDescription(notFoundString);
@@ -64,7 +64,7 @@ module.exports = {
                 if (expelledString == '') expelledString = expelled[i]
                 else expelledString += `, ${expelled[i]}`
             }
-            let expelledEmbed = new Discord.MessageEmbed()
+            let expelledEmbed = new Discord.EmbedBuilder()
                 .setColor(`#ff0000`)
                 .setTitle(`The following users are expelled`)
                 .setDescription(expelledString)

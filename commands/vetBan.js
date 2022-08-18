@@ -100,14 +100,14 @@ module.exports = {
                     vetBanProcess()
                 }
                 async function vetBanProcess() {
-                    let embed = new Discord.MessageEmbed()
+                    let embed = new Discord.EmbedBuilder()
                         .setColor('#ff0000')
                         .setTitle('Vet Ban Information')
                         .setDescription(`The ban is for ${parseInt(args[0])} ${timeTypeString}`)
-                        .addField(`User Information \`${member.nickname}\``, `<@!${member.id}> (Tag: ${member.user.tag})`, true)
-                        .addField(`Mod Information \`${message.guild.members.cache.get(message.author.id).nickname}\``, `<@!${message.author.id}> (Tag: ${message.author.tag})`, true)
-                        .addField(`Reason:`, reason)
-                        .setFooter(`Unsuspending at `)
+                        .addFields([{name: `User Information \`${member.nickname}\``, value: `<@!${member.id}> (Tag: ${member.user.tag})`, inline: true}])
+                        .addFields([{name: `Mod Information \`${message.guild.members.cache.get(message.author.id).nickname}\``, value: `<@!${message.author.id}> (Tag: ${message.author.tag})`, inline: true}])
+                        .addFields([{name: `Reason:`, value: reason}])
+                        .setFooter({ text: `Unsuspending at ` })
                         .setTimestamp(Date.now() + time);
                     messageId = await suspensionLog.send({ embeds: [embed] });
                     await member.user.send({ embeds: [embed] })

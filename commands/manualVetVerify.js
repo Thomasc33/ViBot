@@ -17,14 +17,14 @@ module.exports = {
         if (!member) return message.channel.send("User not found")
         if (member.roles.cache.has(vetBanRole.id)) return message.channel.send("User is vet banned")
         member.roles.add(vetRaiderRole)
-        let embed = new Discord.MessageEmbed()
+        let embed = new Discord.EmbedBuilder()
             .setTitle('Manual Veteran Verify')
             .setDescription(member.toString())
-            .addField('User', member.displayName, true)
-            .addField('Verified By', `<@!${message.author.id}>`, true)
+            .addFields([{name: 'User', value: member.displayName, inline: true}])
+            .addFields([{name: 'Verified By', value: `<@!${message.author.id}>`, inline: true}])
             .setTimestamp(Date.now());
         message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });
-        let confirmEmbed = new Discord.MessageEmbed().setDescription(`${member} has been given ${vetRaiderRole}`)
+        let confirmEmbed = new Discord.EmbedBuilder().setDescription(`${member} has been given ${vetRaiderRole}`)
         message.channel.send({ embeds: [confirmEmbed] })
     }
 }

@@ -50,14 +50,14 @@ module.exports = {
             suspend(false)
         }
         async function suspend(overwrite) {
-            let embed = new Discord.MessageEmbed()
+            let embed = new Discord.EmbedBuilder()
                 .setColor('#ff0000')
                 .setTitle('Suspension Information')
                 .setDescription(`The suspension is permanent`)
-                .addField(`User Information \`${member.nickname}\``, `<@!${member.id}> (Tag: ${member.user.tag})`, true)
-                .addField(`Mod Information \`${message.guild.members.cache.get(message.author.id).nickname}\``, `<@!${message.author.id}> (Tag: ${message.author.tag})`, true)
-                .addField(`Reason:`, reason)
-                .addField(`Roles`, 'None!')
+                .addFields([{name: `User Information \`${member.nickname}\``, value: `<@!${member.id}> (Tag: ${member.user.tag})`, inline: true}])
+                .addFields([{name: `Mod Information \`${message.guild.members.cache.get(message.author.id).nickname}\``, value: `<@!${message.author.id}> (Tag: ${message.author.tag})`, inline: true}])
+                .addFields([{name: `Reason:`, value: reason}])
+                .addFields([{name: `Roles`, value: 'None!'}])
                 .setTimestamp(Date.now());
             let userRolesString = '',
                 userRoles = []
@@ -66,10 +66,10 @@ module.exports = {
                     userRoles.push(r.id)
                     userRolesString = userRolesString.concat(`${r.id} `)
                 }
-                if (embed.fields[3].value == 'None!') {
-                    embed.fields[3].value = `<@&${r.id}>`
+                if (embed.data.fields[3].value == 'None!') {
+                    embed.data.fields[3].value = `<@&${r.id}>`
                 } else {
-                    embed.fields[3].value += `, <@&${r.id}>`
+                    embed.data.fields[3].value += `, <@&${r.id}>`
                 }
             })
             await member.edit({ roles: [pSuspendRole] })
