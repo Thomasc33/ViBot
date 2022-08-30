@@ -2,6 +2,7 @@ const Discord = require('discord.js')
 module.exports = {
     name: 'unverify',
     role: 'security',
+    roleOverride: { '343704644712923138': 'officer' },
     description: 'Removes raider role and removes nickname',
     args: '<user> [reason]',
     execute(message, args, bot, db) {

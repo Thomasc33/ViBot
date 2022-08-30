@@ -6,6 +6,7 @@ module.exports = {
     description: 'Checks the percent chance an account is a main account based on machine learning',
     args: '<ign>',
     role: 'security',
+    roleOverride: { '343704644712923138': 'officer' },
     requiredArgs: 1,
     async execute(message, args, bot, db) {
         let ign = args[0]
