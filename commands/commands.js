@@ -7,6 +7,13 @@ module.exports = {
     args: '(Command Name)',
     alias: ['help'],
     role: 'raider',
+    /**
+     * 
+     * @param {Discord.Message} message 
+     * @param {*} args 
+     * @param {*} bot 
+     * @returns 
+     */
     execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
         const override = userOverride(message.author.id);
@@ -54,7 +61,9 @@ module.exports = {
                 if (message.member.roles.highest.position < role.position && !override) continue;
                 if (!fields[role.name]) fields[role.name] = { position: role.position, commands: [] };
                 bot.commands.each(c => {
-                    if (c.role == roleName && bot.settings[message.guild.id].commands[c.name])
+                    if (c.roleOverride && c.roleOverride[message.guildId] && c.roleOverride[message.guildId] && bot.settings[message.guild.id].commands[c.name])
+                        fields[role.name].commands.push(';' + c.name);
+                    else if (c.role == roleName && bot.settings[message.guild.id].commands[c.name])
                         fields[role.name].commands.push(';' + c.name);
                 })
             }
