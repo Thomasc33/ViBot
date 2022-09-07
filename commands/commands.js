@@ -61,7 +61,7 @@ module.exports = {
                 if (message.member.roles.highest.position < role.position && !override) continue;
                 if (!fields[role.name]) fields[role.name] = { position: role.position, commands: [] };
                 bot.commands.each(c => {
-                    if (c.roleOverride && c.roleOverride[message.guildId] && c.roleOverride[message.guildId] && bot.settings[message.guild.id].commands[c.name])
+                    if (c.roleOverride && c.roleOverride[message.guildId] && c.roleOverride[message.guildId] == roleName && bot.settings[message.guild.id].commands[c.name])
                         fields[role.name].commands.push(';' + c.name);
                     else if (c.role == roleName && bot.settings[message.guild.id].commands[c.name])
                         fields[role.name].commands.push(';' + c.name);

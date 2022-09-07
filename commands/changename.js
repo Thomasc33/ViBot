@@ -42,8 +42,8 @@ module.exports = {
             altName = altName.replace(/[^a-z]/gi, '');
             if (!altName)
                 return reject(`An IGN was not provided.`);
-            if (!staff && altName.length > 10)
-                return reject(`An IGN cannot be more than 10 characters under normal circumstances. If you are an exception, please contact a Security+ staff member.`);
+            if (!staff && altName.length > 15)
+                return reject(`An IGN cannot be more than 15 characters under normal circumstances. If you are an exception, please contact a Security+ staff member.`);
 
             let userPrefix = '',
                 nickname = member.nickname || '',
