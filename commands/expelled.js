@@ -5,7 +5,7 @@ module.exports = {
         name: 'expelled',
         alias: ['expel'],
         role: 'security',
-        roleOverride: { '343704644712923138': 'officer' },
+        roleOverride: { '343704644712923138': 'security' },
         args: '<list/remove> [names/ids] | <add> <name/id> [reason]',
         requiredArgs: 1,
         async execute(message, args, bot, db) {
