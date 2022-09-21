@@ -1244,7 +1244,7 @@
         "bard": true,
         "trickster": true,
         "priest": true,
-        "keyCount": 3,
+        "keyCount": 1,
         "isExalt": true,
         "reacts": [
             "Plane",
@@ -1286,7 +1286,7 @@
         "startDelay": 5000,
         "vcCap": 45,
         "timeLimit": 300,
-        "keyCount": 3,
+        "keyCount": 1,
         "color": "#015c21",
         "isExalt": true,
         "reacts": [
