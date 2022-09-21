@@ -43,6 +43,13 @@
                 "points"
             ],
             "name": "Points"
+        },
+        {
+            "index": 6,
+            "dbNames": [
+                "feedback"
+            ],
+            "name": "Feedbacks"
         }
     ],
     "701483950559985705": [
