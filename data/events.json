@@ -2343,7 +2343,7 @@
                 "Priest"
             ],
             "twoPhase": true,
-            "keyCount": 3,
+            "keyCount": 1,
             "keyPopPoints": 5,
             "earlyLocationCost": 15,
             "vcCap": 30,
