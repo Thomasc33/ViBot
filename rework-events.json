@@ -1713,7 +1713,7 @@
         "reacts": [],
         "earlyLocationCost": 15,
         "earlyLocationReacts": []
-    }
+    },
     "343704644712923138": {
         "fungal": {
             "name": "Fungal Cavern",
@@ -2150,7 +2150,7 @@
             "warrior": true,
             "knight": true,
             "twoPhase": true,
-            "keyCount": 3,
+            "keyCount": 1,
             "keyPopPoints": 5,
             "earlyLocationCost": 15,
             "vcCap": 30,
