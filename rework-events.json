@@ -1164,7 +1164,7 @@
         "startDelay": 5000,
         "vcCap": 45,
         "timeLimit": 300,
-        "keyCount": 3,
+        "keyCount": 1,
         "color": "#015c21",
         "isExalt": true,
         "reacts": [
@@ -1205,7 +1205,7 @@
         "startDelay": 5000,
         "vcCap": 45,
         "timeLimit": 300,
-        "keyCount": 3,
+        "keyCount": 1,
         "color": "#015c21",
         "isExalt": true,
         "reacts": [
@@ -1713,7 +1713,7 @@
         "reacts": [],
         "earlyLocationCost": 15,
         "earlyLocationReacts": []
-    }
+    },
     "343704644712923138": {
         "fungal": {
             "name": "Fungal Cavern",
