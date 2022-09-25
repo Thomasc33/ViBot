@@ -389,8 +389,8 @@
             "runName": "Shatters",
             "symbol": "s",
             "reqsImageUrl": "",
-            "keyEmoteID": "723001429903802478",
-            "pingRole": "shattsping",
+            "keyEmoteID": "1008104345197346817",
+            "pingRole": "shattsReact",
             "keyLogName": "keypops",
             "runLogName": "shattersRuns",
             "headcountEmote": "723001214865899532",
@@ -442,7 +442,7 @@
             ],
             "embed": {
                 "color": "#013220",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:shattersK:723001429903802478>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:720404844187353099>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
+                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:shattersKey:1008104345197346817>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:720404844187353099>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/723001214865899532.png?v=1",
                 "removeThumbnail": true
             },
@@ -453,8 +453,8 @@
             "runName": "Adv. Shatter",
             "symbol": "as",
             "reqsImageUrl": "",
-            "keyEmoteID": "723001429903802478",
-            "pingRole": "shattsreact",
+            "keyEmoteID": "1008104345197346817",
+            "pingRole": "shattsReact",
             "keyLogName": "keypops",
             "runLogName": "shattersRuns",
             "headcountEmote": "723001214865899532",
@@ -506,7 +506,7 @@
             ],
             "embed": {
                 "color": "#013220",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:shattersK:723001429903802478>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:720404844187353099>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
+                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:shattersKey:1008104345197346817>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:720404844187353099>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/723001214865899532.png?v=1",
                 "removeThumbnail": true
             },
