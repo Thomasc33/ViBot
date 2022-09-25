@@ -1463,7 +1463,7 @@ async function createChannel(runInfo, message, bot) {
  * @returns {Object} RunType
  */
 function getRunType(char, guildid) {
-    for (let i in afkTemplates[guildid]) if (afkTemplates[guildid][i].symbol == char) return afkTemplates[guildid][i]
+    for (let i in afkTemplates[guildid]) if (afkTemplates[guildid][i].symbol == char.toLowerCase()) return afkTemplates[guildid][i]
     return null
 
 }
