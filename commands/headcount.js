@@ -1,9 +1,10 @@
 const Discord = require('discord.js');
 const botSettings = require('../settings.json');
-const ErrorLogger = require('../lib/logError')
-const afkCheck = require('./afkCheck')
-const eventAfk = require('./eventAfk')
-const eventFile = require('../data/events.json')
+const emojis = require('../data/emojis.json');
+const ErrorLogger = require('../lib/logError');
+const afkCheck = require('./afkCheck');
+const eventAfk = require('./eventAfk');
+const eventFile = require('../data/events.json');
 
 var bot
 module.exports = {
@@ -69,7 +70,7 @@ module.exports = {
             if (channel) {
                 let embed = new Discord.MessageEmbed()
                     .setAuthor(`Headcount for ${run.runName} by ${message.member.nickname}`)
-                    .setDescription(`${run.headcountEmote ? `React with ${bot.emojis.cache.get(run.headcountEmote)} if you are coming\n` : ''}React with ${bot.emojis.cache.get(run.keyEmoteID)} if you have a key\nOtherwise react with your gear/class choices below`)
+                    .setDescription(run.embed.description ? run.embed.description : `${run.headcountEmote ? `React with ${bot.emojis.cache.get(run.headcountEmote)} if you are coming\n` : ''}React with ${bot.emojis.cache.get(run.keyEmoteID)} if you have a key\nOtherwise react with your gear/class choices below`)
                     .setColor(run.embed ? run.embed.color : run.color)
                     .setTimestamp()
 
@@ -81,12 +82,12 @@ module.exports = {
                 const pings = pingRole ? (typeof pingRole != "string" ? pingRole.map(r => `<@&${settings.roles[r]}>`).join(' ') : `<@&${settings.roles[pingRole]}>`) + ' @here' : '@here';
 
                 let m = await channel.send({ content: `${pings}`, embeds: [embed], components: [] })
-                if (run.headcountEmote) m.react(run.headcountEmote)
-                await m.react(run.keyEmoteID)
+                if (run.headcountEmote) await m.react(run.headcountEmote)
+                if (run.keyEmoteID) await m.react(run.keyEmoteID)
                 if (run.vialReact) await m.react(botSettings.emoteIDs.Vial)
                 for (let i of run.earlyLocationReacts) await m.react(i.emoteID)
                 for (let i of run.reacts) {
-                    if (isNaN(+i)) await m.react(botSettings.emoteIDs[i])
+                    if (isNaN(+i)) await m.react(emojis[i]["id"])
                     else await m.react(i)
                 }
             }
