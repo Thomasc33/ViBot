@@ -1783,7 +1783,7 @@
             "Plane",
             "Collo",
             "Ogmur",
-            "UTTomeoftheMushroomTriebs",
+            "UTTomeoftheMushroomTribes",
             "MarbleSeal",
             "brain",
             "mystic",
@@ -1821,7 +1821,23 @@
         "keyCount": 3,
         "color": "#fefefe",
         "isExalt": false,
-        "reacts": [],
+        "reacts": [
+            "voidd",
+            "Vial",
+            "malus",
+            "Plane",
+            "fungalPortal",
+            "nestPortal",
+            "shattersPortal",
+            "LostHallsKey",
+            "fungalKey",
+            "nestKey",
+            "shattersKey"
+        ],
+        "embed": {
+            "description": "React with any Dungeon Icon if you plan on joining\nReact with any Dungen Key if you plan on bringing any key",
+            "color": "#fefefe"
+        },
         "earlyLocationCost": 15,
         "earlyLocationReacts": []
     },

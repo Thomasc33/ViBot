@@ -29,5 +29,13 @@
     "trickster": { "tag": ":trickster:723018431275728918", "id": "723018431275728918" },
     "hallsPortal": { "tag": ":hallsPortal:716763303480786968", "id": "716763303480786968" },
     "o3": { "tag": ":oryxThree:708043327706103858", "id": "708043327706103858" },
-    "aether": { "tag": ":UTOrbofAether:720265038664826959", "id": "720265038664826959" }
+    "aether": { "tag": ":UTOrbofAether:720265038664826959", "id": "720265038664826959" },
+    "epicMysteryKey": { "tag": ":epicMysteryKey:831051424187940874", "id": "831051424187940874" },
+    "legendaryMysteryKey": { "tag": ":legendaryMysteryKey:831052176507535360", "id": "831052176507535360" },
+    "fungalKey": { "tag": ":fungalK:723001429614395402", "id": "723001429614395402" },
+    "nestKey": { "tag": ":nestK:723001429693956106", "id": "723001429693956106" },
+    "shattersKey": { "tag": ":shattersKey:1008104345197346817", "id": "1008104345197346817" },
+    "fungalPortal": { "tag": ":fungal:723001215696240660", "id": "723001215696240660" },
+    "nestPortal": { "tag": ":nest:723001215407095899", "id": "723001215407095899" },
+    "shattersPortal": { "tag": ":shatters:723001214865899532", "id": "723001214865899532" }
 }
