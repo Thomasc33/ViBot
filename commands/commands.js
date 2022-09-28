@@ -43,8 +43,10 @@ module.exports = {
             if (command.args) commandPanel.addField('Args', command.args)
             if (command.getNotes && command.getNotes(message.guild.id, message.member)) commandPanel.addField('Special Notes', command.getNotes(message.guild.id, message.member))
 
+            var roleOverride = message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.roleOverride[message.guildId]])
             var minimumRole = message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role])
-            if (minimumRole) commandPanel.addField('Minimum Role', minimumRole.toString());
+            if (roleOverride) commandPanel.addField('Minimum Role', roleOverride.toString());
+            else if (minimumRole) commandPanel.addField('Minimum Role', minimumRole.toString());
             else commandPanel.addField('Minimum Role', 'Role not set up');
             message.channel.send({ embeds: [commandPanel] });
         } else {
@@ -61,8 +63,9 @@ module.exports = {
                 if (message.member.roles.highest.position < role.position && !override) continue;
                 if (!fields[role.name]) fields[role.name] = { position: role.position, commands: [] };
                 bot.commands.each(c => {
-                    if (c.roleOverride && c.roleOverride[message.guildId] && c.roleOverride[message.guildId] == roleName && bot.settings[message.guild.id].commands[c.name])
-                        fields[role.name].commands.push(';' + c.name);
+                    if (c.roleOverride && c.roleOverride[message.guildId] && bot.settings[message.guild.id].commands[c.name]) {
+                        if (c.roleOverride[message.guildId] == roleName) fields[role.name].commands.push(';' + c.name);
+                    }
                     else if (c.role == roleName && bot.settings[message.guild.id].commands[c.name])
                         fields[role.name].commands.push(';' + c.name);
                 })
