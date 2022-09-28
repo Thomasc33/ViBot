@@ -79,8 +79,10 @@ module.exports = {
                 return u.send(`You are currently blacklisted from verifying. Please DM me to contact mod-mail and find out why`);
 
             const staff = blGuild.members.cache.get(blInfo.modid);
-            if (!staff || staff.id == bot.user.id || staff.roles.highest.comparePositionTo(bot.settings[blGuild.id].roles.security) < 0)
-                return u.send(`You are currently blacklisted from the __${blGuild.name}__ server and cannot verify. The person who blacklisted you is no longer staff. Please DM me and send mod-mail to that server to appeal.`);
+            if (!staff || staff.id == bot.user.id || staff.roles.highest.comparePositionTo(bot.settings[blGuild.id].roles.security) < 0) {
+                 if (guild.id == botSettings.hallsId) return u.send(`You are currently blacklisted from the __${blGuild.name}__ server and cannot verify. The person who blacklisted you is no longer staff. Please DM any online officer to appeal.`);
+                 return u.send(`You are currently blacklisted from the __${blGuild.name}__ server and cannot verify. The person who blacklisted you is no longer staff. Please DM me and send mod-mail to that server to appeal.`);
+            }
 
             return u.send(`You are currently blacklisted from the __${blGuild.name}__ server and cannot verify. Please contact ${staff} in order to appeal. If they do not reply within 48 hours, feel free to mod-mail the ${blGuild.name} server to get assistance.`);
         }
@@ -519,7 +521,7 @@ module.exports = {
                         //2
                         else if (r.emoji.name === '2️⃣') {
                             //add to expelled
-                            db.query(`INSERT INTO veriblacklist (id, modid, guildid, reason) VALUES ('${member.id}', '${reactor.id}', '${message.guild.id}', 'Reacted with 1️⃣ to verification.'),('${ign.toLowerCase()}', '${reactor.id}', '${message.guild.id}', 'Reacted with 1️⃣ to verification.')`)
+                            db.query(`INSERT INTO veriblacklist (id, modid, guildid, reason) VALUES ('${member.id}', '${reactor.id}', '${message.guild.id}', 'Reacted with 2️⃣ to verification.'),('${ign.toLowerCase()}', '${reactor.id}', '${message.guild.id}', 'Reacted with 2️⃣ to verification.')`)
 
                             //set nickname
                             let tag = member.user.tag.substring(0, member.user.tag.length - 5)
