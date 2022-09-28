@@ -34,7 +34,7 @@ module.exports = {
         let embed = new Discord.MessageEmbed()
             .setColor('#ff0000')
             .setAuthor(message.author.tag, message.author.avatarURL())
-            .setDescription(`<@!${message.author.id}> send the bot: "${message.content}"`)
+            .setDescription(`<@!${message.author.id}> sent the bot: "${message.content}"`)
             .setFooter(`User ID: ${message.author.id} MSG ID: ${message.id}`)
             .setTimestamp()
         let modMailChannel = guild.channels.cache.get(settings.channels.modmail)
