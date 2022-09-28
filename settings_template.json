@@ -62,7 +62,15 @@
         "trickster": ":trickster:723018431275728918",
         "hallsPortal": ":hallsPortal:716763303480786968",
         "o3": ":oryxThree:708043327706103858",
-        "UTOrbofAether": ":UTOrbofAether:720265038664826959"
+        "UTOrbofAether": ":UTOrbofAether:720265038664826959",
+        "epicMysteryKey": ":epicMysteryKey:831051424187940874",
+        "legendaryMysteryKey": ":legendaryMysteryKey:831052176507535360",
+        "fungalKey": ":fungalK:723001429614395402",
+        "nestKey": ":nestK:723001429693956106",
+        "shattersKey": ":shattersKey:1008104345197346817",
+        "fungalPortal": ":fungal:723001215696240660",
+        "nestPortal": ":nest:723001215407095899",
+        "shattersPortal": ":shatters:723001214865899532"
     },
     "emoteIDs": {
         "Warrior": "701491230395072522",
@@ -94,6 +102,14 @@
         "switchS": "723018852929372270",
         "trickster": "723018431275728918",
         "hallsPortal": "716763303480786968",
-        "UTOrbofAether": "720265038664826959"
+        "UTOrbofAether": "720265038664826959",
+        "epicMysteryKey": "831051424187940874",
+        "legendaryMysteryKey": "831052176507535360",
+        "fungalKey": "723001429614395402",
+        "nestKey": "723001429693956106",
+        "shattersKey": "1008104345197346817",
+        "fungalPortal": "723001215696240660",
+        "nestPortal": "723001215407095899",
+        "shattersPortal": "723001214865899532"
     }
 }

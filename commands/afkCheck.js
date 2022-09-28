@@ -375,7 +375,7 @@ class afkCheck {
         const avsan = /^[aeiou]/i.test(this.afkInfo.runName) ? 'An' : 'A';
 
         //send messages
-        this.mainEmbed = new Discord.MessageEmbed(this.afkInfo.embed);
+        this.mainEmbed = new Discord.MessageEmbed(this.afkInfo.embed)
         this.mainEmbed.setAuthor({ name: `${avsan} ${this.afkInfo.runName} Has Been Started in ${this.channel.name}` })
             .setColor(this.afkInfo.embed.color)
             .setFooter({ text: `Time Remaining: ${Math.floor(this.time / 60)} minutes and ${this.time % 60} seconds` })
@@ -649,8 +649,11 @@ class afkCheck {
             for (let r of this.afkInfo.earlyLocationReacts) {
                 if (type == r.shortName) reactInfo = r;
             }
-
-            embed.setDescription(`You reacted as ${emote}\n${(reactInfo && reactInfo.checkRealmEye) ? `If you have a(n) ${reactInfo.checkRealmEye.class} that is ${reactInfo.checkRealmEye.ofEight || 8}/8${reactInfo.checkRealmEye.orb ? ` and has a tier ${reactInfo.checkRealmEye.orb} orb` : ''}${reactInfo.checkRealmEye.mheal ? ` and a pet with at least ${reactInfo.checkRealmEye.mheal} mheal` : ``}` : ''}\nPress ✅ to confirm your reaction. Otherwise press ❌`)
+            embed.setDescription(
+                reactInfo.confimrationMessage ?
+                `You reacted as ${emote}\n\n${reactInfo.confimrationMessage}\n\nPress ✅ to confirm your reaction. Otherwise press ❌` :
+                `You reacted as ${emote}\nPress ✅ to confirm your reaction. Otherwise press ❌`
+                )
             let ar = new Discord.MessageActionRow({ components: [{ type: 'BUTTON', customId: 'confirm', style: 'SUCCESS', label: '✅ Confirm' }, { type: 'BUTTON', customId: 'abort', style: 'DANGER', label: '❌ Cancel' }] })
             await interaction.reply({ embeds: [embed], ephemeral: true, components: [ar] })
             let em = await interaction.fetchReply()
@@ -1428,7 +1431,7 @@ async function createChannel(runInfo, message, bot) {
         }
         if (!template) return rej(`Template channel not found`)
         let channel = await template.clone({
-            name: `${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s ${runInfo.runType}`,
+            name: `${message.member.displayName.replace(/[^a-z|]/gi, '').split('|')[0]}'s ${runInfo.runType}`,
             parent: message.guild.channels.cache.filter(c => c.type == 'GUILD_CATEGORY').find(c => c.name.toLowerCase() === parent).id,
             userLimit: runInfo.vcCap
         }).then(c => c.setPosition(0))
