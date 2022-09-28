@@ -30,9 +30,9 @@ module.exports = {
             return result;
         }
 
-        let originalMessage = embed.description;
+        let originalMessage = embed.data.description;
         originalMessage = originalMessage.substring(originalMessage.indexOf(':') + 3, originalMessage.length - 1)
-        let responseEmbed = new Discord.MessageEmbed()
+        let responseEmbed = new Discord.EmbedBuilder()
             .setDescription(`__How would you like to respond to ${raider}'s [message](${m.url})__\n${originalMessage}`)
         let responseEmbedMessage = await message.channel.send({ embeds: [responseEmbed] })
         let responseCollector = new Discord.MessageCollector(message.channel,{filter:  m => m.author.id === message.author.id})
@@ -56,7 +56,7 @@ module.exports = {
                         return responseEmbedMessage.delete();
                     await dms.send(response)
                     responseEmbedMessage.delete()
-                    embed.addField(`Response by ${message.member.nickname}:`, response)
+                    embed.addFields([{name: `Response by ${message.member.nickname}:`, value: response}])
                     m.edit({ embeds: [embed] })
                 } else if (r.emoji.name === '❌') {
                     ConfirmReactionCollector.stop()

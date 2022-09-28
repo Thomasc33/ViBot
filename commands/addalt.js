@@ -22,17 +22,19 @@ module.exports = {
         if (!image) return message.channel.send(`Please provide an image`)
         if (!validURL(image)) return message.channel.send(`Error attaching the image. Please try again`)
         let confirmMessage = await message.channel.send(`Are you sure you want to add the alt ${altName} to ${member}? Y/N`);
-        let collector = new Discord.MessageCollector(message.channel, {filter: m => m.author.id === message.author.id, time: 10000 });
+        let collector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id === message.author.id, time: 10000 });
         collector.on('collect', async m => {
             try {
                 if (m.content.toLowerCase().charAt(0) == 'y') {
                     member.setNickname(`${member.nickname} | ${altName}`, `Old Name: ${member.nickname}\nNew Name: ${member.nickname} | ${altName}\nChange by: ${message.member}`);
-                    let embed = new Discord.MessageEmbed()
+                    let embed = new Discord.EmbedBuilder()
                         .setTitle('Alt Added')
                         .setDescription(member.toString())
-                        .addField('Main', member.nickname, true)
-                        .addField('New Alt', altName, true)
-                        .addField('Added By', `<@!${message.author.id}>`)
+                        .addFields([
+                            { name: 'Main', value: member.nickname, inline: true },
+                            { name: 'New Alt', value: altName, inline: true },
+                            { name: 'Added By', value: `<@!${message.author.id}>` }
+                        ])
                         .setTimestamp(Date.now())
                         .setImage(image)
                     await message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });

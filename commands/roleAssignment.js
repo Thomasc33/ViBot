@@ -80,11 +80,11 @@ module.exports = {
 }
 
 function getEmbed(guildReacts) {
-    let embed = new Discord.MessageEmbed()
+    let embed = new Discord.EmbedBuilder()
         .setTitle(`Role Assignment`)
         .setDescription('React/Unreact with one of the following emojis to get pinged for specific runs')
     for (let i of guildReacts) {
-        embed.addField(i.prettyName, i.react, true)
+        embed.addFields([{name: i.prettyName, value: i.react, inline: true}])
     }
     return embed
 }

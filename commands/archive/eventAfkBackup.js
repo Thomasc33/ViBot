@@ -87,36 +87,36 @@ class afk {
         this.moveInTimer = await setInterval(() => { this.moveIn() }, 10000);
 
         //Main panel
-        this.embed = new Discord.MessageEmbed()
+        this.embed = new Discord.EmbedBuilder()
             .setColor(this.event.color)
-            .setAuthor(`${this.event.name} started by ${this.message.member.nickname} in ${this.channel.name}`, `${this.message.author.avatarURL()}`)
+            .setAuthor({ name: `${this.event.name} started by ${this.message.member.nickname} in ${this.channel.name}`, iconURL: `${this.message.author.avatarURL()}` })
             .setDescription(`<${this.event.portalEmote}> Join \`${this.channel.name}\` before it fills up
             React with your gear/class choice as seen below`)
-            .setFooter(`Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds`)
+            .setFooter({ text: `Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds` })
             .setTimestamp()
-            .addField('Key', `<${this.event.keyEmote}>`, true);
-        if (this.event.rushers) this.embed.addField('Rushers', `<${botSettings.emote.Plane}>`, true)
-        if (this.event.stun) this.embed.addField('Stun', `<${botSettings.emote.Collo}>`, true)
-        if (this.event.ogmur) this.embed.addField('(P)ogmur', `<${botSettings.emote.Ogmur}>`, true)
-        if (this.event.fungal) this.embed.addField('Fungal Tome', `<${botSettings.emote.UTTomeoftheMushroomTribes}>`, true)
-        if (this.event.mseal) this.embed.addField('Mseal', `<${botSettings.emote.MarbleSeal}>`, true)
-        if (this.event.brain) this.embed.addField('Decoy', `<${botSettings.emote.Brain}>`, true)
-        if (this.event.stasis) this.embed.addField('Mystic', `<${botSettings.emote.Mystic}>`, true)
-        if (this.event.parylize) this.embed.addField('Paralyze', `<${botSettings.emote.Paralyze}>`, true)
-        if (this.event.slow) this.embed.addField('Slow', `<${botSettings.emote.Slow}>`, true)
-        if (this.event.daze) this.embed.addField('Daze', `<${botSettings.emote.Qot}>`, true)
-        if (this.event.curse) this.embed.addField('Curse', `<${botSettings.emote.Curse}>`, true)
-        if (this.event.expose) this.embed.addField('Expose', `<${botSettings.emote.Expose}>`, true)
-        if (this.event.warrior) this.embed.addField('Warrior', `<${botSettings.emote.Warrior}>`, true)
-        if (this.event.paladin) this.embed.addField('Paladin', `<${botSettings.emote.Paladin}>`, true)
-        if (this.event.bard) this.embed.addField('Bard', `<${botSettings.emote.Bard}>`, true)
-        if (this.event.priest) this.embed.addField('Priest', `<${botSettings.emote.Priest}>`, true)
-        if (this.event.trickster) this.embed.addField('Trickster', `<${botSettings.emote.trickster}>`, true)
-        if (this.event.knight) this.embed.addField('Knight', `<${botSettings.emote.Knight}>`, true)
+            .addFields([{name: 'Key', value: `<${this.event.keyEmote}>`, inline: true}]);
+        if (this.event.rushers) this.embed.addFields([{name: 'Rushers', value: `<${botSettings.emote.Plane}>`, inline: true}])
+        if (this.event.stun) this.embed.addFields([{name: 'Stun', value: `<${botSettings.emote.Collo}>`, inline: true}])
+        if (this.event.ogmur) this.embed.addFields([{name: '(P)ogmur', value: `<${botSettings.emote.Ogmur}>`, inline: true}])
+        if (this.event.fungal) this.embed.addFields([{name: 'Fungal Tome', value: `<${botSettings.emote.UTTomeoftheMushroomTribes}>`, inline: true}])
+        if (this.event.mseal) this.embed.addFields([{name: 'Mseal', value: `<${botSettings.emote.MarbleSeal}>`, inline: true}])
+        if (this.event.brain) this.embed.addFields([{name: 'Decoy', value: `<${botSettings.emote.Brain}>`, inline: true}])
+        if (this.event.stasis) this.embed.addFields([{name: 'Mystic', value: `<${botSettings.emote.Mystic}>`, inline: true}])
+        if (this.event.parylize) this.embed.addFields([{name: 'Paralyze', value: `<${botSettings.emote.Paralyze}>`, inline: true}])
+        if (this.event.slow) this.embed.addFields([{name: 'Slow', value: `<${botSettings.emote.Slow}>`, inline: true}])
+        if (this.event.daze) this.embed.addFields([{name: 'Daze', value: `<${botSettings.emote.Qot}>`, inline: true}])
+        if (this.event.curse) this.embed.addFields([{name: 'Curse', value: `<${botSettings.emote.Curse}>`, inline: true}])
+        if (this.event.expose) this.embed.addFields([{name: 'Expose', value: `<${botSettings.emote.Expose}>`, inline: true}])
+        if (this.event.warrior) this.embed.addFields([{name: 'Warrior', value: `<${botSettings.emote.Warrior}>`, inline: true}])
+        if (this.event.paladin) this.embed.addFields([{name: 'Paladin', value: `<${botSettings.emote.Paladin}>`, inline: true}])
+        if (this.event.bard) this.embed.addFields([{name: 'Bard', value: `<${botSettings.emote.Bard}>`, inline: true}])
+        if (this.event.priest) this.embed.addFields([{name: 'Priest', value: `<${botSettings.emote.Priest}>`, inline: true}])
+        if (this.event.trickster) this.embed.addFields([{name: 'Trickster', value: `<${botSettings.emote.trickster}>`, inline: true}])
+        if (this.event.knight) this.embed.addFields([{name: 'Knight', value: `<${botSettings.emote.Knight}>`, inline: true}])
         if (this.event.name == 'Shatters') {
-            this.embed.addField('Switch 1', `<${botSettings.emote.switch1}>`, true)
-            this.embed.addField('Switch 2', `<${botSettings.emote.switch2}>`, true)
-            this.embed.addField('Switch S', `<${botSettings.emote.switchS}>`, true)
+            this.embed.addFields([{name: 'Switch 1', value: `<${botSettings.emote.switch1}>`, inline: true}])
+            this.embed.addFields([{name: 'Switch 2', value: `<${botSettings.emote.switch2}>`, inline: true}])
+            this.embed.addFields([{name: 'Switch S', value: `<${botSettings.emote.switchS}>`, inline: true}])
         }
         this.pingMessage.edit(this.embed)
         this.addReacts();
@@ -130,10 +130,10 @@ class afk {
         if (this.eventBoi) await this.channel.permissionOverwrites.edit(this.eventBoi.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
 
         //Leader Panel
-        this.leaderEmbed = new Discord.MessageEmbed()
+        this.leaderEmbed = new Discord.EmbedBuilder()
             .setColor(this.event.color)
             .setTitle(`<${this.event.portalEmote}> AFK Check control panel for \`${this.channel.name}\` <${this.event.portalEmote}>`)
-            .setFooter(`To abort the afk check, react with ❌ below.`)
+            .setFooter({ text: `To abort the afk check, react with ❌ below.` })
             .addFields({ name: `Our current keys`, value: `None yet!` }, { name: `Location of run`, value: `${this.location}` },)
         this.afkControlPanelInfo = await this.message.guild.channels.cache.get(this.settings.channels.runlogs).send(this.leaderEmbed)
         this.afkControlPanelCommands = await this.message.guild.channels.cache.get(this.settings.channels.eventcommands).send(this.leaderEmbed)
@@ -210,7 +210,7 @@ class afk {
         this.minutes = Math.floor(this.time / 60);
         this.seconds = this.time % 60;
         if (this.embed == null || this.pingMessage == null) return;
-        this.embed.setFooter(`Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds`);
+        this.embed.setFooter({ text: `Time Remaining: ${this.minutes} minutes and ${this.seconds} seconds` });
         this.pingMessage.edit(this.embed).catch(er => ErrorLogger.log(er, bot));
 
     }
@@ -234,11 +234,11 @@ class afk {
 
         await this.channel.permissionOverwrites.edit(this.raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
         if (this.eventBoi) await this.channel.permissionOverwrites.edit(this.eventBoi.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
-        await this.channel.setPosition(this.channel.parent.children.filter(c => c.type == 'GUILD_VOICE').size - 1)
+        await this.channel.setPosition(this.channel.parent.children.filter(c => c.type == Discord.ChannelType.GuildVoice).size - 1)
 
         this.embed.setDescription(`This afk check has ended`)
-            .setFooter(`The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
-        this.embed.fields = []
+            .setFooter({ text: `The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}` })
+        this.embed.data.fields = []
         this.pingMessage.edit('', this.embed).catch(er => ErrorLogger.log(er, bot))
 
         this.afkControlPanelCommands.reactions.removeAll()
@@ -254,11 +254,11 @@ class afk {
 
         await this.channel.permissionOverwrites.edit(this.raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
         if (this.eventBoi) await this.channel.permissionOverwrites.edit(this.eventBoi.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
-        await this.channel.setPosition(this.channel.parent.children.filter(c => c.type == 'GUILD_VOICE').size - 1)
+        await this.channel.setPosition(this.channel.parent.children.filter(c => c.type == Discord.ChannelType.GuildVoice).size - 1)
 
         this.embed.setDescription(`This afk check has been aborted`)
-            .setFooter(`The afk check has been aborted by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}`)
-        this.embed.fields = []
+            .setFooter({ text: `The afk check has been aborted by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}` })
+        this.embed.data.fields = []
         this.pingMessage.edit('', this.embedMessage).catch(er => ErrorLogger.log(er, bot))
 
         this.afkControlPanelCommands.reactions.removeAll()
@@ -318,13 +318,13 @@ function createChannel(message, bot, isVet) {
             var template = message.guild.channels.cache.get(settings.voice.veteventtemplate)
             var raider = message.guild.roles.cache.get(settings.roles.vetraider)
             var vibotChannels = message.guild.channels.cache.get(settings.channels.vetchannels)
-            var category = message.guild.channels.cache.filter(c => c.type == 'GUILD_CATEGORY').find(c => c.name.toLowerCase() === 'veteran raiding')
+            var category = message.guild.channels.cache.filter(c => c.type == Discord.ChannelType.GuildCategory).find(c => c.name.toLowerCase() === 'veteran raiding')
         } else {
             var template = message.guild.channels.cache.get(settings.voice.eventtemplate)
             var raider = message.guild.roles.cache.get(settings.roles.raider)
             var EventBoi = message.guild.roles.cache.get(settings.roles.eventraider)
             var vibotChannels = message.guild.channels.cache.get(settings.channels.eventchannels)
-            var category = message.guild.channels.cache.filter(c => c.type == 'GUILD_CATEGORY').find(c => c.name.toLowerCase() === 'events')
+            var category = message.guild.channels.cache.filter(c => c.type == Discord.ChannelType.GuildCategory).find(c => c.name.toLowerCase() === 'events')
         }
 
         let channel = await template.clone()
@@ -340,10 +340,10 @@ function createChannel(message, bot, isVet) {
         if (EventBoi) await channel.permissionOverwrites.edit(EventBoi.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)).catch(er => reject('Failed to give Event Boi Perms'))
 
         //Embed to remove
-        let embed = new Discord.MessageEmbed()
+        let embed = new Discord.EmbedBuilder()
             .setTitle(`${message.member.nickname}'s Run`)
             .setDescription('Whenever the run is over. React with the ❌ to delete the channel. View the timestamp for more information')
-            .setFooter(channel.id)
+            .setFooter({ text: channel.id })
             .setTimestamp()
         let m = await vibotChannels.send(`${message.member}`, embed).catch(er => ErrorLogger.log(er))
         m.react('❌').catch(er => { })

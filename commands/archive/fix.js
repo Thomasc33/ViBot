@@ -13,11 +13,11 @@ module.exports = {
             db.query('SELECT * FROM users', (err, rows) => {
                 if (err) ErrorLogger.log(err, bot)
                 let members = message.guild.members.cache.map(m => m);
-                var embed = new Discord.MessageEmbed()
+                var embed = new Discord.EmbedBuilder()
                     .setColor('#015c21')
                     .setTitle('Fixed')
-                    .addField('No nickname, not in DB, has Verified Raider', 'None')
-                    .addField('Has nickname, has Verified Raider, not in db', 'None')
+                    .addFields([{name: 'No nickname, not in DB, has Verified Raider', value: 'None'}])
+                    .addFields([{name: 'Has nickname, has Verified Raider, not in db', value: 'None'}])
                 for (let i in members) {
                     let m = members[i]
                     if (!m.roles.cache.has(settings.roles.raider)) continue;
@@ -31,27 +31,27 @@ module.exports = {
                     if (!found) {
                         if (m.nickname == undefined) {
                             m.roles.remove(settings.roles.raider)
-                            if (embed.fields[0].value == 'None') {
-                                embed.fields[0].value = m
+                            if (embed.data.fields[0].value == 'None') {
+                                embed.data.fields[0].value = m
                             } else {
-                                if (embed.fields[0].value.length + `\n${m}` > 1024) {
+                                if (embed.data.fields[0].value.length + `\n${m}` > 1024) {
                                     message.channel.send({ embeds: [embed] })
-                                    embed.fields[1].value = ''
-                                    embed.fields[0].value = ''
+                                    embed.data.fields[1].value = ''
+                                    embed.data.fields[0].value = ''
                                 }
-                                embed.fields[0].value += `\n${m}`
+                                embed.data.fields[0].value += `\n${m}`
                             }
                         } else {
                             db.query(`INSERT INTO users (id) VALUES ('${m.id}')`)
-                            if (embed.fields[1].value == 'None') {
-                                embed.fields[1].value = m
+                            if (embed.data.fields[1].value == 'None') {
+                                embed.data.fields[1].value = m
                             } else {
-                                if (embed.fields[1].length + `\n${m}` > 1024) {
+                                if (embed.data.fields[1].length + `\n${m}` > 1024) {
                                     message.channel.send({ embeds: [embed] })
-                                    embed.fields[1].value = ''
-                                    embed.fields[0].value = ''
+                                    embed.data.fields[1].value = ''
+                                    embed.data.fields[0].value = ''
                                 }
-                                embed.fields[1].value += `\n${m}`;
+                                embed.data.fields[1].value += `\n${m}`;
 
                             }
                         }

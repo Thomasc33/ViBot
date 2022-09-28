@@ -21,12 +21,12 @@ module.exports = {
 
         const reason = args.join(' ');
         //unverify
-        let embed = new Discord.MessageEmbed()
+        let embed = new Discord.EmbedBuilder()
             .setTitle('Unverify')
             .setDescription(`${member} \`${member.user.tag}\``)
-            .addField('Nickname', member.nickname || 'None!', true)
-            .addField('Unverified By', `<@!${message.author.id}>`, true)
-            .addField('Reason', reason || 'None!')
+            .addFields([{name: 'Nickname', value: member.nickname || 'None!', inline: true}])
+            .addFields([{name: 'Unverified By', value: `<@!${message.author.id}>`, inline: true}])
+            .addFields([{name: 'Reason', value: reason || 'None!'}])
             .setTimestamp(Date.now());
         member.roles.set([])
             .then(() => member.setNickname(''))

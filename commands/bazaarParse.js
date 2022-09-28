@@ -17,11 +17,13 @@ module.exports = {
         if (!bot.afkChecks[channel.id]) return message.channel.send(`Please wait for the afk check to end before bazaarparsing`)
         let EarlyLocation = bot.afkChecks[channel.id].earlyLocation
         if (!EarlyLocation) return message.channel.send('I do not have any logs of runs for the channel you are currently in. Bazaar parse is only compatable with afk checks made by me.')
-        let parseStatusEmbed = new Discord.MessageEmbed()
+        let parseStatusEmbed = new Discord.EmbedBuilder()
             .setColor(`#00ff00`)
             .setTitle('Bazaar-Parse Status')
-            .addField('Parse by', `${message.member}`)
-            .addField('Status', 'Getting Image')
+            .addFields([
+                { name: 'Parse by', value: `${message.member}` },
+                { name: 'Status', value: 'Getting Image' },
+            ])
         let parseStatusMessage = await message.channel.send({ embeds: [parseStatusEmbed] })
         var image;
         if (message.attachments.size == 0) {
@@ -31,11 +33,11 @@ module.exports = {
         }
         if (image == null) {
             parseStatusEmbed.setColor('#ff0000')
-                .fields[1].value = `Error Getting Image`
+                .data.fields[1].value = `Error Getting Image`
             parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
             return;
         }
-        parseStatusEmbed.fields[1].value = `Sending Image to Google`
+        parseStatusEmbed.data.fields[1].value = `Sending Image to Google`
         parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
         const [result] = await client.textDetection(image)
         var players = result.fullTextAnnotation.text.toLowerCase().replace(/[\n,]/g, " ").split(/ +/)
@@ -43,7 +45,7 @@ module.exports = {
         players.shift()
         players.shift()
 
-        parseStatusEmbed.fields[1].value = `Processing Results`
+        parseStatusEmbed.data.fields[1].value = `Processing Results`
         parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
 
         let crashers = []
@@ -74,23 +76,25 @@ module.exports = {
             }
         }
 
-        let embed = new Discord.MessageEmbed()
+        let embed = new Discord.EmbedBuilder()
             .setTitle('Bazaar Parse')
             .setColor('#00ff00')
-            .addField('Given Location, Not in Bazaar', 'None!')
-            .addField('In Location Early', 'None!')
+            .addFields([
+                { name: 'Given Location, Not in Bazaar', value: 'None!' },
+                { name: 'In Location Early', value: 'None!' },
+            ])
 
         for (let i in supposedToBeThere) {
-            if (embed.fields[0].value == 'None!') embed.fields[0].value = `${supposedToBeThere[i]}`
-            else embed.fields[0].value += `, ${supposedToBeThere[i]}`
+            if (embed.data.fields[0].value == 'None!') embed.data.fields[0].value = `${supposedToBeThere[i]}`
+            else embed.data.fields[0].value += `, ${supposedToBeThere[i]}`
         }
         for (let i in crashers) {
-            if (embed.fields[1].value == 'None!') embed.fields[1].value = `${crashers[i]}`
-            else embed.fields[1].value += `, ${crashers[i]}`
+            if (embed.data.fields[1].value == 'None!') embed.data.fields[1].value = `${crashers[i]}`
+            else embed.data.fields[1].value += `, ${crashers[i]}`
         }
 
         await message.channel.send({ embeds: [embed] })
-        parseStatusEmbed.fields[1].value = 'Parse Complete.'
+        parseStatusEmbed.data.fields[1].value = 'Parse Complete.'
         parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
 
 

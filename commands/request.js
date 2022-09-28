@@ -25,7 +25,7 @@ module.exports = {
         if (!found || !afk) return message.channel.send('No active afk checks found')
 
         //prompt for what emote to request
-        let promptEmbed = new Discord.MessageEmbed()
+        let promptEmbed = new Discord.EmbedBuilder()
             .setDescription('Select a reaction to request')
         let m = await message.channel.send({ embeds: [promptEmbed] })
         let reacts = [afk.afkInfo.keyEmoteID]
@@ -35,7 +35,7 @@ module.exports = {
         let reactionCollector = new Discord.ReactionCollector(m, { filter: (r, u) => !u.bot && reacts.includes(r.emoji.id) })
         reactionCollector.on('collect', async (r, u) => {
             //post in raid status
-            let raidStatusEmbed = new Discord.MessageEmbed()
+            let raidStatusEmbed = new Discord.EmbedBuilder()
                 .setDescription(`A ${r.emoji} has been requested in ${afk.channel}.`)
             let rm = await afk.raidStatus.send({ embeds: [raidStatusEmbed] })
             let rsReactionCollector = new Discord.ReactionCollector(rm, { filter: (re, u) => !u.bot && re.emoji.id == r.emoji.id })
@@ -72,8 +72,8 @@ module.exports = {
         location = location.trim();
         if (location == '') return message.channel.send("Add a location and try again")
         var requestMessage = await raidStatus.send('@here')
-        let embed = new Discord.MessageEmbed()
-            .setAuthor(`Requested by ${message.member.nickname} in ${voiceChannel.name}`, `${message.author.avatarURL()}`)
+        let embed = new Discord.EmbedBuilder()
+            .setAuthor({ name: `Requested by ${message.member.nickname} in ${voiceChannel.name}`, iconURL: `${message.author.avatarURL()}` })
             .setTimestamp()
         switch (args[0].charAt(0).toLowerCase()) {
             case 'k':

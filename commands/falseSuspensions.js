@@ -16,7 +16,7 @@ module.exports = {
         message.guild.members.cache.filter(m => m.roles.cache.has(suspendedId)).each(m => {
             if (!suspendsIds.includes(m.id)) falseSuspends.push(m.id)
         })
-        let embed = new Discord.MessageEmbed()
+        let embed = new Discord.EmbedBuilder()
             .setColor(`#706b60`)
             .setTitle(`False Suspensions`)
             .setDescription(`None!`)
@@ -35,29 +35,29 @@ async function getSuspends(guild, db) {
 }
 
 function fitStringIntoEmbed(embed, string, channel) {
-    if (embed.description == 'None!') {
+    if (embed.data.description == 'None!') {
         embed.setDescription(string)
-    } else if (embed.description.length + `\n${string}`.length >= 2048) {
-        if (embed.fields.length == 0) {
-            embed.addField('-', string)
-        } else if (embed.fields[embed.fields.length - 1].value.length + `\n${string}`.length >= 1024) {
-            if (embed.length + `\n${string}`.length >= 6000) {
+    } else if (embed.data.description.length + `\n${string}`.length >= 2048) {
+        if (embed.data.fields.length == 0) {
+            embed.addFields({ name: '-', value: string })
+        } else if (embed.data.fields[embed.data.fields.length - 1].value.length + `\n${string}`.length >= 1024) {
+            if (embed.data.length + `\n${string}`.length >= 6000) {
                 channel.send({ embeds: [embed] })
                 embed.setDescription('None!')
-                embed.fields = []
+                embed.data.fields = []
             } else {
-                embed.addField('-', string)
+                embed.addFields({ name: '-', value: string })
             }
         } else {
-            if (embed.length + `\n${string}`.length >= 6000) {
+            if (embed.data.length + `\n${string}`.length >= 6000) {
                 channel.send({ embeds: [embed] })
                 embed.setDescription('None!')
-                embed.fields = []
+                embed.data.fields = []
             } else {
-                embed.fields[embed.fields.length - 1].value = embed.fields[embed.fields.length - 1].value.concat(`\n${string}`)
+                embed.data.fields[embed.data.fields.length - 1].value = embed.data.fields[embed.data.fields.length - 1].value.concat(`\n${string}`)
             }
         }
     } else {
-        embed.setDescription(embed.description.concat(`\n${string}`))
+        embed.setDescription(embed.data.description.concat(`\n${string}`))
     }
 }

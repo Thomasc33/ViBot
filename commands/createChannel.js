@@ -38,12 +38,12 @@ module.exports = {
                 let channel = await createChannel(name, isVet, message, bot)
 
                 //post a message in raid status
-                let embed = new Discord.MessageEmbed()
+                let embed = new Discord.EmbedBuilder()
                     .setColor('#eeeeee')
-                    .setAuthor(`${name}`)
+                    .setAuthor({ name: `${name}` })
                     .setDescription(`Join \`${channel.name}\` to participate`)
-                    .addField('Status', '**Closed**')
-                    .setFooter('Started at')
+                    .addFields({ name: 'Status', value: '**Closed**' })
+                    .setFooter({ text: 'Started at' })
                     .setTimestamp(Date.now())
                 let raidStatus
                 if (isVet) raidStatus = message.guild.channels.cache.get(settings.channels.vetstatus)
@@ -123,7 +123,7 @@ module.exports = {
                                     .then(eventBoi && settings.backend.giveEventRoleOnDenial2 ? channel.channel.permissionOverwrites.edit(eventBoi.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)) : null)
 
                                 //edit message in raid status
-                                channel.embed.fields[0].value = '**Open**'
+                                channel.embed.data.fields[0].value = '**Open**'
                                 channel.message.edit({ content: '@here', embeds: [channel.embed] })
 
                                 if (!bot.afkChecks[channel.channelId]) bot.afkChecks[channel.channelId] = {}
@@ -155,7 +155,7 @@ module.exports = {
                         .then(eventBoi && settings.backend.giveEventRoleOnDenial2 ? channel.channel.permissionOverwrites.edit(eventBoi.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)) : null)
 
                     //edit message in raid status
-                    channel.embed.fields[0].value = '**Closed**'
+                    channel.embed.data.fields[0].value = '**Closed**'
                     channel.message.edit({ content: null, embeds: [channel.embed] })
                     if (bot.afkChecks[channel.channelId]) {
                         bot.afkChecks[channel.channelId].active = false;
@@ -308,7 +308,7 @@ async function createChannel(name, isVet, message, bot) {
         if (!template) return rej(`Template channel not found`)
         let channel = await template.clone({
             name: `${name}`,
-            parent: message.guild.channels.cache.filter(c => c.type == 'GUILD_CATEGORY').find(c => c.name.toLowerCase() === parent).id,
+            parent: message.guild.channels.cache.filter(c => c.type == Discord.ChannelType.GuildCategory).find(c => c.name.toLowerCase() === parent).id,
             userLimit: 50
         }).then(c => c.setPosition(lounge.position + 1))
 
@@ -319,9 +319,9 @@ async function createChannel(name, isVet, message, bot) {
         if (eventBoi && settings.backend.giveEventRoleOnDenial2) channel.permissionOverwrites.edit(eventBoi.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
 
         //Embed to remove
-        let embed = new Discord.MessageEmbed()
+        let embed = new Discord.EmbedBuilder()
             .setDescription(`Whenever the run is over. React with the ❌ to delete the channel. View the timestamp for more information`)
-            .setFooter(channel.id)
+            .setFooter({ text: channel.id })
             .setTimestamp()
             .setTitle(channel.name)
             .setColor(`#eeeeee`)

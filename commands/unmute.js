@@ -23,7 +23,7 @@ module.exports = {
         db.query(`SELECT * FROM mutes WHERE id = '${member.id}' AND muted = true`, async (err, rows) => {
             if (err) ErrorLogger.log(err, bot)
             if (!rows || rows.length == 0) {
-                let embed = new Discord.MessageEmbed()
+                let embed = new Discord.EmbedBuilder()
                     .setTitle('Confirm Action')
                     .setColor('#ff0000')
                     .setDescription(`I don't have any log of ${member} being muted. Are you sure you want to unmute them?`)
@@ -40,7 +40,7 @@ module.exports = {
             } else {
                 const reason = rows[0].reason
                 const unmuteDate = new Date(rows[0].uTime)
-                let embed = new Discord.MessageEmbed()
+                let embed = new Discord.EmbedBuilder()
                     .setTitle('Confirm Action')
                     .setColor('#ff0000')
                     .setDescription(`Are you sure you want to unmute ${member}\nReason: ${reason}\nMuted by <@!${rows[0].modid}>\nMuted until: ${unmuteDate.toDateString()}`)

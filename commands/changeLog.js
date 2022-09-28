@@ -51,7 +51,7 @@ module.exports = {
         query += `WHERE id = '${member.id}'`
 
         //confirm
-        let confirmEmbed = new Discord.MessageEmbed()
+        let confirmEmbed = new Discord.EmbedBuilder()
             .setTitle(`Confirm Action`)
             .setDescription(`${args[1]} ${count} ${logTypes[logIndex]} to ${member}`)
         let confirmMessage = await message.channel.send({ embeds: [confirmEmbed] })
@@ -65,7 +65,7 @@ module.exports = {
                 if (operator != 's') {
                     for (let i of currentweek) {
                         if (i.case == logTypes[logIndex]) {
-                            let currentWeekConfirmEmbed = new Discord.MessageEmbed()
+                            let currentWeekConfirmEmbed = new Discord.EmbedBuilder()
                                 .setTitle('Confirm Action')
                                 .setDescription('Do you also want to add/remove this from currentweek?')
                             let currentweekConfirmMessage = await message.channel.send({ embeds: [currentWeekConfirmEmbed] })

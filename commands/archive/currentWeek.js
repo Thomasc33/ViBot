@@ -53,13 +53,12 @@ module.exports = {
         if (!leaderLog) return console.log('Channel not found');
         await this.sendEmbed(leaderLog, db, bot, true)
         const rolling = quota.values.filter(v => v.rolling);
-        if (rolling.length)
-        {
+        if (rolling.length) {
             const ignore = await excuses.getIgnore(guild.id, db);
 
             const query = `UPDATE users SET ${rolling[0].column} = GREATEST(` + quota.values.filter(v => !v.rolling).map(v => `(${v.column}*${v.value})`).join(' + ') + ' - ' + quota.quota + ', 0)';
 
-            await db.query(ignore ? `UPDATE users SET ${rolling[0].column} = 0` : query ,(err, rows) => { console.log(err) });
+            await db.query(ignore ? `UPDATE users SET ${rolling[0].column} = 0` : query, (err, rows) => { console.log(err) });
         }
         let q = `UPDATE users SET ${quota.values.filter(v => !v.rolling).map(v => `${v.column} = 0`).join(', ')}`
         await db.query(q)
@@ -85,39 +84,39 @@ module.exports = {
         const quota = raidingQuotas[0];
         let csvData = 'Leader ID,Leader Nickname,Total\n';
         return new Promise(async (resolve, reject) => {
-            let embed = new Discord.MessageEmbed()
+            let embed = new Discord.EmbedBuilder()
                 .setColor('#00ff00')
                 .setTitle('This weeks current logged runs!')
                 .setDescription('None!')
-                .setFooter(`##### Total Runs`);
+                .setFooter({ text: `##### Total Runs` });
             const embeds = [];
             //Timestamp embed start
-            if(!bot.settings[guild.id].backend.raidResetBiweekly && !bot.settings[guild.id].backend.raidResetMonthly) {
+            if (!bot.settings[guild.id].backend.raidResetBiweekly && !bot.settings[guild.id].backend.raidResetMonthly) {
                 let curtime = moment().unix();
-                let utc_days_till_sunday = 7-((Math.floor(curtime/86400)+4)%7);
-                let utc_close_to_next_sunday = curtime + utc_days_till_sunday*86400;
-                let utc_next_sunday = Math.floor(utc_close_to_next_sunday/86400)*86400;
-                let est_next_sunday = utc_next_sunday+18000;
-                fitStringIntoEmbed(embeds,embed,`Quota reset <t:${est_next_sunday}:R>\n`);
-            } else if(bot.settings[guild.id].backend.raidResetBiweekly) {
+                let utc_days_till_sunday = 7 - ((Math.floor(curtime / 86400) + 4) % 7);
+                let utc_close_to_next_sunday = curtime + utc_days_till_sunday * 86400;
+                let utc_next_sunday = Math.floor(utc_close_to_next_sunday / 86400) * 86400;
+                let est_next_sunday = utc_next_sunday + 18000;
+                fitStringIntoEmbed(embeds, embed, `Quota reset <t:${est_next_sunday}:R>\n`);
+            } else if (bot.settings[guild.id].backend.raidResetBiweekly) {
                 let curtime = moment().unix();
-                const day = 60*60*24;
-                const week = day*7;
-                const two_week = week*2;
-                let utc_biweek = Math.floor((curtime-18000-3*day-week)/two_week);
-                let utc_next_biweek_sunday = utc_biweek*two_week + 3*day + week + two_week;
-                let est_next_biweek_sunday = utc_next_biweek_sunday + 18000 - 60*60;
-                fitStringIntoEmbed(embeds,embed,`Quota reset <t:${est_next_biweek_sunday}:R>\n`);
-            } else if(bot.settings[guild.id].backend.raidResetMonthly) {
+                const day = 60 * 60 * 24;
+                const week = day * 7;
+                const two_week = week * 2;
+                let utc_biweek = Math.floor((curtime - 18000 - 3 * day - week) / two_week);
+                let utc_next_biweek_sunday = utc_biweek * two_week + 3 * day + week + two_week;
+                let est_next_biweek_sunday = utc_next_biweek_sunday + 18000 - 60 * 60;
+                fitStringIntoEmbed(embeds, embed, `Quota reset <t:${est_next_biweek_sunday}:R>\n`);
+            } else if (bot.settings[guild.id].backend.raidResetMonthly) {
                 let today = new Date();
                 let next_month;
-                if(today.getMonth() == 12) {
+                if (today.getMonth() == 12) {
                     next_month = new Date(today.getFullYear() + 1, 0, 1);
                 } else {
                     next_month = new Date(today.getFullYear(), today.getMonth() + 1, 1);
                 }
-                let next_month_as_unix = ((next_month.getTime()/1000) - 7200).toFixed(0);
-                fitStringIntoEmbed(embeds,embed,'Quota reset <t:'+next_month_as_unix+':R>\n');
+                let next_month_as_unix = ((next_month.getTime() / 1000) - 7200).toFixed(0);
+                fitStringIntoEmbed(embeds, embed, 'Quota reset <t:' + next_month_as_unix + ':R>\n');
             }
             //Timestamp embed end
             const combine = quota.values.map(v => `(${v.column}*${v.value})`).join(' + ') + ' as total';
@@ -128,8 +127,8 @@ module.exports = {
                     const user = rows[idx];
                     csvData += `${user.id},${channel.guild.members.cache.get(user.id)?.nickname},${user.total}\n`;
                     let result = `**[${parseInt(idx) + 1}]** <@!${user.id}>:\nRaids: \`${user.total}\` (` +
-                        quota.values.map(v => `${v.name}: \`${user[v.column]||0}\``).join(', ') + ')';
-                    runCount += quota.values.map(v => v.isRun ? user[v.column] : 0).reduce((a, b) => a+b, 0);
+                        quota.values.map(v => `${v.name}: \`${user[v.column] || 0}\``).join(', ') + ')';
+                    runCount += quota.values.map(v => v.isRun ? user[v.column] : 0).reduce((a, b) => a + b, 0);
                     fitStringIntoEmbed(embeds, embed, result);
                 }
 
@@ -140,8 +139,8 @@ module.exports = {
                         fitStringIntoEmbed(embeds, embed, `<@!${m.id}> has not logged any runs or been assisted this week`)
                     }
                 })
-                embed.setFooter(`${runCount} Total Runs`)
-                embeds.push(new Discord.MessageEmbed(embed))
+                embed.setFooter({ text: `${runCount} Total Runs` })
+                embeds.push(new Discord.EmbedBuilder(embed))
 
                 if (channel.id == settings.channels.currentweek) {
                     try {
@@ -182,7 +181,7 @@ module.exports = {
                     } catch (er) { console.log(er) }
                 } else for (let i in embeds) channel.send({ embeds: [embeds[i]] })
                 if (nw)
-                    channel.send({ files: [new Discord.MessageAttachment(Buffer.from(csvData, "utf-8"),"currentweekResetData.csv")] })
+                    channel.send({ files: [new Discord.MessageAttachment(Buffer.from(csvData, "utf-8"), "currentweekResetData.csv")] })
                 resolve(true);
             });
         });
@@ -190,23 +189,23 @@ module.exports = {
 }
 
 function fitStringIntoEmbed(embeds, embed, string) {
-    if (embed.description == 'None!') embed.setDescription(string)
-    else if (embed.description.length + `\n${string}`.length >= 2048) {//change to 2048
-        if (embed.fields.length == 0) embed.addField('-', string)
-        else if (embed.fields[embed.fields.length - 1].value.length + `\n${string}`.length >= 1024) { //change to 1024
-            if (embed.length + `\n${string}`.length >= 6000) {//change back to 6k
-                embeds.push(new Discord.MessageEmbed(embed))
+    if (embed.data.description == 'None!') embed.setDescription(string)
+    else if (embed.data.description.length + `\n${string}`.length >= 2048) {//change to 2048
+        if (embed.data.fields.length == 0) embed.addFields({ name: '-', value: string })
+        else if (embed.data.fields[embed.data.fields.length - 1].value.length + `\n${string}`.length >= 1024) { //change to 1024
+            if (embed.data.length + `\n${string}`.length >= 6000) {//change back to 6k
+                embeds.push(new Discord.EmbedBuilder(embed))
                 embed.setDescription('None!')
-                embed.fields = []
-            } else embed.addField('-', string)
+                embed.data.fields = []
+            } else embed.addFields({ name: '-', value: string })
         } else {
-            if (embed.length + `\n${string}`.length >= 6000) { //change back to 6k
-                embeds.push(new Discord.MessageEmbed(embed))
+            if (embed.data.length + `\n${string}`.length >= 6000) { //change back to 6k
+                embeds.push(new Discord.EmbedBuilder(embed))
                 embed.setDescription('None!')
-                embed.fields = []
-            } else embed.fields[embed.fields.length - 1].value = embed.fields[embed.fields.length - 1].value.concat(`\n${string}`)
+                embed.data.fields = []
+            } else embed.data.fields[embed.data.fields.length - 1].value = embed.data.fields[embed.data.fields.length - 1].value.concat(`\n${string}`)
         }
-    } else embed.setDescription(embed.description.concat(`\n${string}`))
+    } else embed.setDescription(embed.data.description.concat(`\n${string}`))
 }
 
 function cleanString(str) {

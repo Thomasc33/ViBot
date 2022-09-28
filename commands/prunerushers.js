@@ -25,20 +25,20 @@ module.exports = {
         if (inactiveRushers.length == 0) {
             message.channel.send(`No rushers to prune!`)
             return;
-        } 
+        }
         //Create Embed
-        let embed = new Discord.MessageEmbed()
+        let embed = new Discord.EmbedBuilder()
             .setColor('#BF40BF')
             .setTitle('Prune Rushers')
             .setDescription('Prune Inactive Rushers? \n')
-            .setFooter(`Please react ${message.member.name}!`)
-        
+            .setFooter({ text: `Please react ${message.member.name}!` })
+
         inactiveRushers.forEach(rusher => {
-            embed.description += `${message.guild.members.cache.get(rusher.id)}\n` 
+            embed.data.description += `${message.guild.members.cache.get(rusher.id)}\n`
         })
-        
+
         let embedMessage = await message.channel.send({ embeds: [embed] })
-        if (await embedMessage.confirm( message.author.id)) {
+        if (await embedMessage.confirm(message.author.id)) {
             this.purgeRushers(message.guild.id, db, settings.numerical.prunerushersoffset)
             //Remove Rusher roles
             for (let rusher of inactiveRushers) {
@@ -49,9 +49,9 @@ module.exports = {
                     }, 1500)
                 })
             }
-            embed.setFooter('Purge Completed!')
+            embed.setFooter({ text: 'Purge Completed!' })
         } else {
-            embed.setFooter('Purge Canceled!')
+            embed.setFooter({ text: 'Purge Canceled!' })
         }
     },
     //DB Query for Rushers

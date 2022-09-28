@@ -16,7 +16,7 @@ module.exports = {
                 users.push(user)
             }
         })
-        let embed = new Discord.MessageEmbed()
+        let embed = new Discord.EmbedBuilder()
             .setColor('#fefefe')
             .setTitle('No Nicknames')
         if (users.length) {
@@ -25,7 +25,7 @@ module.exports = {
                 let u = users[i];
                 usersString = usersString.concat(`${u}, `)
             }
-            embed.addField('Users', usersString)
+            embed.addFields([{name: 'Users', value: usersString}])
         } else {
             embed.setDescription(`No users found with ${message.guild.roles.cache.get(settings.roles.raider)} and no nickname`)
         }

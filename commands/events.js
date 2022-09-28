@@ -10,7 +10,7 @@ module.exports = {
         this.send(message.channel, bot, args.length && args[0].toLowerCase() == 'exalts');
     },
     send(channel, bot, onlyExalts) {
-        let embed = new Discord.MessageEmbed()
+        let embed = new Discord.EmbedBuilder()
             .setColor('#ff0000')
             .setTitle('Current event run types')
         for (let x in Events) if (Events[x].enabled) {
@@ -33,18 +33,18 @@ module.exports = {
 }
 
 function fitStringIntoEmbed(embed, string) {
-    if (embed.fields.length == 0) embed.addField('** **', string, true)
-    else if (embed.fields[embed.fields.length - 1].value.length + `\n${string}`.length >= 1024) { //change to 1024
-        if (embed.length + `\n${string}`.length >= 6000) {//change back to 6k
-            embeds.push(new Discord.MessageEmbed(embed))
+    if (embed.data.fields.length == 0) embed.addFields({ name: '** **', value: string, inline: true })
+    else if (embed.data.fields[embed.data.fields.length - 1].value.length + `\n${string}`.length >= 1024) {
+        if (embed.data.length + `\n${string}`.length >= 6000) {
+            embeds.push(new Discord.EmbedBuilder(embed))
             embed.setDescription('None!')
-            embed.fields = []
-        } else embed.addField('** **', string, true)
+            embed.data.fields = []
+        } else embed.addFields({ name: '** **', value: string, inline: true })
     } else {
-        if (embed.length + `\n${string}`.length >= 6000) { //change back to 6k
-            embeds.push(new Discord.MessageEmbed(embed))
+        if (embed.data.length + `\n${string}`.length >= 6000) {
+            embeds.push(new Discord.EmbedBuilder(embed))
             embed.setDescription('None!')
-            embed.fields = []
-        } else embed.fields[embed.fields.length - 1].value = embed.fields[embed.fields.length - 1].value.concat(`\n${string}`)
+            embed.data.fields = []
+        } else embed.data.fields[embed.data.fields.length - 1].value = embed.data.fields[embed.data.fields.length - 1].value.concat(`\n${string}`)
     }
 }

@@ -14,8 +14,8 @@ module.exports = {
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         let toUpdate = 0
-        var embed = new Discord.MessageEmbed().setAuthor(message.member.nickname, message.author.avatarURL() || null)
-        let currentWeekEmbed = new Discord.MessageEmbed()
+        var embed = new Discord.EmbedBuilder().setAuthor({ name: message.member.nickname, iconURL: message.author.avatarURL() || undefined })
+        let currentWeekEmbed = new Discord.EmbedBuilder()
         let count = 1;
         var desc = '`Successful` Run'
         let promises = []
@@ -53,7 +53,7 @@ module.exports = {
                     if (err) { res(null); return message.channel.send(`Error: ${err}`) }
                     if (rows.length < 1) { res(null); return message.channel.send('Current week stats could not be retrived. However, run was still logged') }
                     currentWeekEmbed.setDescription(`Run Logged for ${`<@!${message.author.id}>`}${message.member.nickname ? ` \`${message.member.nickname}\`` : ''}`)
-                        .addField('Current week:', run.toDisplay.map(c => ` \`${rows[0][c]}\` ${c.replace('currentweek', '')}`).join('\n'))
+                        .addFields({ name: 'Current week:', value: run.toDisplay.map(c => ` \`${rows[0][c]}\` ${c.replace('currentweek', '')}`).join('\n') })
                         .setTimestamp()
                         .setColor(run.color)
                     if (run.icon) currentWeekEmbed.setThumbnail(run.icon)
@@ -77,9 +77,9 @@ module.exports = {
                             if (err) return res(null)
                             db.query(`SELECT ${guildInfo.assist.currentweek} FROM users WHERE id = '${m.id}'`, (err, rows) => {
                                 let s = `<@!${m.id}>${m.nickname ? ` \`${m.nickname}\`` : ''}. Current week: ${rows[0][guildInfo.assist.currentweek]} Assists`
-                                if (currentWeekEmbed.fields.length == 1) currentWeekEmbed.addField('Assists', s)
+                                if (currentWeekEmbed.fields.length == 1) currentWeekEmbed.addFields([{name: 'Assists', value: s}])
                                 else if (currentWeekEmbed.fields[currentWeekEmbed.fields.length - 1].value.length + s.length <= 1024) currentWeekEmbed.fields[currentWeekEmbed.fields.length - 1].value = currentWeekEmbed.fields[currentWeekEmbed.fields.length - 1].value.concat(`\n${s}`)
-                                else currentWeekEmbed.addField('** **', s)
+                                else currentWeekEmbed.addFields([{name: '** **', value: s}])
                                 res(null)
                             })
                         })
@@ -93,7 +93,7 @@ module.exports = {
         embed.setDescription(desc)
         message.channel.send({ embeds: [currentWeekEmbed] })
         const logChannel = message.guild.channels.cache.get(settings.channels.leadinglog)
-        if (logChannel) 
+        if (logChannel)
             logChannel.send({ embeds: [embed] })
         if (!toUpdate) return
 
@@ -101,18 +101,18 @@ module.exports = {
             const runQuota = quotas[message.guild.id].quotas.filter(q => q.id == toUpdate)
             if (runQuota)
                 quota.update(message.guild, db, bot, settings, quotas[message.guild.id], runQuota[0]);
-        } 
+        }
     }
 }
 
 function confirm(runInfo, message, count) {
     return new Promise(async (res, rej) => {
         const multiplier = runInfo.multiply === null ? 1 : runInfo.multiply;
-        let confirmEmbed = new Discord.MessageEmbed()
+        let confirmEmbed = new Discord.EmbedBuilder()
             .setColor(runInfo.color)
             .setTitle('Confirm')
             .setDescription(`Are you sure you want to log ${parseInt(count) * multiplier} ${runInfo.confirmSuffix}?`)
-            .setFooter(message.member.nickname)
+            .setFooter({ text: message.member.nickname })
             .setTimestamp()
         let confirmMessage = await message.channel.send({ embeds: [confirmEmbed] })
         let confirmCollector = new Discord.ReactionCollector(confirmMessage, { filter: (r, u) => !u.bot && u.id == message.author.id && (r.emoji.name === '✅' || r.emoji.name === '❌') })

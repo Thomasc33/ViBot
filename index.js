@@ -42,23 +42,30 @@ const prefix = botSettings.prefix
 const cooldowns = new Discord.Collection()
 const bot = new Discord.Client({
     intents: [ // Discord moment
-        Discord.Intents.FLAGS.GUILDS,
-        Discord.Intents.FLAGS.GUILD_MEMBERS,
-        Discord.Intents.FLAGS.GUILD_BANS,
-        Discord.Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
-        Discord.Intents.FLAGS.GUILD_INTEGRATIONS,
-        Discord.Intents.FLAGS.GUILD_WEBHOOKS,
-        Discord.Intents.FLAGS.GUILD_INVITES,
-        Discord.Intents.FLAGS.GUILD_VOICE_STATES,
-        Discord.Intents.FLAGS.GUILD_PRESENCES,
-        Discord.Intents.FLAGS.GUILD_MESSAGES,
-        Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-        Discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
-        Discord.Intents.FLAGS.DIRECT_MESSAGES,
-        Discord.Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
-        Discord.Intents.FLAGS.DIRECT_MESSAGE_TYPING
+        Discord.GatewayIntentBits.Guilds,
+        Discord.GatewayIntentBits.GuildMembers,
+        Discord.GatewayIntentBits.GuildBans,
+        Discord.GatewayIntentBits.GuildEmojisAndStickers,
+        Discord.GatewayIntentBits.GuildIntegrations,
+        Discord.GatewayIntentBits.GuildWebhooks,
+        Discord.GatewayIntentBits.GuildInvites,
+        Discord.GatewayIntentBits.GuildVoiceStates,
+        Discord.GatewayIntentBits.GuildPresences,
+        Discord.GatewayIntentBits.GuildMessages,
+        Discord.GatewayIntentBits.GuildMessageReactions,
+        Discord.GatewayIntentBits.GuildMessageTyping,
+        Discord.GatewayIntentBits.DirectMessages,
+        Discord.GatewayIntentBits.DirectMessageReactions,
+        Discord.GatewayIntentBits.DirectMessageTyping,
+        Discord.GatewayIntentBits.MessageContent,
     ],
-    partials: ['USER', 'CHANNEL', 'GUILD_MEMBER', 'MESSAGE', 'REACTION']
+    partials: [
+        Discord.Partials.User,
+        Discord.Partials.Channel,
+        Discord.Partials.GuildMember,
+        Discord.Partials.Message,
+        Discord.Partials.Reaction
+    ]
 })
 bot.commands = new Discord.Collection()
 bot.dbs = {}
@@ -80,7 +87,7 @@ for (const file of commandFiles) {
 // Bot Event Handlers
 bot.on('messageCreate', message => {
     try {
-        if (!message.channel.type.startsWith('GUILD')) {
+        if (!message.channel.type == Discord.ChannelType.GuildText) {
             try {
                 return dmHandler(message);
             } catch (er) {
@@ -205,8 +212,8 @@ bot.on("ready", async () => {
                                         } else {
                                             let embed = m.embeds.shift();
                                             embed.setColor('#00ff00')
-                                                .setDescription(embed.description.concat(`\nUn-vet-banned automatically`))
-                                                .setFooter('Unsuspended at')
+                                                .setDescription(embed.data.description.concat(`\nUn-vet-banned automatically`))
+                                                .setFooter({ text: 'Unsuspended at' })
                                                 .setTimestamp(Date.now())
                                             m.edit({ embeds: [embed] })
                                         }
@@ -263,8 +270,8 @@ bot.on("ready", async () => {
                                         } else {
                                             let embed = m.embeds.shift();
                                             embed.setColor('#00ff00')
-                                                .setDescription(embed.description.concat(`\nUnsuspended automatically`))
-                                                .setFooter('Unsuspended at')
+                                                .setDescription(embed.data.description.concat(`\nUnsuspended automatically`))
+                                                .setFooter({ text: 'Unsuspended at' })
                                                 .setTimestamp(Date.now())
                                             m.edit({ embeds: [embed] })
                                         }
@@ -463,7 +470,7 @@ bot.on('messageReactionAdd', async (r, u) => {
                 else content[i] = content[i].toUpperCase()
             } catch (er) { console.log(er) }
         }
-        let spongemockEmbed = new Discord.MessageEmbed()
+        let spongemockEmbed = new Discord.EmbedBuilder()
             .setColor('#FDF300')
             .setDescription(content.join(''))
             .setThumbnail('https://res.cloudinary.com/nashex/image/upload/v1613698392/assets/759584001131544597_im3kgg.png')
@@ -473,7 +480,7 @@ bot.on('messageReactionAdd', async (r, u) => {
 })
 
 bot.on('typingStart', (c, u) => {
-    if (c.type !== 'DM' || u.bot || verification.checkActive(u.id)) return
+    if (c.type !== Discord.ChannelType.DM || u.bot || verification.checkActive(u.id)) return
     c.startTyping()
     setTimeout(() => {
         c.stopTyping()
@@ -588,10 +595,10 @@ async function dmHandler(message) {
             message.channel.send('This command does not work in DM\'s. Please use this inside of a server')
         }
         async function sendModMail() {
-            let confirmModMailEmbed = new Discord.MessageEmbed()
+            let confirmModMailEmbed = new Discord.EmbedBuilder()
                 .setColor(`#ff0000`)
                 .setTitle('Are you sure you want to message modmail?')
-                .setFooter('Spamming modmail with junk will result in being modmail blacklisted')
+                .setFooter({ text: 'Spamming modmail with junk will result in being modmail blacklisted' })
                 .setDescription(`\`\`\`${message.content}\`\`\``)
             let guild = await getGuild(message).catch(er => { cancelled = true })
             let confirmModMailMessage = await message.channel.send({ embeds: [confirmModMailEmbed] })
@@ -616,11 +623,11 @@ async function dmHandler(message) {
     }
     async function logCommand(guild) {
         if (!guild || !bot.settings[guild.id]) return
-        let logEmbed = new Discord.MessageEmbed()
-            .setAuthor(message.author.tag)
+        let logEmbed = new Discord.EmbedBuilder()
+            .setAuthor({ name: message.author.tag })
             .setColor('#0000ff')
             .setDescription(`<@!${message.author.id}> sent the bot: "${message.content}"`)
-            .setFooter(`User ID: ${message.author.id}`)
+            .setFooter({ text: `User ID: ${message.author.id}` })
             .setTimestamp()
         if (message.author.avatarURL()) logEmbed.author.iconURL = message.author.avatarURL()
         guild.channels.cache.get(bot.settings[guild.id].channels.dmcommands).send({ embeds: [logEmbed] }).catch(er => { ErrorLogger.log(new Error(`Unable to find/send in settings.channels.dmcommands channel for ${guild.id}`), bot) })
@@ -687,12 +694,12 @@ async function getGuild(message) {
         if (guilds.length == 0) reject('We dont share any servers')
         else if (guilds.length == 1) resolve(guilds[0])
         else {
-            let guildSelectionEmbed = new Discord.MessageEmbed()
+            let guildSelectionEmbed = new Discord.EmbedBuilder()
                 .setTitle('Please select a server')
                 .setColor('#fefefe')
                 .setDescription('None!')
-                .setFooter('React with the number corresponding to the target guild')
-            if (guilds.length > 10) guildSelectionEmbed.setFooter('Please type the number corresponding to the target guild')
+                .setFooter({ text: 'React with the number corresponding to the target guild' })
+            if (guilds.length > 10) guildSelectionEmbed.setFooter({ text: 'Please type the number corresponding to the target guild' })
             for (let i in guilds) {
                 g = guilds[i]
                 fitStringIntoEmbed(guildSelectionEmbed, `**${parseInt(i) + 1}:** ${g.name}`, message.channel)
@@ -826,30 +833,30 @@ async function getGuild(message) {
  * @param {Discord.TextChannel} channel 
  */
 function fitStringIntoEmbed(embed, string, channel) {
-    if (embed.description == 'None!') {
+    if (embed.data.description == 'None!') {
         embed.setDescription(string)
-    } else if (embed.description.length + `\n${string}`.length >= 2048) {
-        if (embed.fields.length == 0) {
-            embed.addField('-', string)
-        } else if (embed.fields[embed.fields.length - 1].value.length + `\n${string}`.length >= 1024) {
-            if (embed.length + `\n${string}`.length >= 6000) {
+    } else if (embed.data.description.length + `\n${string}`.length >= 2048) {
+        if (embed.data.fields.length == 0) {
+            embed.addFields({ name: '-', value: string })
+        } else if (embed.data.fields[embed.data.fields.length - 1].value.length + `\n${string}`.length >= 1024) {
+            if (embed.data.length + `\n${string}`.length >= 6000) {
                 channel.send({ embeds: [embed] })
                 embed.setDescription('None!')
-                embed.fields = []
+                embed.data.fields = []
             } else {
-                embed.addField('-', string)
+                embed.addFields({ name: '-', value: string })
             }
         } else {
-            if (embed.length + `\n${string}`.length >= 6000) {
+            if (embed.data.length + `\n${string}`.length >= 6000) {
                 channel.send({ embeds: [embed] })
                 embed.setDescription('None!')
-                embed.fields = []
+                embed.data.fields = []
             } else {
-                embed.fields[embed.fields.length - 1].value = embed.fields[embed.fields.length - 1].value.concat(`\n${string}`)
+                embed.data.fields[embed.data.fields.length - 1].value = embed.data.fields[embed.data.fields.length - 1].value.concat(`\n${string}`)
             }
         }
     } else {
-        embed.setDescription(embed.description.concat(`\n${string}`))
+        embed.setDescription(embed.data.description.concat(`\n${string}`))
     }
 }
 

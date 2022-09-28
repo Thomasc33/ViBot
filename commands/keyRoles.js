@@ -20,13 +20,13 @@ module.exports = {
         if (args.length == 0) {
             const popInfo = data[message.guild.id];
             console.log(popInfo);
-            let keyCountEmbed = new Discord.MessageEmbed().setAuthor(`The ${message.guild.name} server has the following key roles configured:\n`).setDescription("").setColor('#ff0000')
+            let keyCountEmbed = new Discord.EmbedBuilder().setAuthor({ name: `The ${message.guild.name} server has the following key roles configured:\n` }).setDescription("").setColor('#ff0000')
             if (!popInfo || !popInfo.length) keyCountEmbed.description += `No key roles have been setup in this Discord server.`;
             else {
                 let found = 0;
                 for (const keyInfo of popInfo) {
                     if (!settings.roles[keyInfo.role]) continue;
-                    keyCountEmbed.description += `<@&${settings.roles[keyInfo.role]}>: ${keyInfo.amount} ${keyInfo.types.map(t => t[1]).join(", ")}${keyInfo.types.length > 1?" Combined" : ""}\n`
+                    keyCountEmbed.description += `<@&${settings.roles[keyInfo.role]}>: ${keyInfo.amount} ${keyInfo.types.map(t => t[1]).join(", ")}${keyInfo.types.length > 1 ? " Combined" : ""}\n`
                     found++
                 }
                 if (!found)
@@ -129,10 +129,10 @@ module.exports = {
 }
 
 function checkRow(guild, bot, row, member) {
-    return new Promise(async(res) => {
+    return new Promise(async (res) => {
         const settings = bot.settings[guild.id];
         const popInfo = data[guild.id];
-        member = member || await guild.members.fetch(row.id).catch(e => {});
+        member = member || await guild.members.fetch(row.id).catch(e => { });
         if (!settings || !popInfo || !member) return;
         const rolesToAdd = [];
         for (const keyInfo of popInfo) {

@@ -81,7 +81,7 @@ module.exports = {
         return new Promise((resolve, reject) => {
             db.query(`SELECT * FROM users WHERE id = '${member.id}'`, async (err, rows) => {
                 if (err || (rows && rows.length == 0)) reject()
-                let pointEmbed = new Discord.MessageEmbed()
+                let pointEmbed = new Discord.EmbedBuilder()
                     .setColor('#015c21')
                     .setDescription(`<${botSettings.emote.hallsPortal}> __**Points for <@!${rows[0].id}> on Pub Halls**__ <${botSettings.emote.hallsPortal}>\n**Points:** ${rows[0].points}`)
                 resolve(pointEmbed)

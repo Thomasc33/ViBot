@@ -30,7 +30,7 @@ module.exports = {
         async listAll(message, args, bot, db) {
             db.query(`SELECT * FROM veriblacklist`, async(err, rows) => {
                 if (err) ErrorLogger.log(err, bot)
-                let embed = new Discord.MessageEmbed()
+                let embed = new Discord.EmbedBuilder()
                     .setTitle(`Expelled / Veriblacklisted users`)
                     .setDescription('None!')
                 for (let i in rows) {
@@ -42,7 +42,7 @@ module.exports = {
         async listUsers(message, args, bot, db) {
             db.query(`SELECT * FROM veriblacklist WHERE id IN (${args.map(a => `'${a}'`).join(', ')})`, async(err, rows) => {
             if (err) ErrorLogger.log(err, bot);
-            let embed = new Discord.MessageEmbed()
+            let embed = new Discord.EmbedBuilder()
                 .setTitle(`Expelled / Veriblacklisted users`)
                 .setDescription('None!');
 
@@ -79,29 +79,29 @@ module.exports = {
 }
 
 function fitStringIntoEmbed(embed, string, channel, join) {
-    if (embed.description == 'None!') {
+    if (embed.data.description == 'None!') {
         embed.setDescription(string)
-    } else if (embed.description.length + `${join}${string}`.length >= 2048) {
-        if (embed.fields.length == 0) {
-            embed.addField('-', string)
-        } else if (embed.fields[embed.fields.length - 1].value.length + `${join}${string}`.length >= 1024) {
-            if (embed.length + `${join}${string}`.length >= 6000) {
+    } else if (embed.data.description.length + `${join}${string}`.length >= 2048) {
+        if (embed.data.fields.length == 0) {
+            embed.addFields({ name: '-', value: string })
+        } else if (embed.data.fields[embed.data.fields.length - 1].value.length + `${join}${string}`.length >= 1024) {
+            if (embed.data.length + `${join}${string}`.length >= 6000) {
                 channel.send({ embeds: [embed] })
                 embed.setDescription('None!')
-                embed.fields = []
+                embed.data.fields = []
             } else {
-                embed.addField('-', string)
+                embed.addFields({ name: '-', value: string })
             }
         } else {
-            if (embed.length + `${join}${string}`.length >= 6000) {
+            if (embed.data.length + `${join}${string}`.length >= 6000) {
                 channel.send({ embeds: [embed] })
                 embed.setDescription('None!')
-                embed.fields = []
+                embed.data.fields = []
             } else {
-                embed.fields[embed.fields.length - 1].value = embed.fields[embed.fields.length - 1].value.concat(`${join}${string}`)
+                embed.data.fields[embed.data.fields.length - 1].value = embed.data.fields[embed.data.fields.length - 1].value.concat(`${join}${string}`)
             }
         }
     } else {
-        embed.setDescription(embed.description.concat(`${join}${string}`))
+        embed.setDescription(embed.data.description.concat(`${join}${string}`))
     }
 }
