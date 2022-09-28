@@ -43,8 +43,10 @@ module.exports = {
             if (command.args) commandPanel.addField('Args', command.args)
             if (command.getNotes && command.getNotes(message.guild.id, message.member)) commandPanel.addField('Special Notes', command.getNotes(message.guild.id, message.member))
 
+            var roleOverride = message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.roleOverride[message.guildId]])
             var minimumRole = message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role])
-            if (minimumRole) commandPanel.addField('Minimum Role', minimumRole.toString());
+            if (roleOverride) commandPanel.addField('Minimum Role', roleOverride.toString());
+            else if (minimumRole) commandPanel.addField('Minimum Role', minimumRole.toString());
             else commandPanel.addField('Minimum Role', 'Role not set up');
             message.channel.send({ embeds: [commandPanel] });
         } else {
@@ -53,20 +55,21 @@ module.exports = {
                 .setColor('#ff0000')
 
             const fields = {};
-            for (const roleName in settings.roles) {
-                const roleID = settings.roles[roleName];
-                if (isNaN(roleID) || roleID == null) continue;
-                const role = message.guild.roles.cache.get(roleID);
-                if (!role) continue;
-                if (message.member.roles.highest.position < role.position && !override) continue;
-                if (!fields[role.name]) fields[role.name] = { position: role.position, commands: [] };
-                bot.commands.each(c => {
-                    if (c.roleOverride && c.roleOverride[message.guildId] && c.roleOverride[message.guildId] == roleName && bot.settings[message.guild.id].commands[c.name])
-                        fields[role.name].commands.push(';' + c.name);
-                    else if (c.role == roleName && bot.settings[message.guild.id].commands[c.name])
-                        fields[role.name].commands.push(';' + c.name);
-                })
-            }
+for (const roleName in settings.roles) {
+    const roleID = settings.roles[roleName];
+    if (isNaN(roleID) || roleID == null) continue;
+    const role = message.guild.roles.cache.get(roleID);
+    if (!role) continue;
+    if (message.member.roles.highest.position < role.position && !override) continue;
+    if (!fields[role.name]) fields[role.name] = { position: role.position, commands: [] };
+    bot.commands.each(c => {
+        if (c.roleOverride && c.roleOverride[message.guildId] && bot.settings[message.guild.id].commands[c.name]) {
+            if (c.roleOverride[message.guildId] == roleName) fields[role.name].commands.push(';' + c.name);
+        }
+        else if (c.role == roleName && bot.settings[message.guild.id].commands[c.name])
+            fields[role.name].commands.push(';' + c.name);
+    })
+}
             for (const name of Object.keys(fields).sort((a, b) => fields[a].position - fields[b].position))
                 if (fields[name].commands.length)
                     commandPanel.addField(name + '+', '```css\n' + fields[name].commands.join(' ') + '```');
