@@ -314,13 +314,6 @@ function fitStringIntoEmbed(embed, string, channel) {
     }
 }
 
-/*
-function embedLength(embed) {
-    let totalLength = 0;
-    if (embed.data.title) totalLength += embed.data.title
-}
-*/
-
 async function getSuspends(guild, db) {
     return new Promise((res, rej) => {
         db.query(`SELECT * FROM suspensions WHERE suspended = true AND guildid = '${guild.id}'`, (err, rows) => {
