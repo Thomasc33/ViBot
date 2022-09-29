@@ -210,7 +210,8 @@ bot.on("ready", async () => {
                                         if (!m) {
                                             guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${rows[i].id}> has been un-vet-banned automatically`)
                                         } else {
-                                            let embed = m.embeds.shift();
+                                            let embed = new Discord.EmbedBuilder()
+                                            embed.data = m.embeds.shift().data;
                                             embed.setColor('#00ff00')
                                                 .setDescription(embed.data.description.concat(`\nUn-vet-banned automatically`))
                                                 .setFooter({ text: 'Unsuspended at' })
@@ -268,7 +269,8 @@ bot.on("ready", async () => {
                                         if (!m) {
                                             guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${rows[i].id}> has been unsuspended automatically`)
                                         } else {
-                                            let embed = m.embeds.shift();
+                                            let embed = new Discord.EmbedBuilder()
+                                            embed.data = m.embeds.shift().data;
                                             embed.setColor('#00ff00')
                                                 .setDescription(embed.data.description.concat(`\nUnsuspended automatically`))
                                                 .setFooter({ text: 'Unsuspended at' })

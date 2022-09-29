@@ -417,7 +417,8 @@ module.exports = {
             message.guild.channels.cache.get(settings.channels.verificationlog).send(`<@!${member_id}> Left server while under manual review`)
             return message.delete()
         }
-        let embed = message.embeds[0]
+        let embed = new Discord.EmbedBuilder()
+        embed.data = message.embeds[0].data
         watching.push(member.id)
         let desc = embed.data.author.name.split(/ +/)
         let ign = desc[desc.length - 1]
