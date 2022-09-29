@@ -553,6 +553,14 @@
                     "shortName": "armorbreak",
                     "noConfirm": false,
                     "noLocation": false
+                },
+                {
+                    "emoteID": "723019533555597332",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "expose",
+                    "noConfirm": false,
+                    "noLocation": false
                 }
             ],
             "reacts": [
@@ -589,13 +597,13 @@
             "postAfkCheck": false,
             "twoPhase": true,
             "startDelay": 10000,
-            "vcCap": 30,
+            "vcCap": 45,
             "timeLimit": 360,
             "keyCount": 1,
             "earlyLocationCost": 20,
             "earlyLocationReacts": [{
                     "emoteID": "720404844187353099",
-                    "pointsGiven": 5,
+                    "pointsGiven": 2,
                     "limit": 3,
                     "shortName": "rusher",
                     "requiredRole": "rusher",
@@ -607,6 +615,14 @@
                     "pointsGiven": 1,
                     "limit": 1,
                     "shortName": "armorbreak",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emoteID": "723019533555597332",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "expose",
                     "noConfirm": false,
                     "noLocation": false
                 }
@@ -646,18 +662,27 @@
             "postAfkCheck": false,
             "twoPhase": true,
             "startDelay": 10000,
-            "vcCap": 40,
+            "vcCap": 45,
             "timeLimit": 360,
             "keyCount": 1,
             "earlyLocationCost": 25,
             "earlyLocationReacts": [{
-                "emoteID": "723019533597802507",
-                "pointsGiven": 1,
-                "limit": 1,
-                "shortName": "armorbreak",
-                "noConfirm": false,
-                "noLocation": false
-            }],
+                    "emoteID": "723019533597802507",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "armorbreak",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emoteID": "723019533555597332",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "expose",
+                    "noConfirm": false,
+                    "noLocation": false
+                }
+            ],
             "reacts": [
                 "723018431489900595",
                 "723018431296831539",
@@ -693,18 +718,27 @@
             "postAfkCheck": false,
             "twoPhase": true,
             "startDelay": 10000,
-            "vcCap": 30,
+            "vcCap": 45,
             "timeLimit": 360,
             "keyCount": 1,
             "earlyLocationCost": 25,
             "earlyLocationReacts": [{
-                "emoteID": "723019533597802507",
-                "pointsGiven": 1,
-                "limit": 1,
-                "shortName": "armorbreak",
-                "noConfirm": false,
-                "noLocation": false
-            }],
+                    "emoteID": "723019533597802507",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "armorbreak",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emoteID": "723019533555597332",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "expose",
+                    "noConfirm": false,
+                    "noLocation": false
+                }
+            ],
             "reacts": [
                 "723018431489900595",
                 "723018431296831539",
@@ -740,7 +774,7 @@
             "postAfkCheck": false,
             "twoPhase": true,
             "startDelay": 10000,
-            "vcCap": 40,
+            "vcCap": 45,
             "timeLimit": 360,
             "keyCount": 1,
             "earlyLocationCost": 30,
@@ -749,7 +783,7 @@
                     "pointsGiven": 25,
                     "limit": 3,
                     "shortName": "mystic",
-                    "confirmationMessage": "**__REQUIRED__**\n- Your pet must have **level 85+ magic heal.**\n- You must have a <:T2ImprisonmentOrb:720265039164211241> or <:T3NeutralizationOrb:720265039004565544> available.",
+                    "confirmationMessage": "**__REQUIRED__**\n- Your pet mush have **level 85+ magic heal.**\n- You must have a <:T2ImprisonmentOrb:720265039164211241> or <:T3NeutralizationOrb:720265039004565544> available.",
                     "noConfirm": false,
                     "noLocation": false
                 },
@@ -766,6 +800,14 @@
                     "pointsGiven": 1,
                     "limit": 1,
                     "shortName": "armorbreak",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emoteID": "723019533555597332",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "expose",
                     "noConfirm": false,
                     "noLocation": false
                 }
@@ -805,7 +847,7 @@
             "postAfkCheck": false,
             "twoPhase": true,
             "startDelay": 10000,
-            "vcCap": 30,
+            "vcCap": 45,
             "timeLimit": 360,
             "keyCount": 1,
             "earlyLocationCost": 30,
@@ -833,6 +875,14 @@
                     "shortName": "armorbreak",
                     "noConfirm": false,
                     "noLocation": false
+                },
+                {
+                    "emoteID": "723019533555597332",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "expose",
+                    "noConfirm": false,
+                    "noLocation": false
                 }
             ],
             "reacts": [
@@ -852,32 +902,33 @@
             },
             "font-color": "#eeeeee"
         },
-        "splitCult": {
-            "runType": "Split-Cult",
-            "runName": "Split-Cult",
-            "symbol": "x",
+        "shatters": {
+            "runType": "Shatters",
+            "runName": "Shatters",
+            "symbol": "s",
             "reqsImageUrl": "",
-            "keyEmoteID": "701491230260985877",
-            "pingRole": "cultping",
+            "keyEmoteID": "1008104345197346817",
+            "pingRole": "shattsReact",
             "keyLogName": "keypops",
-            "runLogName": "cultRuns",
-            "headcountEmote": "701491230332157972",
+            "runLogName": "shattersRuns",
+            "headcountEmote": "723001214865899532",
             "headcountOnAfk": false,
-            "isSplit": true,
+            "isSplit": false,
             "newChannel": true,
             "vialReact": false,
             "postAfkCheck": false,
-            "twoPhase": false,
+            "twoPhase": true,
             "startDelay": 10000,
             "vcCap": 45,
             "timeLimit": 360,
             "keyCount": 1,
-            "earlyLocationCost": 30,
+            "earlyLocationCost": 20,
             "earlyLocationReacts": [{
                     "emoteID": "720404844187353099",
                     "pointsGiven": 5,
                     "limit": 3,
                     "shortName": "rusher",
+                    "requiredRole": "rusher",
                     "noConfirm": false,
                     "noLocation": false
                 },
@@ -886,6 +937,14 @@
                     "pointsGiven": 1,
                     "limit": 1,
                     "shortName": "armorbreak",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emoteID": "723019533555597332",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "expose",
                     "noConfirm": false,
                     "noLocation": false
                 }
@@ -900,9 +959,73 @@
                 "723018431275728918"
             ],
             "embed": {
-                "color": "#ff0000",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:LostHallsKey:701491230260985877>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:720404844187353099>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
-                "thumbnail": "https://cdn.discordapp.com/emojis/701491230332157972.png?v=1",
+                "color": "#013220",
+                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:shattersKey:1008104345197346817>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:720404844187353099>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
+                "thumbnail": "https://cdn.discordapp.com/emojis/723001214865899532.png?v=1",
+                "removeThumbnail": true
+            },
+            "font-color": "#000000"
+        },
+        "advancedShatters": {
+            "runType": "Adv. Shatter",
+            "runName": "Adv. Shatter",
+            "symbol": "as",
+            "reqsImageUrl": "",
+            "keyEmoteID": "1008104345197346817",
+            "pingRole": "shattsReact",
+            "keyLogName": "keypops",
+            "runLogName": "shattersRuns",
+            "headcountEmote": "723001214865899532",
+            "headcountOnAfk": false,
+            "isSplit": false,
+            "newChannel": true,
+            "vialReact": false,
+            "postAfkCheck": false,
+            "twoPhase": true,
+            "startDelay": 10000,
+            "vcCap": 45,
+            "timeLimit": 360,
+            "keyCount": 1,
+            "earlyLocationCost": 20,
+            "earlyLocationReacts": [{
+                    "emoteID": "720404844187353099",
+                    "pointsGiven": 2,
+                    "limit": 3,
+                    "shortName": "rusher",
+                    "requiredRole": "rusher",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emoteID": "723019533597802507",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "armorbreak",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emoteID": "723019533555597332",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "expose",
+                    "noConfirm": false,
+                    "noLocation": false
+                }
+            ],
+            "reacts": [
+                "723018431489900595",
+                "723018431296831539",
+                "723018431598952498",
+                "723018431573655643",
+                "720401067086446672",
+                "720404621331267697",
+                "723018431275728918"
+            ],
+            "embed": {
+                "color": "#013220",
+                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:shattersKey:1008104345197346817>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:720404844187353099>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
+                "thumbnail": "https://cdn.discordapp.com/emojis/723001214865899532.png?v=1",
                 "removeThumbnail": true
             },
             "font-color": "#000000"

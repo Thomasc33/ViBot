@@ -85,7 +85,7 @@ module.exports = {
                     for (let i in array) {
                         let s = `\n${parseInt(i) + 1}: ${array[i]} ${type == 'array' ? `- ${bot.settings[message.guild.id][arrayName][array[i]].length} Items` : `'${bot.settings[message.guild.id][arrayName][array[i]]}'`}`
                         if (setupEmbed.data.description.length + s.length + `\n\`\`\``.length >= 2048) {
-                            if (!setupEmbed.data.fields[fieldIndex]) setupEmbed.addFields([{name: '** **', value: `\`\`\`${s}`}])
+                            if (!setupEmbed.data.fields || !setupEmbed.data.fields[fieldIndex]) setupEmbed.addFields([{name: '** **', value: `\`\`\`${s}`}])
                             else if (setupEmbed.data.fields[fieldIndex].value.length + s.length + `\n\`\`\``.length >= 1024) {
                                 fieldIndex++
                                 setupEmbed.addFields([{name: '** **', value: s}])

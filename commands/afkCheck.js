@@ -651,7 +651,7 @@ class afkCheck {
             }
 
             embed.setDescription(
-                reactInfo.confirmationMessage ?
+                reactInfo && reactInfo.confirmationMessage ?
                 `You reacted as ${emote}\n\n${reactInfo.confirmationMessage}\n\nPress ✅ to confirm your reaction. Otherwise press ❌` :
                 `You reacted as ${emote}\nPress ✅ to confirm your reaction. Otherwise press ❌`
                 )
