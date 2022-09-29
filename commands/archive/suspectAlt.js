@@ -16,11 +16,11 @@ module.exports = {
             return;
         }
         await user.setNickname(`?${user.nickname}`)
-        let embed = new Discord.MessageEmbed()
+        let embed = new Discord.EmbedBuilder()
             .setTitle('Suspected Alt')
             .setDescription(user)
-            .addField('User', user.displayName, true)
-            .addField('Suspected By', `<@!${message.author.id}>`, true)
+            .addFields([{name: 'User', value: user.displayName, inline: true}])
+            .addFields([{name: 'Suspected By', value: `<@!${message.author.id}>`, inline: true}])
             .setTimestamp(Date.now());
         await message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });
         message.react('✅')

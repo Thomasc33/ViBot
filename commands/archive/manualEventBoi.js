@@ -37,11 +37,11 @@ module.exports = {
         let image;
         if (message.attachments.first() != null) image = message.attachments.first().proxyURL
         if (image == null) image = args[2]
-        let embed = new Discord.MessageEmbed()
+        let embed = new Discord.EmbedBuilder()
             .setTitle('Manual Event Boi Verify')
             .setDescription(member.toString())
-            .addField('User', member.displayName, true)
-            .addField('Verified By', `<@!${message.author.id}>`, true)
+            .addFields([{name: 'User', value: member.displayName, inline: true}])
+            .addFields([{name: 'Verified By', value: `<@!${message.author.id}>`, inline: true}])
             .setTimestamp(Date.now());
         try {
             if (validURL(image)) embed.setImage(image)

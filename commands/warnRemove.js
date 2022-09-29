@@ -19,7 +19,7 @@ module.exports = {
             if (err) ErrorLogger.log(err, bot)
             let warn = rows[toRemove - 1]
             if (!warn) return message.channel.send(`Warn number ${toRemove} was not found. Please try again`)
-            let confirmEmbed = new Discord.MessageEmbed()
+            let confirmEmbed = new Discord.EmbedBuilder()
                 .setColor('#ff0000')
                 .setTitle('Please Confirm')
                 .setDescription(`__Warn for user:__ ${member} (${member.nickname})\n__Reason:__${warn.reason}\n__Warn by:__ <@!${warn.modid}>`)

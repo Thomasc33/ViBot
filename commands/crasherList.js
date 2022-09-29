@@ -40,14 +40,14 @@ module.exports = {
             if (crashers == 'None!') crashers = `/kick ${i}`
             else crashers += `\n/kick ${i}`
         }
-        let embed = new Discord.MessageEmbed()
+        let embed = new Discord.EmbedBuilder()
             .setColor(`#ff0000`)
             .setDescription(`**First and foremost key poppers, we sincerly thank you for your contribution and investment into the server.**\n\nIn order to keep the runs as clean and efficient as possible, we need you to kick crashers from the runs. Below is a list of common crashers seen in our servers. If at any point you see any of these people in one of our runs, make sure to kick them:\n\n\`\`\`${crashers}\`\`\`\n\n**The messages bellow are the character parses for our runs.**\nIf the timestamp matches the run you are currently in, double check with the RL/Security who is parsing, then kick the people they tell you to kick.\n\n**Once again, we sincerely thank you for your investment in our server and for your cooperation**`)
         channel.send({ embeds: [embed] })
     },
     async add(message, args, bot) {
         message.channel.send(`Are you sure you want to add ${args[1].toLowerCase()} to the crasher list? (Y/N)`)
-        let messageCollector = new Discord.MessageCollector(message.channel, {filter: m => m.author.id == message.author.id})
+        let messageCollector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id == message.author.id })
         messageCollector.on('collect', m => {
             switch (m.content.charAt(0).toLowerCase()) {
                 case 'y':
@@ -84,12 +84,14 @@ module.exports = {
             if (args[1].toLowerCase() == i) {
                 found = true;
                 let d = new Date(guildCrashers[i].added)
-                let embed = new Discord.MessageEmbed()
+                let embed = new Discord.EmbedBuilder()
                     .setColor('#ff0000')
                     .setTitle('Confirm Action')
                     .setDescription(`Are you sure you want to remove ${i} from the crasher list?`)
-                    .addField('Added By:', `<@!${guildCrashers[i].addedBy}>`)
-                    .addField('Added:', d.toDateString())
+                    .addFields([
+                        { name: 'Added By:', value: `<@!${guildCrashers[i].addedBy}>` },
+                        { name: 'Added:', value: d.toDateString() },
+                    ])
                 let confirmMessage = await message.channel.send({ embeds: [embed] })
                 let reactionCollector = new Discord.ReactionCollector(confirmMessage, { filter: (r, u) => !u.bot && u.id == message.author.id && (r.emoji.name === '✅' || r.emoji.name === '❌') })
                 await confirmMessage.react('✅')
@@ -99,10 +101,10 @@ module.exports = {
                         delete bot.crasherList[message.guild.id][i];
                         fs.writeFileSync('./data/crasherList.json', JSON.stringify(bot.crasherList, null, 4), async function (err) {
                             reactionCollector.stop()
-                            let newEmbed = new Discord.MessageEmbed()
+                            let newEmbed = new Discord.EmbedBuilder()
                                 .setColor('#00ff00')
                                 .setDescription(`${i} has been removed from the crasher list, would you like to update the crasher list?`)
-                            confirmMessage.edit({embeds: [newEmbed]})
+                            confirmMessage.edit({ embeds: [newEmbed] })
                             let nreactionCollector = new Discord.ReactionCollector(confirmMessage, { filter: (r, u) => !u.bot && u.id == message.author.id && (r.emoji.name === '✅' || r.emoji.name === '❌') })
                             nreactionCollector.on('collect', (r, u) => {
                                 confirmMessage.delete()

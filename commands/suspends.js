@@ -21,7 +21,7 @@ module.exports = {
             db.query(`SELECT * FROM suspensions WHERE id = '${member.id}'${search}`, async (err, rows) => {
                 if (!rows || rows.length == 0) return message.channel.send('User has no suspends logged under me')
                 if (err) ErrorLogger.log(err, bot)
-                let embed = new Discord.MessageEmbed()
+                let embed = new Discord.EmbedBuilder()
                     .setDescription('None!')
                 let i = 0;
                 for (let suspension of rows) {
@@ -33,7 +33,7 @@ module.exports = {
             })
 
         } else if (message.member.roles.has(settings.roles.developer)) {
-            let embed = new Discord.MessageEmbed()
+            let embed = new Discord.EmbedBuilder()
                 .setColor(message.guild.roles.cache.get(settings.roles.tempsuspended).hexColor)
                 .setTitle('Current Logged Suspensions')
                 .setDescription('None!')
@@ -53,29 +53,29 @@ module.exports = {
 }
 
 function fitStringIntoEmbed(embed, string, channel) {
-    if (embed.description == 'None!') {
+    if (embed.data.description == 'None!') {
         embed.setDescription(string)
-    } else if (embed.description.length + `\n${string}`.length >= 2048) {
-        if (embed.fields.length == 0) {
-            embed.addField('-', string)
-        } else if (embed.fields[embed.fields.length - 1].value.length + `\n${string}`.length >= 1024) {
-            if (embed.length + `\n${string}`.length + 1 >= 6000) {
+    } else if (embed.data.description.length + `\n${string}`.length >= 2048) {
+        if (embed.data.fields.length == 0) {
+            embed.addFields({ name: '-', value: string })
+        } else if (embed.data.fields[embed.data.fields.length - 1].value.length + `\n${string}`.length >= 1024) {
+            if (embed.data.length + `\n${string}`.length + 1 >= 6000) {
                 channel.send({ embeds: [embed] })
                 embed.setDescription('None!')
-                embed.fields = []
+                embed.data.fields = []
             } else {
-                embed.addField('-', string)
+                embed.addFields({ name: '-', value: string })
             }
         } else {
-            if (embed.length + `\n${string}`.length >= 6000) {
+            if (embed.data.length + `\n${string}`.length >= 6000) {
                 channel.send({ embeds: [embed] })
                 embed.setDescription('None!')
-                embed.fields = []
+                embed.data.fields = []
             } else {
-                embed.fields[embed.fields.length - 1].value = embed.fields[embed.fields.length - 1].value.concat(`\n${string}`)
+                embed.data.fields[embed.data.fields.length - 1].value = embed.data.fields[embed.data.fields.length - 1].value.concat(`\n${string}`)
             }
         }
     } else {
-        embed.setDescription(embed.description.concat(`\n${string}`))
+        embed.setDescription(embed.data.description.concat(`\n${string}`))
     }
 }

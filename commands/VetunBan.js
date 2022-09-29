@@ -29,8 +29,8 @@ module.exports = {
                 if (logMessage) {
                     let embed = logMessage.embeds.shift();
                     embed.setColor('#00ff00')
-                        .setDescription(embed.description.concat(`\nUn-vet-banned automatically`))
-                        .setFooter('Unsuspended at')
+                        .setDescription(embed.data.description.concat(`\nUn-vet-banned automatically`))
+                        .setFooter({ text: 'Unsuspended at' })
                         .setTimestamp(Date.now())
                     logMessage.edit({ embeds: [embed] });
                 } else {

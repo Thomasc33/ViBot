@@ -13,7 +13,7 @@ module.exports = {
         if (!member) member = message.guild.members.cache.get(args[0])
         if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
         if (!member) return message.channel.send('User not found')
-        let embed = new Discord.MessageEmbed()
+        let embed = new Discord.EmbedBuilder()
             .setColor('#fefefe')
             .setDescription(member.toString())
             .setImage(member.user.avatarURL({ dynamic: true, size: 4096 }))

@@ -29,7 +29,7 @@ module.exports = {
                     return reject(er)
                 })
             if (!charInfo) return reject('error')
-            let embed = new Discord.MessageEmbed()
+            let embed = new Discord.EmbedBuilder()
                 .setColor('#0000ff')
                 .setTitle(`Character List for ${ign}`)
             for (let i in charInfo.characters) {
@@ -44,7 +44,7 @@ module.exports = {
                 else armorEmoji = bot.emojis.cache.find(e => e.name.toLowerCase().replace(/[^a-z0-9]/g, '').includes(current.armor.split(' ').slice(0, -1).join('').toLowerCase().replace(/[^a-z0-9]/g, '')))
                 if (!current.ring) ringEmoji = 'None'
                 else ringEmoji = bot.emojis.cache.find(e => e.name.toLowerCase().replace(/[^a-z0-9]/g, '').includes(current.ring.split(' ').slice(0, -1).join('').toLowerCase().replace(/[^a-z0-9]/g, '')))
-                embed.addField(current.class, `${characterEmote} | LVL: \`${current.level}\` | Fame: \`${current.fame}\` | Stats: \`${current.stats}\` | ${weaponEmoji} ${abilityEmoji} ${armorEmoji} ${ringEmoji}`)
+                embed.addFields({ name: current.class, value: `${characterEmote} | LVL: \`${current.level}\` | Fame: \`${current.fame}\` | Stats: \`${current.stats}\` | ${weaponEmoji} ${abilityEmoji} ${armorEmoji} ${ringEmoji}` })
             }
             resolve(embed)
         })

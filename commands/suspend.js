@@ -82,24 +82,24 @@ module.exports = {
                     suspendProcess(false)
                 }
                 async function suspendProcess(overwrite) {
-                    let embed = new Discord.MessageEmbed()
+                    let embed = new Discord.EmbedBuilder()
                         .setColor('#ff0000')
                         .setTitle('Suspension Information')
                         .setDescription(`The suspension is for ${parseInt(args[0])} ${timeTypeString}`)
-                        .addField(`User Information \`${member.nickname}\``, `<@!${member.id}> (Tag: ${member.user.tag})`, true)
-                        .addField(`Mod Information \`${message.guild.members.cache.get(message.author.id).nickname}\``, `<@!${message.author.id}> (Tag: ${message.author.tag})`, true)
-                        .addField(`Reason:`, reason)
-                        .addField(`Roles`, 'None!')
-                        .setFooter(`Unsuspending at `)
+                        .addFields([{name: `User Information \`${member.nickname}\``, value: `<@!${member.id}> (Tag: ${member.user.tag})`, inline: true}])
+                        .addFields([{name: `Mod Information \`${message.guild.members.cache.get(message.author.id).nickname}\``, value: `<@!${message.author.id}> (Tag: ${message.author.tag})`, inline: true}])
+                        .addFields([{name: `Reason:`, value: reason}])
+                        .addFields([{name: `Roles`, value: 'None!'}])
+                        .setFooter({ text: `Unsuspending at ` })
                         .setTimestamp(Date.now() + time);
                     if (overwrite) {
                         db.query(`UPDATE suspensions SET uTime = '${Date.now() + time}' WHERE id = '${member.id}' AND suspended = true`)
-                        embed.fields[3].value = `Overwritten suspensions. Roles the same as prior suspension`
+                        embed.data.fields[3].value = `Overwritten suspensions. Roles the same as prior suspension`
                         suspensionLog.send({ embeds: [embed] }).then(member.user.send({ embeds: [embed] }))
                     } else {
                         let userRolesString = '', userRoles = []
                         const roles = [...member.roles.cache.filter(r => !r.managed && r.id != settings.roles.nitro).values()];
-                        embed.fields[3].value = roles.join(', ') || 'None!';
+                        embed.data.fields[3].value = roles.join(', ') || 'None!';
                         member.roles.cache.each(r => {
                             if (!r.managed && r.id != settings.roles.nitro) {
                                 userRoles.push(r.id)
@@ -115,7 +115,7 @@ module.exports = {
                     message.channel.send(`${member} has been suspended`)
                 }
 
-            })  
+            })
         } catch (er) {
             ErrorLogger.log(er, bot)
             message.channel.send("Error with command. Please check syntax and try again");

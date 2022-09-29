@@ -15,39 +15,39 @@ module.exports = {
         db.query(`SELECT * FROM warns WHERE id = '${member.user.id}' and (guildid = '${message.guild.id}' OR guildid is null)`, async function (err, rows) {
             if (err) ErrorLogger.log(err, bot)
             if (rows == []) return message.channel.send(`${member.nickname} has no warns in the database`)
-            let embed = new Discord.MessageEmbed()
+            let embed = new Discord.EmbedBuilder()
                 .setColor('#ff0000')
                 .setTitle(`Warns for ${member.nickname}`)
                 .setDescription('None!')
-                .setFooter(member.user.id)
+                .setFooter({ text: member.user.id })
             for (let i in rows) {
-                fitStringIntoEmbed(embed, `**\`${parseInt(i) + 1}\`** by <@!${rows[i].modid}>${rows[i].time ? ' '+ moment().to(new Date(parseInt(rows[i].time))) : ''}:\n  \`\`\`${rows[i].reason}\`\`\``, message.channel)
+                fitStringIntoEmbed(embed, `**\`${parseInt(i) + 1}\`** by <@!${rows[i].modid}>${rows[i].time ? ' ' + moment().to(new Date(parseInt(rows[i].time))) : ''}:\n  \`\`\`${rows[i].reason}\`\`\``, message.channel)
             }
             function fitStringIntoEmbed(embed, string, channel) {
-                if (embed.description == 'None!') {
+                if (embed.data.description == 'None!') {
                     embed.setDescription(string)
-                } else if (embed.description.length + `\n${string}`.length >= 2048) {
-                    if (embed.fields.length == 0) {
-                        embed.addField('-', string)
-                    } else if (embed.fields[embed.fields.length - 1].value.length + `\n${string}`.length >= 1024) {
-                        if (embed.length + `\n${string}`.length >= 6000) {
+                } else if (embed.data.description.length + `\n${string}`.length >= 2048) {
+                    if (embed.data.fields.length == 0) {
+                        embed.addFields({ name: '-', value: string })
+                    } else if (embed.data.fields[embed.data.fields.length - 1].value.length + `\n${string}`.length >= 1024) {
+                        if (embed.data.length + `\n${string}`.length >= 6000) {
                             channel.send({ embeds: [embed] })
                             embed.setDescription('None!')
-                            embed.fields = []
+                            embed.data.fields = []
                         } else {
-                            embed.addField('-', string)
+                            embed.addFields({ name: '-', value: string })
                         }
                     } else {
-                        if (embed.length + `\n${string}`.length >= 6000) {
+                        if (embed.data.length + `\n${string}`.length >= 6000) {
                             channel.send({ embeds: [embed] })
                             embed.setDescription('None!')
-                            embed.fields = []
+                            embed.data.fields = []
                         } else {
-                            embed.fields[embed.fields.length - 1].value = embed.fields[embed.fields.length - 1].value.concat(`\n${string}`)
+                            embed.data.fields[embed.data.fields.length - 1].value = embed.data.fields[embed.data.fields.length - 1].value.concat(`\n${string}`)
                         }
                     }
                 } else {
-                    embed.setDescription(embed.description.concat(`\n${string}`))
+                    embed.setDescription(embed.data.description.concat(`\n${string}`))
                 }
             }
             message.channel.send({ embeds: [embed] })

@@ -29,7 +29,7 @@ module.exports = {
             if (err) ErrorLogger.log(err, bot)
             if (rows && rows.length == 0) {
                 message.channel.send(`This user was not suspended by ${bot.user}. Would you still like to unsuspend them (removes suspended and gives raider role back)? Y/N`)
-                let collector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id === message.author.id,  time: 10000 });
+                let collector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id === message.author.id, time: 10000 });
                 collector.on('collect', m => {
                     try {
                         if (m.content.toLowerCase().charAt(0) == 'y') {
@@ -60,10 +60,10 @@ module.exports = {
                     try {
                         let embed = bot.guilds.cache.get(guildId).channels.cache.get(settings.channels.suspendlog).messages.cache.get(proofLogID).embeds.shift();
                         embed.setColor('#00ff00')
-                            .setDescription(embed.description.concat(`\nUnsuspended manually by <@!${message.author.id}>`))
-                            .setFooter('Unsuspended at')
+                            .setDescription(embed.data.description.concat(`\nUnsuspended manually by <@!${message.author.id}>`))
+                            .setFooter({ text: 'Unsuspended at' })
                             .setTimestamp(Date.now())
-                            .addField('Reason for unsuspension', reason)
+                            .addFields([{name: 'Reason for unsuspension', value: reason}])
                         let messages = await bot.guilds.cache.get(guildId).channels.cache.get(settings.channels.suspendlog).messages.fetch({ limit: 100 })
                         messages.filter(m => m.id == proofLogID && m.author.id == bot.user.id).first().edit({ embeds: [embed] })
                     } catch (er) { bot.guilds.cache.get(guildId).channels.cache.get(settings.channels.suspendlog).send(`${member} has been unsuspended by ${message.member}`) }

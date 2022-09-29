@@ -54,14 +54,14 @@ class AfkTemplate {
         this.original = original;
         this.author = this.original.author;
         this.nickname = this.original.member.nickname.split('|')[0].trim();
-        this.embed = new Discord.MessageEmbed()
+        this.embed = new Discord.EmbedBuilder()
             .setTitle('Raiding Template Editor')
             .setColor('#82EEFD')
-            .setAuthor(`Editing ${this.nickname}'s Raiding Template`, this.author.avatarURL())
-            .setFooter(`UID: ${this.author.id}`)
+            .setAuthor({ name: `Editing ${this.nickname}'s Raiding Template`, iconURL: this.author.avatarURL() })
+            .setFooter({ text: `UID: ${this.author.id}` })
             .setImage(this.data.reqsImageUrl)
             .setTimestamp(new Date());
-        this.reactEmbed = new Discord.MessageEmbed()
+        this.reactEmbed = new Discord.EmbedBuilder()
             .setTitle('Reaction List')
             .setColor('#82EEFD');
         this.bot = bot;
@@ -80,16 +80,16 @@ class AfkTemplate {
         ];
         if (!this.data.reqsImageUrl)
             f.push({ name: 'Image', value: 'None!', inline: true });
-        f.push({ name: 'Ping Role', value: this.data.pingRole || 'None!', inline: true }, { name: 'Split Group', value: yn(this.data.isSplit), inline: true }, { name: 'New Channel', value: yn(this.data.newChannel), inline: true }, { name: 'Needs Vial', value: yn(this.data.vialReact), inline: true }, { name: 'VC Lock Phase', value: yn(this.data.twoPhase), inline: true }, { name: 'VC Cap', value: this.data.vcCap || 1, inline: true }, { name: 'AFK Time Limit', value: secondsToStr(this.data.timeLimit || 360), inline: true }, { name: 'Key Reacts', value: this.data.keyCount || 1, inline: true }, { name: 'Embed Color', value: this.data.embed.color || '#2f075c', inline: true }, { name: 'Font Color', value: this.data['font-color'] || '#eeeeee', inline: true }, { name: 'Description', value: this.data.embed.description || 'None!', inline: false });
+        f.push({ name: 'Ping Role', value: this.data.pingRole || 'None!', inline: true }, { name: 'Split Group', value: yn(this.data.isSplit), inline: true }, { name: 'New Channel', value: yn(this.data.newChannel), inline: true }, { name: 'Needs Vial', value: yn(this.data.vialReact), inline: true }, { name: 'VC Lock Phase', value: yn(this.data.twoPhase), inline: true }, { name: 'VC Cap', value: this.data.vcCap || 1, inline: true }, { name: 'AFK Time Limit', value: secondsToStr(this.data.timeLimit || 360), inline: true }, { name: 'Key Reacts', value: this.data.keyCount || 1, inline: true }, { name: 'Embed Color', value: this.data.embed.color || '#2f075c', inline: true }, { name: 'Font Color', value: this.data['font-color'] || '#eeeeee', inline: true }, { name: 'Description', value: this.data.embed.data.description || 'None!', inline: false });
 
         return f;
     }
     async preview(channel, requestor) {
-        const preview = new Discord.MessageEmbed()
+        const preview = new Discord.EmbedBuilder()
             .setDescription(this.data.description)
-            .setAuthor(`A ${this.data.runType} Has Been Started in ${this.author}'s ${this.data.runName}`, this.author.avatarURL())
+            .setAuthor({ name: `A ${this.data.runType} Has Been Started in ${this.author}'s ${this.data.runName}`, iconURL: this.author.avatarURL() })
             .setImage(this.data.reqsImageUrl)
-            .setFooter(`Time Remaining: 1 minute`)
+            .setFooter({ text: `Time Remaining: 1 minute` })
             .setTimestamp(new Date());
         const message = await channel.send('***This is a preview***\r\nReact to the ❌ to remove it. Preview will timeout automatically after 45 seconds', preview);
         await message.react(this.data.keyEmoteID);
@@ -145,7 +145,7 @@ class AfkTemplate {
         return this.dmMessage = this.channel.then(c => c.send({ embeds: [this.embed] }));
     }
     async updateDM(description) {
-        this.embed.fields = this.fields;
+        this.embed.data.fields = this.fields;
         if (description)
             this.embed.setDescription(description);
         await this.dm.then(d => d.edit({ embeds: [this.embed] }));
@@ -154,8 +154,8 @@ class AfkTemplate {
         if (description)
             this.reactEmbed.setDescription(description);
         this.reactEmbed
-            .setFooter(`UID: ${this.author.id} • MSG: ${await this.dm.then(d => d.id)}`)
-            .setAuthor(`${this.nickname}'s ${this.data.runType} Reactions`);
+            .setFooter({ text: `UID: ${this.author.id} • MSG: ${await this.dm.then(d => d.id)}` })
+            .setAuthor({ name: `${this.nickname}'s ${this.data.runType} Reactions` });
         const fields = [];
         for (const reaction of this.data.earlyLocationReacts) {
             const emoji = this.bot.emojis.resolve(reaction.emoteID);
@@ -191,7 +191,7 @@ class AfkTemplate {
     async editKeyType() {
         await this.updateDM('**Key Type**: What type of key should this run use?');
         const emoji = await new Promise(async (resolve, reject) => {
-            const embed = new Discord.MessageEmbed()
+            const embed = new Discord.EmbedBuilder()
                 .setDescription('React with the key this run should accept. React with :x: to cancel')
                 .setTitle('Key Selection')
                 .setColor('#dadada');
@@ -234,9 +234,9 @@ class AfkTemplate {
             }
         }
 
-        const embed = new Discord.MessageEmbed()
+        const embed = new Discord.EmbedBuilder()
             .setDescription(`\`\`\`${unavailable.join(', ')}\`\`\``)
-            .setAuthor('Unavailable symbols');
+            .setAuthor({ name: 'Unavailable symbols' });
         const msg = await (await this.channel).send({ embeds: [embed] });
         this.symbol = (await this.channel.then(c => c.next((message) => {
             return message.content &&
@@ -328,7 +328,7 @@ class AfkTemplate {
     }
     async editDescription() {
         await this.updateDM('**Description**: What description would you like for your afk check? Type cancel to cancel');
-        this.data.embed.description = (await this.channel.then(c => c.next(null, null, this.author.id))).content;
+        this.data.embed.data.description = (await this.channel.then(c => c.next(null, null, this.author.id))).content;
     }
     async editEarlyReacts() {
         this.updateReacts(`React to this message with all early reactions. ${this.bot.emojis.resolve(this.data.keyEmoteID)} ${this.data.vialReact ? 'and <' + botSettings.emote.Vial + '> are' : 'is'} automatically added. Any not accessible by me will be removed. React to the ❌ to finish adding reactions.`);
@@ -358,9 +358,9 @@ class AfkTemplate {
             let rolesMessage;
             const guildRoles = this.bot.settings[this.guild.id].roles;
             try {
-                const rolesEmbed = new Discord.MessageEmbed()
+                const rolesEmbed = new Discord.EmbedBuilder()
                     .setColor("#000000")
-                    .setAuthor("Roles List")
+                    .setAuthor({ name: "Roles List" })
                     .setDescription("Choose from the following roles which should be the required role:");
                 const selections = [];
                 let roleList = ['\r\n0\r\nNo Role'];
@@ -376,13 +376,13 @@ class AfkTemplate {
                     selections.push(rolename);
                     roleList.push(`\r\n${selections.length} ${role}`);
                     if (roleList.length == 5) {
-                        rolesEmbed.addField('** **', `**${roleList.join('\r\n')}**`, true)
+                        rolesEmbed.addFields({ name: '** **', value: `**${roleList.join('\r\n')}**`, inline: true })
                         roleList = [];
                     }
                 }
 
                 if (roleList.length)
-                    rolesEmbed.addField('** **', `**${roleList.join('\r\n')}**`, true)
+                    rolesEmbed.addFields({ name: '** **', value: `**${roleList.join('\r\n')}**`, inline: true });
 
                 rolesMessage = await (await this.channel).send({ embeds: [rolesEmbed] });
                 const selection_idx = await this.channel.then(c => c.nextInt(res => res >= 0 && res <= selections.length, `Please enter a value between 0 and ${selections.length}. Enter 0 for no role.`, this.author.id));
@@ -499,7 +499,7 @@ module.exports = {
                         afk_template.embed.setTitle("Successfully Created Raiding Template")
                             .setColor("#00ff00")
                             .setDescription("Successfully created the following raiding template:")
-                            .setFooter(`UID: ${message.author.id} • ;afk ${afk_template.symbol} • Created at`)
+                            .setFooter({ text: `UID: ${message.author.id} • ;afk ${afk_template.symbol} • Created at` })
                             .setTimestamp(new Date());
                         afk_template.reactEmbed.setColor("#00ff00");
                         message.author.send({ embeds: [afk_template.embed] }).then(() => message.author.send({ embeds: [afk_template.reactEmbed] }))
@@ -524,13 +524,13 @@ module.exports = {
             afk_template.embed.setTitle('Raiding Template Cancelled')
                 .setColor('#ff0000')
                 .setDescription(error.stack || error)
-                .setFooter(`UID: ${message.author.id} • Cancelled at`)
+                .setFooter({ text: `UID: ${message.author.id} • Cancelled at` })
                 .setTimestamp(new Date());
             message.author.send({ embeds: [afk_template.embed] }).then(async () => {
                 if (afk_template.reactEmbed) {
                     const dm = await afk_template.dm.then(d => d);
                     afk_template.reactEmbed.setColor('#ff0000')
-                        .setFooter(`TID: ${dm.id} • Cancelled at`)
+                        .setFooter({ text: `TID: ${dm.id} • Cancelled at` })
                         .setTimestamp(new Date())
                         .setTitle('Raiding Template Cancelled');
                     message.author.send({ embeds: [afk_template.reactEmbed] });

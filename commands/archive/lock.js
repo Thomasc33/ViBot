@@ -19,7 +19,7 @@ module.exports = {
             var channel = await message.guild.channels.cache.find(c => c.name.includes(`${settings.voiceprefixes.vetprefix}${args[0]}`))
             var verifiedRaiderRole = await message.guild.roles.cache.get(settings.roles.vetraider);
         } else if (message.channel.parent.name.toLowerCase() === 'events') {
-            var channel = message.guild.channels.cache.find(c => c.type == 'GUILD_CATEGORY' && c.name == 'Events').children.find(c => c.name.includes(args[0]) && !c.name.includes('Realm Clearing'))
+            var channel = message.guild.channels.cache.find(c => c.type == Discord.ChannelType.GuildCategory && c.name == 'Events').children.find(c => c.name.includes(args[0]) && !c.name.includes('Realm Clearing'))
             var verifiedRaiderRole = await message.guild.roles.cache.get(settings.roles.raider);
         } else return message.channel.send("Try again, but in a proper category")
         bot = bott

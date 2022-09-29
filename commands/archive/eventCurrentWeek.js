@@ -56,7 +56,7 @@ module.exports = {
             db.query(query, async function (err, rows) {
                 if (err) reject(err)
                 let logged = []
-                let embed = new Discord.MessageEmbed()
+                let embed = new Discord.EmbedBuilder()
                     .setColor('#00ff00')
                     .setTitle('This weeks current logged runs!')
                     .setDescription('None!')
@@ -118,25 +118,25 @@ module.exports = {
                         if (!logged.includes(m.id)) fitStringIntoEmbed(embed, `<@!${m.id}> has not logged any runs or been assisted this week`)
                     }
                 })
-                embeds.push(new Discord.MessageEmbed(embed))
+                embeds.push(new Discord.EmbedBuilder(embed))
                 function fitStringIntoEmbed(embed, string) {
-                    if (embed.description == 'None!') embed.setDescription(string)
-                    else if (embed.description.length + `\n${string}`.length >= 2048) {//change to 2048
-                        if (embed.fields.length == 0) embed.addField('-', string)
-                        else if (embed.fields[embed.fields.length - 1].value.length + `\n${string}`.length >= 1024) { //change to 1024
-                            if (embed.length + `\n${string}`.length >= 6000) {//change back to 6k
-                                embeds.push(new Discord.MessageEmbed(embed))
+                    if (embed.data.description == 'None!') embed.setDescription(string)
+                    else if (embed.data.description.length + `\n${string}`.length >= 2048) {//change to 2048
+                        if (embed.data.fields.length == 0) embed.addFields({ name: '-', value: string })
+                        else if (embed.data.fields[embed.data.fields.length - 1].value.length + `\n${string}`.length >= 1024) { //change to 1024
+                            if (embed.data.length + `\n${string}`.length >= 6000) {//change back to 6k
+                                embeds.push(new Discord.EmbedBuilder(embed))
                                 embed.setDescription('None!')
-                                embed.fields = []
-                            } else embed.addField('-', string)
+                                embed.data.fields = []
+                            } else embed.addFields({ name: '-', value: string })
                         } else {
-                            if (embed.length + `\n${string}`.length >= 6000) { //change back to 6k
-                                embeds.push(new Discord.MessageEmbed(embed))
+                            if (embed.data.length + `\n${string}`.length >= 6000) { //change back to 6k
+                                embeds.push(new Discord.EmbedBuilder(embed))
                                 embed.setDescription('None!')
-                                embed.fields = []
-                            } else embed.fields[embed.fields.length - 1].value = embed.fields[embed.fields.length - 1].value.concat(`\n${string}`)
+                                embed.data.fields = []
+                            } else embed.data.fields[embed.data.fields.length - 1].value = embed.data.fields[embed.data.fields.length - 1].value.concat(`\n${string}`)
                         }
-                    } else embed.setDescription(embed.description.concat(`\n${string}`))
+                    } else embed.setDescription(embed.data.description.concat(`\n${string}`))
                 }
                 if (channel.id == settings.channels.eventcurrentweek) {
                     try {

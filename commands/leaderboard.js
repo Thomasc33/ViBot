@@ -19,9 +19,9 @@ module.exports = {
         this.leaderBoardModule(message, bot, db, guild)
     },
     async leaderBoardModule(message, bot, db, guild) {
-        let embed = new Discord.MessageEmbed()
+        let embed = new Discord.EmbedBuilder()
             .setColor(`#0000ff`)
-            .setAuthor(`Select a leaderboard`)
+            .setAuthor({ name: `Select a leaderboard` })
             .setDescription(leaderBoardTypes[guild.id].map(lb => `${numberToEmote(lb.index)} ${lb.name}`).join('\n'))
         if (message.author.avatarURL()) embed.author.iconURL = message.author.avatarURL()
         let embedMessage = await message.channel.send({ embeds: [embed] })
@@ -40,7 +40,7 @@ module.exports = {
             db.query(`SELECT * FROM users ORDER BY ${type.dbNames.map(n => n).join(' + ')} DESC LIMIT 25`, (err, rows) => {
                 if (err) ErrorLogger.log(err, bot)
                 embed.author.name = `Top 25 ${type.name}`
-                embed.description = 'None!'
+                embed.data.description = 'None!'
                 for (let i in rows) {
                     let member = guild.members.cache.get(rows[i].id)
                     let desc = `<@!${rows[i].id}>`
@@ -73,30 +73,30 @@ module.exports = {
     }
 }
 function fitStringIntoEmbed(embed, string, channel) {
-    if (embed.description == 'None!') {
+    if (embed.data.description == 'None!') {
         embed.setDescription(string)
-    } else if (embed.description.length + `\n${string}`.length >= 2048) {
-        if (embed.fields.length == 0) {
-            embed.addField('-', string)
-        } else if (embed.fields[embed.fields.length - 1].value.length + `\n${string}`.length >= 1024) {
-            if (embed.length + `\n${string}`.length >= 6000) {
+    } else if (embed.data.description.length + `\n${string}`.length >= 2048) {
+        if (embed.data.fields.length == 0) {
+            embed.addFields({ name: '-', value: string })
+        } else if (embed.data.fields[embed.data.fields.length - 1].value.length + `\n${string}`.length >= 1024) {
+            if (embed.data.length + `\n${string}`.length >= 6000) {
                 channel.send({ embeds: [embed] })
                 embed.setDescription('None!')
-                embed.fields = []
+                embed.data.fields = []
             } else {
-                embed.addField('-', string)
+                embed.addFields({ name: '-', value: string })
             }
         } else {
-            if (embed.length + `\n${string}`.length >= 6000) {
+            if (embed.data.length + `\n${string}`.length >= 6000) {
                 channel.send({ embeds: [embed] })
                 embed.setDescription('None!')
-                embed.fields = []
+                embed.data.fields = []
             } else {
-                embed.fields[embed.fields.length - 1].value = embed.fields[embed.fields.length - 1].value.concat(`\n${string}`)
+                embed.data.fields[embed.data.fields.length - 1].value = embed.data.fields[embed.data.fields.length - 1].value.concat(`\n${string}`)
             }
         }
     } else {
-        embed.setDescription(embed.description.concat(`\n${string}`))
+        embed.setDescription(embed.data.description.concat(`\n${string}`))
     }
 }
 

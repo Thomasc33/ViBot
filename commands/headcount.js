@@ -38,11 +38,11 @@ module.exports = {
             hallsHC(eventTypes[0]);
         } else {
             const id = "" + Math.random();
-            let selection = new Discord.MessageEmbed()
-                .setAuthor(`Select HC Type`)
+            let selection = new Discord.EmbedBuilder()
+                .setAuthor({ name: `Select HC Type` })
                 .setDescription(`There are multiple headcounts that match the type given. Please select one.`)
-            const row = new Discord.MessageActionRow().addComponents(
-                new Discord.MessageSelectMenu()
+            const row = new Discord.ActionRowBuilder().addComponents(
+                new Discord.SelectMenuBuilder()
                     .setCustomId(id)
                     .setPlaceholder('Select a Type')
                     .addOptions(eventTypes.map(type => {
@@ -69,13 +69,13 @@ module.exports = {
             else if (message.channel.parent.name.toLowerCase() == settings.categories.raiding) channel = message.guild.channels.cache.get(settings.channels.raidstatus)
             if (channel) {
                 let embed = new Discord.MessageEmbed()
-                    .setAuthor(`Headcount for ${run.runName} by ${message.member.nickname}`)
+                    .setAuthor({ name: `Headcount for ${run.runName} by ${message.member.nickname}` })
                     .setDescription(run.embed.headcountDescription ? run.embed.headcountDescription : `${run.headcountEmote ? `React with ${bot.emojis.cache.get(run.headcountEmote)} if you are coming\n` : ''}React with ${bot.emojis.cache.get(run.keyEmoteID)} if you have a key\nOtherwise react with your gear/class choices below`)
                     .setColor(run.embed ? run.embed.color : run.color)
                     .setTimestamp()
 
                 if (symbol.charAt(0) == 'a')
-                    embed.description += `\n\n**__Advanced Runs__**\nThis is an **advanced run**, meaning there are extended requirements you **MUST** meet. You must be both **__8/8__** and follow the requirements sheet listed in the afk check.\n\nIf you are caught not meeting these requirements, you will be removed from the run and suspended.`;
+                    embed.data.description += `\n\n**__Advanced Runs__**\nThis is an **advanced run**, meaning there are extended requirements you **MUST** meet. You must be both **__8/8__** and follow the requirements sheet listed in the afk check.\n\nIf you are caught not meeting these requirements, you will be removed from the run and suspended.`;
 
                 if (message.author.avatarURL()) embed.author.iconURL = message.author.avatarURL()
                 const pingRole = run.pingRole || run.rolePing;

@@ -24,8 +24,8 @@ module.exports = {
 
             const suspends = await getSuspends(guild, db);
 
-            const embed = new Discord.MessageEmbed()
-                .setAuthor(`Check Report`);
+            const embed = new Discord.EmbedBuilder()
+                .setAuthor({ name: `Check Report` });
 
             let report = await channel.send({ embeds: [embed] })
 
@@ -40,10 +40,10 @@ module.exports = {
 
             async function updateEmbed(title, array, join) {
 
-                embed.addField(title, 'None!');
+                embed.addFields({ name: title, value: 'None!' });
                 if (array.length == 0) {
-                    if (embed.length + title.length + 'None!'.length >= 6000) {
-                        embed.fields = [{
+                    if (embed.data.length + title.length + 'None!'.length >= 6000) {
+                        embed.data.fields = [{
                             name: title,
                             value: 'None!'
                         }];
@@ -53,23 +53,23 @@ module.exports = {
                     }
                     return;
                 }
-                embed.fields[embed.fields.length - 1].value = '';
+                embed.data.fields[embed.data.fields.length - 1].value = '';
                 for (const item of array) {
-                    if (embed.length + item.length + join.length >= 6000) {
+                    if (embed.data.length + item.length + join.length >= 6000) {
                         debounceEdit();
-                        embed.fields = [{
+                        embed.data.fields = [{
                             name: title,
                             value: `${item}`
                         }];
                         report = await channel.send({ embeds: [embed] })
-                    } else if (embed.fields[embed.fields.length - 1].value.length + item.length + join.length >= 1024) {
-                        embed.fields[embed.fields.length - 1].value = embed.fields[embed.fields.length - 1].value.substring(join.length);
-                        embed.addField(title + " Continued", join + `${item}`);
+                    } else if (embed.data.fields[embed.data.fields.length - 1].value.length + item.length + join.length >= 1024) {
+                        embed.data.fields[embed.data.fields.length - 1].value = embed.data.fields[embed.data.fields.length - 1].value.substring(join.length);
+                        embed.addFields({ name: title + " Continued", value: join + `${item}` });
                     } else {
-                        embed.fields[embed.fields.length - 1].value += join + `${item}`;
+                        embed.data.fields[embed.data.fields.length - 1].value += join + `${item}`;
                     }
                 }
-                embed.fields[embed.fields.length - 1].value = embed.fields[embed.fields.length - 1].value.substring(join.length);
+                embed.data.fields[embed.data.fields.length - 1].value = embed.data.fields[embed.data.fields.length - 1].value.substring(join.length);
                 debounceEdit();
             }
 
@@ -132,7 +132,7 @@ module.exports = {
                         const messages = await modmail.messages.fetch({ limit: 100 })
                         messages.each(m => {
                             if (m.reactions.cache.has('🔑') && m.author.bot)
-                                unansweredModmails.push(`[${m.nickname||'Module'}](${m.url})`)
+                                unansweredModmails.push(`[${m.nickname || 'Module'}](${m.url})`)
                         })
                     }
                 }
@@ -186,15 +186,15 @@ module.exports = {
 
             let settings = bot.settings[message.guild.id]
             let checkMessage = await message.channel.send('Checking information on the server. This may take a little bit.')
-            let checkEmbed = new Discord.MessageEmbed()
+            let checkEmbed = new Discord.EmbedBuilder()
                 .setTitle('Check Report')
-                //temporary keypopper
-            checkEmbed.addField('Temporary Key Poppers', 'None!')
+            //temporary keypopper
+            checkEmbed.addFields({ name: 'Temporary Key Poppers', value: 'None!' })
             message.guild.members.cache.filter(u => u.roles.cache.has(settings.roles.tempkey)).each(m => {
-                    if (checkEmbed.fields[0].value == 'None!') checkEmbed.fields[0].value = `<@!${m.id}>`
-                    else checkEmbed.fields[0].value = checkEmbed.fields[0].value.concat(`, <@!${m.id}>`)
-                })
-                //people with same name
+                if (checkEmbed.data.fields[0].value == 'None!') checkEmbed.data.fields[0].value = `<@!${m.id}>`
+                else checkEmbed.data.fields[0].value = checkEmbed.data.fields[0].value.concat(`, <@!${m.id}>`)
+            })
+            //people with same name
             let dupesArray = []
 
             let allMembers = message.guild.members.cache.filter(u => u.nickname && (u.roles.cache.has(settings.roles.raider) || (u.roles.cache.has(settings.roles.eventraider) && settings.backend.giveEventRoleOnDenial2))).map(m => m)
@@ -210,47 +210,47 @@ module.exports = {
                 dupes = dupes.map(m => dupesArray.push(m.id))
             }
             dupesArray = dupesArray.filter((item, index) => dupesArray.indexOf(item) === index)
-            checkEmbed.addField('Duplicate Names', 'None!')
+            checkEmbed.addFields({ name: 'Duplicate Names', value: 'None!' })
             for (let i in dupesArray) {
-                if (checkEmbed.fields[1].value == 'None!') checkEmbed.fields[1].value = `<@!${dupesArray[i]}>`
-                else checkEmbed.fields[1].value += `, <@!${dupesArray[i]}>`
+                if (checkEmbed.data.fields[1].value == 'None!') checkEmbed.data.fields[1].value = `<@!${dupesArray[i]}>`
+                else checkEmbed.data.fields[1].value += `, <@!${dupesArray[i]}>`
             }
             //pending verifications
             let veriPending = message.guild.channels.cache.get(settings.channels.manualverification)
-            checkEmbed.addField('Pending Verifications', 'None!')
-            if (!veriPending) checkEmbed.fields[2].value = 'Error finding channel'
+            checkEmbed.addFields({ name: 'Pending Verifications', value: 'None!' })
+            if (!veriPending) checkEmbed.data.fields[2].value = 'Error finding channel'
             else {
                 let messages = await veriPending.messages.fetch({ limit: 100 })
                 messages.each(m => {
                     if (m.reactions.cache.has('🔑')) {
-                        if (checkEmbed.fields[2].value == 'None!') checkEmbed.fields[2].value = `[Module](${m.url})`
-                        else checkEmbed.fields[2].value += `, [Module](${m.url})`
+                        if (checkEmbed.data.fields[2].value == 'None!') checkEmbed.data.fields[2].value = `[Module](${m.url})`
+                        else checkEmbed.data.fields[2].value += `, [Module](${m.url})`
                     }
                 })
             }
             //pending vet verification
             let veriPendingVet = message.guild.channels.cache.get(settings.channels.manualvetverification)
-            checkEmbed.addField('Pending Veteran Verification', 'None!')
-            if (!veriPendingVet) checkEmbed.fields[3].value = 'Error finding channel'
+            checkEmbed.addFields({ name: 'Pending Veteran Verification', value: 'None!' })
+            if (!veriPendingVet) checkEmbed.data.fields[3].value = 'Error finding channel'
             else {
                 let messages = await veriPendingVet.messages.fetch({ limit: 100 })
                 messages.each(m => {
                     if (m.reactions.cache.has('🔑')) {
-                        if (checkEmbed.fields[3].value == 'None!') checkEmbed.fields[3].value = `[Module](${m.url})`
-                        else checkEmbed.fields[3].value += `, [Module](${m.url})`
+                        if (checkEmbed.data.fields[3].value == 'None!') checkEmbed.data.fields[3].value = `[Module](${m.url})`
+                        else checkEmbed.data.fields[3].value += `, [Module](${m.url})`
                     }
                 })
             }
             //pending mod mail
             let modMailChannel = message.guild.channels.cache.get(settings.channels.modmail)
-            checkEmbed.addField('Pending ModMail', 'None!')
-            if (!modMailChannel) checkEmbed.fields[4].value = 'Error finding channel'
+            checkEmbed.addFields({ name: 'Pending ModMail', value: 'None!' })
+            if (!modMailChannel) checkEmbed.data.fields[4].value = 'Error finding channel'
             else {
                 let messages = await modMailChannel.messages.fetch({ limit: 100 })
                 messages.each(m => {
                     if (m.reactions.cache.has('🔑') && m.author.id == bot.user.id) {
-                        if (checkEmbed.fields[4].value == 'None!') checkEmbed.fields[4].value = `[Module](${m.url})`
-                        else checkEmbed.fields[4].value += `, [Module](${m.url})`
+                        if (checkEmbed.data.fields[4].value == 'None!') checkEmbed.data.fields[4].value = `[Module](${m.url})`
+                        else checkEmbed.data.fields[4].value += `, [Module](${m.url})`
                     }
                 })
             }
@@ -262,21 +262,21 @@ module.exports = {
                     nn.push(user)
                 }
             })
-            checkEmbed.addField('No Nicknames', 'None!')
+            checkEmbed.addFields({ name: 'No Nicknames', value: 'None!' })
             for (let i in nn) {
-                if (checkEmbed.fields[5].value == 'None!') checkEmbed.fields[5].value = `${nn[i]}`
-                else checkEmbed.fields[5].value += `, ${nn[i]}`
+                if (checkEmbed.data.fields[5].value == 'None!') checkEmbed.data.fields[5].value = `${nn[i]}`
+                else checkEmbed.data.fields[5].value += `, ${nn[i]}`
             }
-            for (let i in checkEmbed.fields) {
-                if (checkEmbed.fields[i].value.length >= 1024) {
-                    let replacementEmbed = new Discord.MessageEmbed()
-                        .setTitle(checkEmbed.fields[i].name)
+            for (let i in checkEmbed.data.fields) {
+                if (checkEmbed.data.fields[i].value.length >= 1024) {
+                    let replacementEmbed = new Discord.EmbedBuilder()
+                        .setTitle(checkEmbed.data.fields[i].name)
                         .setDescription('None!')
-                    checkEmbed.fields[i].value.split(', ').forEach(s => {
+                    checkEmbed.data.fields[i].value.split(', ').forEach(s => {
                         fitStringIntoEmbed(replacementEmbed, s, message.channel)
                     })
                     message.channel.send({ embeds: [replacementEmbed] })
-                    checkEmbed.fields[i].value = 'See Below'
+                    checkEmbed.data.fields[i].value = 'See Below'
                 }
             }
             checkMessage.edit({ content: null, embeds: [checkEmbed] })
@@ -287,30 +287,30 @@ module.exports = {
 }
 
 function fitStringIntoEmbed(embed, string, channel) {
-    if (embed.description == 'None!') {
+    if (embed.data.description == 'None!') {
         embed.setDescription(string)
-    } else if (embed.description.length + `, ${string}`.length >= 2048) {
-        if (embed.fields.length == 0) {
-            embed.addField('-', string)
-        } else if (embed.fields[embed.fields.length - 1].value.length + `, ${string}`.length >= 1024) {
-            if (embed.length + `, ${string}`.length >= 6000) {
+    } else if (embed.data.description.length + `, ${string}`.length >= 2048) {
+        if (embed.data.fields.length == 0) {
+            embed.addFields({ name: '-', value: string })
+        } else if (embed.data.fields[embed.data.fields.length - 1].value.length + `, ${string}`.length >= 1024) {
+            if (embed.data.length + `, ${string}`.length >= 6000) {
                 channel.send({ embeds: [embed] })
                 embed.setDescription('None!')
-                embed.fields = []
+                embed.data.fields = []
             } else {
-                embed.addField('-', string)
+                embed.addFields({ name: '-', value: string })
             }
         } else {
-            if (embed.length + `, ${string}`.length >= 6000) {
+            if (embed.data.length + `, ${string}`.length >= 6000) {
                 channel.send({ embeds: [embed] })
                 embed.setDescription('None!')
-                embed.fields = []
+                embed.data.fields = []
             } else {
-                embed.fields[embed.fields.length - 1].value = embed.fields[embed.fields.length - 1].value.concat(`, ${string}`)
+                embed.data.fields[embed.data.fields.length - 1].value = embed.data.fields[embed.data.fields.length - 1].value.concat(`, ${string}`)
             }
         }
     } else {
-        embed.setDescription(embed.description.concat(`, ${string}`))
+        embed.setDescription(embed.data.description.concat(`, ${string}`))
     }
 }
 

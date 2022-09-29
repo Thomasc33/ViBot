@@ -22,11 +22,11 @@ module.exports = {
             }
         } else nick = newName
         await user.setNickname(newName)
-        let embed = new Discord.MessageEmbed()
+        let embed = new Discord.EmbedBuilder()
             .setTitle('User Rectified')
             .setDescription(user)
-            .addField('User', user.displayName, true)
-            .addField('Rectified By', `<@!${message.author.id}>`, true)
+            .addFields([{name: 'User', value: user.displayName, inline: true}])
+            .addFields([{name: 'Rectified By', value: `<@!${message.author.id}>`, inline: true}])
             .setTimestamp(Date.now());
         message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });
         message.react('✅')

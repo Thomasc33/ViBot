@@ -2,7 +2,7 @@ const fs = require('fs')
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
 const roles = ['moderator', 'officer', 'headrl', 'vetrl', 'fsvrl', 'mrvrl', 'security', 'fullskip', 'developer', 'rl', 'almostrl', 'trialrl', 'headeventrl', 'eventrl', 'rusher', 'nitro', 'lol', 'vetraider', 'raider', 'eventraider', 'muted',
-    'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'keyjesus', 'topkey', 'bottomkey', 'cultping', 'voidping', 'shattsReact', 'fungalReact', 'nestReact', 'fskipReact', 'fameReact', 'rcPing', 'o3Ping', 'eventBoi',  'veteventrl',
+    'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'keyjesus', 'topkey', 'bottomkey', 'cultping', 'voidping', 'shattsReact', 'fungalReact', 'nestReact', 'fskipReact', 'fameReact', 'rcPing', 'o3Ping', 'eventBoi', 'veteventrl',
     'priest', 'warden', 'vetaffiliate']
 const channels = ['modmail', 'verification', 'manualverification', 'vetverification', 'manualvetverification', 'verificationlog', 'activeverification', 'modlogs', 'history', 'suspendlog',
     'viallog', 'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel', 'raidstatus', 'eventstatus',
@@ -38,10 +38,10 @@ module.exports = {
     async execute(message, args, bot, db) {
         if (!commands) commands = Array.from(bot.commands.keys())
         if (args.length == 0) {
-            let setupEmbed = new Discord.MessageEmbed()
+            let setupEmbed = new Discord.EmbedBuilder()
                 .setTitle('Setup')
                 .setColor('#54d1c2')
-                .setFooter(`Type 'cancel' to stop`)
+                .setFooter({ text: `Type 'cancel' to stop` })
                 .setDescription(`\`\`\`Please select what you wish to edit:\n${menus.map((m, i) => `${parseInt(i) + 1}: ${m}`).join('\n')}\`\`\``)
             let setupMessage = await message.channel.send({ embeds: [setupEmbed] })
             let mainMenu = new Discord.MessageCollector(message.channel, { filter: m => m.author.id == message.author.id })
@@ -85,10 +85,10 @@ module.exports = {
                     for (let i in array) {
                         let s = `\n${parseInt(i) + 1}: ${array[i]} ${type == 'array' ? `- ${bot.settings[message.guild.id][arrayName][array[i]].length} Items` : `'${bot.settings[message.guild.id][arrayName][array[i]]}'`}`
                         if (setupEmbed.description.length + s.length + `\n\`\`\``.length >= 2048) {
-                            if (!setupEmbed.fields[fieldIndex]) setupEmbed.addField('** **', `\`\`\`${s}`, false)
+                            if (!setupEmbed.fields[fieldIndex]) setupEmbed.addFields([{name: '** **', value: `\`\`\`${s}`}])
                             else if (setupEmbed.fields[fieldIndex].value.length + s.length + `\n\`\`\``.length >= 1024) {
                                 fieldIndex++
-                                setupEmbed.addField('** **', s, false)
+                                setupEmbed.addFields([{name: '** **', value: s}])
                             } else setupEmbed.fields[fieldIndex].value += s;
                         } else setupEmbed.description += s
                     }
@@ -132,7 +132,7 @@ module.exports = {
                                     fs.writeFileSync('./guildSettings.json', JSON.stringify(bot.settings, null, 4), err => message.channel.send(err.toString()))
                                     setupEmbed.setDescription(change)
                                         .setTitle(`Changes Made`)
-                                        .setFooter(`Setup completed`)
+                                        .setFooter({ text: `Setup completed` })
                                     await setupMessage.edit({ embeds: [setupEmbed] })
                                     message.react('✅')
                                     mes.delete()
@@ -219,7 +219,7 @@ module.exports = {
                                     fs.writeFileSync('./guildSettings.json', JSON.stringify(bot.settings, null, 4), err => message.channel.send(err.toString()))
                                     setupEmbed.setDescription(change)
                                         .setTitle(`Changes Made`)
-                                        .setFooter(`Setup completed`)
+                                        .setFooter({ text: `Setup completed` })
                                     await setupMessage.edit({ embeds: [setupEmbed] })
                                     message.react('✅')
                                     m.delete()
@@ -274,7 +274,7 @@ module.exports = {
         for (let i in channels) {
             let channel = channels[i]
             if (!bot.settings[guild.id].channels[channel]) {
-                let c = guild.channels.cache.find(c => c.name === getDefaultChannelName(channel) && c.type == 'GUILD_TEXT')
+                let c = guild.channels.cache.find(c => c.name === getDefaultChannelName(channel) && c.type == Discord.ChannelType.GuildText)
                 if (c) bot.settings[guild.id].channels[channel] = c.id
                 else bot.settings[guild.id].channels[channel] = null
             }
@@ -282,7 +282,7 @@ module.exports = {
         for (let i in voice) {
             let v = voice[i]
             if (!bot.settings[guild.id].voice[v]) {
-                let vc = guild.channels.cache.find(c => c.name === getDefaultVoiceName(v) && c.type == 'GUILD_VOICE')
+                let vc = guild.channels.cache.find(c => c.name === getDefaultVoiceName(v) && c.type == Discord.ChannelType.GuildVoice)
                 if (vc) bot.settings[guild.id].voice[v] = vc.id
                 else bot.settings[guild.id].voice[v] = null
             }

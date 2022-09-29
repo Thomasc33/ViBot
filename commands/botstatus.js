@@ -3,7 +3,7 @@ const reScrape = require('../lib/realmEyeScrape')
 
 var statusMessages = {}, Bot, DB
 const interval = setInterval(() => { module.exports.updateAll() }, 30000) //update every 2 mins
-const StatusEmbed = new Discord.MessageEmbed()
+const StatusEmbed = new Discord.EmbedBuilder()
 module.exports = {
     name: 'botstatus',
     role: 'developer',
@@ -29,14 +29,15 @@ module.exports = {
     async init(guild, bot, db) {
         if (!Bot) Bot = bot
         if (!DB) DB = db
-        if (StatusEmbed.fields.length == 0) {
+        if (!StatusEmbed.data.fields || StatusEmbed.data.fields.length == 0) {
             //embed stuff
             StatusEmbed.setColor('#0000ff')
                 .setTitle('ViBot Status')
-                //.setDescription('i put real shit in here :wink:')
-                .addField('Status', 'Initializing', false)
-                .addField('DB OK', await this.checkDataBase() ? '✅' : '❌', true)
-                .addField('RealmEye', await reScrape.handler.next() ? '✅' : '❌', true)
+                .addFields([
+                    { name: 'Status', value: 'Initializing' },
+                    { name: 'DB OK', value: await this.checkDataBase() ? '✅' : '❌', inline: true },
+                    { name: 'RealmEye', value: await reScrape.handler.next() ? '✅' : '❌', inline: true },
+                ])
                 .setTimestamp()
         }
         let settings = bot.settings[guild.id]
@@ -62,13 +63,13 @@ module.exports = {
         await m.edit({ embeds: [StatusEmbed] })
     },
     async updateAll() {
-        if (!DB || !Bot || StatusEmbed.fields.length < 3) return //happens on bot initialization
-        if (StatusEmbed.fields[0].value == 'Initializing') {
-            StatusEmbed.fields[0].value = 'Chilling';
+        if (!DB || !Bot || StatusEmbed.data.fields.length < 3) return //happens on bot initialization
+        if (StatusEmbed.data.fields[0].value == 'Initializing') {
+            StatusEmbed.data.fields[0].value = 'Chilling';
             StatusEmbed.setColor('#00ff00')
         }
-        StatusEmbed.fields[1].value = await this.checkDataBase() ? '✅' : '❌'
-        StatusEmbed.fields[2].value = await reScrape.handler.next() ? '✅' : '❌'
+        StatusEmbed.data.fields[1].value = await this.checkDataBase() ? '✅' : '❌'
+        StatusEmbed.data.fields[2].value = await reScrape.handler.next() ? '✅' : '❌'
         for (let i in statusMessages) {
             await statusMessages[i].edit({ embeds: [StatusEmbed] })
         }
