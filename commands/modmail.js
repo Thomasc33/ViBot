@@ -116,7 +116,7 @@ module.exports = {
     //                                 }
     //                                 await dms.send(response)
     //                                 responseEmbedMessage.delete()
-    //                                 embed.addFields([{name: `Response by ${reactor.nickname}:`, value: response}])
+    //                                 embed.addFields([{name: `Response by ${reactor.displayName}:`, value: response}])
     //                                 m.edit(embed)
     //                                 await m.reactions.removeAll()
     //                                 await m.react('📫')
@@ -191,7 +191,8 @@ module.exports = {
         let bot = message.client
         let settings = bot.settings[guild.id]
         let modMailChannel = guild.channels.cache.get(settings.channels.modmail)
-        let embed = m.embeds[0]
+        let embed = new Discord.EmbedBuilder()
+        embed.data = m.embeds[0].data;
         if (!embed) return;
         let modMailMessageID = embed.data.footer.text.split(/ +/g)[5]
         let raider = guild.members.cache.get(embed.data.footer.text.split(/ +/g)[2])
@@ -253,7 +254,7 @@ module.exports = {
                                 }
                                 await dms.send(response)
                                 responseEmbedMessage.delete()
-                                embed.addFields([{name: `Response by ${reactor.nickname}:`, value: response}])
+                                embed.addFields([{ name: `Response by ${reactor.displayName}:`, value: response }])
                                 m.edit({ embeds: [embed] })
                                 await m.reactions.removeAll()
                                 await m.react('📫')
