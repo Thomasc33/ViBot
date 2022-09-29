@@ -650,7 +650,11 @@ class afkCheck {
                 if (type == r.shortName) reactInfo = r;
             }
 
-            embed.setDescription(`You reacted as ${emote}\n${(reactInfo && reactInfo.checkRealmEye) ? `If you have a(n) ${reactInfo.checkRealmEye.class} that is ${reactInfo.checkRealmEye.ofEight || 8}/8${reactInfo.checkRealmEye.orb ? ` and has a tier ${reactInfo.checkRealmEye.orb} orb` : ''}${reactInfo.checkRealmEye.mheal ? ` and a pet with at least ${reactInfo.checkRealmEye.mheal} mheal` : ``}` : ''}\nPress ✅ to confirm your reaction. Otherwise press ❌`)
+            embed.setDescription(
+                reactInfo.confimrationMessage ?
+                `You reacted as ${emote}\n\n${reactInfo.confimrationMessage}\n\nPress ✅ to confirm your reaction. Otherwise press ❌` :
+                `You reacted as ${emote}\nPress ✅ to confirm your reaction. Otherwise press ❌`
+                )
             let ar = new Discord.ActionRowBuilder().addComponents([
                 new Discord.ButtonBuilder()
                     .setLabel('✅ Confirm')
@@ -1446,7 +1450,7 @@ async function createChannel(runInfo, message, bot) {
         }
         if (!template) return rej(`Template channel not found`)
         let channel = await template.clone({
-            name: `${message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0]}'s ${runInfo.runType}`,
+            name: `${message.member.displayName.replace(/[^a-z|]/gi, '').split('|')[0]}'s ${runInfo.runType}`,
             parent: message.guild.channels.cache.filter(c => c.type == Discord.ChannelType.GuildCategory).find(c => c.name.toLowerCase() === parent).id,
             userLimit: runInfo.vcCap
         }).then(c => c.setPosition(0))

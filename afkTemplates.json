@@ -267,6 +267,7 @@
                     "pointsGiven": 25,
                     "limit": 3,
                     "shortName": "mystic",
+                    "confimrationMessage": "**__REQUIRED__**\n- Your pet mush have **level 85+ magic heal.**\n- You must have a <:T2ImprisonmentOrb:720265039164211241> or <:T3NeutralizationOrb:720265039004565544> available.",
                     "noConfirm": false,
                     "noLocation": false
                 },
@@ -339,6 +340,7 @@
                     "pointsGiven": 25,
                     "limit": 3,
                     "shortName": "mystic",
+                    "confimrationMessage": "**__REQUIRED__**\n- Your pet mush have **level 85+ magic heal.**\n- You must have a <:T2ImprisonmentOrb:720265039164211241> or <:T3NeutralizationOrb:720265039004565544> available.",
                     "noConfirm": false,
                     "noLocation": false
                 },
@@ -747,6 +749,7 @@
                     "pointsGiven": 25,
                     "limit": 3,
                     "shortName": "mystic",
+                    "confimrationMessage": "**__REQUIRED__**\n- Your pet mush have **level 85+ magic heal.**\n- You must have a <:T2ImprisonmentOrb:720265039164211241> or <:T3NeutralizationOrb:720265039004565544> available.",
                     "noConfirm": false,
                     "noLocation": false
                 },
@@ -811,6 +814,7 @@
                     "pointsGiven": 25,
                     "limit": 3,
                     "shortName": "mystic",
+                    "confimrationMessage": "**__REQUIRED__**\n- Your pet mush have **level 85+ magic heal.**\n- You must have a <:T2ImprisonmentOrb:720265039164211241> or <:T3NeutralizationOrb:720265039004565544> available.",
                     "noConfirm": false,
                     "noLocation": false
                 },

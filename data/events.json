@@ -1835,7 +1835,7 @@
             "shattersKey"
         ],
         "embed": {
-            "headcountDescription": "React with any Dungeon Icon if you plan on joining\nReact with any Dungen Key if you plan on bringing any key",
+            "headcountDescription": "React with any Dungeon Icon if you plan on joining\nReact with any Dungeon Key if you plan on bringing any key",
             "color": "#fefefe"
         },
         "earlyLocationCost": 15,

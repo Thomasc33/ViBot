@@ -38,7 +38,7 @@ const quotas = require('./data/quotas.json');
 const botSettings = require('./settings.json')
 const token = require('./botKey.json')
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
-const prefix = botSettings.prefix
+const prefix = botSettings.prefix;
 const cooldowns = new Discord.Collection()
 const bot = new Discord.Client({
     intents: [ // Discord moment
