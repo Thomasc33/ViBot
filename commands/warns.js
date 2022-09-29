@@ -27,10 +27,10 @@ module.exports = {
                 if (embed.data.description == 'None!') {
                     embed.setDescription(string)
                 } else if (embed.data.description.length + `\n${string}`.length >= 2048) {
-                    if (embed.data.fields.length == 0) {
+                    if (!embed.data.fields) {
                         embed.addFields({ name: '-', value: string })
                     } else if (embed.data.fields[embed.data.fields.length - 1].value.length + `\n${string}`.length >= 1024) {
-                        if (embed.data.length + `\n${string}`.length >= 6000) {
+                        if (JSON.stringify(embed.toJSON()).length + `\n${string}`.length >= 6000) {
                             channel.send({ embeds: [embed] })
                             embed.setDescription('None!')
                             embed.data.fields = []
@@ -38,7 +38,7 @@ module.exports = {
                             embed.addFields({ name: '-', value: string })
                         }
                     } else {
-                        if (embed.data.length + `\n${string}`.length >= 6000) {
+                        if (JSON.stringify(embed.toJSON()).length + `\n${string}`.length >= 6000) {
                             channel.send({ embeds: [embed] })
                             embed.setDescription('None!')
                             embed.data.fields = []

@@ -211,7 +211,7 @@ class afkCheck {
      * @param {String} afkInfo.earlyLocationReacts.class
      * @param {String} afkInfo.earlyLocationReacts.ofEight
      * @param {String[]} afkInfo.reacts
-     * @param {Discord.MessageEmbed} afkInfo.embed
+     * @param {Discord.EmbedBuilder} afkInfo.embed
      * @param {Discord.Client} bot
      * @param {import('mysql').Connection} db
      * @param {Discord.Guild} guild
@@ -651,8 +651,8 @@ class afkCheck {
             }
 
             embed.setDescription(
-                reactInfo.confimrationMessage ?
-                `You reacted as ${emote}\n\n${reactInfo.confimrationMessage}\n\nPress ✅ to confirm your reaction. Otherwise press ❌` :
+                reactInfo.confirmationMessage ?
+                `You reacted as ${emote}\n\n${reactInfo.confirmationMessage}\n\nPress ✅ to confirm your reaction. Otherwise press ❌` :
                 `You reacted as ${emote}\nPress ✅ to confirm your reaction. Otherwise press ❌`
                 )
             let ar = new Discord.ActionRowBuilder().addComponents([

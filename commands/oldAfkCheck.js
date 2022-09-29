@@ -186,7 +186,7 @@ class afkCheck {
      * @param {String} afkInfo.earlyLocationReacts.class
      * @param {String} afkInfo.earlyLocationReacts.ofEight
      * @param {String[]} afkInfo.reacts
-     * @param {Discord.MessageEmbed} afkInfo.embed
+     * @param {Discord.EmbedBuilder} afkInfo.embed
      * @param {Discord.Client} bot 
      * @param {import('mysql').Connection} db 
      * @param {Discord.Guild} guild 
