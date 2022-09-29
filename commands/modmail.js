@@ -53,7 +53,8 @@ module.exports = {
     //     let bot = message.client
     //     let settings = bot.settings[guild.id]
     //     let modMailChannel = guild.channels.cache.get(settings.channels.modmail)
-    //     let embed = m.embeds[0]
+    //     let embed = new Discord.EmbedBuilder()
+    //     embed.data = m.embeds[0].data
     //     if (!embed) return;
     //     let modMailMessageID = embed.data.footer.text.split(/ +/g)[5]
     //     let raider = guild.members.cache.get(embed.data.footer.text.split(/ +/g)[2])
@@ -166,7 +167,8 @@ module.exports = {
     //                 let botReco = bot.guilds.cache.get('343704644712923138').channels.cache.get('746634644644167680')
     //                 if (botReco) {
     //                     let embed = new Discord.EmbedBuilder()
-    //                     let oldEmbed = m.embeds[0]
+    //                     let oldEmbed = new Discord.EmbedBuilder()
+    //                     oldEmbed.data = m.embeds[0].data
     //                     embed.setColor('#ff0000')
     //                     embed.setDescription(oldEmbed.data.description)
     //                     let me = await botReco.send({ embeds: [embed] })
@@ -300,7 +302,8 @@ module.exports = {
                 let botReco = bot.guilds.cache.get('343704644712923138').channels.cache.get('746634644644167680')
                 if (botReco) {
                     let embed = new Discord.EmbedBuilder()
-                    let oldEmbed = m.embeds[0]
+                    let oldEmbed = new Discord.EmbedBuilder()
+                    oldEmbed.data = m.embeds[0].data
                     embed.setColor('#ff0000')
                     embed.setDescription(oldEmbed.data.description)
                     let me = await botReco.send({ embeds: [embed] })

@@ -277,7 +277,8 @@ module.exports = {
             let ManualVerificationCollector = new Discord.ReactionCollector(message, { filter: ManualFilter })
             ManualVerificationCollector.on('collect', async function (r, u) {
                 if (!(u.id == reactor.id)) return;
-                let embed = message.embeds[0]
+                let embed = new Discord.EmbedBuilder()
+                embed.data = message.embeds[0].data
                 let member = message.guild.members.cache.get(embed.data.footer.text)
                 const info = {
                     role: vetRaider,

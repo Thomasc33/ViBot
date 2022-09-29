@@ -32,7 +32,8 @@ module.exports = {
             messages.each(async m => {
                 if (m.author.id !== bot.user.id) return;
                 if (m.embeds.length == 0) return;
-                let embed = m.embeds[0]
+                let embed = new Discord.EmbedBuilder()
+                embed.data = m.embeds[0].data
                 //we have a message, we have no channel -> delete message
                 if (!guild.channels.cache.get(embed.data.footer.text)) {
                     m.delete();
@@ -57,7 +58,8 @@ module.exports = {
     },
     async watchMessage(message, bot, settings) {
         let m = message
-        let embed = m.embeds[0]
+        let embed = new Discord.EmbedBuilder()
+        embed.data = m.embeds[0].data
         if (watchedMessages.includes(embed.data.footer)) return
         watchedMessages.push(embed.data.footer)
         let channel = message.guild.channels.cache.get(embed.data.footer.text)
@@ -74,7 +76,7 @@ module.exports = {
                 await m.react('❌')
                 embed.data.footer.text = `Opened By ${m.guild.members.cache.get(u.id).nickname || u.tag} • ${embed.data.footer.text}`;
                 message = m = await m.edit({ embeds: m.embeds })
-                embed = message.embeds[0]
+                embed.data = message.embeds[0].data
                 let confirmReactionCollector = new Discord.ReactionCollector(m, { filter: (r, uu) => (r.emoji.name === '✅' || r.emoji.name === '❌') && u.id == uu.id })
 
                 confirmReactionCollector.on('collect', async (r, u) => {
@@ -84,7 +86,7 @@ module.exports = {
                         await m.react('❌')
                         m.embeds[0].footer.text = embed.data.footer.text.split(' ').pop()
                         message = m = await m.edit({ embeds: m.embeds })
-                        embed = message.embeds[0]
+                        embed.data = message.embeds[0].data
                         await this.update(m.guild, bot)
                     } else remove()
                 })
