@@ -23,7 +23,7 @@ module.exports = {
             .setColor(`#0000ff`)
             .setAuthor({ name: `Select a leaderboard` })
             .setDescription(leaderBoardTypes[guild.id].map(lb => `${numberToEmote(lb.index)} ${lb.name}`).join('\n'))
-        if (message.author.avatarURL()) embed.author.iconURL = message.author.avatarURL()
+        if (message.author.avatarURL()) embed.setAuthor({ name: `Select a leaderboard`, iconURL: message.author.avatarURL() })
         let embedMessage = await message.channel.send({ embeds: [embed] })
         let reacted = false
         let reactionCollector = new Discord.ReactionCollector(embedMessage, { filter: (r, u) => u.id == message.author.id && ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟', '❌'] })
@@ -39,7 +39,7 @@ module.exports = {
             reacted = true;
             db.query(`SELECT * FROM users ORDER BY ${type.dbNames.map(n => n).join(' + ')} DESC LIMIT 25`, (err, rows) => {
                 if (err) ErrorLogger.log(err, bot)
-                embed.author.name = `Top 25 ${type.name}`
+                embed.data.author.name = `Top 25 ${type.name}`
                 embed.data.description = 'None!'
                 for (let i in rows) {
                     let member = guild.members.cache.get(rows[i].id)

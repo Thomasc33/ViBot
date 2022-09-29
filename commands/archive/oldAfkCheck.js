@@ -241,9 +241,9 @@ class afk {
                     reactor.send(`The location for this run has been set to \`${this.location}\``);
                     this.nitro[this.nitroCount] = u;
                     this.nitroCount++;
-                    if (this.leaderEmbed.fields[3].value == `None yet!`) {
-                        this.leaderEmbed.fields[3].value = `<@!${u.id}> `;
-                    } else this.leaderEmbed.fields[3].value += `, <@!${u.id}>`
+                    if (this.leaderEmbed.data.fields[3].value == `None yet!`) {
+                        this.leaderEmbed.data.fields[3].value = `<@!${u.id}> `;
+                    } else this.leaderEmbed.data.fields[3].value += `, <@!${u.id}>`
                     this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => console.log(er));
                     this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => console.log(er));
                     this.earlyLocation.push(u);
@@ -347,9 +347,9 @@ To end the AFK check as a leader, react to ❌`)
                     reactor.send(`The location for this run has been set to \`${this.location}\``);
                     this.nitro[this.nitroCount] = u;
                     this.nitroCount++;
-                    if (this.leaderEmbed.fields[3].value == `None yet!`) {
-                        this.leaderEmbed.fields[3].value = `<@!${u.id}> `;
-                    } else this.leaderEmbed.fields[3].value += `, <@!${u.id}>`
+                    if (this.leaderEmbed.data.fields[3].value == `None yet!`) {
+                        this.leaderEmbed.data.fields[3].value = `<@!${u.id}> `;
+                    } else this.leaderEmbed.data.fields[3].value += `, <@!${u.id}>`
                     this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => console.log(er));
                     this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => console.log(er));
                     this.earlyLocation.push(u);
@@ -466,9 +466,9 @@ To end the AFK check as a leader, react to ❌`)
                     reactor.send(`The location for this run has been set to \`${this.location}\``);
                     this.nitro[this.nitroCount] = u;
                     this.nitroCount++;
-                    if (this.leaderEmbed.fields[5].value == `None yet!`) {
-                        this.leaderEmbed.fields[5].value = `<@!${u.id}> `;
-                    } else this.leaderEmbed.fields[5].value += `, <@!${u.id}>`
+                    if (this.leaderEmbed.data.fields[5].value == `None yet!`) {
+                        this.leaderEmbed.data.fields[5].value = `<@!${u.id}> `;
+                    } else this.leaderEmbed.data.fields[5].value += `, <@!${u.id}>`
                     this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => console.log(er));
                     this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => console.log(er));
                     this.earlyLocation.push(u);
@@ -532,9 +532,9 @@ To end the AFK check as a leader, react to ❌`)
             this.key = u;
             dm.send(`The location for this run has been set to \`${this.location}\`, get there and confirm key with ${this.message.member.nickname}`);
             console.log(`${u.tag} confirmed key`);
-            if (this.leaderEmbed.fields[0].value == `None yet!`) {
-                this.leaderEmbed.fields[0].value = `<${botSettings.emote.LostHallsKey}>: <@!${u.id}>`;
-            } else this.leaderEmbed.fields[0].value += `\n<${botSettings.emote.LostHallsKey}>: ${`<@!${u.id}>`}`;
+            if (this.leaderEmbed.data.fields[0].value == `None yet!`) {
+                this.leaderEmbed.data.fields[0].value = `<${botSettings.emote.LostHallsKey}>: <@!${u.id}>`;
+            } else this.leaderEmbed.data.fields[0].value += `\n<${botSettings.emote.LostHallsKey}>: ${`<@!${u.id}>`}`;
             this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => console.log(er));
             this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => console.log(er));
             this.earlyLocation.push(u);
@@ -569,9 +569,9 @@ To end the AFK check as a leader, react to ❌`)
                 this.vials[this.vialCount - 1] = u;
                 dm.send(`The location for this run has been set to \`${this.location}\`, get there and confirm vial with ${this.message.member.nickname}`);
                 console.log(`${u.tag} confirmed vial`);
-                if (this.leaderEmbed.fields[1].value == `None yet!`) {
-                    this.leaderEmbed.fields[1].value = `<${botSettings.emote.Vial}>: <@!${u.id}>`;
-                } else this.leaderEmbed.fields[1].value += `\n<${botSettings.emote.Vial}>: ${`<@!${u.id}>`}`
+                if (this.leaderEmbed.data.fields[1].value == `None yet!`) {
+                    this.leaderEmbed.data.fields[1].value = `<${botSettings.emote.Vial}>: <@!${u.id}>`;
+                } else this.leaderEmbed.data.fields[1].value += `\n<${botSettings.emote.Vial}>: ${`<@!${u.id}>`}`
                 this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => console.log(er));
                 this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => console.log(er));
                 this.earlyLocation.push(u);
@@ -609,9 +609,9 @@ To end the AFK check as a leader, react to ❌`)
                 this.rusherCount++;
                 dm.send(`The location for this run has been set to \`${this.location}\`, get there asap`);
                 console.log(`${u.tag} confirmed rusher`);
-                if (this.leaderEmbed.fields[1].value == `None yet!`) {
-                    this.leaderEmbed.fields[1].value = `<${botSettings.emote.Plane}>: <@!${u.id}>`;
-                } else this.leaderEmbed.fields[1].value += `\n<${botSettings.emote.Plane}>: ${`<@!${u.id}>`}`;
+                if (this.leaderEmbed.data.fields[1].value == `None yet!`) {
+                    this.leaderEmbed.data.fields[1].value = `<${botSettings.emote.Plane}>: <@!${u.id}>`;
+                } else this.leaderEmbed.data.fields[1].value += `\n<${botSettings.emote.Plane}>: ${`<@!${u.id}>`}`;
                 this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => console.log(er));
                 this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => console.log(er));
                 this.earlyLocation.push(u);
@@ -648,9 +648,9 @@ To end the AFK check as a leader, react to ❌`)
                 this.mystics[this.mysticCount - 1] = u;
                 dm.send(`The location for this run has been set to \`${this.location}\`, get there asap`);
                 console.log(`${u.tag} confirmed mystic`);
-                if (this.leaderEmbed.fields[3].value == `None yet!`) {
-                    this.leaderEmbed.fields[3].value = `<${botSettings.emote.Mystic}>: <@!${u.id}>`;
-                } else this.leaderEmbed.fields[3].value += `\n<${botSettings.emote.Mystic}>: ${`<@!${u.id}>`}`
+                if (this.leaderEmbed.data.fields[3].value == `None yet!`) {
+                    this.leaderEmbed.data.fields[3].value = `<${botSettings.emote.Mystic}>: <@!${u.id}>`;
+                } else this.leaderEmbed.data.fields[3].value += `\n<${botSettings.emote.Mystic}>: ${`<@!${u.id}>`}`
                 this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => console.log(er));
                 this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => console.log(er));
                 this.earlyLocation.push(u);
@@ -687,9 +687,9 @@ To end the AFK check as a leader, react to ❌`)
                 this.brains[this.brainCount - 1] = u;
                 dm.send(`The location for this run has been set to \`${this.location}\`, get there asap`);
                 console.log(`${u.tag} confirmed brain`);
-                if (this.leaderEmbed.fields[2].value == `None yet!`) {
-                    this.leaderEmbed.fields[2].value = `<${botSettings.emote.Brain}>: <@!${u.id}>`;
-                } else this.leaderEmbed.fields[2].value += `\n<${botSettings.emote.Brain}>: ${`<@!${u.id}>`}`
+                if (this.leaderEmbed.data.fields[2].value == `None yet!`) {
+                    this.leaderEmbed.data.fields[2].value = `<${botSettings.emote.Brain}>: <@!${u.id}>`;
+                } else this.leaderEmbed.data.fields[2].value += `\n<${botSettings.emote.Brain}>: ${`<@!${u.id}>`}`
                 this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => console.log(er));
                 this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => console.log(er));
                 this.earlyLocation.push(u);
@@ -786,35 +786,35 @@ To end the AFK check as a leader, react to ❌`)
             .addFields([{name: 'Key', value: 'None!'}])
             .addFields([{name: 'Early Location', value: 'None!'}])
             .addFields([{name: 'Raiders', value: 'None!'}])
-        if (this.key) historyEmbed.fields[2].value = `<@!${this.key.id}>`
+        if (this.key) historyEmbed.data.fields[2].value = `<@!${this.key.id}>`
         this.earlyLocation.forEach(m => {
-            if (historyEmbed.fields[3].value == `None!`) historyEmbed.fields[3].value = `<@!${m.id}>`
-            else historyEmbed.fields[3].value += `, <@!${m.id}>`
+            if (historyEmbed.data.fields[3].value == `None!`) historyEmbed.data.fields[3].value = `<@!${m.id}>`
+            else historyEmbed.data.fields[3].value += `, <@!${m.id}>`
         })
         let bigEmbed = false
         let biggerEmbed = false
         let biggestEmbed = false
         raiders.forEach(m => {
             if (bigEmbed) {
-                if (historyEmbed.fields[5].value.length >= 1000) {
+                if (historyEmbed.data.fields[5].value.length >= 1000) {
                     biggerEmbed = true;
                     historyEmbed.addFields([{name: '-', `, value: <@!${m}>`}])
                 }
-                else historyEmbed.fields[5].value += `, <@!${m}>`
+                else historyEmbed.data.fields[5].value += `, <@!${m}>`
             } else if (biggerEmbed) {
-                if (historyEmbed.fields[6].value.length >= 1000) {
+                if (historyEmbed.data.fields[6].value.length >= 1000) {
                     biggestEmbed = true;
                     historyEmbed.addFields([{name: '-', `, value: <@!${m}>`}])
                 }
-                else historyEmbed.fields[6].value += `, <@!${m}>`
+                else historyEmbed.data.fields[6].value += `, <@!${m}>`
             } else if (biggestEmbed) {
-                historyEmbed.fields[7].value += `, <@!${m}>`
+                historyEmbed.data.fields[7].value += `, <@!${m}>`
             } else {
-                if (historyEmbed.fields[4].value.length >= 1000) {
+                if (historyEmbed.data.fields[4].value.length >= 1000) {
                     bigEmbed = true;
                     historyEmbed.addFields([{name: '-', `, value: <@!${m}>`}])
                 }
-                else historyEmbed.fields[4].value += `, <@!${m}>`
+                else historyEmbed.data.fields[4].value += `, <@!${m}>`
             }
         })
         this.message.guild.channels.cache.get(this.settings.channels.history).send(historyEmbed)
@@ -943,13 +943,13 @@ To end the AFK check as a leader, react to ❌`)
         //update afk control panel
         switch (this.run) {
             case 1:
-                this.leaderEmbed.fields[2].value = this.location;
+                this.leaderEmbed.data.fields[2].value = this.location;
                 break;
             case 2:
-                this.leaderEmbed.fields[2].value = this.location;
+                this.leaderEmbed.data.fields[2].value = this.location;
                 break;
             case 3:
-                this.leaderEmbed.fields[4].value = this.location;
+                this.leaderEmbed.data.fields[4].value = this.location;
                 break;
         }
         this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => console.log(er));

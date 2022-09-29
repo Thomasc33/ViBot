@@ -182,7 +182,7 @@ module.exports = {
                     channel.channel.setName(`${name}`)
 
                     //update message in raid-status
-                    channel.embed.author.text = `${name}`
+                    channel.embed.data.author.text = `${name}`
                     channel.message.edit({ embeds: [channel.embed] })
 
                     if (!bot.afkChecks[channel.channelId].runType) bot.afkChecks[channel.channelId].runType = {}

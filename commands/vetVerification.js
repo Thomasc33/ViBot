@@ -278,7 +278,7 @@ module.exports = {
             ManualVerificationCollector.on('collect', async function (r, u) {
                 if (!(u.id == reactor.id)) return;
                 let embed = message.embeds[0]
-                let member = message.guild.members.cache.get(embed.footer.text)
+                let member = message.guild.members.cache.get(embed.data.footer.text)
                 const info = {
                     role: vetRaider,
                     guild: message.guild,

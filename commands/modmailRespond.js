@@ -15,9 +15,9 @@ module.exports = {
         let raider;
         if (!raider)
             try {
-                raider = message.guild.members.cache.get(embed.footer.text.split(/ +/g)[2]);
+                raider = message.guild.members.cache.get(embed.data.footer.text.split(/ +/g)[2]);
                 if (!raider)
-                    raider = await message.guild.members.fetch({ user: embed.footer.text.split(/ +/g)[2], force: true });
+                    raider = await message.guild.members.fetch({ user: embed.data.footer.text.split(/ +/g)[2], force: true });
             } catch (e) { return message.channel.send(`User is not currently in the server.`); }
         if (!raider)
             return message.channel.send(`User is not currently in the server.`);

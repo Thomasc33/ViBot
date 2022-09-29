@@ -837,16 +837,16 @@ class afkCheck {
             interactionCollector.on('collect', async int => {
                 if (int.customId == 'abort') {
                     embed.setDescription('Cancelled. You can dismiss this message')
-                    if (embed.footer) delete embed.footer
-                    if (embed.author) delete embed.author
+                    if (embed.data.footer) delete embed.data.footer
+                    if (embed.data.author) delete embed.data.author
                     interaction.editReply({ embeds: [embed], components: [] })
                     this.removeFromActiveInteractions(interaction.user.id)
                 }
                 else if (int.customId == 'confirm') {
                     if (this.pointsUsers.length >= ticketLimit) {
                         embed.setDescription('Unfortunately too many people have used their points for this run. No points have been deducted.')
-                        if (embed.footer) delete embed.footer
-                        if (embed.author) delete embed.author
+                        if (embed.data.footer) delete embed.data.footer
+                        if (embed.data.author) delete embed.data.author
                         interaction.editReply({ embeds: [embed], components: [] })
                         this.removeFromActiveInteractions(interaction.user.id)
                         return
@@ -856,8 +856,8 @@ class afkCheck {
                     if (success) {
                         this.removeFromActiveInteractions(interaction.user.id)
                         embed.setDescription(`The location for this run has been set to \`${this.afkInfo.location}\`\nYou now have \`${leftOver}\` points left over. Join lounge to be moved into the channel.`)
-                        if (embed.footer) delete embed.footer
-                        if (embed.author) delete embed.author
+                        if (embed.data.footer) delete embed.data.footer
+                        if (embed.data.author) delete embed.data.author
                         interaction.editReply({ embeds: [embed], components: [] })
                         if (this.leaderEmbed.data.fields[index].value == 'None!') this.leaderEmbed.data.fields[index].value = `<@!${interaction.user.id}>`
                         else this.leaderEmbed.data.fields[index].value += `, <@!${interaction.user.id}>`
@@ -874,8 +874,8 @@ class afkCheck {
                     }
                     else {
                         embed.setDescription(`There was an issue using the points: \`${er}\``)
-                        if (embed.footer) delete embed.footer
-                        if (embed.author) delete embed.author
+                        if (embed.data.footer) delete embed.data.footer
+                        if (embed.data.author) delete embed.data.author
                         interaction.editReply({ embeds: [embed], components: [] })
                         this.removeFromActiveInteractions(interaction.user.id)
                     }

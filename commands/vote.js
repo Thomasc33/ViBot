@@ -150,18 +150,18 @@ async function postVote(message, member, bot, db) {
         .setColor('#ff0000')
         .setAuthor({ name: `${member.nickname} to ${voteType}` })
         .setDescription(`${member}\n`)
-    if (member.user.avatarURL()) voteEmbed.author.iconURL = member.user.avatarURL()
+    if (member.user.avatarURL()) voteEmbed.setAuthor({ name: `${member.nickname} to ${voteType}`, iconURL: member.user.avatarURL() })
     db.query(`SELECT * FROM users WHERE id = ${member.id}`, async (err, rows) => {
         if (err) ErrorLogger.log(err, bot)
         if (voteType != 'Almost Raid Leader')
             if (rows[0]) {
-                voteEmbed.description += `Runs Logged: \`${rows[0].voidsLead}\` Voids, \`${rows[0].cultsLead}\` Cults\nRecent Feedback:\n`
-            } else voteEmbed.description += `Issue getting runs\nRecent Feedback:\n`
-        else voteEmbed.description += `Feedback:\n`
+                voteEmbed.data.description += `Runs Logged: \`${rows[0].voidsLead}\` Voids, \`${rows[0].cultsLead}\` Cults\nRecent Feedback:\n`
+            } else voteEmbed.data.description += `Issue getting runs\nRecent Feedback:\n`
+        else voteEmbed.data.description += `Feedback:\n`
         let cont = true
         feedback.forEach(m => {
             if (cont)
-                if (voteEmbed.description.length + `[Link](${m}) `.length < 2048) voteEmbed.description += `[Link](${m}) `
+                if (voteEmbed.data.description.length + `[Link](${m}) `.length < 2048) voteEmbed.data.description += `[Link](${m}) `
                 else cont = false
         })
         let m = await channel.send({ embeds: [voteEmbed] })

@@ -171,7 +171,7 @@ class AfkTemplate {
             value: this.data.reacts.map(r => this.bot.emojis.resolve(r)).join(' ') || 'None!'
         });
 
-        this.reactEmbed.fields = fields;
+        this.reactEmbed.data.fields = fields;
         await this.rm.then(r => r.edit({ embeds: [this.reactEmbed] }));
     }
     get rm() {

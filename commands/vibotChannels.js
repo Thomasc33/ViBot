@@ -34,11 +34,11 @@ module.exports = {
                 if (m.embeds.length == 0) return;
                 let embed = m.embeds[0]
                 //we have a message, we have no channel -> delete message
-                if (!guild.channels.cache.get(embed.footer.text)) {
+                if (!guild.channels.cache.get(embed.data.footer.text)) {
                     m.delete();
                 }
                 //we have a message, we have a channel -> check if its watched already
-                else if (watchedButtons[embed.footer.text] === undefined) {
+                else if (watchedButtons[embed.data.footer.text] === undefined) {
                     //no? add a listener
                     module.exports.addCloseChannelButtons(bot, m);
                 }
@@ -58,9 +58,9 @@ module.exports = {
     async watchMessage(message, bot, settings) {
         let m = message
         let embed = m.embeds[0]
-        if (watchedMessages.includes(embed.footer)) return
-        watchedMessages.push(embed.footer)
-        let channel = message.guild.channels.cache.get(embed.footer.text)
+        if (watchedMessages.includes(embed.data.footer)) return
+        watchedMessages.push(embed.data.footer)
+        let channel = message.guild.channels.cache.get(embed.data.footer.text)
         if (!channel) return m.delete()
         let channelName = channel.name
         let reactionCollector = new Discord.ReactionCollector(m, { filter: xFilter })
@@ -72,7 +72,7 @@ module.exports = {
                 await m.reactions.removeAll()
                 await m.react('✅')
                 await m.react('❌')
-                embed.footer.text = `Openned By ${m.guild.members.cache.get(u.id).nickname || u.tag} • ${embed.footer.text}`;
+                embed.data.footer.text = `Opened By ${m.guild.members.cache.get(u.id).nickname || u.tag} • ${embed.data.footer.text}`;
                 message = m = await m.edit({ embeds: m.embeds })
                 embed = message.embeds[0]
                 let confirmReactionCollector = new Discord.ReactionCollector(m, { filter: (r, uu) => (r.emoji.name === '✅' || r.emoji.name === '❌') && u.id == uu.id })
@@ -82,7 +82,7 @@ module.exports = {
                         await m.reactions.removeAll()
                         confirmReactionCollector.stop()
                         await m.react('❌')
-                        m.embeds[0].footer.text = embed.footer.text.split(' ').pop()
+                        m.embeds[0].footer.text = embed.data.footer.text.split(' ').pop()
                         message = m = await m.edit({ embeds: m.embeds })
                         embed = message.embeds[0]
                         await this.update(m.guild, bot)
@@ -91,7 +91,7 @@ module.exports = {
             }
             async function remove() {
                 for (let i in bot.afkChecks) {
-                    const id = embed.footer.text.split(' ').pop()
+                    const id = embed.data.footer.text.split(' ').pop()
                     if (i == id) {
                         let key = await message.guild.members.cache.get(bot.afkChecks[i].key)
                         if (key) {

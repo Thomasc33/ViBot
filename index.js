@@ -629,7 +629,7 @@ async function dmHandler(message) {
             .setDescription(`<@!${message.author.id}> sent the bot: "${message.content}"`)
             .setFooter({ text: `User ID: ${message.author.id}` })
             .setTimestamp()
-        if (message.author.avatarURL()) logEmbed.author.iconURL = message.author.avatarURL()
+        if (message.author.avatarURL()) logEmbed.setAuthor({ name: message.author.tag, iconURL: message.author.avatarURL() })
         guild.channels.cache.get(bot.settings[guild.id].channels.dmcommands).send({ embeds: [logEmbed] }).catch(er => { ErrorLogger.log(new Error(`Unable to find/send in settings.channels.dmcommands channel for ${guild.id}`), bot) })
     }
     async function checkBlacklist(member, db) {
