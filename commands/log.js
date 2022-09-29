@@ -77,8 +77,8 @@ module.exports = {
                             if (err) return res(null)
                             db.query(`SELECT ${guildInfo.assist.currentweek} FROM users WHERE id = '${m.id}'`, (err, rows) => {
                                 let s = `<@!${m.id}>${m.nickname ? ` \`${m.nickname}\`` : ''}. Current week: ${rows[0][guildInfo.assist.currentweek]} Assists`
-                                if (currentWeekEmbed.fields.length == 1) currentWeekEmbed.addFields([{name: 'Assists', value: s}])
-                                else if (currentWeekEmbed.fields[currentWeekEmbed.fields.length - 1].value.length + s.length <= 1024) currentWeekEmbed.fields[currentWeekEmbed.fields.length - 1].value = currentWeekEmbed.fields[currentWeekEmbed.fields.length - 1].value.concat(`\n${s}`)
+                                if (currentWeekEmbed.data.fields.length == 1) currentWeekEmbed.addFields([{name: 'Assists', value: s}])
+                                else if (currentWeekEmbed.data.fields[currentWeekEmbed.data.fields.length - 1].value.length + s.length <= 1024) currentWeekEmbed.data.fields[currentWeekEmbed.data.fields.length - 1].value = currentWeekEmbed.data.fields[currentWeekEmbed.data.fields.length - 1].value.concat(`\n${s}`)
                                 else currentWeekEmbed.addFields([{name: '** **', value: s}])
                                 res(null)
                             })

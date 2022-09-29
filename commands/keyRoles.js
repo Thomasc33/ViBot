@@ -21,16 +21,16 @@ module.exports = {
             const popInfo = data[message.guild.id];
             console.log(popInfo);
             let keyCountEmbed = new Discord.EmbedBuilder().setAuthor({ name: `The ${message.guild.name} server has the following key roles configured:\n` }).setDescription("").setColor('#ff0000')
-            if (!popInfo || !popInfo.length) keyCountEmbed.description += `No key roles have been setup in this Discord server.`;
+            if (!popInfo || !popInfo.length) keyCountEmbed.data.description += `No key roles have been setup in this Discord server.`;
             else {
                 let found = 0;
                 for (const keyInfo of popInfo) {
                     if (!settings.roles[keyInfo.role]) continue;
-                    keyCountEmbed.description += `<@&${settings.roles[keyInfo.role]}>: ${keyInfo.amount} ${keyInfo.types.map(t => t[1]).join(", ")}${keyInfo.types.length > 1 ? " Combined" : ""}\n`
+                    keyCountEmbed.data.description += `<@&${settings.roles[keyInfo.role]}>: ${keyInfo.amount} ${keyInfo.types.map(t => t[1]).join(", ")}${keyInfo.types.length > 1 ? " Combined" : ""}\n`
                     found++
                 }
                 if (!found)
-                    keyCountEmbed.description += `No key roles have been setup in this Discord server.`;
+                    keyCountEmbed.data.description += `No key roles have been setup in this Discord server.`;
             }
             message.channel.send({ embeds: [keyCountEmbed] })
         } else {

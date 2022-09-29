@@ -33,15 +33,15 @@ module.exports = {
 }
 
 function fitStringIntoEmbed(embed, string) {
-    if (embed.data.fields.length == 0) embed.addFields({ name: '** **', value: string, inline: true })
+    if (!embed.data.fields) embed.addFields({ name: '** **', value: string, inline: true })
     else if (embed.data.fields[embed.data.fields.length - 1].value.length + `\n${string}`.length >= 1024) {
-        if (embed.data.length + `\n${string}`.length >= 6000) {
+        if (JSON.stringify(embed.toJSON()).length + `\n${string}`.length >= 6000) {
             embeds.push(new Discord.EmbedBuilder(embed))
             embed.setDescription('None!')
             embed.data.fields = []
         } else embed.addFields({ name: '** **', value: string, inline: true })
     } else {
-        if (embed.data.length + `\n${string}`.length >= 6000) {
+        if (JSON.stringify(embed.toJSON()).length + `\n${string}`.length >= 6000) {
             embeds.push(new Discord.EmbedBuilder(embed))
             embed.setDescription('None!')
             embed.data.fields = []

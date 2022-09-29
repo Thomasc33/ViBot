@@ -186,7 +186,7 @@ class afkCheck {
      * @param {String} afkInfo.earlyLocationReacts.class
      * @param {String} afkInfo.earlyLocationReacts.ofEight
      * @param {String[]} afkInfo.reacts
-     * @param {Discord.MessageEmbed} afkInfo.embed
+     * @param {Discord.EmbedBuilder} afkInfo.embed
      * @param {Discord.Client} bot 
      * @param {import('mysql').Connection} db 
      * @param {Discord.Guild} guild 
@@ -323,16 +323,16 @@ class afkCheck {
             .setColor(this.afkInfo.embed.color)
             .setFooter({ text: `Time Remaining: ${Math.floor(this.time / 60)} minutes and ${this.time % 60} seconds` })
             .setTimestamp(Date.now())
-        if (this.message.author.avatarURL()) this.mainEmbed.author.iconURL = this.message.author.avatarURL()
+        if (this.message.author.avatarURL()) this.mainEmbed.setAuthor({ name: `${avsan} ${this.afkInfo.runName} Has Been Started in ${this.channel.name}`, iconURL: this.message.author.avatarURL() })
         if (this.afkInfo.reqsImageUrl) this.mainEmbed.setImage(this.afkInfo.reqsImageUrl)
         else if (this.afkInfo.isAdvanced && !this.afkInfo.isExalt && this.settings.strings.hallsAdvancedReqsImage) this.mainEmbed.setImage(this.settings.strings.hallsAdvancedReqsImage);
         else if (this.afkInfo.isAdvanced && this.afkInfo.isExalt && this.settings.strings.exaltsAdvancedReqsImage) this.mainEmbed.setImage(this.settings.strings.exaltsAdvancedReqsImage);
         if (this.afkInfo.embed.thumbnail && !this.afkInfo.embed.removeThumbnail) this.mainEmbed.setThumbnail(this.afkInfo.embed.thumbnail)
-        this.mainEmbed.description = this.mainEmbed.description.replace('{voicechannel}', `${this.channel}`)
+        this.mainEmbed.data.description = this.mainEmbed.data.description.replace('{voicechannel}', `${this.channel}`)
         const rules = `<#${this.settings.channels.raidingrules}>` || '#raiding-rules';
 
         if (this.afkInfo.isAdvanced)
-            this.mainEmbed.description += `\n\n**__Advanced Runs__**\nThis is an **advanced run**, meaning there are extended requirements you **MUST** meet. You must be both **__8/8__** and follow the requirements sheet listed below.\n\nBasic raiding rules from ${rules} will still apply.\n\nIf you are caught not meeting these requirements, you will be removed from the run and suspended.`
+            this.mainEmbed.data.description += `\n\n**__Advanced Runs__**\nThis is an **advanced run**, meaning there are extended requirements you **MUST** meet. You must be both **__8/8__** and follow the requirements sheet listed below.\n\nBasic raiding rules from ${rules} will still apply.\n\nIf you are caught not meeting these requirements, you will be removed from the run and suspended.`
 
         this.raidStatusMessage.edit({ embeds: [this.mainEmbed] })
         if (this.bot.afkChecks[this.channel.id])
@@ -368,13 +368,13 @@ class afkCheck {
             this.confirmSelection(u, r, 0, 'key', this.afkInfo.keyCount)
         }
         else if (this.afkInfo.vialReact && r.emoji.id == this.afkInfo.vialEmoteID) this.confirmSelection(u, r, 1, 'vial', 3)
-        else if (r.emoji.id === '701491230349066261') return this.useNitro(u, this.leaderEmbed.fields.length - 1)
-        else if (r.emoji.id === '752368122551337061') return this.supporterUse(u, this.leaderEmbed.fields.length - 2)
-        else if (r.emoji.name === '🎟️') return this.pointsUse(u, this.leaderEmbed.fields.length - 2)
+        else if (r.emoji.id === '701491230349066261') return this.useNitro(u, this.leaderEmbed.data.fields.length - 1)
+        else if (r.emoji.id === '752368122551337061') return this.supporterUse(u, this.leaderEmbed.data.fields.length - 2)
+        else if (r.emoji.name === '🎟️') return this.pointsUse(u, this.leaderEmbed.data.fields.length - 2)
         else if (r.emoji.name === '❌') {
             if (this.guild.members.cache.get(u.id).roles.highest.position >= this.staffRole.position) {
                 this.endedBy = u;
-                return this.postAfk(u, this.leaderEmbed.fields.length - 2)
+                return this.postAfk(u, this.leaderEmbed.data.fields.length - 2)
             }
         }
         else for (let i in this.afkInfo.earlyLocationReacts) {
@@ -400,7 +400,7 @@ class afkCheck {
             this.abortAfk()
         } else if (r.emoji.name === '✅') {
             if (this.afkInfo.twoPhase) {
-                this.leaderEmbed.footer.text = `React with ❌ to abort, Channel is opening...`
+                this.leaderEmbed.data.footer.text = `React with ❌ to abort, Channel is opening...`
                 this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] })
                 let tempM = await this.raidStatus.send(`<#${this.channel.id}> will open in 5 seconds...`)
                 setTimeout(async (afk) => {
@@ -468,9 +468,9 @@ class afkCheck {
             if (!noLocation) u.send(`The location for this run has been set to \`${afk.afkInfo.location}\`, get there ASAP! Join lounge to be moved into the channel.`);
             //add to leader embed
             if (afk.afkInfo.vialReact && !(type == 'key' || type == 'vial')) index++;
-            if (afk.leaderEmbed.fields[index].value == `None!`) {
-                afk.leaderEmbed.fields[index].value = `${emote}: <@!${u.id}>`;
-            } else afk.leaderEmbed.fields[index].value += `\n${emote}: ${`<@!${u.id}>`}`
+            if (afk.leaderEmbed.data.fields[index].value == `None!`) {
+                afk.leaderEmbed.data.fields[index].value = `${emote}: <@!${u.id}>`;
+            } else afk.leaderEmbed.data.fields[index].value += `\n${emote}: ${`<@!${u.id}>`}`
             afk.leaderEmbedMessage.edit({ embeds: [afk.leaderEmbed] }).catch(er => ErrorLogger.log(er, afk.bot));
             afk.runInfoMessage.edit({ embeds: [afk.leaderEmbed] }).catch(er => ErrorLogger.log(er, afk.bot));
             //end collectors
@@ -579,8 +579,8 @@ class afkCheck {
                         }
                         reactor.voice.setChannel(this.channel.id).catch(er => { reactor.send('Please join a voice channel and you will be moved in automatically') })
                         this.nitro.push(u)
-                        if (this.leaderEmbed.fields[index].value == `None!`) this.leaderEmbed.fields[index].value = `<@!${u.id}> `;
-                        else this.leaderEmbed.fields[index].value += `, <@!${u.id}>`
+                        if (this.leaderEmbed.data.fields[index].value == `None!`) this.leaderEmbed.data.fields[index].value = `<@!${u.id}> `;
+                        else this.leaderEmbed.data.fields[index].value += `, <@!${u.id}>`
                         this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
                         this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
                         emitter.on('Ended', (channelID, aborted) => {
@@ -622,8 +622,8 @@ class afkCheck {
                     let leftOver = await points.buyEarlyLocaton(u, this.db, earlyLocationCost, this.afkInfo, this.bot, this.message.guild).catch(r => { er = r; success = false })
                     if (success) {
                         await dms.send(`The location for this run has been set to \`${this.afkInfo.location}\`\nYou now have \`${leftOver}\` points left over. Join lounge to be moved into the channel.`).catch(er => this.commandChannel.send(`<@!${u.id}> tried to react with 🎟️ but their DMs are private`))
-                        if (this.leaderEmbed.fields[index].value == 'None!') this.leaderEmbed.fields[index].value = `<@!${u.id}>`
-                        else this.leaderEmbed.fields[index].value += `, <@!${u.id}>`
+                        if (this.leaderEmbed.data.fields[index].value == 'None!') this.leaderEmbed.data.fields[index].value = `<@!${u.id}>`
+                        else this.leaderEmbed.data.fields[index].value += `, <@!${u.id}>`
                         this.pointsUsers.push(u)
                         this.earlyLocation.push(u)
                         await this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, bot));
@@ -672,8 +672,8 @@ class afkCheck {
             afkcheck.earlyLocation.push(u);
             reactor.voice.setChannel(afkcheck.channel.id).catch(er => { reactor.send('Please join any voice channel to get moved in') })
             afkcheck.supporters.push(u)
-            if (afkcheck.leaderEmbed.fields[index].value == `None!`) afkcheck.leaderEmbed.fields[index].value = `<@!${u.id}> `;
-            else afkcheck.leaderEmbed.fields[index].value += `, <@!${u.id}>`
+            if (afkcheck.leaderEmbed.data.fields[index].value == `None!`) afkcheck.leaderEmbed.data.fields[index].value = `<@!${u.id}> `;
+            else afkcheck.leaderEmbed.data.fields[index].value += `, <@!${u.id}>`
             afkcheck.leaderEmbedMessage.edit({ embeds: [afkcheck.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
             afkcheck.runInfoMessage.edit({ embeds: [afkcheck.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
             if (cooldown) {
@@ -788,7 +788,7 @@ class afkCheck {
             .setFooter({ text: `The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}` })
 
         if (this.afkInfo.isAdvanced)
-            this.mainEmbed.description += `\n\n**__Advanced Runs__**\nThis is an **advanced run**, meaning there are extended requirements you **MUST** meet. You must be both **__8/8__** and follow the requirements sheet listed below.\n\nBasic raiding rules from ${rules} will still apply.\n\nIf you are caught not meeting these requirements, you will be removed from the run and suspended.`
+            this.mainEmbed.data.description += `\n\n**__Advanced Runs__**\nThis is an **advanced run**, meaning there are extended requirements you **MUST** meet. You must be both **__8/8__** and follow the requirements sheet listed below.\n\nBasic raiding rules from ${rules} will still apply.\n\nIf you are caught not meeting these requirements, you will be removed from the run and suspended.`
 
         this.leaderEmbed.setFooter({ text: `The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname} at` })
             .setTimestamp();
@@ -825,35 +825,35 @@ class afkCheck {
             .addFields([{ name: 'Key', value: 'None!' }])
             .addFields([{ name: 'Early Location', value: 'None!' }])
             .addFields([{ name: 'Raiders', value: 'None!' }])
-        if (this.key) historyEmbed.fields[2].value = `<@!${this.key.id}>`
+        if (this.key) historyEmbed.data.fields[2].value = `<@!${this.key.id}>`
         this.earlyLocation.forEach(m => {
-            if (historyEmbed.fields[3].value == `None!`) historyEmbed.fields[3].value = `<@!${m.id}>`
-            else historyEmbed.fields[3].value += `, <@!${m.id}>`
+            if (historyEmbed.data.fields[3].value == `None!`) historyEmbed.data.fields[3].value = `<@!${m.id}>`
+            else historyEmbed.data.fields[3].value += `, <@!${m.id}>`
         })
         let bigEmbed = false
         let biggerEmbed = false
         let biggestEmbed = false
         raiders.forEach(m => {
             if (bigEmbed) {
-                if (historyEmbed.fields[5].value.length >= 1000) {
+                if (historyEmbed.data.fields[5].value.length >= 1000) {
                     biggerEmbed = true;
                     historyEmbed.addFields([{ name: '-', value: `, <@!${m}>` }])
                 }
-                else historyEmbed.fields[5].value += `, <@!${m}>`
+                else historyEmbed.data.fields[5].value += `, <@!${m}>`
             } else if (biggerEmbed) {
-                if (historyEmbed.fields[6].value.length >= 1000) {
+                if (historyEmbed.data.fields[6].value.length >= 1000) {
                     biggestEmbed = true;
                     historyEmbed.addFields([{ name: '-', value: `, <@!${m}>` }])
                 }
-                else historyEmbed.fields[6].value += `, <@!${m}>`
+                else historyEmbed.data.fields[6].value += `, <@!${m}>`
             } else if (biggestEmbed) {
-                historyEmbed.fields[7].value += `, <@!${m}>`
+                historyEmbed.data.fields[7].value += `, <@!${m}>`
             } else {
-                if (historyEmbed.fields[4].value.length >= 1000) {
+                if (historyEmbed.data.fields[4].value.length >= 1000) {
                     bigEmbed = true;
                     historyEmbed.addFields([{ name: '-', value: `, <@!${m}>` }])
                 }
-                else historyEmbed.fields[4].value == 'None!' ? historyEmbed.fields[4].value = `<@!${m}>` : historyEmbed.fields[4].value += `, <@!${m}>`
+                else historyEmbed.data.fields[4].value == 'None!' ? historyEmbed.data.fields[4].value = `<@!${m}>` : historyEmbed.data.fields[4].value += `, <@!${m}>`
             }
         })
         historyEmbed.setFooter({ text: `${this.channel.id} • ${this.raidStatusMessage.id} • ${this.leaderEmbedMessage.id} • ${raiders.length} Raiders` })
@@ -1045,22 +1045,22 @@ class afkCheck {
             .setAuthor({ name: `Split Groups for ${this.channel.name}` })
             .addFields([{name: 'Main', value: 'None!'}])
             .addFields([{name: 'Split', value: 'None!'}])
-        if (this.message.author.avatarURL()) groupEmbed.author.iconURL = this.message.author.avatarURL()
+        if (this.message.author.avatarURL()) groupEmbed.setAuthor({ name: `Split Groups for ${this.channel.name}`, iconURL: this.message.author.avatarURL() })
         for (let i in this.mainGroup) {
             let member = this.message.guild.members.cache.get(this.mainGroup[i])
             let nick
             if (!member) nick = `<@!${this.mainGroup[i]}>`
             else nick = member.nickname
-            if (groupEmbed.fields[0].value == 'None!') groupEmbed.fields[0].value = `${nick}`
-            else groupEmbed.fields[0].value += `\n${nick}`
+            if (groupEmbed.data.fields[0].value == 'None!') groupEmbed.data.fields[0].value = `${nick}`
+            else groupEmbed.data.fields[0].value += `\n${nick}`
         }
         for (let i in this.splitGroup) {
             let member = this.message.guild.members.cache.get(this.splitGroup[i])
             let nick
             if (!member) nick = `<@!${this.splitGroup[i]}>`
             else nick = member.nickname
-            if (groupEmbed.fields[1].value == 'None!') groupEmbed.fields[1].value = `${nick}`
-            else groupEmbed.fields[1].value += `\n${nick}`
+            if (groupEmbed.data.fields[1].value == 'None!') groupEmbed.data.fields[1].value = `${nick}`
+            else groupEmbed.data.fields[1].value += `\n${nick}`
         }
         this.raidStatus.send({ embeds: [groupEmbed] })
     }
@@ -1070,7 +1070,7 @@ class afkCheck {
 
         if (!this.leaderEmbed) return
 
-        this.leaderEmbed.fields[this.leaderEmbed.fields.length - 3].value = this.afkInfo.location;
+        this.leaderEmbed.data.fields[this.leaderEmbed.data.fields.length - 3].value = this.afkInfo.location;
 
         this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
         this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));

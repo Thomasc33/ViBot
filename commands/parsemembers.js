@@ -44,7 +44,7 @@ module.exports = {
             await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
             return;
         }
-        parseStatusEmbed.fields[1].value = 'Sending Image to Google'
+        parseStatusEmbed.data.fields[1].value = 'Sending Image to Google'
         parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
         try {
             const [result] = await client.textDetection(image);
@@ -54,13 +54,13 @@ module.exports = {
             players.shift()
             players.shift()
         } catch (er) {
-            parseStatusEmbed.fields[1].value = `Error: \`${er.message}\``
+            parseStatusEmbed.data.fields[1].value = `Error: \`${er.message}\``
             await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
             return;
         }
 
         async function crasherParse() {
-            parseStatusEmbed.fields[1].value = 'Processing Data'
+            parseStatusEmbed.data.fields[1].value = 'Processing Data'
             await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
             var raiders = []
             for (let i in players) {
@@ -127,7 +127,7 @@ module.exports = {
                 .addFields({ name: 'Potential Alts', value: altsS }, { name: 'Other Channels', value: movedS }, { name: 'Crashers', value: crashersS }, { name: 'Find Command', value: `\`\`\`${find}\`\`\`` }, { name: 'Kick List', value: `\`\`\`${kickList}\`\`\`` })
             if (bot.afkChecks[channel.id]) embed.addFields([{name: `Were in VC`, value: `The following can do \`;join\`:\n${allowedCrashers.map(u => `${u} `)}`}])
             await message.channel.send({ embeds: [embed] });
-            parseStatusEmbed.fields[1].value = `Crasher Parse Completed. See Below. Beginning Character Parse`
+            parseStatusEmbed.data.fields[1].value = `Crasher Parse Completed. See Below. Beginning Character Parse`
             await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
 
             if (bot.afkChecks[channel.id]) {
@@ -258,13 +258,13 @@ module.exports = {
                                 else armorEmoji = bot.emojis.cache.find(e => e.name.toLowerCase().replace(/[^a-z0-9]/g, '').includes(character.armor.split(' ').slice(0, -1).join('').toLowerCase().replace(/[^a-z0-9]/g, '')))
                                 if (!character.ring) ringEmoji = 'None'
                                 else ringEmoji = bot.emojis.cache.find(e => e.name.toLowerCase().replace(/[^a-z0-9]/g, '').includes(character.ring.split(' ').slice(0, -1).join('').toLowerCase().replace(/[^a-z0-9]/g, '')))
-                                if (characterParseEmbed.fields.length >= 24 || characterParseEmbed.length + issueString.length + 50 > 6000) {
+                                if (characterParseEmbed.data.fields.length >= 24 || JSON.stringify(characterParseEmbed.toJSON()).length + issueString.length + 50 > 6000) { 
                                     message.channel.send({ embeds: [characterParseEmbed] })
-                                    characterParseEmbed.fields = []
+                                    characterParseEmbed.data.fields = []
                                 }
                                 characterParseEmbed.addFields([{name: players[i], value: `[Link](https://www.realmeye.com/player/${players[i]}) | ${characterEmote} | LVL: \`${character.level}\` | Fame: \`${character.fame}\` | Stats: \`${character.stats}\` | ${weaponEmoji} ${abilityEmoji} ${armorEmoji} ${ringEmoji}${issueString}`}])
                                 if (i % 5 == 0) {
-                                    parseStatusEmbed.fields[1].value = `Parsing Characters (${i}/${players.length})`
+                                    parseStatusEmbed.data.fields[1].value = `Parsing Characters (${i}/${players.length})`
                                     parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
                                 }
                             }
@@ -283,8 +283,8 @@ module.exports = {
                 .setTitle('The following were unreachable')
                 .setDescription('None!')
             for (let i in unreachable) {
-                if (unreachableEmbed.description == 'None!') unreachableEmbed.setDescription(`${unreachable[i]} `)
-                else unreachableEmbed.setDescription(unreachableEmbed.description.concat(`, ${unreachable[i]}`))
+                if (unreachableEmbed.data.description == 'None!') unreachableEmbed.setDescription(`${unreachable[i]} `)
+                else unreachableEmbed.setDescription(unreachableEmbed.data.description.concat(`, ${unreachable[i]}`))
             }
             await message.channel.send({ embeds: [characterParseEmbed] })
             await message.channel.send({ embeds: [unreachableEmbed] })
@@ -297,7 +297,7 @@ module.exports = {
 
         await Promise.all(parsePromises)
 
-        parseStatusEmbed.fields[1].value = `Parse Completed\nParse took ${(Date.now() - started) / 1000} seconds`
+        parseStatusEmbed.data.fields[1].value = `Parse Completed\nParse took ${(Date.now() - started) / 1000} seconds`
         await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
         
         let currentweekparsename, parsetotalname

@@ -42,7 +42,7 @@ module.exports = {
 
                 embed.addFields({ name: title, value: 'None!' });
                 if (array.length == 0) {
-                    if (embed.data.length + title.length + 'None!'.length >= 6000) {
+                    if (JSON.stringify(embed.toJSON()).length + title.length + 'None!'.length >= 6000) {
                         embed.data.fields = [{
                             name: title,
                             value: 'None!'
@@ -55,7 +55,7 @@ module.exports = {
                 }
                 embed.data.fields[embed.data.fields.length - 1].value = '';
                 for (const item of array) {
-                    if (embed.data.length + item.length + join.length >= 6000) {
+                    if (JSON.stringify(embed.toJSON()).length + item.length + join.length >= 6000) {
                         debounceEdit();
                         embed.data.fields = [{
                             name: title,
@@ -290,10 +290,10 @@ function fitStringIntoEmbed(embed, string, channel) {
     if (embed.data.description == 'None!') {
         embed.setDescription(string)
     } else if (embed.data.description.length + `, ${string}`.length >= 2048) {
-        if (embed.data.fields.length == 0) {
+        if (!embed.data.fields) {
             embed.addFields({ name: '-', value: string })
         } else if (embed.data.fields[embed.data.fields.length - 1].value.length + `, ${string}`.length >= 1024) {
-            if (embed.data.length + `, ${string}`.length >= 6000) {
+            if (JSON.stringify(embed.toJSON()).length + `, ${string}`.length >= 6000) {
                 channel.send({ embeds: [embed] })
                 embed.setDescription('None!')
                 embed.data.fields = []
@@ -301,7 +301,7 @@ function fitStringIntoEmbed(embed, string, channel) {
                 embed.addFields({ name: '-', value: string })
             }
         } else {
-            if (embed.data.length + `, ${string}`.length >= 6000) {
+            if (JSON.stringify(embed.toJSON()).length + `, ${string}`.length >= 6000) {
                 channel.send({ embeds: [embed] })
                 embed.setDescription('None!')
                 embed.data.fields = []

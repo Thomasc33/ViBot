@@ -33,9 +33,9 @@ module.exports = {
                     .setDescription(`Token has been redeemed. Thank you for supporting ViBot`)
                     .setFooter({ text: `Time will expire at` })
                     .setTimestamp(new Date(parseInt(rows[0].duration) + parseInt(Date.now())))
-                if (message.author.avatarURL()) confirmEmbed.author.iconURL = message.author.avatarURL()
-                if (rows[0].hasCooldown) confirmEmbed.description += `\nCooldown time: \`1 hour\``
-                else confirmEmbed.description += `\nCooldown time: \`None :)\``
+                if (message.author.avatarURL()) confirmEmbed.setAuthor({ name: message.author.tag , iconURL: message.author.avatarURL() })
+                if (rows[0].hasCooldown) confirmEmbed.data.description += `\nCooldown time: \`1 hour\``
+                else confirmEmbed.data.description += `\nCooldown time: \`None :)\``
                 message.author.send({ embeds: [confirmEmbed] })
             })
         })

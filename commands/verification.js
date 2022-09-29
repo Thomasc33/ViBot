@@ -94,7 +94,7 @@ module.exports = {
             .setAuthor({ name: `${u.tag} is attempting to verify` })
             .setDescription(`<@!${u.id}> has started the verification process`)
             .setFooter({ text: `ID: ${u.id}` })
-        if (u.avatarURL()) LoggingEmbed.author.iconURL = u.avatarURL()
+        if (u.avatarURL()) LoggingEmbed.setAuthor({ name: `${u.tag} is attempting to verify`, iconURL: u.avatarURL() })
         veriattempts.send({ embeds: [LoggingEmbed] })
         let activeMessage = await veriactive.send({ embeds: [LoggingEmbed] })
 
@@ -419,7 +419,7 @@ module.exports = {
         }
         let embed = message.embeds[0]
         watching.push(member.id)
-        let desc = embed.author.name.split(/ +/)
+        let desc = embed.data.author.name.split(/ +/)
         let ign = desc[desc.length - 1]
         //start key reaction collector
         if (!message.reactions.cache.has('🔑')) message.react('🔑')

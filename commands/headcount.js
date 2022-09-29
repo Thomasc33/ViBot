@@ -68,7 +68,7 @@ module.exports = {
             else if (settings.backend.exaltsInRSA && message.channel.parent.name.toLowerCase() == settings.categories.raiding) channel = message.guild.channels.cache.get(isNaN(settings.channels.exaltstatus) ? settings.channels.raidstatus : settings.channels.exaltstatus)
             else if (message.channel.parent.name.toLowerCase() == settings.categories.raiding) channel = message.guild.channels.cache.get(settings.channels.raidstatus)
             if (channel) {
-                let embed = new Discord.MessageEmbed()
+                let embed = new Discord.EmbedBuilder()
                     .setAuthor({ name: `Headcount for ${run.runName} by ${message.member.nickname}` })
                     .setDescription(run.embed.headcountDescription ? run.embed.headcountDescription : `${run.headcountEmote ? `React with ${bot.emojis.cache.get(run.headcountEmote)} if you are coming\n` : ''}React with ${bot.emojis.cache.get(run.keyEmoteID)} if you have a key\nOtherwise react with your gear/class choices below`)
                     .setColor(run.embed ? run.embed.color : run.color)
@@ -77,7 +77,7 @@ module.exports = {
                 if (symbol.charAt(0) == 'a')
                     embed.data.description += `\n\n**__Advanced Runs__**\nThis is an **advanced run**, meaning there are extended requirements you **MUST** meet. You must be both **__8/8__** and follow the requirements sheet listed in the afk check.\n\nIf you are caught not meeting these requirements, you will be removed from the run and suspended.`;
 
-                if (message.author.avatarURL()) embed.author.iconURL = message.author.avatarURL()
+                if (message.author.avatarURL()) embed.setAuthor({ name: `Headcount for ${run.runName} by ${message.member.nickname}`, iconURL: message.author.avatarURL() })
                 const pingRole = run.pingRole || run.rolePing;
                 const pings = pingRole ? (typeof pingRole != "string" ? pingRole.map(r => `<@&${settings.roles[r]}>`).join(' ') : `<@&${settings.roles[pingRole]}>`) + ' @here' : '@here';
 

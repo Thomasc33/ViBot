@@ -189,9 +189,9 @@ class afk {
                 }
                 this.keys.push(u);
                 dm.send(`The location for this run has been set to \`${this.location}\`, get there and confirm vial with ${this.message.member.nickname}`);
-                if (this.leaderEmbed.fields[0].value == `None yet!`) {
-                    this.leaderEmbed.fields[0].value = `<${this.event.keyEmote}>: <@!${u.id}>`;
-                } else this.leaderEmbed.fields[0].value += `\n<${this.event.keyEmote}>: ${`<@!${u.id}>`}`
+                if (this.leaderEmbed.data.fields[0].value == `None yet!`) {
+                    this.leaderEmbed.data.fields[0].value = `<${this.event.keyEmote}>: <@!${u.id}>`;
+                } else this.leaderEmbed.data.fields[0].value += `\n<${this.event.keyEmote}>: ${`<@!${u.id}>`}`
                 this.afkControlPanelInfo.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                 this.afkControlPanelCommands.edit(this.leaderEmbed).catch(er => ErrorLogger.log(er, bot));
                 this.earlyLocation.push(u);
@@ -294,7 +294,7 @@ class afk {
     }
     async changeLocation(location) {
         this.location = location
-        this.leaderEmbed.fields[1].value = location
+        this.leaderEmbed.data.fields[1].value = location
         this.afkControlPanelCommands.edit(this.leaderEmbed)
         this.afkControlPanelInfo.edit(this.leaderEmbed)
         try {

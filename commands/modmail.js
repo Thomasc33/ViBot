@@ -55,8 +55,8 @@ module.exports = {
     //     let modMailChannel = guild.channels.cache.get(settings.channels.modmail)
     //     let embed = m.embeds[0]
     //     if (!embed) return;
-    //     let modMailMessageID = embed.footer.text.split(/ +/g)[5]
-    //     let raider = guild.members.cache.get(embed.footer.text.split(/ +/g)[2])
+    //     let modMailMessageID = embed.data.footer.text.split(/ +/g)[5]
+    //     let raider = guild.members.cache.get(embed.data.footer.text.split(/ +/g)[2])
     //     if (!raider) return
     //     let dms = await raider.user.createDM()
 
@@ -168,7 +168,7 @@ module.exports = {
     //                     let embed = new Discord.EmbedBuilder()
     //                     let oldEmbed = m.embeds[0]
     //                     embed.setColor('#ff0000')
-    //                     embed.setDescription(oldEmbed.description)
+    //                     embed.setDescription(oldEmbed.data.description)
     //                     let me = await botReco.send({ embeds: [embed] })
     //                     await me.react('👍')
     //                     await me.react('👎')
@@ -193,8 +193,8 @@ module.exports = {
         let modMailChannel = guild.channels.cache.get(settings.channels.modmail)
         let embed = m.embeds[0]
         if (!embed) return;
-        let modMailMessageID = embed.footer.text.split(/ +/g)[5]
-        let raider = guild.members.cache.get(embed.footer.text.split(/ +/g)[2])
+        let modMailMessageID = embed.data.footer.text.split(/ +/g)[5]
+        let raider = guild.members.cache.get(embed.data.footer.text.split(/ +/g)[2])
         if (!raider) return
         let dms = await raider.user.createDM()
 
@@ -301,7 +301,7 @@ module.exports = {
                     let embed = new Discord.EmbedBuilder()
                     let oldEmbed = m.embeds[0]
                     embed.setColor('#ff0000')
-                    embed.setDescription(oldEmbed.description)
+                    embed.setDescription(oldEmbed.data.description)
                     let me = await botReco.send({ embeds: [embed] })
                     await me.react('👍')
                     await me.react('👎')

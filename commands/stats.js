@@ -184,7 +184,7 @@ function getFields(row, schema) {
         },
         {
             name: `<:legendaryMysteryKey:831052176507535360> __**Keys Popped**__ <:legendaryMysteryKey:831052176507535360>`,
-            value: `<:shattersK:723001429903802478> ${row.shatterspops}\n` +
+            value: `<:shattersKey:1008104345197346817> ${row.shatterspops}\n` +
                 `<:epicMysteryKey:831051424187940874> ${row.eventpops}\n`,
             inline: true
         },

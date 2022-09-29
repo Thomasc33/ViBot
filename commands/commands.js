@@ -43,7 +43,8 @@ module.exports = {
             if (command.args) commandPanel.addFields({ name: 'Args', value: command.args })
             if (command.getNotes && command.getNotes(message.guild.id, message.member)) commandPanel.addFields({ name: 'Special Notes', value: command.getNotes(message.guild.id, message.member) })
 
-            var roleOverride = message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.roleOverride[message.guildId]])
+            var roleOverride
+            if (command.roleOverride && command.roleOverride[message.guildId]) roleOverride = message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.roleOverride[message.guildId]])
             var minimumRole = message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role])
             if (roleOverride) commandPanel.addFields({ name: 'Minimum Role', value: roleOverride.toString() });
             else if (minimumRole) commandPanel.addFields({ name: 'Minimum Role', value: minimumRole.toString() });
