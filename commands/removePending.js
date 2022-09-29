@@ -1,6 +1,7 @@
 module.exports = {
     name: 'removepending',
     role: 'security',
+    roleOverride: { '343704644712923138': 'officer' },
     description: 'Removes a pending verification or veteran verification module if bot hiccups',
     args: '<r/v> <id>',
     getNotes(guildid, member) {

@@ -11,7 +11,8 @@ module.exports = {
         if (!args[0]) return
         let m = await message.channel.messages.fetch(args[0])
         if (!m) return message.channel.send(`Could not find message with ID of \`${args[0]}\``)
-        let embed = m.embeds[0]
+        let embed = new Discord.EmbedBuilder()
+        embed.data = m.embeds[0].data;
         let raider;
         if (!raider)
             try {
@@ -56,7 +57,7 @@ module.exports = {
                         return responseEmbedMessage.delete();
                     await dms.send(response)
                     responseEmbedMessage.delete()
-                    embed.addFields([{name: `Response by ${message.member.nickname}:`, value: response}])
+                    embed.addFields([{ name: `Response by ${message.member.displayName}:`, value: response }])
                     m.edit({ embeds: [embed] })
                 } else if (r.emoji.name === '❌') {
                     ConfirmReactionCollector.stop()
