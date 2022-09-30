@@ -121,20 +121,20 @@ module.exports = {
                         }
                 })
                 embed.setFooter({ text: `${parses} Total Parses, ${nonSecParses} From Non-Security+` })
-                embeds.push(new Discord.EmbedBuilder(embed))
+                embeds.push(new Discord.EmbedBuilder(embed.data))
                 function fitStringIntoEmbed(embed, string) {
                     if (embed.data.description == 'None!') embed.setDescription(string)
                     else if (embed.data.description.length + `\n${string}`.length >= 2048) {//change to 2048
                         if (!embed.data.fields) embed.addFields({ name: '-', value: string })
                         else if (embed.data.fields[embed.data.fields.length - 1].value.length + `\n${string}`.length >= 1024) { //change to 1024
                             if (JSON.stringify(embed.toJSON()).length + `\n${string}`.length >= 6000) {//change back to 6k
-                                embeds.push(new Discord.EmbedBuilder(embed))
+                                embeds.push(new Discord.EmbedBuilder(embed.data))
                                 embed.setDescription('None!')
                                 embed.data.fields = []
                             } else embed.addFields({ name: '-', value: string })
                         } else {
                             if (JSON.stringify(embed.toJSON()).length + `\n${string}`.length >= 6000) { //change back to 6k
-                                embeds.push(new Discord.EmbedBuilder(embed))
+                                embeds.push(new Discord.EmbedBuilder(embed.data))
                                 embed.setDescription('None!')
                                 embed.data.fields = []
                             } else embed.data.fields[embed.data.fields.length - 1].value = embed.data.fields[embed.data.fields.length - 1].value.concat(`\n${string}`)

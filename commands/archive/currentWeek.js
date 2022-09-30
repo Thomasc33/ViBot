@@ -140,7 +140,7 @@ module.exports = {
                     }
                 })
                 embed.setFooter({ text: `${runCount} Total Runs` })
-                embeds.push(new Discord.EmbedBuilder(embed))
+                embeds.push(new Discord.EmbedBuilder(embed.data))
 
                 if (channel.id == settings.channels.currentweek) {
                     try {
@@ -194,13 +194,13 @@ function fitStringIntoEmbed(embeds, embed, string) {
         if (!embed.data.fields) embed.addFields({ name: '-', value: string })
         else if (embed.data.fields[embed.data.fields.length - 1].value.length + `\n${string}`.length >= 1024) { //change to 1024
             if (JSON.stringify(embed.toJSON()).length + `\n${string}`.length >= 6000) {//change back to 6k
-                embeds.push(new Discord.EmbedBuilder(embed))
+                embeds.push(new Discord.EmbedBuilder(embed.data))
                 embed.setDescription('None!')
                 embed.data.fields = []
             } else embed.addFields({ name: '-', value: string })
         } else {
             if (JSON.stringify(embed.toJSON()).length + `\n${string}`.length >= 6000) { //change back to 6k
-                embeds.push(new Discord.EmbedBuilder(embed))
+                embeds.push(new Discord.EmbedBuilder(embed.data))
                 embed.setDescription('None!')
                 embed.data.fields = []
             } else embed.data.fields[embed.data.fields.length - 1].value = embed.data.fields[embed.data.fields.length - 1].value.concat(`\n${string}`)
