@@ -878,6 +878,7 @@ function checkPatreon(patreonRoleId, userId) {
 function moduleIsAvailable(path) {
     try {
         require.resolve(path);
+        require(path)
         return true;
     } catch (e) {
         return false;
