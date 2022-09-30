@@ -14,7 +14,7 @@ module.exports = {
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         let toUpdate = 0
-        var embed = new Discord.EmbedBuilder().setAuthor({ name: message.member.nickname, iconURL: message.author.avatarURL() || undefined })
+        var embed = new Discord.EmbedBuilder().setAuthor({ name: message.member.displayName, iconURL: message.author.avatarURL() || undefined })
         let currentWeekEmbed = new Discord.EmbedBuilder()
         let count = 1;
         var desc = '`Successful` Run'
@@ -52,7 +52,7 @@ module.exports = {
                 db.query(`SELECT * FROM users WHERE id = '${message.author.id}'`, (err, rows) => {
                     if (err) { res(null); return message.channel.send(`Error: ${err}`) }
                     if (rows.length < 1) { res(null); return message.channel.send('Current week stats could not be retrived. However, run was still logged') }
-                    currentWeekEmbed.setDescription(`Run Logged for ${`<@!${message.author.id}>`}${message.member.nickname ? ` \`${message.member.nickname}\`` : ''}`)
+                    currentWeekEmbed.setDescription(`Run Logged for ${`<@!${message.author.id}>`}${message.member.displayName ? ` \`${message.member.displayName}\`` : ''}`)
                         .addFields({ name: 'Current week:', value: run.toDisplay.map(c => ` \`${rows[0][c]}\` ${c.replace('currentweek', '')}`).join('\n') })
                         .setTimestamp()
                         .setColor(run.color)
@@ -76,7 +76,7 @@ module.exports = {
                         db.query(`UPDATE users SET ${guildInfo.assist.main} = ${guildInfo.assist.main} + ${count}, ${guildInfo.assist.currentweek} = ${guildInfo.assist.currentweek} + ${count} WHERE id = ${m.id}`, (err, rows) => {
                             if (err) return res(null)
                             db.query(`SELECT ${guildInfo.assist.currentweek} FROM users WHERE id = '${m.id}'`, (err, rows) => {
-                                let s = `<@!${m.id}>${m.nickname ? ` \`${m.nickname}\`` : ''}. Current week: ${rows[0][guildInfo.assist.currentweek]} Assists`
+                                let s = `<@!${m.id}>${m.displayName ? ` \`${m.displayName}\`` : ''}. Current week: ${rows[0][guildInfo.assist.currentweek]} Assists`
                                 if (currentWeekEmbed.data.fields.length == 1) currentWeekEmbed.addFields([{name: 'Assists', value: s}])
                                 else if (currentWeekEmbed.data.fields[currentWeekEmbed.data.fields.length - 1].value.length + s.length <= 1024) currentWeekEmbed.data.fields[currentWeekEmbed.data.fields.length - 1].value = currentWeekEmbed.data.fields[currentWeekEmbed.data.fields.length - 1].value.concat(`\n${s}`)
                                 else currentWeekEmbed.addFields([{name: '** **', value: s}])
@@ -91,7 +91,7 @@ module.exports = {
         await Promise.all(promises)
 
         embed.setDescription(desc)
-        message.channel.send({ embeds: [currentWeekEmbed] })
+        if (currentWeekEmbed.data.description) message.channel.send({ embeds: [currentWeekEmbed] })
         const logChannel = message.guild.channels.cache.get(settings.channels.leadinglog)
         if (logChannel)
             logChannel.send({ embeds: [embed] })
@@ -112,7 +112,7 @@ function confirm(runInfo, message, count) {
             .setColor(runInfo.color)
             .setTitle('Confirm')
             .setDescription(`Are you sure you want to log ${parseInt(count) * multiplier} ${runInfo.confirmSuffix}?`)
-            .setFooter({ text: message.member.nickname })
+            .setFooter({ text: message.member.displayName })
             .setTimestamp()
         let confirmMessage = await message.channel.send({ embeds: [confirmEmbed] })
         let confirmCollector = new Discord.ReactionCollector(confirmMessage, { filter: (r, u) => !u.bot && u.id == message.author.id && (r.emoji.name === '✅' || r.emoji.name === '❌') })
