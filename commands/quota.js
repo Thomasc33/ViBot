@@ -142,8 +142,8 @@ module.exports = {
         let csvData = 'Leader ID,Leader Nickname,Currentweek Total,Total\n';
         return new Promise(async (resolve, reject) => {
             let embed = new Discord.EmbedBuilder()
-                .setColor('#00ff00')
                 .setTitle('This weeks current logged runs!')
+                .setColor('#00ff00')
                 .setDescription('None!')
                 .setFooter({ text: `##### Total Runs` });
             const embeds = [];
@@ -233,7 +233,7 @@ function fitStringIntoEmbed(embeds, embed, string) {
     if (embed.data.description == 'None!') embed.setDescription(string)
     else if (embed.data.description.length + `\n${string}`.length >= 2000) {//change to 2048
         if (!embed.data.fields) embed.addFields({ name: '-', value: string })
-        else if (embed.data.fields[embed.data.fields.length - 1].value.length + `\n${string}`.length >= 1000) { //change to 1024
+        else if (embed.data.fields && embed.data.fields[embed.data.fields.length - 1].value.length + `\n${string}`.length >= 1000) { //change to 1024
             if (JSON.stringify(embed.toJSON()).length + `\n${string}`.length >= 5950) {//change back to 6k
                 embeds.push(new Discord.EmbedBuilder(embed.data))
                 embed.setDescription(`${string}`)

@@ -51,6 +51,58 @@
             }
         ]
     },
+    "701483950559985705": {
+        "logtypes": [
+            "keypops",
+            "eventpops",
+            "cultsLead",
+            "voidsLead",
+            "assists",
+            "vialStored",
+            "vialUsed",
+            "cultRuns",
+            "voidRuns",
+            "eventsLead",
+            "parses",
+            "feedback",
+            "exaltsLead",
+            "exaltFeedback"
+        ],
+        "currentweeks": [
+            {
+                "case": "cultsLead",
+                "currentWeekName": "currentweekCult"
+            },
+            {
+                "case": "voidsLead",
+                "currentWeekName": "currentweekVoid"
+            },
+            {
+                "case": "assists",
+                "currentWeekName": "currentweekAssists"
+            },
+            {
+                "case": "parses",
+                "currentWeekName": "currentweekparses"
+            },
+            {
+                "case": "feedback",
+                "currentWeekName": "currentweekFeedback"
+            },
+            {
+                "case": "eventsLead",
+                "currentWeekName": "currentweekEvents"
+            },
+            {
+                "case": "exaltsLead",
+                "currentWeekName": "currentweekExalts"
+            },
+            {
+                "case": "exaltFeedback",
+                "currentWeekName": "currentweekExaltFeedback"
+            }
+        ]
+    },
     "708026927721480254": {
         "logtypes": [
             "eventpops",
