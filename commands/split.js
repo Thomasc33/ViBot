@@ -1,5 +1,7 @@
 const Discord = require('discord.js')
 const Channels = require('./vibotChannels')
+const ErrorLogger = require('../lib/logError')
+
 module.exports = {
     name: 'split',
     description: 'Splits the group in a split type run',

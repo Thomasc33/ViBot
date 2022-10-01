@@ -1,4 +1,5 @@
 const botSettings = require('../settings.json')
+const ErrorLogger = require('../lib/logError')
 module.exports = {
     name: 'addpoints',
     alias: ['stream', 'priest', 'trickster'],

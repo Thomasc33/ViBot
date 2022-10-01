@@ -1,5 +1,6 @@
 const Discord = require('discord.js')
 const moment = require('moment');
+const ErrorLogger = require('../lib/logError')
 
 module.exports = {
     name: 'mutes',

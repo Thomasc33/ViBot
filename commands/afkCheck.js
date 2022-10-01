@@ -723,7 +723,7 @@ class afkCheck {
      * @param {Number} index
      */
     async useNitro(interaction, index) {
-        let embed = new Discord.EmbedBuilder({ color: this.afkInfo.embed.color, description: 'placeholder' })
+        let embed = new Discord.EmbedBuilder({ description: 'placeholder' }).setColor(this.afkInfo.embed.color)
         let reactor = interaction.member
         if (this.earlyLocation.includes(interaction.user)) {
             embed.setDescription(`The location for this run has been set to \`${this.afkInfo.location}\``)
