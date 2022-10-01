@@ -3,6 +3,7 @@ const Discord = require('discord.js')
 const fs = require('fs')
 const dbInfo = require('../data/database.json')
 const afkCheck = require('./afkCheck')
+const ErrorLogger = require('../lib/logError')
 
 var channels = []
 var channelCache = []
