@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+const ErrorLogger = require('../lib/logError')
 const { init } = require('./vetVerification');
 var watchedModMails = []
 
