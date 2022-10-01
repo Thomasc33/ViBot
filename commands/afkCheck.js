@@ -282,7 +282,7 @@ class afkCheck {
             //location: this.afkInfo.location, disabled until it is needed
             //keys: [],
             leader: this.message.author.id,
-            leaderNick: this.message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0],
+            leaderNick: this.message.member.displayName.replace(/[^a-z|]/gi, '').split('|')[0],
             //earlyLocation: earlyLocationIDS,
             //raiders: raiders,
             time: Date.now(),
