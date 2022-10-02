@@ -36,9 +36,7 @@ module.exports = {
         collector.on('collect', async m => {
             if (m.content.charAt(0).toLowerCase() == 'y' || m.content.charAt(0).toLowerCase() == 'm') {
                 collector.stop()
-                if (m.content.charAt(0).toLowerCase() == 'm') {
-                    moddedKey = true
-                }
+                if (m.content.charAt(0).toLowerCase() == 'm') moddedKey = true
                 db.query(`SELECT * FROM users WHERE id = '${user.id}'`, async(err, rows) => {
                     if (err) ErrorLogger.log(err, bot)
                     if (rows.length == 0) {
