@@ -402,7 +402,7 @@ module.exports = {
                 embed.setColor('#00ff00')
             }
             if (issues.met.length) {
-                embed.addFields({ name: "Met Quotas", values: issues.met.map(m => m.name).join(", ") });
+                embed.addFields({ name: "Met Quotas", value: issues.met.map(m => m.name).join(", ") });
                 if (!issues.excuse)
                     embed.setColor("#FFC100");
             }
