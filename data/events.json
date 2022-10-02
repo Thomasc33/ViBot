@@ -961,7 +961,9 @@
     "fungal": {
         "runType": "Fungal Cavern",
         "runName": "Fungal Cavern",
-        "aliases": [],
+        "aliases": [
+            "fc"
+        ],
         "enabled": true,
         "keyEmoteID": "723001429614395402",
         "keyEmote": ":fungalK:723001429614395402",
@@ -1846,7 +1848,9 @@
             "name": "Fungal Cavern",
             "runType": "Fungal Cavern",
             "runName": "Fungal Cavern",
-            "aliases": [],
+            "aliases": [
+                "fc"
+            ],
             "enabled": true,
             "keyEmoteID": "723001429614395402",
             "keyEmote": ":fungalK:723001429614395402",

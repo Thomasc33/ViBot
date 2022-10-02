@@ -307,6 +307,7 @@ async function createChannel(name, isVet, message, bot) {
             var lounge = message.guild.channels.cache.find(c => c.name.toLowerCase() == 'event lounge')
         }
         if (!template) return rej(`Template channel not found`)
+        if (!message.guild.channels.cache.filter(c => c.type == Discord.ChannelType.GuildCategory).find(c => c.name.toLowerCase() === parent)) return rej(`${parent} category not found`)
         let channel = await template.clone({
             name: `${name}`,
             parent: message.guild.channels.cache.filter(c => c.type == Discord.ChannelType.GuildCategory).find(c => c.name.toLowerCase() === parent).id,
