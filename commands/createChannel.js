@@ -120,8 +120,8 @@ module.exports = {
                                     var raider = message.guild.roles.cache.get(settings.roles.vetraider)
                                 }
 
-                                channel.channel.permissionOverwrites.edit(raider.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
-                                    .then(eventBoi && settings.backend.giveEventRoleOnDenial2 ? channel.channel.permissionOverwrites.edit(eventBoi.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)) : null)
+                                channel.channel.permissionOverwrites.edit(raider.id, { Connect: true, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot))
+                                    .then(eventBoi && settings.backend.giveEventRoleOnDenial2 ? channel.channel.permissionOverwrites.edit(eventBoi.id, { Connect: true, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot)) : null)
 
                                 //edit message in raid status
                                 channel.embed.data.fields[0].value = '**Open**'
@@ -152,8 +152,8 @@ module.exports = {
                         var raider = message.guild.roles.cache.get(settings.roles.vetraider)
                     }
 
-                    channel.channel.permissionOverwrites.edit(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
-                        .then(eventBoi && settings.backend.giveEventRoleOnDenial2 ? channel.channel.permissionOverwrites.edit(eventBoi.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)) : null)
+                    channel.channel.permissionOverwrites.edit(raider.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot))
+                        .then(eventBoi && settings.backend.giveEventRoleOnDenial2 ? channel.channel.permissionOverwrites.edit(eventBoi.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot)) : null)
 
                     //edit message in raid status
                     channel.embed.data.fields[0].value = '**Closed**'
@@ -317,8 +317,8 @@ async function createChannel(name, isVet, message, bot) {
         await message.member.voice.setChannel(channel).catch(er => { })
 
         //allows raiders to view
-        channel.permissionOverwrites.edit(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
-        if (eventBoi && settings.backend.giveEventRoleOnDenial2) channel.permissionOverwrites.edit(eventBoi.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+        channel.permissionOverwrites.edit(raider.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot))
+        if (eventBoi && settings.backend.giveEventRoleOnDenial2) channel.permissionOverwrites.edit(eventBoi.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot))
 
         //Embed to remove
         let embed = new Discord.EmbedBuilder()

@@ -20,7 +20,7 @@ module.exports = {
         if (args.length == 0) {
             const popInfo = data[message.guild.id];
             console.log(popInfo);
-            let keyCountEmbed = new Discord.EmbedBuilder().setAuthor({ name: `The ${message.guild.name} server has the following key roles configured:\n` }).setDescription("").setColor('#ff0000')
+            let keyCountEmbed = new Discord.EmbedBuilder().setDescription(`**The ${message.guild.name} server has the following key roles configured:**\n\n`).setColor('#ff0000')
             if (!popInfo || !popInfo.length) keyCountEmbed.data.description += `No key roles have been setup in this Discord server.`;
             else {
                 let found = 0;
@@ -38,7 +38,7 @@ module.exports = {
                 if (args[1].toLowerCase() == 'all') {
                     this.checkAll(message.guild, bot, db)
                     message.react('✅')
-                } else if (args[1].toLowerCase() == 'reset' && message.member.can(settings.roles.moderator)) {
+                } else if (args[1].toLowerCase() == 'reset' && message.member.roles.cache.has(settings.roles.moderator)) {
                     this.rolesReset(message.guild, bot, db);
                     message.react('✅')
                 } else {
@@ -83,7 +83,7 @@ module.exports = {
             const dbmembers = {};
             rows.forEach(r => dbmembers[r.id] = r);
             guild.members.fetch().then(members => {
-                for (const [id, member] of members) {
+                for (const [id, member] of members) {                
                     const toRemove = [],
                         toAdd = [];
                     if (!dbmembers[id])
