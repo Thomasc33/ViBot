@@ -21,6 +21,7 @@ module.exports = {
         if (!image) image = args[2]
         if (!image) return message.channel.send(`Please provide an image`)
         if (!validURL(image)) return message.channel.send(`Error attaching the image. Please try again`)
+        if (`${member.nickname} | ${altName}`.length > 32) return message.channel.send(`User exceeds the allowable nickname length of 32 characters with the addition of \`${altName}\`. Please remove an alt before proceeding.`)
         let confirmMessage = await message.channel.send(`Are you sure you want to add the alt ${altName} to ${member}? Y/N`);
         let collector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id === message.author.id, time: 10000 });
         collector.on('collect', async m => {
