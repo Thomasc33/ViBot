@@ -89,7 +89,7 @@ bot.on('messageCreate', message => {
     try {
         if (!message.channel.type == Discord.ChannelType.GuildText) {
             try {
-                return dmHandler(message);
+                if (message.channel.type == Discord.ChannelType.DM) return dmHandler(message);
             } catch (er) {
                 ErrorLogger.log(er, bot);
             }
