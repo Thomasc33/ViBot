@@ -30,7 +30,8 @@ module.exports = {
         const eventTypes = eventAfk.getMatchingEvents(args[0], eventFile, message.guild.id)
         if (runType && (message.channel.parent.name.toLowerCase() != settings.categories.event || settings.categories.event == settings.categories.raiding)) {
             if (settings.backend.exaltsInRSA)
-                eventTypes.push(runType)
+                if (eventTypes.length && eventTypes.length == 1 && eventTypes[0].runName == runType.runName) return hallsHC(runType)
+                else eventTypes.push(runType)
             else return hallsHC(runType)
         }
         if (!eventTypes.length) return message.channel.send('Run Type not recognized')
