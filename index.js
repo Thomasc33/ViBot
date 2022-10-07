@@ -546,8 +546,8 @@ async function dmHandler(message) {
     if (verification.checkActive(message.author.id)) return
     if (hostkeys.checkActive(message.author.id)) return
     let cancelled = false;
-    let statsTypos = ['stats', 'satts', 'stat', 'status', 'sats', 'stata', 'stts']
-    if (statsTypos.includes(message.content.split(' ')[0].replace(/[^a-z0-9]/gi, ''))) {
+    let statsTypos = ['stats', 'satts', 'stat', 'status', 'sats', 'stata', 'stts', 'stas']
+    if (statsTypos.includes(message.content.split(' ')[0].replace(/[^a-z0-9]/gi, '').toLowerCase())) {
         let guild;
         bot.guilds.cache.forEach(g => {
             if (g.members.cache.get(message.author.id)) {
@@ -575,10 +575,8 @@ async function dmHandler(message) {
         let args = message.content.split(/ +/)
         let commandName = args.shift().toLowerCase().replace(prefix, '')
         const command = bot.commands.get(commandName) || bot.commands.find(c => c.alias && c.alias.includes(commandName))
-        if (!command) {
-            let guild = await getGuild(message).catch(er => { cancelled = true })
-            sendModMail()
-        } else if (command.dms) {
+        if (!command) sendModMail()
+        else if (command.dms) {
             let guild
             if (command.dmNeedsGuild) {
                 guild = await getGuild(message).catch(er => cancelled = true)
@@ -593,9 +591,8 @@ async function dmHandler(message) {
                     } else command.dmExecution(message, args, bot, bot.dbs[guild.id], guild, tokenDB)
                 }
             }
-        } else {
-            message.channel.send('This command does not work in DM\'s. Please use this inside of a server')
-        }
+        } else message.channel.send('This command does not work in DM\'s. Please use this inside of a server')
+        
         async function sendModMail() {
             let confirmModMailEmbed = new Discord.EmbedBuilder()
                 .setColor(`#ff0000`)
@@ -614,10 +611,7 @@ async function dmHandler(message) {
                         if (r.emoji.name == '✅') modmail.sendModMail(message, guild, bot, bot.dbs[guild.id])
                         confirmModMailMessage.delete()
                     }
-                } else {
-                    confirmModMailMessage.delete()
-                }
-
+                } else confirmModMailMessage.delete()
             })
             confirmModMailMessage.react('✅')
                 .then(confirmModMailMessage.react('❌'))
@@ -633,18 +627,6 @@ async function dmHandler(message) {
             .setTimestamp()
         if (message.author.avatarURL()) logEmbed.setAuthor({ name: message.author.tag, iconURL: message.author.avatarURL() })
         guild.channels.cache.get(bot.settings[guild.id].channels.dmcommands).send({ embeds: [logEmbed] }).catch(er => { ErrorLogger.log(new Error(`Unable to find/send in settings.channels.dmcommands channel for ${guild.id}`), bot) })
-    }
-    async function checkBlacklist(member, db) {
-        return new Promise(async (res, rej) => {
-            db.query(`SELECT * FROM modmailblacklist WHERE id = '${member.id}'`, (err, rows) => {
-                if (err) return rej(err)
-                if (rows.length == 0) {
-                    res(false)
-                } else {
-                    res(true)
-                }
-            })
-        })
     }
 }
 
