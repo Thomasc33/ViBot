@@ -2,7 +2,7 @@ module.exports = {
     name: 'unvetverify',
     description: 'Removes veteran raider role',
     role: 'security',
-    roleOverride: { '343704644712923138': 'officer' },
+    roleOverride: { '343704644712923138': 'security' },
     args: '<user>',
     async execute(message, args, bot, db) {
         //member
