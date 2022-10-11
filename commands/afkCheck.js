@@ -11,6 +11,7 @@ const EventEmitter = require('events').EventEmitter
 const pointLogger = require('../lib/pointLogger')
 const patreonHelper = require('../lib/patreonHelper')
 const afkTemplates = require('../afkTemplates.json')
+const bannedNames = require('../data/bannedNames.json')
 var emitter = new EventEmitter()
 
 var runs = [] //{channel: id, afk: afk instance}
@@ -53,10 +54,9 @@ module.exports = {
         //clear out runs array
         destroyInactiveRuns();
         let shift = args.shift();
-        let symbol = shift.charAt(0).toLowerCase();
+        let symbol = shift.toLowerCase();
         let isAdvanced = false;
-        if (symbol == 'a') {
-            symbol += shift.charAt(1).toLowerCase();
+        if (symbol[0] == 'a') {
             isAdvanced = true;
         }
         //Check Run Type
@@ -1449,8 +1449,9 @@ async function createChannel(runInfo, message, bot) {
             vibotChannels = message.guild.channels.cache.get(settings.channels.raidingchannels)
         }
         if (!template) return rej(`Template channel not found`)
+        let raidLeaderDisplayName = message.member.displayName.replace(/[^a-z|]/gi, '').split('|')[0]
         let channel = await template.clone({
-            name: `${message.member.displayName.replace(/[^a-z|]/gi, '').split('|')[0]}'s ${runInfo.runType}`,
+            name: getBannedName(raidLeaderDisplayName, message.guild.id) ? `${raidLeaderDisplayName[0]}'s ${runInfo.runType}` : `${raidLeaderDisplayName}'s ${runInfo.runType}`,
             parent: message.guild.channels.cache.filter(c => c.type == Discord.ChannelType.GuildCategory).find(c => c.name.toLowerCase() === parent).id,
             userLimit: runInfo.vcCap
         }).then(c => c.setPosition(0))
@@ -1480,13 +1481,34 @@ async function createChannel(runInfo, message, bot) {
 /**
  *
  * @param {String} char
+ * @param {String} name
  * @param {String} guildid
  * @returns {Object} RunType
  */
-function getRunType(char, guildid) {
-    for (let i in afkTemplates[guildid]) if (afkTemplates[guildid][i].symbol == char.toLowerCase()) return afkTemplates[guildid][i]
-    return null
 
+/*
+ function getRunType(char, guildid) {
+    for (let i in afkTemplates[guildid]) if (afkTemplates[guildid][i].symbol == char.toLowerCase()) return afkTemplates[guildid][i]
+    for (let o in afkTemplates[guildid][i].aliases) if (o == char.toLowerCase())  { return afkTemplates[guildid][i] }
+    return null
+}
+*/
+
+function getBannedName(name, guildid) {
+    for (let i in bannedNames[guildid]) {
+        if (name.toLowerCase() == bannedNames[guildid][i].name) return true;
+    }
+    return false
+}
+
+function getRunType(char, guildid) {
+    for (let i in afkTemplates[guildid]) {
+        if (char.toLowerCase() == afkTemplates[guildid][i].symbol) return afkTemplates[guildid][i];
+        if (afkTemplates[guildid][i].aliases) {
+            if (afkTemplates[guildid][i].aliases.includes(char.toLowerCase())) return afkTemplates[guildid][i];
+        }
+    }
+    return null
 }
 
 async function getTemplate(message, afkTemplates, runType) {
