@@ -6,7 +6,7 @@ module.exports = {
     args: '<id/mention>',
     requiredArgs: 1,
     role: 'security',
-    roleOverride: { '343704644712923138': 'officer' },
+    roleOverride: { '343704644712923138': 'security' },
     alias: ['mvv'],
     execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]

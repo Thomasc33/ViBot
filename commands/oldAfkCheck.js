@@ -340,8 +340,8 @@ class afkCheck {
 
         //unlock channel
         if (!this.afkInfo.twoPhase) {
-            this.channel.permissionOverwrites.edit(this.verifiedRaiderRole.id, { CONNECT: true, VIEW_CHANNEL: true })
-            if (this.eventBoi) this.channel.permissionOverwrites.edit(this.eventBoi.id, { CONNECT: true, VIEW_CHANNEL: true })
+            this.channel.permissionOverwrites.edit(this.verifiedRaiderRole.id, { Connect: true, ViewChannel: true })
+            if (this.eventBoi) this.channel.permissionOverwrites.edit(this.eventBoi.id, { Connect: true, ViewChannel: true })
         }
 
         //create reaction collector
@@ -405,8 +405,8 @@ class afkCheck {
                 let tempM = await this.raidStatus.send(`<#${this.channel.id}> will open in 5 seconds...`)
                 setTimeout(async (afk) => {
                     await tempM.edit(`${afk.channel.name} is open!`)
-                    await afk.channel.permissionOverwrites.edit(afk.verifiedRaiderRole.id, { CONNECT: true, VIEW_CHANNEL: true })
-                    if (afk.eventBoi) await afk.channel.permissionOverwrites.edit(afk.eventBoi.id, { CONNECT: true, VIEW_CHANNEL: true })
+                    await afk.channel.permissionOverwrites.edit(afk.verifiedRaiderRole.id, { Connect: true, ViewChannel: true })
+                    if (afk.eventBoi) await afk.channel.permissionOverwrites.edit(afk.eventBoi.id, { Connect: true, ViewChannel: true })
                 }, 5000, this)
                 setTimeout(async tempM => tempM.delete(), 20000, tempM)
                 for (let i of this.afkInfo.reacts) await this.raidStatusMessage.react(i)
@@ -749,8 +749,8 @@ class afkCheck {
         this.timer = await setInterval(() => { this.updatePost() }, 5000);
 
         //lock vc
-        this.channel.permissionOverwrites.edit(this.verifiedRaiderRole.id, { CONNECT: false, VIEW_CHANNEL: true })
-        if (this.eventBoi) await this.channel.permissionOverwrites.edit(this.eventBoi.id, { CONNECT: false, VIEW_CHANNEL: true })
+        this.channel.permissionOverwrites.edit(this.verifiedRaiderRole.id, { Connect: false, ViewChannel: true })
+        if (this.eventBoi) await this.channel.permissionOverwrites.edit(this.eventBoi.id, { Connect: false, ViewChannel: true })
 
         //post afk check embed
         this.mainEmbed.setDescription(`__**Post AFK Move-in**__\nIf you got moved out of vc, or missed the afk check:\n**1.** Join lounge\n**2** React with <${this.settings.misc.icon}> to get moved in.\n__Time Remaining:__ ${this.postTime} seconds.`)
@@ -777,8 +777,8 @@ class afkCheck {
         if (this.afkInfo.isSplit) await this.splitLogic();
 
         //lock channel
-        await this.channel.permissionOverwrites.edit(this.verifiedRaiderRole.id, { CONNECT: false, VIEW_CHANNEL: true })
-        if (this.eventBoi) await this.channel.permissionOverwrites.edit(this.eventBoi.id, { CONNECT: false, VIEW_CHANNEL: true })
+        await this.channel.permissionOverwrites.edit(this.verifiedRaiderRole.id, { Connect: false, ViewChannel: true })
+        if (this.eventBoi) await this.channel.permissionOverwrites.edit(this.eventBoi.id, { Connect: false, ViewChannel: true })
         if (this.afkInfo.newChannel && !this.isVet) {
             this.channel.setPosition(this.afkChannel.position)
         }
@@ -961,8 +961,8 @@ class afkCheck {
         if (this.timer) clearInterval(this.timer);
         if (this.updateVC) clearInterval(this.updateVC)
 
-        await this.channel.permissionOverwrites.edit(this.verifiedRaiderRole.id, { CONNECT: false, VIEW_CHANNEL: false })
-        if (this.eventBoi) await this.channel.permissionOverwrites.edit(this.eventBoi.id, { CONNECT: false, VIEW_CHANNEL: false })
+        await this.channel.permissionOverwrites.edit(this.verifiedRaiderRole.id, { Connect: false, ViewChannel: false })
+        if (this.eventBoi) await this.channel.permissionOverwrites.edit(this.eventBoi.id, { Connect: false, ViewChannel: false })
         if (this.afkInfo.newChannel && !this.isVet) {
             this.channel.setPosition(this.afkChannel.position)
         }
@@ -1125,8 +1125,8 @@ async function createChannel(runInfo, message, bot) {
         await message.member.voice.setChannel(channel).catch(er => { })
 
         //allows raiders to view
-        channel.permissionOverwrites.edit(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
-        if (eventBoi) channel.permissionOverwrites.edit(eventBoi.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+        channel.permissionOverwrites.edit(raider.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot))
+        if (eventBoi) channel.permissionOverwrites.edit(eventBoi.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot))
 
         //Embed to remove
         let embed = new Discord.EmbedBuilder()

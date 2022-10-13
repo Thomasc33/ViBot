@@ -40,7 +40,7 @@ module.exports = {
         else if (args.length) image = args[0]; //added check if args actually exists
         if (!image) {
             parseStatusEmbed.setColor('#ff0000')
-                .fields[1].value = 'Error Getting Image'
+                .data.fields[1].value = 'Error Getting Image'
             await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
             return;
         }

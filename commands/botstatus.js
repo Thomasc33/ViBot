@@ -22,6 +22,7 @@ module.exports = {
                 break;
             case 'update':
                 this.update(message.guild)
+                break;
             default:
                 return message.channel.send('Unknown arg')
         }

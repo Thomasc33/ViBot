@@ -30,7 +30,8 @@ module.exports = {
         const eventTypes = eventAfk.getMatchingEvents(args[0], eventFile, message.guild.id)
         if (runType && (message.channel.parent.name.toLowerCase() != settings.categories.event || settings.categories.event == settings.categories.raiding)) {
             if (settings.backend.exaltsInRSA)
-                eventTypes.push(runType)
+                if (eventTypes.length && eventTypes.length == 1 && eventTypes[0].runName == runType.runName) return hallsHC(runType)
+                else eventTypes.push(runType)
             else return hallsHC(runType)
         }
         if (!eventTypes.length) return message.channel.send('Run Type not recognized')
@@ -70,7 +71,7 @@ module.exports = {
             if (channel) {
                 let embed = new Discord.EmbedBuilder()
                     .setAuthor({ name: `Headcount for ${run.runName} by ${message.member.nickname}` })
-                    .setDescription(run.embed.headcountDescription ? run.embed.headcountDescription : `${run.headcountEmote ? `React with ${bot.emojis.cache.get(run.headcountEmote)} if you are coming\n` : ''}React with ${bot.emojis.cache.get(run.keyEmoteID)} if you have a key\nOtherwise react with your gear/class choices below`)
+                    .setDescription(run.embed && run.embed.headcountDescription ? run.embed.headcountDescription : `${run.headcountEmote ? `React with ${bot.emojis.cache.get(run.headcountEmote)} if you are coming\n` : ''}React with ${bot.emojis.cache.get(run.keyEmoteID)} if you have a key\nOtherwise react with your gear/class choices below`)
                     .setColor(run.embed ? run.embed.color : run.color)
                     .setTimestamp()
 

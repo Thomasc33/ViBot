@@ -121,14 +121,14 @@ class AfkTemplate {
                 reason: `For creating or editing the raiding template for ${this.author}`,
                 permissionOverwrites: [{
                     id: this.guild.roles.everyone.id,
-                    deny: ['VIEW_CHANNEL']
+                    deny: ['ViewChannel']
                 },
                 {
                     id: this.author.id,
-                    allow: ['ADD_REACTIONS', 'SEND_MESSAGES', 'VIEW_CHANNEL', 'EMBED_LINKS', 'ATTACH_FILES', 'USE_EXTERNAL_EMOJIS']
+                    allow: ['AddReactions', 'SendMessages', 'ViewChannel', 'EmbedLinks', 'AttachFiles', 'UseExternalEmojis']
                 }, {
                     id: this.bot.user,
-                    allow: ['ADD_REACTIONS', 'SEND_MESSAGES', 'VIEW_CHANNEL', 'EMBED_LINKS', 'ATTACH_FILES', 'USE_EXTERNAL_EMOJIS']
+                    allow: ['AddReactions', 'SendMessages', 'ViewChannel', 'EmbedLinks', 'AttachFiles', 'UseExternalEmojis']
                 }
                 ]
             });
