@@ -652,9 +652,9 @@ class afkCheck {
 
             embed.setDescription(
                 reactInfo && reactInfo.confirmationMessage ?
-                `You reacted as ${emote}\n\n${reactInfo.confirmationMessage}\n\nPress ✅ to confirm your reaction. Otherwise press ❌` :
-                `You reacted as ${emote}\nPress ✅ to confirm your reaction. Otherwise press ❌`
-                )
+                    `You reacted as ${emote}\n\n${reactInfo.confirmationMessage}\n\nPress ✅ to confirm your reaction. Otherwise press ❌` :
+                    `You reacted as ${emote}\nPress ✅ to confirm your reaction. Otherwise press ❌`
+            )
             let ar = new Discord.ActionRowBuilder().addComponents([
                 new Discord.ButtonBuilder()
                     .setLabel('✅ Confirm')
@@ -1478,26 +1478,9 @@ async function createChannel(runInfo, message, bot) {
     })
 }
 
-/**
- *
- * @param {String} char
- * @param {String} name
- * @param {String} guildid
- * @returns {Object} RunType
- */
-
-/*
- function getRunType(char, guildid) {
-    for (let i in afkTemplates[guildid]) if (afkTemplates[guildid][i].symbol == char.toLowerCase()) return afkTemplates[guildid][i]
-    for (let o in afkTemplates[guildid][i].aliases) if (o == char.toLowerCase())  { return afkTemplates[guildid][i] }
-    return null
-}
-*/
-
 function getBannedName(name, guildid) {
-    for (let i in bannedNames[guildid]) {
-        if (name.toLowerCase() == bannedNames[guildid][i].name) return true;
-    }
+    let n = new Set(bannedNames[guildid])
+    if (n.has(name.toLowerCase())) return true
     return false
 }
 

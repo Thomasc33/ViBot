@@ -1,18 +1,10 @@
 {
-    "343704644712923138": {
-        "lingerie": {
-            "name": "lingerie"
-        },
-        "dick": {
-            "name": "dick"
-        }
-    },
-    "701483950559985705": {
-        "lingerie": {
-            "name": "lingerie"
-        },
-        "dick": {
-            "name": "dick"
-        }
-    }
+    "343704644712923138": [
+        "lingerie",
+        "dick"
+    ],
+    "701483950559985705": [
+        "lingerie",
+        "dick"
+    ]
 }
