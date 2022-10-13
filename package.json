@@ -38,6 +38,11 @@
   "keywords": [
     "rotmg"
   ],
+  "nodemonConfig": {
+    "ignore": [
+      "*.json"
+    ]
+  },
   "author": "Thomas Carr",
   "license": "ISC",
   "bugs": {
