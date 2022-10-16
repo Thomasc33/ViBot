@@ -590,7 +590,7 @@ class afkCheck {
                 if (firstCall) interaction.reply({ embeds: [embed], ephemeral: true })
                 else interaction.editReply({ embeds: [embed], components: [] })
             } else {
-                embed.setDescription(`You are confirmed to be the puzzle solver :)`)
+                embed.setDescription(`You do not get location for this reaction. Join lounge to be moved into the channel.`)
                 if (firstCall) interaction.reply({ embeds: [embed], ephemeral: true })
                 else interaction.editReply({ embeds: [embed], components: [] })
             }

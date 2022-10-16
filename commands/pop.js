@@ -57,6 +57,9 @@ module.exports = {
                     db.query(`UPDATE users SET ${keyInfo.schema} = ${keyInfo.schema} + ${count} WHERE id = '${user.id}'`, (err, rows) => {
                         keyRoles.checkUser(user, bot, db);
                     });
+                    if (moddedKey) db.query(`UPDATE users SET moddedPops = moddedPops + ${count} WHERE id = '${user.id}'`, (err, rows) => {
+                        keyRoles.checkUser(user, bot, db);
+                    });
                     let embed = new Discord.EmbedBuilder()
                         .setColor('#0000ff')
                         .setDescription(`Key has been logged.\n${user.nickname} now has ${parseInt(rows[0][keyInfo.schema]) + parseInt(count)} pops`)
