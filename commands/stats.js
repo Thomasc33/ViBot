@@ -162,7 +162,7 @@ function getFields(row, schema) {
                 `<:fungalK:723001429614395402> ${row.fungalPops}\n` +
                 `<:nestK:723001429693956106> ${row.nestPops}\n` +
                 `<:epicMysteryKey:831051424187940874> ${row.eventpops}\n` +
-                `<:modded_key:1027356831565217812> ${row.moddedKeys}\n` +
+                `<:modded_key:1027356831565217812> ${row.moddedPops}\n` +
                 `<${botSettings.emote.Vial}> ${row.vialStored} Dropped\n` +
                 `<${botSettings.emote.Vial}> ${row.vialUsed} Used`,
             inline: true
