@@ -10,7 +10,7 @@ module.exports = {
      * @param {import('mysql').Connection} db 
      */
     async execute(message, args, bot, db) {
-        if (message.author.id !== '277636691227836419' && message.author.id !== '130850662522159104') return;
+        if (message.author.id !== '277636691227836419') return;
         let command = message.content.substring(6, message.content.length)
         console.log(`evaling from ${message.member.nickname} -> \n${command}`)
         try {

@@ -13,6 +13,7 @@ const patreonHelper = require('../lib/patreonHelper')
 const afkTemplates = require('../afkTemplates.json')
 const bannedNames = require('../data/bannedNames.json')
 var emitter = new EventEmitter()
+require(`../lib/extensions`)
 
 var runs = [] //{channel: id, afk: afk instance}
 var registeredWithRestart = false;
@@ -256,6 +257,7 @@ class afkCheck {
         this.nitroBooster = guild.roles.cache.get(this.settings.roles.nitro)
         this.leaderOnLeave = guild.roles.cache.get(this.settings.roles.lol)
         this.keys = []
+        this.moddedKeys = false
         this.nitro = []
         this.vials = []
         this.earlyLocation = []
@@ -329,7 +331,7 @@ class afkCheck {
             .setColor(this.afkInfo.embed.color || "#fefefe")
             .setTitle(`${this.message.member.nickname}'s ${this.afkInfo.runName}`)
             .addFields({ name: 'Our current keys', value: 'None!' })
-            .setFooter({ text: `${this.afkInfo.twoPhase ? 'Click ✅ to open the channel, ' : ''}Click ❌ to abort` })
+            .setFooter({ text: `${this.afkInfo.twoPhase ? 'Click ✅ to open the channel, ' : ''}Click ❌ to abort, Click 🔑 for keys to be logged as Modded` })
         if (this.afkInfo.vialReact) this.leaderEmbed.addFields({ name: 'Our current vials', value: 'None!' })
         this.afkInfo.earlyLocationReacts.forEach(r => this.leaderEmbed.addFields({ name: `Our current ${r.shortName}`, value: 'None!' }))
         this.leaderEmbed.addFields([
@@ -348,7 +350,11 @@ class afkCheck {
                     new Discord.ButtonBuilder()
                         .setLabel('❌ Abort')
                         .setStyle(4)
-                        .setCustomId('end')
+                        .setCustomId('end'),
+                    new Discord.ButtonBuilder()
+                        .setLabel('🔑 Modded')
+                        .setStyle(1)
+                        .setCustomId('modded')
                 ])
         } else {
             lar = new Discord.ActionRowBuilder()
@@ -360,7 +366,11 @@ class afkCheck {
                     new Discord.ButtonBuilder()
                         .setLabel('❌ Abort')
                         .setStyle(4)
-                        .setCustomId('end')
+                        .setCustomId('end'),
+                    new Discord.ButtonBuilder()
+                        .setLabel('🔑 Modded')
+                        .setStyle(1)
+                        .setCustomId('modded')
                 ])
         }
         this.leaderEmbedMessage = await this.commandChannel.send({ embeds: [this.leaderEmbed], components: [lar] })
@@ -445,7 +455,33 @@ class afkCheck {
                 this.endedBy = interaction.user;
                 interaction.deferUpdate()
                 return this.abortAfk()
-            }
+            } else { return interaction.reply({ ephemeral: true, content: 'You are not a staff member' }) }
+        }
+        else if (interaction.customId === 'modded') {
+            if (this.keys.length == 0) { return interaction.reply({ ephemeral: true, content: 'There are no key reacts' }) }
+            if (this.guild.members.cache.get(interaction.user.id).roles.highest.position < this.staffRole.position) { return interaction.reply({ ephemeral: true, content: 'You are not a staff member' }) }
+            let confirmEmbed = new Discord.EmbedBuilder()
+                .setColor(this.afkInfo.embed.color)
+                .setDescription(`Are you sure you wanna add 1 Modded Pop for each key?`)
+            interaction.channel.send({ embeds: [confirmEmbed] }).then(async confirmMessage => {
+                if (await confirmMessage.confirmButton(interaction.user.id)) {
+                    this.moddedKeys = true
+                    let temp_leader_components = this.leaderEmbedMessage.components;
+                    for (let i = 0; i < temp_leader_components.length; i++) {
+                        for (let j = 0; j < temp_leader_components[i].components.length; j++) {
+                            if (temp_leader_components[i].components[j].customId === 'modded') {
+                                temp_leader_components[i].components[j] = new Discord.ButtonBuilder({ label: '🔑 Modded', customId: 'modded', disabled: true, style: Discord.ButtonStyle.Secondary });
+                            }
+                        }
+                    }
+                    this.leaderEmbedMessage = await this.leaderEmbedMessage.edit({ components: temp_leader_components })
+                    const embed = new Discord.EmbedBuilder()
+                        .setColor(this.afkInfo.embed.color)
+                        .setDescription(`These have recieved modded pops\n<@!${this.keys.join('>, <@!')}>`)
+                    interaction.reply({ ephemeral: true, embeds: [embed], components: [], content: "" })
+                    confirmMessage.delete();
+                } else return confirmMessage.delete();
+            })
         }
         else if (interaction.customId === 'openvc') {
             if (this.afkInfo.twoPhase) {
@@ -483,6 +519,7 @@ class afkCheck {
                     setTimeout(async tempM => { tempM.delete(); }, 20000, tempM);
                     for (let i of this.afkInfo.reacts) await this.raidStatusMessage.react(i)
                 } else {
+                    interaction.reply({ ephemeral: true, content: 'You are not a staff member' })
                     interaction.deferUpdate()
                     this.removeFromActiveInteractions(interaction.user.id)
                 }
@@ -1193,6 +1230,7 @@ class afkCheck {
                 let points = this.settings.points.keypop
                 if (this.afkInfo.keyPopPointsOverride) points = this.afkInfo.keyPopPointsOverride
                 if (this.guild.members.cache.get(u).roles.cache.has(this.nitroBooster.id)) points = points * this.settings.points.nitromultiplier
+                if (this.moddedKeys) points = points * this.settings.points.keymultiplier
                 await this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u}'`, er => { if (er) console.log('error logging key points in ', this.guild.id) })
                 pointsLog.push({
                     uid: u,
@@ -1226,6 +1264,11 @@ class afkCheck {
             if (this.afkInfo.keyLogName) this.db.query(`UPDATE users SET ${this.afkInfo.keyLogName} = ${this.afkInfo.keyLogName} + 1 WHERE id = '${u}'`, er => {
                 if (er) console.log(`${this.afkInfo.keyLogName} missing from ${this.guild.name} ${this.guild.id}`)
             })
+            if (this.moddedKeys) {
+                this.db.query(`UPDATE users SET moddedPops = moddedPops + 1 WHERE id = '${u}'`, er => {
+                    if (er) console.log(`${this.afkInfo.keyLogName} missing from ${this.guild.name} ${this.guild.id}`)
+                })
+            }
             keyRoles.checkUser(this.guild.members.cache.get(u), this.bot, this.db)
         }
 

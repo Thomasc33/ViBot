@@ -40,6 +40,11 @@
             "role": "keyjesus"
         },
         {
+            "types": [ ["moddedPops"] ],
+            "amount": 10,
+            "role": "moddedkey"
+        },
+        {
             "types": [ ["runesused", "Runes Used"] ],
             "amount": 15,
             "role": "bottomrune"
