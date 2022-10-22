@@ -60,10 +60,10 @@ function fitStringIntoEmbed(embed, string, channel) {
     } else if (embed.data.description.length + `\n${string}`.length >= 2048) {
         if (!embed.data.fields) {
             embed.addFields({ name: '-', value: string })
-        } else if (embed.data.fields[embed.data.fields.length - 1].value.length + `\n${string}`.length >= 1024) {
+        } else if (embed.data.fields && embed.data.fields[embed.data.fields.length - 1].value.length + `\n${string}`.length >= 1024) {
             if (JSON.stringify(embed.toJSON()).length + `\n${string}`.length >= 6000) {
                 channel.send({ embeds: [embed] })
-                embed.setDescription('None!')
+                embed.setDescription(string)
                 embed.data.fields = []
             } else {
                 embed.addFields({ name: '-', value: string })
@@ -71,7 +71,7 @@ function fitStringIntoEmbed(embed, string, channel) {
         } else {
             if (JSON.stringify(embed.toJSON()).length + `\n${string}`.length >= 6000) {
                 channel.send({ embeds: [embed] })
-                embed.setDescription('None!')
+                embed.setDescription(string)
                 embed.data.fields = []
             } else {
                 embed.data.fields[embed.data.fields.length - 1].value = embed.data.fields[embed.data.fields.length - 1].value.concat(`\n${string}`)

@@ -854,7 +854,7 @@ var vibotControlGuild
  */
 function checkPatreon(patreonRoleId, userId) {
     if (!vibotControlGuild) vibotControlGuild = bot.guilds.cache.get('739623118833713214')
-    if (vibotControlGuild.members.cache.get(userId).roles.cache.has(patreonRoleId)) return true
+    if (vibotControlGuild.members.cache.get(userId) && vibotControlGuild.members.cache.get(userId).roles.cache.has(patreonRoleId)) return true
     else return false
 }
 
