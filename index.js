@@ -12,6 +12,7 @@ const cookieParser = require('cookie-parser')
 const cors = require('cors')
 const path = require('path');
 const moment = require('moment');
+require('./lib/extensions.js')
 global.appRoot = path.resolve(__dirname); //put here so verification ml doenst break
 
 
