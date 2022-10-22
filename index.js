@@ -108,8 +108,8 @@ bot.on('messageCreate', message => {
         if (!bot.settings[message.guild.id].commands[command.name]) return message.channel.send('Command doesnt exist, check \`commands\` and try again');
         if (restarting.restarting && !command.allowedInRestart) return message.channel.send('Cannot execute command as a restart is pending')
         if (!message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role])) return message.channel.send('Permissions not set up for this commands role')
-        if (command.roleOverride && command.roleOverride[message.guildId]) { if (message.member.roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.roleOverride[message.guildId]]).position && (message.author.id !== '277636691227836419' && message.author.id !== '298989767369031684' && message.author.id !== '130850662522159104')) return; }
-        else if ((message.member.roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role]).position && (message.author.id !== '277636691227836419' && message.author.id !== '298989767369031684' && message.author.id !== '130850662522159104')) && (command.patreonRole ? !checkPatreon(command.patreonRole, message.author.id) : true)) return;
+        if (command.roleOverride && command.roleOverride[message.guildId]) { if (message.member.roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.roleOverride[message.guildId]]).position && (message.author.id !== '277636691227836419')) return; }
+        else if ((message.member.roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role]).position && (message.author.id !== '277636691227836419')) && (command.patreonRole ? !checkPatreon(command.patreonRole, message.author.id) : true)) return;
         if (command.requiredArgs && command.requiredArgs > args.length) return message.channel.send(`Command Entered incorrecty. \`${botSettings.prefix}${command.name} ${command.args}\``)
         if (command.cooldown) {
             if (cooldowns.get(command.name)) {
