@@ -54,61 +54,51 @@ module.exports = {
         let confirmEmbed = new Discord.EmbedBuilder()
             .setTitle(`Confirm Action`)
             .setDescription(`${args[1]} ${count} ${logTypes[logIndex]} to ${member}`)
-        let confirmMessage = await message.channel.send({ embeds: [confirmEmbed] })
-        confirmMessage.react('✅')
-        confirmMessage.react('❌')
-        let confirmReactionCollector = new Discord.ReactionCollector(confirmMessage, { filter: (r, u) => u.id == message.author.id })
-        confirmReactionCollector.on('collect', async (r, u) => {
-            if (r.emoji.name == '✅') {
-                confirmReactionCollector.stop()
-                await confirmMessage.delete()
+        await message.channel.send({ embeds: [confirmEmbed] }).then(async confirmMessage => {
+            if (await confirmMessage.confirmButton(message.author.id)) {
                 if (operator != 's') {
-                    for (let i of currentweek) {
-                        if (i.case == logTypes[logIndex]) {
-                            let currentWeekConfirmEmbed = new Discord.EmbedBuilder()
-                                .setTitle('Confirm Action')
-                                .setDescription('Do you also want to add/remove this from currentweek?')
-                            let currentweekConfirmMessage = await message.channel.send({ embeds: [currentWeekConfirmEmbed] })
-                            currentweekConfirmMessage.react('✅')
-                            currentweekConfirmMessage.react('❌')
-                            let currentweekConfirmCollector = new Discord.ReactionCollector(currentweekConfirmMessage, { filter: (r, u) => u.id == message.author.id })
-                            currentweekConfirmCollector.on('collect', async (r, u) => {
-                                if (r.emoji.name == '✅') {
-                                    currentweekConfirmMessage.delete()
-                                    currentweekConfirmCollector.stop()
-                                    let currentWeekQuery = `UPDATE users SET `
-                                    let currentWeekName = i.currentWeekName
-                                    if (operator == 'a') currentWeekQuery += `${currentWeekName} = ${currentWeekName} + ${count} `
-                                    else currentWeekQuery += `${currentWeekName} = ${currentWeekName} - ${count} `
-                                    currentWeekQuery += `WHERE id = '${member.id}'`
-                                    db.query(currentWeekQuery, (err, rows) => {
-                                        if (err) message.channel.send(`\`${err}\``)
-                                    })
-                                } else if (r.emoji.name == '❌') {
-                                    currentweekConfirmMessage.delete()
-                                    currentweekConfirmCollector.stop()
-                                }
-                                sendQuery()
-                            })
-                            return;
+                    find: {
+                        for (let i of currentweek) {
+                            if (i.case == logTypes[logIndex]) {
+                                let currentWeekConfirmEmbed = new Discord.EmbedBuilder()
+                                    .setTitle('Confirm Action')
+                                    .setDescription('Do you also want to add/remove this from currentweek?')
+                                await message.channel.send({ embeds: [currentWeekConfirmEmbed] }).then(async confirmMessageWeek => {
+                                    if (await confirmMessageWeek.confirmButton(message.author.id)) {
+                                        let currentWeekQuery = `UPDATE users SET `
+                                        let currentWeekName = i.currentWeekName
+                                        if (operator == 'a') currentWeekQuery += `${currentWeekName} = ${currentWeekName} + ${count} `
+                                        else currentWeekQuery += `${currentWeekName} = ${currentWeekName} - ${count} `
+                                        currentWeekQuery += `WHERE id = '${member.id}'`
+                                        db.query(currentWeekQuery, (err, rows) => {
+                                            if (err) message.channel.send(`\`${err}\``)
+                                        })
+                                        confirmMessageWeek.delete()
+                                        sendQuery()
+                                    } else {
+                                        confirmMessageWeek.delete()
+                                        sendQuery()
+                                    }
+                                })
+                                break find;
+                            }
                         }
+                        sendQuery()
                     }
-                    sendQuery()
-                } else {
-                    sendQuery()
                 }
-
-                function sendQuery() {
-                    db.query(query, (err, rows) => {
-                        if (err) message.channel.send(`\`${err}\``)
-                        message.react('✅')
-                    })
-                }
-            } else if (r.emoji.name == '❌') {
-                confirmReactionCollector.stop()
                 await confirmMessage.delete()
+            } else {
+                await confirmMessage.delete()
+                message.react('✅')
             }
         })
+
+        function sendQuery() {
+            db.query(query, (err, rows) => {
+                if (err) message.channel.send(`\`${err}\``)
+                message.react('✅')
+            })
+        }
     }
 }
 

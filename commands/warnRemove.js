@@ -23,20 +23,12 @@ module.exports = {
                 .setColor('#ff0000')
                 .setTitle('Please Confirm')
                 .setDescription(`__Warn for user:__ ${member} (${member.nickname})\n__Reason:__${warn.reason}\n__Warn by:__ <@!${warn.modid}>`)
-            let confirmMessage = await message.channel.send({ embeds: [confirmEmbed] })
-            let confirmReactionCollector = new Discord.ReactionCollector(confirmMessage, { filter: (r, u) => !u.bot && u.id == message.author.id && (r.emoji.name === '✅' || r.emoji.name === '❌') })
-            await confirmMessage.react('✅')
-            await confirmMessage.react('❌')
-            confirmReactionCollector.on('collect', async function (r, u) {
-                await confirmMessage.reactions.removeAll()
-                if (r.emoji.name === '✅') {
+            await message.channel.send({ embeds: [confirmEmbed] }).then(async confirmMessage => {
+                if (await confirmMessage.confirmButton(message.author.id)) {
                     db.query(`DELETE FROM warns WHERE warn_id = ${warn.warn_id} AND modid = '${warn.modid}'`)
-                    confirmReactionCollector.stop()
                     confirmEmbed.setTitle('Warn Removed')
-                    confirmMessage.edit({ embeds: [confirmEmbed] })
-                }
-                else {
-                    confirmReactionCollector.stop()
+                    confirmMessage.edit({ embeds: [confirmEmbed], components: [] })
+                } else {
                     confirmMessage.delete()
                 }
             })

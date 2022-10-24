@@ -46,12 +46,8 @@ module.exports = {
         channel.send({ embeds: [embed] })
     },
     async add(message, args, bot) {
-        message.channel.send(`Are you sure you want to add ${args[1].toLowerCase()} to the crasher list? (Y/N)`)
-        let messageCollector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id == message.author.id })
-        messageCollector.on('collect', m => {
-            switch (m.content.charAt(0).toLowerCase()) {
-                case 'y':
-                    messageCollector.stop()
+        message.channel.send(`Are you sure you want to add ${args[1].toLowerCase()} to the crasher list?`).then(async confirmMessage => {
+            if (await confirmMessage.confirmButton(message.author.id)) {
                     if (!bot.crasherList[message.guild.id]) bot.crasherList[message.guild.id] = {}
                     bot.crasherList[message.guild.id][args[1].toLowerCase()] = {
                         addedBy: message.author.id,
@@ -59,20 +55,17 @@ module.exports = {
                     }
                     fs.writeFileSync('./data/crasherList.json', JSON.stringify(bot.crasherList, null, 4), async function (err) {
                         if (err) ErrorLogger.log(err, bot)
-                        let confirmMessage = await message.channel.send(`${args[1].toLowerCase()} has been added to the crasher list. Would you like to update the message?`)
-                        let reactionCollector = new Discord.ReactionCollector(confirmMessage, { filter: (r, u) => !u.bot && u.id == message.author.id && (r.emoji.name === '✅' || r.emoji.name === '❌') })
-                        await confirmMessage.react('✅')
-                        await confirmMessage.react('❌')
-                        reactionCollector.on('collect', async function (r, u) {
-                            await confirmMessage.delete()
-                            message.react('✅')
-                            if (r.emoji.name == '✅') {
+                        await message.channel.send(`${args[1].toLowerCase()} has been added to the crasher list. Would you like to update the message?`).then(async confirmMessageUpdater => {
+                            if (await confirmMessageUpdater.confirmButton(message.author.id)) {
                                 module.exports.update(message, args, bot)
+                            } else {
+                                return confirmMessageUpdater.delete();
                             }
                         })
                     })
-                case 'n':
-                    messageCollector.stop()
+                return confirmMessage.delete();
+            } else {
+                return confirmMessage.delete();
             }
         })
     },
@@ -92,33 +85,27 @@ module.exports = {
                         { name: 'Added By:', value: `<@!${guildCrashers[i].addedBy}>` },
                         { name: 'Added:', value: d.toDateString() },
                     ])
-                let confirmMessage = await message.channel.send({ embeds: [embed] })
-                let reactionCollector = new Discord.ReactionCollector(confirmMessage, { filter: (r, u) => !u.bot && u.id == message.author.id && (r.emoji.name === '✅' || r.emoji.name === '❌') })
-                await confirmMessage.react('✅')
-                await confirmMessage.react('❌')
-                reactionCollector.on('collect', async function (r, u) {
-                    if (r.emoji.name == '✅') {
+                await message.channel.send({ embeds: [embed] }).then(async confirmMessage => {
+                    if (await confirmMessage.confirmButton(message.author.id)) {
                         delete bot.crasherList[message.guild.id][i];
                         fs.writeFileSync('./data/crasherList.json', JSON.stringify(bot.crasherList, null, 4), async function (err) {
                             reactionCollector.stop()
                             let newEmbed = new Discord.EmbedBuilder()
+                                .setTitle('Confirm Action')
                                 .setColor('#00ff00')
                                 .setDescription(`${i} has been removed from the crasher list, would you like to update the crasher list?`)
-                            confirmMessage.edit({ embeds: [newEmbed] })
-                            let nreactionCollector = new Discord.ReactionCollector(confirmMessage, { filter: (r, u) => !u.bot && u.id == message.author.id && (r.emoji.name === '✅' || r.emoji.name === '❌') })
-                            nreactionCollector.on('collect', (r, u) => {
-                                confirmMessage.delete()
-                                message.react('✅')
-                                if (r.emoji.name == '✅') {
-                                    nreactionCollector.stop()
+                            await message.channel.send({ embeds: [newEmbed] }).then(async confirmMessageUpdater => {
+                                if (confirmMessageUpdater.confirmButton(message.author.id)) {
                                     module.exports.update(message, args, bot)
-                                } else nreactionCollector.stop()
+                                    return confirmMessageUpdater.delete()
+                                } else {
+                                    return confirmMessageUpdater.delete()
+                                }
                             })
                         })
-                    }
-                    else {
-                        reactionCollector.stop()
-                        await confirmMessage.delete()
+                        return confirmMessage.delete()
+                    } else {
+                        return confirmMessage.delete()
                     }
                 })
             }

@@ -110,20 +110,20 @@ function confirm(runInfo, message, count) {
         const multiplier = runInfo.multiply === null ? 1 : runInfo.multiply;
         let confirmEmbed = new Discord.EmbedBuilder()
             .setColor(runInfo.color)
-            .setTitle('Confirm')
+            .setTitle('Confirm Action')
             .setDescription(`Are you sure you want to log ${parseInt(count) * multiplier} ${runInfo.confirmSuffix}?`)
             .setFooter({ text: message.member.displayName })
             .setTimestamp()
-        let confirmMessage = await message.channel.send({ embeds: [confirmEmbed] })
-        let confirmCollector = new Discord.ReactionCollector(confirmMessage, { filter: (r, u) => !u.bot && u.id == message.author.id && (r.emoji.name === '✅' || r.emoji.name === '❌') })
-        confirmMessage.react('✅')
-        confirmMessage.react('❌')
-        confirmCollector.on('collect', async function (r, u) {
-            confirmMessage.delete()
-            if (r.emoji.name === '✅') return res(true)
-            else return res(false)
+        await message.channel.send({ embeds: [confirmEmbed] }).then(async confirmMessage => {
+            if (await confirmMessage.confirmButton(message.author.id)) {
+                await confirmMessage.delete()
+                return res(true)
+            } else {
+                await confirmMessage.delete()
+                await message.react('✅')
+                return res(false)
+            }
         })
-        confirmCollector.on('end', async (r, u) => { confirmMessage.delete(); res(false); })
     })
 }
 
