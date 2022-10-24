@@ -1,6 +1,6 @@
 module.exports = {
     name: 'memes',
-    alias: ['phd', 'xbox', 'cwinner', 'eury', 'nefiah', 'abysm', 'drunkdevil', 'shiba', 'rj', 'vr'],
+    alias: ['phd', 'xbox', 'cwinner', 'eury', 'nefiah', 'abysm', 'drunkdevil', 'shiba', 'rj', 'vr', 'pusbal'],
     role: 'eventrl',
     async execute(message, args, bot) {
         const settings = bot.settings[message.guild.id]
@@ -36,6 +36,9 @@ module.exports = {
                 break;
             case 'vr':
                 message.channel.send(message.author.id == '277636691227836419' ? `<@&${settings.roles.raider}>` : '@verified raider')
+                break;
+            case 'pusbal':
+                message.channel.send({ files: ['https://media.discordapp.net/attachments/488881485366165515/1033372031384817714/52ca3466-744e-4372-8211-175184521ecd.png'] })
         }
     }
 }

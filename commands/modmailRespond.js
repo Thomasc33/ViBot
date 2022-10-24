@@ -45,24 +45,17 @@ module.exports = {
             if (!checkInServer())
                 return responseEmbedMessage.delete();
             responseEmbed.setDescription(`__Are you sure you want to respond with the following?__\n${response}`)
-            await responseEmbedMessage.edit({ embeds: [responseEmbed] })
-            await responseEmbedMessage.react('✅')
-            await responseEmbedMessage.react('❌')
-            let ConfirmReactionCollector = new Discord.ReactionCollector(responseEmbedMessage, { filter: (r, u) => !u.bot && (r.emoji.name === '❌' || r.emoji.name === '✅') })
-            ConfirmReactionCollector.on('collect', async function (r, u) {
-                if (u.id !== message.author.id) return;
-                if (r.emoji.name === '✅') {
-                    ConfirmReactionCollector.stop()
+            await responseEmbedMessage.edit({ embeds: [responseEmbed] }).then(async confirmMessage => {
+                if (await confirmMessage.confirmButton(message.author.id)) {
                     if (!checkInServer())
                         return responseEmbedMessage.delete();
                     await dms.send(response)
                     responseEmbedMessage.delete()
                     embed.addFields([{ name: `Response by ${message.member.displayName}:`, value: response }])
                     m.edit({ embeds: [embed] })
-                } else if (r.emoji.name === '❌') {
-                    ConfirmReactionCollector.stop()
+                } else {
                     await responseEmbedMessage.delete()
-                } else return;
+                }
             })
         })
         message.delete()

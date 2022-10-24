@@ -382,7 +382,7 @@ function getDefaultRoleName(name) {
         case 'vetban': return 'Banned Veteran Raider'
         case 'tempkey': return 'Temporary Key Popper'
         case 'topkey': return 'Veteran Key Popper'
-        case 'moddedkey': return 'ModdedKey'
+        case 'moddedkey': return 'Modded Key Popper'
         case 'bottomkey': return 'Verified Key Popper'
         case 'cultping': return 'Cult boi'
         case 'voidping': return 'Void boi'

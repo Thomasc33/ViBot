@@ -241,14 +241,8 @@ module.exports = {
                             return;
                         }
                         responseEmbed.setDescription(`__Are you sure you want to respond with the following?__\n${response}`)
-                        await responseEmbedMessage.edit({ embeds: [responseEmbed] })
-                        await responseEmbedMessage.react('✅')
-                        await responseEmbedMessage.react('❌')
-                        let ConfirmReactionCollector = new Discord.ReactionCollector(responseEmbedMessage, { filter: ConfirmationFilter })
-                        ConfirmReactionCollector.on('collect', async function (r, u) {
-                            if (u.id !== reactor.id) return;
-                            if (r.emoji.name === '✅') {
-                                ConfirmReactionCollector.stop()
+                        await responseEmbedMessage.edit({ embeds: [responseEmbed] }).then(async confirmMessage => {
+                            if (await confirmMessage.confirmButton(reactor.id)) {
                                 if (!checkInServer()) {
                                     responseEmbedMessage.delete();
                                     await m.reactions.removeAll();
@@ -261,12 +255,11 @@ module.exports = {
                                 m.edit({ embeds: [embed] })
                                 await m.reactions.removeAll()
                                 await m.react('📫')
-                            } else if (r.emoji.name === '❌') {
-                                ConfirmReactionCollector.stop()
+                            } else {
                                 await responseEmbedMessage.delete()
                                 await m.reactions.removeAll()
                                 await m.react('🔑')
-                            } else return;
+                            }
                         })
                     })
                     break;
@@ -346,4 +339,3 @@ async function checkBlacklist(member, db) {
 
 const keyFilter = (r, u) => !u.bot && r.emoji.name === '🔑'
 const choiceFilter = (r, u) => !u.bot && (r.emoji.name === '📧' || r.emoji.name === '👀' || r.emoji.name === '🗑️' || r.emoji.name === '❌' || r.emoji.name === '🔨' || r.emoji.name === '🔒' /*temp, remove later*/ || r.emoji.id === '752368122551337061')
-const ConfirmationFilter = (r, u) => !u.bot && (r.emoji.name === '❌' || r.emoji.name === '✅')

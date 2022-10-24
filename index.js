@@ -601,21 +601,14 @@ async function dmHandler(message) {
                 .setFooter({ text: 'Spamming modmail with junk will result in being modmail blacklisted' })
                 .setDescription(`\`\`\`${message.content}\`\`\``)
             let guild = await getGuild(message).catch(er => { cancelled = true })
-            let confirmModMailMessage = await message.channel.send({ embeds: [confirmModMailEmbed] })
-            let reactionCollector = new Discord.ReactionCollector(confirmModMailMessage, { filter: (r, u) => u.id == message.author.id && (r.emoji.name == '✅' || r.emoji.name == '❌') })
-
-            //Check blacklist 
-            reactionCollector.on('collect', async (r, u) => {
-                reactionCollector.stop()
-                if (r.emoji.name == '✅') {
-                    if (!cancelled) {
-                        if (r.emoji.name == '✅') modmail.sendModMail(message, guild, bot, bot.dbs[guild.id])
-                        confirmModMailMessage.delete()
-                    }
-                } else confirmModMailMessage.delete()
+            await message.channel.send({ embeds: [confirmModMailEmbed] }).then(async confirmMessage => {
+                if (await confirmMessage.confirmButton(message.author.id)) {
+                    modmail.sendModMail(message, guild, bot, bot.dbs[guild.id])
+                    confirmMessage.delete()
+                } else confirmMessage.delete()
             })
-            confirmModMailMessage.react('✅')
-                .then(confirmModMailMessage.react('❌'))
+
+            //Check blacklist
         }
     }
     async function logCommand(guild) {
