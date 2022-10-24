@@ -3,7 +3,7 @@ module.exports = {
     name: 'manualverify',
     description: 'Manually verifies a user',
     role: 'security',
-    roleOverride: { '343704644712923138': 'officer' },
+    roleOverride: { '343704644712923138': 'security' },
     alias: ['mv'],
     requiredArgs: 2,
     args: '<id/mention> <ign>',

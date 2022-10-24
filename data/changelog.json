@@ -14,7 +14,10 @@
             "parses",
             "feedback",
             "exaltsLead",
-            "exaltFeedback"
+            "exaltFeedback",
+            "shattersLead",
+            "fungalsLead",
+            "nestsLead"
         ],
         "currentweeks": [
             {
@@ -48,6 +51,18 @@
             {
                 "case": "exaltFeedback",
                 "currentWeekName": "currentweekExaltFeedback"
+            },
+            {
+                "case": "shattersLead",
+                "currentWeekName": "currentweekShatters"
+            },
+            {
+                "case": "fungalsLead",
+                "currentWeekName": "currentweekFungals"
+            },
+            {
+                "case": "nestsLead",
+                "currentWeekName": "currentweekNests"
             }
         ]
     },
@@ -66,7 +81,10 @@
             "parses",
             "feedback",
             "exaltsLead",
-            "exaltFeedback"
+            "exaltFeedback",
+            "shattersLead",
+            "fungalsLead",
+            "nestsLead"
         ],
         "currentweeks": [
             {
@@ -100,6 +118,18 @@
             {
                 "case": "exaltFeedback",
                 "currentWeekName": "currentweekExaltFeedback"
+            },
+            {
+                "case": "shattersLead",
+                "currentWeekName": "currentweekShatters"
+            },
+            {
+                "case": "fungalsLead",
+                "currentWeekName": "currentweekFungals"
+            },
+            {
+                "case": "nestsLead",
+                "currentWeekName": "currentweekNests"
             }
         ]
     },

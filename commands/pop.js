@@ -15,6 +15,7 @@ module.exports = {
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         var count = 1
+        let moddedKey = false
         if (args.length < 1) return;
         if (args.length > 2) count = parseInt(args[2])
         if (count == NaN || !count) count = 1
@@ -30,11 +31,12 @@ module.exports = {
         let collector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id === message.author.id, time: 20000 });
         let confirmEmbed = new Discord.EmbedBuilder()
             .setColor('#ff0000')
-            .setDescription(`Are you sure you want to log ${count} ${keyInfo.name} pops for ${user.nickname}?\n\nRespond with __**Y**__es or __**N**__o`)
+            .setDescription(`Are you sure you want to log ${count} ${keyInfo.name} pops for ${user.nickname}?\n\nRespond with __**Y**__es for a normal key.\nRespond with __**M**__od for a modified key.\nRespond with __**N**__o to cancel.`)
         let confirmMessage = await message.channel.send({ embeds: [confirmEmbed] })
         collector.on('collect', async m => {
-            if (m.content.charAt(0).toLowerCase() == 'y') {
+            if (m.content.charAt(0).toLowerCase() == 'y' || m.content.charAt(0).toLowerCase() == 'm') {
                 collector.stop()
+                if (m.content.charAt(0).toLowerCase() == 'm') moddedKey = true
                 db.query(`SELECT * FROM users WHERE id = '${user.id}'`, async(err, rows) => {
                     if (err) ErrorLogger.log(err, bot)
                     if (rows.length == 0) {
@@ -55,6 +57,9 @@ module.exports = {
                     db.query(`UPDATE users SET ${keyInfo.schema} = ${keyInfo.schema} + ${count} WHERE id = '${user.id}'`, (err, rows) => {
                         keyRoles.checkUser(user, bot, db);
                     });
+                    if (moddedKey) db.query(`UPDATE users SET moddedPops = moddedPops + ${count} WHERE id = '${user.id}'`, (err, rows) => {
+                        keyRoles.checkUser(user, bot, db);
+                    });
                     let embed = new Discord.EmbedBuilder()
                         .setColor('#0000ff')
                         .setDescription(`Key has been logged.\n${user.nickname} now has ${parseInt(rows[0][keyInfo.schema]) + parseInt(count)} pops`)
@@ -63,6 +68,7 @@ module.exports = {
                 if (settings.backend.points && keyInfo.points) {
                     let points = settings.points[keyInfo.points] * count
                     if (user.roles.cache.has(settings.roles.nitro)) points = points * settings.points.nitromultiplier
+                    if (moddedKey) points = points * settings.points.keymultiplier
                     db.query(`UPDATE users SET points = points + ${points} WHERE id = '${user.id}'`)
                 }
                 await confirmMessage.delete()

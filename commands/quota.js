@@ -222,7 +222,7 @@ module.exports = {
                     } catch (er) { console.log(er) }
                 } else for (let i in embeds) channel.send({ embeds: [embeds[i]] })
                 if (nw)
-                    channel.send({ files: [new Discord.MessageAttachment(Buffer.from(csvData, "utf-8"), "currentweekResetData.csv")] })
+                    channel.send({ files: [new Discord.AttachmentBuilder(Buffer.from(csvData, "utf-8"), { name: "currentweekResetData.csv" })] })
                 resolve(true);
             });
         });

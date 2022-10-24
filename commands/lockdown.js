@@ -11,7 +11,7 @@ module.exports = {
         else channel = message.guild.channels.cache.get(args[0])
         if (!channel) return message.channel.send('Channel not found')
 
-        channel.permissionOverwrites.edit(message.guild.id, { SEND_MESSAGES: false })
+        channel.permissionOverwrites.edit(message.guild.id, { SendMessages: false })
             .then(message.react('✅'))
             .catch(er => ErrorLogger.log(er, bot))
     }

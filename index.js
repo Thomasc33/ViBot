@@ -12,6 +12,7 @@ const cookieParser = require('cookie-parser')
 const cors = require('cors')
 const path = require('path');
 const moment = require('moment');
+require('./lib/extensions.js')
 global.appRoot = path.resolve(__dirname); //put here so verification ml doenst break
 
 
@@ -89,7 +90,7 @@ bot.on('messageCreate', message => {
     try {
         if (!message.channel.type == Discord.ChannelType.GuildText) {
             try {
-                return dmHandler(message);
+                if (message.channel.type == Discord.ChannelType.DM) return dmHandler(message);
             } catch (er) {
                 ErrorLogger.log(er, bot);
             }
@@ -107,8 +108,8 @@ bot.on('messageCreate', message => {
         if (!bot.settings[message.guild.id].commands[command.name]) return message.channel.send('Command doesnt exist, check \`commands\` and try again');
         if (restarting.restarting && !command.allowedInRestart) return message.channel.send('Cannot execute command as a restart is pending')
         if (!message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role])) return message.channel.send('Permissions not set up for this commands role')
-        if (command.roleOverride && command.roleOverride[message.guildId]) { if (message.member.roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.roleOverride[message.guildId]]).position && (message.author.id !== '277636691227836419' && message.author.id !== '298989767369031684' && message.author.id !== '130850662522159104')) return; }
-        else if ((message.member.roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role]).position && (message.author.id !== '277636691227836419' && message.author.id !== '298989767369031684' && message.author.id !== '130850662522159104')) && (command.patreonRole ? !checkPatreon(command.patreonRole, message.author.id) : true)) return;
+        if (command.roleOverride && command.roleOverride[message.guildId]) { if (message.member.roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.roleOverride[message.guildId]]).position && (message.author.id !== '277636691227836419')) return; }
+        else if ((message.member.roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role]).position && (message.author.id !== '277636691227836419')) && (command.patreonRole ? !checkPatreon(command.patreonRole, message.author.id) : true)) return;
         if (command.requiredArgs && command.requiredArgs > args.length) return message.channel.send(`Command Entered incorrecty. \`${botSettings.prefix}${command.name} ${command.args}\``)
         if (command.cooldown) {
             if (cooldowns.get(command.name)) {
@@ -546,8 +547,8 @@ async function dmHandler(message) {
     if (verification.checkActive(message.author.id)) return
     if (hostkeys.checkActive(message.author.id)) return
     let cancelled = false;
-    let statsTypos = ['stats', 'satts', 'stat', 'status', 'sats', 'stata', 'stts']
-    if (statsTypos.includes(message.content.split(' ')[0].replace(/[^a-z0-9]/gi, ''))) {
+    let statsTypos = ['stats', 'satts', 'stat', 'status', 'sats', 'stata', 'stts', 'stas']
+    if (statsTypos.includes(message.content.split(' ')[0].replace(/[^a-z0-9]/gi, '').toLowerCase())) {
         let guild;
         bot.guilds.cache.forEach(g => {
             if (g.members.cache.get(message.author.id)) {
@@ -575,10 +576,8 @@ async function dmHandler(message) {
         let args = message.content.split(/ +/)
         let commandName = args.shift().toLowerCase().replace(prefix, '')
         const command = bot.commands.get(commandName) || bot.commands.find(c => c.alias && c.alias.includes(commandName))
-        if (!command) {
-            let guild = await getGuild(message).catch(er => { cancelled = true })
-            sendModMail()
-        } else if (command.dms) {
+        if (!command) sendModMail()
+        else if (command.dms) {
             let guild
             if (command.dmNeedsGuild) {
                 guild = await getGuild(message).catch(er => cancelled = true)
@@ -593,9 +592,8 @@ async function dmHandler(message) {
                     } else command.dmExecution(message, args, bot, bot.dbs[guild.id], guild, tokenDB)
                 }
             }
-        } else {
-            message.channel.send('This command does not work in DM\'s. Please use this inside of a server')
-        }
+        } else message.channel.send('This command does not work in DM\'s. Please use this inside of a server')
+        
         async function sendModMail() {
             let confirmModMailEmbed = new Discord.EmbedBuilder()
                 .setColor(`#ff0000`)
@@ -614,10 +612,7 @@ async function dmHandler(message) {
                         if (r.emoji.name == '✅') modmail.sendModMail(message, guild, bot, bot.dbs[guild.id])
                         confirmModMailMessage.delete()
                     }
-                } else {
-                    confirmModMailMessage.delete()
-                }
-
+                } else confirmModMailMessage.delete()
             })
             confirmModMailMessage.react('✅')
                 .then(confirmModMailMessage.react('❌'))
@@ -633,18 +628,6 @@ async function dmHandler(message) {
             .setTimestamp()
         if (message.author.avatarURL()) logEmbed.setAuthor({ name: message.author.tag, iconURL: message.author.avatarURL() })
         guild.channels.cache.get(bot.settings[guild.id].channels.dmcommands).send({ embeds: [logEmbed] }).catch(er => { ErrorLogger.log(new Error(`Unable to find/send in settings.channels.dmcommands channel for ${guild.id}`), bot) })
-    }
-    async function checkBlacklist(member, db) {
-        return new Promise(async (res, rej) => {
-            db.query(`SELECT * FROM modmailblacklist WHERE id = '${member.id}'`, (err, rows) => {
-                if (err) return rej(err)
-                if (rows.length == 0) {
-                    res(false)
-                } else {
-                    res(true)
-                }
-            })
-        })
     }
 }
 
@@ -871,7 +854,7 @@ var vibotControlGuild
  */
 function checkPatreon(patreonRoleId, userId) {
     if (!vibotControlGuild) vibotControlGuild = bot.guilds.cache.get('739623118833713214')
-    if (vibotControlGuild.members.cache.get(userId).roles.cache.has(patreonRoleId)) return true
+    if (vibotControlGuild.members.cache.get(userId) && vibotControlGuild.members.cache.get(userId).roles.cache.has(patreonRoleId)) return true
     else return false
 }
 

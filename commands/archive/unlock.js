@@ -32,20 +32,20 @@ module.exports = {
         if (message.channel.parent.name.toLowerCase() === 'raiding') {
             await channel.setName(`${settings.voiceprefixes.raidingprefix}${channelNumber} <-- Join!`).catch(er => ErrorLogger.log(er, bot))
             setTimeout(function() { channel.setUserLimit(75).catch(er => ErrorLogger.log(er, bot)) }, 500)
-            setTimeout(function() { channel.permissionOverwrites.edit(raider.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)) }, 1000)
+            setTimeout(function() { channel.permissionOverwrites.edit(raider.id, { Connect: true, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot)) }, 1000)
         }
         if (message.channel.parent.name.toLowerCase() === 'veteran raiding') {
             await channel.setName(`${settings.voiceprefixes.vetprefix}${channelNumber} <-- Join!`).catch(er => ErrorLogger.log(er, bot))
             setTimeout(function() { channel.setUserLimit(75).catch(er => ErrorLogger.log(er, bot)) }, 500)
-            setTimeout(function() { channel.permissionOverwrites.edit(raider.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)) }, 1000)
+            setTimeout(function() { channel.permissionOverwrites.edit(raider.id, { Connect: true, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot)) }, 1000)
         }
         if (message.channel.parent.name.toLowerCase() === 'events') {
             let eventBoi = await message.guild.roles.cache.get(settings.roles.eventraider)
             let name = channel.name.substring(0, channel.name.indexOf(channelNumber) + 1)
             await channel.setName(`${name} <-- Join!`).catch(er => ErrorLogger.log(er, bot))
             setTimeout(function() { channel.setUserLimit(75).catch(er => ErrorLogger.log(er, bot)) }, 500)
-            setTimeout(function() { channel.permissionOverwrites.edit(raider.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)) }, 1000)
-            setTimeout(function() { channel.permissionOverwrites.edit(eventBoi.id, { CONNECT: true, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot)) }, 1000)
+            setTimeout(function() { channel.permissionOverwrites.edit(raider.id, { Connect: true, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot)) }, 1000)
+            setTimeout(function() { channel.permissionOverwrites.edit(eventBoi.id, { Connect: true, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot)) }, 1000)
         }
     }
 };

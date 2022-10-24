@@ -2,6 +2,7 @@ const Discord = require('discord.js')
 const botSettings = require('../settings.json')
 const axios = require('axios')
 const emojiServers = require('../data/emojiServers.json')
+const keyRoles = require('../data/keyRoles.json')
 
 module.exports = {
     name: 'stats',
@@ -69,6 +70,7 @@ module.exports = {
                     oryx3.leading = { ...oryx3.leading, ...data.profile.oryx3.leading };
                     oryx3.pops = { ...oryx3.pops, ...data.profile.pops };
                     if (bot.dbs['343704644712923138']) bot.dbs['343704644712923138'].query(`UPDATE users SET o3runs = ${data.profile.oryx3.participation.completions} WHERE id = '${id}'`);
+                    if (bot.dbs['343704644712923138']) bot.dbs['343704644712923138'].query(`UPDATE users SET runesused = ${oryx3.pops.shield + oryx3.pops.sword + oryx3.pops.helmet} WHERE id = '${id}'`);
                 }
             }
 
@@ -89,6 +91,17 @@ module.exports = {
 
             //add discord pfp
             if (member) embed.setThumbnail(member.user.avatarURL());
+
+            // check for missing keyroles
+            const popInfo = keyRoles[guild.id];
+            const settings = bot.settings[guild.id];
+            if (settings && popInfo && member) {
+                const keyRows = popInfo.map(ki => ki.types.map(t => t[0]).join(", ")).join(", ");
+                if (bot.dbs['343704644712923138']) bot.dbs['343704644712923138'].query(`SELECT id, ${keyRows} FROM users WHERE id = '${member.id}'`, (err, keyRows) => {
+                    if (err) ErrorLogger.log(err, bot)
+                    if (keyRows && keyRows[0]) checkRow(guild, bot, keyRows[0], member);
+                })
+            }
 
             //return embed
             res(embed);
@@ -149,6 +162,7 @@ function getFields(row, schema) {
                 `<:fungalK:723001429614395402> ${row.fungalPops}\n` +
                 `<:nestK:723001429693956106> ${row.nestPops}\n` +
                 `<:epicMysteryKey:831051424187940874> ${row.eventpops}\n` +
+                `<:modded_key:1027356831565217812> ${row.moddedPops}\n` +
                 `<${botSettings.emote.Vial}> ${row.vialStored} Dropped\n` +
                 `<${botSettings.emote.Vial}> ${row.vialUsed} Used`,
             inline: true
@@ -208,4 +222,26 @@ function getFields(row, schema) {
     ]
     console.log('no found schema in stats.js:getFields. Schema: ', schema)
     return []
+}
+
+function checkRow(guild, bot, row, member) {
+    return new Promise(async (res) => {
+        const settings = bot.settings[guild.id];
+        const popInfo = keyRoles[guild.id];
+        member = member || await guild.members.fetch(row.id).catch(e => { });
+        if (!settings || !popInfo || !member) return;
+        const rolesToAdd = [];
+        for (const keyInfo of popInfo) {
+            if (!settings.roles[keyInfo.role]) continue;
+            let count = 0;
+            for (const [keyType, keyName] of keyInfo.types)
+                count += row[keyType] || 0;
+            if (count >= keyInfo.amount) {
+                if (!member.roles.cache.has(settings.roles[keyInfo.role]))
+                    rolesToAdd.push(settings.roles[keyInfo.role]);
+            }
+        }
+        member.roles.add(rolesToAdd);
+        res(rolesToAdd);
+    })
 }

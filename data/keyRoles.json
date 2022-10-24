@@ -38,6 +38,33 @@
             "types": [ ["eventpops", "Event Keys"], ["keypops", "Lost Halls Keys"] ],
             "amount": 2000,
             "role": "keyjesus"
+        },
+        {
+            "types": [ ["moddedPops"] ],
+            "amount": 10,
+            "role": "moddedkey"
+        },
+        {
+            "types": [ ["runesused", "Runes Used"] ],
+            "amount": 15,
+            "role": "bottomrune"
+        },
+        {
+            "types": [ ["runesused", "Runes Used"] ],
+            "amount": 45,
+            "role": "toprune"
+        }
+    ],
+    "708026927721480254": [
+        {
+            "types": [ ["runesused", "Runes Used"] ],
+            "amount": 15,
+            "role": "bottomrune"
+        },
+        {
+            "types": [ ["runesused", "Runes Used"] ],
+            "amount": 45,
+            "role": "toprune"
         }
     ]
 }

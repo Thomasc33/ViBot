@@ -11,7 +11,9 @@ const EventEmitter = require('events').EventEmitter
 const pointLogger = require('../lib/pointLogger')
 const patreonHelper = require('../lib/patreonHelper')
 const afkTemplates = require('../afkTemplates.json')
+const bannedNames = require('../data/bannedNames.json')
 var emitter = new EventEmitter()
+require(`../lib/extensions`)
 
 var runs = [] //{channel: id, afk: afk instance}
 var registeredWithRestart = false;
@@ -53,10 +55,9 @@ module.exports = {
         //clear out runs array
         destroyInactiveRuns();
         let shift = args.shift();
-        let symbol = shift.charAt(0).toLowerCase();
+        let symbol = shift.toLowerCase();
         let isAdvanced = false;
-        if (symbol == 'a') {
-            symbol += shift.charAt(1).toLowerCase();
+        if (symbol[0] == 'a') {
             isAdvanced = true;
         }
         //Check Run Type
@@ -256,6 +257,7 @@ class afkCheck {
         this.nitroBooster = guild.roles.cache.get(this.settings.roles.nitro)
         this.leaderOnLeave = guild.roles.cache.get(this.settings.roles.lol)
         this.keys = []
+        this.moddedKeys = false
         this.nitro = []
         this.vials = []
         this.earlyLocation = []
@@ -282,7 +284,7 @@ class afkCheck {
             //location: this.afkInfo.location, disabled until it is needed
             //keys: [],
             leader: this.message.author.id,
-            leaderNick: this.message.member.nickname.replace(/[^a-z|]/gi, '').split('|')[0],
+            leaderNick: this.message.member.displayName.replace(/[^a-z|]/gi, '').split('|')[0],
             //earlyLocation: earlyLocationIDS,
             //raiders: raiders,
             time: Date.now(),
@@ -329,7 +331,7 @@ class afkCheck {
             .setColor(this.afkInfo.embed.color || "#fefefe")
             .setTitle(`${this.message.member.nickname}'s ${this.afkInfo.runName}`)
             .addFields({ name: 'Our current keys', value: 'None!' })
-            .setFooter({ text: `${this.afkInfo.twoPhase ? 'Click ✅ to open the channel, ' : ''}Click ❌ to abort` })
+            .setFooter({ text: `${this.afkInfo.twoPhase ? 'Click ✅ to open the channel, ' : ''}Click ❌ to abort, Click 🔑 for keys to be logged as Modded` })
         if (this.afkInfo.vialReact) this.leaderEmbed.addFields({ name: 'Our current vials', value: 'None!' })
         this.afkInfo.earlyLocationReacts.forEach(r => this.leaderEmbed.addFields({ name: `Our current ${r.shortName}`, value: 'None!' }))
         this.leaderEmbed.addFields([
@@ -348,7 +350,11 @@ class afkCheck {
                     new Discord.ButtonBuilder()
                         .setLabel('❌ Abort')
                         .setStyle(4)
-                        .setCustomId('end')
+                        .setCustomId('end'),
+                    new Discord.ButtonBuilder()
+                        .setLabel('🔑 Modded')
+                        .setStyle(1)
+                        .setCustomId('modded')
                 ])
         } else {
             lar = new Discord.ActionRowBuilder()
@@ -360,7 +366,11 @@ class afkCheck {
                     new Discord.ButtonBuilder()
                         .setLabel('❌ Abort')
                         .setStyle(4)
-                        .setCustomId('end')
+                        .setCustomId('end'),
+                    new Discord.ButtonBuilder()
+                        .setLabel('🔑 Modded')
+                        .setStyle(1)
+                        .setCustomId('modded')
                 ])
         }
         this.leaderEmbedMessage = await this.commandChannel.send({ embeds: [this.leaderEmbed], components: [lar] })
@@ -445,7 +455,33 @@ class afkCheck {
                 this.endedBy = interaction.user;
                 interaction.deferUpdate()
                 return this.abortAfk()
-            }
+            } else { return interaction.reply({ ephemeral: true, content: 'You are not a staff member' }) }
+        }
+        else if (interaction.customId === 'modded') {
+            if (this.keys.length == 0) { return interaction.reply({ ephemeral: true, content: 'There are no key reacts' }) }
+            if (this.guild.members.cache.get(interaction.user.id).roles.highest.position < this.staffRole.position) { return interaction.reply({ ephemeral: true, content: 'You are not a staff member' }) }
+            let confirmEmbed = new Discord.EmbedBuilder()
+                .setColor(this.afkInfo.embed.color)
+                .setDescription(`Are you sure you wanna add 1 Modded Pop for each key?`)
+            interaction.channel.send({ embeds: [confirmEmbed] }).then(async confirmMessage => {
+                if (await confirmMessage.confirmButton(interaction.user.id)) {
+                    this.moddedKeys = true
+                    let temp_leader_components = this.leaderEmbedMessage.components;
+                    for (let i = 0; i < temp_leader_components.length; i++) {
+                        for (let j = 0; j < temp_leader_components[i].components.length; j++) {
+                            if (temp_leader_components[i].components[j].customId === 'modded') {
+                                temp_leader_components[i].components[j] = new Discord.ButtonBuilder({ label: '🔑 Modded', customId: 'modded', disabled: true, style: Discord.ButtonStyle.Secondary });
+                            }
+                        }
+                    }
+                    this.leaderEmbedMessage = await this.leaderEmbedMessage.edit({ components: temp_leader_components })
+                    const embed = new Discord.EmbedBuilder()
+                        .setColor(this.afkInfo.embed.color)
+                        .setDescription(`These have recieved modded pops\n<@!${this.keys.join('>, <@!')}>`)
+                    interaction.reply({ ephemeral: true, embeds: [embed], components: [], content: "" })
+                    confirmMessage.delete();
+                } else return confirmMessage.delete();
+            })
         }
         else if (interaction.customId === 'openvc') {
             if (this.afkInfo.twoPhase) {
@@ -483,6 +519,7 @@ class afkCheck {
                     setTimeout(async tempM => { tempM.delete(); }, 20000, tempM);
                     for (let i of this.afkInfo.reacts) await this.raidStatusMessage.react(i)
                 } else {
+                    interaction.reply({ ephemeral: true, content: 'You are not a staff member' })
                     interaction.deferUpdate()
                     this.removeFromActiveInteractions(interaction.user.id)
                 }
@@ -590,7 +627,7 @@ class afkCheck {
                 if (firstCall) interaction.reply({ embeds: [embed], ephemeral: true })
                 else interaction.editReply({ embeds: [embed], components: [] })
             } else {
-                embed.setDescription(`You are confirmed to be the puzzle solver :)`)
+                embed.setDescription(`You do not get location for this reaction. Join lounge to be moved into the channel.`)
                 if (firstCall) interaction.reply({ embeds: [embed], ephemeral: true })
                 else interaction.editReply({ embeds: [embed], components: [] })
             }
@@ -652,9 +689,9 @@ class afkCheck {
 
             embed.setDescription(
                 reactInfo && reactInfo.confirmationMessage ?
-                `You reacted as ${emote}\n\n${reactInfo.confirmationMessage}\n\nPress ✅ to confirm your reaction. Otherwise press ❌` :
-                `You reacted as ${emote}\nPress ✅ to confirm your reaction. Otherwise press ❌`
-                )
+                    `You reacted as ${emote}\n\n${reactInfo.confirmationMessage}\n\nPress ✅ to confirm your reaction. Otherwise press ❌` :
+                    `You reacted as ${emote}\nPress ✅ to confirm your reaction. Otherwise press ❌`
+            )
             let ar = new Discord.ActionRowBuilder().addComponents([
                 new Discord.ButtonBuilder()
                     .setLabel('✅ Confirm')
@@ -723,7 +760,7 @@ class afkCheck {
      * @param {Number} index
      */
     async useNitro(interaction, index) {
-        let embed = new Discord.EmbedBuilder({ color: this.afkInfo.embed.color, description: 'placeholder' })
+        let embed = new Discord.EmbedBuilder({ description: 'placeholder' }).setColor(this.afkInfo.embed.color)
         let reactor = interaction.member
         if (this.earlyLocation.includes(interaction.user)) {
             embed.setDescription(`The location for this run has been set to \`${this.afkInfo.location}\``)
@@ -1193,6 +1230,7 @@ class afkCheck {
                 let points = this.settings.points.keypop
                 if (this.afkInfo.keyPopPointsOverride) points = this.afkInfo.keyPopPointsOverride
                 if (this.guild.members.cache.get(u).roles.cache.has(this.nitroBooster.id)) points = points * this.settings.points.nitromultiplier
+                if (this.moddedKeys) points = points * this.settings.points.keymultiplier
                 await this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u}'`, er => { if (er) console.log('error logging key points in ', this.guild.id) })
                 pointsLog.push({
                     uid: u,
@@ -1226,6 +1264,11 @@ class afkCheck {
             if (this.afkInfo.keyLogName) this.db.query(`UPDATE users SET ${this.afkInfo.keyLogName} = ${this.afkInfo.keyLogName} + 1 WHERE id = '${u}'`, er => {
                 if (er) console.log(`${this.afkInfo.keyLogName} missing from ${this.guild.name} ${this.guild.id}`)
             })
+            if (this.moddedKeys) {
+                this.db.query(`UPDATE users SET moddedPops = moddedPops + 1 WHERE id = '${u}'`, er => {
+                    if (er) console.log(`${this.afkInfo.keyLogName} missing from ${this.guild.name} ${this.guild.id}`)
+                })
+            }
             keyRoles.checkUser(this.guild.members.cache.get(u), this.bot, this.db)
         }
 
@@ -1449,8 +1492,9 @@ async function createChannel(runInfo, message, bot) {
             vibotChannels = message.guild.channels.cache.get(settings.channels.raidingchannels)
         }
         if (!template) return rej(`Template channel not found`)
+        let raidLeaderDisplayName = message.member.displayName.replace(/[^a-z|]/gi, '').split('|')[0]
         let channel = await template.clone({
-            name: `${message.member.displayName.replace(/[^a-z|]/gi, '').split('|')[0]}'s ${runInfo.runType}`,
+            name: getBannedName(raidLeaderDisplayName, message.guild.id) ? `${raidLeaderDisplayName[0]}'s ${runInfo.runType}` : `${raidLeaderDisplayName}'s ${runInfo.runType}`,
             parent: message.guild.channels.cache.filter(c => c.type == Discord.ChannelType.GuildCategory).find(c => c.name.toLowerCase() === parent).id,
             userLimit: runInfo.vcCap
         }).then(c => c.setPosition(0))
@@ -1477,16 +1521,20 @@ async function createChannel(runInfo, message, bot) {
     })
 }
 
-/**
- *
- * @param {String} char
- * @param {String} guildid
- * @returns {Object} RunType
- */
-function getRunType(char, guildid) {
-    for (let i in afkTemplates[guildid]) if (afkTemplates[guildid][i].symbol == char.toLowerCase()) return afkTemplates[guildid][i]
-    return null
+function getBannedName(name, guildid) {
+    let n = new Set(bannedNames[guildid])
+    if (n.has(name.toLowerCase())) return true
+    return false
+}
 
+function getRunType(char, guildid) {
+    for (let i in afkTemplates[guildid]) {
+        if (char.toLowerCase() == afkTemplates[guildid][i].symbol) return afkTemplates[guildid][i];
+        if (afkTemplates[guildid][i].aliases) {
+            if (afkTemplates[guildid][i].aliases.includes(char.toLowerCase())) return afkTemplates[guildid][i];
+        }
+    }
+    return null
 }
 
 async function getTemplate(message, afkTemplates, runType) {

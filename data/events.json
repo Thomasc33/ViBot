@@ -630,7 +630,7 @@
         "color": "#ffff00",
         "isExalt": false,
         "reacts": [
-            "mystic",
+            "Mystic",
             "Warrior",
             "Paladin",
             "Knight",
@@ -698,7 +698,7 @@
         "isExalt": false,
         "reacts": [
             "Plane",
-            "UTTomeoftheMushroomTriebs",
+            "UTTomeoftheMushroomTribes",
             "Qot",
             "Warrior",
             "Paladin",
@@ -961,7 +961,9 @@
     "fungal": {
         "runType": "Fungal Cavern",
         "runName": "Fungal Cavern",
-        "aliases": [],
+        "aliases": [
+            "fc"
+        ],
         "enabled": true,
         "keyEmoteID": "723001429614395402",
         "keyEmote": ":fungalK:723001429614395402",
@@ -1069,7 +1071,7 @@
         "isExalt": true,
         "reacts": [
             "Collo",
-            "UTTomeoftheMushroomTriebs",
+            "UTTomeoftheMushroomTribes",
             "Slow",
             "Qot",
             "Curse",
@@ -1111,7 +1113,7 @@
         "isExalt": true,
         "reacts": [
             "Collo",
-            "UTTomeoftheMushroomTriebs",
+            "UTTomeoftheMushroomTribes",
             "Slow",
             "Qot",
             "Curse",
@@ -1151,9 +1153,9 @@
         "isExalt": true,
         "reacts": [
             "Collo",
-            "UTTomeoftheMushroomTriebs",
+            "UTTomeoftheMushroomTribes",
             "brain",
-            "mystic",
+            "Mystic",
             "Slow",
             "Qot",
             "Curse",
@@ -1196,9 +1198,9 @@
         "isExalt": true,
         "reacts": [
             "Collo",
-            "UTTomeoftheMushroomTriebs",
+            "UTTomeoftheMushroomTribes",
             "brain",
-            "mystic",
+            "Mystic",
             "Slow",
             "Qot",
             "Curse",
@@ -1252,7 +1254,7 @@
             "Plane",
             "Collo",
             "Ogmur",
-            "mystic",
+            "Mystic",
             "Curse",
             "Expose",
             "Warrior",
@@ -1295,7 +1297,7 @@
             "Plane",
             "Collo",
             "Ogmur",
-            "mystic",
+            "Mystic",
             "Curse",
             "Expose",
             "Warrior",
@@ -1366,7 +1368,7 @@
         "isExalt": false,
         "reacts": [
             "Collo",
-            "mystic",
+            "Mystic",
             "Slow",
             "Warrior",
             "Paladin",
@@ -1400,7 +1402,7 @@
         "color": "#ffffff",
         "isExalt": false,
         "reacts": [
-            "mystic",
+            "Mystic",
             "Slow",
             "Qot",
             "Warrior",
@@ -1435,7 +1437,7 @@
         "isExalt": false,
         "reacts": [
             "Collo",
-            "UTTomeoftheMushroomTriebs",
+            "UTTomeoftheMushroomTribes",
             "Slow",
             "Warrior",
             "Paladin",
@@ -1706,7 +1708,7 @@
             "Plane",
             "Collo",
             "Ogmur",
-            "UTTomeoftheMushroomTriebs",
+            "UTTomeoftheMushroomTribes",
             "MarbleSeal",
             "Slow",
             "Qot",
@@ -1786,7 +1788,7 @@
             "UTTomeoftheMushroomTribes",
             "MarbleSeal",
             "brain",
-            "mystic",
+            "Mystic",
             "Slow",
             "Qot",
             "Curse",
@@ -1846,7 +1848,9 @@
             "name": "Fungal Cavern",
             "runType": "Fungal Cavern",
             "runName": "Fungal Cavern",
-            "aliases": [],
+            "aliases": [
+                "fc"
+            ],
             "enabled": true,
             "keyEmoteID": "723001429614395402",
             "keyEmote": ":fungalK:723001429614395402",

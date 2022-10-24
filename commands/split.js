@@ -1,5 +1,7 @@
 const Discord = require('discord.js')
 const Channels = require('./vibotChannels')
+const ErrorLogger = require('../lib/logError')
+
 module.exports = {
     name: 'split',
     description: 'Splits the group in a split type run',
@@ -42,7 +44,7 @@ async function createChannel(isVet, message, bot) {
         await channel.setName(`Split Channel`)
 
         //allows raiders to view
-        await channel.permissionOverwrites.edit(raider.id, { CONNECT: false, VIEW_CHANNEL: true }).catch(er => ErrorLogger.log(er, bot))
+        await channel.permissionOverwrites.edit(raider.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot))
 
         //Embed to remove
         let embed = new Discord.EmbedBuilder()
