@@ -1,21 +1,18 @@
 {
     "343704644712923138": [
         {
-            "index": 0,
             "dbNames": [
                 "keypops"
             ],
             "name": "Key Pops"
         },
         {
-            "index": 1,
             "dbNames": [
                 "eventpops"
             ],
             "name": "Event Key Pops"
         },
         {
-            "index": 2,
             "dbNames": [
                 "cultRuns",
                 "voidRuns"
@@ -23,7 +20,6 @@
             "name": "Total Runs"
         },
         {
-            "index": 3,
             "dbNames": [
                 "cultsLead",
                 "voidsLead"
@@ -31,28 +27,24 @@
             "name": "Total Runs Lead"
         },
         {
-            "index": 4,
             "dbNames": [
                 "vialUsed"
             ],
             "name": "Vials Used"
         },
         {
-            "index": 5,
             "dbNames": [
                 "points"
             ],
             "name": "Points"
         },
         {
-            "index": 6,
             "dbNames": [
                 "feedback"
             ],
             "name": "Feedbacks"
         },
         {
-            "index": 7,
             "dbNames": [
                 "parses"
             ],
@@ -61,21 +53,18 @@
     ],
     "701483950559985705": [
         {
-            "index": 0,
             "dbNames": [
                 "keypops"
             ],
             "name": "Key Pops"
         },
         {
-            "index": 1,
             "dbNames": [
                 "eventpops"
             ],
             "name": "Event Key Pops"
         },
         {
-            "index": 2,
             "dbNames": [
                 "cultRuns",
                 "voidRuns"
@@ -83,7 +72,6 @@
             "name": "Total Runs"
         },
         {
-            "index": 3,
             "dbNames": [
                 "cultsLead",
                 "voidsLead"
@@ -91,28 +79,24 @@
             "name": "Total Runs Lead"
         },
         {
-            "index": 4,
             "dbNames": [
                 "vialUsed"
             ],
             "name": "Vials Used"
         },
         {
-            "index": 5,
             "dbNames": [
                 "points"
             ],
             "name": "Points"
         },
         {
-            "index": 6,
             "dbNames": [
                 "feedback"
             ],
             "name": "Feedbacks"
         },
         {
-            "index": 7,
             "dbNames": [
                 "parses"
             ],
@@ -121,49 +105,42 @@
     ],
     "451171819672698920": [
         {
-            "index": 0,
             "dbNames": [
                 "shatterspops"
             ],
             "name": "Key Pops"
         },
         {
-            "index": 1,
             "dbNames": [
                 "eventpops"
             ],
             "name": "Event Key Pops"
         },
         {
-            "index": 2,
             "dbNames": [
                 "runs"
             ],
             "name": "Total Runs"
         },
         {
-            "index": 3,
             "dbNames": [
                 "successruns"
             ],
             "name": "Total Runs Lead"
         },
         {
-            "index": 4,
             "dbNames": [
                 "points"
             ],
             "name": "Points"
         },
         {
-            "index": 5,
             "dbNames": [
                 "oldruns"
             ],
             "name": "Legacy Runs"
         },
         {
-            "index": 6,
             "dbNames": [
                 "oldsuccessruns"
             ],
