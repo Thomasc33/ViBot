@@ -251,7 +251,8 @@ class afkCheck {
             else this.verifiedRaiderRole = this.guild.roles.cache.get(this.settings.roles.raider)
             this.staffRole = guild.roles.cache.get(this.afkInfo.isEvent ? this.settings.roles.eventrl : this.settings.roles.almostrl)
         }
-        this.afkChannel = guild.channels.cache.find(c => c.name === 'afk')
+        this.afkChannel = guild.channels.cache.find(c => c.name.toLowerCase() === 'afk')
+        if (!this.afkChannel) this.afkChannel = guild.channels.cache.find(c => c.name.toLowerCase() === 'lounge')
         this.runInfoChannel = guild.channels.cache.get(this.settings.channels.runlogs)
         this.officialRusher = guild.roles.cache.get(this.settings.roles.rusher)
         this.nitroBooster = guild.roles.cache.get(this.settings.roles.nitro)
@@ -1030,7 +1031,7 @@ class afkCheck {
         this.leaderInteractionCollector.stop();
 
         //move out people
-        this.channel.members.each(async u => {
+        if (this.afkChannel) this.channel.members.each(async u => {
             if (!this.raiders.includes(u.id)) {
                 let reactor = this.message.guild.members.cache.get(u.id)
                 if (reactor.roles.highest.position >= this.leaderOnLeave.position) return;
@@ -1102,7 +1103,7 @@ class afkCheck {
         //lock channel
         await this.channel.permissionOverwrites.edit(this.verifiedRaiderRole.id, { Connect: false, ViewChannel: true })
         if (this.eventBoi) await this.channel.permissionOverwrites.edit(this.eventBoi.id, { Connect: false, ViewChannel: true })
-        if (this.afkInfo.newChannel && !this.isVet) {
+        if (this.afkInfo.newChannel && !this.isVet && this.afkChannel) {
             this.channel.setPosition(this.afkChannel.position)
         }
         const rules = `<#${this.settings.channels.raidingrules}>` || '#raiding-rules';
@@ -1323,7 +1324,7 @@ class afkCheck {
 
         await this.channel.permissionOverwrites.edit(this.verifiedRaiderRole.id, { Connect: false, ViewChannel: false })
         if (this.eventBoi) await this.channel.permissionOverwrites.edit(this.eventBoi.id, { Connect: false, ViewChannel: false })
-        if (this.afkInfo.newChannel && !this.isVet) {
+        if (this.afkInfo.newChannel && !this.isVet && this.afkChannel) {
             this.channel.setPosition(this.afkChannel.position)
         }
         this.mainEmbed.setImage(null);
