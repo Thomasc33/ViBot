@@ -1,11 +1,12 @@
 const Discord = require('discord.js');
 const botSettings = require('../settings.json');
-const ErrorLogger = require('../lib/logError')
+const ErrorLogger = require('../lib/logError');
+const emojis = require("../data/emojis.json")
 
 module.exports = {
     name: 'poll',
     description: 'Puts a poll in a raid status channel',
-    args: '<\`c/v\` -or- \`us/eu\` -or- \`r/a\`>',
+    args: '<\`c/v\` -or- \`us/eu\` -or- \`r/a\` -or- \`exalts\`> -or- \`fc/n\`',
     requiredArgs: 1,
     role: 'eventrl',
     async execute(message, args, bot) {
@@ -44,6 +45,29 @@ module.exports = {
                 var embedMessage = await message.channel.send({ embeds: [embed] });
                 embedMessage.react('🇷')
                     .then(embedMessage.react(`🇦`))
+                break;
+                case 'exalts':
+                var embed = new Discord.EmbedBuilder()
+                    .setColor('#fefefe')
+                    .setTitle('Which exalted dungeon?')
+                    .setDescription(`<${botSettings.emote.voidd}> or <${botSettings.emote.malus}> or <${botSettings.emote.shattersPortal}> or <${botSettings.emote.fungalPortal}> or <${botSettings.emote.nestPortal}>`)
+                    .setFooter({ text: `Started by ${message.guild.members.cache.get(message.author.id).nickname}` })
+                var embedMessage = await message.channel.send({ embeds: [embed] });
+                embedMessage.react(botSettings.emote.voidd)
+                    .then(embedMessage.react(botSettings.emote.malus))
+                    .then(embedMessage.react(botSettings.emote.shattersPortal))
+                    .then(embedMessage.react(botSettings.emote.fungalPortal))
+                    .then(embedMessage.react(botSettings.emote.nestPortal))
+                break;
+                case 'fc/n':
+                var embed = new Discord.EmbedBuilder()
+                    .setColor('#fefefe')
+                    .setTitle('Fungal or Nest?')
+                    .setDescription(`<${botSettings.emote.fungalPortal}> or <${botSettings.emote.nestPortal}>`)
+                    .setFooter({ text: `Started by ${message.guild.members.cache.get(message.author.id).nickname}` })
+                var embedMessage = await message.channel.send({ embeds: [embed] });
+                embedMessage.react(botSettings.emote.fungalPortal)
+                    .then(embedMessage.react(botSettings.emote.nestPortal))
                 break;
             default: message.channel.send("Poll Type not recognized. Please try again")
         }
