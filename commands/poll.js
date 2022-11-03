@@ -5,7 +5,7 @@ const ErrorLogger = require('../lib/logError')
 module.exports = {
     name: 'poll',
     description: 'Puts a poll in a raid status channel',
-    args: '<\`c/v\` -or- \`us/eu\`>',
+    args: '<\`c/v\` -or- \`us/eu\` -or- \`r/a\`>',
     requiredArgs: 1,
     role: 'eventrl',
     async execute(message, args, bot) {
@@ -34,6 +34,16 @@ module.exports = {
                 var embedMessage = await message.channel.send({ embeds: [embed] });
                 embedMessage.react('🇺🇲')
                     .then(embedMessage.react(`🇪🇺`))
+                break;
+            case 'r/a':
+                var embed = new Discord.EmbedBuilder()
+                    .setColor('#fefefe')
+                    .setTitle('Regular or Advanced?')
+                    // .setDescription(`:flag_um: or :flag_eu:`)
+                    .setFooter({ text: `Started by ${message.guild.members.cache.get(message.author.id).nickname}` })
+                var embedMessage = await message.channel.send({ embeds: [embed] });
+                embedMessage.react('🇷')
+                    .then(embedMessage.react(`🇦`))
                 break;
             default: message.channel.send("Poll Type not recognized. Please try again")
         }
