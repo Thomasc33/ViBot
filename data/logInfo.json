@@ -24,7 +24,8 @@
                     "currentweekFungals",
                     "currentweekNests",
                     "currentweekAssists",
-                    "currentweekFeedback"
+                    "currentweekFeedback",
+                    "rollingQuota"
                 ],
                 "logVet": true,
                 "promotable": [ { "roles": ["almostrl"], "column": "arlRollingQuotaVoids" } ]
@@ -52,7 +53,8 @@
                     "currentweekFungals",
                     "currentweekNests",
                     "currentweekAssists",
-                    "currentweekFeedback"
+                    "currentweekFeedback",
+                    "rollingQuota"
                 ],
                 "logVet": true
             },
@@ -80,7 +82,8 @@
                     "currentweekFungals",
                     "currentweekNests",
                     "currentweekAssists",
-                    "currentweekFeedback"
+                    "currentweekFeedback",
+                    "rollingQuota"
                 ],
                 "logVet": true
             },
@@ -108,7 +111,8 @@
                     "currentweekFungals",
                     "currentweekNests",
                     "currentweekAssists",
-                    "currentweekFeedback"
+                    "currentweekFeedback",
+                    "rollingQuota"
                 ],
                 "logVet": true
             },
@@ -135,7 +139,8 @@
                     "currentweekFungals",
                     "currentweekNests",
                     "currentweekAssists",
-                    "currentweekFeedback"
+                    "currentweekFeedback",
+                    "rollingQuota"
                 ],
                 "logVet": true
             },
@@ -165,7 +170,8 @@
                     "currentweekFungals",
                     "currentweekNests",
                     "currentweekAssists",
-                    "currentweekFeedback"
+                    "currentweekFeedback",
+                    "rollingQuota"
                 ],
                 "logVet": true
             },
@@ -222,7 +228,8 @@
                     "currentweekFungals",
                     "currentweekNests",
                     "currentweekAssists",
-                    "currentweekFeedback"
+                    "currentweekFeedback",
+                    "rollingQuota"
                 ],
                 "logVet": true,
                 "promotable": [ { "roles": ["almostrl"], "column": "arlRollingQuotaVoids" } ]
@@ -250,7 +257,8 @@
                     "currentweekFungals",
                     "currentweekNests",
                     "currentweekAssists",
-                    "currentweekFeedback"
+                    "currentweekFeedback",
+                    "rollingQuota"
                 ],
                 "logVet": true
             },
@@ -278,7 +286,8 @@
                     "currentweekFungals",
                     "currentweekNests",
                     "currentweekAssists",
-                    "currentweekFeedback"
+                    "currentweekFeedback",
+                    "rollingQuota"
                 ],
                 "logVet": true
             },
@@ -306,7 +315,8 @@
                     "currentweekFungals",
                     "currentweekNests",
                     "currentweekAssists",
-                    "currentweekFeedback"
+                    "currentweekFeedback",
+                    "rollingQuota"
                 ],
                 "logVet": true
             },
@@ -333,7 +343,8 @@
                     "currentweekFungals",
                     "currentweekNests",
                     "currentweekAssists",
-                    "currentweekFeedback"
+                    "currentweekFeedback",
+                    "rollingQuota"
                 ],
                 "logVet": true
             },
@@ -363,7 +374,8 @@
                     "currentweekFungals",
                     "currentweekNests",
                     "currentweekAssists",
-                    "currentweekFeedback"
+                    "currentweekFeedback",
+                    "rollingQuota"
                 ],
                 "logVet": true
             },
@@ -416,7 +428,8 @@
                 "toDisplay": [
                     "currentweeko3",
                     "currentweekAssistso3",
-                    "currentweeko3Feedback"
+                    "currentweeko3Feedback",
+                    "rollingQuotao3"
                 ]
             },
             {
@@ -478,7 +491,8 @@
                 "toDisplay": [
                     "currentweeko3",
                     "currentweekAssistso3",
-                    "currentweeko3Feedback"
+                    "currentweeko3Feedback",
+                    "rollingQuotao3"
                 ]
             }
         ],
