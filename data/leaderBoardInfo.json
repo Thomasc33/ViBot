@@ -14,6 +14,12 @@
         },
         {
             "dbNames": [
+                "moddedPops"
+            ],
+            "name": "Modded Key Pops"
+        },
+        {
+            "dbNames": [
                 "cultRuns",
                 "voidRuns"
             ],
@@ -63,6 +69,12 @@
                 "eventpops"
             ],
             "name": "Event Key Pops"
+        },
+        {
+            "dbNames": [
+                "moddedPops"
+            ],
+            "name": "Modded Key Pops"
         },
         {
             "dbNames": [
