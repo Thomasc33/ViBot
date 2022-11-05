@@ -31,9 +31,10 @@ module.exports = {
                 .setFooter({ text: `Quota for ${member.displayName} as of` })
                 .setTimestamp()
                 .addFields(
-                    { name: 'Raiding', value: raids.toDisplay.map(c => ` \`${rows[0][c]}\` ${c.replace('currentweek', '').replace('rollingQuota', 'Rollover')}`).join('\n'), inline: true },
-                    { name: 'Security', value: `\`${rows[0].currentweekparses}\` Parses`, inline: true }
+                    { name: 'Raiding', value: raids.toDisplay.map(c => ` \`${rows[0][c]}\` ${c.replace('currentweek', '').replace('rollingQuota', 'Rollover')}`).join('\n'), inline: true }
                 );
+            if (message.guild.id == '343704644712923138' || message.guild.id == '701483950559985705') quotaEmbed.addFields({ name: 'Security', value: `\`${rows[0].currentweekparses}\` Parses`, inline: true })
+            if (message.guild.id == '708026927721480254' || message.guild.id == '701483950559985705') quotaEmbed.addFields({ name: 'Parsing', value: `\`${rows[0].o3currentweekparses + rows[0].rollingsecurityquotao3}\` Total\n\`${rows[0].o3currentweekparses}\` Parses\n\`${rows[0].rollingsecurityquotao3}\` Rollover`, inline: true })
             message.channel.send({ embeds: [quotaEmbed] });
         })
     }
