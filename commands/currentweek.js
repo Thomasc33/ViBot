@@ -20,6 +20,7 @@ module.exports = {
         let guildInfo = logs[message.guild.id];
         if (!guildInfo) return message.channel.send('Logging isn\'t setup on this server yet');
         let raids = getRunInfo(guildInfo, 'v');
+        if (message.guild.id == '708026927721480254') raids = getRunInfo(guildInfo, 'o')
         if (!raids) return message.channel.send('Run Type not recognized\n' + this.getNotes(message.guild.id));
 
         db.query(`SELECT * FROM users WHERE id = ${member.id}`, (err, rows) => {

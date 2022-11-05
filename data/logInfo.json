@@ -428,7 +428,8 @@
                 "toDisplay": [
                     "currentweeko3",
                     "currentweekAssistso3",
-                    "currentweeko3Feedback"
+                    "currentweeko3Feedback",
+                    "rollingQuotao3"
                 ]
             },
             {
@@ -490,7 +491,8 @@
                 "toDisplay": [
                     "currentweeko3",
                     "currentweekAssistso3",
-                    "currentweeko3Feedback"
+                    "currentweeko3Feedback",
+                    "rollingQuotao3"
                 ]
             }
         ],
