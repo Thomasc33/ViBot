@@ -3,7 +3,8 @@
         "totalUnexcused": "totalUnexcused",
         "consecutiveUnexcused": "consecutiveUnexcused",
         "consecutiveLeave": "consecutiveLeave",
-        "ignoreRoles": ["officer", "headrl", "moderator", "headeventrl"],
+        "ignoreRoles": ["officer", "headrl", "moderator", "headeventrl", "admin"],
+        "ignoreRolesDisplay": [],
         "quotas": [{
                 "id": "raiding",
                 "name": "Raid Leader Quota",
@@ -47,6 +48,7 @@
         "consecutiveUnexcused": "consecutiveUnexcused",
         "consecutiveLeave": "consecutiveLeave",
         "ignoreRoles": ["officer", "moderator", "headrl"],
+        "ignoreRolesDisplay": ["officer", "moderator"],
         "quotas": [{
                 "id": "raiding",
                 "name": "Raid Leader Quota",
@@ -91,6 +93,7 @@
         "consecutiveUnexcused": "consecutiveUnexcusedo3",
         "consecutiveLeave": "consecutiveLeaveo3",
         "ignoreRoles": ["officer", "headrl", "moderator", "headeventrl"],
+        "ignoreRolesDisplay": ["officer", "headrl", "moderator", "headeventrl"],
         "quotas": [{
             "id": "raiding",
             "name": "Raid Leader Quota",

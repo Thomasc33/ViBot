@@ -158,7 +158,7 @@ module.exports = {
                 if (err) return reject(err);
                 let runCount = 0;
                 const roles = quota.roles.map(r => channel.guild.roles.cache.get(settings.roles[r])?.id).filter(r => r);
-                const ignore = (guildQuotas.ignoreRoles || []).map(r => settings.roles[r]).filter(r => r);
+                const ignore = (guildQuotas.ignoreRolesDisplay || []).map(r => settings.roles[r]).filter(r => r);
                 for (const idx in rows) {
                     const user = rows[idx];
                     const member = channel.guild.members.cache.get(user.id);
