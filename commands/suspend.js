@@ -56,6 +56,18 @@ module.exports = {
                 if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(u.toLowerCase()));
                 if (!member) member = message.guild.members.cache.get(u.replace(/[<>@!]/gi, ''))
                 if (!member) return message.channel.send(`${u} not found, please try again`);
+                //check if person being suspended is staff
+                if (bot.settings[message.guild.id].backend.onlyUpperStaffSuspendStaff) {
+                    let lowest_staff_role = bot.settings[message.guild.id].roles["lol"];
+                    if (lowest_staff_role) {
+                        if (member.roles.highest.comparePositionTo(lowest_staff_role) >= 0) {
+                            //the suspend should only happen if message.member is like an admin or something
+                            let suspendingRoles = settings.lists.suspendingRoles.length ? settings.lists.suspendingRoles : ['moderator', 'headrl', 'headeventrl', 'officer', 'developer']
+                            let suspendingIds = suspendingRoles.map(m => settings.roles[m])
+                            if (!message.member.roles.cache.filter(role => suspendingIds.includes(role.id)).size) return message.channel.send("Could not suspend that user as they are staff and your highest role isn't high enough. Ask for a promotion and then try again.");
+                        }
+                    }
+                }
                 if (member.roles.highest.position >= message.member.roles.highest.position) return message.channel.send(`${member} has a role greater than or equal to you and cannot be suspended`);
                 if (member.roles.cache.has(pSuspendRole.id)) return message.channel.send('User is perma suspended already, no need to suspend again')
                 if (member.roles.cache.has(suspendedRole.id)) {
