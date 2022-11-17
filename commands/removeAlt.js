@@ -57,7 +57,7 @@ module.exports = {
                     .addFields([{ name: 'Removed By', value: `<@!${message.author.id}> `, inline: false }])
                     .setTimestamp(Date.now());
                 let reason = ''
-                for (let i = 1; i < args.length; i++) reason += args[i]
+                for (let i = 1; i < args.length; i++) reason += args[i] + " "
                 if (reason != '')
                     if (reason.length > 1024) {
                         embed.addFields([{ name: 'Reason 1', value: reason.substring(0, 1024) }])
