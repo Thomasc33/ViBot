@@ -8,14 +8,20 @@ module.exports = {
     requiredArgs: 1,
     args: '[Users]',
     async execute(message, args, bot, db) {
+        if (args.length == 0) return;
+        var notFoundString = ''
+        //combines users into an array
         for (let i in args) {
             let u = args[i];
-            member = message.guild.members.cache.get(u)
+            var member = message.guild.members.cache.get(u)
             if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(u.toLowerCase()));
-            if (!member) return message.channel.send('Member not found. Please try again')
+            if (!member) {
+                if (notFoundString == '') notFoundString = `${u}`
+                else notFoundString = notFoundString.concat(`, ${u}`)
+                continue
+            }
             db.query(`SELECT * FROM warns WHERE id = '${member.user.id}' and (guildid = '${message.guild.id}' OR guildid is null)`, async function (err, rows) {
                 if (err) ErrorLogger.log(err, bot)
-                if (rows == []) return message.channel.send(`${member.nickname} has no warns in the database`)
                 let embed = new Discord.EmbedBuilder()
                     .setColor('#ff0000')
                     .setTitle(`Warns for ${member.nickname}`)
@@ -53,6 +59,13 @@ module.exports = {
                 }
                 message.channel.send({ embeds: [embed] })
             })
+        }
+        if (notFoundString != '') {
+            var embed = new Discord.EmbedBuilder()
+                .setColor('#ffff00')
+                .setTitle('Users not found:')
+                .setDescription(notFoundString);
+            message.channel.send({ embeds: [embed] })
         }
     }
 }
