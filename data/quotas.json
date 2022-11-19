@@ -161,6 +161,17 @@
             "values": [
                 { "column": "currentweekEvents", "name": "Events", "value": 1 }
             ]
+        }, {
+            "id": "security",
+            "name": "Security Quota",
+            "roles": ["security"],
+            "quota": [7],
+            "reset": "weekly",
+            "currentweek": "parsecurrentweek",
+            "pastweeks": "pastparseweeks",
+            "values": [
+                { "column": "currentweekparses", "name": "Parses", "value": 1 }
+            ]
         }]
     }
 }
