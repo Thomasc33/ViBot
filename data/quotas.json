@@ -164,7 +164,7 @@
         }, {
             "id": "security",
             "name": "Security Quota",
-            "roles": ["security"],
+            "roles": ["security", "helper"],
             "quota": [7],
             "reset": "weekly",
             "currentweek": "parsecurrentweek",

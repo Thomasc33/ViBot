@@ -2,29 +2,28 @@ const fs = require('fs')
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
 const roles = ['moderator', 'officer', 'headrl', 'vetrl', 'fsvrl', 'mrvrl', 'security', 'fullskip', 'developer', 'rl', 'almostrl', 'trialrl', 'headeventrl', 'eventrl',
-'rusher', 'nitro', 'lol', 'vetraider', 'raider', 'eventraider', 'muted',
+    'rusher', 'nitro', 'lol', 'vetraider', 'raider', 'eventraider', 'muted',
     'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'keyjesus', 'moddedkey', 'topkey', 'bottomkey', 'cultping', 'voidping', 'shattsReact', 'fungalReact', 'nestReact',
     'fskipReact', 'fameReact', 'rcPing', 'o3Ping', 'eventBoi', 'veteventrl',
-    'priest', 'warden', 'vetaffiliate', `toprune`, `bottomrune`]
+    'priest', 'warden', 'vetaffiliate', `toprune`, `bottomrune`, 'helper']
 const channels = ['modmail', 'verification', 'manualverification', 'vetverification', 'manualvetverification', 'verificationlog', 'activeverification', 'modlogs', 'history', 'suspendlog',
     'viallog', 'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel', 'raidstatus', 'eventstatus',
     'vetstatus', 'exaltstatus', 'raidcommands', 'eventcommands', 'vetcommands', 'raidingchannels', 'eventchannels', 'vetchannels', 'runlogs', 'dmcommands', 'veriactive', 'pointlogging',
-    'veriattempts',
-    'modmailinfo', 'parsecurrentweek', 'pastparseweeks', 'roleassignment', 'botstatus', 'keyalerts', 'activitylog', 'raidingrules']
+    'veriattempts', 'modmailinfo', 'parsecurrentweek', 'pastparseweeks', 'roleassignment', 'botstatus', 'keyalerts', 'activitylog', 'raidingrules']
 const categories = ['raiding', 'veteran', 'event']
 const voice = ['raidingtemplate', 'eventtemplate', 'vettemplate', 'veteventtemplate', 'lounge', 'vetlounge', 'eventlounge', 'afk']
 const voiceprefixes = ['raidingprefix', 'vetprefix']
 const backend = ['modmail', 'currentweek', 'eventcurrentweek', 'parsecurrentweek', 'verification', 'vetverification', 'points', 'supporter', 'roleassignment', 'realmeyestats', 'automod',
-'nitroearlylocation', 'removekeyreacts', 'characterparse',
+    'nitroearlylocation', 'removekeyreacts', 'characterparse',
     'giveeventroleonverification', 'eventcurrentweekdisplaysalleventrl', 'upgradedCheck', 'raidResetMonthly', 'eventResetMonthly', 'parseResetMonthly', 'exaltedEvents', 'sendmissedquota',
     'exaltsInRSA', 'allowAdvancedRuns', 'raidResetBiweekly', 'eventResetBiweekly', 'parseResetBiweekly', 'onlyUpperStaffSuspendStaff', 'giveEventRoleOnDenial2']
 const numerical = ['afktime', 'eventafktime', 'nitrocount', 'nitrocooldown', 'topkey', 'bottomkey', 'ticketlimit', 'supporterlimit', 'keyalertsage', 'waitnewkeyalert', 'prunerushersoffset',
-`toprune`, `bottomrune`]
+    `toprune`, `bottomrune`]
 const runreqs = ['weapon', 'ability', 'armor', 'ring']
 const autoveri = ['fame', 'stars', 'realmage', 'discordage', 'deathcount']
 const vetverireqs = ['maxed', 'meleemaxed', 'runs']
 const points = ['earlylocation', 'perrun', 'nitromultiplier', 'keypop', 'vialpop', 'rushing', 'brain', 'mystic', 'eventkey', 'cultlocation', 'voidlocation', 'fsvlocation', 'o3streaming',
-'o3trickster', 'o3puri', 'exaltkey', 'shattskey', 'fungalkey', 'nestkey', 'keymultiplier']
+    'o3trickster', 'o3puri', 'exaltkey', 'shattskey', 'fungalkey', 'nestkey', 'keymultiplier']
 const lists = ['earlyLocation', 'runningEvents', 'warningRoles']
 const strings = ['hallsAdvancedReqsImage', 'exaltsAdvancedReqsImage']
 var commands = []
@@ -92,10 +91,10 @@ module.exports = {
                     for (let i in array) {
                         let s = `\n${parseInt(i) + 1}: ${array[i]} ${type == 'array' ? `- ${bot.settings[message.guild.id][arrayName][array[i]].length} Items` : `'${bot.settings[message.guild.id][arrayName][array[i]]}'`}`
                         if (setupEmbed.data.description.length + s.length + `\n\`\`\``.length >= 2048) {
-                            if (!setupEmbed.data.fields || !setupEmbed.data.fields[fieldIndex]) setupEmbed.addFields([{name: '** **', value: `\`\`\`${s}`}])
+                            if (!setupEmbed.data.fields || !setupEmbed.data.fields[fieldIndex]) setupEmbed.addFields([{ name: '** **', value: `\`\`\`${s}` }])
                             else if (setupEmbed.data.fields[fieldIndex].value.length + s.length + `\n\`\`\``.length >= 1024) {
                                 fieldIndex++
-                                setupEmbed.addFields([{name: '** **', value: s}])
+                                setupEmbed.addFields([{ name: '** **', value: s }])
                             } else setupEmbed.data.fields[fieldIndex].value += s;
                         } else setupEmbed.data.description += s
                     }
@@ -395,8 +394,9 @@ function getDefaultRoleName(name) {
         case 'eventBoi': return 'Event Boi'
         case 'priest': return 'Supreme Priest'
         case 'vetaffiliate': return 'Veteran Affiliate Staff'
-        case 'toprune' : return 'Veteran Rune Popper'
-        case 'bottomrune' : return 'Verified Rune Popper'
+        case 'toprune': return 'Veteran Rune Popper'
+        case 'bottomrune': return 'Verified Rune Popper'
+        case 'helper': return 'Helper'
     }
 }
 
