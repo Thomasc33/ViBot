@@ -119,7 +119,7 @@ module.exports = {
         })
     },
 
-    async addCloseChannelButtons(bot, m) {
+    async addCloseChannelButtons(bot, m, rsaMessage) {
         let ar = new Discord.ActionRowBuilder()
             .addComponents(new Discord.ButtonBuilder()
                 .setLabel('Delete Channel')
@@ -127,7 +127,7 @@ module.exports = {
                 .setCustomId('delete'))
         m = await m.edit({ components: [ar] });
         let hndlr = m.createMessageComponentCollector({ componentType: Discord.ComponentType.Button });
-        hndlr.on('collect', async (interaction) => closeChannelButtonsHandler(interaction, bot));
+        hndlr.on('collect', async (interaction) => closeChannelButtonsHandler(interaction, bot, rsaMessage));
         let button_manager = { hndlr: hndlr, confirm_hndlrs: [], RSAMessage: undefined, reconnect_hndlr: undefined };
         watchedButtons[m.embeds[0].footer.text] = button_manager;
     },
@@ -147,6 +147,47 @@ module.exports = {
 
     async registerAFKCheck(afkCheckMod) {
         afkCheckModule = afkCheckMod;
+    },
+
+    async deleteChannel(bot, vc_channel_id, run_title, who_closed, guild, active_channel_msg, ephemeral_response_interaction, rsaMessage) {
+        watchedButtons[vc_channel_id].hndlr.stop();
+        for (let i of watchedButtons[vc_channel_id].confirm_hndlrs) {
+            i.stop();
+        }
+        if (watchedButtons[vc_channel_id].reconnect_hndlr) {
+            watchedButtons[vc_channel_id].reconnect_hndlr.stop()
+        }
+        if (watchedButtons[vc_channel_id].RSAMessage) {
+            watchedButtons[vc_channel_id].RSAMessage.edit({ components: [] });
+    
+        }
+        await active_channel_msg.delete().then().catch(console.error);
+        if (ephemeral_response_interaction) {
+            await ephemeral_response_interaction.update({ content: `${run_title} has been deleted. Have a nice day!`, components: [] });
+        }
+        if (rsaMessage) { rsaMessage.edit({ content: '', components: [] }) }
+        if (afkCheckModule) {
+            let active_run = await afkCheckModule.returnRunByID(vc_channel_id);
+            if (active_run) {
+                await active_run.abortAfk(who_closed);
+            }
+        }
+        delete (bot.afkChecks[vc_channel_id]);
+        fs.writeFile('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => {
+            if (err) ErrorLogger.log(err, bot)
+        });
+        let channel = guild.channels.cache.get(vc_channel_id);
+        if (!channel) return
+        await channel.delete().catch(er => { })
+        if (bot.settings[guild.id].channels.history) {
+            guild.channels.cache.get(bot.settings[guild.id].channels.history).send({
+                embeds: [
+                    new Discord.EmbedBuilder()
+                        .setDescription(`${channel.name} deleted by ${who_closed}`)
+                ]
+            });
+        }
+        delete (watchedButtons[vc_channel_id]);
     }
 }
 
@@ -158,7 +199,7 @@ async function getAFKChannelMessage(bot, guild, vc_channel_id) {
     return await c.messages.fetch(rsaMessageId);
 }
 
-async function closeChannelButtonsHandler(interaction, bot) {
+async function closeChannelButtonsHandler(interaction, bot, rsaMessage) {
     if (!interaction.isButton()) return;
     if (interaction.customId === 'delete') {
         let confirm_buttons = new Discord.ActionRowBuilder().addComponents([
@@ -175,7 +216,7 @@ async function closeChannelButtonsHandler(interaction, bot) {
             bot.afkChecks[interaction.message.embeds[0].footer.text].runType &&
             bot.afkChecks[interaction.message.embeds[0].footer.text].runType.raidLeader === interaction.member.id) {
             interaction.deferUpdate();
-            deleteChannel(bot, interaction.message.embeds[0].footer.text, interaction.message.embeds[0].title, interaction.member, interaction.guild, interaction.message);
+            module.exports.deleteChannel(bot, interaction.message.embeds[0].footer.text, interaction.message.embeds[0].title, interaction.member, interaction.guild, interaction.message, rsaMessage);
         } else {
             await interaction.reply({
                 content: `Are you sure you want to delete <#${interaction.message.embeds[0].footer.text}>? Only do this if the run is over.`,
@@ -184,16 +225,16 @@ async function closeChannelButtonsHandler(interaction, bot) {
             });
             let confirm_m = await interaction.fetchReply();
             let confirm_hndlr = confirm_m.createMessageComponentCollector({ componentType: Discord.ComponentType.Button, time: 30000 });
-            confirm_hndlr.on('collect', async (new_interaction) => watchConfirmButtonsHandler(new_interaction, interaction, bot, confirm_hndlr))
+            confirm_hndlr.on('collect', async (new_interaction) => watchConfirmButtonsHandler(new_interaction, interaction, bot, confirm_hndlr, rsaMessage))
             watchedButtons[interaction.message.embeds[0].footer.text].confirm_hndlrs.push(confirm_hndlr);
         }
     }
 }
 
-async function watchConfirmButtonsHandler(interaction, prev_interaction, bot, this_hndlr) {
+async function watchConfirmButtonsHandler(interaction, prev_interaction, bot, this_hndlr, rsaMessage) {
     if (!interaction.isButton()) return;
     if (interaction.customId === 'delete_confirmed') {
-        deleteChannel(bot, prev_interaction.message.embeds[0].footer.text, prev_interaction.message.embeds[0].title, interaction.member, interaction.guild, prev_interaction.message, interaction);
+        module.exports.deleteChannel(bot, prev_interaction.message.embeds[0].footer.text, prev_interaction.message.embeds[0].title, interaction.member, interaction.guild, prev_interaction.message, interaction, rsaMessage);
     } else if (interaction.customId === 'delete_cancel') {
         await interaction.update({ content: `ඞ`, components: [] });
         for (let i = 0; i < watchedButtons[prev_interaction.message.embeds[0].footer.text].confirm_hndlrs.length; i++) {
@@ -204,46 +245,6 @@ async function watchConfirmButtonsHandler(interaction, prev_interaction, bot, th
             }
         }
     }
-}
-
-async function deleteChannel(bot, vc_channel_id, run_title, who_closed, guild, active_channel_msg, ephemeral_response_interaction) {
-    watchedButtons[vc_channel_id].hndlr.stop();
-    for (let i of watchedButtons[vc_channel_id].confirm_hndlrs) {
-        i.stop();
-    }
-    if (watchedButtons[vc_channel_id].reconnect_hndlr) {
-        watchedButtons[vc_channel_id].reconnect_hndlr.stop()
-    }
-    if (watchedButtons[vc_channel_id].RSAMessage) {
-        watchedButtons[vc_channel_id].RSAMessage.edit({ components: [] });
-
-    }
-    await active_channel_msg.delete().then().catch(console.error);
-    if (ephemeral_response_interaction) {
-        await ephemeral_response_interaction.update({ content: `${run_title} has been deleted. Have a nice day!`, components: [] });
-    }
-    if (afkCheckModule) {
-        let active_run = await afkCheckModule.returnRunByID(vc_channel_id);
-        if (active_run) {
-            await active_run.abortAfk(who_closed);
-        }
-    }
-    delete (bot.afkChecks[vc_channel_id]);
-    fs.writeFile('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => {
-        if (err) ErrorLogger.log(err, bot)
-    });
-    let channel = guild.channels.cache.get(vc_channel_id);
-    if (!channel) return
-    await channel.delete().catch(er => { })
-    if (bot.settings[guild.id].channels.history) {
-        guild.channels.cache.get(bot.settings[guild.id].channels.history).send({
-            embeds: [
-                new Discord.EmbedBuilder()
-                    .setDescription(`${channel.name} deleted by ${who_closed}`)
-            ]
-        });
-    }
-    delete (watchedButtons[vc_channel_id]);
 }
 
 async function reconnectButtonHandler(interaction, vc_channel_id, bot) {

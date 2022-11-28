@@ -80,7 +80,7 @@ module.exports = {
 
             const staff = blGuild.members.cache.get(blInfo.modid);
             if (!staff || staff.id == bot.user.id || staff.roles.highest.comparePositionTo(bot.settings[blGuild.id].roles.security) < 0) {
-                 if (guild.id == botSettings.hallsId) return u.send(`You are currently blacklisted from the __${blGuild.name}__ server and cannot verify. The person who blacklisted you is no longer staff. Please DM any online officer to appeal.`);
+                 if (guild.id == botSettings.hallsId) return u.send(`You are currently blacklisted from the __${blGuild.name}__ server and cannot verify. The person who blacklisted you is no longer staff. Please DM any online security to appeal.`);
                  return u.send(`You are currently blacklisted from the __${blGuild.name}__ server and cannot verify. The person who blacklisted you is no longer staff. Please DM me and send mod-mail to that server to appeal.`);
             }
 
