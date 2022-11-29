@@ -26,7 +26,7 @@ module.exports = {
 			else if (role.name.toLowerCase().split(' ').map(([v]) => v).join('') == choice) guildRole = role;
 			else if (role.name.toLowerCase().substring(0, choice.length) == choice) guildRole = role;
 			else if (role == message.mentions.roles.first()) guildRole = role;
-			if (!guildRole) break;
+			if (guildRole) break;
 		}
 		if (!guildRole) return message.channel.send('No role was found with that name/ID.');
 
