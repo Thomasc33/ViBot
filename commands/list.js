@@ -68,3 +68,10 @@ module.exports = {
 		message.channel.send({ embeds: [roleCheckEmbed] }).catch(err => ErrorLogger.log(err, bot));
     }
 }
+
+const getHighestRole = (guildMember) => {
+	const rolePosition = guildMember.roles.cache.reduce(function(acc, role) {
+		return Math.max(acc, role.position);
+	}, 0);
+	return guildMember.roles.cache.find(role => role.position == rolePosition);
+};
