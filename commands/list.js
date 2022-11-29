@@ -41,7 +41,7 @@ module.exports = {
 		for (const member of d.highest) {
 			if (highestString.length < 950) highestString += `${member} `;
 			else {
-				highestString += 'and ' + (highestMembers.length - highestMembers.indexOf(member)) + ' others...';
+				highestString += 'and ' + (d.highest.length - d.highest.indexOf(member)) + ' others...';
 				break;
 			}
 		}
@@ -51,7 +51,7 @@ module.exports = {
 		for (const member of d.higher) {
 			if (higherString.length < 950) higherString += `${member} `;
 			else {
-				higherString += 'and ' + (higherMembers.length - higherMembers.indexOf(member)) + ' others...';
+				higherString += 'and ' + (d.higher.length - d.higher.indexOf(member)) + ' others...';
 				break;
 			}
 		}
@@ -63,8 +63,8 @@ module.exports = {
 			.setFooter({ text: `There are ${memberList.length} members in the ${guildRole.name} role` })
 			.setTimestamp()
 			.addFields(
-				{ name: `${higherMembers.length} members with a higher role than \`${guildRole.name}\``, value: higherMembers.length > 0 ? higherString : 'None' },
-				{ name: `${highestMembers.length} members with \`${guildRole.name}\` as their highest role`, value: highestMembers.length > 0 ? highestString : 'None' }
+				{ name: `${d.higher.length} members with a higher role than \`${guildRole.name}\``, value: d.higher.length > 0 ? higherString : 'None' },
+				{ name: `${d.highest.length} members with \`${guildRole.name}\` as their highest role`, value: d.highest.length > 0 ? highestString : 'None' }
 			);
 		message.channel.send({ embeds: [roleCheckEmbed] }).catch(err => ErrorLogger.log(err, bot));
 	}
