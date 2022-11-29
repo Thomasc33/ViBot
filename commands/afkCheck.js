@@ -257,6 +257,7 @@ class afkCheck {
         this.officialRusher = guild.roles.cache.get(this.settings.roles.rusher)
         this.nitroBooster = guild.roles.cache.get(this.settings.roles.nitro)
         this.leaderOnLeave = guild.roles.cache.get(this.settings.roles.lol)
+        this.trialRaidLeader = guild.roles.cache.get(this.settings.roles.trialrl)
         this.keys = []
         this.moddedKeys = false
         this.nitro = []
@@ -769,7 +770,7 @@ class afkCheck {
             this.removeFromActiveInteractions(interaction.user.id)
             return;
         }
-        if (reactor.roles.highest.position >= this.leaderOnLeave.position) {
+        if (reactor.roles.highest.position >= this.trialRaidLeader.position) {
             embed.setDescription(`The location for this run has been set to \`${this.afkInfo.location}\``)
             interaction.reply({ embeds: [embed], ephemeral: true })
             this.earlyLocation.push(interaction.user);
@@ -1108,7 +1109,7 @@ class afkCheck {
         }
         const rules = `<#${this.settings.channels.raidingrules}>` || '#raiding-rules';
         //update embeds/messages
-        this.mainEmbed.setDescription(`This afk check has been ended.\n${this.keys.length > 0 ? `Thank you to ${this.keys.map(k => `<@!${k}> `)} for popping a ${this.bot.emojis.cache.get(this.afkInfo.keyEmoteID)} for us!\n` : ''}${this.simp ? `Thank you to <@!${this.simp.id}> for being a ViBot SIMP` : ''}If you get disconnected during the run, **JOIN LOUNGE** *then* DM ${this.bot.user} \`join\` to get back in`)
+        this.mainEmbed.setDescription(`This afk check has been ended.\n${this.keys.length > 0 ? `Thank you to ${this.keys.map(k => `<@!${k}> `)} for popping a ${this.bot.emojis.cache.get(this.afkInfo.keyEmoteID)} for us!\n` : ''}${this.simp ? `Thank you to <@!${this.simp.id}> for being a ViBot SIMP` : ''}If you get disconnected during the run, **JOIN LOUNGE** *then* press the huge **RECONNECT** button`)
             .setFooter({ text: `The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}` })
 
         if (this.afkInfo.isAdvanced)
