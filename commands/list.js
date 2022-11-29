@@ -3,72 +3,68 @@ const ErrorLogger = require('../lib/logError')
 
 module.exports = {
     name: 'list',
-    description: 'Lists all suspected alts, or members with a specific role',
-    args: '<sa/role>',
-    requiredArgs: 1,
+    description: 'Displays a list of all users with the specified role.',
     role: 'security',
+    args: '<role name/ID>',
+    requiredArgs: 1,
+    alias: ['roleinfo', 'ri'],
+	/**
+     * @param {Discord.Message} message
+     * @param {Array} args
+     * @param {Discord.Client} bot
+     */
     async execute(message, args, bot) {
-        switch (args[0]) {
-            case 'sa':
-                let sa = ' '
-                let saembed = new Discord.EmbedBuilder()
-                message.guild.members.cache.filter(m => m.displayName.charAt(0) == '?')
-                    .each(m => {
-                        saembed.setTitle(m.displayName.replace(/[^a-z|]/gi, ''))
-                            .setDescription(`Suspected Alt: ${m}`)
-                            .setColor('#ff0000')
-                            .setURL(`https://www.realmeye.com/player/${m.displayName.replace(/[^a-z|]/gi, '')}`)
-                        message.channel.send({ embeds: [saembed] })
-                    })
-                break;
-            default:
-                let roleN = '';
-                for (i = 0; i < args.length; i++) {
-                    roleN = roleN.concat(args[i]) + ' ';
-                }
-                roleN = roleN.trim().toLowerCase();
-                if (roleN == 'verified raider' || roleN == 'veteran raider') { message.channel.send('Yeah, lets not do that'); return; }
-                let role = message.guild.roles.cache.find(r => r.name.toLowerCase() === roleN)
-                if (role == undefined) { message.channel.send('Role not found'); return; }
-                var embed = new Discord.EmbedBuilder()
-                    .setTitle(role.name)
-                    .setColor(role.hexColor)
-                    .setDescription('None!')
-                let members = message.guild.members.cache.filter(m => m.roles.cache.has(role.id))
-                members.each(m => {
-                    fitStringIntoEmbed(embed, `<@!${m.id}>`, message.channel)
-                })
-                embed.setFooter({ text: `${members.size} users with role` })
-                message.channel.send({ embeds: [embed] }).catch(er => ErrorLogger.log(er, bot))
-                break;
-        }
-    }
-}
+        let choice = args.join(' ').toLowerCase();
 
-function fitStringIntoEmbed(embed, string, channel) {
-    if (embed.data.description == 'None!') {
-        embed.setDescription(string)
-    } else if (embed.data.description.length + `, ${string}`.length >= 2048) {
-        if (!embed.data.fields) {
-            embed.addFields({ name: '-', value: string })
-        } else if (embed.data.fields[embed.data.fields.length - 1].value.length + `, ${string}`.length >= 1024) {
-            if (JSON.stringify(embed.toJSON()).length + `, ${string}`.length >= 6000) {
-                channel.send({ embeds: [embed] })
-                embed.setDescription('None!')
-                embed.data.fields = []
-            } else {
-                embed.addFields({ name: '-', value: string })
-            }
-        } else {
-            if (JSON.stringify(embed.toJSON()).length + `, ${string}`.length >= 6000) {
-                channel.send({ embeds: [embed] })
-                embed.setDescription('None!')
-                embed.data.fields = []
-            } else {
-                embed.data.fields[embed.data.fields.length - 1].value = embed.data.fields[embed.data.fields.length - 1].value.concat(`, ${string}`)
-            }
-        }
-    } else {
-        embed.setDescription(embed.data.description.concat(`, ${string}`))
+        // Search for role in guild
+		const guildRoles = message.guild.roles.cache.sort((a, b) => b.position - a.position).map(r => r);
+		let guildRole = null;
+		for (const role of guildRoles) {
+			if (role.id == args[0]) guildRole = role;
+			else if (role.name.toLowerCase() == choice) guildRole = role;
+			else if (role.name.toLowerCase().replace(/ /g, '') == choice.replace(/ /g, '')) guildRole = role;
+			else if (role.name.toLowerCase().split(' ').map(([v]) => v).join('') == choice) guildRole = role;
+			else if (role.name.toLowerCase().substring(0, choice.length) == choice) guildRole = role;
+			else if (role == message.mentions.roles.first()) guildRole = role;
+			if (guildRole != null) break;
+		}
+		if (guildRole == null) return message.channel.send('No role was found with that name/ID.');
+
+        const memberList = message.guild.roles.cache.get(guildRole.id).members.map(member => member);
+		const rolePosition = guildRole.position;
+
+		// List of users where given role is highest position
+		const highestMembers = memberList.filter(highestMem => getHighestRole(highestMem).position == rolePosition);
+		let highestString = '';
+		for (const member of highestMembers) {
+			if (highestString.length < 950) highestString += `${member} `;
+			else {
+				highestString += 'and ' + (highestMembers.length - highestMembers.indexOf(member)) + ' others...';
+				break;
+			}
+		}
+
+		// List of users with a higher position role
+		const higherMembers = memberList.filter(higherMem => getHighestRole(higherMem).position != rolePosition);
+		let higherString = '';
+		for (const member of higherMembers) {
+			if (higherString.length < 950) higherString += `${member} `;
+			else {
+				higherString += 'and ' + (higherMembers.length - higherMembers.indexOf(member)) + ' others...';
+				break;
+			}
+		}
+
+		const roleCheckEmbed = new Discord.EmbedBuilder()
+			.setColor(guildRole.hexColor)
+			.setTitle(`Role Info for ${guildRole.name}`)
+			.setDescription(`**Role:** ${guildRole} | **Role Color:** \`${guildRole.hexColor}\``)
+			.setFooter({ text: `There are ${memberList.length} members in the ${guildRole.name} role` })
+			.setTimestamp()
+			.addFields(
+				{ name: `${higherMembers.length} members with a higher role than \`${guildRole.name}\``, value: higherMembers.length > 0 ? higherString : 'None' },
+				{ name: `${highestMembers.length} members with \`${guildRole.name}\` as their highest role`, value: highestMembers.length > 0 ? highestString : 'None' }
+			);
+		message.channel.send({ embeds: [roleCheckEmbed] }).catch(err => ErrorLogger.log(err, bot));
     }
 }
