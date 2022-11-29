@@ -33,10 +33,12 @@ module.exports = {
 		const memberList = message.guild.roles.cache.get(guildRole.id).members.map(member => member);
 		const rolePosition = guildRole.position;
 
+		const d = { highest: [], higher: [] }
+		for (const member of memberList) if (member.roles.highest.position == rolePosition) d.highest.push(member); else d.higher.push(member);
+
 		// List of users where given role is highest position
-		const highestMembers = memberList.filter(m => m.roles.highest.position == rolePosition);
 		let highestString = '';
-		for (const member of highestMembers) {
+		for (const member of d.highest) {
 			if (highestString.length < 950) highestString += `${member} `;
 			else {
 				highestString += 'and ' + (highestMembers.length - highestMembers.indexOf(member)) + ' others...';
@@ -45,9 +47,8 @@ module.exports = {
 		}
 
 		// List of users with a higher position role
-		const higherMembers = memberList.filter(m => m.roles.highest.position != rolePosition);
 		let higherString = '';
-		for (const member of higherMembers) {
+		for (const member of d.higher) {
 			if (higherString.length < 950) higherString += `${member} `;
 			else {
 				higherString += 'and ' + (higherMembers.length - higherMembers.indexOf(member)) + ' others...';
