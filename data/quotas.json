@@ -47,8 +47,8 @@
         "totalUnexcused": "totalUnexcused",
         "consecutiveUnexcused": "consecutiveUnexcused",
         "consecutiveLeave": "consecutiveLeave",
-        "ignoreRoles": ["officer", "moderator", "headrl"],
-        "ignoreRolesDisplay": ["officer", "moderator"],
+        "ignoreRoles": ["officer", "moderator", "headrl", "admin"],
+        "ignoreRolesDisplay": [],
         "quotas": [{
                 "id": "raiding",
                 "name": "Raid Leader Quota",
