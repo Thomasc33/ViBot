@@ -5,6 +5,7 @@ const ErrorLogger = require('../lib/logError');
 const afkCheck = require('./afkCheck');
 const eventAfk = require('./eventAfk');
 const eventFile = require('../data/events.json');
+const afkTemplates = require('../afkTemplates.json')
 
 var bot
 module.exports = {
@@ -17,16 +18,21 @@ module.exports = {
         return `**Run Types:**\n*Regular Afk Checks:*\n${afkCheck.getNotes(guildid, member)}\n*Events:*\nSee \`;events\``
     },
     role: 'eventrl',
+    getRunType,
     async execute(message, args, bott) {
         //settings
         let settings = bott.settings[message.guild.id]
         if (![settings.categories.raiding, settings.categories.event, settings.categories.veteran].includes(message.channel.parent.name.toLowerCase())) return message.channel.send("Try again in a correct category");
         if (!bot) bot = bott;
 
-        let symbol = args[0].charAt(0).toLowerCase();
-        if (symbol == 'a' && args[0].length > 1)
-            symbol += args[0].charAt(1).toLowerCase();
-        const runType = afkCheck.getRunType(symbol, message.guild.id)
+        let shift = args.shift();
+        let symbol = shift.toLowerCase();
+        let isAdvanced = false;
+        if (symbol[0] == 'a') {
+            isAdvanced = true;
+        }
+        
+        const runType = getRunType(symbol, message.guild.id)
         const eventTypes = eventAfk.getMatchingEvents(args[0], eventFile, message.guild.id)
         if (runType && (message.channel.parent.name.toLowerCase() != settings.categories.event || settings.categories.event == settings.categories.raiding)) {
             if (settings.backend.exaltsInRSA)
@@ -97,4 +103,13 @@ module.exports = {
         // add indicator that command was a success
         message.react('✅')
     }
+}
+function getRunType(char, guildid) {
+    for (let i in afkTemplates[guildid]) {
+        if (char.toLowerCase() == afkTemplates[guildid][i].symbol) return afkTemplates[guildid][i];
+        if (afkTemplates[guildid][i].aliases) {
+            if (afkTemplates[guildid][i].aliases.includes(char.toLowerCase())) return afkTemplates[guildid][i];
+        }
+    }
+    return null
 }
