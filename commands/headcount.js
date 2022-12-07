@@ -21,12 +21,12 @@ module.exports = {
     getRunType,
     async execute(message, args, bott) {
         //settings
+        console.log(args)
         let settings = bott.settings[message.guild.id]
         if (![settings.categories.raiding, settings.categories.event, settings.categories.veteran].includes(message.channel.parent.name.toLowerCase())) return message.channel.send("Try again in a correct category");
         if (!bot) bot = bott;
 
-        let shift = args.shift();
-        let symbol = shift.toLowerCase();
+        let symbol = args[0].toLowerCase();
         let isAdvanced = false;
         if (symbol[0] == 'a') {
             isAdvanced = true;
@@ -81,9 +81,11 @@ module.exports = {
                     .setColor(run.embed ? run.embed.color : run.color)
                     .setTimestamp()
 
-                if (symbol.charAt(0) == 'a')
+                if (isAdvanced){
+                    embed
+                    if (this.mainEmbed.data.thumbnail && typeof (this.mainEmbed.data.thumbnail) == 'string') this.mainEmbed.setThumbnail(this.mainEmbed.data.thumbnail)
                     embed.data.description += `\n\n**__Advanced Runs__**\nThis is an **advanced run**, meaning there are extended requirements you **MUST** meet. You must be both **__8/8__** and follow the requirements sheet listed in the afk check.\n\nIf you are caught not meeting these requirements, you will be removed from the run and suspended.`;
-
+                }
                 if (message.author.avatarURL()) embed.setAuthor({ name: `Headcount for ${run.runName} by ${message.member.nickname}`, iconURL: message.author.avatarURL() })
                 const pingRole = run.pingRole || run.rolePing;
                 const pings = pingRole ? (typeof pingRole != "string" ? pingRole.map(r => `<@&${settings.roles[r]}>`).join(' ') : `<@&${settings.roles[pingRole]}>`) + ' @here' : '@here';
