@@ -1,6 +1,7 @@
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
 const moment = require('moment')
+const partneredServers = require('../data/partneredServers.json')
 module.exports = {
     name: 'warns',
     description: 'Displays all warns for all inputted users',
@@ -10,6 +11,8 @@ module.exports = {
     async execute(message, args, bot, db) {
         if (args.length == 0) return;
         var notFoundString = ''
+        const settings = bot.settings[message.guild.id]
+        securityRole = message.guild.roles.cache.get(settings.roles.security)
         //combines users into an array
         for (let i in args) {
             let u = args[i];
@@ -20,14 +23,35 @@ module.exports = {
                 else notFoundString = notFoundString.concat(`, ${u}`)
                 continue
             }
-            db.query(`SELECT * FROM warns WHERE id = '${member.user.id}' and (guildid = '${message.guild.id}' OR guildid is null)`, async function (err, rows) {
+            db.query(`SELECT * FROM warns WHERE id = '${member.user.id}'`, async function (err, rows) {
                 if (err) ErrorLogger.log(err, bot)
                 let embed = new Discord.EmbedBuilder()
                     .setColor('#ff0000')
                     .setTitle(`Warns for ${member.nickname}`)
                     .setDescription('None!')
                     .setFooter({ text: member.user.id })
+                if (message.member.roles.highest.position >= securityRole.position) {
+                    function getPartneredServers(guildId) {
+                        for (let i in partneredServers) {
+                            if (partneredServers[i].guildId == message.guild.id) { return partneredServers[i]}
+                        }
+                        return null
+                    }
+                    let partneredServer = getPartneredServers(message.guild.id)
+                    if (partneredServer != null) {
+                        db.query(`SELECT * FROM warns WHERE id = '${member.user.id}'`, async function (err, rows) {
+                            if (err) ErrorLogger.log(err, bot)
+                            if (rows || rows.length > 0) { embed.setDescription(partneredServer.name + "'s Section\n") }
+                            for (let i in rows) {
+                                if (rows[i].guildid != partneredServer.id) { continue }
+                                fitStringIntoEmbed(embed, `**\`${parseInt(i) + 1}\`** by <@!${rows[i].modid}>${rows[i].time ? ' ' + moment().to(new Date(parseInt(rows[i].time))) : ''}:\n  \`\`\`${rows[i].reason}\`\`\``, message.channel)
+                            }
+                        })
+                        embed.setDescription('\n' + embed.data.description + message.guild.name + "'s Section")
+                    }
+                }
                 for (let i in rows) {
+                    if (rows[i].guildid != message.guild.id) { continue }
                     fitStringIntoEmbed(embed, `**\`${parseInt(i) + 1}\`** by <@!${rows[i].modid}>${rows[i].time ? ' ' + moment().to(new Date(parseInt(rows[i].time))) : ''}:\n  \`\`\`${rows[i].reason}\`\`\``, message.channel)
                 }
                 function fitStringIntoEmbed(embed, string, channel) {

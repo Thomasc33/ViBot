@@ -48,8 +48,10 @@ module.exports = {
                 member.send({ embeds: [warnEmbed] })
         })
         if (!errored) setTimeout(() => {
-            db.query(`SELECT * FROM warns WHERE id = '${member.user.id}'`, (err, rows) => {
-                message.channel.send(`${member.nickname}${silent ? ' silently' : ''} warned successfully. This is their \`${rows.length}\` warning`)
+            db.query(`SELECT * FROM warns WHERE id = '${member.user.id}'`, (err, rowsForAllWarnings) => {
+                db.query(`SELECT * FROM warns WHERE id = '${member.user.id}' and (guildid = '${message.guild.id}' OR guildid is null)`, (err, rowsForWarningsCurrentServer) => {
+                    message.channel.send(`${member.nickname}${silent ? ' silently' : ''} warned successfully. This is their \`${rowsForAllWarnings.length}\` warning for this server. And has a total of \`${rowsForWarningsCurrentServer.length}\` warnings`)
+                })
             })
         }, 500)
     }

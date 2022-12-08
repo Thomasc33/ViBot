@@ -16,8 +16,6 @@ module.exports = {
 	async execute(message, args, bot) {
 		let choice = args.join(' ').toLowerCase();
 
-		let start = Date.now();
-
 		// Search for role in guild
 		const guildRoles = message.guild.roles.cache.sort((a, b) => b.position - a.position).map(r => r);
 		let guildRole = null;
@@ -31,16 +29,12 @@ module.exports = {
 			if (guildRole) break;
 		}
 		if (!guildRole) return message.channel.send('No role was found with that name/ID.');
-		let roleTime = Date.now();
-		console.log(`Time to find role: ${roleTime - start}ms`);
 
 		const memberList = message.guild.roles.cache.get(guildRole.id).members.map(member => member);
 		const rolePosition = guildRole.position;
 
 		const d = { highest: [], higher: [] }
 		for (const member of memberList) if (member.roles.highest.position == rolePosition) d.highest.push(member); else d.higher.push(member);
-		let memberTime = Date.now();
-		console.log(`Time to find members: ${memberTime - roleTime}ms`);
 
 		// List of users where given role is highest position
 		let highestString = '';
@@ -72,8 +66,6 @@ module.exports = {
 				{ name: `${d.higher.length} members with a higher role than \`${guildRole.name}\``, value: d.higher.length > 0 ? higherString : 'None' },
 				{ name: `${d.highest.length} members with \`${guildRole.name}\` as their highest role`, value: d.highest.length > 0 ? highestString : 'None' }
 			);
-		let embedTime = Date.now();
-		console.log(`Time to create embeds: ${embedTime - memberTime}ms`);
 		message.channel.send({ embeds: [roleCheckEmbed] }).catch(err => ErrorLogger.log(err, bot));
 	}
 }
