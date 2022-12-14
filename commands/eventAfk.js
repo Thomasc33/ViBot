@@ -65,7 +65,8 @@ module.exports = {
         afkCheck.eventAfkExecute(message, args, bot, db, tokenDB, event, isVet)
     },
     getEventType,
-    getMatchingEvents
+    getMatchingEvents,
+    getEventTypeFromServer
 }
 
 function getMatchingEvents(arg, events, id) {
@@ -83,5 +84,15 @@ function getMatchingEvents(arg, events, id) {
 
 function getEventType(arg, events, id) {
     return getMatchingEvents(arg, events, id)[0]
+}
+
+function getEventTypeFromServer(char, guildid) {
+    for (let i in eventFile[guildid]) {
+        if (char.toLowerCase() == eventFile[guildid][i].symbol) return eventFile[guildid][i];
+        if (eventFile[guildid][i].aliases) {
+            if (eventFile[guildid][i].aliases.includes(char.toLowerCase())) return eventFile[guildid][i];
+        }
+    }
+    return null
 }
 

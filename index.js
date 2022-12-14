@@ -664,9 +664,11 @@ async function autoMod(message) {
 async function getGuild(message) {
     return new Promise(async (resolve, reject) => {
         let guilds = []
+        let guildNames = []
         bot.guilds.cache.each(g => {
             if (g.members.cache.has(message.author.id) && !emojiServers.includes(g.id)) {
                 guilds.push(g)
+                guildNames.push(g.name)
             }
         })
         if (guilds.length == 0) reject('We dont share any servers')
@@ -675,131 +677,18 @@ async function getGuild(message) {
             let guildSelectionEmbed = new Discord.EmbedBuilder()
                 .setTitle('Please select a server')
                 .setColor('#fefefe')
-                .setDescription('None!')
-                .setFooter({ text: 'React with the number corresponding to the target guild' })
-            if (guilds.length > 10) guildSelectionEmbed.setFooter({ text: 'Please type the number corresponding to the target guild' })
-            for (let i in guilds) {
-                g = guilds[i]
-                fitStringIntoEmbed(guildSelectionEmbed, `**${parseInt(i) + 1}:** ${g.name}`, message.channel)
-            }
+                .setDescription('Press Cancel if you don\'t wanna proceed')
             let guildSelectionMessage = await message.channel.send({ embeds: [guildSelectionEmbed] })
-            if (guilds.length > 10) {
-                let messageCollector = new Discord.MessageCollector(message.channel, m => m.author.id == message.author.id)
-                messageCollector.on('collect', async m => {
-                    if (m.content.replace(/[^0-9]/g, '') != m.content) {
-                        if (m.content.toLowerCase() == 'cancel') {
-                            await m.delete()
-                            await guildSelectionMessage.delete()
-                        } else {
-                            let retryMessage = await message.channel.send(`\`${m.content}\` is an invalid number. Please try again or type \`cancel\` to cancel`)
-                            setTimeout(() => { retryMessage.delete() }, 5000)
-                        }
-                    } else {
-                        let i = parseInt(m.content) - 1
-                        resolve(guilds[i])
-                        await guildSelectionMessage.delete()
-                    }
-                })
-            } else {
-                let reactionCollector = new Discord.ReactionCollector(guildSelectionMessage, { filter: (r, u) => !u.bot })
-                reactionCollector.on('collect', async (r, u) => {
-                    switch (r.emoji.name) {
-                        case '1️⃣':
-                            resolve(guilds[0]);
-                            await guildSelectionMessage.delete();
-                            reactionCollector.stop();
-                            break;
-                        case '2️⃣':
-                            resolve(guilds[1]);
-                            await guildSelectionMessage.delete();
-                            reactionCollector.stop();
-                            break;
-                        case '3️⃣':
-                            resolve(guilds[2]);
-                            await guildSelectionMessage.delete();
-                            reactionCollector.stop();
-                            break;
-                        case '4️⃣':
-                            resolve(guilds[3]);
-                            await guildSelectionMessage.delete();
-                            reactionCollector.stop();
-                            break;
-                        case '5️⃣':
-                            resolve(guilds[4]);
-                            await guildSelectionMessage.delete();
-                            reactionCollector.stop();
-                            break;
-                        case '6️⃣':
-                            resolve(guilds[5]);
-                            await guildSelectionMessage.delete();
-                            reactionCollector.stop();
-                            break;
-                        case '7️⃣':
-                            resolve(guilds[6]);
-                            await guildSelectionMessage.delete();
-                            reactionCollector.stop();
-                            break;
-                        case '8️⃣':
-                            resolve(guilds[7]);
-                            await guildSelectionMessage.delete();
-                            reactionCollector.stop();
-                            break;
-                        case '9️⃣':
-                            resolve(guilds[8]);
-                            await guildSelectionMessage.delete();
-                            reactionCollector.stop();
-                            break;
-                        case '🔟':
-                            resolve(guilds[9]);
-                            await guildSelectionMessage.delete();
-                            reactionCollector.stop();
-                            break;
-                        case '❌':
-                            reject('User Cancelled');
-                            await guildSelectionMessage.delete();
-                            reactionCollector.stop();
-                            break;
-                        default:
-                            let retryMessage = await message.channel.send('There was an issue with the reaction. Please try again');
-                            setTimeout(() => { retryMessage.delete() }, 5000)
-                    }
-                })
-                for (let i = 0; i < guilds.length; i++) {
-                    switch (i) {
-                        case 0:
-                            await guildSelectionMessage.react('1️⃣');
-                            break;
-                        case 1:
-                            await guildSelectionMessage.react('2️⃣');
-                            break;
-                        case 2:
-                            await guildSelectionMessage.react('3️⃣');
-                            break;
-                        case 3:
-                            await guildSelectionMessage.react('4️⃣');
-                            break;
-                        case 4:
-                            await guildSelectionMessage.react('5️⃣');
-                            break;
-                        case 5:
-                            await guildSelectionMessage.react('6️⃣');
-                            break;
-                        case 6:
-                            await guildSelectionMessage.react('7️⃣');
-                            break;
-                        case 7:
-                            await guildSelectionMessage.react('8️⃣');
-                            break;
-                        case 8:
-                            await guildSelectionMessage.react('9️⃣');
-                            break;
-                        case 9:
-                            await guildSelectionMessage.react('🔟');
-                            break;
-                    }
+            const choice = await guildSelectionMessage.confirmList(guildNames, message.author.id);
+            if (!choice || choice == 'Cancelled') return guildSelectionMessage.delete();
+            guildSelectionMessage.delete();
+
+            function getGuildByName(guildName) {
+                for (let i in guilds) {
+                    if (guilds[i].name == choice) return guilds[i]
                 }
-                await guildSelectionMessage.react('❌')
             }
+            resolve(getGuildByName(choice));
         }
     })
 }

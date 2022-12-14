@@ -329,18 +329,32 @@ class afkCheck {
 
     async start() {
         //create/send leader embed
+        /* this.leaderEmbed = new Discord.EmbedBuilder()
+            .setColor(this.afkInfo.embed.color || "#fefefe")
+            .setTitle(`${this.message.member.nickname}'s ${this.afkInfo.runName}`)
+            .setFooter({ text: `${this.afkInfo.twoPhase ? 'Click ✅ to open the channel, ' : ''}Click ❌ to abort, Click 🔑 for keys to be logged as Modded` })
+        if (this.afkInfo.keyEmoteID) this.leaderEmbed.addFields({ name: '🔑 Keys', value: 'None!' })
+        if (this.afkInfo.vialReact) this.leaderEmbed.addFields({ name: 'Vials', value: 'None!' })
+        this.afkInfo.earlyLocationReacts.forEach(r => this.leaderEmbed.addFields({ name: `${this.bot.emojis.cache.get(r.emoteID)} ${r.shortName}`, value: 'None!', inline: r.inline ? true : false }))
+        this.leaderEmbed.addFields([
+            { name: '🗺️ Location', value: this.afkInfo.location },
+            { name: '🗺️ Other Early Location', value: 'None!' },
+            { name: '<:NitroBooster:1050492863257002035> Nitro', value: 'None!' },
+        ]) */
+
         this.leaderEmbed = new Discord.EmbedBuilder()
             .setColor(this.afkInfo.embed.color || "#fefefe")
             .setTitle(`${this.message.member.nickname}'s ${this.afkInfo.runName}`)
-            .addFields({ name: 'Our current keys', value: 'None!' })
             .setFooter({ text: `${this.afkInfo.twoPhase ? 'Click ✅ to open the channel, ' : ''}Click ❌ to abort, Click 🔑 for keys to be logged as Modded` })
-        if (this.afkInfo.vialReact) this.leaderEmbed.addFields({ name: 'Our current vials', value: 'None!' })
-        this.afkInfo.earlyLocationReacts.forEach(r => this.leaderEmbed.addFields({ name: `Our current ${r.shortName}`, value: 'None!' }))
+            .setDescription(`**Raid Leader: ${this.message.member} \`\`${this.message.member.nickname}\`\`\nVC: ${this.channel}\nLocation:** \`\`${this.afkInfo.location}\`\``)
+        if (this.afkInfo.keyEmoteID) this.leaderEmbed.addFields({ name: `${this.bot.emojis.cache.get(this.afkInfo.keyEmoteID)} Keys`, value: 'None!', inline: true})
+        if (this.afkInfo.vialReact) this.leaderEmbed.addFields({ name: '<:VialOfPureDarkness:1050494410770632794> Vials', value: 'None!', inline: true})
+        this.afkInfo.earlyLocationReacts.forEach(r => this.leaderEmbed.addFields({ name: `${this.bot.emojis.cache.get(r.emoteID)} ${r.shortName}`, value: 'None!', inline: true }))
         this.leaderEmbed.addFields([
-            { name: 'Location', value: this.afkInfo.location },
-            { name: 'Other Early Location', value: 'None!' },
-            { name: 'Nitro', value: 'None!' },
+            { name: '🗺️ Early Location', value: 'None!', inline: true },
+            { name: '<:NitroBooster:1050492863257002035> Nitro', value: 'None!', inline: true },
         ])
+
         let lar;
         if (this.afkInfo.twoPhase) {
             lar = new Discord.ActionRowBuilder()
@@ -555,9 +569,9 @@ class afkCheck {
 
         // Organize reacts into above arrays
         if (this.afkInfo.headcountEmote && this.afkInfo.headcountOnAfk) reacts.push(this.afkInfo.headcountEmote)
-        addButton({ emoji: this.afkInfo.keyEmoteID, style: Discord.ButtonStyle.Primary, customId: this.afkInfo.keyEmoteID })
+        if (this.afkInfo.keyEmoteID) addButton({ emoji: this.afkInfo.keyEmoteID, style: Discord.ButtonStyle.Primary, customId: this.afkInfo.keyEmoteID })
         if (this.afkInfo.vialReact) addButton({ emoji: this.afkInfo.vialEmoteID, style: Discord.ButtonStyle.Secondary, customId: this.afkInfo.vialEmoteID })
-        for (let i of this.afkInfo.earlyLocationReacts) addButton({ emoji: i.emoteID, style: Discord.ButtonStyle.Secondary, customId: i.emoteID })
+        for (let i of this.afkInfo.earlyLocationReacts) addButton({ emoji: i.emoteID, style: i.buttonStyle ? i.buttonStyle : Discord.ButtonStyle.Secondary, customId: i.emoteID })
         if (!this.afkInfo.twoPhase) for (let i of this.afkInfo.reacts) reacts.push(i)
         //split row
         actionRows.push(curRow); curRow = []
@@ -635,10 +649,11 @@ class afkCheck {
             }
 
             //add to leader embed
+            if (!afk.afkInfo.keyEmoteID) index--;
             if (afk.afkInfo.vialReact && !(type == 'key' || type == 'vial')) index++;
             if (afk.leaderEmbed.data.fields[index].value == `None!`) {
-                afk.leaderEmbed.data.fields[index].value = `${emote}: <@!${interaction.user.id}>`;
-            } else afk.leaderEmbed.data.fields[index].value += `\n${emote}: ${`<@!${interaction.user.id}>`}`
+                afk.leaderEmbed.data.fields[index].value = `${emote}: <@!${interaction.user.id}> \`\`${interaction.member.nickname}\`\``;
+            } else afk.leaderEmbed.data.fields[index].value += `\n${emote}: ${`<@!${interaction.user.id}> \`\`${interaction.member.nickname}\`\``}`
             afk.leaderEmbedMessage.edit({ embeds: [afk.leaderEmbed] }).catch(er => ErrorLogger.log(er, afk.bot));
             afk.runInfoMessage.edit({ embeds: [afk.leaderEmbed] }).catch(er => ErrorLogger.log(er, afk.bot));
 
@@ -689,10 +704,15 @@ class afkCheck {
                 if (type == r.shortName) reactInfo = r;
             }
 
+            let emoteName = null
+            if (reactInfo && reactInfo.shortName) emoteName = reactInfo.shortName
+            if (type == "key") emoteName = 'Key'
+            if (type == "vial") emoteName = 'Vial'
+
             embed.setDescription(
                 reactInfo && reactInfo.confirmationMessage ?
-                    `You reacted as ${emote}\n\n${reactInfo.confirmationMessage}\n\nPress ✅ to confirm your reaction. Otherwise press ❌` :
-                    `You reacted as ${emote}\nPress ✅ to confirm your reaction. Otherwise press ❌`
+                    `You reacted as ${emote} **${emoteName}**\n\n${reactInfo.confirmationMessage}\n\nPress ✅ to confirm your reaction. Otherwise press ❌` :
+                    `You reacted as ${emote} **${emoteName}**\nPress ✅ to confirm your reaction. Otherwise press ❌`
             )
             let ar = new Discord.ActionRowBuilder().addComponents([
                 new Discord.ButtonBuilder()
@@ -1109,7 +1129,7 @@ class afkCheck {
         }
         const rules = `<#${this.settings.channels.raidingrules}>` || '#raiding-rules';
         //update embeds/messages
-        this.mainEmbed.setDescription(`This afk check has been ended.\n${this.keys.length > 0 ? `Thank you to ${this.keys.map(k => `<@!${k}> `)} for popping a ${this.bot.emojis.cache.get(this.afkInfo.keyEmoteID)} for us!\n` : ''}${this.simp ? `Thank you to <@!${this.simp.id}> for being a ViBot SIMP` : ''}If you get disconnected during the run, **JOIN LOUNGE** *then* press the huge **RECONNECT** button`)
+        this.mainEmbed.setDescription(`This afk check has been ended.\n${this.keys.length > 0 && this.afkInfo.keyEmoteID ? `Thank you to ${this.keys.map(k => `<@!${k}> `)} for popping a ${this.bot.emojis.cache.get(this.afkInfo.keyEmoteID)} for us!\n` : ''}${this.simp ? `Thank you to <@!${this.simp.id}> for being a ViBot SIMP` : ''}If you get disconnected during the run, **JOIN LOUNGE** *then* press the huge **RECONNECT** button`)
             .setFooter({ text: `The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}` })
 
         if (this.afkInfo.isAdvanced)

@@ -23,6 +23,7 @@
                     "currentweekShatters",
                     "currentweekFungals",
                     "currentweekNests",
+                    "currentweekSteamwork",
                     "currentweekAssists",
                     "currentweekFeedback",
                     "rollingQuota"
@@ -52,6 +53,7 @@
                     "currentweekShatters",
                     "currentweekFungals",
                     "currentweekNests",
+                    "currentweekSteamwork",
                     "currentweekAssists",
                     "currentweekFeedback",
                     "rollingQuota"
@@ -81,6 +83,7 @@
                     "currentweekShatters",
                     "currentweekFungals",
                     "currentweekNests",
+                    "currentweekSteamwork",
                     "currentweekAssists",
                     "currentweekFeedback",
                     "rollingQuota"
@@ -110,6 +113,7 @@
                     "currentweekShatters",
                     "currentweekFungals",
                     "currentweekNests",
+                    "currentweekSteamwork",
                     "currentweekAssists",
                     "currentweekFeedback",
                     "rollingQuota"
@@ -138,6 +142,7 @@
                     "currentweekShatters",
                     "currentweekFungals",
                     "currentweekNests",
+                    "currentweekSteamwork",
                     "currentweekAssists",
                     "currentweekFeedback",
                     "rollingQuota"
@@ -169,6 +174,7 @@
                     "currentweekShatters",
                     "currentweekFungals",
                     "currentweekNests",
+                    "currentweekSteamwork",
                     "currentweekAssists",
                     "currentweekFeedback",
                     "rollingQuota"
@@ -196,6 +202,40 @@
                 "toDisplay": [
                     "currentweekEvents"
                 ]
+            },
+            {
+                "key": "k",
+                "name": "kogbold steamworks",
+                "alias": [
+                    "kogbold",
+                    "kogbol",
+                    "kog",
+                    "steamworks",
+                    "steamwork",
+                    "steam",
+                    "work"
+                ],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "steamworkLead",
+                "currentweek": "currentweekSteamwork",
+                "color": "#0ba6ee",
+                "icon": "https://cdn.discordapp.com/emojis/1050156577920917574.webp",
+                "desc": "`Steamworks` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweekCult",
+                    "currentweekVoid",
+                    "currentweekShatters",
+                    "currentweekFungals",
+                    "currentweekNests",
+                    "currentweekSteamwork",
+                    "currentweekAssists",
+                    "currentweekFeedback",
+                    "rollingQuota"
+                ],
+                "logVet": true
             }
         ],
         "assist": {
@@ -227,6 +267,7 @@
                     "currentweekShatters",
                     "currentweekFungals",
                     "currentweekNests",
+                    "currentweekSteamwork",
                     "currentweekAssists",
                     "currentweekFeedback",
                     "rollingQuota"
@@ -256,6 +297,7 @@
                     "currentweekShatters",
                     "currentweekFungals",
                     "currentweekNests",
+                    "currentweekSteamwork",
                     "currentweekAssists",
                     "currentweekFeedback",
                     "rollingQuota"
@@ -275,7 +317,7 @@
                 "confirm": false,
                 "main": "shattersLead",
                 "currentweek": "currentweekShatters",
-                "color": "#013220",
+                "color": "#ff0000",
                 "icon": "https://cdn.discordapp.com/emojis/924899045154103296.webp",
                 "desc": "`Shatters` Run",
                 "toUpdate": "raiding",
@@ -285,6 +327,7 @@
                     "currentweekShatters",
                     "currentweekFungals",
                     "currentweekNests",
+                    "currentweekSteamwork",
                     "currentweekAssists",
                     "currentweekFeedback",
                     "rollingQuota"
@@ -314,6 +357,7 @@
                     "currentweekShatters",
                     "currentweekFungals",
                     "currentweekNests",
+                    "currentweekSteamwork",
                     "currentweekAssists",
                     "currentweekFeedback",
                     "rollingQuota"
@@ -332,7 +376,7 @@
                 "confirm": false,
                 "main": "nestsLead",
                 "currentweek": "currentweekNests",
-                "color": "#ffd700",
+                "color": "#ff0000",
                 "icon": "https://cdn.discordapp.com/emojis/926313806567719032.webp",
                 "desc": "`Nest` Run",
                 "toUpdate": "raiding",
@@ -342,6 +386,7 @@
                     "currentweekShatters",
                     "currentweekFungals",
                     "currentweekNests",
+                    "currentweekSteamwork",
                     "currentweekAssists",
                     "currentweekFeedback",
                     "rollingQuota"
@@ -363,9 +408,9 @@
                 "confirm": false,
                 "main": "fungalsLead",
                 "currentweek": "currentweekFungals",
-                "color": "#fefefe",
+                "color": "#ff0000",
                 "icon": "https://cdn.discordapp.com/emojis/926313805888225342.webp",
-                "desc": "`Fungal` Run",
+                "desc": "`Cult` Run",
                 "toUpdate": "raiding",
                 "toDisplay": [
                     "currentweekCult",
@@ -373,6 +418,7 @@
                     "currentweekShatters",
                     "currentweekFungals",
                     "currentweekNests",
+                    "currentweekSteamwork",
                     "currentweekAssists",
                     "currentweekFeedback",
                     "rollingQuota"
@@ -400,6 +446,40 @@
                 "toDisplay": [
                     "currentweekEvents"
                 ]
+            },
+            {
+                "key": "k",
+                "name": "kogbold steamworks",
+                "alias": [
+                    "kogbold",
+                    "kogbol",
+                    "kog",
+                    "steamworks",
+                    "steamwork",
+                    "steam",
+                    "work"
+                ],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "steamworkLead",
+                "currentweek": "currentweekSteamwork",
+                "color": "#0ba6ee",
+                "icon": "https://cdn.discordapp.com/emojis/1050156577920917574.webp",
+                "desc": "`Steamworks` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweekCult",
+                    "currentweekVoid",
+                    "currentweekShatters",
+                    "currentweekFungals",
+                    "currentweekNests",
+                    "currentweekSteamwork",
+                    "currentweekAssists",
+                    "currentweekFeedback",
+                    "rollingQuota"
+                ],
+                "logVet": true
             }
         ],
         "assist": {
