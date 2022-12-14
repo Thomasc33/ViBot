@@ -1843,6 +1843,188 @@
         "earlyLocationCost": 15,
         "earlyLocationReacts": []
     },
+    "steamworks": {
+        "runType": "Kogbold Steamworks",
+        "runName": "Kogbold Steamworks",
+        "aliases": [
+            "k",
+            "steamworks",
+            "sw",
+            "ksw"
+        ],
+        "enabled": true,
+        "keyEmoteID": "1050848141492109372",
+        "keyEmote": ":steamworksKey:1050848141492109372",
+        "portalEmojiID": "1050156386547413012",
+        "portalEmote": "a:steamworksPortal:1050156386547413012",
+        "pingRole": "steamworksping",
+        "headcountEmote": "1050156386547413012",
+        "headcountOnAfk": false,
+        "runLogName": "steamworkRuns",
+        "isSplit": false,
+        "vialReact": false,
+        "twoPhase": false,
+        "startDelay": 5000,
+        "vcCap": 45,
+        "timeLimit": 300,
+        "keyCount": 1,
+        "color": "#7a7a7a",
+        "isExalt": true,
+        "earlyLocationReacts": [
+            {
+                "emoteID": "723019533597802507",
+                "pointsGiven": 0,
+                "limit": 1,
+                "shortName": "Armor Break",
+                "noConfirm": false,
+                "noLocation": false
+            },
+            {
+                "emoteID": "723019533555597332",
+                "pointsGiven": 0,
+                "limit": 1,
+                "shortName": "Expose",
+                "noConfirm": false,
+                "noLocation": false
+            },
+            {
+                "emoteID": "720401067086446672",
+                "pointsGiven": 0,
+                "limit": 1,
+                "shortName": "Marble Seal",
+                "noConfirm": false,
+                "noLocation": false
+            },
+            {
+                "emoteID": "1050171338515566723",
+                "pointsGiven": 0,
+                "limit": 2,
+                "shortName": "Fungal Tome",
+                "noConfirm": false,
+                "noLocation": false
+            },
+            {
+                "emoteID": "723019533580894279",
+                "pointsGiven": 0,
+                "limit": 2,
+                "shortName": "Slow",
+                "noConfirm": false,
+                "noLocation": false
+            },
+            {
+                "emoteID": "944786433082818591",
+                "pointsGiven": 0,
+                "limit": 1,
+                "shortName": "Daze",
+                "noConfirm": false,
+                "noLocation": false
+            },
+            {
+                "emoteID": "723018431275728918",
+                "pointsGiven": 0,
+                "limit": 1,
+                "shortName": "Trickster",
+                "noConfirm": false,
+                "noLocation": false
+            }
+        ],
+        "reacts": [],
+        "earlyLocationCost": 15
+    },
+    "advancedsteamworks": {
+        "runType": "Advanced Kogbold Steamworks",
+        "runName": "Advanced Kogbold Steamworks",
+        "aliases": [
+            "ak",
+            "asteamworks",
+            "asw",
+            "aksw",
+            "advk",
+            "advancedkogbold",
+            "advancedsteamwork",
+            "advancedsteamworks",
+            "advancedkogboldsteamwork",
+            "advancedkogboldsteamworks"
+        ],
+        "enabled": true,
+        "keyEmoteID": "1050848141492109372",
+        "keyEmote": ":steamworksKey:1050848141492109372",
+        "portalEmojiID": "1050156386547413012",
+        "portalEmote": "a:steamworksPortal:1050156386547413012",
+        "pingRole": "steamworksping",
+        "headcountEmote": "1050156386547413012",
+        "headcountOnAfk": false,
+        "runLogName": "steamworkRuns",
+        "isSplit": false,
+        "vialReact": false,
+        "twoPhase": false,
+        "startDelay": 5000,
+        "vcCap": 45,
+        "timeLimit": 300,
+        "keyCount": 1,
+        "color": "#7a7a7a",
+        "isExalt": true,
+        "earlyLocationReacts": [
+            {
+                "emoteID": "723019533597802507",
+                "pointsGiven": 0,
+                "limit": 1,
+                "shortName": "Armor Break",
+                "noConfirm": false,
+                "noLocation": false
+            },
+            {
+                "emoteID": "723019533555597332",
+                "pointsGiven": 0,
+                "limit": 1,
+                "shortName": "Expose",
+                "noConfirm": false,
+                "noLocation": false
+            },
+            {
+                "emoteID": "720401067086446672",
+                "pointsGiven": 0,
+                "limit": 1,
+                "shortName": "Marble Seal",
+                "noConfirm": false,
+                "noLocation": false
+            },
+            {
+                "emoteID": "1050171338515566723",
+                "pointsGiven": 0,
+                "limit": 2,
+                "shortName": "Fungal Tome",
+                "noConfirm": false,
+                "noLocation": false
+            },
+            {
+                "emoteID": "723019533580894279",
+                "pointsGiven": 0,
+                "limit": 2,
+                "shortName": "Slow",
+                "noConfirm": false,
+                "noLocation": false
+            },
+            {
+                "emoteID": "944786433082818591",
+                "pointsGiven": 0,
+                "limit": 1,
+                "shortName": "Daze",
+                "noConfirm": false,
+                "noLocation": false
+            },
+            {
+                "emoteID": "723018431275728918",
+                "pointsGiven": 0,
+                "limit": 1,
+                "shortName": "Trickster",
+                "noConfirm": false,
+                "noLocation": false
+            }
+        ],
+        "reacts": [],
+        "earlyLocationCost": 15
+    },
     "343704644712923138": {
         "fungal": {
             "name": "Fungal Cavern",

@@ -34,6 +34,11 @@ module.exports = {
                 else eventTypes.push(runType)
             else return hallsHC(runType)
         }
+        if (settings.backend.disableEventsFromHeadcounts) { // If you disable events/exalts that are not prioritized with the server from headcounts.
+            let eventType = eventAfk.getEventTypeFromServer(args[0], message.guild.id);
+            if (eventType == null) return;
+            else return hallsHC(eventType);
+        }
         if (!eventTypes.length) return message.channel.send('Run Type not recognized')
         if (eventTypes.length == 1) {
             hallsHC(eventTypes[0]);
@@ -71,7 +76,7 @@ module.exports = {
             if (channel) {
                 let embed = new Discord.EmbedBuilder()
                     .setAuthor({ name: `Headcount for ${run.runName} by ${message.member.nickname}` })
-                    .setDescription(run.embed && run.embed.headcountDescription ? run.embed.headcountDescription : `${run.headcountEmote ? `React with ${bot.emojis.cache.get(run.headcountEmote)} if you are coming\n` : ''}React with ${bot.emojis.cache.get(run.keyEmoteID)} if you have a key\nOtherwise react with your gear/class choices below`)
+                    .setDescription(run.embed && run.embed.headcountDescription ? run.embed.headcountDescription : `${run.headcountEmote ? `React with ${bot.emojis.cache.get(run.headcountEmote)} if you are coming\n` : ''}${ run.keyEmoteID ? `React with ${bot.emojis.cache.get(run.keyEmoteID)} if you plan to bring a key\n` : '' }Otherwise react with your gear/class choices below`)
                     .setColor(run.embed ? run.embed.color : run.color)
                     .setTimestamp()
 

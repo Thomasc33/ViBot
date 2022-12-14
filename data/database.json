@@ -61,5 +61,26 @@
             "eventruns": "eventruns",
             "eventpops": "eventpops"
         }
+    },
+    "934611202787643412": {
+        "schema": "shatters",
+        "users_table": "users",
+        "suspends_table": "suspensions",
+        "warns_table": "warns",
+        "vetbans_table": "vetbans",
+        "veriblacklist_table": "veriblacklist",
+        "mainKeyType": "shatterspops",
+        "userInfo": {
+            "id": "id",
+            "isRusher": null,
+            "isVet": "isVet",
+            "points": "points",
+            "vialUse": null,
+            "vialStored": null
+        },
+        "eventInfo": {
+            "eventruns": "eventruns",
+            "eventpops": "eventpops"
+        }
     }
 }

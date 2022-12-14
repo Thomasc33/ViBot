@@ -37,5 +37,16 @@
     "shattersKey": { "tag": ":shattersKey:1008104345197346817", "id": "1008104345197346817" },
     "fungalPortal": { "tag": ":fungal:723001215696240660", "id": "723001215696240660" },
     "nestPortal": { "tag": ":nest:723001215407095899", "id": "723001215407095899" },
-    "shattersPortal": { "tag": ":shatters:723001214865899532", "id": "723001214865899532" }
+    "shattersPortal": { "tag": ":shatters:723001214865899532", "id": "723001214865899532" },
+    "oryxThreeBoss": { "tag": ":oryxThree:831047591096745984", "id": "831047591096745984" },
+    "2dpsRanged": { "tag": ":2dpsRanged:1050156574330589295", "id": "1050156574330589295" },
+    "3dpsRanged": { "tag": ":3dpsRanged:1050156576259977247", "id": "1050156576259977247" },
+    "oryxThreePortal": { "tag": ":o3portal:831046404252237855", "id": "831046404252237855" },
+    "runeSword": { "tag": ":swordRune:831046532370530324", "id": "831046532370530324" },
+    "runeShield": { "tag": ":shieldRune:831046532232118292", "id": "831046532232118292" },
+    "runeHelmet": { "tag": ":helmetRune:831046532115202078", "id": "831046532115202078" },
+    "steamworksBoss": { "tag": ":SteamworksBoss:1050156577920917574", "id": "1050156577920917574" },
+    "steamworksPortal": { "tag": "a:steamworksPortal:1050156386547413012", "id": "1050156386547413012" },
+    "oryxThreeSkating": { "tag": "a:oryxSkating:1050173254121291827", "id": "1050173254121291827" },
+    "": { "tag": "", "id": "" }
 }

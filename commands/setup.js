@@ -5,7 +5,7 @@ const roles = ['moderator', 'officer', 'headrl', 'vetrl', 'fsvrl', 'mrvrl', 'sec
     'rusher', 'nitro', 'lol', 'vetraider', 'raider', 'eventraider', 'muted',
     'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'keyjesus', 'moddedkey', 'topkey', 'bottomkey', 'cultping', 'voidping', 'shattsReact', 'fungalReact', 'nestReact',
     'fskipReact', 'fameReact', 'rcPing', 'o3Ping', 'eventBoi', 'veteventrl',
-    'priest', 'warden', 'vetaffiliate', `toprune`, `bottomrune`, 'helper']
+    'priest', 'warden', 'vetaffiliate', `toprune`, `bottomrune`, 'helper', 'steamworksping']
 const channels = ['modmail', 'verification', 'manualverification', 'vetverification', 'manualvetverification', 'verificationlog', 'activeverification', 'modlogs', 'history', 'suspendlog',
     'viallog', 'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel', 'raidstatus', 'eventstatus',
     'vetstatus', 'exaltstatus', 'raidcommands', 'eventcommands', 'vetcommands', 'raidingchannels', 'eventchannels', 'vetchannels', 'runlogs', 'dmcommands', 'veriactive', 'pointlogging',
@@ -16,14 +16,14 @@ const voiceprefixes = ['raidingprefix', 'vetprefix']
 const backend = ['modmail', 'currentweek', 'eventcurrentweek', 'parsecurrentweek', 'verification', 'vetverification', 'points', 'supporter', 'roleassignment', 'realmeyestats', 'automod',
     'nitroearlylocation', 'removekeyreacts', 'characterparse',
     'giveeventroleonverification', 'eventcurrentweekdisplaysalleventrl', 'upgradedCheck', 'raidResetMonthly', 'eventResetMonthly', 'parseResetMonthly', 'exaltedEvents', 'sendmissedquota',
-    'exaltsInRSA', 'allowAdvancedRuns', 'raidResetBiweekly', 'eventResetBiweekly', 'parseResetBiweekly', 'onlyUpperStaffSuspendStaff', 'giveEventRoleOnDenial2']
+    'exaltsInRSA', 'allowAdvancedRuns', 'raidResetBiweekly', 'eventResetBiweekly', 'parseResetBiweekly', 'onlyUpperStaffSuspendStaff', 'giveEventRoleOnDenial2', 'disableEventsFromHeadcounts']
 const numerical = ['afktime', 'eventafktime', 'nitrocount', 'nitrocooldown', 'topkey', 'bottomkey', 'ticketlimit', 'supporterlimit', 'keyalertsage', 'waitnewkeyalert', 'prunerushersoffset',
     `toprune`, `bottomrune`]
 const runreqs = ['weapon', 'ability', 'armor', 'ring']
 const autoveri = ['fame', 'stars', 'realmage', 'discordage', 'deathcount']
 const vetverireqs = ['maxed', 'meleemaxed', 'runs']
 const points = ['earlylocation', 'perrun', 'nitromultiplier', 'keypop', 'vialpop', 'rushing', 'brain', 'mystic', 'eventkey', 'cultlocation', 'voidlocation', 'fsvlocation', 'o3streaming',
-    'o3trickster', 'o3puri', 'exaltkey', 'shattskey', 'fungalkey', 'nestkey', 'keymultiplier']
+    'o3trickster', 'o3puri', 'exaltkey', 'shattskey', 'fungalkey', 'nestkey', 'keymultiplier', 'runepop', 'steamworkKey']
 const lists = ['earlyLocation', 'runningEvents', 'warningRoles']
 const strings = ['hallsAdvancedReqsImage', 'exaltsAdvancedReqsImage']
 var commands = []
@@ -397,6 +397,7 @@ function getDefaultRoleName(name) {
         case 'toprune': return 'Veteran Rune Popper'
         case 'bottomrune': return 'Verified Rune Popper'
         case 'helper': return 'Helper'
+        case 'steamworksping': return 'Steamworks boi'
     }
 }
 
@@ -535,6 +536,8 @@ function getDefaultPointValue(name) {
         case 'fungalkey': return 5;
         case 'nestkey': return 5;
         case 'keymultiplier': return 2;
+        case 'runepop': return 20;
+        case 'incpop': return 0;
     }
 }
 
