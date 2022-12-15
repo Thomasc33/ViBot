@@ -161,6 +161,7 @@ function getFields(row, schema) {
                 `<:shattersKey:1008104345197346817> ${row.shattersPops}\n` +
                 `<:fungalK:723001429614395402> ${row.fungalPops}\n` +
                 `<:nestK:723001429693956106> ${row.nestPops}\n` +
+                `<:steamworksKey:1050848141492109372> ${row.steamworkPops}\n` +
                 `<:epicMysteryKey:831051424187940874> ${row.eventpops}\n` +
                 `<:modded_key:1027356831565217812> ${row.moddedPops}\n` +
                 `<${botSettings.emote.Vial}> ${row.vialStored} Dropped\n` +
@@ -174,6 +175,7 @@ function getFields(row, schema) {
                 `<:forgottenking:1008068892071055512> ${row.shattersRuns}\n` +
                 `<:crystal:1008068893056696410> ${row.fungalRuns}\n` +
                 `<:queenbee:1008068890791780433> ${row.nestRuns}\n` +
+                `<a:steamworksPortal:1050156386547413012> ${row.steamworkRuns}\n` +
                 `<:epicMysteryKey:831051424187940874> ${row.eventruns}`,
             inline: true
         },
@@ -184,10 +186,13 @@ function getFields(row, schema) {
                 `<:forgottenking:1008068892071055512> ${row.shattersLead}\n` +
                 `<:crystal:1008068893056696410> ${row.fungalsLead}\n` +
                 `<:queenbee:1008068890791780433> ${row.nestsLead}\n` +
+                `<:SteamworksBoss:1050156577920917574> ${row.steamworkLead}\n` +
                 `<:epicMysteryKey:831051424187940874> ${parseInt(row.eventsLead) * 10} Minutes\n` +
                 `<:feedback:858920770806087710> ${row.feedback + row.exaltFeedback}\n` +
                 `🤝 ${row.assists} Assists\n` +
-                `🔎 ${row.parses} Parses`,
+                `🔎 ${row.parses} Parses\n` +
+                `${row.incPops} Incs Popped\n` +
+                `${row.runesused} Runes Popped`,
             inline: true
         }
     ]

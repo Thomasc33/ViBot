@@ -328,20 +328,6 @@ class afkCheck {
     }
 
     async start() {
-        //create/send leader embed
-        /* this.leaderEmbed = new Discord.EmbedBuilder()
-            .setColor(this.afkInfo.embed.color || "#fefefe")
-            .setTitle(`${this.message.member.nickname}'s ${this.afkInfo.runName}`)
-            .setFooter({ text: `${this.afkInfo.twoPhase ? 'Click ✅ to open the channel, ' : ''}Click ❌ to abort, Click 🔑 for keys to be logged as Modded` })
-        if (this.afkInfo.keyEmoteID) this.leaderEmbed.addFields({ name: '🔑 Keys', value: 'None!' })
-        if (this.afkInfo.vialReact) this.leaderEmbed.addFields({ name: 'Vials', value: 'None!' })
-        this.afkInfo.earlyLocationReacts.forEach(r => this.leaderEmbed.addFields({ name: `${this.bot.emojis.cache.get(r.emoteID)} ${r.shortName}`, value: 'None!', inline: r.inline ? true : false }))
-        this.leaderEmbed.addFields([
-            { name: '🗺️ Location', value: this.afkInfo.location },
-            { name: '🗺️ Other Early Location', value: 'None!' },
-            { name: '<:NitroBooster:1050492863257002035> Nitro', value: 'None!' },
-        ]) */
-
         this.leaderEmbed = new Discord.EmbedBuilder()
             .setColor(this.afkInfo.embed.color || "#fefefe")
             .setTitle(`${this.message.member.nickname}'s ${this.afkInfo.runName}`)
@@ -652,8 +638,8 @@ class afkCheck {
             if (!afk.afkInfo.keyEmoteID) index--;
             if (afk.afkInfo.vialReact && !(type == 'key' || type == 'vial')) index++;
             if (afk.leaderEmbed.data.fields[index].value == `None!`) {
-                afk.leaderEmbed.data.fields[index].value = `${emote}: <@!${interaction.user.id}> \`\`${interaction.member.nickname}\`\``;
-            } else afk.leaderEmbed.data.fields[index].value += `\n${emote}: ${`<@!${interaction.user.id}> \`\`${interaction.member.nickname}\`\``}`
+                afk.leaderEmbed.data.fields[index].value = `${emote}: <@!${interaction.user.id}>`;
+            } else afk.leaderEmbed.data.fields[index].value += `\n${emote}: ${`<@!${interaction.user.id}>`}`
             afk.leaderEmbedMessage.edit({ embeds: [afk.leaderEmbed] }).catch(er => ErrorLogger.log(er, afk.bot));
             afk.runInfoMessage.edit({ embeds: [afk.leaderEmbed] }).catch(er => ErrorLogger.log(er, afk.bot));
 
@@ -1466,9 +1452,7 @@ class afkCheck {
         this.afkInfo.location = location;
 
         if (!this.leaderEmbed) return
-
-        this.leaderEmbed.data.fields[this.leaderEmbed.data.fields.length - 3].value = this.afkInfo.location;
-
+        this.leaderEmbed.setDescription(`**Raid Leader: ${this.message.member} \`\`${this.message.member.nickname}\`\`\nVC: ${this.channel}\nLocation:** \`\`${this.afkInfo.location}\`\``)
         this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
         this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
 
