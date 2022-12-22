@@ -130,9 +130,9 @@ bot.on('messageCreate', message => {
         let guildId = message.guild.id
         let memberId = message.member.id
 
-        if (memberPosition > roleCache.get(settings.roles[command.role]).position) hasPermissionForCommand = true
+        if (memberPosition >= roleCache.get(settings.roles[command.role]).position) hasPermissionForCommand = true
         if (command.roleOverride && command.roleOverride[guildId]) {
-            if (memberPosition > roleCache.get(settings.roles[command.roleOverride]).position) hasPermissionForCommand = true
+            if (memberPosition >= roleCache.get(settings.roles[command.roleOverride]).position) hasPermissionForCommand = true
             else hasPermissionForCommand = false
         }
         if (command.patreonRole) {
