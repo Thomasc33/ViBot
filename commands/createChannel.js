@@ -25,7 +25,11 @@ module.exports = {
             case 'create':
                 //get channel parent
                 let isVet = false;
-                if (message.channel.parent.name.toLowerCase() == settings.categories.veteran) isVet = true;
+                let isAccursed = false;
+                if (message.channel.parent.name.toLowerCase() == settings.categories.veteran){
+                    if(message.channel.id == settings.channels.accursedcommands) isAccursed = true
+                    else isVet = true;
+                }
                 else if (message.channel.parent.name.toLowerCase() == settings.categories.event) isVet = false;
                 else return message.channel.send('Channel category is invalid')
 
@@ -45,6 +49,7 @@ module.exports = {
                     .setTimestamp(Date.now())
                 let raidStatus
                 if (isVet) raidStatus = message.guild.channels.cache.get(settings.channels.vetstatus)
+                else if (isAccursed) raidStatus = message.guild.channels.cache.get(settings.channels.accursedstatus)
                 else raidStatus = message.guild.channels.cache.get(settings.channels.eventstatus)
                 if (!raidStatus) return message.channel.send('Could not find raid-status')
                 embedComponents = new Discord.ActionRowBuilder()
@@ -57,7 +62,7 @@ module.exports = {
                 let m = await raidStatus.send({ content: `@here Run will be starting very soon`, embeds: [], components: [] })
 
                 //create channel default unlocked using same code from afkcheck
-                let channel = await createChannel(name, isVet, message, bot, m)
+                let channel = await createChannel(name, isVet, message, bot, m, isAccursed)
 
                 // Modify the Raid Status Embed
                 embed.setDescription(`**Raid Leader:** ${message.member}\n**VC:** ${channel}`)
@@ -237,23 +242,31 @@ function getChannel(message) {
 }
 
 
-async function createChannel(name, isVet, message, bot, rsaMessage) {
+async function createChannel(name, isVet, message, bot, rsaMessage, isAccursed) {
     let settings = bot.settings[message.guild.id]
     return new Promise(async (res, rej) => {
         //channel creation
         if (isVet) {
-            var parent = 'veteran raiding';
+            var parent = settings.categories.veteran;
             var template = message.guild.channels.cache.get(settings.voice.vettemplate)
             var raider = message.guild.roles.cache.get(settings.roles.vetraider)
             var vibotChannels = message.guild.channels.cache.get(settings.channels.vetchannels)
-            var lounge = message.guild.channels.cache.find(c => c.name.toLowerCase() == 'veteran lounge')
-        } else {
-            var parent = 'events';
+            var lounge = message.guild.channels.cache.get(settings.voice.vetlounge)
+        }
+        else if (isAccursed) {
+            var parent = settings.categories.veteran;
+            var template = message.guild.channels.cache.get(settings.voice.accursedtemplate)
+            var raider = message.guild.roles.cache.get(settings.roles.accursed)
+            var vibotChannels = message.guild.channels.cache.get(settings.channels.vetchannels)
+            var lounge = message.guild.channels.cache.get(settings.voice.vetlounge)
+        }
+        else {
+            var parent = settings.categories.event;
             var template = message.guild.channels.cache.get(settings.voice.eventtemplate)
             var raider = message.guild.roles.cache.get(settings.roles.raider)
             var eventBoi = message.guild.roles.cache.get(settings.roles.eventraider)
             var vibotChannels = message.guild.channels.cache.get(settings.channels.eventchannels)
-            var lounge = message.guild.channels.cache.find(c => c.name.toLowerCase() == 'event lounge')
+            var lounge = message.guild.channels.cache.get(settings.voice.eventlounge)
         }
         if (!template) return rej(`Template channel not found`)
         if (!message.guild.channels.cache.filter(c => c.type == Discord.ChannelType.GuildCategory).find(c => c.name.toLowerCase() === parent)) return rej(`${parent} category not found`)
@@ -289,8 +302,8 @@ async function interactionHandler(interaction, message, settings, bot) {
     if (!interaction.isButton()) return;
     if (interaction.customId == "open") {
         veteranAffiliate = message.guild.roles.cache.get(settings.roles.vetaffiliate)
-        if (message.guild.members.cache.get(interaction.user.id).roles.highest.position < veteranAffiliate.position) { return interaction.reply({ content: 'This Voice Channel is currently **CLOSED**\nYou are not a Staff Member and can not open this Voice Channel', ephemeral: true}) }
-        interaction.reply({ ephemeral: true, content: "Opening channel!"})
+        if (message.guild.members.cache.get(interaction.user.id).roles.highest.position < veteranAffiliate.position) { return await interaction.reply({ content: 'This Voice Channel is currently **CLOSED**\nYou are not a Staff Member and can not open this Voice Channel', ephemeral: true}) }
+        await interaction.reply({ ephemeral: true, content: "Opening channel!"})
         open(interaction, settings, bot)
 
         let temp_m_components = message.components
@@ -346,8 +359,10 @@ function open(message, settings, bot) {
                 if (channel.channel.parent.name.toLowerCase() == 'events') {
                     var eventBoi = message.guild.roles.cache.get(settings.roles.eventraider)
                     var raider = message.guild.roles.cache.get(settings.roles.raider)
-                } else {
-                    var raider = message.guild.roles.cache.get(settings.roles.vetraider)
+                }
+                 else {
+                    if(message.channelId == settings.channels.accursedstatus || message.channelId == settings.channels.accursedcommands) var raider = message.guild.roles.cache.get(settings.roles.accursed)
+                    else var raider = message.guild.roles.cache.get(settings.roles.vetraider)
                 }
 
                 channel.channel.permissionOverwrites.edit(raider.id, { Connect: true, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot))
