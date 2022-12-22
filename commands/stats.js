@@ -190,9 +190,7 @@ function getFields(row, schema) {
                 `<:epicMysteryKey:831051424187940874> ${parseInt(row.eventsLead) * 10} Minutes\n` +
                 `<:feedback:858920770806087710> ${row.feedback + row.exaltFeedback}\n` +
                 `🤝 ${row.assists} Assists\n` +
-                `🔎 ${row.parses} Parses\n` +
-                `${row.incPops} Incs Popped\n` +
-                `${row.runesused} Runes Popped`,
+                `🔎 ${row.parses} Parses\n`,
             inline: true
         }
     ]

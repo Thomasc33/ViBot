@@ -537,234 +537,6 @@
                 "removeThumbnail": true
             },
             "font-color": "#000000"
-        },
-        "fungal": {
-            "runType": "Fungal Cavern",
-            "runName": "Fungal Cavern",
-            "symbol": "fc",
-            "aliases": ["fungal", "fungalcavern", "cavern", "fung", "fungies"],
-            "reqsImageUrl": "",
-            "keyEmoteID": "723001429614395402",
-            "vialEmoteID": "701491230567039018",
-            "pingRole": "fungalReact",
-            "keyLogName": "fungalPops",
-            "runLogName": "fungalRuns",
-            "headcountEmote": "723001215696240660",
-            "headcountOnAfk": false,
-            "isSplit": false,
-            "newChannel": true,
-            "vialReact": false,
-            "postAfkCheck": false,
-            "twoPhase": true,
-            "startDelay": 10000,
-            "vcCap": 45,
-            "timeLimit": 360,
-            "keyCount": 3,
-            "earlyLocationCost": 25,
-            "earlyLocationReacts": [{
-                    "emoteID": "723019533597802507",
-                    "pointsGiven": 1,
-                    "limit": 1,
-                    "shortName": "armorbreak",
-                    "noConfirm": false,
-                    "noLocation": false
-                },
-                {
-                    "emoteID": "723019533555597332",
-                    "pointsGiven": 0,
-                    "limit": 1,
-                    "shortName": "expose",
-                    "noConfirm": false,
-                    "noLocation": false
-                }
-            ],
-            "reacts": [
-                "723018431489900595",
-                "723018431296831539",
-                "723018431598952498",
-                "723018431573655643",
-                "720401067086446672",
-                "720404621331267697",
-                "723018431275728918"
-            ],
-            "embed": {
-                "color": "#0ba6ee",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:fungalK:723001429614395402>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
-                "thumbnail": "https://cdn.discordapp.com/emojis/1008068893056696410.png?v=1",
-                "removeThumbnail": false
-            },
-            "font-color": "#eeeeee"
-        },
-        "advancedFungal": {
-            "runType": "Adv. Fungal",
-            "runName": "Adv. Fungal",
-            "symbol": "afc",
-            "aliases": ["advfc", "advfungal", "advfungalcavern", "advcavern", "afungal", "afungalcavern", "afung", "acavern"],
-            "reqsImageUrl": "",
-            "keyEmoteID": "723001429614395402",
-            "vialEmoteID": "701491230567039018",
-            "pingRole": "fungalReact",
-            "keyLogName": "fungalPops",
-            "runLogName": "fungalRuns",
-            "headcountEmote": "723001215696240660",
-            "headcountOnAfk": false,
-            "isSplit": false,
-            "newChannel": true,
-            "vialReact": false,
-            "postAfkCheck": false,
-            "twoPhase": true,
-            "startDelay": 10000,
-            "vcCap": 45,
-            "timeLimit": 360,
-            "keyCount": 1,
-            "earlyLocationCost": 25,
-            "earlyLocationReacts": [{
-                    "emoteID": "723019533597802507",
-                    "pointsGiven": 1,
-                    "limit": 1,
-                    "shortName": "armorbreak",
-                    "noConfirm": false,
-                    "noLocation": false
-                },
-                {
-                    "emoteID": "723019533555597332",
-                    "pointsGiven": 0,
-                    "limit": 1,
-                    "shortName": "expose",
-                    "noConfirm": false,
-                    "noLocation": false
-                }
-            ],
-            "reacts": [
-                "723018431489900595",
-                "723018431296831539",
-                "723018431598952498",
-                "723018431573655643",
-                "720401067086446672",
-                "720404621331267697",
-                "723018431275728918"
-            ],
-            "embed": {
-                "color": "#0ba6ee",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:fungalK:723001429614395402>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
-                "thumbnail": "https://cdn.discordapp.com/emojis/1008068893056696410.png?v=1",
-                "removeThumbnail": false
-            },
-            "font-color": "#eeeeee"
-        },
-        "nest": {
-            "runType": "Nest",
-            "runName": "Nest",
-            "symbol": "n",
-            "aliases": ["nest", "nests"],
-            "reqsImageUrl": "",
-            "keyEmoteID": "723001429693956106",
-            "vialEmoteID": "701491230567039018",
-            "pingRole": "nestReact",
-            "keyLogName": "nestPops",
-            "runLogName": "nestRuns",
-            "headcountEmote": "723001215407095899",
-            "headcountOnAfk": false,
-            "isSplit": false,
-            "newChannel": true,
-            "vialReact": false,
-            "postAfkCheck": false,
-            "twoPhase": true,
-            "startDelay": 10000,
-            "vcCap": 45,
-            "timeLimit": 360,
-            "keyCount": 3,
-            "earlyLocationCost": 25,
-            "earlyLocationReacts": [{
-                    "emoteID": "723019533597802507",
-                    "pointsGiven": 1,
-                    "limit": 1,
-                    "shortName": "armorbreak",
-                    "noConfirm": false,
-                    "noLocation": false
-                },
-                {
-                    "emoteID": "723019533555597332",
-                    "pointsGiven": 0,
-                    "limit": 1,
-                    "shortName": "expose",
-                    "noConfirm": false,
-                    "noLocation": false
-                }
-            ],
-            "reacts": [
-                "723018431489900595",
-                "723018431296831539",
-                "723018431598952498",
-                "723018431573655643",
-                "720401067086446672",
-                "720404621331267697",
-                "723018431275728918"
-            ],
-            "embed": {
-                "color": "#FFC164",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:nestK:723001429693956106>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
-                "thumbnail": "https://cdn.discordapp.com/emojis/1008068890791780433.png?v=1",
-                "removeThumbnail": false
-            },
-            "font-color": "#eeeeee"
-        },
-        "advancedNest": {
-            "runType": "Adv. Nest",
-            "runName": "Adv. Nest",
-            "symbol": "an",
-            "aliases": ["anest", "anests", "advnest", "advnests"],
-            "reqsImageUrl": "",
-            "keyEmoteID": "723001429693956106",
-            "vialEmoteID": "701491230567039018",
-            "pingRole": "nestReact",
-            "keyLogName": "nestPops",
-            "runLogName": "nestRuns",
-            "headcountEmote": "723001215407095899",
-            "headcountOnAfk": false,
-            "isSplit": false,
-            "newChannel": true,
-            "vialReact": false,
-            "postAfkCheck": false,
-            "twoPhase": true,
-            "startDelay": 10000,
-            "vcCap": 45,
-            "timeLimit": 360,
-            "keyCount": 1,
-            "earlyLocationCost": 25,
-            "earlyLocationReacts": [{
-                    "emoteID": "723019533597802507",
-                    "pointsGiven": 1,
-                    "limit": 1,
-                    "shortName": "armorbreak",
-                    "noConfirm": false,
-                    "noLocation": false
-                },
-                {
-                    "emoteID": "723019533555597332",
-                    "pointsGiven": 0,
-                    "limit": 1,
-                    "shortName": "expose",
-                    "noConfirm": false,
-                    "noLocation": false
-                }
-            ],
-            "reacts": [
-                "723018431489900595",
-                "723018431296831539",
-                "723018431598952498",
-                "723018431573655643",
-                "720401067086446672",
-                "720404621331267697",
-                "723018431275728918"
-            ],
-            "embed": {
-                "color": "#FFC164",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:nestK:723001429693956106>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
-                "thumbnail": "https://cdn.discordapp.com/emojis/1008068890791780433.png?v=1",
-                "removeThumbnail": false
-            },
-            "font-color": "#eeeeee"
         }
     },
     "701483950559985705": {
@@ -1305,234 +1077,6 @@
                 "removeThumbnail": true
             },
             "font-color": "#000000"
-        },
-        "fungal": {
-            "runType": "Fungal Cavern",
-            "runName": "Fungal Cavern",
-            "symbol": "fc",
-            "aliases": ["fungal", "fungalcavern", "cavern", "fung", "fungies"],
-            "reqsImageUrl": "",
-            "keyEmoteID": "723001429614395402",
-            "vialEmoteID": "701491230567039018",
-            "pingRole": "fungalReact",
-            "keyLogName": "fungalPops",
-            "runLogName": "fungalRuns",
-            "headcountEmote": "723001215696240660",
-            "headcountOnAfk": false,
-            "isSplit": false,
-            "newChannel": true,
-            "vialReact": false,
-            "postAfkCheck": false,
-            "twoPhase": true,
-            "startDelay": 10000,
-            "vcCap": 45,
-            "timeLimit": 360,
-            "keyCount": 3,
-            "earlyLocationCost": 25,
-            "earlyLocationReacts": [{
-                    "emoteID": "723019533597802507",
-                    "pointsGiven": 1,
-                    "limit": 1,
-                    "shortName": "armorbreak",
-                    "noConfirm": false,
-                    "noLocation": false
-                },
-                {
-                    "emoteID": "723019533555597332",
-                    "pointsGiven": 0,
-                    "limit": 1,
-                    "shortName": "expose",
-                    "noConfirm": false,
-                    "noLocation": false
-                }
-            ],
-            "reacts": [
-                "723018431489900595",
-                "723018431296831539",
-                "723018431598952498",
-                "723018431573655643",
-                "720401067086446672",
-                "720404621331267697",
-                "723018431275728918"
-            ],
-            "embed": {
-                "color": "#0ba6ee",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:fungalK:723001429614395402>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
-                "thumbnail": "https://cdn.discordapp.com/emojis/1008068893056696410.png?v=1",
-                "removeThumbnail": false
-            },
-            "font-color": "#eeeeee"
-        },
-        "advancedFungal": {
-            "runType": "Adv. Fungal",
-            "runName": "Adv. Fungal",
-            "symbol": "afc",
-            "aliases": ["advfc", "advfungal", "advfungalcavern", "advcavern", "afungal", "afungalcavern", "afung", "acavern"],
-            "reqsImageUrl": "",
-            "keyEmoteID": "723001429614395402",
-            "vialEmoteID": "701491230567039018",
-            "pingRole": "fungalReact",
-            "keyLogName": "fungalPops",
-            "runLogName": "fungalRuns",
-            "headcountEmote": "723001215696240660",
-            "headcountOnAfk": false,
-            "isSplit": false,
-            "newChannel": true,
-            "vialReact": false,
-            "postAfkCheck": false,
-            "twoPhase": true,
-            "startDelay": 10000,
-            "vcCap": 45,
-            "timeLimit": 360,
-            "keyCount": 1,
-            "earlyLocationCost": 25,
-            "earlyLocationReacts": [{
-                    "emoteID": "723019533597802507",
-                    "pointsGiven": 1,
-                    "limit": 1,
-                    "shortName": "armorbreak",
-                    "noConfirm": false,
-                    "noLocation": false
-                },
-                {
-                    "emoteID": "723019533555597332",
-                    "pointsGiven": 0,
-                    "limit": 1,
-                    "shortName": "expose",
-                    "noConfirm": false,
-                    "noLocation": false
-                }
-            ],
-            "reacts": [
-                "723018431489900595",
-                "723018431296831539",
-                "723018431598952498",
-                "723018431573655643",
-                "720401067086446672",
-                "720404621331267697",
-                "723018431275728918"
-            ],
-            "embed": {
-                "color": "#0ba6ee",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:fungalK:723001429614395402>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
-                "thumbnail": "https://cdn.discordapp.com/emojis/1008068893056696410.png?v=1",
-                "removeThumbnail": false
-            },
-            "font-color": "#eeeeee"
-        },
-        "nest": {
-            "runType": "Nest",
-            "runName": "Nest",
-            "symbol": "n",
-            "aliases": ["nest", "nests"],
-            "reqsImageUrl": "",
-            "keyEmoteID": "723001429693956106",
-            "vialEmoteID": "701491230567039018",
-            "pingRole": "nestReact",
-            "keyLogName": "nestPops",
-            "runLogName": "nestRuns",
-            "headcountEmote": "723001215407095899",
-            "headcountOnAfk": false,
-            "isSplit": false,
-            "newChannel": true,
-            "vialReact": false,
-            "postAfkCheck": false,
-            "twoPhase": true,
-            "startDelay": 10000,
-            "vcCap": 45,
-            "timeLimit": 360,
-            "keyCount": 3,
-            "earlyLocationCost": 25,
-            "earlyLocationReacts": [{
-                    "emoteID": "723019533597802507",
-                    "pointsGiven": 1,
-                    "limit": 1,
-                    "shortName": "armorbreak",
-                    "noConfirm": false,
-                    "noLocation": false
-                },
-                {
-                    "emoteID": "723019533555597332",
-                    "pointsGiven": 0,
-                    "limit": 1,
-                    "shortName": "expose",
-                    "noConfirm": false,
-                    "noLocation": false
-                }
-            ],
-            "reacts": [
-                "723018431489900595",
-                "723018431296831539",
-                "723018431598952498",
-                "723018431573655643",
-                "720401067086446672",
-                "720404621331267697",
-                "723018431275728918"
-            ],
-            "embed": {
-                "color": "#FFC164",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:nestK:723001429693956106>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
-                "thumbnail": "https://cdn.discordapp.com/emojis/1008068890791780433.png?v=1",
-                "removeThumbnail": false
-            },
-            "font-color": "#eeeeee"
-        },
-        "advancedNest": {
-            "runType": "Adv. Nest",
-            "runName": "Adv. Nest",
-            "symbol": "an",
-            "aliases": ["anest", "anests", "advnest", "advnests"],
-            "reqsImageUrl": "",
-            "keyEmoteID": "723001429693956106",
-            "vialEmoteID": "701491230567039018",
-            "pingRole": "nestReact",
-            "keyLogName": "nestPops",
-            "runLogName": "nestRuns",
-            "headcountEmote": "723001215407095899",
-            "headcountOnAfk": false,
-            "isSplit": false,
-            "newChannel": true,
-            "vialReact": false,
-            "postAfkCheck": false,
-            "twoPhase": true,
-            "startDelay": 10000,
-            "vcCap": 45,
-            "timeLimit": 360,
-            "keyCount": 1,
-            "earlyLocationCost": 25,
-            "earlyLocationReacts": [{
-                    "emoteID": "723019533597802507",
-                    "pointsGiven": 1,
-                    "limit": 1,
-                    "shortName": "armorbreak",
-                    "noConfirm": false,
-                    "noLocation": false
-                },
-                {
-                    "emoteID": "723019533555597332",
-                    "pointsGiven": 0,
-                    "limit": 1,
-                    "shortName": "expose",
-                    "noConfirm": false,
-                    "noLocation": false
-                }
-            ],
-            "reacts": [
-                "723018431489900595",
-                "723018431296831539",
-                "723018431598952498",
-                "723018431573655643",
-                "720401067086446672",
-                "720404621331267697",
-                "723018431275728918"
-            ],
-            "embed": {
-                "color": "#FFC164",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:nestK:723001429693956106>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
-                "thumbnail": "https://cdn.discordapp.com/emojis/1008068890791780433.png?v=1",
-                "removeThumbnail": false
-            },
-            "font-color": "#eeeeee"
         }
     },
     "451171819672698920": {
@@ -1670,6 +1214,132 @@
                 "color": "#015c21",
                 "description": "To join, connect to the raiding channel by clicking its name\nIf you have a key react with <:ShattersKey:1008104345197346817>\nTo indicate your class or gear choices, react with <:Warrior:500083067386331136> <:Paladin:500083068019933204> <:Knight:662095356074524675> <:FungalTome:888890099511734312> <:Ogmur:662096955912224778> <:UTMarbleSeal:720401067086446672> <:RangedDPS:888985633270423584> <:Slow:723019533580894279> <:Curse:723019533681426472> <:Expose:723019533555597332>\nIf you plan on rushing, react with <a:Rusher:888889860964892693>\nIf you are able to solve the puzzle react with <:Puzzle:888887797530918952>\n<@&585542641975033859> to get early location react with <:nitro:701491230349066261>",
                 "thumbnail": "https://cdn.discordapp.com/attachments/748200247716479159/890001562620035122/unknown.png",
+                "removeThumbnail": false
+            },
+            "font-color": "#fefefe"
+        }
+    },
+    "934611202787643412": {
+        "OryxThree": {
+            "runType": "Oryx 3",
+            "runName": "Oryx 3",
+            "symbol": "o",
+            "aliases": ["o3", "oryx", "oryxthree", "oryxthemadgod", "oryxtheexaltedgod"],
+            "reqsImageUrl": "",
+            "runLogName": "o3runs",
+            "headcountEmote": "831046404252237855",
+            "headcountOnAfk": false,
+            "pingRole": "o3Ping",
+            "isSplit": false,
+            "newChannel": true,
+            "vialReact": false,
+            "postAfkCheck": true,
+            "twoPhase": true,
+            "startDelay": 5000,
+            "vcCap": 75,
+            "timeLimit": 360,
+            "keyCount": 2,
+            "earlyLocationCost": 20,
+            "earlyLocationReacts": [{
+                    "emoteID": "831046532370530324",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "Sword Rune",
+                    "noConfirm": false,
+                    "noLocation": false,
+                    "inline": true,
+                    "buttonStyle": 1
+                },
+                {
+                    "emoteID": "831046532232118292",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "Shield Rune",
+                    "noConfirm": false,
+                    "noLocation": false,
+                    "inline": true,
+                    "buttonStyle": 1
+                },
+                {
+                    "emoteID": "831046532115202078",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "Helmet Rune",
+                    "noConfirm": false,
+                    "noLocation": false,
+                    "inline": true,
+                    "buttonStyle": 1
+                },
+                {
+                    "emoteID": "831046532156620851",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "Wine Cellars Incantation",
+                    "noConfirm": false,
+                    "noLocation": false,
+                    "inline": true,
+                    "buttonStyle": 1
+                },
+                {
+                    "emoteID": "720401067086446672",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "Marble Seal",
+                    "noConfirm": false,
+                    "noLocation": true,
+                    "inline": true
+                },
+                {
+                    "emoteID": "723019533580894279",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "Slow",
+                    "noConfirm": false,
+                    "noLocation": false,
+                    "inline": true
+                },
+                {
+                    "emoteID": "723019533597802507",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Ogmur",
+                    "noConfirm": false,
+                    "noLocation": false,
+                    "inline": true
+                },
+                {
+                    "emoteID": "1050171338515566723",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "Fungal",
+                    "noConfirm": false,
+                    "noLocation": false,
+                    "inline": true
+                },
+                {
+                    "emoteID": "1050156574330589295",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "2/4 DPS Ranged",
+                    "noConfirm": false,
+                    "noLocation": true,
+                    "inline": true
+                },
+                {
+                    "emoteID": "1050156576259977247",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "3/4 DPS ranged",
+                    "noConfirm": false,
+                    "noLocation": true,
+                    "inline": true
+                }
+            ],
+            "reacts": [],
+            "embed": {
+                "color": "#dc143c",
+                "description": "To join, connect to the raiding channel by clicking its name\nIf you have a rune react with the corresponding rune icon\nTo indicate your class or gear choices, react with <:Mystic:723018431275859969> <:UTMarbleSeal:720401067086446672> <:Trickster:723018431275728918> <:effusionOfAttack:1050171903224053811> <:effusionOfDexterity:1050171892797026366> <:Slow:723019533580894279> <:Ogmur:723019533597802507> <:fungalTome:1050171338515566723> <:2dpsRanged:1050156574330589295> <:3dpsRanged:1050156576259977247>\n<@&585542641975033859> to get early location react with <:nitro:701491230349066261>",
+                "thumbnail": "https://cdn.discordapp.com/emojis/1050173254121291827.png?v=1",
                 "removeThumbnail": false
             },
             "font-color": "#fefefe"

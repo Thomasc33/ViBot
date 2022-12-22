@@ -9,12 +9,12 @@ const roles = ['moderator', 'officer', 'headrl', 'vetrl', 'fsvrl', 'mrvrl', 'sec
 const channels = ['modmail', 'verification', 'manualverification', 'vetverification', 'manualvetverification', 'verificationlog', 'activeverification', 'modlogs', 'history', 'suspendlog',
     'viallog', 'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel', 'raidstatus', 'eventstatus',
     'vetstatus', 'exaltstatus', 'raidcommands', 'eventcommands', 'vetcommands', 'raidingchannels', 'eventchannels', 'vetchannels', 'runlogs', 'dmcommands', 'veriactive', 'pointlogging',
-    'veriattempts', 'modmailinfo', 'parsecurrentweek', 'pastparseweeks', 'roleassignment', 'botstatus', 'keyalerts', 'activitylog', 'raidingrules']
+    'veriattempts', 'modmailinfo', 'parsecurrentweek', 'pastparseweeks', 'roleassignment', 'botstatus', 'keyalerts', 'activitylog', 'raidingrules', 'forwardedModmailMessage']
 const categories = ['raiding', 'veteran', 'event']
 const voice = ['raidingtemplate', 'eventtemplate', 'vettemplate', 'veteventtemplate', 'lounge', 'vetlounge', 'eventlounge', 'afk']
 const voiceprefixes = ['raidingprefix', 'vetprefix']
 const backend = ['modmail', 'currentweek', 'eventcurrentweek', 'parsecurrentweek', 'verification', 'vetverification', 'points', 'supporter', 'roleassignment', 'realmeyestats', 'automod',
-    'nitroearlylocation', 'removekeyreacts', 'characterparse',
+    'nitroearlylocation', 'removekeyreacts', 'characterparse', 'forwadedMessageThumbsUpAndDownReactions',
     'giveeventroleonverification', 'eventcurrentweekdisplaysalleventrl', 'upgradedCheck', 'raidResetMonthly', 'eventResetMonthly', 'parseResetMonthly', 'exaltedEvents', 'sendmissedquota',
     'exaltsInRSA', 'allowAdvancedRuns', 'raidResetBiweekly', 'eventResetBiweekly', 'parseResetBiweekly', 'onlyUpperStaffSuspendStaff', 'giveEventRoleOnDenial2', 'disableEventsFromHeadcounts']
 const numerical = ['afktime', 'eventafktime', 'nitrocount', 'nitrocooldown', 'topkey', 'bottomkey', 'ticketlimit', 'supporterlimit', 'keyalertsage', 'waitnewkeyalert', 'prunerushersoffset',
@@ -26,9 +26,13 @@ const points = ['earlylocation', 'perrun', 'nitromultiplier', 'keypop', 'vialpop
     'o3trickster', 'o3puri', 'exaltkey', 'shattskey', 'fungalkey', 'nestkey', 'keymultiplier', 'runepop', 'steamworkKey']
 const lists = ['earlyLocation', 'runningEvents', 'warningRoles']
 const strings = ['hallsAdvancedReqsImage', 'exaltsAdvancedReqsImage']
+const quotapoints = ['voidLeading', 'cultLeading', 'shattersLeading', 'oryx3Leading', 'fungalLeading', 'nestLeading', 'steamworkLeading',
+'eventLeading', 'failedRun', 'feedback', 'feedbackOnFeedback', 'assist', 'parsing', 'rolledquota']
+const modmail = ['sendMessage', 'forwardMessage', 'closeModmail', 'blacklistUser', 'lockModmail']
 var commands = []
 
-const menus = ['roles', 'channels', 'voice', 'voiceprefixes', 'backend', 'numerical', 'runreqs', 'autoveri', 'vetverireqs', 'points', 'commands', 'categories', 'lists', 'strings']
+const menus = ['roles', 'channels', 'voice', 'voiceprefixes', 'backend', 'numerical', 'runreqs', 'autoveri',
+'vetverireqs', 'points', 'commands', 'categories', 'lists', 'strings', 'quotapoints', 'modmail']
 
 module.exports = {
     name: 'setup',
@@ -76,6 +80,8 @@ module.exports = {
                         case '12': menu(categories, 'categories', 'string'); break;
                         case '13': menu(lists, 'lists', 'array'); break;
                         case '14': menu(strings, 'strings', 'string'); break;
+                        case '15': menu(quotapoints, 'quotapoints', 'int'); break;
+                        case '16': menu(modmail, 'modmail', 'boolean'); break;
                     }
                 }
                 /**
@@ -263,7 +269,9 @@ module.exports = {
                 commands: {},
                 categories: {},
                 lists: {},
-                strings: {}
+                strings: {},
+                quotapoints: {},
+                modmail: {}
             }
         }
         for (let i of menus) {
@@ -347,6 +355,17 @@ module.exports = {
         if (!bot.settings[guild.id].strings) bot.settings[guild.id].strings = {}
         for (let i of strings) {
             if (!bot.settings[guild.id].strings[i]) bot.settings[guild.id].strings[i] = null
+        }
+        for (let i in quotapoints) {
+            let n = quotapoints[i]
+            if (!bot.settings[guild.id].quotapoints[n] && bot.settings[guild.id].quotapoints[n] != 0) {
+                bot.settings[guild.id].quotapoints[n] = getDefaultQuotaPoint(n)
+            }
+        }
+        for (let i in modmail) {
+            if (!bot.settings[guild.id].modmail[modmail[i]]) {
+                bot.settings[guild.id].modmail[modmail[i]] = true
+            }
         }
         fs.writeFileSync('./guildSettings.json', JSON.stringify(bot.settings, null, 4), err => message.channel.send(err.toString()))
     }
@@ -546,5 +565,24 @@ function getDefaultCategoryName(name) {
         case 'raiding': return 'raiding';
         case 'veteran': return 'veteran raiding'
         case 'event': return 'events'
+    }
+}
+
+function getDefaultQuotaPoint(name) {
+    switch (name) {
+        case 'voidLeading': return 1;
+        case 'cultLeading': return 1;
+        case 'shattersLeading': return 1;
+        case 'oryx3Leading': return 1;
+        case 'fungalLeading': return 1;
+        case 'nestLeading': return 1;
+        case 'steamworkLeading': return 1;
+        case 'eventLeading': return 1;
+        case 'failedRun': return 1;
+        case 'feedback': return 1;
+        case 'feedbackOnFeedback': return 1;
+        case 'assist': return 0.5;
+        case 'parsing': return 1;
+        case 'rolledquota': return 1;
     }
 }
