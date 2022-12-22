@@ -83,6 +83,7 @@ for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
     bot.commands.set(command.name, command);
 }
+const adminUsers = ['277636691227836419', '258286481167220738']
 
 
 // Bot Event Handlers
@@ -108,8 +109,42 @@ bot.on('messageCreate', message => {
         if (!bot.settings[message.guild.id].commands[command.name]) return message.channel.send('Command doesnt exist, check \`commands\` and try again');
         if (restarting.restarting && !command.allowedInRestart) return message.channel.send('Cannot execute command as a restart is pending')
         if (!message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role])) return message.channel.send('Permissions not set up for this commands role')
-        if (command.roleOverride && command.roleOverride[message.guildId]) { if (message.member.roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.roleOverride[message.guildId]]).position && (message.author.id !== '277636691227836419')) return; }
-        else if ((message.member.roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role]).position && (message.author.id !== '277636691227836419')) && (command.patreonRole ? !checkPatreon(command.patreonRole, message.author.id) : true)) return;
+
+        // Permission Manager
+        /* 
+            if (command role permission) true
+            if (Role Override permission) true
+            else { false }
+            if (command patreon role) true
+            if (Useroverride permission) true
+            if (Admin user permission) true
+
+            This order of hierachy will allow us to not spagethi code
+        */
+
+        // All of these are for user readibility, making it much easier for you reading this right now. You're welcome :)
+        let hasPermissionForCommand = false // The default will be set to FALSE, if the user has the permission, we will change this to TRUE
+        let memberPosition = message.member.roles.highest.position
+        let settings = bot.settings[message.guild.id]
+        let roleCache = message.guild.roles.cache
+        let guildId = message.guild.id
+        let memberId = message.member.id
+
+        if (memberPosition > roleCache.get(settings.roles[command.role]).position) hasPermissionForCommand = true
+        if (command.roleOverride && command.roleOverride[guildId]) {
+            if (memberPosition > roleCache.get(settings.roles[command.roleOverride]).position) hasPermissionForCommand = true
+            else hasPermissionForCommand = false
+        }
+        if (command.patreonRole) {
+            if (checkPatreon(command.patreonRole, memberId)) hasPermissionForCommand = true
+        }
+        if (command.userOverride) {
+            if (command.userOverride.includes(memberId)) hasPermissionForCommand = true
+        }
+        if (adminUsers.includes(memberId)) hasPermissionForCommand = true
+        
+        if (!hasPermissionForCommand) return message.channel.send('You do not have permission to use this command')
+        
         if (command.requiredArgs && command.requiredArgs > args.length) return message.channel.send(`Command Entered incorrecty. \`${botSettings.prefix}${command.name} ${command.args}\``)
         if (command.cooldown) {
             if (cooldowns.get(command.name)) {
@@ -587,7 +622,7 @@ async function dmHandler(message) {
                 if (!command.dmNeedsGuild) command.dmExecution(message, args, bot, null, guild, tokenDB)
                 else {
                     let member = guild.members.cache.get(message.author.id)
-                    if (member.roles.highest.position < guild.roles.cache.get(bot.settings[guild.id].roles[command.role]).position && message.author.id !== '277636691227836419') {
+                    if (member.roles.highest.position < guild.roles.cache.get(bot.settings[guild.id].roles[command.role]).position && !adminUsers.includes(message.member.id)) {
                         sendModMail();
                     } else command.dmExecution(message, args, bot, bot.dbs[guild.id], guild, tokenDB)
                 }

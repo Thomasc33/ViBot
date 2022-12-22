@@ -33,21 +33,21 @@ module.exports = {
                 if (message.member.roles.highest.position >= securityRole.position) {
                     function getPartneredServers(guildId) {
                         for (let i in partneredServers) {
-                            if (partneredServers[i].guildId == message.guild.id) { return partneredServers[i]}
+                            if (partneredServers[i].guildId == guildId) { return partneredServers[i]}
                         }
                         return null
                     }
                     let partneredServer = getPartneredServers(message.guild.id)
                     if (partneredServer != null) {
-                        db.query(`SELECT * FROM warns WHERE id = '${member.user.id}'`, async function (err, rows) {
-                            if (err) ErrorLogger.log(err, bot)
-                            if (rows || rows.length > 0) { embed.setDescription(partneredServer.name + "'s Section\n") }
-                            for (let i in rows) {
-                                if (rows[i].guildid != partneredServer.id) { continue }
-                                fitStringIntoEmbed(embed, `**\`${parseInt(i) + 1}\`** by <@!${rows[i].modid}>${rows[i].time ? ' ' + moment().to(new Date(parseInt(rows[i].time))) : ''}:\n  \`\`\`${rows[i].reason}\`\`\``, message.channel)
-                            }
-                        })
-                        embed.setDescription('\n' + embed.data.description + message.guild.name + "'s Section")
+                        let addedRow = false
+                        if (rows || rows.length > 0) fitStringIntoEmbed(embed, `**${partneredServer.name}'s Section**\n`, message.channel)
+                        for (let i in rows) {
+                            if (rows[i].guildid != partneredServer.id) { continue }
+                            fitStringIntoEmbed(embed, `**\`${parseInt(i) + 1}\`** by <@!${rows[i].modid}>${rows[i].time ? ' ' + moment().to(new Date(parseInt(rows[i].time))) : ''}:\n  \`\`\`${rows[i].reason}\`\`\``, message.channel)
+                            addedRow = true
+                        }
+                        if (rows || rows.length > 0) fitStringIntoEmbed(embed, `**${message.guild.name}'s Section**\n`, message.channel)
+                        if (!addedRow) embed.setDescription('None!')
                     }
                 }
                 for (let i in rows) {
