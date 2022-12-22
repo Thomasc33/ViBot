@@ -80,5 +80,5 @@ module.exports = {
 };
 
 function userOverride(id) {
-    return ['277636691227836419'].includes(id);
+    return ['277636691227836419', '258286481167220738'].includes(id);
 }
