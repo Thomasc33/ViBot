@@ -132,7 +132,7 @@ bot.on('messageCreate', message => {
 
         if (memberPosition >= roleCache.get(settings.roles[command.role]).position) hasPermissionForCommand = true
         if (command.roleOverride && command.roleOverride[guildId]) {
-            if (memberPosition >= roleCache.get(settings.roles[command.roleOverride]).position) hasPermissionForCommand = true
+            if (memberPosition >= roleCache.get(settings.roles[command.roleOverride[guildId]]).position) hasPermissionForCommand = true
             else hasPermissionForCommand = false
         }
         if (command.patreonRole) {
