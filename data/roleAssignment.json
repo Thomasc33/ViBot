@@ -1,75 +1,138 @@
 {
     "343704644712923138": [
         {
-            "reactName": "cultping",
-            "prettyName": "Cults",
-            "react": "<:malus:701491230332157972>"
+            "role": "cultping",
+            "name": "Cults",
+            "emojiId": "701491230332157972",
+            "emoji": "<:malus:701491230332157972>"
         },
         {
-            "reactName": "voidping",
-            "prettyName": "Voids",
-            "react": "<:void:701491230210523247>"
+            "role": "voidping",
+            "name": "Voids",
+            "emojiId": "701491230210523247",
+            "emoji": "<:void:701491230210523247>"
         },
         {
-            "reactName": "shattsReact",
-            "prettyName": "Shatters",
-            "react": "<:shatters:723001214865899532>"
+            "role": "shattsReact",
+            "name": "Shatters",
+            "emojiId": "1008068892071055512",
+            "emoji": "<:forgottenking:1008068892071055512>"
         },
         {
-            "reactName": "nestReact",
-            "prettyName": "Nests",
-            "react": "<:nest:723001215407095899>"
+            "role": "nestReact",
+            "name": "Nests",
+            "emojiId": "723001215407095899",
+            "emoji": "<:nest:723001215407095899>"
         },
         {
-            "reactName": "fungalReact",
-            "prettyName": "Fungals",
-            "react": "<:fungal:723001215696240660>"
+            "role": "fungalReact",
+            "name": "Fungals",
+            "emojiId": "723001215696240660",
+            "emoji": "<:fungal:723001215696240660>"
         },
         {
-            "reactName": "fskipReact",
-            "prettyName": "Full-Skip Voids",
-            "react": "<:SkipBoi:701491230391140453>"
+            "role": "fskipReact",
+            "name": "Full-Skip Voids",
+            "emojiId": "701491230391140453",
+            "emoji": "<:SkipBoi:701491230391140453>"
         },
         {
-            "reactName": "fameReact",
-            "prettyName": "Fame Runs",
-            "react": "<:fame:1024104144845406248>"
+            "role": "fameReact",
+            "name": "Fame Runs",
+            "emojiId": "1024104144845406248",
+            "emoji": "<:fame:1024104144845406248>"
         },
         {
-            "reactName": "steamworksping",
-            "prettyName": "Steamworks",
-            "react": "<a:steamworksPortal:1050156386547413012>"
+            "role": "steamworksping",
+            "name": "Steamworks",
+            "emojiId": "1050156386547413012",
+            "emoji": "<a:steamworksPortal:1050156386547413012>"
         }
     ],
     "708026927721480254": [
         {
-            "reactName": "o3Ping",
-            "prettyName": "Oryx 3",
-            "react": "<:oryxThree:831047591096745984>"
+            "role": "o3Ping",
+            "name": "Oryx 3",
+            "emojiId": "831047591096745984",
+            "emoji": "<:oryxThree:831047591096745984>"
         },
         {
-            "reactName": "rcPing",
-            "prettyName": "Realm Clearing",
-            "react": "<:pcave:723001215184535553>"
+            "role": "rcPing",
+            "name": "Realm Clearing",
+            "emojiId": "723001215184535553",
+            "emoji": "<:pcave:723001215184535553>"
         }
     ],
 	"451171819672698920": [
 	{
-            "reactName": "eventraider",
-            "prettyName": "All Events",
-            "react": "<:oryx:723009084814524449>"
+            "role": "eventraider",
+            "name": "All Events",
+            "emojiId": "723009084814524449",
+            "emoji": "<:oryx:723009084814524449>"
         }
 	],
     "934611202787643412": [
         {
-            "reactName": "o3Ping",
-            "prettyName": "Oryx 3",
-            "react": "<:oryxThree:831047591096745984>"
+            "role": "o3Ping",
+            "name": "Oryx 3",
+            "emojiId": "831047591096745984",
+            "emoji": "<:oryxThree:831047591096745984>"
         },
         {
-            "reactName": "rcPing",
-            "prettyName": "Realm Clearing",
-            "react": "<:pcave:723001215184535553>"
+            "role": "rcPing",
+            "name": "Realm Clearing",
+            "emojiId": "723001215184535553",
+            "emoji": "<:pcave:723001215184535553>"
+        }
+    ],
+    "701483950559985705": [
+        {
+            "role": "cultping",
+            "name": "Cults",
+            "emojiId": "701491230332157972",
+            "emoji": "<:malus:701491230332157972>"
+        },
+        {
+            "role": "voidping",
+            "name": "Voids",
+            "emojiId": "701491230210523247",
+            "emoji": "<:void:701491230210523247>"
+        },
+        {
+            "role": "shattsReact",
+            "name": "Shatters",
+            "emojiId": "1008068892071055512",
+            "emoji": "<:forgottenking:1008068892071055512>"
+        },
+        {
+            "role": "nestReact",
+            "name": "Nests",
+            "emojiId": "723001215407095899",
+            "emoji": "<:nest:723001215407095899>"
+        },
+        {
+            "role": "fungalReact",
+            "name": "Fungals",
+            "emojiId": "723001215696240660",
+            "emoji": "<:fungal:723001215696240660>"
+        },
+        {
+            "role": "fskipReact",
+            "name": "Full-Skip Voids",
+            "emojiId": "701491230391140453",
+            "emoji": "<:SkipBoi:701491230391140453>"
+        },
+        {
+            "role": "fameReact",
+            "name": "Fame Runs",
+            "emojiId": "1024104144845406248",
+            "emoji": "<:fame:1024104144845406248>"
+        },
+        {
+            "role": "steamworksping",
+            "name": "Steamworks",
+            "emojiId": "1050156386547413012",
+            "emoji": "<a:steamworksPortal:1050156386547413012>"
         }
     ]
 }

@@ -4,6 +4,7 @@ const botSettings = require('../settings.json')
 const ErrorLogger = require('../lib/logError')
 const vibotChannel = require('./vibotChannels.js')
 const modmail = require('./modmail.js')
+const roleassignment = require('./roleassignment.js')
 var watchedMessages = []
 var watchedButtons = {}; //the keys for this are the id of a VC
 //{VC_ID: {hndlr: ACTIVATE_CHANNEL_MESSAGE_HANDLER,
@@ -28,6 +29,7 @@ module.exports = {
         await updateChannel(guild.channels.cache.get(settings.channels.vetchannels))
         await updateChannel(guild.channels.cache.get(settings.channels.eventchannels))
         await updateModmailListeners(guild.channels.cache.get(settings.channels.modmail), settings, bot, db)
+        await updateRoleAssignmentListeners(guild.channels.cache.get(settings.channels.roleassignment), settings, bot, db)
         async function updateChannel(c) {
             if (!c) return;
             let messages = await c.messages.fetch()
@@ -63,6 +65,24 @@ module.exports = {
                 if (modmailMessage.components == 0) { return }
                 // Anything below this code inside this function is for open modmails, and we need to reset them
                 module.exports.addModmailUnlockButton(modmailMessage, settings, bot, db) // This will add a modmail "unlock" button to the modmailMessage
+            })
+        }
+        async function updateRoleAssignmentListeners(roleassignmentChannel, settings, bot, db) {
+            if (!settings.backend.roleassignment) return;
+            if (!roleassignmentChannel) { return } // If there is no roleassignment channel it will not continue
+            let roleassignmentChannelMessages = await roleassignmentChannel.messages.fetch() // This fetches all the messages in the roleassignment channel
+            roleassignmentChannelMessages.each(async message => { // This will loop through the roleassignment channel messages
+                if (message.author.id !== bot.user.id) return; // If the roleassignment message author is not the same id as ViBot it will not continue with this message
+                if (message.embeds.length == 0) return; // If the message has no embeds it will not continue
+                let embed = new Discord.EmbedBuilder() // This creates a empty embed, able to be edited later
+                embed.data = message.embeds[0].data // This will change the empty embed to have the message embed data
+
+                /*  We have a message -> check if it has no components
+                    **EXPLANATION** roleassignment message is supposed to have components
+                */
+                if (message.components == 0) { return }
+                // Anything below this code inside this function is for roleassignment messages, and we need to reset them
+                roleassignment.addInteractionButtons(message, bot) // This will add a roleassignment button listeners to the message
             })
         }
         for (let i in bot.afkChecks) {

@@ -172,6 +172,38 @@
             }
         ]
     },
+    "934611202787643412": {
+        "logtypes": [
+            "eventpops",
+            "o3eventsLead",
+            "o3parses",
+            "assistso3",
+            "o3runs",
+            "o3feedback"
+        ],
+        "currentweeks": [
+            {
+                "case": "o3eventsLead",
+                "currentWeekName": "currentweekEventso3"
+            },
+            {
+                "case": "o3parses",
+                "currentWeekName": "o3currentweekparses"
+            },
+            {
+                "case": "assistso3",
+                "currentWeekName": "currentweekAssistso3"
+            },
+            {
+                "case": "o3feedback",
+                "currentWeekName": "currentweeko3Feedback"
+            },
+            {
+                "case": "o3runs",
+                "currentWeekName": "currentweeko3"
+            }
+        ]
+    },
     "451171819672698920": {
         "logtypes": ["shatterspops", "eventpops", "eventpops", "successruns", "failruns", "assists", "eventslead"],
         "currentweeks": [

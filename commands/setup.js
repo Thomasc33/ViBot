@@ -1,7 +1,8 @@
 const fs = require('fs')
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
-const roles = ['moderator', 'officer', 'headrl', 'vetrl', 'fsvrl', 'mrvrl', 'security', 'fullskip', 'developer', 'rl', 'almostrl', 'trialrl', 'headeventrl', 'eventrl',
+const roles = ['admin', 'moderator', 'officer', 'headrl', 'headdev', 'assistantdev', 'vetrl', 'fsvrl', 'mrvrl', 'security', 'fullskip', 'developer', 'rl', 'almostrl',
+    'trialrl', 'headeventrl', 'eventrl',
     'rusher', 'nitro', 'lol', 'accursed', 'vetraider', 'raider', 'eventraider', 'muted',
     'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'keyjesus', 'moddedkey', 'topkey', 'bottomkey', 'cultping', 'voidping', 'shattsReact', 'fungalReact', 'nestReact',
     'fskipReact', 'fameReact', 'rcPing', 'o3Ping', 'eventBoi', 'veteventrl',
@@ -80,7 +81,7 @@ module.exports = {
                         case '12': menu(categories, 'categories', 'string'); break;
                         case '13': menu(lists, 'lists', 'array'); break;
                         case '14': menu(strings, 'strings', 'string'); break;
-                        case '15': menu(quotapoints, 'quotapoints', 'int'); break;
+                        case '15': menu(quotapoints, 'quotapoints', 'float'); break;
                         case '16': menu(modmail, 'modmail', 'boolean'); break;
                     }
                 }
@@ -116,7 +117,7 @@ module.exports = {
                                 message.react('✅')
                                 menuCollector.stop()
                             } else message.channel.send('Invalid number recieved. Please try again')
-                        } else if (['string', 'boolean', 'int'].includes(type)) {
+                        } else if (['string', 'boolean', 'int', 'float'].includes(type)) {
                             menuCollector.stop()
                             setupEmbed.setDescription(`\`\`\`Please enter in the new value\`\`\`\nCurrent Value:\n**${array[parseInt(num) - 1]}** = ${bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]]}`)
                             setupMessage.edit({ embeds: [setupEmbed] })
@@ -140,6 +141,7 @@ module.exports = {
                                             }
                                             break;
                                         case 'int': bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]] = parseInt(mes.content); break;
+                                        case 'float': bot.settings[message.guild.id][arrayName][[array[parseFloat(num) - 1]]] = parseFloat(mes.content); break;
                                     }
                                     fs.writeFileSync('./guildSettings.json', JSON.stringify(bot.settings, null, 4), err => message.channel.send(err.toString()))
                                     setupEmbed.setDescription(change)

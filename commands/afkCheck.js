@@ -64,8 +64,8 @@ module.exports = {
         let runType = getRunType(symbol, message.guild.id);
         if (isAdvanced && !bot.settings[message.guild.id].backend.allowAdvancedRuns) return
         if (!runType && message.member.roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles.vetrl).position) return message.channel.send('Run Type Not Recognized')
-        if (!runType) runType = await getTemplate(message, afkTemplates, shift).catch(er => message.channel.send(`Unable to get template. Error: \`${er}\``))
-        if (!runType) return
+        if (!runType) runType = await getTemplate(message, afkTemplates, shift)
+        if (!runType) return await message.channel.send(`Could not find run type ${symbol}`)
 
         //Check for keycount
         let keyCount
@@ -256,6 +256,7 @@ class afkCheck {
         this.runInfoChannel = guild.channels.cache.get(this.settings.channels.runlogs)
         this.officialRusher = guild.roles.cache.get(this.settings.roles.rusher)
         this.nitroBooster = guild.roles.cache.get(this.settings.roles.nitro)
+        this.supporter = guild.roles.cache.get(this.settings.roles.supporter)
         this.leaderOnLeave = guild.roles.cache.get(this.settings.roles.lol)
         this.trialRaidLeader = guild.roles.cache.get(this.settings.roles.trialrl)
         this.keys = []
@@ -1544,10 +1545,8 @@ function getRunType(char, guildid) {
 }
 
 async function getTemplate(message, afkTemplates, runType) {
-    return new Promise(async (res, rej) => {
-        if (afkTemplates[message.author.id] && afkTemplates[message.author.id][runType.toLowerCase()]) return res(afkTemplates[message.author.id][runType.toLowerCase()])
-        else rej(`No templates for user under: ${runType}`)
-    })
+    if (afkTemplates[message.author.id] && afkTemplates[message.author.id][runType.toLowerCase()]) return afkTemplates[message.author.id][runType.toLowerCase()]
+    else return null
 }
 
 async function destroyInactiveRuns() {

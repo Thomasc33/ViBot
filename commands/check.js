@@ -130,8 +130,8 @@ module.exports = {
                         unansweredModmails.push(`Could not find the modmail channel <#${settings.channels.modmail}>`);
                     else {
                         const messages = await modmail.messages.fetch({ limit: 100 })
-                        messages.each(m => {
-                            if (m.reactions.cache.has('🔑') && m.author.bot)
+                        messages.each(async m => {
+                            if (m.components.length > 0 && m.author.bot)
                                 unansweredModmails.push(`[${m.nickname || 'Module'}](${m.url})`)
                         })
                     }
@@ -248,7 +248,7 @@ module.exports = {
             else {
                 let messages = await modMailChannel.messages.fetch({ limit: 100 })
                 messages.each(m => {
-                    if (m.reactions.cache.has('🔑') && m.author.id == bot.user.id) {
+                    if (m.components.length > 0 && m.author.id == bot.user.id) {
                         if (checkEmbed.data.fields[4].value == 'None!') checkEmbed.data.fields[4].value = `[Module](${m.url})`
                         else checkEmbed.data.fields[4].value += `, [Module](${m.url})`
                     }

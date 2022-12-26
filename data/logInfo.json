@@ -581,6 +581,100 @@
             "currentweek": "currentweekAssistso3"
         }
     },
+    "934611202787643412": {
+        "main": [
+            {
+                "key": "o",
+                "name": "o3",
+                "alias": [
+                    "o3",
+                    "oryx"
+                ],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "o3leads",
+                "currentweek": "currentweeko3",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/831047591096745984.png?v=1",
+                "desc": "`Oryx` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweeko3",
+                    "currentweekAssistso3",
+                    "currentweeko3Feedback",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "p",
+                "name": "parse",
+                "alias": [
+                    "parse"
+                ],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": false,
+                "main": "o3parses",
+                "currentweek": "o3currentweekparses",
+                "color": "#8c00ff",
+                "icon": null,
+                "desc": "`Parse`",
+                "toUpdate": "security",
+                "toDisplay": [
+                    "o3currentweekparses"
+                ]
+            },
+            {
+                "key": "e",
+                "name": "events",
+                "alias": [
+                    "event",
+                    "events"
+                ],
+                "multiply": 10,
+                "allowAssists": false,
+                "confirm": true,
+                "confirmSuffix": "minutes",
+                "main": "o3eventsLead",
+                "currentweek": "currentweekEventso3",
+                "color": "#00FF00",
+                "icon": "https://cdn.discordapp.com/emojis/831052176507535360.png?v=1",
+                "desc": "`Event` run",
+                "toUpdate": "events",
+                "toDisplay": [
+                    "currentweekEventso3"
+                ]
+            },
+            {
+                "key": "f",
+                "name": "feedback",
+                "alias": [
+                    "feedback",
+                    "fb"
+                ],
+                "multiply": 2,
+                "allowAssists": false,
+                "confirm": false,
+                "main": "o3feedback",
+                "currentweek": "currentweeko3Feedback",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/858920770806087710.png?v=1",
+                "desc": "`Feedback`",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweeko3",
+                    "currentweekAssistso3",
+                    "currentweeko3Feedback",
+                    "rollingQuotao3"
+                ]
+            }
+        ],
+        "assist": {
+            "main": "assistso3",
+            "currentweek": "currentweekAssistso3"
+        }
+    },
     "451171819672698920": {
         "main": [
             {

@@ -389,10 +389,9 @@ bot.on("ready", async () => {
     bot.guilds.cache.each(g => {
         if (!emojiServers.includes(g.id)) {
             vibotChannels.update(g, bot).catch(er => { })
-            if (bot.settings[g.id].backend.modmail) modmail.init(g, bot, bot.dbs[g.id]).catch(er => { ErrorLogger.log(er, bot); })
+            // if (bot.settings[g.id].backend.modmail) modmail.init(g, bot, bot.dbs[g.id]).catch(er => { ErrorLogger.log(er, bot); })
             if (bot.settings[g.id].backend.verification) verification.init(g, bot, bot.dbs[g.id]).catch(er => { ErrorLogger.log(er, bot); })
             if (bot.settings[g.id].backend.vetverification) vetVerification.init(g, bot, bot.dbs[g.id]).catch(er => { ErrorLogger.log(er, bot); })
-            if (bot.settings[g.id].backend.roleassignment) roleAssignment.init(g, bot).catch(er => { ErrorLogger.log(er, bot); })
             botstatus.init(g, bot, bot.dbs[g.id])
         }
     })
@@ -493,11 +492,7 @@ bot.on('guildMemberRemove', member => {
 bot.on('messageReactionAdd', async (r, u) => {
     if (u.bot) return
     //modmail
-    if (r.message.partial)
-        r.message = await r.message.fetch();
-    if (r.emoji.name == '🔑' && r.message.guild && r.message.author.id == bot.user.id && r.message.guild && bot.settings[r.message.guild.id] && r.message.channel.id == bot.settings[r.message.guild.id].channels.modmail) {
-        modmail.modmailLogic(r.message, bot.dbs[r.message.guild.id], u)
-    }
+    if (r.message.partial) r.message = await r.message.fetch();
     //spongemock
     if (r.emoji.id == '812959258638549022') {
         let content = [...r.message.content]

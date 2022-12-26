@@ -3,7 +3,7 @@
         "totalUnexcused": "totalUnexcused",
         "consecutiveUnexcused": "consecutiveUnexcused",
         "consecutiveLeave": "consecutiveLeave",
-        "ignoreRoles": ["officer", "headrl", "moderator", "headeventrl", "admin"],
+        "ignoreRoles": ["officer", "headrl", "moderator", "headeventrl", "admin", "headdev"],
         "ignoreRolesDisplay": [],
         "quotas": [{
                 "id": "raiding",
@@ -31,6 +31,7 @@
                 }
             },
             {
+                "ignoreRolesDisplay": ["officer", "headrl", "moderator", "headeventrl", "admin", "headdev"],
                 "id": "security",
                 "name": "Security Quota",
                 "roles": ["security"],
@@ -77,6 +78,7 @@
                 }
             },
             {
+                "ignoreRolesDisplay": ["officer", "headrl", "moderator", "headeventrl", "admin", "headdev"],
                 "id": "security",
                 "name": "Security Quota",
                 "roles": ["security"],
@@ -105,10 +107,10 @@
             "currentweek": "currentweek",
             "pastweeks": "pastweeks",
             "values": [
-                { "column": "currentweeko3", "name": "Oryx Runs", "value": 1, "isRun": true },
-                { "column": "currentweeko3Feedback", "name": "Feedback", "value": 1.5 },
-                { "column": "currentweekAssistso3", "name": "Assists", "value": 0.5 },
-                { "column": "rollingQuotao3", "name": "Rolled Quota", "value": 1, "rolling": true }
+                { "column": "currentweeko3", "emoji": "<:oryxThree:831047591096745984>", "name": "Oryx Runs", "value": 1, "isRun": true },
+                { "column": "currentweeko3Feedback", "emoji": "<:feedback:858920770806087710>", "name": "Feedback", "value": 1.5 },
+                { "column": "currentweekAssistso3", "emoji": ":handshake:", "name": "Assists", "value": 0.5 },
+                { "column": "rollingQuotao3", "emoji": ":hourglass:", "name": "Rolled Quota", "value": 1, "rolling": true }
             ]
         }, {
             "id": "security",
@@ -119,8 +121,54 @@
             "currentweek": "parsecurrentweek",
             "pastweeks": "pastparseweeks",
             "values": [
-                { "column": "o3currentweekparses", "name": "Parses", "value": 1 },
-                { "column": "rollingsecurityquotao3", "name": "Rolled Quota", "value": 1, "rolling": true }
+                { "column": "o3currentweekparses", "emoji": ":mag:", "name": "Parses", "value": 1 },
+                { "column": "rollingsecurityquotao3", "emoji": ":hourglass:", "name": "Rolled Quota", "value": 1, "rolling": true }
+            ]
+        }, {
+            "id": "events",
+            "name": "Realm Organizer Quota",
+            "roles": ["eventrl"],
+            "quota": [2],
+            "noexcuses": true,
+            "reset": "never",
+            "currentweek": "eventcurrentweek",
+            "pastweeks": "eventpastweeks",
+            "values": [
+                { "column": "currentweekEventso3", "name": "Events", "value": 1 }
+            ]
+        }]
+    },
+    "934611202787643412": {
+        "totalUnexcused": "totalUnexcusedo3",
+        "consecutiveUnexcused": "consecutiveUnexcusedo3",
+        "consecutiveLeave": "consecutiveLeaveo3",
+        "ignoreRoles": ["officer", "headrl", "moderator", "headeventrl"],
+        "ignoreRolesDisplay": [],
+        "quotas": [{
+            "id": "raiding",
+            "name": "Raid Leader Quota",
+            "roles": ["rl", "almostrl"],
+            "quota": [3, 3],
+            "reset": "weekly",
+            "currentweek": "currentweek",
+            "pastweeks": "pastweeks",
+            "values": [
+                { "column": "currentweeko3", "emoji": "<:oryxThree:831047591096745984>", "name": "Oryx Runs", "value": 1, "isRun": true },
+                { "column": "currentweeko3Feedback", "emoji": "<:feedback:858920770806087710>", "name": "Feedback", "value": 1.5 },
+                { "column": "currentweekAssistso3", "emoji": ":handshake:", "name": "Assists", "value": 0.5 },
+                { "column": "rollingQuotao3", "emoji": ":hourglass:", "name": "Rolled Quota", "value": 1, "rolling": true }
+            ]
+        }, {
+            "id": "security",
+            "name": "Security Quota",
+            "roles": ["security", "warden"],
+            "quota": [22, 30],
+            "reset": "weekly",
+            "currentweek": "parsecurrentweek",
+            "pastweeks": "pastparseweeks",
+            "values": [
+                { "column": "o3currentweekparses", "emoji": ":mag:", "name": "Parses", "value": 1 },
+                { "column": "rollingsecurityquotao3", "emoji": ":hourglass:", "name": "Rolled Quota", "value": 1, "rolling": true }
             ]
         }, {
             "id": "events",

@@ -113,7 +113,11 @@ async function interactionHandler(interaction, settings, bot, db) {
     let modmailChannel = guild.channels.cache.get(settings.channels.modmail)
     let modmailMessageID = modmailMessage.embeds[0].data.footer.text.split(/ +/g)[5]
     let raider = guild.members.cache.get(modmailMessage.embeds[0].data.footer.text.split(/ +/g)[2])
-    if (!raider) { failedEmbed.setDescription(`Raider was not found.`); return await interaction.reply({ embeds: [failedEmbed] }); }
+    if (!raider) {
+        embed.addFields({ name: `This modmail has been closed automatically`, value: `The raider in this modmail is no longer in this server.\nI can no longer proceed with this modmail`, inline: false })
+        interaction.message.edit({ embeds: [embed], components: [] })
+        return await interaction.deferUpdate()
+    }
     let directMessages = await raider.user.createDM()
 
     function checkInServer() {
