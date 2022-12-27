@@ -110,13 +110,12 @@ module.exports = {
                         suspensionLog.send({ embeds: [embed] }).then(member.user.send({ embeds: [embed] }))
                     } else {
                         let userRolesString = '', userRoles = []
-                        const roles = [...member.roles.cache.filter(r => !r.managed && r.id != settings.roles.nitro).values()];
+                        const roles = [...member.roles.cache.filter(r => !r.managed && (r.id != settings.roles.nitro || r.id != settings.roles.supporter)).values()];
                         embed.data.fields[3].value = roles.join(', ') || 'None!';
                         member.roles.cache.each(r => {
-                            if (!r.managed && r.id != settings.roles.nitro) {
-                                userRoles.push(r.id)
-                                userRolesString = userRolesString.concat(`${r.id} `)
-                            }
+                            if (r.managed || r.id == settings.roles.nitro || r.id == settings.roles.supporter) { return }
+                            userRoles.push(r.id)
+                            userRolesString = userRolesString.concat(`${r.id} `)
                         })
                         messageId = await suspensionLog.send({ embeds: [embed] });
                         await member.roles.remove(userRoles)

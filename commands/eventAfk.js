@@ -37,7 +37,7 @@ module.exports = {
             keyPopPointsOverride: event.keyPopPoints,
             embed: {
                 color: event.color,
-                description: `To join, **click here** {voicechannel}\nIf you have a key react with <${event.keyEmote}>\nTo indicate your class or gear choices, react with ${event.reacts.map(m => `${bot.emojis.cache.get(botSettings.emoteIDs[m])}`).join(' ')}\nIf you have the role <@&${settings.roles.nitro}> react with <:nitro:701491230349066261> to get into VC`
+                description: `To join, **click here** {voicechannel}\nIf you have a key react with <${event.keyEmote}>\nTo indicate your class or gear choices, react with ${event.reacts.map(m => `${bot.emojis.cache.get(botSettings.emoteIDs[m])}`).join(' ')}\nIf you have the role <@&${settings.roles.nitro}>${settings.roles.supporter ? `, <@&${settings.roles.supporter}>` : ''} react with <:nitro:701491230349066261> to get into VC`
             }
         }
 

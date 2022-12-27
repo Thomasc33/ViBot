@@ -13,10 +13,9 @@ module.exports = {
         let reason = 'seppuku'
         let userRolesString = '', userRoles = []
         message.member.roles.cache.each(r => {
-            if (!r.managed && r.id != settings.roles.nitro) {
-                userRoles.push(r.id)
-                userRolesString = userRolesString.concat(`${r.id} `)
-            }
+            if (!r.managed || r.id == settings.roles.nitro || r.id == settings.roles.supporter) { return }
+            userRoles.push(r.id)
+            userRolesString = userRolesString.concat(`${r.id} `)
         })
         await message.member.roles.remove(userRoles)
         setTimeout(() => { message.member.roles.add(suspendedRole); }, 1000)
