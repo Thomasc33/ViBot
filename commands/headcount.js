@@ -23,9 +23,12 @@ module.exports = {
         if (![settings.categories.raiding, settings.categories.event, settings.categories.veteran].includes(message.channel.parent.name.toLowerCase())) return message.channel.send("Try again in a correct category");
         if (!bot) bot = bott;
 
-        let symbol = args[0].charAt(0).toLowerCase();
-        if (symbol == 'a' && args[0].length > 1)
-            symbol += args[0].charAt(1).toLowerCase();
+        let symbol = args[0].toLowerCase();
+        let isAvanced = false;
+        if (symbol.charAt(0) == 'a' && args[0].length > 1){
+            isAvanced = true;
+            // symbol += args[0].charAt(1).toLowerCase();
+            }
         const runType = afkCheck.getRunType(symbol, message.guild.id)
         const eventTypes = eventAfk.getMatchingEvents(args[0], eventFile, message.guild.id)
         if (runType && (message.channel.parent.name.toLowerCase() != settings.categories.event || settings.categories.event == settings.categories.raiding)) {
@@ -80,9 +83,10 @@ module.exports = {
                     .setColor(run.embed ? run.embed.color : run.color)
                     .setTimestamp()
 
-                if (symbol.charAt(0) == 'a')
-                    embed.data.description += `\n\n**__Advanced Runs__**\nThis is an **advanced run**, meaning there are extended requirements you **MUST** meet. You must be both **__8/8__** and follow the requirements sheet listed in the afk check.\n\nIf you are caught not meeting these requirements, you will be removed from the run and suspended.`;
-
+                if (isAvanced){
+                    embed.data.description += `\n\n**__Advanced Runs__**\nThis is an **advanced run**, meaning there are extended requirements you **MUST** meet. You must be both **__8/8__** and follow the requirements sheet listed below.\n\nIf you are caught not meeting these requirements, you will be removed from the run and suspended.`;
+                    embed.setImage(settings.strings.hallsAdvancedReqsImage);
+                }
                 if (message.author.avatarURL()) embed.setAuthor({ name: `Headcount for ${run.runName} by ${message.member.nickname}`, iconURL: message.author.avatarURL() })
                 const pingRole = run.pingRole || run.rolePing;
                 const pings = pingRole ? (typeof pingRole != "string" ? pingRole.map(r => `<@&${settings.roles[r]}>`).join(' ') : `<@&${settings.roles[pingRole]}>`) + ' @here' : '@here';
