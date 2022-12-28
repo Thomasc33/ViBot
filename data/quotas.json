@@ -62,7 +62,7 @@
                 "values": [
                     { "column": "currentweekVoid", "emoji": "<:void:701491230210523247>", "name": "Voids", "value": 1, "isRun": true },
                     { "column": "currentweekCult", "emoji": "<:malus:701491230332157972>", "name": "Cults", "value": 1, "isRun": true },
-                    { "column": "currentweekShatters", "emoji": "<:forgottenking:1008068892071055512>", "name": "Shatters", "value": 2, "isRun": true },
+                    { "column": "currentweekShatters", "emoji": "<:forgottenking:1008068892071055512>", "name": "Shatters", "value": 2.5, "isRun": true },
                     { "column": "currentweekFungals", "emoji": "<:crystal:1008068893056696410>", "name": "Fungals", "value": 1, "isRun": true },
                     { "column": "currentweekNests", "emoji": "<:queenbee:1008068890791780433>", "name": "Nests", "value": 0.5, "isRun": true },
                     { "column": "currentweekSteamwork", "emoji": "<:SteamworksBoss:1050156577920917574>", "name": "Steamworks", "value": 1, "isRun": true },
