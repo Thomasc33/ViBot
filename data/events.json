@@ -1868,6 +1868,7 @@
         "vcCap": 45,
         "timeLimit": 300,
         "keyCount": 1,
+        "thumbnail": "https://i.imgur.com/wSoAGoR.png",
         "color": "#7a7a7a",
         "isExalt": true,
         "earlyLocationReacts": [
@@ -1962,6 +1963,7 @@
         "vcCap": 45,
         "timeLimit": 300,
         "keyCount": 1,
+        "thumbnail": "https://i.imgur.com/wSoAGoR.png",
         "color": "#7a7a7a",
         "isExalt": true,
         "earlyLocationReacts": [
@@ -2025,20 +2027,24 @@
         "reacts": [],
         "earlyLocationCost": 15
     },
-    "343704644712923138": {
+    "701483950559985705": {
         "fungal": {
             "name": "Fungal Cavern",
             "runType": "Fungal Cavern",
             "runName": "Fungal Cavern",
             "aliases": [
-                "fc"
+                "fc",
+                "fungal"
             ],
             "enabled": true,
             "keyEmoteID": "723001429614395402",
             "keyEmote": ":fungalK:723001429614395402",
             "portalEmojiID": "723001215696240660",
             "portalEmote": ":fungal:723001215696240660",
+            "headcountEmote": "723001215696240660",
+            "headcountOnAfk": true,
             "runLogName": "fungalRuns",
+            "thumbnail": "https://i.imgur.com/5DfG6i5.png",
             "color": "#0ba6ee",
             "keyCount": 3,
             "keyPopPoints": 5,
@@ -2099,7 +2105,7 @@
             "runType": "Advanced Fungal Cavern",
             "runName": "Advanced Fungal Cavern",
             "aliases": [
-                "af",
+                "afc",
                 "afun",
                 "afungal",
                 "advf",
@@ -2110,7 +2116,10 @@
             "keyEmote": ":fungalK:723001429614395402",
             "portalEmojiID": "723001215696240660",
             "portalEmote": ":fungal:723001215696240660",
+            "headcountEmote": "723001215696240660",
+            "headcountOnAfk": true,
             "runLogName": "fungalRuns",
+            "thumbnail": "https://i.imgur.com/5DfG6i5.png",
             "color": "#0ba6ee",
             "twoPhase": true,
             "keyCount": 3,
@@ -2178,6 +2187,9 @@
             "keyEmote": ":nestK:723001429693956106",
             "portalEmojiID": "723001215407095899",
             "portalEmote": ":nest:723001215407095899",
+            "headcountEmote": "723001215407095899",
+            "headcountOnAfk": true,
+            "thumbnail": "https://i.imgur.com/hUWc3IV.png",
             "color": "#ffd700",
             "twoPhase": true,
             "reacts": [
@@ -2248,6 +2260,9 @@
             "keyEmote": ":nestK:723001429693956106",
             "portalEmojiID": "723001215407095899",
             "portalEmote": ":nest:723001215407095899",
+            "headcountEmote": "723001215407095899",
+            "headcountOnAfk": true,
+            "thumbnail": "https://i.imgur.com/hUWc3IV.png",
             "color": "#ffd700",
             "twoPhase": true,
             "keyCount": 3,
@@ -2309,6 +2324,7 @@
             "runType": "Full-skip Nest",
             "runName": "Full-skip Nest",
             "aliases": [
+                "fn",
                 "fsnest"
             ],
             "enabled": true,
@@ -2317,6 +2333,9 @@
             "portalEmojiID": "723001215407095899",
             "portalEmote": ":nest:723001215407095899",
             "runLogName": "nestRuns",
+            "headcountEmote": "723001215407095899",
+            "headcountOnAfk": true,
+            "thumbnail": "https://i.imgur.com/hUWc3IV.png",
             "color": "#ffd700",
             "expose": true,
             "twoPhase": true,
@@ -2387,7 +2406,450 @@
             "keyEmote": ":nestK:723001429693956106",
             "portalEmojiID": "723001215407095899",
             "portalEmote": ":nest:723001215407095899",
+            "headcountEmote": "723001215407095899",
+            "headcountOnAfk": true,
             "runLogName": "nestRuns",
+            "thumbnail": "https://i.imgur.com/hUWc3IV.png",
+            "color": "#ffd700",
+            "reacts": [
+                "Plane",
+                "Collo",
+                "Knight",
+                "Curse",
+                "Expose",
+                "Warrior",
+                "Paladin",
+                "Bard",
+                "trickster",
+                "Priest"
+            ],
+            "twoPhase": true,
+            "keyCount": 3,
+            "keyPopPoints": 5,
+            "earlyLocationCost": 15,
+            "vcCap": 30,
+            "pingRole": "nestReact",
+            "isExalt": true,
+            "isAdvanced": true,
+            "earlyLocationReacts": [
+                {
+                    "emoteID": "723019533580894279",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "slow",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emoteID": "723019533597802507",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "armorbreak",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emoteID": "720401067086446672",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "mseal",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emoteID": "944786433082818591",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "daze",
+                    "noConfirm": false,
+                    "noLocation": false
+                }
+            ]
+        }
+    },
+    "343704644712923138": {
+        "fungal": {
+            "name": "Fungal Cavern",
+            "runType": "Fungal Cavern",
+            "runName": "Fungal Cavern",
+            "aliases": [
+                "fc",
+                "fungal"
+            ],
+            "enabled": true,
+            "keyEmoteID": "723001429614395402",
+            "keyEmote": ":fungalK:723001429614395402",
+            "portalEmojiID": "723001215696240660",
+            "portalEmote": ":fungal:723001215696240660",
+            "headcountEmote": "723001215696240660",
+            "headcountOnAfk": true,
+            "runLogName": "fungalRuns",
+            "thumbnail": "https://i.imgur.com/5DfG6i5.png",
+            "color": "#0ba6ee",
+            "keyCount": 3,
+            "keyPopPoints": 5,
+            "earlyLocationCost": 15,
+            "vcCap": 40,
+            "twoPhase": true,
+            "pingRole": "fungalReact",
+            "isExalt": true,
+            "reacts": [
+                "Plane",
+                "Collo",
+                "Qot",
+                "Curse",
+                "Expose",
+                "Warrior",
+                "Paladin",
+                "Bard",
+                "trickster",
+                "Priest"
+            ],
+            "earlyLocationReacts": [
+                {
+                    "emoteID": "701491229925310575",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "knight",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emoteID": "723019533580894279",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "slow",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emoteID": "723019533597802507",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "armorbreak",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emoteID": "720401067086446672",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "mseal",
+                    "noConfirm": false,
+                    "noLocation": false
+                }
+            ]
+        },
+        "advancedfungal": {
+            "name": "Advanced Fungal Cavern",
+            "runType": "Advanced Fungal Cavern",
+            "runName": "Advanced Fungal Cavern",
+            "aliases": [
+                "afc",
+                "afun",
+                "afungal",
+                "advf",
+                "advfungal"
+            ],
+            "enabled": true,
+            "keyEmoteID": "723001429614395402",
+            "keyEmote": ":fungalK:723001429614395402",
+            "portalEmojiID": "723001215696240660",
+            "portalEmote": ":fungal:723001215696240660",
+            "headcountEmote": "723001215696240660",
+            "headcountOnAfk": true,
+            "runLogName": "fungalRuns",
+            "thumbnail": "https://i.imgur.com/5DfG6i5.png",
+            "color": "#0ba6ee",
+            "twoPhase": true,
+            "keyCount": 3,
+            "keyPopPoints": 5,
+            "earlyLocationCost": 15,
+            "vcCap": 30,
+            "pingRole": "fungalReact",
+            "isExalt": true,
+            "isAdvanced": true,
+            "reacts": [
+                "Plane",
+                "Collo",
+                "Qot",
+                "Curse",
+                "Expose",
+                "Warrior",
+                "Paladin",
+                "Bard",
+                "trickster",
+                "Priest"
+            ],
+            "earlyLocationReacts": [
+                {
+                    "emoteID": "701491229925310575",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "knight",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emoteID": "723019533580894279",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "slow",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emoteID": "723019533597802507",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "armorbreak",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emoteID": "720401067086446672",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "mseal",
+                    "noConfirm": false,
+                    "noLocation": false
+                }
+            ]
+        },
+        "nest": {
+            "name": "Nest",
+            "runType": "Nest",
+            "runName": "Nest",
+            "aliases": [],
+            "enabled": true,
+            "runLogName": "nestRuns",
+            "keyEmoteID": "723001429693956106",
+            "keyEmote": ":nestK:723001429693956106",
+            "portalEmojiID": "723001215407095899",
+            "portalEmote": ":nest:723001215407095899",
+            "headcountEmote": "723001215407095899",
+            "headcountOnAfk": true,
+            "thumbnail": "https://i.imgur.com/hUWc3IV.png",
+            "color": "#ffd700",
+            "twoPhase": true,
+            "reacts": [
+                "Plane",
+                "Collo",
+                "Knight",
+                "Curse",
+                "Expose",
+                "Warrior",
+                "Paladin",
+                "Bard",
+                "trickster",
+                "Priest"
+            ],
+            "keyCount": 3,
+            "keyPopPoints": 5,
+            "earlyLocationCost": 15,
+            "vcCap": 40,
+            "pingRole": "nestReact",
+            "isExalt": true,
+            "earlyLocationReacts": [
+                {
+                    "emoteID": "723019533580894279",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "slow",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emoteID": "723019533597802507",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "armorbreak",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emoteID": "720401067086446672",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "mseal",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emoteID": "944786433082818591",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "daze",
+                    "noConfirm": false,
+                    "noLocation": false
+                }
+            ]
+        },
+        "advancednest": {
+            "name": "Advanced Nest",
+            "runType": "Advanced Nest",
+            "runName": "Advanced Nest",
+            "aliases": [
+                "an",
+                "anest",
+                "advnest"
+            ],
+            "enabled": true,
+            "runLogName": "nestRuns",
+            "keyEmoteID": "723001429693956106",
+            "keyEmote": ":nestK:723001429693956106",
+            "portalEmojiID": "723001215407095899",
+            "portalEmote": ":nest:723001215407095899",
+            "headcountEmote": "723001215407095899",
+            "headcountOnAfk": true,
+            "thumbnail": "https://i.imgur.com/hUWc3IV.png",
+            "color": "#ffd700",
+            "twoPhase": true,
+            "keyCount": 3,
+            "keyPopPoints": 5,
+            "earlyLocationCost": 15,
+            "vcCap": 30,
+            "pingRole": "nestReact",
+            "isExalt": true,
+            "isAdvanced": true,
+            "reacts": [
+                "Plane",
+                "Collo",
+                "Knight",
+                "Curse",
+                "Expose",
+                "Warrior",
+                "Paladin",
+                "Bard",
+                "trickster",
+                "Priest"
+            ],
+            "earlyLocationReacts": [
+                {
+                    "emoteID": "723019533580894279",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "slow",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emoteID": "723019533597802507",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "armorbreak",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emoteID": "720401067086446672",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "mseal",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emoteID": "944786433082818591",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "daze",
+                    "noConfirm": false,
+                    "noLocation": false
+                }
+            ]
+        },
+        "fullskipnest": {
+            "name": "Full-skip Nest",
+            "runType": "Full-skip Nest",
+            "runName": "Full-skip Nest",
+            "aliases": [
+                "fn",
+                "fsnest"
+            ],
+            "enabled": true,
+            "keyEmoteID": "723001429693956106",
+            "keyEmote": ":nestK:723001429693956106",
+            "portalEmojiID": "723001215407095899",
+            "portalEmote": ":nest:723001215407095899",
+            "runLogName": "nestRuns",
+            "headcountEmote": "723001215407095899",
+            "headcountOnAfk": true,
+            "thumbnail": "https://i.imgur.com/hUWc3IV.png",
+            "color": "#ffd700",
+            "expose": true,
+            "twoPhase": true,
+            "keyCount": 3,
+            "keyPopPoints": 5,
+            "earlyLocationCost": 15,
+            "vcCap": 40,
+            "pingRole": "nestReact",
+            "isExalt": true,
+            "reacts": [
+                "Plane",
+                "Collo",
+                "Knight",
+                "Curse",
+                "Expose",
+                "Warrior",
+                "Paladin",
+                "Bard",
+                "trickster",
+                "Priest"
+            ],
+            "earlyLocationReacts": [
+                {
+                    "emoteID": "723019533580894279",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "slow",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emoteID": "723019533597802507",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "armorbreak",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emoteID": "720401067086446672",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "mseal",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emoteID": "944786433082818591",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "daze",
+                    "noConfirm": false,
+                    "noLocation": false
+                }
+            ]
+        },
+        "advancedfullskipnest": {
+            "name": "Advanced Full-skip Nest",
+            "runType": "Advanced Full-skip Nest",
+            "runName": "Advanced Full-skip Nest",
+            "aliases": [
+                "afn",
+                "afsn",
+                "afsnest"
+            ],
+            "enabled": true,
+            "keyEmoteID": "723001429693956106",
+            "keyEmote": ":nestK:723001429693956106",
+            "portalEmojiID": "723001215407095899",
+            "portalEmote": ":nest:723001215407095899",
+            "headcountEmote": "723001215407095899",
+            "headcountOnAfk": true,
+            "runLogName": "nestRuns",
+            "thumbnail": "https://i.imgur.com/hUWc3IV.png",
             "color": "#ffd700",
             "reacts": [
                 "Plane",
