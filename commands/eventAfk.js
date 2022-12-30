@@ -26,7 +26,7 @@ module.exports = {
             postAfkCheck: !!oldStyleAfkGuilds.includes(message.guild.id),
             runLogName: event.runLogName,
             startDelay: 5000,
-            vcCap: 45,
+            vcCap: event.vcCap,
             timeLimit: 300,
             keyCount: 3,
             color: event.color,
