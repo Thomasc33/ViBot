@@ -18,7 +18,7 @@ module.exports = {
         //check for vet run
         var eventType = args[0]
         let event = getEventType(eventType, eventFile, message.guild.id)
-        if (!event) return message.channel.send(`${eventType} does not exist.`);
+        if (!event) return message.channel.send(`${eventType} does not exist. Do \`\`;events\`\` to see every event type`);
         event = {
             ...event,
             isEvent: true,
@@ -37,26 +37,13 @@ module.exports = {
             keyPopPointsOverride: event.keyPopPoints,
             embed: {
                 color: event.color,
-                description: `To join, **click here** {voicechannel}\nIf you have a key react with <${event.keyEmote}>\nTo indicate your class or gear choices, react with ${event.reacts.map(m => `${bot.emojis.cache.get(botSettings.emoteIDs[m])}`).join(' ')}\nIf you have the role <@&${settings.roles.nitro}>${settings.roles.supporter ? `, <@&${settings.roles.supporter}>` : ''} react with <:nitro:701491230349066261> to get into VC`,
-                thumbnail: event.thumbnail
+                thumbnail: event.thumbnail,
+                description: `To join, **click here** {voicechannel}\n${event.keyEmote ? `If you have a key react with <${event.keyEmote}>\n` : ''}${event.reacts.length > 0 ? `To indicate your class or gear choices, react with ${event.reacts.map(m => `${bot.emojis.cache.get(botSettings.emoteIDs[m])}`).join(' ')}\n` : ''}If you have the role <@&${settings.roles.nitro}>${settings.roles.supporter ? `, <@&${settings.roles.supporter}>` : ''} react with <:nitro:701491230349066261> to get into VC`
             }
         }
 
         if (!event.pingRole) 'eventBoi'
         event.reacts = event.reacts.map(r => botSettings.emoteIDs[r])
-
-        if (!event.earlyLocationReacts) event.earlyLocationReacts = [{
-            "emoteID": "723018431275859969",
-            "pointsGiven": 2,
-            "limit": 3,
-            "shortName": "mystic",
-            "checkRealmEye": {
-                "class": "mystic",
-                "ofEight": "8",
-                "mheal": "85",
-                "orb": "2"
-            }
-        }];
 
         let isVet = message.channel.id == settings.channels.vetcommands;
         if (event.isAdvanced && !settings.backend.allowAdvancedRuns) return message.channel.send(`Advanced runs are not enabled for this server.`);

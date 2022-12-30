@@ -28,7 +28,7 @@ module.exports = {
         if (message.member.roles.highest.position < message.guild.roles.cache.get(settings.roles.eventrl).position) {
             await message.member.send({ embeds: [await this.getPointEmbed(message.member, db)] })
             message.react('✅')
-        } else if (message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.headrl).position || adminUsers.includes(member.id)) {
+        } else if (message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.headrl).position || bot.adminUsers.includes(member.id)) {
             if (args.length == 0) return await message.member.send({ embeds: [await this.getPointEmbed(message.member, db)] }).then(message.react('✅'))
             switch (args[0].toLowerCase()) {
                 case 'add':

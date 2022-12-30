@@ -31,9 +31,10 @@ const quotapoints = ['voidLeading', 'cultLeading', 'shattersLeading', 'oryx3Lead
 'eventLeading', 'failedRun', 'feedback', 'feedbackOnFeedback', 'assist', 'parsing', 'rolledquota']
 const modmail = ['sendMessage', 'forwardMessage', 'closeModmail', 'blacklistUser', 'lockModmail']
 var commands = []
+var commandsRolePermissions = []
 
 const menus = ['roles', 'channels', 'voice', 'voiceprefixes', 'backend', 'numerical', 'runreqs', 'autoveri',
-'vetverireqs', 'points', 'commands', 'categories', 'lists', 'strings', 'quotapoints', 'modmail']
+'vetverireqs', 'points', 'commands', 'categories', 'lists', 'strings', 'quotapoints', 'modmail', 'commandsRolePermissions']
 
 module.exports = {
     name: 'setup',
@@ -53,7 +54,7 @@ module.exports = {
                 .setTitle('Setup')
                 .setColor('#54d1c2')
                 .setFooter({ text: `Type 'cancel' to stop` })
-                .setDescription(`\`\`\`Please select what you wish to edit:\n${menus.map((m, i) => `${parseInt(i) + 1}: ${m}`).join('\n')}\`\`\``)
+                .setDescription(`\`\`\`coffeescript\nPlease select what you wish to edit:\n${menus.map((m, i) => `[ ${`${parseInt(i) + 1}`.padStart(3, ' ')} ] ${m}`).join('\n')}\`\`\``)
             let setupMessage = await message.channel.send({ embeds: [setupEmbed] })
             let mainMenu = new Discord.MessageCollector(message.channel, { filter: m => m.author.id == message.author.id })
             mainMenu.on('collect', async m => {
@@ -83,6 +84,7 @@ module.exports = {
                         case '14': menu(strings, 'strings', 'string'); break;
                         case '15': menu(quotapoints, 'quotapoints', 'float'); break;
                         case '16': menu(modmail, 'modmail', 'boolean'); break;
+                        case '17': menu(commandsRolePermissions, 'commandsRolePermissions', 'string'); break;
                     }
                 }
                 /**
@@ -93,15 +95,20 @@ module.exports = {
                  */
                 async function menu(array, arrayName, type) {
                     setupEmbed.setTitle(`${arrayName} Menu`)
-                        .setDescription(`\`\`\`Please select what you wish to edit`)
+                        .setDescription(`\`\`\`coffeescript\nPlease select what you wish to edit`)
                     let fieldIndex = 0;
+                    let padSize = 0;
+                    for (let i in array) { if (padSize < array[i].length) { padSize = array[i].length; } }
+                    padSize = padSize + 3;
                     for (let i in array) {
-                        let s = `\n${parseInt(i) + 1}: ${array[i]} ${type == 'array' ? `- ${bot.settings[message.guild.id][arrayName][array[i]].length} Items` : `'${bot.settings[message.guild.id][arrayName][array[i]]}'`}`
+                        settings = bot.settings[message.guild.id]
+                        arrayItem = bot.settings[message.guild.id][arrayName][array[i]]
+                        let s = `\n${`${parseInt(i) + 1}`.padStart(3, ' ')}: ${array[i].padEnd(padSize, ' ')} ${type == 'array' ? `- ${arrayItem.length} Items` : `'${arrayItem}'`}`
                         if (setupEmbed.data.description.length + s.length + `\n\`\`\``.length >= 2048) {
-                            if (!setupEmbed.data.fields || !setupEmbed.data.fields[fieldIndex]) setupEmbed.addFields([{ name: '** **', value: `\`\`\`${s}` }])
+                            if (!setupEmbed.data.fields || !setupEmbed.data.fields[fieldIndex]) setupEmbed.addFields([{ name: '** **', value: `\`\`\`coffeescript\n${s}` }])
                             else if (setupEmbed.data.fields[fieldIndex].value.length + s.length + `\n\`\`\``.length >= 1024) {
                                 fieldIndex++
-                                setupEmbed.addFields([{ name: '** **', value: s }])
+                                setupEmbed.addFields([{ name: '** **', value: `\`\`\`coffeescript\n${s}` }])
                             } else setupEmbed.data.fields[fieldIndex].value += s;
                         } else setupEmbed.data.description += s
                     }
@@ -119,7 +126,8 @@ module.exports = {
                             } else message.channel.send('Invalid number recieved. Please try again')
                         } else if (['string', 'boolean', 'int', 'float'].includes(type)) {
                             menuCollector.stop()
-                            setupEmbed.setDescription(`\`\`\`Please enter in the new value\`\`\`\nCurrent Value:\n**${array[parseInt(num) - 1]}** = ${bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]]}`)
+                            setupEmbed.setDescription(`\`\`\`coffeescript\nPlease enter in the new value\`\`\`\nCurrent Value:\n**${array[parseInt(num) - 1]}** = ${bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]]}`)
+                            setupEmbed.spliceFields(0, 5)
                             setupMessage.edit({ embeds: [setupEmbed] })
                             let menuMessageCollector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id == message.author.id })
                             menuMessageCollector.on('collect', async mes => {
@@ -128,15 +136,17 @@ module.exports = {
                                     message.react('✅')
                                     menuCollector.stop()
                                 } else {
-                                    let change = `\`\`\`${array[parseInt(num) - 1]}: ${bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]]} -> ${mes.content}\`\`\``
+                                    let change = `\`\`\`coffeescript\n${array[parseInt(num) - 1]}: ${bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]]} -> ${mes.content}\`\`\``
                                     switch (type) {
-                                        case 'string': bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]] = mes.content; break;
+                                        case 'string':
+                                            let result = mes.content; if (['null', 'none'].includes(result.toLocaleLowerCase())) result = null
+                                            bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]] = result; break;
                                         case 'boolean':
                                             if (mes.content.charAt(0).toLowerCase() == 't') {
-                                                change = `\`\`\`${array[parseInt(num) - 1]}: ${bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]]} -> true\`\`\``
+                                                change = `\`\`\`coffeescript\n${array[parseInt(num) - 1]}: ${bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]]} -> true\`\`\``
                                                 bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]] = true
                                             } else {
-                                                change = `\`\`\`${array[parseInt(num) - 1]}: ${bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]]} -> false\`\`\``
+                                                change = `\`\`\`coffeescript\n${array[parseInt(num) - 1]}: ${bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]]} -> false\`\`\``
                                                 bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]] = false
                                             }
                                             break;
@@ -147,6 +157,7 @@ module.exports = {
                                     setupEmbed.setDescription(change)
                                         .setTitle(`Changes Made`)
                                         .setFooter({ text: `Setup completed` })
+                                        .spliceFields(0, 5)
                                     await setupMessage.edit({ embeds: [setupEmbed] })
                                     message.react('✅')
                                     mes.delete()
@@ -167,19 +178,19 @@ module.exports = {
                             let str = cur.map((v, i) => `${parseInt(i) + 1}: ${v}`).join('\n')
 
                             // Send
-                            setupEmbed.setDescription(`\`\`\`Please select a value to REMOVE\n\nCurrent Values:\n${str}\`\`\`\nOr Say "add", "new", or "clear"`)
+                            setupEmbed.setDescription(`\`\`\`coffeescript\nPlease select a value to REMOVE\n\nCurrent Values:\n${str}\`\`\`\nOr Say "add", "new", or "clear"`)
                             setupMessage.edit({ embeds: [setupEmbed] })
 
                             // Add reaction collector
                             const collector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id == message.author.id })
                             collector.on('collect', async m => {
-                                let change = '\`\`\`Errored\`\`\`'
+                                let change = '\`\`\`coffeescript\nErrored\`\`\`'
                                 if (m.content.toLowerCase() == 'add' || m.content.toLowerCase() == 'new') {
                                     // End collector
                                     collector.stop()
 
                                     // Prompt for new value
-                                    setupEmbed.setDescription(`\`\`\`Please enter in the new value\`\`\`\nCurrent Value:\n**${array[parseInt(num) - 1]}** = ${bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]]}`)
+                                    setupEmbed.setDescription(`\`\`\`coffeescript\nPlease enter in the new value\`\`\`\nCurrent Value:\n**${array[parseInt(num) - 1]}** = ${bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]]}`)
                                     setupMessage.edit({ embeds: [setupEmbed] })
                                     const newCollector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id == message.author.id })
                                     newCollector.on('collect', async mes => {
@@ -188,7 +199,7 @@ module.exports = {
                                             message.react('✅')
                                             collector.stop()
                                         } else {
-                                            change = `\`\`\`${mes.content} added to ${arrayName}\`\`\``
+                                            change = `\`\`\`coffeescript\n${mes.content} added to ${arrayName}\`\`\``
                                             bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]].push(mes.content)
                                             newCollector.stop()
                                             exit()
@@ -203,7 +214,7 @@ module.exports = {
                                     bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]] = []
 
                                     // Update embed/Return
-                                    change = `\`\`\`Cleared Array ${arrayName}\`\`\``
+                                    change = `\`\`\`coffeescript\nCleared Array ${arrayName}\`\`\``
                                     exit()
                                 } else if (m.content.toLowerCase() == 'cancel') {
                                     setupMessage.delete()
@@ -224,9 +235,9 @@ module.exports = {
                                     // Delete
                                     try {
                                         bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]].splice(selectionIndex, 1)
-                                        change = `\`\`\`Removed ${selection}\`\`\``
+                                        change = `\`\`\`coffeescript\nRemoved ${selection}\`\`\``
                                     } catch (er) {
-                                        change = `\`\`\`Error removing from list. Try again\`\`\``
+                                        change = `\`\`\`coffeescript\nError removing from list. Try again\`\`\``
                                     } finally { exit() }
                                 }
                                 async function exit() {
@@ -255,6 +266,7 @@ module.exports = {
     },
     autoSetup(guild, bot) {
         if (commands.length == 0) commands = Array.from(bot.commands.keys())
+        if (commandsRolePermissions.length == 0) commandsRolePermissions = Array.from(bot.commands.keys())
         if (!bot.settings[guild.id]) {
             bot.settings[guild.id] = {
                 name: guild.name,
@@ -273,7 +285,8 @@ module.exports = {
                 lists: {},
                 strings: {},
                 quotapoints: {},
-                modmail: {}
+                modmail: {},
+                commandsRolePermissions: {}
             }
         }
         for (let i of menus) {
@@ -346,6 +359,9 @@ module.exports = {
         }
         for (let i of commands) {
             if (!bot.settings[guild.id].commands[i] && bot.settings[guild.id].commands[i] !== false) bot.settings[guild.id].commands[i] = bot.commands.get(i).guildSpecific ? false : true //this might not work lol
+        }
+        for (let i of commandsRolePermissions) {
+            if (!bot.settings[guild.id].commandsRolePermissions[i] && bot.settings[guild.id].commandsRolePermissions[i] !== false) bot.settings[guild.id].commandsRolePermissions[i] = null
         }
         for (let i of categories) {
             if (!bot.settings[guild.id].categories[i]) bot.settings[guild.id].categories[i] = getDefaultCategoryName(i)

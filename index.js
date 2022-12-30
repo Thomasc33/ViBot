@@ -74,8 +74,11 @@ bot.crasherList = moduleIsAvailable('./data/crasherList.json') ? require('./data
 bot.afkChecks = moduleIsAvailable('./afkChecks.json') ? require('./afkChecks.json') : {}
 bot.settings = moduleIsAvailable('./guildSettings.json') ? require('./guildSettings.json') : {}
 bot.serverWhiteList = moduleIsAvailable('./data/serverWhiteList.json') ? require('./data/serverWhiteList.json') : {}
+bot.partneredServers = moduleIsAvailable('./data/partneredServers.json') ? require('./data/partneredServers.json') : {}
+bot.adminUsers = ['277636691227836419', '258286481167220738']
 const emojiServers = moduleIsAvailable('./data/emojiServers.json') ? require('./data/emojiServers.json') : {}
 const dbSchemas = require('./data/schemas.json')
+const { channel } = require('diagnostics_channel')
 const app = express();
 const rootCas = require('ssl-root-cas').create();
 require('https').globalAgent.options.ca = rootCas;
@@ -83,7 +86,6 @@ for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
     bot.commands.set(command.name, command);
 }
-const adminUsers = ['277636691227836419', '258286481167220738']
 
 
 // Bot Event Handlers
@@ -131,8 +133,8 @@ bot.on('messageCreate', message => {
         let memberId = message.member.id
 
         if (memberPosition >= roleCache.get(settings.roles[command.role]).position) hasPermissionForCommand = true
-        if (command.roleOverride && command.roleOverride[guildId]) {
-            if (memberPosition >= roleCache.get(settings.roles[command.roleOverride[guildId]]).position) hasPermissionForCommand = true
+        if (settings.commandsRolePermissions[command.name]) {
+            if (memberPosition >= roleCache.get(settings.roles[settings.commandsRolePermissions[command.name]]).position) hasPermissionForCommand = true
             else hasPermissionForCommand = false
         }
         if (command.patreonRole) {
@@ -141,7 +143,7 @@ bot.on('messageCreate', message => {
         if (command.userOverride) {
             if (command.userOverride.includes(memberId)) hasPermissionForCommand = true
         }
-        if (adminUsers.includes(memberId)) hasPermissionForCommand = true
+        if (bot.adminUsers.includes(memberId)) hasPermissionForCommand = true
         
         if (!hasPermissionForCommand) return message.channel.send('You do not have permission to use this command')
         
@@ -458,14 +460,107 @@ bot.on('guildMemberAdd', member => {
     }
 })
 
-bot.on('guildMemberUpdate', (oldMember, newMember) => {
+bot.on('guildMemberUpdate', async (oldMember, newMember) => {
     const settings = bot.settings[newMember.guild.id];
+    const guildId = newMember.guild.id
     if (settings && settings.commands.prunerushers && !oldMember.roles.cache.has(settings.roles.rusher) && newMember.roles.cache.has(settings.roles.rusher)) {
         let today = new Date()
         bot.dbs[newMember.guild.id].query(`INSERT IGNORE INTO rushers (id, guildid, time) values ("${newMember.id}", "${newMember.guild.id}", ${today.valueOf()})`)
     } else if (settings && settings.commands.prunerushers && oldMember.roles.cache.has(settings.roles.rusher) && !newMember.roles.cache.has(settings.roles.rusher)) {
         let today = new Date()
         bot.dbs[newMember.guild.id].query(`DELETE FROM rushers WHERE id = "${newMember.id}"`)
+    }
+    
+    let roleDifference = await roleDiff(oldMember, newMember)
+    if (!roleDifference.changed) { return }
+    function getPartneredServers(guildId) {
+        for (let i in bot.partneredServers) {
+            if (bot.partneredServers[i].guildId == guildId) { return bot.partneredServers[i]}
+        }
+        return null
+    }
+    let partneredServer = getPartneredServers(guildId)
+    if (!partneredServer) { return }
+    if (newMember.roles.cache.has(settings.roles.lol)) { return }
+
+    const partneredSettings = bot.settings[partneredServer.id]
+    let otherServer = bot.guilds.cache.find(g => g.id == partneredServer.id)
+    let partneredMember = await otherServer.members.fetch(newMember.user)
+    let partneredModLogs = otherServer.channels.cache.get(partneredSettings.channels.modlogs)
+    let as = otherServer.roles.cache.get(partneredSettings.roles.affiliatestaff)
+    let vas = otherServer.roles.cache.get(partneredSettings.roles.vetaffiliate)
+    
+    if (partneredMember.roles.cache.has(as.id)) hasAffiliate = true; else hasAffiliate = false
+    if (partneredMember.roles.cache.has(vas.id)) hasVetAffiliate = true; else hasVetAffiliate = false
+
+    const isStaff = hasRoleInList(newMember, settings, partneredServer.affiliatelist)
+    const vasEligable = hasRoleInList(newMember, settings, partneredServer.vaslist)
+    let iconUrl = 'https://cdn.discordapp.com/avatars/' + newMember.id + '/' + newMember.user.avatar + '.webp'
+    embed = new Discord.EmbedBuilder()
+        .setAuthor({ name: `${partneredMember.displayName}`, iconURL: iconUrl })
+
+    if (isStaff && !hasAffiliate) {
+        setTimeout(async () => {
+            partneredMember.roles.add(as)
+            embed.setDescription(`Given role ${as} to ${partneredMember} \`\`${partneredMember.displayName}\`\``)
+            embed.setColor(as.hexColor)
+            await partneredModLogs.send({ embeds: [embed] })
+        }, 500)
+        
+    } else if (!isStaff && hasAffiliate) {
+        setTimeout(async () => {
+            partneredMember.roles.remove(as)
+            embed.setDescription(`Removed role ${as} from ${partneredMember} \`\`${partneredMember.displayName}\`\``)
+            embed.setColor(as.hexColor)
+            await partneredModLogs.send({ embeds: [embed] })
+        }, 500)
+        
+    }
+    if (vasEligable && !hasVetAffiliate) {
+        setTimeout(async () => {
+            partneredMember.roles.add(vas)
+            embed.setDescription(`Given role ${vas} to ${partneredMember} \`\`${partneredMember.displayName}\`\``)
+            embed.setColor(vas.hexColor)
+            await partneredModLogs.send({ embeds: [embed] })
+        }, 1000)
+        
+    } else if (!vasEligable && hasVetAffiliate) {
+        setTimeout(async () => {
+            partneredMember.roles.remove(vas)
+            embed.setDescription(`Removed role ${vas} from ${partneredMember} \`\`${partneredMember.displayName}\`\``)
+            embed.setColor(vas.hexColor)
+            await partneredModLogs.send({ embeds: [embed] })
+        }, 1000)
+    }
+
+    function hasRoleInList(user, settings, roles) {
+        for (let i in roles) {
+            role = roles[i]
+            if (user.roles.cache.has(settings.roles[role])) return true
+        }
+        return false
+    }
+
+    async function roleDiff(oldMember, newMember) {
+        let oldRoles = oldMember.roles.cache.map(r => r.id)
+        let newRoles = newMember.roles.cache.map(r => r.id)
+        var removed = []
+        var added = []
+        for (var i in newRoles) {
+            if (!oldRoles.includes(newRoles[i])) {
+                added.push(newRoles[i])
+            }
+        }
+        for (var i in oldRoles) {
+            if (!newRoles.includes(oldRoles[i])) {
+                removed.push(oldRoles[i])
+            }
+        }
+        return {
+            "changed": (added.length > 0 || removed.length > 0) ? true : false,
+            "added": added,
+            "removed": removed
+        }
     }
 })
 
@@ -617,7 +712,7 @@ async function dmHandler(message) {
                 if (!command.dmNeedsGuild) command.dmExecution(message, args, bot, null, guild, tokenDB)
                 else {
                     let member = guild.members.cache.get(message.author.id)
-                    if (member.roles.highest.position < guild.roles.cache.get(bot.settings[guild.id].roles[command.role]).position && !adminUsers.includes(message.member.id)) {
+                    if (member.roles.highest.position < guild.roles.cache.get(bot.settings[guild.id].roles[command.role]).position && !bot.adminUsers.includes(message.member.id)) {
                         sendModMail();
                     } else command.dmExecution(message, args, bot, bot.dbs[guild.id], guild, tokenDB)
                 }

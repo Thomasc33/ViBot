@@ -1,12 +1,11 @@
 const ErrorLogger = require('../lib/logError')
-const adminUsers = ['277636691227836419', '258286481167220738']
 module.exports = {
     name: 'setstatus',
     description: 'Sets the bots custom status',
     requiredArgs: 1,
     role: 'developer',
     execute(message, args, bot) {
-        if (!adminUsers.includes(message.member.id)) return
+        if (!bot.adminUsers.includes(message.member.id)) return
         let status = ''
         for (let i in args) status = status.concat(` ${args[i]}`)
         if (status == '') return;

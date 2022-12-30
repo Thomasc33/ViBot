@@ -269,6 +269,7 @@ class afkCheck {
         this.raiders = []
         this.pointsUsers = []
         this.supporters = []
+        this.nitroReacts = []
         this.endedBy
         this.time = this.afkInfo.timeLimit
         this.postTime = 20;
@@ -279,6 +280,9 @@ class afkCheck {
                 this.reactables[i.shortName] = { users: [], points: i.pointsGiven }
             }
         }
+        this.partneredMessageSent = false
+        this.partneredMessage = null
+        this.partneredPings = null
         this.knights = []
         this.warriors = []
         this.pallies = []
@@ -326,6 +330,29 @@ class afkCheck {
         } else {
             this.raidStatusMessage = await this.raidStatus.send(`${pings}, \`${this.afkInfo.runName}\`${flag ? ` (${flag})` : ''} is beginning now. ${this.afkInfo.twoPhase ? `Only reactables will be moved in at first. After everything is confirmed, the channel will open up.` : `Please join ${this.channel.name}`}`)
             this.start()
+        }
+        if (this.afkInfo.partneredServerPing) {
+            function getPartneredServers(guildId, bot) {
+                for (let i in bot.partneredServers) {
+                    if (bot.partneredServers[i].guildId == guildId) { return bot.partneredServers[i]}
+                }
+                return null
+            }
+            let partneredServer = getPartneredServers(this.message.guild.id, this.bot)
+            if (partneredServer) {
+                const partneredSettings = this.bot.settings[partneredServer.id]
+                let otherServer = this.bot.guilds.cache.find(g => g.id == partneredServer.id)
+                let partneredChannel;
+                let otherServerCache = otherServer.channels.cache
+                let settingCategories = this.settings.categories
+                let parentName = this.message.channel.parent.name.toLowerCase()
+                if (parentName === settingCategories.raiding.toLowerCase()) partneredChannel = otherServerCache.get(partneredSettings.channels.raidstatus)
+                else if (parentName === settingCategories.veteran.toLowerCase()) partneredChannel = otherServerCache.get(partneredSettings.channels.vetstatus)
+                else partneredChannel = otherServerCache.get(partneredSettings.channels.eventstatus)
+                this.partneredPings = this.afkInfo.pingRole ? (typeof this.afkInfo.pingRole != "string" ? this.afkInfo.pingRole.map(r => `<@&${partneredSettings.roles[r]}>`).join(' ') : `<@&${partneredSettings.roles[this.afkInfo.pingRole]}>`) + ' @here' : '@here';
+                this.partneredMessageSent = true
+                this.partneredMessage = await partneredChannel.send(`${this.partneredPings},  **${this.afkInfo.runName}** is starting inside of **${this.message.guild.name}** in ${this.channel} at \`\`${this.afkInfo.location}\`\``)
+            }
         }
     }
 
@@ -452,7 +479,7 @@ class afkCheck {
                 this.endedBy = interaction.user;
                 interaction.deferUpdate()
                 return this.postAfk()
-            }
+            } else { return interaction.reply({ ephemeral: true, content: 'You are not a staff member' }) }
         }
         else if (interaction.customId === 'end') {
             if (this.guild.members.cache.get(interaction.user.id).roles.highest.position >= this.staffRole.position) {
@@ -559,15 +586,15 @@ class afkCheck {
         if (this.afkInfo.headcountEmote && this.afkInfo.headcountOnAfk) reacts.push(this.afkInfo.headcountEmote)
         if (this.afkInfo.keyEmoteID) addButton({ emoji: this.afkInfo.keyEmoteID, style: Discord.ButtonStyle.Primary, customId: this.afkInfo.keyEmoteID })
         if (this.afkInfo.vialReact) addButton({ emoji: this.afkInfo.vialEmoteID, style: Discord.ButtonStyle.Secondary, customId: this.afkInfo.vialEmoteID })
-        for (let i of this.afkInfo.earlyLocationReacts) addButton({ emoji: i.emoteID, style: i.buttonStyle ? i.buttonStyle : Discord.ButtonStyle.Secondary, customId: i.emoteID })
+        if (this.afkInfo.earlyLocationReacts.length > 0) for (let i of this.afkInfo.earlyLocationReacts) addButton({ emoji: i.emoteID, style: i.buttonStyle ? i.buttonStyle : Discord.ButtonStyle.Secondary, customId: i.emoteID })
         if (!this.afkInfo.twoPhase) for (let i of this.afkInfo.reacts) reacts.push(i)
         //split row
-        actionRows.push(curRow); curRow = []
+        if (curRow.length > 0) { actionRows.push(curRow); curRow = [] }
         addButton({ emoji: '701491230349066261', style: Discord.ButtonStyle.Secondary, label: 'Nitro', customId: 'nitro' })
         if (this.settings.backend.supporter) addButton({ emoji: '752368122551337061', label: 'ViBot Supporter', style: Discord.ButtonStyle.Success, customId: 'supporter' })
         if (this.settings.backend.points) addButton({ label: '🎟️ Use Tickets', style: Discord.ButtonStyle.Secondary, customId: 'points' })
         //split row
-        actionRows.push(curRow); curRow = []
+        if (curRow.length > 0) { actionRows.push(curRow); curRow = [] }
         if (this.afkInfo.twoPhase) addButton({ label: '✅ Open Channel', style: Discord.ButtonStyle.Success, customId: 'openvc' })
         else addButton({ label: '✅ Start Run', style: Discord.ButtonStyle.Success, customId: 'start' })
         addButton({ label: '❌ Abort Run', style: Discord.ButtonStyle.Danger, customId: 'end' })
@@ -824,8 +851,8 @@ class afkCheck {
                             interaction.reply({ embeds: [embed], ephemeral: true })
                         }
                         this.nitro.push(interaction.user)
-                        if (this.leaderEmbed.data.fields[index].value == `None!`) this.leaderEmbed.data.fields[index].value = `<@!${interaction.user.id}> `;
-                        else this.leaderEmbed.data.fields[index].value += `, <@!${interaction.user.id}>`
+                        this.nitroReacts.push(interaction.user.id)
+                        this.leaderEmbed.data.fields[index].value = '<@!' + this.nitroReacts.join('>,\n<@!') + '>'
                         this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
                         this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
                         emitter.on('Ended', (channelID, aborted) => {
@@ -910,7 +937,7 @@ class afkCheck {
                         if (embed.data.author) delete embed.data.author
                         interaction.editReply({ embeds: [embed], components: [] })
                         if (this.leaderEmbed.data.fields[index].value == 'None!') this.leaderEmbed.data.fields[index].value = `<@!${interaction.user.id}>`
-                        else this.leaderEmbed.data.fields[index].value += `, <@!${interaction.user.id}>`
+                        else this.leaderEmbed.data.fields[index].value += `,\n<@!${interaction.user.id}>`
                         this.pointsUsers.push(interaction.user)
                         this.earlyLocation.push(interaction.user)
                         await this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, bot));
@@ -982,7 +1009,7 @@ class afkCheck {
             afkcheck.earlyLocation.push(interaction.user);
             afkcheck.supporters.push(interaction.user)
             if (afkcheck.leaderEmbed.data.fields[index].value == `None!`) afkcheck.leaderEmbed.data.fields[index].value = `<@!${interaction.user.id}> `;
-            else afkcheck.leaderEmbed.data.fields[index].value += `, <@!${interaction.user.id}>`
+            else afkcheck.leaderEmbed.data.fields[index].value += `,\n<@!${interaction.user.id}>`
             afkcheck.leaderEmbedMessage.edit({ embeds: [afkcheck.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
             afkcheck.runInfoMessage.edit({ embeds: [afkcheck.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
             if (cooldown) {
@@ -1460,6 +1487,9 @@ class afkCheck {
         this.leaderEmbed.setDescription(`**Raid Leader: ${this.message.member} \`\`${this.message.member.nickname}\`\`\nVC: ${this.channel}\nLocation:** \`\`${this.afkInfo.location}\`\``)
         this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
         this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
+        if (this.partneredMessageSent && this.partneredMessage) {
+            this.partneredMessage.edit(`${this.partneredPings},  **${this.afkInfo.runName}** is starting inside of **${this.message.guild.name}** in ${this.channel} at \`\`${this.afkInfo.location}\`\``)
+        }
 
         for (let i of this.earlyLocation) {
             await i.send(`The location for this run has changed to \`${this.afkInfo.location}\``)
