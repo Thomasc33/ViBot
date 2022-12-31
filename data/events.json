@@ -2049,7 +2049,7 @@
             "keyCount": 3,
             "keyPopPoints": 5,
             "earlyLocationCost": 15,
-            "vcCap": 40,
+            "vcCap" : 45,
             "twoPhase": true,
             "pingRole": "fungalReact",
             "isExalt": true,
@@ -2207,7 +2207,7 @@
             "keyCount": 3,
             "keyPopPoints": 5,
             "earlyLocationCost": 15,
-            "vcCap": 40,
+            "vcCap" : 45,
             "pingRole": "nestReact",
             "isExalt": true,
             "earlyLocationReacts": [
@@ -2342,7 +2342,7 @@
             "keyCount": 3,
             "keyPopPoints": 5,
             "earlyLocationCost": 15,
-            "vcCap": 40,
+            "vcCap" : 45,
             "pingRole": "nestReact",
             "isExalt": true,
             "reacts": [
@@ -2557,7 +2557,7 @@
             "keyCount": 3,
             "keyPopPoints": 5,
             "earlyLocationCost": 15,
-            "vcCap": 40,
+            "vcCap" : 45,
             "twoPhase": true,
             "pingRole": "fungalReact",
             "isExalt": true,
@@ -2715,7 +2715,7 @@
             "keyCount": 3,
             "keyPopPoints": 5,
             "earlyLocationCost": 15,
-            "vcCap": 40,
+            "vcCap" : 45,
             "pingRole": "nestReact",
             "isExalt": true,
             "earlyLocationReacts": [
@@ -2850,7 +2850,7 @@
             "keyCount": 3,
             "keyPopPoints": 5,
             "earlyLocationCost": 15,
-            "vcCap": 40,
+            "vcCap" : 45,
             "pingRole": "nestReact",
             "isExalt": true,
             "reacts": [
