@@ -1,6 +1,6 @@
 const axios = require('axios')
 const creds = require('../settings.json').dynamicDomainCredentials
-const adminUsers = ['277636691227836419', '258286481167220738']
+const adminUsers = ['277636691227836419', '258286481167220738', '120540036855889921', '178840516882989056']
 
 module.exports = {
     name: 'updateip',

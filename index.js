@@ -83,7 +83,7 @@ for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
     bot.commands.set(command.name, command);
 }
-const adminUsers = ['277636691227836419', '258286481167220738']
+const adminUsers = ['277636691227836419', '258286481167220738', '120540036855889921', '178840516882989056']
 
 
 // Bot Event Handlers

@@ -1,7 +1,7 @@
 const Discord = require('discord.js')
 const botSettings = require('../settings.json')
 const pointLogger = require('../lib/pointLogger')
-const adminUsers = ['277636691227836419', '258286481167220738']
+const adminUsers = ['277636691227836419', '258286481167220738', '120540036855889921', '178840516882989056']
 
 module.exports = {
     name: 'points',
