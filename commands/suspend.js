@@ -10,6 +10,7 @@ module.exports = {
     role: 'warden',
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
+        let nitro = (settings.perkRoles.nitro || settings.perkRoles.supporter || settings.perkRoles.tip)
         const suspendedRole = message.guild.roles.cache.get(settings.roles.tempsuspended)
         const pSuspendRole = message.guild.roles.cache.get(settings.roles.permasuspended)
         const raiderRole = message.guild.roles.cache.get(settings.roles.raider)
@@ -110,10 +111,10 @@ module.exports = {
                         suspensionLog.send({ embeds: [embed] }).then(member.user.send({ embeds: [embed] }))
                     } else {
                         let userRolesString = '', userRoles = []
-                        const roles = [...member.roles.cache.filter(r => !r.managed && (r.id != settings.roles.nitro || r.id != settings.roles.supporter)).values()];
+                        const roles = [...member.roles.cache.filter(r => !r.managed && (r.id != nitro)).values()];
                         embed.data.fields[3].value = roles.join(', ') || 'None!';
                         member.roles.cache.each(r => {
-                            if (r.managed || r.id == settings.roles.nitro || r.id == settings.roles.supporter) { return }
+                            if (r.managed || r.id == nitro) { return }
                             userRoles.push(r.id)
                             userRolesString = userRolesString.concat(`${r.id} `)
                         })

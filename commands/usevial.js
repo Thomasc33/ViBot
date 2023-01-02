@@ -11,6 +11,7 @@ module.exports = {
     role: 'vetaffiliate',
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
+        let nitro = (settings.perkRoles.nitro || settings.perkRoles.supporter || settings.perkRoles.tip)
         let member = message.mentions.members.first()
         if (!member) member = message.guild.members.cache.get(args[0])
         if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
@@ -19,7 +20,7 @@ module.exports = {
             if (err) ErrorLogger.log(err, bot)
             let points
             if (settings.backend.points) {
-                if (member.roles.cache.has(settings.roles.nitro) || member.roles.cache.has(settings.roles.supporter)) points = settings.points.vialpop * settings.points.nitromultiplier
+                if (member.roles.cache.has(nitro)) points = settings.points.vialpop * settings.points.nitromultiplier
                 else points = settings.points.vialpop
                 db.query(`UPDATE users SET vialUsed = ${parseInt(rows[0].vialUsed) + 1}, points = points + ${points} WHERE id = '${member.id}'`)
             } else {

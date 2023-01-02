@@ -7,13 +7,14 @@ module.exports = {
     description: '死ぬ',
     async execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
+        let nitro = (settings.perkRoles.nitro || settings.perkRoles.supporter || settings.perkRoles.tip)
         let suspendedRole = settings.roles.tempsuspended
         message.channel.send(`死ぬ!`)
         let time = 300000 // 5 min
         let reason = 'seppuku'
         let userRolesString = '', userRoles = []
         message.member.roles.cache.each(r => {
-            if (!r.managed || r.id == settings.roles.nitro || r.id == settings.roles.supporter) { return }
+            if (!r.managed || r.id == nitro) { return }
             userRoles.push(r.id)
             userRolesString = userRolesString.concat(`${r.id} `)
         })

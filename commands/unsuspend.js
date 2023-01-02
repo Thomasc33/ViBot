@@ -52,8 +52,9 @@ module.exports = {
                 const member = guild.members.cache.get(rows[0].id);
                 rolesString.split(' ').forEach(r => { if (r != '') roles.push(r) })
                 try {
-                    if (member.roles.cache.get(settings.roles.nitro)) roles.push(settings.roles.nitro)
-                    if (member.roles.cache.get(settings.roles.supporter)) roles.push(settings.roles.supporter)
+                    if (member.roles.cache.get(settings.perkRoles.nitro)) roles.push(settings.perkRoles.nitro)
+                    if (member.roles.cache.get(settings.perkRoles.supporter)) roles.push(settings.perkRoles.supporter)
+                    if (member.roles.cache.get(settings.perkRoles.tip)) roles.push(settings.perkRoles.tip)
                     await member.edit({
                         roles: roles
                     })

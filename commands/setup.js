@@ -1,12 +1,14 @@
 const fs = require('fs')
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
+const { builtinModules } = require('module')
 const roles = ['admin', 'moderator', 'officer', 'headrl', 'headdev', 'assistantdev', 'vetrl', 'fsvrl', 'mrvrl', 'security', 'fullskip', 'developer', 'rl', 'almostrl',
     'trialrl', 'headeventrl', 'eventrl',
-    'rusher', 'nitro', 'lol', 'accursed', 'vetraider', 'raider', 'eventraider', 'muted',
+    'rusher', 'lol', 'accursed', 'vetraider', 'raider', 'eventraider', 'muted',
     'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'keyjesus', 'moddedkey', 'topkey', 'bottomkey', 'cultping', 'voidping', 'shattsReact', 'fungalReact', 'nestReact',
     'fskipReact', 'fameReact', 'rcPing', 'o3Ping', 'eventBoi', 'veteventrl',
-    'priest', 'warden', 'vetaffiliate', 'affiliatestaff', `toprune`, `bottomrune`, 'helper', 'steamworksping', 'supporter']
+    'priest', 'warden', 'vetaffiliate', 'affiliatestaff', `toprune`, `bottomrune`, 'helper', 'steamworksping']
+const perkRoles = ['nitro', 'supporter', 'tip']
 const channels = ['modmail', 'verification', 'manualverification', 'vetverification', 'manualvetverification', 'verificationlog', 'activeverification', 'modlogs', 'history', 'suspendlog',
     'viallog', 'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel', 'raidstatus', 'eventstatus',
     'vetstatus', 'exaltstatus', 'raidcommands', 'eventcommands', 'vetcommands', 'accursedcommands', 'accursedstatus', 'raidingchannels', 'eventchannels', 'vetchannels', 'runlogs', 'dmcommands', 'veriactive', 'pointlogging',
@@ -69,22 +71,23 @@ module.exports = {
                     mainMenu.stop()
                     switch (m.content) {
                         case '1': menu(roles, 'roles', 'string'); break;
-                        case '2': menu(channels, 'channels', 'string'); break;
-                        case '3': menu(voice, 'voice', 'string'); break;
-                        case '4': menu(voiceprefixes, 'voiceprefixes', 'string'); break;
-                        case '5': menu(backend, 'backend', 'boolean'); break;
-                        case '6': menu(numerical, 'numerical', 'int'); break;
-                        case '7': menu(runreqs, 'runreqs', 'int'); break;
-                        case '8': menu(autoveri, 'autoveri', 'int'); break;
-                        case '9': menu(vetverireqs, 'vetverireqs', 'int'); break;
-                        case '10': menu(points, 'points', 'int'); break;
-                        case '11': menu(commands, 'commands', 'boolean'); break;
-                        case '12': menu(categories, 'categories', 'string'); break;
-                        case '13': menu(lists, 'lists', 'array'); break;
-                        case '14': menu(strings, 'strings', 'string'); break;
-                        case '15': menu(quotapoints, 'quotapoints', 'float'); break;
-                        case '16': menu(modmail, 'modmail', 'boolean'); break;
-                        case '17': menu(commandsRolePermissions, 'commandsRolePermissions', 'string'); break;
+                        case '2': menu(perkRoles, 'perkRoles', 'string'); break;
+                        case '3': menu(channels, 'channels', 'string'); break;
+                        case '4': menu(voice, 'voice', 'string'); break;
+                        case '5': menu(voiceprefixes, 'voiceprefixes', 'string'); break;
+                        case '6': menu(backend, 'backend', 'boolean'); break;
+                        case '7': menu(numerical, 'numerical', 'int'); break;
+                        case '8': menu(runreqs, 'runreqs', 'int'); break;
+                        case '9': menu(autoveri, 'autoveri', 'int'); break;
+                        case '10': menu(vetverireqs, 'vetverireqs', 'int'); break;
+                        case '11': menu(points, 'points', 'int'); break;
+                        case '12': menu(commands, 'commands', 'boolean'); break;
+                        case '13': menu(categories, 'categories', 'string'); break;
+                        case '14': menu(lists, 'lists', 'array'); break;
+                        case '15': menu(strings, 'strings', 'string'); break;
+                        case '16': menu(quotapoints, 'quotapoints', 'float'); break;
+                        case '17': menu(modmail, 'modmail', 'boolean'); break;
+                        case '18': menu(commandsRolePermissions, 'commandsRolePermissions', 'string'); break;
                     }
                 }
                 /**
@@ -298,6 +301,14 @@ module.exports = {
                 let r = guild.roles.cache.find(r => r.name === getDefaultRoleName(role))
                 if (r) bot.settings[guild.id].roles[role] = r.id
                 else bot.settings[guild.id].roles[role] = null
+            }
+        }
+        for (let i in perkRoles) {
+            let perkRole = perkRoles[i]
+            if (!bot.settings[guild.id].perkRoles[perkRole]) {
+                let pr = guild.perkRoles.cache.find(pr => pr.name === getDefaultPerkRolename(perkRole))
+                if (pr) bot.settings[guild.id].perkRoles[perkRole] = pr.id
+                else bot.settings[guild.id].perkRoles[perkRole] = null
             }
         }
         for (let i in channels) {

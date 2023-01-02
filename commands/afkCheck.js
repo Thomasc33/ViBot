@@ -255,9 +255,7 @@ class afkCheck {
         if (!this.afkChannel) this.afkChannel = guild.channels.cache.find(c => c.name.toLowerCase() === 'lounge')
         this.runInfoChannel = guild.channels.cache.get(this.settings.channels.runlogs)
         this.officialRusher = guild.roles.cache.get(this.settings.roles.rusher)
-        this.nitroBooster = guild.roles.cache.get(this.settings.roles.nitro)
-        this.supporter = guild.roles.cache.get(this.settings.roles.supporter)
-        if (!this.supporter) this.supporter = this.nitroBooster
+        this.nitroBooster = guild.roles.cache.get(this.settings.perkRoles.nitro || this.settings.perkRoles.supporter || this.settings.perkRoles.tip)
         this.leaderOnLeave = guild.roles.cache.get(this.settings.roles.lol)
         this.trialRaidLeader = guild.roles.cache.get(this.settings.roles.trialrl)
         this.keys = []
@@ -827,7 +825,7 @@ class afkCheck {
             this.removeFromActiveInteractions(interaction.user.id)
             return
         }
-        if (reactor.roles.cache.has(this.nitroBooster.id) || reactor.roles.cache.has(this.supporter.id)) {
+        if (reactor.roles.cache.has(this.nitroBooster.id)) {
             if (reactor.voice.channel && reactor.voice.channel.id == this.channel.id) {
                 embed.setDescription(`Nitro benefits in \`${this.message.guild.name}\` only gives guaranteed spot in VC. You are already in the VC so this use hasn\'t been counted`);
                 interaction.reply({ embeds: [embed], ephemeral: true })
@@ -1269,7 +1267,7 @@ class afkCheck {
             for (let u of this.keys) {
                 let points = this.settings.points.keypop
                 if (this.afkInfo.keyPopPointsOverride) points = this.afkInfo.keyPopPointsOverride
-                if (this.guild.members.cache.get(u).roles.cache.has(this.nitroBooster.id) || this.guild.members.cache.get(u).roles.cache.has(this.supporter.id)) points = points * this.settings.points.nitromultiplier
+                if (this.guild.members.cache.get(u).roles.cache.has(this.nitroBooster.id)) points = points * this.settings.points.nitromultiplier
                 if (this.moddedKeys) points = points * this.settings.points.keymultiplier
                 await this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u}'`, er => { if (er) console.log('error logging key points in ', this.guild.id) })
                 pointsLog.push({
@@ -1281,7 +1279,7 @@ class afkCheck {
             for (let r in this.reactables) {
                 if (this.reactables[r].users) this.reactables[r].users.forEach(u => {
                     let points = +this.reactables[r].points
-                    if (this.message.guild.members.cache.get(u).roles.cache.has(this.nitroBooster.id) || this.message.guild.members.cache.get(u).roles.cache.has(this.supporter.id)) points = +points * +this.settings.points.nitromultiplier
+                    if (this.message.guild.members.cache.get(u).roles.cache.has(this.nitroBooster.id)) points = +points * +this.settings.points.nitromultiplier
                     this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u}'`, er => { if (er) console.log('error logging reactable points in ', this.guild.id) })
                     pointsLog.push({
                         uid: u,

@@ -14,6 +14,7 @@ module.exports = {
     role: 'eventrl',
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
+        let nitro = (settings.perkRoles.nitro || settings.perkRoles.supporter || settings.perkRoles.tip)
         var count = 1
         let moddedKey = false
         if (args.length < 1) return;
@@ -69,7 +70,7 @@ module.exports = {
                 })
                 if (settings.backend.points && keyInfo.points) {
                     let points = settings.points[keyInfo.points] * count
-                    if (user.roles.cache.has(settings.roles.nitro) || user.roles.cache.has(settings.roles.supporter)) points = points * settings.points.nitromultiplier
+                    if (user.roles.cache.has(nitro)) points = points * settings.points.nitromultiplier
                     if (moddedKey) points = points * settings.points.keymultiplier
                     db.query(`UPDATE users SET points = points + ${points} WHERE id = '${user.id}'`)
                 }

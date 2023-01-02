@@ -14,7 +14,6 @@ module.exports = {
     async execute(message, args, bot, db, tokenDB) {
         //settings
         let settings = bot.settings[message.guild.id]
-
         //check for vet run
         var eventType = args[0]
         let event = getEventType(eventType, eventFile, message.guild.id)
@@ -38,7 +37,7 @@ module.exports = {
             embed: {
                 color: event.color,
                 thumbnail: event.thumbnail,
-                description: `To join, **click here** {voicechannel}\n${event.keyEmote ? `If you have a key react with <${event.keyEmote}>\n` : ''}${event.reacts.length > 0 ? `To indicate your class or gear choices, react with ${event.reacts.map(m => `${bot.emojis.cache.get(botSettings.emoteIDs[m])}`).join(' ')}\n` : ''}If you have the role <@&${settings.roles.nitro}>${settings.roles.supporter ? `, <@&${settings.roles.supporter}>` : ''} react with <:nitro:701491230349066261> to get into VC`
+                description: `To join, **click here** {voicechannel}\n${event.keyEmote ? `If you have a key react with <${event.keyEmote}>\n` : ''}${event.reacts.length > 0 ? `To indicate your class or gear choices, react with ${event.reacts.map(m => `${bot.emojis.cache.get(botSettings.emoteIDs[m])}`).join(' ')}\n` : ''}If you have the role <@&${settings.perkRoles.nitro}>${settings.perkRoles.supporter ? `, <@&${settings.perkRoles.supporter}>` : ''}${settings.perkRoles.tip ? `,<@&${settings.perkRoles.tip}>` : ''} react with <:nitro:701491230349066261> to get into VC`
             }
         }
 
