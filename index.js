@@ -83,6 +83,7 @@ bot.fetchPartneredServer = function (guildId) {
     return null
 }
 bot.adminUsers = ['277636691227836419', '258286481167220738']
+bot.partneredServers = moduleIsAvailable('./data/partneredServers.json') ? require('./data/partneredServers.json') : {}
 const emojiServers = moduleIsAvailable('./data/emojiServers.json') ? require('./data/emojiServers.json') : {}
 const dbSchemas = require('./data/schemas.json')
 const { channel } = require('diagnostics_channel')
