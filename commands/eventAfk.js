@@ -38,7 +38,11 @@ module.exports = {
             embed: {
                 color: event.color,
                 thumbnail: event.thumbnail,
-                description: `To join, **click here** {voicechannel}\n${event.keyEmote ? `If you have a key react with <${event.keyEmote}>\n` : ''}${event.reacts.length > 0 ? `To indicate your class or gear choices, react with ${event.reacts.map(m => `${bot.emojis.cache.get(botSettings.emoteIDs[m])}`).join(' ')}\n` : ''}If you have the role <@&${settings.roles.nitro}>${settings.roles.supporter ? `, <@&${settings.roles.supporter}>` : ''} react with <:nitro:701491230349066261> to get into VC`
+                description: `To join, **click here** {voicechannel}\n` +
+                `${event.keyEmote ? `If you have a key react with <${event.keyEmote}>\n` : ''}` + 
+                `${event.reacts.length > 0 ? `To indicate your class or gear choices, react with ${event.reacts.map(m => `${bot.emojis.cache.get(botSettings.emoteIDs[m])}`).join(' ')}\n` : ''}` +
+                `If you have one of the following roles ${settings.lists.perkRoles.map(role => `<@&${settings.roles[role]}>`).join(', ')} ` +
+                `react with <:nitro:701491230349066261> to get into VC`
             }
         }
 

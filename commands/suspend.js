@@ -110,10 +110,11 @@ module.exports = {
                         suspensionLog.send({ embeds: [embed] }).then(member.user.send({ embeds: [embed] }))
                     } else {
                         let userRolesString = '', userRoles = []
-                        const roles = [...member.roles.cache.filter(r => !r.managed && (r.id != settings.roles.nitro || r.id != settings.roles.supporter)).values()];
+                        const roles = [...member.roles.cache.filter(r => !r.managed && (!settings.lists.perkRoles.map(role => settings.roles[role]).includes(r.id))).values()];
                         embed.data.fields[3].value = roles.join(', ') || 'None!';
                         member.roles.cache.each(r => {
-                            if (r.managed || r.id == settings.roles.nitro || r.id == settings.roles.supporter) { return }
+                            if (r.managed) return
+                            if (settings.lists.perkRoles.map(role => settings.roles[role]).includes(r.id)) return
                             userRoles.push(r.id)
                             userRolesString = userRolesString.concat(`${r.id} `)
                         })

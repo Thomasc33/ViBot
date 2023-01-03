@@ -31,13 +31,7 @@ module.exports = {
                     .setDescription('None!')
                     .setFooter({ text: member.user.id })
                 if (message.member.roles.highest.position >= securityRole.position) {
-                    function getPartneredServers(guildId) {
-                        for (let i in partneredServers) {
-                            if (partneredServers[i].guildId == guildId) { return partneredServers[i]}
-                        }
-                        return null
-                    }
-                    let partneredServer = getPartneredServers(message.guild.id)
+                    let partneredServer = bot.fetchPartneredServer(message.guild.id)
                     if (partneredServer != null) {
                         let addedRow = false
                         if (rows || rows.length > 0) fitStringIntoEmbed(embed, `**${partneredServer.name}'s Section**\n`, message.channel)

@@ -19,7 +19,7 @@ module.exports = {
             if (err) ErrorLogger.log(err, bot)
             let points
             if (settings.backend.points) {
-                if (member.roles.cache.has(settings.roles.nitro) || member.roles.cache.has(settings.roles.supporter)) points = settings.points.vialpop * settings.points.nitromultiplier
+                if (member.roles.cache.hasAny(...settings.lists.perkRoles.map(role => settings.roles[role]))) points = settings.points.vialpop * settings.points.nitromultiplier
                 else points = settings.points.vialpop
                 db.query(`UPDATE users SET vialUsed = ${parseInt(rows[0].vialUsed) + 1}, points = points + ${points} WHERE id = '${member.id}'`)
             } else {

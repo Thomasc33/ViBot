@@ -74,7 +74,14 @@ bot.crasherList = moduleIsAvailable('./data/crasherList.json') ? require('./data
 bot.afkChecks = moduleIsAvailable('./afkChecks.json') ? require('./afkChecks.json') : {}
 bot.settings = moduleIsAvailable('./guildSettings.json') ? require('./guildSettings.json') : {}
 bot.serverWhiteList = moduleIsAvailable('./data/serverWhiteList.json') ? require('./data/serverWhiteList.json') : {}
-bot.partneredServers = moduleIsAvailable('./data/partneredServers.json') ? require('./data/partneredServers.json') : {}
+bot.partneredServers = moduleIsAvailable('./data/partneredServers.json') ? require('./data/partneredServers.json') : []
+bot.fetchPartneredServer = function (guildId) {
+    for (let i in bot.partneredServers) {
+        server = bot.partneredServers[i]
+        if (server.guildId == guildId) return server
+    }
+    return null
+}
 bot.adminUsers = ['277636691227836419', '258286481167220738']
 const emojiServers = moduleIsAvailable('./data/emojiServers.json') ? require('./data/emojiServers.json') : {}
 const dbSchemas = require('./data/schemas.json')
@@ -729,8 +736,8 @@ async function dmHandler(message) {
             await message.channel.send({ embeds: [confirmModMailEmbed] }).then(async confirmMessage => {
                 if (await confirmMessage.confirmButton(message.author.id)) {
                     modmail.sendModMail(message, guild, bot, bot.dbs[guild.id])
-                    confirmMessage.delete()
-                } else confirmMessage.delete()
+                    return confirmMessage.delete()
+                } else return confirmMessage.delete()
             })
 
             //Check blacklist

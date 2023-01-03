@@ -13,7 +13,8 @@ module.exports = {
         let reason = 'seppuku'
         let userRolesString = '', userRoles = []
         message.member.roles.cache.each(r => {
-            if (!r.managed || r.id == settings.roles.nitro || r.id == settings.roles.supporter) { return }
+            if (!r.managed) return
+            if (settings.lists.perkRoles.map(role => settings.roles[role]).includes(r.id)) return
             userRoles.push(r.id)
             userRolesString = userRolesString.concat(`${r.id} `)
         })

@@ -18,6 +18,7 @@ module.exports = {
         let intervalTicker = 5;
         let intervalCounter = minutes * 60;
         let interval = true;
+        let memberVoice = message.member.voice
         for (let i in args) {
             let memberSearch = args[i];
             let member = null;
@@ -60,7 +61,7 @@ module.exports = {
                 await endProcess()
                 return
             }
-            let movedUsers = await moveUsersIn(toBeMoved, message.member.voice, message.guild)
+            let movedUsers = await moveUsersIn(toBeMoved, memberVoice, message.guild)
             for (let i in toBeMoved) {
                 user = toBeMoved[i]
                 if (movedUsers.includes(user.id)) {
@@ -76,6 +77,7 @@ module.exports = {
                 return
             }
             intervalCounter = intervalCounter - intervalTicker;
+            if (intervalCounter <= 0) interval = false
         }, intervalTicker * 1000);
 
         async function interactionHandler(interaction) {
