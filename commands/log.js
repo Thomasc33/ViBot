@@ -113,8 +113,9 @@ function confirm(runInfo, message, count) {
             .setTimestamp()
         await message.channel.send({ embeds: [confirmEmbed] }).then(async confirmMessage => {
             if (await confirmMessage.confirmButton(message.author.id)) {
+                await confirmMessage.delete()
                 return res(true)
-            } else return res(false)
+            } else await confirmMessage.delete(); return res(false)
         })
     })
 }

@@ -1,7 +1,7 @@
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
 const moment = require('moment')
-const partneredServers = require('../data/partneredServers.json')
+
 module.exports = {
     name: 'warns',
     description: 'Displays all warns for all inputted users',
@@ -9,81 +9,57 @@ module.exports = {
     requiredArgs: 1,
     args: '[Users]',
     async execute(message, args, bot, db) {
-        if (args.length == 0) return;
-        var notFoundString = ''
         const settings = bot.settings[message.guild.id]
-        securityRole = message.guild.roles.cache.get(settings.roles.security)
-        //combines users into an array
+        const securityRole = message.guild.roles.cache.get(settings.roles.security)
+        var usersNotFound = []
         for (let i in args) {
-            let u = args[i];
-            var member = message.guild.members.cache.get(u)
-            if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(u.toLowerCase()));
-            if (!member) {
-                if (notFoundString == '') notFoundString = `${u}`
-                else notFoundString = notFoundString.concat(`, ${u}`)
-                continue
-            }
+            let user = args[i]
+            let member = message.guild.findMember(user)
+            if (!member) { usersNotFound.push(user); continue; }
+
+            let embed = new Discord.EmbedBuilder()
+                .setColor('#F04747')
+                .setTitle(`Warnings for ${member.nickname}`)
+                .setFooter({ text: member.user.id })
+            let partneredServer = bot.fetchPartneredServer(message.guild.id)
             db.query(`SELECT * FROM warns WHERE id = '${member.user.id}'`, async function (err, rows) {
                 if (err) ErrorLogger.log(err, bot)
-                let embed = new Discord.EmbedBuilder()
-                    .setColor('#ff0000')
-                    .setTitle(`Warns for ${member.nickname}`)
-                    .setDescription('None!')
-                    .setFooter({ text: member.user.id })
-                if (message.member.roles.highest.position >= securityRole.position) {
-                    let partneredServer = bot.fetchPartneredServer(message.guild.id)
-                    if (partneredServer != null) {
-                        let addedRow = false
-                        if (rows || rows.length > 0) fitStringIntoEmbed(embed, `**${partneredServer.name}'s Section**\n`, message.channel)
-                        for (let i in rows) {
-                            if (rows[i].guildid != partneredServer.id) { continue }
-                            fitStringIntoEmbed(embed, `**\`${parseInt(i) + 1}\`** by <@!${rows[i].modid}>${rows[i].time ? ' ' + moment().to(new Date(parseInt(rows[i].time))) : ''}:\n  \`\`\`${rows[i].reason}\`\`\``, message.channel)
-                            addedRow = true
-                        }
-                        if (rows || rows.length > 0) fitStringIntoEmbed(embed, `**${message.guild.name}'s Section**\n`, message.channel)
-                        if (!addedRow) embed.setDescription('None!')
-                    }
-                }
+                for (let i in rows) { let index = parseInt(i); rows[i].index = index}
+                let warningsServer = []
+                let warningsPartnered = []
+                let warningsNull = []
                 for (let i in rows) {
-                    if (rows[i].guildid != message.guild.id) { continue }
-                    fitStringIntoEmbed(embed, `**\`${parseInt(i) + 1}\`** by <@!${rows[i].modid}>${rows[i].time ? ' ' + moment().to(new Date(parseInt(rows[i].time))) : ''}:\n  \`\`\`${rows[i].reason}\`\`\``, message.channel)
+                    let row = rows[i]
+                    if (row.guildid == message.guild.id) warningsServer.push(row)
+                    else if (row.guildid == partneredServer.id) warningsPartnered.push(row)
+                    else if (row.guildid == null) warningsNull.push(row)
                 }
-                function fitStringIntoEmbed(embed, string, channel) {
-                    if (embed.data.description == 'None!') {
-                        embed.setDescription(string)
-                    } else if (embed.data.description.length + `\n${string}`.length >= 2048) {
-                        if (!embed.data.fields) {
-                            embed.addFields({ name: '-', value: string })
-                        } else if (embed.data.fields[embed.data.fields.length - 1].value.length + `\n${string}`.length >= 1024) {
-                            if (JSON.stringify(embed.toJSON()).length + `\n${string}`.length >= 6000) {
-                                channel.send({ embeds: [embed] })
-                                embed.setDescription(string)
-                                embed.data.fields = []
-                            } else {
-                                embed.addFields({ name: '-', value: string })
-                            }
-                        } else {
-                            if (JSON.stringify(embed.toJSON()).length + `\n${string}`.length >= 6000) {
-                                channel.send({ embeds: [embed] })
-                                embed.setDescription(string)
-                                embed.data.fields = []
-                            } else {
-                                embed.data.fields[embed.data.fields.length - 1].value = embed.data.fields[embed.data.fields.length - 1].value.concat(`\n${string}`)
-                            }
-                        }
-                    } else {
-                        embed.setDescription(embed.data.description.concat(`\n${string}`))
+                if (warningsServer.length > 0) {
+                    for (let i in warningsServer) { let index = parseInt(i); warningsServer[i].index = index}
+                    embed.addFields({ name: `${message.guild.name}'s Section`, value: warningsServer.map(warning => `${warning.index+1}. By <@!${warning.modid}> ${moment().to(new Date(parseInt(warning.time)))}\`\`\`${warning.reason}\`\`\``).join('\n'), inline: false })
+                }
+                if (message.member.roles.highest.position >= securityRole.position || bot.adminUsers.includes(message.member.id)) {
+                    if (warningsPartnered.length > 0) {
+                        for (let i in warningsPartnered) { let index = parseInt(i); warningsPartnered[i].index = index}
+                        embed.addFields({ name: `${partneredServer.name}'s Section`, value: warningsPartnered.map(warning => `${warning.index+1}. By <@!${warning.modid}> ${moment().to(new Date(parseInt(warning.time)))}\`\`\`${warning.reason}\`\`\``).join('\n'), inline: false })
+                    }
+                    if (warningsNull.length > 0) {
+                        for (let i in warningsNull) { let index = parseInt(i); warningsNull[i].index = index}
+                        embed.addFields({ name: 'Unknown Server', value: warningsNull.map(warning => `${warning.index+1}. By <@!${warning.modid}> ${moment().to(new Date(parseInt(warning.time)))}\`\`\`${warning.reason}\`\`\``).join('\n'), inline: false })
                     }
                 }
-                message.channel.send({ embeds: [embed] })
+                if (!embed.data.fields || embed.data.fields.length == 0) {
+                    embed.setDescription(`No warnings have been issued for ${member}`)
+                }
+                await message.channel.send({ embeds: [embed] })
             })
         }
-        if (notFoundString != '') {
-            var embed = new Discord.EmbedBuilder()
-                .setColor('#ffff00')
-                .setTitle('Users not found:')
-                .setDescription(notFoundString);
-            message.channel.send({ embeds: [embed] })
+        if (usersNotFound.length > 0) {
+            let embedNotFound = new Discord.EmbedBuilder()
+                .setTitle('Users not found')
+                .setColor('#fAA61A')
+                .setDescription(usersNotFound.join(', '))
+            await message.channel.send({ embeds: [embedNotFound] })
         }
     }
 }
