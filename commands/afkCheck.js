@@ -24,7 +24,7 @@ module.exports = {
     // alias: ['nafk'],
     description: 'The new version of the afk check',
     requiredArgs: 1,
-    args: '<run symbol> (key count) <location>',
+    args: '<run symbol> (key count) (#/raiding vc) <location>',
     role: 'almostrl',
     getNotes(guildid, member) {
         return `${afkTemplates[guildid] ? Object.keys(afkTemplates[guildid]).map(afk => `\`${afkTemplates[guildid][afk].symbol}\``).join(', ') : 'None for guild'}${afkTemplates[member.id] ? `, ${Object.keys(afkTemplates[member.id]).map(afk => `\`${afkTemplates[member.id][afk].symbol}\``).join(', ')}` : ''}`
@@ -44,6 +44,7 @@ module.exports = {
      * @param {import('mysql').Connection} tokenDB
      */
     async execute(message, args, bot, db, tokenDB, event) {
+        let settings = bot.settings[message.guild.id]
         if (!registeredWithRestart) {
             restart.registerAFKCheck(module.exports);
             registeredWithRestart = true;
@@ -60,6 +61,8 @@ module.exports = {
         if (symbol[0] == 'a') {
             isAdvanced = true;
         }
+        let raidingVC;
+        if (settings.backend.useStaticVCForRaiding) { raidingVC = args[0]; args.shift(); }
         //Check Run Type
         let runType = getRunType(symbol, message.guild.id);
         if (isAdvanced && !bot.settings[message.guild.id].backend.allowAdvancedRuns) return
@@ -99,10 +102,16 @@ module.exports = {
 
         //get/set channel
         let channel = null;
-        if (runInfo.newChannel) channel = await createChannel(runInfo, message, bot)
-        else channel = message.member.voice.channel;
-        if (!channel) return message.channel.send(`Unable to create/find the channel you are in`)
-        else runInfo.channel = channel.id;
+        if (settings.backend.useStaticVCForRaiding) {
+            runInfo.channel = settings.voice["raiding" + raidingVC]
+            channel = bot.channels.cache.get(runInfo.channel)
+            if (!channel) return message.channel.send(`Unable to create/find the channel you are in`)
+        } else {
+            if (runInfo.newChannel) channel = await createChannel(runInfo, message, bot)
+            else channel = message.member.voice.channel;
+            if (!channel) return message.channel.send(`Unable to create/find the channel you are in`)
+            else runInfo.channel = channel.id;
+        }
 
         //begin afk check
         let afkModule = new afkCheck(runInfo, bot, db, message.guild, channel, message, tokenDB)
@@ -110,6 +119,7 @@ module.exports = {
         if (runInfo.startDelay > 0) setTimeout(begin, runInfo.startDelay, afkModule)
     },
     async eventAfkExecute(message, args, bot, db, tokenDB, event, isVet) {
+        settings = bot.settings[message.guild.id]
         if (!registeredWithRestart) {
             restart.registerAFKCheck(module.exports);
             registeredWithRestart = true;
@@ -118,6 +128,9 @@ module.exports = {
             Channels.registerAFKCheck(module.exports);
             registeredWithVibotChannels = true;
         }
+        let raidingVC;
+        args.shift();
+        if (settings.backend.useStaticVCForRaiding) { raidingVC = args[0]; args.shift(); }
         //clear out runs array
         destroyInactiveRuns();
 
@@ -131,8 +144,7 @@ module.exports = {
         runInfo.raidLeader = message.author.id;
 
         //get/set location
-        let location = ''
-        for (i = 1; i < args.length; i++) location = location.concat(args[i]) + ' ';
+        let location = args.join(' ')
         if (location.length >= 1024) return message.channel.send('Location must be below 1024 characters, try again');
         if (location == '') location = 'None'
         runInfo.location = location.trim();
@@ -142,10 +154,16 @@ module.exports = {
 
         //get/set channel
         let channel = null;
-        if (runInfo.newChannel) channel = await createChannel(runInfo, message, bot)
-        else channel = message.member.voice.channel;
-        if (!channel) return message.channel.send(`Unable to create/find the channel you are in`)
-        else runInfo.channel = channel.id;
+        if (settings.backend.useStaticVCForRaiding) {
+            runInfo.channel = settings.voice["raiding" + raidingVC]
+            channel = bot.channels.cache.get(runInfo.channel)
+            if (!channel) return message.channel.send(`Unable to create/find the channel you are in`)
+        } else {
+            if (runInfo.newChannel) channel = await createChannel(runInfo, message, bot)
+            else channel = message.member.voice.channel;
+            if (!channel) return message.channel.send(`Unable to create/find the channel you are in`)
+            else runInfo.channel = channel.id;
+        }
 
         //begin afk check
         let afkModule = new afkCheck(runInfo, bot, db, message.guild, channel, message, tokenDB)
@@ -535,7 +553,7 @@ class afkCheck {
                     this.raidStatusMessage = await this.raidStatusMessage.edit({ components: temp_rs_components });
                     this.leaderEmbed.data.footer.text = `Channel is opening...`
                     this.leaderEmbedMessage = await this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed], components: temp_leader_components })
-                    let tempM = await this.raidStatus.send(`${this.channel.name} will open in 5 seconds...`);
+                    let tempM = await this.raidStatus.send(`${this.channel} will open in 5 seconds...`);
                     setTimeout(async (afk) => {
                         await afk.channel.permissionOverwrites.edit(afk.verifiedRaiderRole.id, { Connect: true, ViewChannel: true })
                         if (afk.eventBoi) await afk.channel.permissionOverwrites.edit(afk.eventBoi.id, { Connect: true, ViewChannel: true })
@@ -1060,6 +1078,7 @@ class afkCheck {
     }
 
     async postAfk() {
+        console.log(this.afkInfo.postAfkCheck)
         if (!this.afkInfo.postAfkCheck) return this.endAfk();
 
         //stop main timer
