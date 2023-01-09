@@ -189,7 +189,7 @@
             "ignoreRolesDisplay": [],
             "id": "raiding",
             "name": "Raid Leader Quota",
-            "roles": ["rl", "almostrl"],
+            "roles": ["headrl", "rl", "almostrl"],
             "quota": [3, 3],
             "noexcuses": true,
             "reset": "weekly",
@@ -198,12 +198,13 @@
             "values": [
                 { "column": "currentweek", "name": "Shatters Runs", "value": 1, "isRun": true },
                 { "column": "currentweekfailed", "name": "Failed Runs", "value": 1, "isRun": true },
+                { "column": "curretnweekShattersLead", "name": "Veteran Runs", "value": 1, "isRun": true },
                 { "column": "currentweekAssists", "name": "Assists", "value": 0.5 }
             ]
         }, {
             "id": "events",
             "name": "Realm Organizer Quota",
-            "roles": ["eventrl"],
+            "roles": ["veteventrl", "eventrl"],
             "quota": 0,
             "noexcuses": true,
             "reset": "weekly",
@@ -215,7 +216,7 @@
         }, {
             "id": "security",
             "name": "Security Quota",
-            "roles": ["security", "helper"],
+            "roles": ["officer", "security", "helper"],
             "quota": [7],
             "reset": "weekly",
             "currentweek": "parsecurrentweek",

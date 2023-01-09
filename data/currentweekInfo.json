@@ -36,7 +36,8 @@
             "id": "451171819672698920",
             "runs": [
                 "currentweek",
-                "currentweekfailed"
+                "currentweekfailed",
+                "currentweekVeteranShattersLead"
             ],
             "assists": [
                 "currentweekassists"
