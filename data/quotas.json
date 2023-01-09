@@ -186,6 +186,7 @@
     },
     "451171819672698920": {
         "quotas": [{
+            "ignoreRolesDisplay": [],
             "id": "raiding",
             "name": "Raid Leader Quota",
             "roles": ["rl", "almostrl"],

@@ -48,10 +48,26 @@
     "steamworksBoss": { "tag": ":SteamworksBoss:1050156577920917574", "id": "1050156577920917574" },
     "steamworksPortal": { "tag": "a:steamworksPortal:1050156386547413012", "id": "1050156386547413012" },
     "oryxThreeSkating": { "tag": "a:oryxSkating:1050173254121291827", "id": "1050173254121291827" },
-    "Founder": { "tag": ":Founder:1056598981603495986", "id": "1056598981603495986" },
-    "Leader": { "tag": ":Leader:1056598986091397141", "id": "1056598986091397141" },
-    "Officer": { "tag": ":Officer:1056598979695099924", "id": "1056598979695099924" },
-    "Member": { "tag": ":Member:1056598977870569582", "id": "1056598977870569582" },
-    "Initiate": { "tag": ":Initiate:1056598984577253386", "id": "1056598984577253386" },
-    "yellowStar": { "tag": ":yellowStar:1056598879354748978", "id": "1056598879354748978" }
+    
+    "Founder": { "tag": ":guildRankFounder:1058453908500004914", "id": "1058453908500004914" },
+    "Leader": { "tag": ":guildRankLeader:1058453911796727809", "id": "1058453911796727809" },
+    "Officer": { "tag": ":guildRankOfficer:1058453915588378725", "id": "1058453915588378725" },
+    "Member": { "tag": ":guildRankMember:1058453913692557433", "id": "1058453913692557433" },
+    "Initiate": { "tag": ":guildRankInitiate:1058453910026715268", "id": "1058453910026715268" },
+
+    "whiteStar": { "tag": ":starWhite:1058454263187112019", "id": "1058454263187112019" },
+    "yellowStar": { "tag": ":starYellow:1058454261131902996", "id": "1058454261131902996" },
+    "orangeStar": { "tag": ":starOrange:1058454227615223888", "id": "1058454227615223888" },
+    "redStar": { "tag": ":starRed:1058454229079044218", "id": "1058454229079044218" },
+    "blueStar": { "tag": ":starBlue:1058454242609856522", "id": "1058454242609856522" },
+    "lightBlueStar": { "tag": ":starLightBlue:1058454226033967124", "id": "1058454226033967124" },
+
+    "halloweenMysterySkin": { "tag": ":HalloweenMysterySkin:1061048510411198574", "id": "1061048510411198574" },
+    "mysterySkin": { "tag": ":mysterySkin:1061048566770053290", "id": "1061048566770053290" },
+    
+    "legendarySkin": { "tag": ":legendaryMysterySkin:1061048550739427458", "id": "1061048550739427458" },
+    "goldSkin": { "tag": ":goldMysterySkin:1061048525636522024", "id": "1061048525636522024" },
+    "rareSkin": { "tag": ":rareMysterySkin:1056615794164912250", "id": "1056615794164912250" },
+    "silverSkin": { "tag": ":silverMysterySkin:1061048601595359282", "id": "1061048601595359282" },
+    "bronzeSkin": { "tag": ":bronzeMysterySkin:1061048495672397824", "id": "1061048495672397824" }
 }
