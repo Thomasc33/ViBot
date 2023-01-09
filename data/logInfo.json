@@ -699,6 +699,7 @@
                 "toDisplay": [
                     "currentweek",
                     "currentweekfailed",
+                    "currentweekVeteranShattersLead",
                     "currentweekassists"
                 ]
             },
@@ -721,6 +722,7 @@
                 "toDisplay": [
                     "currentweek",
                     "currentweekfailed",
+                    "currentweekVeteranShattersLead",
                     "currentweekassists"
                 ]
             },
@@ -743,6 +745,30 @@
                 "toUpdate": "events",
                 "toDisplay": [
                     "currentweekEvents"
+                ]
+            },
+            {
+                "key": "v",
+                "name": "veteran",
+                "alias": [
+                    "vet",
+                    "veteran"
+                ],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": true,
+                "confirmSuffix": "veterans",
+                "main": "veteranShattersLead",
+                "currentweek": "currentweekVeteranShattersLead",
+                "color": "#308a00",
+                "icon": "https://cdn.discordapp.com/emojis/849406533435523093.png?v=1",
+                "desc": "Veteran Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweek",
+                    "currentweekfailed",
+                    "currentweekVeteranShattersLead",
+                    "currentweekassists"
                 ]
             }
         ],

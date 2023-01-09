@@ -6,7 +6,7 @@ module.exports = {
     role: 'security',
     name: 'punishments',
     args: '[users]',
-    aliases: ['backgroundcheck', 'pu', 'ui', 'userinfo'],
+    alias: ['backgroundcheck', 'pu', 'ui', 'userinfo'],
     requiredArgs: 1,
     description: 'Displays all mutes, warnings or suspensions any user has',
     async execute(message, args, bot, db) {
