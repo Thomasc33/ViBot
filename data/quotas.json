@@ -198,7 +198,7 @@
             "values": [
                 { "column": "currentweek", "name": "Shatters Runs", "value": 1, "isRun": true },
                 { "column": "currentweekfailed", "name": "Failed Runs", "value": 1, "isRun": true },
-                { "column": "curretnweekShattersLead", "name": "Veteran Runs", "value": 1, "isRun": true },
+                { "column": "currentweekVeteranShattersLead", "name": "Veteran Runs", "value": 1, "isRun": true },
                 { "column": "currentweekAssists", "name": "Assists", "value": 0.5 }
             ]
         }, {
