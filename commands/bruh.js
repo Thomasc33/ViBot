@@ -7,11 +7,15 @@ module.exports = {
     async execute(message, args, bot, db) {
         let channel = message.guild.channels.cache.get(args[0]) || message.member.voice.channel
         if (!channel) return message.channel.send('Join a VC')
+        
+        // connect to the channel and play bruh.mp3
         let connection = await channel.join()
-        connection.play('./data/bruh.mp3')
-        await sleep(1500)
+        let dispatcher = connection.play('./bruh.mp3')
+
+        // wait 5 seconds and disconnect
+        await sleep(5000)
+        dispatcher.destroy()
         connection.disconnect()
-        message.delete()
     }
 }
 
