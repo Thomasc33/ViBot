@@ -9,7 +9,7 @@ module.exports = {
     requiredArgs: 2,
     role: 'security',
     async execute(message, args, bot, db) {
-        let settings = bot.settings[message.guild.id]
+        const settings = bot.settings[message.guild.id]
         var member = message.mentions.members.first()
         if (!member) member = message.guild.members.cache.get(args.shift());
         else { args.shift() }
@@ -22,37 +22,49 @@ module.exports = {
         if (!image) return message.channel.send(`Please provide an image`)
         if (!validURL(image)) return message.channel.send(`Error attaching the image. Please try again`)
         if (`${member.nickname} | ${altName}`.length > 32) return message.channel.send(`User exceeds the allowable nickname length of 32 characters with the addition of \`${altName}\`. Please remove an alt before proceeding.`)
-        let confirmMessage = await message.channel.send(`Are you sure you want to add the alt ${altName} to ${member}? Y/N`);
-        let collector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id === message.author.id, time: 10000 });
-        collector.on('collect', async m => {
-            try {
-                if (m.content.toLowerCase().charAt(0) == 'y') {
-                    member.setNickname(`${member.nickname} | ${altName}`, `Old Name: ${member.nickname}\nNew Name: ${member.nickname} | ${altName}\nChange by: ${message.member}`);
-                    let embed = new Discord.EmbedBuilder()
-                        .setTitle('Alt Added')
-                        .setDescription(member.toString())
-                        .addFields([
-                            { name: 'Main', value: member.nickname, inline: true },
-                            { name: 'New Alt', value: altName, inline: true },
-                            { name: 'Added By', value: `<@!${message.author.id}>` }
-                        ])
-                        .setTimestamp(Date.now())
-                        .setImage(image)
-                    await message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });
-                    collector.stop();
-                    message.react('✅')
-                    confirmMessage.delete()
-                    db.query(`DELETE FROM veriblacklist WHERE id = '${altName}'`)
-                } else {
-                    message.channel.send('Response not recognized. Please try suspending again');
-                    collector.stop();
-                }
-            } catch (er) {
-                message.channel.send('Error adding alt. `;addalt <id> <alt name> <proof>')
-                ErrorLogger.log(er, bot, message.guild)
-            }
-        })
+        
+        member.setNickname(`${member.nickname} | ${altName}`, `Old Name: ${member.nickname}\nNew Name: ${member.nickname} | ${altName}\nChange by: ${message.member}`);
+        
+        let embed = new Discord.EmbedBuilder()
+            .setTitle('Alt Added')
+            .setDescription(member.toString())
+            .addFields([
+                { name: 'Main', value: member.nickname, inline: true },
+                { name: 'New Alt', value: altName, inline: true },
+                { name: 'Added By', value: `<@!${message.author.id}>` }
+            ])
+            .setTimestamp(Date.now())
+            .setImage(image)
+        await message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });
 
+        db.query(`SELECT * FROM veriblacklist WHERE id = '${altName}'`, async (err, rows) => {
+            if (!rows || !rows.length)
+                return;
+                
+            const expelEmbed = new Discord.EmbedBuilder()
+                .setTitle('Automatic Expel Removal')
+                .setDescription(`The following expels will be removed from the database tied to ${altName}. Are you sure you want to do this?`)
+                .setColor('#E0B0FF');
+
+            for (const row of rows) {
+                expelEmbed.addFields([{name: `${row.id}`, value: `Expelled by <@${row.modid}> in ${bot.guilds.cache.get(row.guildid).name || row.guildid}:\`\`\`${row.reason}\`\`\``}]);
+            }
+            
+            await message.channel.send({ embeds: [expelEmbed] }).then(async confirmMessage => {
+                if (await confirmMessage.confirmButton(message.author.id)) {
+                    expelEmbed.setTitle('Expels Successfully Removed')
+                    expelEmbed.setDescription(`The following expels have been removed from the database tied to ${altName}.`);
+                    expelEmbed.setColor('#33FF33')
+                    db.query(`DELETE FROM veriblacklist WHERE id = '${altName}'`);
+                } else {
+                    expelEmbed.setTitle('Expels Not Removed')
+                    expelEmbed.setDescription(`The expels for ${altName} have not been removed.`);
+                    expelEmbed.setColor('#FF3300')
+                    expelEmbed.spliceFields(0, expelEmbed.data.fields.length);
+                }
+                confirmMessage.edit({ embeds: [expelEmbed], components: [] });
+            })
+        })
     }
 }
 

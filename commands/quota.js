@@ -1,5 +1,4 @@
 const Discord = require('discord.js')
-const tables = require('../data/currentweekInfo.json').currentweek
 const ErrorLogger = require('../lib/logError');
 const moment = require('moment')
 const quotas = require('../data/quotas.json');
