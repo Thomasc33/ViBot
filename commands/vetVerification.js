@@ -68,7 +68,7 @@ module.exports = {
         let profile;
         if (!dungeon.webdata) {
             db.query(`SELECT * FROM users WHERE id = '${u.id}'`, (err, rows) => {
-                if (err) ErrorLogger.log(err, bot)
+                if (err) ErrorLogger.log(err, bot, guild)
                 if (rows.length == 0) return
                 if (dungeon.dbnames) for (let i of dungeon.dbnames) if (rows[0][i]) loggedRuns += parseInt(rows[0][i])
                 if (dungeon.dbisvet) isVet = rows[0][dungeon.dbisvet]

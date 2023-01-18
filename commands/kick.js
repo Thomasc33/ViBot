@@ -34,7 +34,7 @@ module.exports = {
             if (m.content.toLowerCase().charAt(0) == 'y') {
                 await message.channel.send(`Kicking now`);
                 await member.send(`You have been kicked from ${message.guild.name} for:\n${reason}`).catch(er => { })
-                await member.kick(reason).catch(er => { ErrorLogger.log(er, bot); message.channel.send(`Could not kick because: \`${er.message}\``); return; })
+                await member.kick(reason).catch(er => { ErrorLogger.log(er, bot, message.guild); message.channel.send(`Could not kick because: \`${er.message}\``); return; })
                 let embed = new Discord.EmbedBuilder()
                     .setTitle('User Kicked')
                     .setDescription(member.toString())

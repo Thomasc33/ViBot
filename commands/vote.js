@@ -53,11 +53,11 @@ async function postVote2(message, member, bot, db) {
             continue;
         let promotion = info[0];
         if (info.length > 1)
-            promotion = await retrievePromotionType(settings, message.channel, message.author, member, role, info).catch(err => ErrorLogger.log(err, bot));
+            promotion = await retrievePromotionType(settings, message.channel, message.author, member, role, info).catch(err => ErrorLogger.log(err, bot, message.guild));
         if (!promotion) return message.channel.send(`Cancelled vote for ${member}`);
 
         await db.query(`SELECT * FROM users WHERE id = ${member.id}`, async (err, rows) => {
-            if (err) ErrorLogger.log(err, bot);
+            if (err) ErrorLogger.log(err, bot, message.guild);
             const feedback = await getFeedback.getFeedback(member, message.guild, bot);
             const promo_role = message.guild.roles.cache.get(settings.roles[promotion]);
             const embed = new Discord.EmbedBuilder()
@@ -152,7 +152,7 @@ async function postVote(message, member, bot, db) {
         .setDescription(`${member}\n`)
     if (member.user.avatarURL()) voteEmbed.setAuthor({ name: `${member.nickname} to ${voteType}`, iconURL: member.user.avatarURL() })
     db.query(`SELECT * FROM users WHERE id = ${member.id}`, async (err, rows) => {
-        if (err) ErrorLogger.log(err, bot)
+        if (err) ErrorLogger.log(err, bot, message.guild)
         if (voteType != 'Almost Raid Leader')
             if (rows[0]) {
                 voteEmbed.data.description += `Runs Logged: \`${rows[0].voidsLead}\` Voids, \`${rows[0].cultsLead}\` Cults\nRecent Feedback:\n`

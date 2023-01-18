@@ -103,7 +103,7 @@ bot.on('messageCreate', message => {
             try {
                 if (message.channel.type == Discord.ChannelType.DM) return dmHandler(message);
             } catch (er) {
-                ErrorLogger.log(er, bot);
+                ErrorLogger.log(er, bot, message.guild);
             }
         }
         if (message.author.bot) return;
@@ -167,11 +167,11 @@ bot.on('messageCreate', message => {
             command.execute(message, args, bot, bot.dbs[message.guild.id], tokenDB)
             CommandLogger.log(message, bot)
         } catch (er) {
-            ErrorLogger.log(er, bot)
+            ErrorLogger.log(er, bot, message.guild)
             message.channel.send("Issue executing the command, check \`;commands\` and try again");
         }
     } catch (er) {
-        ErrorLogger.log(er, bot)
+        ErrorLogger.log(er, bot, message.guild)
     }
 });
 
@@ -202,7 +202,7 @@ bot.on("ready", async () => {
                     bot.dbs[g.id] = mysql.createConnection(dbInfo)
                     connectDB(bot.dbs[g.id])
                 }
-                else ErrorLogger.log(err, bot)
+                else ErrorLogger.log(err, bot, g)
             })
         }
     })
@@ -234,7 +234,7 @@ bot.on("ready", async () => {
                 if (bot.dbs[g.id] && !checked.includes(bot.dbs[g.id].config.databse)) {
                     checked.push(bot.dbs[g.id].config.databse) //prevents people from being unsuspended twice
                     bot.dbs[g.id].query(`SELECT * FROM vetbans WHERE suspended = true`, async (err, rows) => {
-                        if (err) ErrorLogger.log(err, bot)
+                        if (err) ErrorLogger.log(err, bot, g)
                         for (let i in rows) {
                             if (Date.now() > parseInt(rows[i].uTime)) {
                                 const guildId = rows[i].guildid;
@@ -248,7 +248,7 @@ bot.on("ready", async () => {
                                     setTimeout(() => { member.roles.add(settings.roles.vetraider); }, 1000)
                                     setTimeout(() => {
                                         if (!member.roles.cache.has(settings.roles.vetraider))
-                                            member.roles.add(settings.roles.vetraider).catch(er => ErrorLogger.log(er, bot))
+                                            member.roles.add(settings.roles.vetraider).catch(er => ErrorLogger.log(er, bot, g))
                                     }, 5000)
                                     try {
                                         let messages = await guild.channels.cache.get(settings.channels.suspendlog).messages.fetch({ limit: 100 })
@@ -270,7 +270,7 @@ bot.on("ready", async () => {
                                         await bot.dbs[g.id].query(`UPDATE vetbans SET suspended = false WHERE id = '${rows[i].id}'`)
                                     }
                                 } catch (er) {
-                                    ErrorLogger.log(er, bot)
+                                    ErrorLogger.log(er, bot, g)
                                 }
                             }
                         }
@@ -288,7 +288,7 @@ bot.on("ready", async () => {
                 if (bot.dbs[g.id] && !checked.includes(bot.dbs[g.id].config.databse)) {
                     checked.push(bot.dbs[g.id].config.databse) //prevents people from being unsuspended twice
                     bot.dbs[g.id].query(`SELECT * FROM suspensions WHERE suspended = true AND perma = false`, async (err, rows) => {
-                        if (err) ErrorLogger.log(err, bot)
+                        if (err) ErrorLogger.log(err, bot, g)
                         for (let i in rows) {
                             if (Date.now() > parseInt(rows[i].uTime)) {
                                 const guildId = rows[i].guildid;
@@ -304,10 +304,10 @@ bot.on("ready", async () => {
                                 }
                                 rolesString.split(' ').forEach(r => { if (r !== '') roles.push(r) })
                                 try {
-                                    await member.edit({ roles: roles }).catch(er => ErrorLogger.log(er, bot))
+                                    await member.edit({ roles: roles }).catch(er => ErrorLogger.log(er, bot, g))
                                     setTimeout(() => {
                                         if (member.roles.cache.has(settings.roles.tempsuspended))
-                                            member.edit({ roles: roles }).catch(er => ErrorLogger.log(er, bot))
+                                            member.edit({ roles: roles }).catch(er => ErrorLogger.log(er, bot, g))
                                     }, 5000)
                                     try {
                                         let messages = await guild.channels.cache.get(settings.channels.suspendlog).messages.fetch({ limit: 100 })
@@ -329,7 +329,7 @@ bot.on("ready", async () => {
                                         await bot.dbs[g.id].query(`UPDATE suspensions SET suspended = false WHERE id = '${rows[i].id}'`)
                                     }
                                 } catch (er) {
-                                    ErrorLogger.log(er, bot)
+                                    ErrorLogger.log(er, bot, g)
                                 }
                             }
                         }
@@ -371,7 +371,7 @@ bot.on("ready", async () => {
                 if (bot.dbs[g.id] && !checked.includes(bot.dbs[g.id].config.databse)) {
                     checked.push(bot.dbs[g.id].config.databse) //prevents people from being unsuspended twice
                     bot.dbs[g.id].query(`SELECT * FROM mutes WHERE muted = true`, async (err, rows) => {
-                        if (err) ErrorLogger.log(err, bot)
+                        if (err) ErrorLogger.log(err, bot, g)
                         for (let i in rows) {
                             if (Date.now() > parseInt(rows[i].uTime)) {
                                 const guildId = rows[i].guildid;
@@ -384,7 +384,7 @@ bot.on("ready", async () => {
                                         await member.roles.remove(settings.roles.muted)
                                         await bot.dbs[g.id].query(`UPDATE mutes SET muted = false WHERE id = '${rows[i].id}'`)
                                     } catch (er) {
-                                        ErrorLogger.log(er, bot)
+                                        ErrorLogger.log(er, bot, g)
                                     }
                                 }
                             }
@@ -399,9 +399,9 @@ bot.on("ready", async () => {
     bot.guilds.cache.each(g => {
         if (!emojiServers.includes(g.id)) {
             vibotChannels.update(g, bot).catch(er => { })
-            // if (bot.settings[g.id].backend.modmail) modmail.init(g, bot, bot.dbs[g.id]).catch(er => { ErrorLogger.log(er, bot); })
-            if (bot.settings[g.id].backend.verification) verification.init(g, bot, bot.dbs[g.id]).catch(er => { ErrorLogger.log(er, bot); })
-            if (bot.settings[g.id].backend.vetverification) vetVerification.init(g, bot, bot.dbs[g.id]).catch(er => { ErrorLogger.log(er, bot); })
+            // if (bot.settings[g.id].backend.modmail) modmail.init(g, bot, bot.dbs[g.id]).catch(er => { ErrorLogger.log(er, bot, g); })
+            if (bot.settings[g.id].backend.verification) verification.init(g, bot, bot.dbs[g.id]).catch(er => { ErrorLogger.log(er, bot, g); })
+            if (bot.settings[g.id].backend.vetverification) vetVerification.init(g, bot, bot.dbs[g.id]).catch(er => { ErrorLogger.log(er, bot, g); })
             botstatus.init(g, bot, bot.dbs[g.id])
         }
     })
@@ -453,7 +453,7 @@ bot.on('guildMemberAdd', member => {
                 } else
                     msg += `Could not assign a nickname as it was either null or undefined. Giving suspended role back.`;
                 let modlog = member.guild.channels.cache.get(bot.settings[member.guild.id].channels.modlogs)
-                if (!modlog) return ErrorLogger.log(new Error(`mod log not found in ${member.guild.id}`), bot)
+                if (!modlog) return ErrorLogger.log(new Error(`mod log not found in ${member.guild.id}`), bot, member.guild)
                 modlog.send(`${member} rejoined server after leaving while suspended. Giving suspended role and nickname back.`)
             }
         })
@@ -461,7 +461,7 @@ bot.on('guildMemberAdd', member => {
             if (rows.length !== 0) {
                 member.roles.add(bot.settings[member.guild.id].roles.muted)
                 let modlog = member.guild.channels.cache.get(bot.settings[member.guild.id].channels.modlogs)
-                if (!modlog) return ErrorLogger.log(new Error(`mod log not found in ${member.guild.id}`), bot)
+                if (!modlog) return ErrorLogger.log(new Error(`mod log not found in ${member.guild.id}`), bot, member.guild)
                 modlog.send(`${member} rejoined server after leaving while muted. Giving muted role back.`)
             }
         })
@@ -576,10 +576,10 @@ bot.on('guildMemberRemove', member => {
     if (bot.dbs[member.guild.id]) {
         let db = bot.dbs[member.guild.id]
         db.query(`SELECT suspended FROM suspensions WHERE id = '${member.id}' AND suspended = true AND guildid = '${member.guild.id}`, (err, rows) => {
-            if (err) return ErrorLogger.log(err, bot)
+            if (err) return ErrorLogger.log(err, bot, member.guild)
             if (rows.length !== 0) {
                 let modlog = member.guild.channels.cache.get(bot.settings[member.guild.id].channels.modlogs)
-                if (!modlog) return ErrorLogger.log(new Error(`mod log not found in ${member.guild.id}`), bot)
+                if (!modlog) return ErrorLogger.log(new Error(`mod log not found in ${member.guild.id}`), bot, member.guild)
                 modlog.send(`${member} is attempting to dodge a suspension by leaving the server`)
                 db.query(`UPDATE suspensions SET ignOnLeave = '${member.nickname}' WHERE id = '${member.id}' AND suspended = true`)
                 if (member.nickname) {
@@ -753,7 +753,7 @@ async function dmHandler(message) {
             .setFooter({ text: `User ID: ${message.author.id}` })
             .setTimestamp()
         if (message.author.avatarURL()) logEmbed.setAuthor({ name: message.author.tag, iconURL: message.author.avatarURL() })
-        guild.channels.cache.get(bot.settings[guild.id].channels.dmcommands).send({ embeds: [logEmbed] }).catch(er => { ErrorLogger.log(new Error(`Unable to find/send in settings.channels.dmcommands channel for ${guild.id}`), bot) })
+        guild.channels.cache.get(bot.settings[guild.id].channels.dmcommands).send({ embeds: [logEmbed] }).catch(er => { ErrorLogger.log(new Error(`Unable to find/send in settings.channels.dmcommands channel for ${guild.id}`), bot, guild) })
     }
 }
 
@@ -783,7 +783,7 @@ async function autoMod(message) {
             .then(() => message.author.send(`You have been muted in \`${message.guild.name}\` for \`${reason}\`. This will last for \`${timeString}\``))
             .then(() => {
                 let modlog = message.guild.channels.cache.get(settings.channels.modlog)
-                if (!modlog) return ErrorLogger.log(new Error('Mod log not found for automod'), bot)
+                if (!modlog) return ErrorLogger.log(new Error('Mod log not found for automod'), bot, message.guild)
                 modlog.send(`${message.member} was muted for \`${timeString}\` for \`${reason}\``)
             })
     }

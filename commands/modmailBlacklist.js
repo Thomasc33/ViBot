@@ -12,7 +12,7 @@ module.exports = {
                 .setTitle('Blacklisted Modmail Users')
                 .setDescription('None!')
             db.query(`SELECT * FROM modmailblacklist`, (err, rows) => {
-                if (err) ErrorLogger.log(err, bot)
+                if (err) ErrorLogger.log(err, bot, message.guild)
                 for (let i in rows) fitStringIntoEmbed(blackListedEmbed, `<@!${rows[i].id}>`, message.channel)
                 message.channel.send({ embeds: [blackListedEmbed] })
             })
@@ -40,7 +40,7 @@ module.exports = {
                 db.query(`SELECT * FROM modmailblacklist WHERE id = '${member.id}'`, (err, rows) => {
                     if (rows.length != 0) return message.channel.send(`${member} is already blacklisted`)
                     db.query(`INSERT INTO modmailblacklist (id) VALUES ('${member.id}')`, (err, rows) => {
-                        if (err) ErrorLogger.log(err, bot)
+                        if (err) ErrorLogger.log(err, bot, message.guild)
                         message.react('✅')
                     })
                 })
@@ -48,7 +48,7 @@ module.exports = {
                 db.query(`SELECT * FROM modmailblacklist WHERE id = '${member.id}'`, (err, rows) => {
                     if (rows.length == 0) return message.channel.send(`${member} is not blacklisted`)
                     db.query(`DELETE FROM modmailblacklist WHERE id = '${member.id}'`, (err, rows) => {
-                        if (err) ErrorLogger.log(err, bot)
+                        if (err) ErrorLogger.log(err, bot, message.guild)
                         message.react('✅')
                     })
                 })

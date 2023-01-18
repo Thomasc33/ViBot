@@ -38,7 +38,7 @@ module.exports = {
                     .setCustomId('modmailUnlock')
             ])
         let modMailChannel = guild.channels.cache.get(settings.channels.modmail)
-        let embedMessage = await modMailChannel.send({ embeds: [embed], components: [modmailCloseComponents] }).catch(er => ErrorLogger.log(er, bot))
+        let embedMessage = await modMailChannel.send({ embeds: [embed], components: [modmailCloseComponents] }).catch(er => ErrorLogger.log(er, bot, message.guild))
 
         modmailInteractionCollector = new Discord.InteractionCollector(bot, { message: embedMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
         modmailInteractionCollector.on('collect', (interaction) => interactionHandler(interaction, settings, bot, db))

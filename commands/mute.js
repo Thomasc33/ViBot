@@ -19,7 +19,7 @@ module.exports = {
         let muted = settings.roles.muted
         if (member.roles.cache.has(muted)) return message.channel.send(`${member} is already muted`)
         if (args.length == 1) {
-            await member.roles.add(muted).catch(er => ErrorLogger.log(er, bot))
+            await member.roles.add(muted).catch(er => ErrorLogger.log(er, bot, message.guild))
             await message.channel.send(`${member} has been muted indefinitely`)
             return;
         }
@@ -50,7 +50,7 @@ module.exports = {
                 return message.channel.send("Please enter a valid time type __**d**__ay, __**m**__inute, __**h**__our, __**s**__econd, __**w**__eek, __**y**__ear");
         }
         db.query(`INSERT INTO mutes (id, guildid, muted, reason, modid, uTime) VALUES ('${member.id}', '${message.guild.id}', true, '${reason || 'None Provided'}','${message.author.id}', '${Date.now() + time}')`, err => {
-            member.roles.add(muted).catch(er => ErrorLogger.log(er, bot))
+            member.roles.add(muted).catch(er => ErrorLogger.log(er, bot, message.guild))
             message.channel.send(`${member} has been muted`)
             member.user.send(`You have been muted on \`${message.guild.name}\` by <@!${message.author.id}> \`${message.author.tag}\`${reason ? ': ' + reason : 'No reason provided'}.`);
         })

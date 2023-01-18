@@ -49,7 +49,7 @@ module.exports = {
                 }
             } catch (er) {
                 message.channel.send('Error adding alt. `;addalt <id> <alt name> <proof>')
-                ErrorLogger.log(er, bot)
+                ErrorLogger.log(er, bot, message.guild)
             }
         })
 

@@ -14,7 +14,7 @@ module.exports = {
         let member = message.guild.findMember(args[0])
         if (!member) return message.channel.send('Member not found. Please try again')
         db.query(`SELECT * FROM suspensions WHERE id = '${member.user.id}'`, async function (err, rows) {
-            if (err) ErrorLogger.log(err, bot)
+            if (err) ErrorLogger.log(err, bot, message.guild)
             for (let i in rows) { if (rows[i].suspended == true) { rows.splice(i, 1) } }
             for (let i in rows) { rows[i].index = parseInt(i) }
             let embed = new Discord.EmbedBuilder()

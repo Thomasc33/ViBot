@@ -20,11 +20,11 @@ module.exports = {
                 .setTitle(`Punishments for ${member.nickname}`)
                 .setColor('#F04747')
             db.query(`SELECT * FROM warns WHERE id = '${member.user.id}' AND guildid = '${message.guild.id}'`, async function (err, warnings) {
-                if (err) ErrorLogger.log(err, bot)
+                if (err) ErrorLogger.log(err, bot, message.guild)
                 db.query(`SELECT * FROM suspensions WHERE id = '${member.user.id}' AND guildid = '${message.guild.id}'`, async function (err, suspensions) {
-                    if (err) ErrorLogger.log(err, bot)
+                    if (err) ErrorLogger.log(err, bot, message.guild)
                     db.query(`SELECT * FROM mutes WHERE id = '${member.user.id}' AND guildid = '${message.guild.id}'`, async function (err, mutes) {
-                        if (err) ErrorLogger.log(err, bot)
+                        if (err) ErrorLogger.log(err, bot, message.guild)
                         if (warnings.length > 0) {
                             for (let i in warnings) { let index = parseInt(i); warnings[i].index = index}
                             embed.addFields({ name: `Warnings`, value: warnings.map(warning => `${warning.index+1}. By <@!${warning.modid}> ${moment().to(new Date(parseInt(warning.time)))}\`\`\`${warning.reason}\`\`\``).join('\n'), inline: false })

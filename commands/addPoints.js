@@ -24,7 +24,7 @@ module.exports = {
             default: return message.channel.send(`${type} not recognized`)
         }
         db.query(`UPDATE users SET points = points + ${points} WHERE id = '${member.id}'`, (err, rows) => {
-            if (err) ErrorLogger.log(err, bot)
+            if (err) ErrorLogger.log(err, bot, message.guild)
             message.react('✅')
         })
     }

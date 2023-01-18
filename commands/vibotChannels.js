@@ -93,7 +93,7 @@ module.exports = {
             }
         }
         fs.writeFile('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => {
-            if (err) ErrorLogger.log(err, bot)
+            if (err) ErrorLogger.log(err, bot, guild)
         })
     },
     async watchMessage(message, bot, settings) {
@@ -138,11 +138,11 @@ module.exports = {
                         let key = await message.guild.members.cache.get(bot.afkChecks[i].key)
                         if (key) {
                             let keyRole = await message.guild.roles.cache.get(settings.roles.tempkey)
-                            await key.roles.remove(keyRole.id).catch(r => ErrorLogger.log(r, bot))
+                            await key.roles.remove(keyRole.id).catch(r => ErrorLogger.log(r, bot, message.guild))
                         }
                         delete bot.afkChecks[i];
                         fs.writeFile('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => {
-                            if (err) ErrorLogger.log(err, bot)
+                            if (err) ErrorLogger.log(err, bot, message.guild)
                         })
                     }
                 }
@@ -225,7 +225,7 @@ module.exports = {
         }
         delete (bot.afkChecks[vc_channel_id]);
         fs.writeFile('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => {
-            if (err) ErrorLogger.log(err, bot)
+            if (err) ErrorLogger.log(err, bot, message.guild)
         });
         let channel = guild.channels.cache.get(vc_channel_id);
         if (!channel) return
