@@ -98,7 +98,7 @@ module.exports = {
             if (settings && popInfo && member) {
                 const keyRows = popInfo.map(ki => ki.types.map(t => t[0]).join(", ")).join(", ");
                 if (bot.dbs['343704644712923138']) bot.dbs['343704644712923138'].query(`SELECT id, ${keyRows} FROM users WHERE id = '${member.id}'`, (err, keyRows) => {
-                    if (err) ErrorLogger.log(err, bot)
+                    if (err) ErrorLogger.log(err, bot, message.guild)
                     if (keyRows && keyRows[0]) checkRow(guild, bot, keyRows[0], member);
                 })
             }

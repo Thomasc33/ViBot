@@ -21,7 +21,7 @@ module.exports = {
             .setDescription(`None!`)
         if (!member) {
             db.query(`SELECT * FROM mutes WHERE muted = true AND guildid = ${message.guild.id}`, async (err, rows) => {
-                if (err) ErrorLogger.log(err, bot);
+                if (err) ErrorLogger.log(err, bot, message.guild);
                 const members = message.guild.roles.cache.get(require('../guildSettings.json')[message.guild.id].roles.muted).members.clone();
                 if (rows && rows.length) {
                     for (const row of rows) {
@@ -38,7 +38,7 @@ module.exports = {
             })
         } else {
             db.query(`SELECT * FROM mutes WHERE id = ${member.id} AND guildid = ${message.guild.id} ORDER BY muted DESC`, async (err, rows) => {
-                if (err) ErrorLogger.log(err, bot);
+                if (err) ErrorLogger.log(err, bot, message.guild);
                 if (!rows || !rows.length)
                     return message.channel.send({ embeds: [embed] });
                 for (const row of rows) {

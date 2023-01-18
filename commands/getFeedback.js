@@ -27,7 +27,7 @@ module.exports = {
             findings.edit(mentions)
         } catch (er) {
             message.channel.send("Error occured and details have been sent to Vi")
-            ErrorLogger.log(er, bot)
+            ErrorLogger.log(er, bot, message.guild)
         }
     },
     async getFeedback(member, guild, bot) {

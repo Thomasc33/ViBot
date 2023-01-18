@@ -26,7 +26,7 @@ module.exports = {
         if (!member.roles.cache.has(settings.roles.tempsuspended)) return message.channel.send("User is not suspended")
 
         db.query(`SELECT * FROM suspensions WHERE id = '${member.id}' AND suspended = true`, async (err, rows) => {
-            if (err) ErrorLogger.log(err, bot)
+            if (err) ErrorLogger.log(err, bot, message.guild)
             if (rows && rows.length == 0) {
                 message.channel.send(`This user was not suspended by ${bot.user}. Would you still like to unsuspend them (removes suspended and gives raider role back)? Y/N`)
                 let collector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id === message.author.id, time: 10000 });
@@ -40,7 +40,7 @@ module.exports = {
                             message.channel.send("User unsuspended successfully");
                         }
                     } catch (er) {
-                        ErrorLogger.log(er, bot)
+                        ErrorLogger.log(er, bot, message.guild)
                     }
                 });
             } else {
@@ -72,7 +72,7 @@ module.exports = {
                     db.query(`UPDATE suspensions SET suspended = 0 WHERE id = '${member.id}'`)
                     message.channel.send(`${member} has been unsuspended`)
                 } catch (er) {
-                    ErrorLogger.log(er, bot)
+                    ErrorLogger.log(er, bot, message.guild)
                 }
             }
         })

@@ -20,7 +20,7 @@ module.exports = {
                 search = ` AND guildid = '${message.guild.id}' AND (suspended = 1 OR perma = 1) ORDER BY uTime DESC LIMIT 0, 1`;
             db.query(`SELECT * FROM suspensions WHERE id = '${member.id}'${search}`, async (err, rows) => {
                 if (!rows || rows.length == 0) return message.channel.send('User has no suspends logged under me')
-                if (err) ErrorLogger.log(err, bot)
+                if (err) ErrorLogger.log(err, bot, message.guild)
                 let embed = new Discord.EmbedBuilder()
                     .setDescription('None!')
                 let i = 0;

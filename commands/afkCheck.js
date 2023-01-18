@@ -316,7 +316,7 @@ class afkCheck {
             active: true,
             vcSize: this.channel.members.size,
         }
-        fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot) })
+        fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot, this.guild) })
         this.sendMessage()
     }
 
@@ -685,8 +685,8 @@ class afkCheck {
             if (afk.leaderEmbed.data.fields[index].value == `None!`) {
                 afk.leaderEmbed.data.fields[index].value = `${emote}: <@!${interaction.user.id}>`;
             } else afk.leaderEmbed.data.fields[index].value += `\n${emote}: ${`<@!${interaction.user.id}>`}`
-            afk.leaderEmbedMessage.edit({ embeds: [afk.leaderEmbed] }).catch(er => ErrorLogger.log(er, afk.bot));
-            afk.runInfoMessage.edit({ embeds: [afk.leaderEmbed] }).catch(er => ErrorLogger.log(er, afk.bot));
+            afk.leaderEmbedMessage.edit({ embeds: [afk.leaderEmbed] }).catch(er => ErrorLogger.log(er, afk.bot, this.guild));
+            afk.runInfoMessage.edit({ embeds: [afk.leaderEmbed] }).catch(er => ErrorLogger.log(er, afk.bot, this.guild));
 
             //end interval
             if (endAfter) clearInterval(endAfter);
@@ -851,7 +851,7 @@ class afkCheck {
                 this.removeFromActiveInteractions(interaction.user.id)
             } else {
                 await this.db.query(`SELECT * FROM users WHERE id = '${interaction.user.id}'`, async (err, rows) => {
-                    if (err) ErrorLogger.log(err, bot)
+                    if (err) ErrorLogger.log(err, bot, this.guild)
                     this.removeFromActiveInteractions(interaction.user.id)
                     if (rows.length == 0) return await this.db.query(`INSERT INTO users (id) VALUES('${interaction.user.id}')`)
                     if (Date.now() - this.settings.numerical.nitrocooldown > parseInt(rows[0].lastnitrouse)) {
@@ -870,8 +870,8 @@ class afkCheck {
                         this.nitro.push(interaction.user)
                         this.nitroReacts.push(interaction.user.id)
                         this.leaderEmbed.data.fields[index].value = '<@!' + this.nitroReacts.join('>,\n<@!') + '>'
-                        this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
-                        this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
+                        this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot, this.guild));
+                        this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot, this.guild));
                         emitter.on('Ended', (channelID, aborted) => {
                             if (channelID == this.channel.id) {
                                 if (!aborted) this.db.query(`UPDATE users SET lastnitrouse = '${Date.now()}' WHERE id = ${interaction.user.id}`);
@@ -957,8 +957,8 @@ class afkCheck {
                         else this.leaderEmbed.data.fields[index].value += `,\n<@!${interaction.user.id}>`
                         this.pointsUsers.push(interaction.user)
                         this.earlyLocation.push(interaction.user)
-                        await this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, bot));
-                        await this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, bot));
+                        await this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, bot, this.guild));
+                        await this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, bot, this.guild));
                         emitter.on('Ended', (channelID, aborted) => {
                             if (aborted && channelID == this.channel.id) {
                                 this.db.query(`UPDATE users SET points = points + ${earlyLocationCost} WHERE id = ${interaction.user.id}`);
@@ -1027,8 +1027,8 @@ class afkCheck {
             afkcheck.supporters.push(interaction.user)
             if (afkcheck.leaderEmbed.data.fields[index].value == `None!`) afkcheck.leaderEmbed.data.fields[index].value = `<@!${interaction.user.id}> `;
             else afkcheck.leaderEmbed.data.fields[index].value += `,\n<@!${interaction.user.id}>`
-            afkcheck.leaderEmbedMessage.edit({ embeds: [afkcheck.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
-            afkcheck.runInfoMessage.edit({ embeds: [afkcheck.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
+            afkcheck.leaderEmbedMessage.edit({ embeds: [afkcheck.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot, this.guild));
+            afkcheck.runInfoMessage.edit({ embeds: [afkcheck.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot, this.guild));
             if (cooldown) {
                 afkcheck.tokenDB.query(`SELECT * FROM patreon WHERE id = '${interaction.user.id}'`, (err, rows) => {
                     if (rows.length == 0) afkcheck.tokenDB.query(`INSERT INTO patreon (id, lastuse) VALUES ('${interaction.user.id}', '${Date.now() + (3600000 * cooldown)}')`, (err, rows) => { })
@@ -1174,9 +1174,9 @@ class afkCheck {
         this.leaderEmbed.setFooter({ text: `The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname} at` })
             .setTimestamp();
 
-        this.raidStatusMessage.edit({ content: null, embeds: [this.mainEmbed], components: [] }).catch(er => ErrorLogger.log(er, this.bot))
-            .then(this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed], components: [] }).catch(er => ErrorLogger.log(er, this.bot)))
-            .then(this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot)))
+        this.raidStatusMessage.edit({ content: null, embeds: [this.mainEmbed], components: [] }).catch(er => ErrorLogger.log(er, this.bot, this.guild))
+            .then(this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed], components: [] }).catch(er => ErrorLogger.log(er, this.bot, this.guild)))
+            .then(this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot, this.guild)))
             .then(this.leaderEmbedMessage.reactions.removeAll())
 
         Channels.addReconnectButton(this.bot, this.raidStatusMessage, this.channel.id);
@@ -1199,7 +1199,7 @@ class afkCheck {
             this.bot.afkChecks[this.channel.id].mainGroup = this.splitGroup
             this.bot.afkChecks[this.channel.id].splitChannel = 'na'
         }
-        fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot) })
+        fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot, this.guild) })
 
         //send embed to history
         let history_run_title = "";
@@ -1398,9 +1398,9 @@ class afkCheck {
         }
         this.raidStatusMessage.reactions.removeAll();
 
-        this.raidStatusMessage.edit({ content: null, embeds: [this.mainEmbed], components: [] }).catch(er => ErrorLogger.log(er, this.bot))
-        this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed], components: [] }).catch(er => ErrorLogger.log(er, this.bot))
-        this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot))
+        this.raidStatusMessage.edit({ content: null, embeds: [this.mainEmbed], components: [] }).catch(er => ErrorLogger.log(er, this.bot, this.guild))
+        this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed], components: [] }).catch(er => ErrorLogger.log(er, this.bot, this.guild))
+        this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot, this.guild))
 
         let earlyLocationIDS = []
         for (let i in this.earlyLocation) earlyLocationIDS.push(this.earlyLocation[i].id)
@@ -1417,7 +1417,7 @@ class afkCheck {
         this.bot.afkChecks[this.channel.id].active = false
         if (this.keys.length > 0)
             fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => {
-                if (err) ErrorLogger.log(err, this.bot)
+                if (err) ErrorLogger.log(err, this.bot, this.guild)
             })
 
 
@@ -1503,8 +1503,8 @@ class afkCheck {
 
         if (!this.leaderEmbed) return
         this.leaderEmbed.setDescription(`**Raid Leader: ${this.message.member} \`\`${this.message.member.nickname}\`\`\nVC: ${this.channel}\nLocation:** \`\`${this.afkInfo.location}\`\``)
-        this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
-        this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
+        this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot, this.guild));
+        this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot, this.guild));
         if (this.partneredMessageSent && this.partneredMessage) {
             this.partneredMessage.edit(`${this.partneredPings},  **${this.afkInfo.runName}** is starting inside of **${this.message.guild.name}** in ${this.channel} at \`\`${this.afkInfo.location}\`\``)
         }
@@ -1560,9 +1560,9 @@ async function createChannel(runInfo, message, bot) {
 
         await message.member.voice.setChannel(channel).catch(er => { })
         //allows raiders to view
-        channel.permissionOverwrites.edit(raider.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot))
-        channel.permissionOverwrites.edit(runInfo.raidLeader, { Connect: true, ViewChannel: true, Speak: true }).catch(er => ErrorLogger.log(er, bot))
-        if (eventBoi) channel.permissionOverwrites.edit(eventBoi.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot))
+        channel.permissionOverwrites.edit(raider.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot, message.guild))
+        channel.permissionOverwrites.edit(runInfo.raidLeader, { Connect: true, ViewChannel: true, Speak: true }).catch(er => ErrorLogger.log(er, bot, message.guild))
+        if (eventBoi) channel.permissionOverwrites.edit(eventBoi.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot, message.guild))
 
         //Embed to remove
         let embed = new Discord.EmbedBuilder()
