@@ -493,11 +493,12 @@ bot.on('guildMemberUpdate', async (oldMember, newMember) => {
 
     const partneredSettings = bot.settings[partneredServer.id]
     let otherServer = bot.guilds.cache.find(g => g.id == partneredServer.id)
-    let partneredMember = await otherServer.members.fetch(newMember.user)
+    let partneredMember = await otherServer.members.cache.get(newMember.id)
+    if (!partneredMember) { return }
     let partneredModLogs = otherServer.channels.cache.get(partneredSettings.channels.modlogs)
     let as = otherServer.roles.cache.get(partneredSettings.roles.affiliatestaff)
     let vas = otherServer.roles.cache.get(partneredSettings.roles.vetaffiliate)
-    
+
     if (partneredMember.roles.cache.has(as.id)) hasAffiliate = true; else hasAffiliate = false
     if (partneredMember.roles.cache.has(vas.id)) hasVetAffiliate = true; else hasVetAffiliate = false
 
