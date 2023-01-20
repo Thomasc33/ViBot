@@ -1,6 +1,5 @@
 const Discord = require('discord.js');
 const ErrorLogger = require('../lib/logError')
-const emojis = require('../data/emojis.json');
 
 module.exports = {
     name: 'drag',

@@ -35,6 +35,7 @@ const createTemplate = require('./commands/createTemplate')
 const hostkeys = require('./commands/hostkey');
 const excuses = require('./commands/excuse');
 const quotas = require('./data/quotas.json');
+const emoji = require('./commands/emoji.js');
 // Global Variables/Data
 const botSettings = require('./settings.json')
 const token = require('./botKey.json')
@@ -85,6 +86,7 @@ bot.fetchPartneredServer = function (guildId) {
 bot.adminUsers = ['277636691227836419', '258286481167220738']
 bot.partneredServers = moduleIsAvailable('./data/partneredServers.json') ? require('./data/partneredServers.json') : {}
 const emojiServers = moduleIsAvailable('./data/emojiServers.json') ? require('./data/emojiServers.json') : {}
+bot.emojiServers = emojiServers
 const dbSchemas = require('./data/schemas.json')
 const { channel } = require('diagnostics_channel')
 const app = express();
@@ -183,6 +185,15 @@ bot.on("ready", async () => {
 
     //start api
     startAPI()
+
+    // Update emojis.json
+    try {
+        await emoji.update(bot)
+        console.log('Emoji file updated')
+    } catch (error) {
+        await ErrorLogger.log(error, bot)
+        console.log('Emoji file failed to update')
+    }
 
     //connect databases
     bot.guilds.cache.each(g => {
