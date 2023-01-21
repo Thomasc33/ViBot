@@ -16,10 +16,8 @@ Start the bot by either `node .` or via nodemon: `npm i -g nodemon` and `nodemon
 ## Command Parameters
 *All of these are case sensitive, and it is required that you type them exactly like how they are displayed below*
 
-**Name**: (String) The name of the command. This is something the user has to input in order to run the command.
-
+### **Name**: (String) The name of the command. This is something the user has to input in order to run the command.
 Required: true
-
 Default: null
 
 **description**: (String) This is a description about what the command does.
