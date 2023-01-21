@@ -591,10 +591,10 @@ module.exports = {
     async reVerify(u, guild, bot, db) {
         return new Promise(async (res, rej) => {
             //check to see if they are in other servers   
-            let emojiServers = require('../data/emojiServers.json')
             let nicks = []
             await bot.guilds.cache.each(async g => {
-                if (emojiServers.includes(g.id)) return
+                if (bot.emojiServers.includes(g.id)) return
+                if (bot.devServers.includes(g.id)) return
                 let member = await g.members.cache.get(u.id)
                 let settings = bot.settings[g.id]
                 if (!settings) return

@@ -85,8 +85,8 @@ bot.fetchPartneredServer = function (guildId) {
 }
 bot.adminUsers = ['277636691227836419', '258286481167220738']
 bot.partneredServers = moduleIsAvailable('./data/partneredServers.json') ? require('./data/partneredServers.json') : {}
-const emojiServers = moduleIsAvailable('./data/emojiServers.json') ? require('./data/emojiServers.json') : {}
-bot.emojiServers = emojiServers
+bot.emojiServers = moduleIsAvailable('./data/emojiServers.json') ? require('./data/emojiServers.json') : {}
+bot.devServers = ["739623118833713214"]
 const dbSchemas = require('./data/schemas.json')
 const { channel } = require('diagnostics_channel')
 const app = express();
@@ -197,96 +197,96 @@ bot.on("ready", async () => {
 
     //connect databases
     bot.guilds.cache.each(g => {
-        if (!emojiServers.includes(g.id)) {
-            if (!dbSchemas[g.id] || !dbSchemas[g.id].schema) return console.log('Missing Schema name (schema.json) for: ', g.id)
-            let dbInfo = {
-                host: dbSchemas[g.id].host || botSettings.defaultDbInfo.host,
-                user: dbSchemas[g.id].user || botSettings.defaultDbInfo.user,
-                password: dbSchemas[g.id].password || botSettings.defaultDbInfo.password,
-                database: dbSchemas[g.id].schema
-            }
-            bot.dbs[g.id] = mysql.createConnection(dbInfo)
-            connectDB(bot.dbs[g.id])
-
-            bot.dbs[g.id].on('error', err => {
-                if (err.code == 'PROTOCOL_CONNECTION_LOST' || err.code == 'PROTOCOL_ENQUEUE_AFTER_FATAL_ERROR') {
-                    bot.dbs[g.id] = mysql.createConnection(dbInfo)
-                    connectDB(bot.dbs[g.id])
-                }
-                else ErrorLogger.log(err, bot, g)
-            })
+        if (bot.emojiServers.includes(g.id)) { return }
+        if (bot.devServers.includes(g.id)) { return }
+        if (!dbSchemas[g.id] || !dbSchemas[g.id].schema) return console.log('Missing Schema name (schema.json) for: ', g.id)
+        let dbInfo = {
+            host: dbSchemas[g.id].host || botSettings.defaultDbInfo.host,
+            user: dbSchemas[g.id].user || botSettings.defaultDbInfo.user,
+            password: dbSchemas[g.id].password || botSettings.defaultDbInfo.password,
+            database: dbSchemas[g.id].schema
         }
+        bot.dbs[g.id] = mysql.createConnection(dbInfo)
+        connectDB(bot.dbs[g.id])
+
+        bot.dbs[g.id].on('error', err => {
+            if (err.code == 'PROTOCOL_CONNECTION_LOST' || err.code == 'PROTOCOL_ENQUEUE_AFTER_FATAL_ERROR') {
+                bot.dbs[g.id] = mysql.createConnection(dbInfo)
+                connectDB(bot.dbs[g.id])
+            }
+            else ErrorLogger.log(err, bot, g)
+        })
     })
 
     //to hide dev server
-    if (bot.user.id == botSettings.prodBotId) emojiServers.push('701483950559985705');
+    if (bot.user.id == botSettings.prodBotId) bot.devServers.push('701483950559985705');
 
     //generate default settings
     bot.guilds.cache.each(g => {
-        if (!emojiServers.includes(g.id)) {
-            setup.autoSetup(g, bot)
-        }
+        if (bot.emojiServers.includes(g.id)) { return }
+        if (bot.devServers.includes(g.id)) { return }
+        setup.autoSetup(g, bot)
     })
 
     //purge veri-active
     bot.guilds.cache.each(g => {
-        if (!emojiServers.includes(g.id)) {
-            let veriActive = g.channels.cache.get(bot.settings[g.id].channels.veriactive)
-            if (!veriActive) return;
-            veriActive.bulkDelete(100).catch(er => { })
-        }
+        if (bot.emojiServers.includes(g.id)) { return }
+        if (bot.devServers.includes(g.id)) { return }
+        let veriActive = g.channels.cache.get(bot.settings[g.id].channels.veriactive)
+        if (!veriActive) return;
+        veriActive.bulkDelete(100).catch(er => { })
     })
 
     //vetban check
     let vetbanInterval = setInterval(() => {
         let checked = []
         bot.guilds.cache.each(g => {
-            if (!emojiServers.includes(g.id)) {
-                if (bot.dbs[g.id] && !checked.includes(bot.dbs[g.id].config.databse)) {
-                    checked.push(bot.dbs[g.id].config.databse) //prevents people from being unsuspended twice
-                    bot.dbs[g.id].query(`SELECT * FROM vetbans WHERE suspended = true`, async (err, rows) => {
-                        if (err) ErrorLogger.log(err, bot, g)
-                        for (let i in rows) {
-                            if (Date.now() > parseInt(rows[i].uTime)) {
-                                const guildId = rows[i].guildid;
-                                let settings = bot.settings[guildId]
-                                const guild = bot.guilds.cache.get(guildId);
-                                const proofLogID = rows[i].logmessage;
-                                const member = guild.members.cache.get(rows[i].id);
-                                if (!member) return bot.dbs[g.id].query(`UPDATE vetbans SET suspended = false WHERE id = '${rows[i].id}'`)
+            if (bot.emojiServers.includes(g.id)) { return }
+            if (bot.devServers.includes(g.id)) { return }
+            if (bot.dbs[g.id] && !checked.includes(bot.dbs[g.id].config.databse)) {
+                checked.push(bot.dbs[g.id].config.databse) //prevents people from being unsuspended twice
+                bot.dbs[g.id].query(`SELECT * FROM vetbans WHERE suspended = true`, async (err, rows) => {
+                    if (err) ErrorLogger.log(err, bot, g)
+                    for (let i in rows) {
+                        if (Date.now() > parseInt(rows[i].uTime)) {
+                            const guildId = rows[i].guildid;
+                            let settings = bot.settings[guildId]
+                            const guild = bot.guilds.cache.get(guildId);
+                            const proofLogID = rows[i].logmessage;
+                            const member = guild.members.cache.get(rows[i].id);
+                            if (!member) return bot.dbs[g.id].query(`UPDATE vetbans SET suspended = false WHERE id = '${rows[i].id}'`)
+                            try {
+                                await member.roles.remove(settings.roles.vetban)
+                                setTimeout(() => { member.roles.add(settings.roles.vetraider); }, 1000)
+                                setTimeout(() => {
+                                    if (!member.roles.cache.has(settings.roles.vetraider))
+                                        member.roles.add(settings.roles.vetraider).catch(er => ErrorLogger.log(er, bot, g))
+                                }, 5000)
                                 try {
-                                    await member.roles.remove(settings.roles.vetban)
-                                    setTimeout(() => { member.roles.add(settings.roles.vetraider); }, 1000)
-                                    setTimeout(() => {
-                                        if (!member.roles.cache.has(settings.roles.vetraider))
-                                            member.roles.add(settings.roles.vetraider).catch(er => ErrorLogger.log(er, bot, g))
-                                    }, 5000)
-                                    try {
-                                        let messages = await guild.channels.cache.get(settings.channels.suspendlog).messages.fetch({ limit: 100 })
-                                        let m = messages.get(proofLogID)
-                                        if (!m) {
-                                            guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${rows[i].id}> has been un-vet-banned automatically`)
-                                        } else {
-                                            let embed = new Discord.EmbedBuilder()
-                                            embed.data = m.embeds.shift().data;
-                                            embed.setColor('#00ff00')
-                                                .setDescription(embed.data.description.concat(`\nUn-vet-banned automatically`))
-                                                .setFooter({ text: 'Unsuspended at' })
-                                                .setTimestamp(Date.now())
-                                            m.edit({ embeds: [embed] })
-                                        }
-                                    } catch (er) {
+                                    let messages = await guild.channels.cache.get(settings.channels.suspendlog).messages.fetch({ limit: 100 })
+                                    let m = messages.get(proofLogID)
+                                    if (!m) {
                                         guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${rows[i].id}> has been un-vet-banned automatically`)
-                                    } finally {
-                                        await bot.dbs[g.id].query(`UPDATE vetbans SET suspended = false WHERE id = '${rows[i].id}'`)
+                                    } else {
+                                        let embed = new Discord.EmbedBuilder()
+                                        embed.data = m.embeds.shift().data;
+                                        embed.setColor('#00ff00')
+                                            .setDescription(embed.data.description.concat(`\nUn-vet-banned automatically`))
+                                            .setFooter({ text: 'Unsuspended at' })
+                                            .setTimestamp(Date.now())
+                                        m.edit({ embeds: [embed] })
                                     }
                                 } catch (er) {
-                                    ErrorLogger.log(er, bot, g)
+                                    guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${rows[i].id}> has been un-vet-banned automatically`)
+                                } finally {
+                                    await bot.dbs[g.id].query(`UPDATE vetbans SET suspended = false WHERE id = '${rows[i].id}'`)
                                 }
+                            } catch (er) {
+                                ErrorLogger.log(er, bot, g)
                             }
                         }
-                    })
-                }
+                    }
+                })
             }
         })
     }, 120000);
@@ -295,57 +295,57 @@ bot.on("ready", async () => {
     let suspensionInterval = setInterval(() => {
         let checked = []
         bot.guilds.cache.each(g => {
-            if (!emojiServers.includes(g.id)) {
-                if (bot.dbs[g.id] && !checked.includes(bot.dbs[g.id].config.databse)) {
-                    checked.push(bot.dbs[g.id].config.databse) //prevents people from being unsuspended twice
-                    bot.dbs[g.id].query(`SELECT * FROM suspensions WHERE suspended = true AND perma = false`, async (err, rows) => {
-                        if (err) ErrorLogger.log(err, bot, g)
-                        for (let i in rows) {
-                            if (Date.now() > parseInt(rows[i].uTime)) {
-                                const guildId = rows[i].guildid;
-                                let settings = bot.settings[guildId]
-                                const proofLogID = rows[i].logmessage;
-                                const rolesString = rows[i].roles;
-                                let roles = []
-                                const guild = bot.guilds.cache.get(guildId);
-                                const member = guild.members.cache.get(rows[i].id);
-                                if (!member) {
-                                    guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${rows[i].id}> has been unsuspended automatically. However, they are not in the server`)
-                                    return bot.dbs[g.id].query(`UPDATE suspensions SET suspended = false WHERE id = '${rows[i].id}'`)
-                                }
-                                rolesString.split(' ').forEach(r => { if (r !== '') roles.push(r) })
+            if (bot.emojiServers.includes(g.id)) { return }
+            if (bot.devServers.includes(g.id)) { return }
+            if (bot.dbs[g.id] && !checked.includes(bot.dbs[g.id].config.databse)) {
+                checked.push(bot.dbs[g.id].config.databse) //prevents people from being unsuspended twice
+                bot.dbs[g.id].query(`SELECT * FROM suspensions WHERE suspended = true AND perma = false`, async (err, rows) => {
+                    if (err) ErrorLogger.log(err, bot, g)
+                    for (let i in rows) {
+                        if (Date.now() > parseInt(rows[i].uTime)) {
+                            const guildId = rows[i].guildid;
+                            let settings = bot.settings[guildId]
+                            const proofLogID = rows[i].logmessage;
+                            const rolesString = rows[i].roles;
+                            let roles = []
+                            const guild = bot.guilds.cache.get(guildId);
+                            const member = guild.members.cache.get(rows[i].id);
+                            if (!member) {
+                                guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${rows[i].id}> has been unsuspended automatically. However, they are not in the server`)
+                                return bot.dbs[g.id].query(`UPDATE suspensions SET suspended = false WHERE id = '${rows[i].id}'`)
+                            }
+                            rolesString.split(' ').forEach(r => { if (r !== '') roles.push(r) })
+                            try {
+                                await member.edit({ roles: roles }).catch(er => ErrorLogger.log(er, bot, g))
+                                setTimeout(() => {
+                                    if (member.roles.cache.has(settings.roles.tempsuspended))
+                                        member.edit({ roles: roles }).catch(er => ErrorLogger.log(er, bot, g))
+                                }, 5000)
                                 try {
-                                    await member.edit({ roles: roles }).catch(er => ErrorLogger.log(er, bot, g))
-                                    setTimeout(() => {
-                                        if (member.roles.cache.has(settings.roles.tempsuspended))
-                                            member.edit({ roles: roles }).catch(er => ErrorLogger.log(er, bot, g))
-                                    }, 5000)
-                                    try {
-                                        let messages = await guild.channels.cache.get(settings.channels.suspendlog).messages.fetch({ limit: 100 })
-                                        let m = messages.get(proofLogID)
-                                        if (!m) {
-                                            guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${rows[i].id}> has been unsuspended automatically`)
-                                        } else {
-                                            let embed = new Discord.EmbedBuilder()
-                                            embed.data = m.embeds.shift().data;
-                                            embed.setColor('#00ff00')
-                                                .setDescription(embed.data.description.concat(`\nUnsuspended automatically`))
-                                                .setFooter({ text: 'Unsuspended at' })
-                                                .setTimestamp(Date.now())
-                                            m.edit({ embeds: [embed] })
-                                        }
-                                    } catch (er) {
+                                    let messages = await guild.channels.cache.get(settings.channels.suspendlog).messages.fetch({ limit: 100 })
+                                    let m = messages.get(proofLogID)
+                                    if (!m) {
                                         guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${rows[i].id}> has been unsuspended automatically`)
-                                    } finally {
-                                        await bot.dbs[g.id].query(`UPDATE suspensions SET suspended = false WHERE id = '${rows[i].id}'`)
+                                    } else {
+                                        let embed = new Discord.EmbedBuilder()
+                                        embed.data = m.embeds.shift().data;
+                                        embed.setColor('#00ff00')
+                                            .setDescription(embed.data.description.concat(`\nUnsuspended automatically`))
+                                            .setFooter({ text: 'Unsuspended at' })
+                                            .setTimestamp(Date.now())
+                                        m.edit({ embeds: [embed] })
                                     }
                                 } catch (er) {
-                                    ErrorLogger.log(er, bot, g)
+                                    guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${rows[i].id}> has been unsuspended automatically`)
+                                } finally {
+                                    await bot.dbs[g.id].query(`UPDATE suspensions SET suspended = false WHERE id = '${rows[i].id}'`)
                                 }
+                            } catch (er) {
+                                ErrorLogger.log(er, bot, g)
                             }
                         }
-                    })
-                }
+                    }
+                })
             }
         })
     }, 60000);
@@ -378,43 +378,43 @@ bot.on("ready", async () => {
     let muteInterval = setInterval(() => {
         let checked = []
         bot.guilds.cache.each(g => {
-            if (!emojiServers.includes(g.id)) {
-                if (bot.dbs[g.id] && !checked.includes(bot.dbs[g.id].config.databse)) {
-                    checked.push(bot.dbs[g.id].config.databse) //prevents people from being unsuspended twice
-                    bot.dbs[g.id].query(`SELECT * FROM mutes WHERE muted = true`, async (err, rows) => {
-                        if (err) ErrorLogger.log(err, bot, g)
-                        for (let i in rows) {
-                            if (Date.now() > parseInt(rows[i].uTime)) {
-                                const guildId = rows[i].guildid;
-                                let settings = bot.settings[guildId]
-                                const guild = bot.guilds.cache.get(guildId);
-                                if (guild) {
-                                    const member = guild.members.cache.get(rows[i].id);
-                                    if (!member) return bot.dbs[g.id].query(`UPDATE mutes SET muted = false WHERE id = '${rows[i].id}'`)
-                                    try {
-                                        await member.roles.remove(settings.roles.muted)
-                                        await bot.dbs[g.id].query(`UPDATE mutes SET muted = false WHERE id = '${rows[i].id}'`)
-                                    } catch (er) {
-                                        ErrorLogger.log(er, bot, g)
-                                    }
+            if (bot.emojiServers.includes(g.id)) { return }
+            if (bot.devServers.includes(g.id)) { return }
+            if (bot.dbs[g.id] && !checked.includes(bot.dbs[g.id].config.databse)) {
+                checked.push(bot.dbs[g.id].config.databse) //prevents people from being unsuspended twice
+                bot.dbs[g.id].query(`SELECT * FROM mutes WHERE muted = true`, async (err, rows) => {
+                    if (err) ErrorLogger.log(err, bot, g)
+                    for (let i in rows) {
+                        if (Date.now() > parseInt(rows[i].uTime)) {
+                            const guildId = rows[i].guildid;
+                            let settings = bot.settings[guildId]
+                            const guild = bot.guilds.cache.get(guildId);
+                            if (guild) {
+                                const member = guild.members.cache.get(rows[i].id);
+                                if (!member) return bot.dbs[g.id].query(`UPDATE mutes SET muted = false WHERE id = '${rows[i].id}'`)
+                                try {
+                                    await member.roles.remove(settings.roles.muted)
+                                    await bot.dbs[g.id].query(`UPDATE mutes SET muted = false WHERE id = '${rows[i].id}'`)
+                                } catch (er) {
+                                    ErrorLogger.log(er, bot, g)
                                 }
                             }
                         }
-                    })
-                }
+                    }
+                })
             }
         })
     }, 90000);
 
     //initialize components (eg. modmail, verification)
     bot.guilds.cache.each(g => {
-        if (!emojiServers.includes(g.id)) {
-            vibotChannels.update(g, bot).catch(er => { })
-            // if (bot.settings[g.id].backend.modmail) modmail.init(g, bot, bot.dbs[g.id]).catch(er => { ErrorLogger.log(er, bot, g); })
-            if (bot.settings[g.id].backend.verification) verification.init(g, bot, bot.dbs[g.id]).catch(er => { ErrorLogger.log(er, bot, g); })
-            if (bot.settings[g.id].backend.vetverification) vetVerification.init(g, bot, bot.dbs[g.id]).catch(er => { ErrorLogger.log(er, bot, g); })
-            botstatus.init(g, bot, bot.dbs[g.id])
-        }
+        if (bot.emojiServers.includes(g.id)) { return }
+        if (bot.devServers.includes(g.id)) { return }
+        vibotChannels.update(g, bot).catch(er => { })
+        // if (bot.settings[g.id].backend.modmail) modmail.init(g, bot, bot.dbs[g.id]).catch(er => { ErrorLogger.log(er, bot, g); })
+        if (bot.settings[g.id].backend.verification) verification.init(g, bot, bot.dbs[g.id]).catch(er => { ErrorLogger.log(er, bot, g); })
+        if (bot.settings[g.id].backend.vetverification) vetVerification.init(g, bot, bot.dbs[g.id]).catch(er => { ErrorLogger.log(er, bot, g); })
+        botstatus.init(g, bot, bot.dbs[g.id])
     })
 
     //initialize channels from createchannel.js
@@ -424,26 +424,28 @@ bot.on("ready", async () => {
     const currentWeekReset = cron.job('0 0 * * SUN', () => {
         const biweekly = !(moment().diff(moment(1413378000), 'week') % 2);
         bot.guilds.cache.each(g => {
+            if (bot.emojiServers.includes(g.id)) { return }
+            if (bot.devServers.includes(g.id)) { return }
             const guildQuotas = quotas[g.id];
-            if (!emojiServers.includes(g.id) && guildQuotas) {
-                const quotaList = guildQuotas.quotas.filter(q => q.reset == "weekly" || (q.reset == "biweekly" && biweekly));
-                if (!quotaList.length) return;
+            if (!guildQuotas) { return }
+            const quotaList = guildQuotas.quotas.filter(q => q.reset == "weekly" || (q.reset == "biweekly" && biweekly));
+            if (!quotaList.length) return;
 
-                quota.fullReset(g, bot.dbs[g.id], bot, quotaList);
-            }
+            quota.fullReset(g, bot.dbs[g.id], bot, quotaList);
         })
     }, null, true, 'America/New_York', null, false)
 
     const currentMonthReset = cron.job('0 0 1 * *', () => {
         bot.guilds.cache.each(g => {
+            if (bot.emojiServers.includes(g.id)) { return }
+            if (bot.devServers.includes(g.id)) { return }
             const guildQuotas = quotas[g.id];
-            if (!emojiServers.includes(g.id) && guildQuotas) {
-                const quotaList = guildQuotas.quotas.filter(q => q.reset == "weekly" || (q.reset == "biweekly" && biweekly));
-                if (!quotaList.length) return;
-                for (const q of quotaList)
-                    if (q.reset == "monthly")
-                        quota.newWeek(g, bot, bot.dbs[g.id], bot.settings[g.id], guildQuotas, q);
-            }
+            if (!guildQuotas) { return }
+            const quotaList = guildQuotas.quotas.filter(q => q.reset == "weekly" || (q.reset == "biweekly" && biweekly));
+            if (!quotaList.length) return;
+            for (const q of quotaList)
+                if (q.reset == "monthly")
+                    quota.newWeek(g, bot, bot.dbs[g.id], bot.settings[g.id], guildQuotas, q);
         })
     }, null, true, 'America/New_York', null, false)
 });
@@ -811,10 +813,10 @@ async function getGuild(message) {
         let guilds = []
         let guildNames = []
         bot.guilds.cache.each(g => {
-            if (g.members.cache.has(message.author.id) && !emojiServers.includes(g.id)) {
-                guilds.push(g)
-                guildNames.push(g.name)
-            }
+            if (bot.emojiServers.includes(g.id)) { return }
+            if (bot.devServers.includes(g.id)) { return }
+            guilds.push(g)
+            guildNames.push(g.name)
         })
         if (guilds.length == 0) reject('We dont share any servers')
         else if (guilds.length == 1) resolve(guilds[0])

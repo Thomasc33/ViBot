@@ -5,7 +5,6 @@ const quotas = require('../data/quotas.json');
 require('../lib/extensions');
 const CachedMessages = {}
 const excuses = require('./excuse');
-const emojiServers = moduleIsAvailable('../data/emojiServers.json') ? require('../data/emojiServers.json') : {}
 
 module.exports = {
     name: 'quota',
@@ -52,7 +51,7 @@ module.exports = {
                     switch (args.shift().toLowerCase()) {
                         case 'monthly':
                             bot.guilds.cache.each(g => {
-                                if (!emojiServers.includes(g.id)) {
+                                if (!bot.emojiServers.includes(g.id)) {
                                     const quotaList = guildQuotas.quotas.filter(q => q.reset == "weekly" || (q.reset == "biweekly" && biweekly));
                                     if (!quotaList.length) return;
                                     for (const q of quotaList)
@@ -65,7 +64,7 @@ module.exports = {
                             biweekly = !(moment().diff(moment(1413378000), 'week') % 2);
                         case 'weekly':
                             bot.guilds.cache.each(g => {
-                                if (!emojiServers.includes(g.id)) {
+                                if (!bot.emojiServers.includes(g.id)) {
                                     const quotaList = guildQuotas.quotas.filter(q => q.reset == "weekly" || (q.reset == "biweekly" && biweekly));
                                     if (!quotaList.length) return;
                     

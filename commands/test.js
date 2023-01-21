@@ -3,15 +3,9 @@ const ErrorLogger = require('../lib/logError');
 
 module.exports = {
     name: 'test',
-    description: 'Holds testing code',
-    args: [],
+    description: 'Holds testing code. Do not issue command if you do not know what is in it',
     requiredArgs: 0,
-    getNotes(guildId, member) {
-        return ''
-    },
-    guildSpecific: true,
+    guildspecific: true,
     role: 'developer',
-    async execute(message, args, bot, db) {
-        
-    }
+    async execute(message, args, bot, db) {}
 }

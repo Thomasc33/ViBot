@@ -4,14 +4,14 @@ const ErrorLogger = require('../lib/logError');
 
 module.exports = {
     name: 'emoji',
-    description: 'Lets you view or update all of the emojis on ViBots side',
+    description: 'Lets you view or update all of the emojis on ViBots Database',
     aliases: ['emojis'],
     args: '(list/update)',
     requiredArgs: 0,
     role: 'developer',
     async execute(message, args, bot, db) {
         var choice = undefined
-        if (args.length == 0) { choice = 'list' }
+        if (args.length == 0) { choice = 'update' }
         else choice = args[0].toLowerCase()
         switch (choice.toLowerCase()) {
             case 'update':
@@ -50,6 +50,6 @@ module.exports = {
                 data[emoji.name] = dataTransfer
             })
         })
-        fs.writeFileSync('./data/emojisTest.json', JSON.stringify(data, null, 4))
+        fs.writeFileSync('./data/emojis.json', JSON.stringify(data, null, 4))
     }
 }
