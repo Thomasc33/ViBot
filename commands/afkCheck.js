@@ -726,16 +726,7 @@ class afkCheck {
 
         try {
             if (!checkType(this)) {
-                let newComponents = interaction.message.components.map(oldActionRow => {
-                    let updatedActionRow = new Discord.ActionRowBuilder()
-                    updatedActionRow.addComponents(oldActionRow.components.map(buttonComponent => {
-                      let newButton = Discord.ButtonBuilder.from(buttonComponent)
-                      if(interaction.component.customId == buttonComponent.customId) newButton.setDisabled(true)
-                      return newButton
-                    }));
-                    return updatedActionRow
-                  });
-                await interaction.update({components: newComponents});
+                interaction.disableButton(interaction.component.customId)
                 return this.removeFromActiveInteractions(interaction.member.id)
             }
             let reactInfo
@@ -787,24 +778,7 @@ class afkCheck {
                         return interaction.editReply({ embeds: [embed], components: [] })
                     }
 
-                    //check realmeye if applicable
-                    if (reactInfo && reactInfo.checkRealmEye) {
-                        let found = false;
-                        let characters = await realmEyeScrape.getUserInfo(this.message.guild.members.cache.get(interaction.user.id).nickname.replace(/[^a-z|]/gi, '').split('|')[0]).catch(er => found = true)
-                        if (characters.characters) characters.characters.forEach(c => {
-                            if (!found && (c.class == 'Mystic' && c.stats == '8/8')) {
-                                found = true;
-                            }
-                        })
-                        if (!found) {
-                            embed.setDescription(`I could not find any 8/8 mystics under \`${this.message.guild.members.cache.get(interaction.user.id).nickname.replace(/[^a-z|]/gi, '').split('|')[0]}\`. React with :white_check_mark: if you do have an 8/8 mystic on another account`)
-                            interaction.editReply({ embeds: [embed] })
-                            let subInteractionCollector = new Discord.InteractionCollector(this.bot, { message: em, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
-                            subInteractionCollector.on('collect', subSubInteraction => {
-                                if (subSubInteraction.customId == 'confirm') sendLocation(this)
-                            })
-                        } else sendLocation(this)
-                    } else sendLocation(this)
+                    sendLocation(this)
                 } else {
                     embed.setDescription('Cancelled. You can dismiss this message')
                     interaction.editReply({ embeds: [embed], components: [] })
