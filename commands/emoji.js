@@ -5,7 +5,7 @@ const ErrorLogger = require('../lib/logError');
 module.exports = {
     name: 'emoji',
     description: 'Lets you view or update all of the emojis on ViBots Database',
-    aliases: ['emojis'],
+    alias: ['emojis'],
     args: '(list/update)',
     requiredArgs: 0,
     role: 'developer',

@@ -139,6 +139,8 @@ module.exports = {
         if (!settings) return;
         let csvData = 'Leader ID,Leader Nickname,Currentweek Total,Total\n';
         return new Promise(async (resolve, reject) => {
+            let emojiList = quota.values.map(value => value.emoji ? `${value.emoji}: **${value.name}**` : '')
+            for (let i in emojiList) { if (emojiList[i] == '') { emojiList.splice(i, 1) } }
             let embed = new Discord.EmbedBuilder()
                 .setTitle('This weeks current logged runs!')
                 .setColor('#00ff00')
@@ -147,9 +149,9 @@ module.exports = {
             const embeds = [];
             if (channel.id != settings.channels[quota.pastweeks]) {
                 const nextReset = getNextReset(quota.reset);
-                if (nextReset)
-                    fitStringIntoEmbed(embeds, embed, `Quota reset <t:${nextReset}:R>\n`);
+                if (nextReset) fitStringIntoEmbed(embeds, embed, `Quota reset <t:${nextReset}:R>\n`);
             }
+            if (emojiList.length > 0) { fitStringIntoEmbed(embeds, embed, emojiList.join('\n') + '\n') }
             const combine = quota.values.map(v => `(${v.column}*${v.value})`).join(' + ') + ' as total';
             const unrolled = quota.values.filter(v => !v.rolling).map(v => `(${v.column}*${v.value})`).join(' + ') + ' as unrolled';
             const query = db.query(`SELECT id, ` + quota.values.map(v => v.column).join(', ') + `, ${combine}, ${unrolled} FROM Users WHERE ` + quota.values.map(v => `${v.column} != 0`).join(' OR ') + ` order by total desc`, async (err, rows) => {
