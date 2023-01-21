@@ -15,11 +15,10 @@ Start the bot by either `node .` or via nodemon: `npm i -g nodemon` and `nodemon
 # Documentation
 
 ## Command Parameters
+*All of these are case sensitive, and it is required that you type them exactly like how they are displayed below. Any parameter with * is a required parameter*
 
-`Name` **String**
+`String` **Name** *
 - *The name of the command. This is something the user has to input in order to run the command.*
-- Required: true
-- Default: null
 ## Command Parameters Test
 *All of these are case sensitive, and it is required that you type them exactly like how they are displayed below*
 
