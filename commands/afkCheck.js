@@ -685,6 +685,9 @@ class afkCheck {
                 afk.earlyLocation.push(interaction.user);
             }
 
+            // Disable button if react limit is hit
+            if (!checkType(afk)) interaction.message.disableButton(interaction.component.customId)
+
             //allow another interaction
             afk.removeFromActiveInteractions(interaction.user.id)
 
@@ -747,7 +750,9 @@ class afkCheck {
 
         try {
             if (!checkType(this)) {
-                interaction.disableButton(interaction.component.customId)
+                interaction.message.disableButton(interaction.component.customId)
+                embed.setDescription(`Too many people have already reacted and confirmed for that. Try another react or try again next run.`)
+                interaction.reply({ embeds: [embed], ephemeral: true })
                 return this.removeFromActiveInteractions(interaction.member.id)
             }
             let reactInfo
