@@ -726,8 +726,16 @@ class afkCheck {
 
         try {
             if (!checkType(this)) {
-                embed.setDescription(`Too many people have already reacted and confirmed for that. Try another react or try again next run.`)
-                interaction.reply({ embeds: [embed], ephemeral: true })
+                let newComponents = interaction.message.components.map(oldActionRow => {
+                    let updatedActionRow = new Discord.ActionRowBuilder()
+                    updatedActionRow.addComponents(oldActionRow.components.map(buttonComponent => {
+                      let newButton = Discord.ButtonBuilder.from(buttonComponent)
+                      if(interaction.component.customId == buttonComponent.customId) newButton.setDisabled(true)
+                      return newButton
+                    }));
+                    return updatedActionRow
+                  });
+                await interaction.update({components: newComponents});
                 return this.removeFromActiveInteractions(interaction.member.id)
             }
             let reactInfo
