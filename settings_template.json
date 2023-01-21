@@ -1,35 +1,37 @@
 {
     "prefix": ";",
-    "prodBotId": "",
-    "botId": "",
-    "botSecret": "",
-    "developerId": "",
+    "prodBotId": "589996847083290629",
+    "botId": "701196529519689790",
+    "botSecret": "eWyB5L1FkraexM1VQSE5HI5W1QhgQD7U",
+    "hallsId": "343704644712923138",
+    "developerId": "277636691227836419",
     "api": false,
     "MLtraining": false,
     "MLActiveTraining": false,
-    "osancStats": false,
     "apiPort": 80,
-    "earlyLocationCooldown": 720000,
-    "vibotDirectory": "",
-    "openSslLocaiton": "C:/Program Files/OpenSSL-Win64/bin/openssl.exe",
+    "earlyLocationCooldown": 7200000,
+    "vibotDirectory": "C:/Users/Carrt/OneDrive/Desktop/ViBot",
+    "openSslLocation": "C:/Program Files/OpenSSL-Win64/bin/openssl.exe",
     "dynamicDomainCredentials": {
-        "username": "",
-        "password": ""
+        "username": null,
+        "password": null
     },
     "gcloudOptions": {
-        "keyFilename": "",
-        "projectId": ""
+        "keyFilename": "C:/Program Files (x86)/Google/Cloud SDK/vibotparsingkeyjs.json",
+        "projectId": "vibot-275815"
     },
     "defaultDbInfo": {
-        "host": "",
-        "user": "",
-        "password": ""
-    },
-    "tokenDBInfo": {
-        "host": "",
+        "host": "a.vibot.tech",
         "user": "",
         "password": "",
-        "database": ""
+        "database": "testinghalls",
+        "multipleStatements": true
+    },
+    "tokenDBInfo": {
+        "host": "a.vibot.tech",
+        "user": "",
+        "password": "",
+        "database": "supporters"
     },
     "emote": {
         "Warrior": ":Warrior:701491230395072522",
