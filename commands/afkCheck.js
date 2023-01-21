@@ -622,9 +622,9 @@ class afkCheck {
 
         // Organize reacts into above arrays
         if (this.afkInfo.headcountEmote && this.afkInfo.headcountOnAfk) reacts.push(this.afkInfo.headcountEmote)
-        if (this.afkInfo.keyEmote) addButton({ emoji: this.bot.storedEmojis[this.afkInfo.keyEmote].id, style: Discord.ButtonStyle.Primary, customId: this.afkInfo.keyEmote })
-        if (this.afkInfo.vialReact) addButton({ emoji: this.bot.storedEmojis[this.afkInfo.vialEmote].id, style: Discord.ButtonStyle.Secondary, customId: this.afkInfo.vialEmote })
-        if (this.afkInfo.earlyLocationReacts.length > 0) for (let i of this.afkInfo.earlyLocationReacts) addButton({ emoji: this.bot.storedEmojis[i.emote].id, style: i.buttonStyle ? i.buttonStyle : Discord.ButtonStyle.Secondary, customId: i.emote })
+        if (this.afkInfo.keyEmote) addButton({ emoji: this.bot.storedEmojis[this.afkInfo.keyEmote].id, label: `0/${this.afkInfo.keyCount}`, style: Discord.ButtonStyle.Primary, customId: this.afkInfo.keyEmote })
+        if (this.afkInfo.vialReact) addButton({ emoji: this.bot.storedEmojis[this.afkInfo.vialEmote].id, label: `0/3`, style: Discord.ButtonStyle.Secondary, customId: this.afkInfo.vialEmote })
+        if (this.afkInfo.earlyLocationReacts.length > 0) for (let i of this.afkInfo.earlyLocationReacts) addButton({ emoji: this.bot.storedEmojis[i.emote].id, label: `0/${i.limit}`, style: i.buttonStyle ? i.buttonStyle : Discord.ButtonStyle.Secondary, customId: i.emote })
         if (!this.afkInfo.twoPhase) for (let i of this.afkInfo.reacts) reacts.push(i)
         //split row
         if (curRow.length > 0) { actionRows.push(curRow); curRow = [] }
@@ -668,25 +668,32 @@ class afkCheck {
             //check for full
             if (!checkType(afk)) return
             //set into type
+
+            let current_limit = 0
             setType(afk)
+
             function setType(afk) {
                 //key, vial, other
                 switch (type.toLowerCase()) {
                     case 'key':
                         afk.keys.push(interaction.user.id)
+                        current_limit = afk.keys.length
                         break;
                     case 'vial':
                         afk.vials.push(interaction.user.id)
+                        current_limit = afk.vials.length
                         break;
                     default:
                         afk.reactables[type].users.push(interaction.user.id)
+                        current_limit = afk.reactables[type].users.length
                         break;
                 }
                 afk.earlyLocation.push(interaction.user);
             }
 
             // Disable button if react limit is hit
-            if (!checkType(afk)) interaction.message.disableButton(interaction.component.customId)
+            if (current_limit >= limit) interaction.message.editButton(interaction.component.customId, `${current_limit}/${limit}`, true)
+            else interaction.message.editButton(interaction.component.customId, `${current_limit}/${limit}`)
 
             //allow another interaction
             afk.removeFromActiveInteractions(interaction.user.id)
@@ -750,7 +757,6 @@ class afkCheck {
 
         try {
             if (!checkType(this)) {
-                interaction.message.disableButton(interaction.component.customId)
                 embed.setDescription(`Too many people have already reacted and confirmed for that. Try another react or try again next run.`)
                 interaction.reply({ embeds: [embed], ephemeral: true })
                 return this.removeFromActiveInteractions(interaction.member.id)
@@ -846,6 +852,7 @@ class afkCheck {
             }
         }
         if (this.nitro.length + 1 > this.settings.numerical.nitrocount) {
+            interaction.message.editButton(interaction.component.customId, null, true)
             embed.setDescription('Too many Nitro Boosters have already received location for this run. Try again in the next run!');
             interaction.reply({ embeds: [embed], ephemeral: true })
             this.removeFromActiveInteractions(interaction.user.id)
@@ -911,7 +918,10 @@ class afkCheck {
             return this.removeFromActiveInteractions(interaction.user.id)
         }
         let ticketLimit = this.settings.numerical.ticketlimit
-        if (this.pointsUsers.length >= ticketLimit) return;
+        if (this.pointsUsers.length >= ticketLimit) {
+            interaction.message.editButton(interaction.component.customId, null, true)
+            return
+        }
         let embed = new Discord.EmbedBuilder()
             .setColor(this.afkInfo.embed.color)
             .setFooter({ text: `React with ✅ to confirm, or ❌ to cancel` })
@@ -946,6 +956,7 @@ class afkCheck {
                 }
                 else if (int.customId == 'confirm') {
                     if (this.pointsUsers.length >= ticketLimit) {
+                        interaction.message.editButton(interaction.component.customId, null, true)
                         embed.setDescription('Unfortunately too many people have used their points for this run. No points have been deducted.')
                         if (embed.data.footer) delete embed.data.footer
                         if (embed.data.author) delete embed.data.author
@@ -1002,6 +1013,7 @@ class afkCheck {
         }
         let tier = await patreonHelper.getTier(interaction.user, this.bot, this.tokenDB)
         if (this.supporters.length >= this.bot.settings[this.message.guild.id].numerical.supporterlimit) {
+            interaction.message.editButton(interaction.component.customId, null, true)
             if ([0, 1, 2].includes(tier)) {
                 embed.setDescription('Unfortunately, all spots for early location have been taken.')
                 interaction.reply({ embeds: [embed], ephemeral: true })
