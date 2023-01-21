@@ -87,6 +87,7 @@ bot.adminUsers = ['277636691227836419', '258286481167220738']
 bot.partneredServers = moduleIsAvailable('./data/partneredServers.json') ? require('./data/partneredServers.json') : {}
 bot.emojiServers = moduleIsAvailable('./data/emojiServers.json') ? require('./data/emojiServers.json') : {}
 bot.devServers = ["739623118833713214"]
+bot.storedEmojis = moduleIsAvailable('./data/emojis.json') ? require('./data/emojis.json') : {}
 const dbSchemas = require('./data/schemas.json')
 const { channel } = require('diagnostics_channel')
 const app = express();
