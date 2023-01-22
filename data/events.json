@@ -635,7 +635,7 @@
         "isExalt": false,
         "reacts": [
             "UTCloakofthePlanewalker",
-            "UTTomeoftheMushroomTribes",
+            "tomeOfTheMushroomTribesFungal",
             "daze",
             "Warrior",
             "Paladin",
@@ -654,7 +654,7 @@
             "lod"
         ],
         "enabled": true,
-        "keyEmote": "lodk",
+        "keyEmote": "lodK",
         "pingRole": null,
         "headcountEmote": "lod",
         "headcountOnAfk": true,
@@ -978,7 +978,7 @@
         "isExalt": true,
         "reacts": [
             "Collo",
-            "UTTomeoftheMushroomTribes",
+            "tomeOfTheMushroomTribesFungal",
             "Slow",
             "daze",
             "Curse",
@@ -1017,7 +1017,7 @@
         "isExalt": true,
         "reacts": [
             "Collo",
-            "UTTomeoftheMushroomTribes",
+            "tomeOfTheMushroomTribesFungal",
             "Slow",
             "daze",
             "Curse",
@@ -1054,7 +1054,7 @@
         "isExalt": true,
         "reacts": [
             "Collo",
-            "UTTomeoftheMushroomTribes",
+            "tomeOfTheMushroomTribesFungal",
             "STBrainoftheGolem",
             "Mystic",
             "Slow",
@@ -1096,7 +1096,7 @@
         "isExalt": true,
         "reacts": [
             "Collo",
-            "UTTomeoftheMushroomTribes",
+            "tomeOfTheMushroomTribesFungal",
             "STBrainoftheGolem",
             "Mystic",
             "Slow",
@@ -1317,7 +1317,7 @@
         "isExalt": false,
         "reacts": [
             "Collo",
-            "UTTomeoftheMushroomTribes",
+            "tomeOfTheMushroomTribesFungal",
             "Slow",
             "Warrior",
             "Paladin",
@@ -1563,7 +1563,7 @@
         "reacts": [
             "UTCloakofthePlanewalker",
             "Collo",
-            "UTTomeoftheMushroomTribes",
+            "tomeOfTheMushroomTribesFungal",
             "UTMarbleSeal",
             "Ogmur",
             "Slow",
@@ -1634,7 +1634,7 @@
         "reacts": [
             "UTCloakofthePlanewalker",
             "Collo",
-            "UTTomeoftheMushroomTribes",
+            "tomeOfTheMushroomTribesFungal",
             "UTMarbleSeal",
             "STBrainoftheGolem",
             "Ogmur",
@@ -1740,7 +1740,7 @@
                 "noLocation": false
             },
             {
-                "emote": "UTTomeoftheMushroomTribes",
+                "emote": "tomeOfTheMushroomTribesFungal",
                 "pointsGiven": 0,
                 "limit": 2,
                 "shortName": "Fungal Tome",
@@ -1848,7 +1848,7 @@
                 "noLocation": false
             },
             {
-                "emote": "UTTomeoftheMushroomTribes",
+                "emote": "tomeOfTheMushroomTribesFungal",
                 "pointsGiven": 0,
                 "limit": 2,
                 "shortName": "Fungal Tome",
@@ -1949,7 +1949,7 @@
                     "noLocation": false
                 },
                 {
-                    "emote": "UTTomeoftheMushroomTribes",
+                    "emote": "tomeOfTheMushroomTribesFungal",
                     "pointsGiven": 0,
                     "limit": 1,
                     "shortName": "Fungal Tome",
@@ -2037,7 +2037,7 @@
                     "noLocation": false
                 },
                 {
-                    "emote": "UTTomeoftheMushroomTribes",
+                    "emote": "tomeOfTheMushroomTribesFungal",
                     "pointsGiven": 0,
                     "limit": 1,
                     "shortName": "Fungal Tome",
@@ -2489,7 +2489,7 @@
                     "noLocation": false
                 },
                 {
-                    "emote": "UTTomeoftheMushroomTribes",
+                    "emote": "tomeOfTheMushroomTribesFungal",
                     "pointsGiven": 0,
                     "limit": 1,
                     "shortName": "Fungal Tome",
@@ -2577,7 +2577,7 @@
                     "noLocation": false
                 },
                 {
-                    "emote": "UTTomeoftheMushroomTribes",
+                    "emote": "tomeOfTheMushroomTribesFungal",
                     "pointsGiven": 0,
                     "limit": 1,
                     "shortName": "Fungal Tome",
