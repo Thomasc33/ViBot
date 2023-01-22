@@ -1,6 +1,4 @@
 const Discord = require('discord.js');
-const botSettings = require('../settings.json');
-const emojis = require('../data/emojis.json');
 const ErrorLogger = require('../lib/logError');
 const afkCheck = require('./afkCheck');
 const eventAfk = require('./eventAfk');
@@ -79,7 +77,7 @@ module.exports = {
             if (channel) {
                 let embed = new Discord.EmbedBuilder()
                     .setAuthor({ name: `Headcount for ${run.runName} by ${message.member.nickname}` })
-                    .setDescription(run.embed && run.embed.headcountDescription ? run.embed.headcountDescription : `${run.headcountEmote ? `React with ${bot.emojis.cache.get(run.headcountEmote)} if you are coming\n` : ''}${ run.keyEmoteID ? `React with ${bot.emojis.cache.get(run.keyEmoteID)} if you plan to bring a key\n` : '' }Otherwise react with your gear/class choices below`)
+                    .setDescription(run.embed && run.embed.headcountDescription ? run.embed.headcountDescription : `${run.headcountEmote ? `React with ${bot.storedEmojis[run.headcountEmote].text} if you are coming\n` : ''}${ run.keyEmote ? `React with ${bot.storedEmojis[run.keyEmote].text} if you plan to bring a key\n` : '' }Otherwise react with your gear/class choices below`)
                     .setColor(run.embed ? run.embed.color : run.color)
                     .setTimestamp()
 
@@ -92,13 +90,13 @@ module.exports = {
                 const pings = pingRole ? (typeof pingRole != "string" ? pingRole.map(r => `<@&${settings.roles[r]}>`).join(' ') : `<@&${settings.roles[pingRole]}>`) + ' @here' : '@here';
 
                 let m = await channel.send({ content: `${pings}`, embeds: [embed], components: [] })
-                if (run.headcountEmote) await m.react(run.headcountEmote)
-                if (run.keyEmoteID) await m.react(run.keyEmoteID)
-                if (run.vialReact) await m.react(botSettings.emoteIDs.Vial)
-                for (let i of run.earlyLocationReacts) await m.react(i.emoteID)
+                if (run.headcountEmote) await m.react(bot.storedEmojis[run.headcountEmote].id)
+                if (run.keyEmote) await m.react(bot.storedEmojis[run.keyEmote].id)
+                if (run.vialReact) await m.react(bot.storedEmojis[run.vialEmote].id)
+                for (let i of run.earlyLocationReacts) await m.react(bot.storedEmojis[i.emote].id)
                 for (let i of run.reacts) {
-                    if (isNaN(+i)) await m.react(emojis[i]["id"])
-                    else await m.react(i)
+                    if (isNaN(+i)) await m.react(bot.storedEmojis[i].id)
+                    else await m.react(bot.storedEmojis[i].id)
                 }
             }
         }

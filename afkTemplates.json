@@ -6,11 +6,11 @@
             "symbol": "c",
             "aliases": ["cult"],
             "reqsImageUrl": "",
-            "keyEmoteID": "701491230260985877",
+            "keyEmote": "hallsK",
             "pingRole": "cultping",
             "keyLogName": "keypops",
             "runLogName": "cultRuns",
-            "headcountEmote": "701491230332157972",
+            "headcountEmote": "cultist",
             "headcountOnAfk": false,
             "isSplit": false,
             "newChannel": true,
@@ -23,43 +23,67 @@
             "keyCount": 1,
             "earlyLocationCost": 20,
             "earlyLocationReacts": [{
-                    "emoteID": "720404844187353099",
-                    "pointsGiven": 5,
+                    "emote": "UTCloakofthePlanewalker",
+                    "pointsGiven": 2,
                     "limit": 3,
-                    "shortName": "rusher",
+                    "shortName": "Rusher",
                     "requiredRole": "rusher",
                     "noConfirm": false,
                     "noLocation": false
                 },
                 {
-                    "emoteID": "723019533597802507",
+                    "emote": "Ogmur",
                     "pointsGiven": 1,
                     "limit": 1,
-                    "shortName": "armorbreak",
+                    "shortName": "Armor Break",
                     "noConfirm": false,
                     "noLocation": false
                 },
                 {
-                    "emoteID": "723019533555597332",
+                    "emote": "Expose",
                     "pointsGiven": 0,
                     "limit": 1,
-                    "shortName": "expose",
+                    "shortName": "Expose",
                     "noConfirm": false,
                     "noLocation": false
+                },
+                {   "emote": "daze",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Daze",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "tomeOfTheMushroomTribesFungal",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Fungal Tome",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "UTMarbleSeal",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Marble Seal",
+                    "noConfirm": false,
+                    "noLocation": true
                 }
             ],
             "reacts": [
-                "723018431489900595",
-                "723018431296831539",
-                "723018431598952498",
-                "723018431573655643",
-                "720401067086446672",
-                "720404621331267697",
-                "723018431275728918"
+                "Warrior",
+                "Paladin",
+                "Knight",
+                "Wizard",
+                "Curse",
+                "UTMarbleSeal",
+                "tomeOfTheMushroomTribesFungal",
+                "Trickster"
             ],
             "embed": {
                 "color": "#ff0000",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:LostHallsKey:701491230260985877>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:720404844187353099>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
+                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:LostHallsKey:hallsK>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:UTCloakofthePlanewalker>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:Ogmur>\nIf you have the role <@&585533559280762888> react with <:nitro:NitroBooster> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230332157972.png?v=1",
                 "removeThumbnail": true
             },
@@ -71,11 +95,11 @@
             "symbol": "ac",
             "aliases": ["advcult", "acult"],
             "reqsImageUrl": "",
-            "keyEmoteID": "701491230260985877",
+            "keyEmote": "hallsK",
             "pingRole": "cultping",
             "keyLogName": "keypops",
             "runLogName": "cultRuns",
-            "headcountEmote": "701491230332157972",
+            "headcountEmote": "cultist",
             "headcountOnAfk": false,
             "isSplit": false,
             "newChannel": true,
@@ -88,43 +112,67 @@
             "keyCount": 1,
             "earlyLocationCost": 20,
             "earlyLocationReacts": [{
-                    "emoteID": "720404844187353099",
+                    "emote": "UTCloakofthePlanewalker",
                     "pointsGiven": 2,
                     "limit": 3,
-                    "shortName": "rusher",
+                    "shortName": "Rusher",
                     "requiredRole": "rusher",
                     "noConfirm": false,
                     "noLocation": false
                 },
                 {
-                    "emoteID": "723019533597802507",
+                    "emote": "Ogmur",
                     "pointsGiven": 1,
                     "limit": 1,
-                    "shortName": "armorbreak",
+                    "shortName": "Armor Break",
                     "noConfirm": false,
                     "noLocation": false
                 },
                 {
-                    "emoteID": "723019533555597332",
+                    "emote": "Expose",
                     "pointsGiven": 0,
                     "limit": 1,
-                    "shortName": "expose",
+                    "shortName": "Expose",
                     "noConfirm": false,
                     "noLocation": false
+                },
+                {   "emote": "daze",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Daze",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "tomeOfTheMushroomTribesFungal",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Fungal Tome",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "UTMarbleSeal",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Marble Seal",
+                    "noConfirm": false,
+                    "noLocation": true
                 }
             ],
             "reacts": [
-                "723018431489900595",
-                "723018431296831539",
-                "723018431598952498",
-                "723018431573655643",
-                "720401067086446672",
-                "720404621331267697",
-                "723018431275728918"
+                "Warrior",
+                "Paladin",
+                "Knight",
+                "Wizard",
+                "Curse",
+                "UTMarbleSeal",
+                "tomeOfTheMushroomTribesFungal",
+                "Trickster"
             ],
             "embed": {
                 "color": "#ff0000",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:LostHallsKey:701491230260985877>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:720404844187353099>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
+                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:LostHallsKey:hallsK>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:UTCloakofthePlanewalker>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:Ogmur>\nIf you have the role <@&585533559280762888> react with <:nitro:NitroBooster> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230332157972.png?v=1",
                 "removeThumbnail": true
             },
@@ -136,12 +184,12 @@
             "symbol": "v",
             "aliases": ["void", "voided"],
             "reqsImageUrl": "",
-            "keyEmoteID": "701491230260985877",
-            "vialEmoteID": "701491230567039018",
+            "keyEmote": "hallsK",
+            "vialEmote": "VialOfPureDarkness",
             "pingRole": "voidping",
             "keyLogName": "keypops",
             "runLogName": "voidRuns",
-            "headcountEmote": "701491230210523247",
+            "headcountEmote": "void",
             "headcountOnAfk": false,
             "isSplit": false,
             "newChannel": true,
@@ -154,34 +202,50 @@
             "keyCount": 1,
             "earlyLocationCost": 25,
             "earlyLocationReacts": [{
-                    "emoteID": "723019533597802507",
+                    "emote": "Ogmur",
                     "pointsGiven": 1,
                     "limit": 1,
-                    "shortName": "armorbreak",
+                    "shortName": "Armor Break",
                     "noConfirm": false,
                     "noLocation": false
                 },
                 {
-                    "emoteID": "723019533555597332",
+                    "emote": "Expose",
                     "pointsGiven": 0,
                     "limit": 1,
-                    "shortName": "expose",
+                    "shortName": "Expose",
                     "noConfirm": false,
                     "noLocation": false
+                },
+                {
+                    "emote": "tomeOfTheMushroomTribesFungal",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Fungal Tome",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "UTMarbleSeal",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Marble Seal",
+                    "noConfirm": false,
+                    "noLocation": true
                 }
             ],
             "reacts": [
-                "723018431489900595",
-                "723018431296831539",
-                "723018431598952498",
-                "723018431573655643",
-                "720401067086446672",
-                "720404621331267697",
-                "723018431275728918"
+                "Warrior",
+                "Paladin",
+                "Knight",
+                "Wizard",
+                "tomeOfTheMushroomTribesFungal",
+                "Curse",
+                "Trickster"
             ],
             "embed": {
                 "color": "#2f075c",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:701491230260985877> or <:Vial:701491230567039018>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
+                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:hallsK> or <:Vial:VialOfPureDarkness>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:Ogmur>\nIf you have the role <@&585533559280762888> react with <:nitro:NitroBooster> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230210523247.png?v=1",
                 "removeThumbnail": true
             },
@@ -193,12 +257,12 @@
             "symbol": "av",
             "aliases": ["advvoid", "avoid", "avoided", "advvoided"],
             "reqsImageUrl": "",
-            "keyEmoteID": "701491230260985877",
-            "vialEmoteID": "701491230567039018",
+            "keyEmote": "hallsK",
+            "vialEmote": "VialOfPureDarkness",
             "pingRole": "voidping",
             "keyLogName": "keypops",
             "runLogName": "voidRuns",
-            "headcountEmote": "701491230210523247",
+            "headcountEmote": "void",
             "headcountOnAfk": false,
             "isSplit": false,
             "newChannel": true,
@@ -211,34 +275,50 @@
             "keyCount": 1,
             "earlyLocationCost": 25,
             "earlyLocationReacts": [{
-                    "emoteID": "723019533597802507",
+                    "emote": "Ogmur",
                     "pointsGiven": 1,
                     "limit": 1,
-                    "shortName": "armorbreak",
+                    "shortName": "Armor Break",
                     "noConfirm": false,
                     "noLocation": false
                 },
                 {
-                    "emoteID": "723019533555597332",
+                    "emote": "Expose",
                     "pointsGiven": 0,
                     "limit": 1,
-                    "shortName": "expose",
+                    "shortName": "Expose",
                     "noConfirm": false,
                     "noLocation": false
+                },
+                {
+                    "emote": "tomeOfTheMushroomTribesFungal",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Fungal Tome",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "UTMarbleSeal",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Marble Seal",
+                    "noConfirm": false,
+                    "noLocation": true
                 }
             ],
             "reacts": [
-                "723018431489900595",
-                "723018431296831539",
-                "723018431598952498",
-                "723018431573655643",
-                "720401067086446672",
-                "720404621331267697",
-                "723018431275728918"
+                "Warrior",
+                "Paladin",
+                "Knight",
+                "Wizard",
+                "tomeOfTheMushroomTribesFungal",
+                "Curse",
+                "Trickster"
             ],
             "embed": {
                 "color": "#2f075c",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:701491230260985877> or <:Vial:701491230567039018>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
+                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:hallsK> or <:Vial:VialOfPureDarkness>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:Ogmur>\nIf you have the role <@&585533559280762888> react with <:nitro:NitroBooster> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230210523247.png?v=1",
                 "removeThumbnail": true
             },
@@ -250,12 +330,12 @@
             "symbol": "f",
             "aliases": ["fsv", "fullskip", "fullskipvoid"],
             "reqsImageUrl": "",
-            "keyEmoteID": "701491230260985877",
-            "vialEmoteID": "701491230567039018",
+            "keyEmote": "hallsK",
+            "vialEmote": "VialOfPureDarkness",
             "pingRole": ["voidping", "fskipReact"],
             "keyLogName": "keypops",
             "runLogName": "voidRuns",
-            "headcountEmote": "701491230391140453",
+            "headcountEmote": "fullskip",
             "headcountOnAfk": false,
             "isSplit": false,
             "newChannel": true,
@@ -268,51 +348,60 @@
             "keyCount": 1,
             "earlyLocationCost": 30,
             "earlyLocationReacts": [{
-                    "emoteID": "723018431275859969",
+                    "emote": "Mystic",
                     "pointsGiven": 25,
-                    "limit": 3,
-                    "shortName": "mystic",
-                    "confirmationMessage": "**__REQUIRED__**\n- Your pet must have **level 85+ magic heal.**\n- You must have a <:T2ImprisonmentOrb:720265039164211241> or <:T3NeutralizationOrb:720265039004565544> available.",
+                    "limit": 4,
+                    "shortName": "Mystic",
+                    "confirmationMessage": "**__REQUIRED__**\n- Your pet must have **level 85+ magic heal.**\n- You must have a **8/8 Mystic** with a <:T2ImprisonmentOrb:720265039164211241> (T2) or <:T3NeutralizationOrb:720265039004565544> (T3) Orb available.",
                     "noConfirm": false,
                     "noLocation": false
                 },
                 {
-                    "emoteID": "720263764309704704",
+                    "emote": "STBrainoftheGolem",
                     "pointsGiven": 25,
                     "limit": 3,
-                    "shortName": "brain",
+                    "shortName": "Brain",
+                    "confirmationMessage": "**__REQUIRED__**\n- Your pet must have **level 85+ magic heal.**\n- You must have a **8/8 Trickster** with a <:STBrainoftheGolem:720263764309704704> (Brain) and a Tiered Prism available.",
                     "noConfirm": false,
                     "noLocation": false
                 },
                 {
-                    "emoteID": "723019533597802507",
+                    "emote": "tomeOfTheMushroomTribesFungal",
                     "pointsGiven": 1,
                     "limit": 1,
-                    "shortName": "armorbreak",
+                    "shortName": "Fungal Tome",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "Ogmur",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Armor Break",
                     "noConfirm": false,
                     "noLocation": false
                 },
                 {
-                    "emoteID": "723019533555597332",
+                    "emote": "Expose",
                     "pointsGiven": 0,
                     "limit": 1,
-                    "shortName": "expose",
+                    "shortName": "Expose",
                     "noConfirm": false,
                     "noLocation": false
                 }
             ],
             "reacts": [
-                "723018431489900595",
-                "723018431296831539",
-                "723018431598952498",
-                "723018431573655643",
-                "720401067086446672",
-                "720404621331267697",
-                "723018431275728918"
+                "Warrior",
+                "Paladin",
+                "Knight",
+                "Wizard",
+                "UTMarbleSeal",
+                "tomeOfTheMushroomTribesFungal",
+                "Trickster"
             ],
             "embed": {
                 "color": "#2f075c",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:701491230260985877> or <:Vial:701491230567039018>\nIf you are bringing an 8/8 mystic for the skip, react with <:Mystic:723018431275859969>\nIf you are bringing an 8/8 trickster with a Brain for the skip, react with <:STBrainoftheGolem:720263764309704704>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
+                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:hallsK> or <:Vial:VialOfPureDarkness>\nIf you are bringing an 8/8 Mystic for the skip, react with <:Mystic:Mystic>\nIf you are bringing an 8/8 trickster with a Brain for the skip, react with <:STBrainoftheGolem:STBrainoftheGolem>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:Ogmur>\nIf you have the role <@&585533559280762888> react with <:nitro:NitroBooster> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230391140453.png?v=1",
                 "removeThumbnail": true
             },
@@ -324,12 +413,12 @@
             "symbol": "af",
             "aliases": ["afsv", "afullskipvoid", "afullskip", "advfsv", "advfullskip", "advfullskipvoid"],
             "reqsImageUrl": "",
-            "keyEmoteID": "701491230260985877",
-            "vialEmoteID": "701491230567039018",
+            "keyEmote": "hallsK",
+            "vialEmote": "VialOfPureDarkness",
             "pingRole": ["voidping", "fskipReact"],
             "keyLogName": "keypops",
             "runLogName": "voidRuns",
-            "headcountEmote": "701491230391140453",
+            "headcountEmote": "fullskip",
             "headcountOnAfk": false,
             "isSplit": false,
             "newChannel": true,
@@ -342,51 +431,60 @@
             "keyCount": 1,
             "earlyLocationCost": 30,
             "earlyLocationReacts": [{
-                    "emoteID": "723018431275859969",
+                    "emote": "Mystic",
                     "pointsGiven": 25,
-                    "limit": 3,
-                    "shortName": "mystic",
-                    "confirmationMessage": "**__REQUIRED__**\n- Your pet must have **level 85+ magic heal.**\n- You must have a <:T2ImprisonmentOrb:720265039164211241> or <:T3NeutralizationOrb:720265039004565544> available.",
+                    "limit": 4,
+                    "shortName": "Mystic",
+                    "confirmationMessage": "**__REQUIRED__**\n- Your pet must have **level 85+ magic heal.**\n- You must have a **8/8 Mystic** with a <:T2ImprisonmentOrb:720265039164211241> (T2) or <:T3NeutralizationOrb:720265039004565544> (T3) Orb available.",
                     "noConfirm": false,
                     "noLocation": false
                 },
                 {
-                    "emoteID": "720263764309704704",
+                    "emote": "STBrainoftheGolem",
                     "pointsGiven": 25,
                     "limit": 3,
-                    "shortName": "brain",
+                    "shortName": "Brain",
+                    "confirmationMessage": "**__REQUIRED__**\n- Your pet must have **level 85+ magic heal.**\n- You must have a **8/8 Trickster** with a <:STBrainoftheGolem:720263764309704704> (Brain) and a Tiered Prism available.",
                     "noConfirm": false,
                     "noLocation": false
                 },
                 {
-                    "emoteID": "723019533597802507",
+                    "emote": "tomeOfTheMushroomTribesFungal",
                     "pointsGiven": 1,
                     "limit": 1,
-                    "shortName": "armorbreak",
+                    "shortName": "Fungal Tome",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "Ogmur",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Armor Break",
                     "noConfirm": false,
                     "noLocation": false
                 },
                 {
-                    "emoteID": "723019533555597332",
+                    "emote": "Expose",
                     "pointsGiven": 0,
                     "limit": 1,
-                    "shortName": "expose",
+                    "shortName": "Expose",
                     "noConfirm": false,
                     "noLocation": false
                 }
             ],
             "reacts": [
-                "723018431489900595",
-                "723018431296831539",
-                "723018431598952498",
-                "723018431573655643",
-                "720401067086446672",
-                "720404621331267697",
-                "723018431275728918"
+                "Warrior",
+                "Paladin",
+                "Knight",
+                "Wizard",
+                "UTMarbleSeal",
+                "tomeOfTheMushroomTribesFungal",
+                "Trickster"
             ],
             "embed": {
                 "color": "#2f075c",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:701491230260985877> or <:Vial:701491230567039018>\nIf you are bringing an 8/8 mystic for the skip, react with <:Mystic:723018431275859969>\nIf you are bringing an 8/8 trickster with a Brain for the skip, react with <:STBrainoftheGolem:720263764309704704>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
+                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:hallsK> or <:Vial:VialOfPureDarkness>\nIf you are bringing an 8/8 Mystic for the skip, react with <:Mystic:Mystic>\nIf you are bringing an 8/8 trickster with a Brain for the skip, react with <:STBrainoftheGolem:STBrainoftheGolem>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:Ogmur>\nIf you have the role <@&585533559280762888> react with <:nitro:NitroBooster> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230391140453.png?v=1",
                 "removeThumbnail": true
             },
@@ -398,11 +496,11 @@
             "symbol": "s",
             "aliases": ["shatter", "shatters", "shitters"],
             "reqsImageUrl": "",
-            "keyEmoteID": "1008104345197346817",
+            "keyEmote": "shattersKey",
             "pingRole": "shattsReact",
             "keyLogName": "shattersPops",
             "runLogName": "shattersRuns",
-            "headcountEmote": "723001214865899532",
+            "headcountEmote": "shatters",
             "headcountOnAfk": false,
             "isSplit": false,
             "newChannel": true,
@@ -416,50 +514,72 @@
             "earlyLocationCost": 20,
             "earlyLocationReacts": [
                 {
-                    "emoteID": "720404621331267697",
-                    "pointsGiven": 1,
-                    "limit": 2,
-                    "shortName": "fungal",
-                    "noConfirm": false,
-                    "noLocation": false
-                },
-                {
-                    "emoteID": "720401067086446672",
+                    "emote": "UTCrystalShield",
                     "pointsGiven": 1,
                     "limit": 1,
-                    "shortName": "marblezeal",
+                    "shortName": "CShield",
                     "noConfirm": false,
                     "noLocation": false
                 },
                 {
-                    "emoteID": "723019533580894279",
+                    "emote": "tomeOfTheMushroomTribesFungal",
                     "pointsGiven": 1,
                     "limit": 2,
-                    "shortName": "slow",
+                    "shortName": "Fungal Tome",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emote": "UTCloakofthePlanewalker",
+                    "pointsGiven": 5,
+                    "limit": 3,
+                    "shortName": "Rusher",
                     "noConfirm": false,
                     "noLocation": true
                 },
                 {
-                    "emoteID": "720404844187353099",
-                    "pointsGiven": 5,
-                    "limit": 3,
-                    "shortName": "rusher",
+                    "emote": "UTMarbleSeal",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Marble Seal",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emote": "Slow",
+                    "pointsGiven": 1,
+                    "limit": 2,
+                    "shortName": "Slow",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "Ogmur",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Armor Break",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "Expose",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Expose",
                     "noConfirm": false,
                     "noLocation": true
                 }
             ],
             "reacts": [
-                "701491230395072522",
-                "701491230298734642",
-                "701491229925310575",
-                "723018431586238532",
-                "723019533681426472",
-                "723019533597802507",
-                "723019533555597332"
+                "Warrior",
+                "Paladin",
+                "Knight",
+                "Bard",
+                "Curse"
             ],
             "embed": {
                 "color": "#013220",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:shattersKey:1008104345197346817>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:720404844187353099>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
+                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:shattersKey:shattersKey>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:UTCloakofthePlanewalker>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:Ogmur>\nIf you have the role <@&585533559280762888> react with <:nitro:NitroBooster> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/723001214865899532.png?v=1",
                 "removeThumbnail": true
             },
@@ -471,11 +591,11 @@
             "symbol": "as",
             "aliases": ["advshatters", "ashatters", "advshatter", "ashatters"],
             "reqsImageUrl": "",
-            "keyEmoteID": "1008104345197346817",
+            "keyEmote": "shattersKey",
             "pingRole": "shattsReact",
             "keyLogName": "shattersPops",
             "runLogName": "shattersRuns",
-            "headcountEmote": "723001214865899532",
+            "headcountEmote": "shatters",
             "headcountOnAfk": false,
             "isSplit": false,
             "newChannel": true,
@@ -489,50 +609,72 @@
             "earlyLocationCost": 20,
             "earlyLocationReacts": [
                 {
-                    "emoteID": "720404621331267697",
-                    "pointsGiven": 1,
-                    "limit": 2,
-                    "shortName": "fungal",
-                    "noConfirm": false,
-                    "noLocation": false
-                },
-                {
-                    "emoteID": "720401067086446672",
+                    "emote": "UTCrystalShield",
                     "pointsGiven": 1,
                     "limit": 1,
-                    "shortName": "marblezeal",
+                    "shortName": "CShield",
                     "noConfirm": false,
                     "noLocation": false
                 },
                 {
-                    "emoteID": "723019533580894279",
+                    "emote": "tomeOfTheMushroomTribesFungal",
                     "pointsGiven": 1,
                     "limit": 2,
-                    "shortName": "slow",
+                    "shortName": "Fungal Tome",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emote": "UTCloakofthePlanewalker",
+                    "pointsGiven": 5,
+                    "limit": 3,
+                    "shortName": "Rusher",
                     "noConfirm": false,
                     "noLocation": true
                 },
                 {
-                    "emoteID": "720404844187353099",
-                    "pointsGiven": 5,
-                    "limit": 3,
-                    "shortName": "rusher",
+                    "emote": "UTMarbleSeal",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Marble Seal",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emote": "Slow",
+                    "pointsGiven": 1,
+                    "limit": 2,
+                    "shortName": "Slow",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "Ogmur",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Armor Break",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "Expose",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Expose",
                     "noConfirm": false,
                     "noLocation": true
                 }
             ],
             "reacts": [
-                "701491230395072522",
-                "701491230298734642",
-                "701491229925310575",
-                "723018431586238532",
-                "723019533681426472",
-                "723019533597802507",
-                "723019533555597332"
+                "Warrior",
+                "Paladin",
+                "Knight",
+                "Bard",
+                "Curse"
             ],
             "embed": {
                 "color": "#013220",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:shattersKey:1008104345197346817>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:720404844187353099>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
+                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:shattersKey:shattersKey>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:UTCloakofthePlanewalker>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:Ogmur>\nIf you have the role <@&585533559280762888> react with <:nitro:NitroBooster> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/723001214865899532.png?v=1",
                 "removeThumbnail": true
             },
@@ -546,11 +688,11 @@
             "symbol": "c",
             "aliases": ["cult"],
             "reqsImageUrl": "",
-            "keyEmoteID": "701491230260985877",
+            "keyEmote": "hallsK",
             "pingRole": "cultping",
             "keyLogName": "keypops",
             "runLogName": "cultRuns",
-            "headcountEmote": "701491230332157972",
+            "headcountEmote": "cultist",
             "headcountOnAfk": false,
             "isSplit": false,
             "newChannel": true,
@@ -563,43 +705,67 @@
             "keyCount": 1,
             "earlyLocationCost": 20,
             "earlyLocationReacts": [{
-                    "emoteID": "720404844187353099",
-                    "pointsGiven": 5,
+                    "emote": "UTCloakofthePlanewalker",
+                    "pointsGiven": 2,
                     "limit": 3,
-                    "shortName": "rusher",
+                    "shortName": "Rusher",
                     "requiredRole": "rusher",
                     "noConfirm": false,
                     "noLocation": false
                 },
                 {
-                    "emoteID": "723019533597802507",
+                    "emote": "Ogmur",
                     "pointsGiven": 1,
                     "limit": 1,
-                    "shortName": "armorbreak",
+                    "shortName": "Armor Break",
                     "noConfirm": false,
                     "noLocation": false
                 },
                 {
-                    "emoteID": "723019533555597332",
+                    "emote": "Expose",
                     "pointsGiven": 0,
                     "limit": 1,
-                    "shortName": "expose",
+                    "shortName": "Expose",
                     "noConfirm": false,
                     "noLocation": false
+                },
+                {   "emote": "daze",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Daze",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "tomeOfTheMushroomTribesFungal",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Fungal Tome",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "UTMarbleSeal",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Marble Seal",
+                    "noConfirm": false,
+                    "noLocation": true
                 }
             ],
             "reacts": [
-                "723018431489900595",
-                "723018431296831539",
-                "723018431598952498",
-                "723018431573655643",
-                "720401067086446672",
-                "720404621331267697",
-                "723018431275728918"
+                "Warrior",
+                "Paladin",
+                "Knight",
+                "Wizard",
+                "Curse",
+                "UTMarbleSeal",
+                "tomeOfTheMushroomTribesFungal",
+                "Trickster"
             ],
             "embed": {
                 "color": "#ff0000",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:LostHallsKey:701491230260985877>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:720404844187353099>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
+                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:LostHallsKey:hallsK>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:UTCloakofthePlanewalker>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:Ogmur>\nIf you have the role <@&585533559280762888> react with <:nitro:NitroBooster> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230332157972.png?v=1",
                 "removeThumbnail": true
             },
@@ -611,11 +777,11 @@
             "symbol": "ac",
             "aliases": ["advcult", "acult"],
             "reqsImageUrl": "",
-            "keyEmoteID": "701491230260985877",
+            "keyEmote": "hallsK",
             "pingRole": "cultping",
             "keyLogName": "keypops",
             "runLogName": "cultRuns",
-            "headcountEmote": "701491230332157972",
+            "headcountEmote": "cultist",
             "headcountOnAfk": false,
             "isSplit": false,
             "newChannel": true,
@@ -628,43 +794,67 @@
             "keyCount": 1,
             "earlyLocationCost": 20,
             "earlyLocationReacts": [{
-                    "emoteID": "720404844187353099",
+                    "emote": "UTCloakofthePlanewalker",
                     "pointsGiven": 2,
                     "limit": 3,
-                    "shortName": "rusher",
+                    "shortName": "Rusher",
                     "requiredRole": "rusher",
                     "noConfirm": false,
                     "noLocation": false
                 },
                 {
-                    "emoteID": "723019533597802507",
+                    "emote": "Ogmur",
                     "pointsGiven": 1,
                     "limit": 1,
-                    "shortName": "armorbreak",
+                    "shortName": "Armor Break",
                     "noConfirm": false,
                     "noLocation": false
                 },
                 {
-                    "emoteID": "723019533555597332",
+                    "emote": "Expose",
                     "pointsGiven": 0,
                     "limit": 1,
-                    "shortName": "expose",
+                    "shortName": "Expose",
                     "noConfirm": false,
                     "noLocation": false
+                },
+                {   "emote": "daze",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Daze",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "tomeOfTheMushroomTribesFungal",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Fungal Tome",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "UTMarbleSeal",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Marble Seal",
+                    "noConfirm": false,
+                    "noLocation": true
                 }
             ],
             "reacts": [
-                "723018431489900595",
-                "723018431296831539",
-                "723018431598952498",
-                "723018431573655643",
-                "720401067086446672",
-                "720404621331267697",
-                "723018431275728918"
+                "Warrior",
+                "Paladin",
+                "Knight",
+                "Wizard",
+                "Curse",
+                "UTMarbleSeal",
+                "tomeOfTheMushroomTribesFungal",
+                "Trickster"
             ],
             "embed": {
                 "color": "#ff0000",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:LostHallsKey:701491230260985877>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:720404844187353099>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
+                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:LostHallsKey:hallsK>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:UTCloakofthePlanewalker>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:Ogmur>\nIf you have the role <@&585533559280762888> react with <:nitro:NitroBooster> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230332157972.png?v=1",
                 "removeThumbnail": true
             },
@@ -676,12 +866,12 @@
             "symbol": "v",
             "aliases": ["void", "voided"],
             "reqsImageUrl": "",
-            "keyEmoteID": "701491230260985877",
-            "vialEmoteID": "701491230567039018",
+            "keyEmote": "hallsK",
+            "vialEmote": "VialOfPureDarkness",
             "pingRole": "voidping",
             "keyLogName": "keypops",
             "runLogName": "voidRuns",
-            "headcountEmote": "701491230210523247",
+            "headcountEmote": "void",
             "headcountOnAfk": false,
             "isSplit": false,
             "newChannel": true,
@@ -694,34 +884,50 @@
             "keyCount": 1,
             "earlyLocationCost": 25,
             "earlyLocationReacts": [{
-                    "emoteID": "723019533597802507",
+                    "emote": "Ogmur",
                     "pointsGiven": 1,
                     "limit": 1,
-                    "shortName": "armorbreak",
+                    "shortName": "Armor Break",
                     "noConfirm": false,
                     "noLocation": false
                 },
                 {
-                    "emoteID": "723019533555597332",
+                    "emote": "Expose",
                     "pointsGiven": 0,
                     "limit": 1,
-                    "shortName": "expose",
+                    "shortName": "Expose",
                     "noConfirm": false,
                     "noLocation": false
+                },
+                {
+                    "emote": "tomeOfTheMushroomTribesFungal",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Fungal Tome",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "UTMarbleSeal",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Marble Seal",
+                    "noConfirm": false,
+                    "noLocation": true
                 }
             ],
             "reacts": [
-                "723018431489900595",
-                "723018431296831539",
-                "723018431598952498",
-                "723018431573655643",
-                "720401067086446672",
-                "720404621331267697",
-                "723018431275728918"
+                "Warrior",
+                "Paladin",
+                "Knight",
+                "Wizard",
+                "tomeOfTheMushroomTribesFungal",
+                "Curse",
+                "Trickster"
             ],
             "embed": {
                 "color": "#2f075c",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:701491230260985877> or <:Vial:701491230567039018>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
+                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:hallsK> or <:Vial:VialOfPureDarkness>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:Ogmur>\nIf you have the role <@&585533559280762888> react with <:nitro:NitroBooster> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230210523247.png?v=1",
                 "removeThumbnail": true
             },
@@ -733,12 +939,12 @@
             "symbol": "av",
             "aliases": ["advvoid", "avoid", "avoided", "advvoided"],
             "reqsImageUrl": "",
-            "keyEmoteID": "701491230260985877",
-            "vialEmoteID": "701491230567039018",
+            "keyEmote": "hallsK",
+            "vialEmote": "VialOfPureDarkness",
             "pingRole": "voidping",
             "keyLogName": "keypops",
             "runLogName": "voidRuns",
-            "headcountEmote": "701491230210523247",
+            "headcountEmote": "void",
             "headcountOnAfk": false,
             "isSplit": false,
             "newChannel": true,
@@ -751,34 +957,50 @@
             "keyCount": 1,
             "earlyLocationCost": 25,
             "earlyLocationReacts": [{
-                    "emoteID": "723019533597802507",
+                    "emote": "Ogmur",
                     "pointsGiven": 1,
                     "limit": 1,
-                    "shortName": "armorbreak",
+                    "shortName": "Armor Break",
                     "noConfirm": false,
                     "noLocation": false
                 },
                 {
-                    "emoteID": "723019533555597332",
+                    "emote": "Expose",
                     "pointsGiven": 0,
                     "limit": 1,
-                    "shortName": "expose",
+                    "shortName": "Expose",
                     "noConfirm": false,
                     "noLocation": false
+                },
+                {
+                    "emote": "tomeOfTheMushroomTribesFungal",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Fungal Tome",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "UTMarbleSeal",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Marble Seal",
+                    "noConfirm": false,
+                    "noLocation": true
                 }
             ],
             "reacts": [
-                "723018431489900595",
-                "723018431296831539",
-                "723018431598952498",
-                "723018431573655643",
-                "720401067086446672",
-                "720404621331267697",
-                "723018431275728918"
+                "Warrior",
+                "Paladin",
+                "Knight",
+                "Wizard",
+                "tomeOfTheMushroomTribesFungal",
+                "Curse",
+                "Trickster"
             ],
             "embed": {
                 "color": "#2f075c",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:701491230260985877> or <:Vial:701491230567039018>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
+                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:hallsK> or <:Vial:VialOfPureDarkness>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:Ogmur>\nIf you have the role <@&585533559280762888> react with <:nitro:NitroBooster> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230210523247.png?v=1",
                 "removeThumbnail": true
             },
@@ -790,12 +1012,12 @@
             "symbol": "f",
             "aliases": ["fsv", "fullskip", "fullskipvoid"],
             "reqsImageUrl": "",
-            "keyEmoteID": "701491230260985877",
-            "vialEmoteID": "701491230567039018",
+            "keyEmote": "hallsK",
+            "vialEmote": "VialOfPureDarkness",
             "pingRole": ["voidping", "fskipReact"],
             "keyLogName": "keypops",
             "runLogName": "voidRuns",
-            "headcountEmote": "701491230391140453",
+            "headcountEmote": "fullskip",
             "headcountOnAfk": false,
             "isSplit": false,
             "newChannel": true,
@@ -808,51 +1030,60 @@
             "keyCount": 1,
             "earlyLocationCost": 30,
             "earlyLocationReacts": [{
-                    "emoteID": "723018431275859969",
+                    "emote": "Mystic",
                     "pointsGiven": 25,
-                    "limit": 3,
-                    "shortName": "mystic",
-                    "confirmationMessage": "**__REQUIRED__**\n- Your pet must have **level 85+ magic heal.**\n- You must have a <:T2ImprisonmentOrb:720265039164211241> or <:T3NeutralizationOrb:720265039004565544> available.",
+                    "limit": 4,
+                    "shortName": "Mystic",
+                    "confirmationMessage": "**__REQUIRED__**\n- Your pet must have **level 85+ magic heal.**\n- You must have a **8/8 Mystic** with a <:T2ImprisonmentOrb:720265039164211241> (T2) or <:T3NeutralizationOrb:720265039004565544> (T3) Orb available.",
                     "noConfirm": false,
                     "noLocation": false
                 },
                 {
-                    "emoteID": "720263764309704704",
+                    "emote": "STBrainoftheGolem",
                     "pointsGiven": 25,
                     "limit": 3,
-                    "shortName": "brain",
+                    "shortName": "Brain",
+                    "confirmationMessage": "**__REQUIRED__**\n- Your pet must have **level 85+ magic heal.**\n- You must have a **8/8 Trickster** with a <:STBrainoftheGolem:720263764309704704> (Brain) and a Tiered Prism available.",
                     "noConfirm": false,
                     "noLocation": false
                 },
                 {
-                    "emoteID": "723019533597802507",
+                    "emote": "tomeOfTheMushroomTribesFungal",
                     "pointsGiven": 1,
                     "limit": 1,
-                    "shortName": "armorbreak",
+                    "shortName": "Fungal Tome",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "Ogmur",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Armor Break",
                     "noConfirm": false,
                     "noLocation": false
                 },
                 {
-                    "emoteID": "723019533555597332",
+                    "emote": "Expose",
                     "pointsGiven": 0,
                     "limit": 1,
-                    "shortName": "expose",
+                    "shortName": "Expose",
                     "noConfirm": false,
                     "noLocation": false
                 }
             ],
             "reacts": [
-                "723018431489900595",
-                "723018431296831539",
-                "723018431598952498",
-                "723018431573655643",
-                "720401067086446672",
-                "720404621331267697",
-                "723018431275728918"
+                "Warrior",
+                "Paladin",
+                "Knight",
+                "Wizard",
+                "UTMarbleSeal",
+                "tomeOfTheMushroomTribesFungal",
+                "Trickster"
             ],
             "embed": {
                 "color": "#2f075c",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:701491230260985877> or <:Vial:701491230567039018>\nIf you are bringing an 8/8 mystic for the skip, react with <:Mystic:723018431275859969>\nIf you are bringing an 8/8 trickster with a Brain for the skip, react with <:STBrainoftheGolem:720263764309704704>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
+                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:hallsK> or <:Vial:VialOfPureDarkness>\nIf you are bringing an 8/8 Mystic for the skip, react with <:Mystic:Mystic>\nIf you are bringing an 8/8 trickster with a Brain for the skip, react with <:STBrainoftheGolem:STBrainoftheGolem>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:Ogmur>\nIf you have the role <@&585533559280762888> react with <:nitro:NitroBooster> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230391140453.png?v=1",
                 "removeThumbnail": true
             },
@@ -864,12 +1095,12 @@
             "symbol": "af",
             "aliases": ["afsv", "afullskipvoid", "afullskip", "advfsv", "advfullskip", "advfullskipvoid"],
             "reqsImageUrl": "",
-            "keyEmoteID": "701491230260985877",
-            "vialEmoteID": "701491230567039018",
+            "keyEmote": "hallsK",
+            "vialEmote": "VialOfPureDarkness",
             "pingRole": ["voidping", "fskipReact"],
             "keyLogName": "keypops",
             "runLogName": "voidRuns",
-            "headcountEmote": "701491230391140453",
+            "headcountEmote": "fullskip",
             "headcountOnAfk": false,
             "isSplit": false,
             "newChannel": true,
@@ -882,51 +1113,60 @@
             "keyCount": 1,
             "earlyLocationCost": 30,
             "earlyLocationReacts": [{
-                    "emoteID": "723018431275859969",
+                    "emote": "Mystic",
                     "pointsGiven": 25,
-                    "limit": 3,
-                    "shortName": "mystic",
-                    "confirmationMessage": "**__REQUIRED__**\n- Your pet must have **level 85+ magic heal.**\n- You must have a <:T2ImprisonmentOrb:720265039164211241> or <:T3NeutralizationOrb:720265039004565544> available.",
+                    "limit": 4,
+                    "shortName": "Mystic",
+                    "confirmationMessage": "**__REQUIRED__**\n- Your pet must have **level 85+ magic heal.**\n- You must have a **8/8 Mystic** with a <:T2ImprisonmentOrb:720265039164211241> (T2) or <:T3NeutralizationOrb:720265039004565544> (T3) Orb available.",
                     "noConfirm": false,
                     "noLocation": false
                 },
                 {
-                    "emoteID": "720263764309704704",
+                    "emote": "STBrainoftheGolem",
                     "pointsGiven": 25,
                     "limit": 3,
-                    "shortName": "brain",
+                    "shortName": "Brain",
+                    "confirmationMessage": "**__REQUIRED__**\n- Your pet must have **level 85+ magic heal.**\n- You must have a **8/8 Trickster** with a <:STBrainoftheGolem:720263764309704704> (Brain) and a Tiered Prism available.",
                     "noConfirm": false,
                     "noLocation": false
                 },
                 {
-                    "emoteID": "723019533597802507",
+                    "emote": "tomeOfTheMushroomTribesFungal",
                     "pointsGiven": 1,
                     "limit": 1,
-                    "shortName": "armorbreak",
+                    "shortName": "Fungal Tome",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "Ogmur",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Armor Break",
                     "noConfirm": false,
                     "noLocation": false
                 },
                 {
-                    "emoteID": "723019533555597332",
+                    "emote": "Expose",
                     "pointsGiven": 0,
                     "limit": 1,
-                    "shortName": "expose",
+                    "shortName": "Expose",
                     "noConfirm": false,
                     "noLocation": false
                 }
             ],
             "reacts": [
-                "723018431489900595",
-                "723018431296831539",
-                "723018431598952498",
-                "723018431573655643",
-                "720401067086446672",
-                "720404621331267697",
-                "723018431275728918"
+                "Warrior",
+                "Paladin",
+                "Knight",
+                "Wizard",
+                "UTMarbleSeal",
+                "tomeOfTheMushroomTribesFungal",
+                "Trickster"
             ],
             "embed": {
                 "color": "#2f075c",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:701491230260985877> or <:Vial:701491230567039018>\nIf you are bringing an 8/8 mystic for the skip, react with <:Mystic:723018431275859969>\nIf you are bringing an 8/8 trickster with a Brain for the skip, react with <:STBrainoftheGolem:720263764309704704>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
+                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:hallsK> or <:Vial:VialOfPureDarkness>\nIf you are bringing an 8/8 Mystic for the skip, react with <:Mystic:Mystic>\nIf you are bringing an 8/8 trickster with a Brain for the skip, react with <:STBrainoftheGolem:STBrainoftheGolem>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:Ogmur>\nIf you have the role <@&585533559280762888> react with <:nitro:NitroBooster> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230391140453.png?v=1",
                 "removeThumbnail": true
             },
@@ -938,11 +1178,11 @@
             "symbol": "s",
             "aliases": ["shatter", "shatters", "shitters"],
             "reqsImageUrl": "",
-            "keyEmoteID": "1008104345197346817",
+            "keyEmote": "shattersKey",
             "pingRole": "shattsReact",
             "keyLogName": "shattersPops",
             "runLogName": "shattersRuns",
-            "headcountEmote": "723001214865899532",
+            "headcountEmote": "shatters",
             "headcountOnAfk": false,
             "isSplit": false,
             "newChannel": true,
@@ -956,50 +1196,72 @@
             "earlyLocationCost": 20,
             "earlyLocationReacts": [
                 {
-                    "emoteID": "720404621331267697",
-                    "pointsGiven": 1,
-                    "limit": 2,
-                    "shortName": "fungal",
-                    "noConfirm": false,
-                    "noLocation": false
-                },
-                {
-                    "emoteID": "720401067086446672",
+                    "emote": "UTCrystalShield",
                     "pointsGiven": 1,
                     "limit": 1,
-                    "shortName": "marblezeal",
+                    "shortName": "CShield",
                     "noConfirm": false,
                     "noLocation": false
                 },
                 {
-                    "emoteID": "723019533580894279",
+                    "emote": "tomeOfTheMushroomTribesFungal",
                     "pointsGiven": 1,
                     "limit": 2,
-                    "shortName": "slow",
+                    "shortName": "Fungal Tome",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emote": "UTCloakofthePlanewalker",
+                    "pointsGiven": 5,
+                    "limit": 3,
+                    "shortName": "Rusher",
                     "noConfirm": false,
                     "noLocation": true
                 },
                 {
-                    "emoteID": "720404844187353099",
-                    "pointsGiven": 5,
-                    "limit": 3,
-                    "shortName": "rusher",
+                    "emote": "UTMarbleSeal",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Marble Seal",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emote": "Slow",
+                    "pointsGiven": 1,
+                    "limit": 2,
+                    "shortName": "Slow",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "Ogmur",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Armor Break",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "Expose",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Expose",
                     "noConfirm": false,
                     "noLocation": true
                 }
             ],
             "reacts": [
-                "701491230395072522",
-                "701491230298734642",
-                "701491229925310575",
-                "723018431586238532",
-                "723019533681426472",
-                "723019533597802507",
-                "723019533555597332"
+                "Warrior",
+                "Paladin",
+                "Knight",
+                "Bard",
+                "Curse"
             ],
             "embed": {
                 "color": "#013220",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:shattersKey:1008104345197346817>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:720404844187353099>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
+                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:shattersKey:shattersKey>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:UTCloakofthePlanewalker>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:Ogmur>\nIf you have the role <@&585533559280762888> react with <:nitro:NitroBooster> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/723001214865899532.png?v=1",
                 "removeThumbnail": true
             },
@@ -1011,11 +1273,11 @@
             "symbol": "as",
             "aliases": ["advshatters", "ashatters", "advshatter", "ashatters"],
             "reqsImageUrl": "",
-            "keyEmoteID": "1008104345197346817",
+            "keyEmote": "shattersKey",
             "pingRole": "shattsReact",
             "keyLogName": "shattersPops",
             "runLogName": "shattersRuns",
-            "headcountEmote": "723001214865899532",
+            "headcountEmote": "shatters",
             "headcountOnAfk": false,
             "isSplit": false,
             "newChannel": true,
@@ -1029,50 +1291,72 @@
             "earlyLocationCost": 20,
             "earlyLocationReacts": [
                 {
-                    "emoteID": "720404621331267697",
-                    "pointsGiven": 1,
-                    "limit": 2,
-                    "shortName": "fungal",
-                    "noConfirm": false,
-                    "noLocation": false
-                },
-                {
-                    "emoteID": "720401067086446672",
+                    "emote": "UTCrystalShield",
                     "pointsGiven": 1,
                     "limit": 1,
-                    "shortName": "marblezeal",
+                    "shortName": "CShield",
                     "noConfirm": false,
                     "noLocation": false
                 },
                 {
-                    "emoteID": "723019533580894279",
+                    "emote": "tomeOfTheMushroomTribesFungal",
                     "pointsGiven": 1,
                     "limit": 2,
-                    "shortName": "slow",
+                    "shortName": "Fungal Tome",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emote": "UTCloakofthePlanewalker",
+                    "pointsGiven": 5,
+                    "limit": 3,
+                    "shortName": "Rusher",
                     "noConfirm": false,
                     "noLocation": true
                 },
                 {
-                    "emoteID": "720404844187353099",
-                    "pointsGiven": 5,
-                    "limit": 3,
-                    "shortName": "rusher",
+                    "emote": "UTMarbleSeal",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Marble Seal",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emote": "Slow",
+                    "pointsGiven": 1,
+                    "limit": 2,
+                    "shortName": "Slow",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "Ogmur",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Armor Break",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "Expose",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Expose",
                     "noConfirm": false,
                     "noLocation": true
                 }
             ],
             "reacts": [
-                "701491230395072522",
-                "701491230298734642",
-                "701491229925310575",
-                "723018431586238532",
-                "723019533681426472",
-                "723019533597802507",
-                "723019533555597332"
+                "Warrior",
+                "Paladin",
+                "Knight",
+                "Bard",
+                "Curse"
             ],
             "embed": {
                 "color": "#013220",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:shattersKey:1008104345197346817>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:720404844187353099>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:723019533597802507>\nIf you have the role <@&585533559280762888> react with <:nitro:701491230349066261> to get into VC",
+                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:shattersKey:shattersKey>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:UTCloakofthePlanewalker>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:Ogmur>\nIf you have the role <@&585533559280762888> react with <:nitro:NitroBooster> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/723001214865899532.png?v=1",
                 "removeThumbnail": true
             },
@@ -1085,10 +1369,10 @@
             "runName": "Shatters",
             "symbol": "s",
             "reqsImageUrl": "",
-            "keyEmoteID": "1008104345197346817",
+            "keyEmote": "shattersKey",
             "runLogName": "runs",
             "keyLogName": "keypops",
-            "headcountEmote": "888890697653047307",
+            "headcountEmote": "theShattersPortal",
             "headcountOnAfk": true,
             "pingRole": null,
             "isSplit": false,
@@ -1102,7 +1386,7 @@
             "keyCount": 2,
             "earlyLocationCost": 20,
             "earlyLocationReacts": [{
-                    "emoteID": "888889860964892693",
+                    "emote": "SwitchRusher",
                     "pointsGiven": 2,
                     "limit": 3,
                     "shortName": "Switch Rusher",
@@ -1111,7 +1395,7 @@
                     "noLocation": false
                 },
                 {
-                    "emoteID": "888887797530918952",
+                    "emote": "PuzzleBanner",
                     "pointsGiven": 0,
                     "limit": 1,
                     "shortName": "Puzzle",
@@ -1120,7 +1404,7 @@
                     "noLocation": true
                 },
                 {
-                    "emoteID": "888890099511734312",
+                    "emote": "tomeOfTheMushroomTribesFungal",
                     "pointsGiven": 2,
                     "limit": 3,
                     "shortName": "Fungal Tome",
@@ -1130,20 +1414,20 @@
                 }
             ],
             "reacts": [
-                "723018431489900595",
-                "723018431296831539",
-                "723018431598952498",
-                "720401153140981890",
-                "720401067086446672",
-                "888985633270423584",
-                "723019533580894279",
-                "723019533681426472",
-                "723019533555597332",
-                "720401152633470998"
+                "Warrior",
+                "Paladin",
+                "Knight",
+                "UTShieldofOgmur",
+                "UTMarbleSeal",
+                "rangedDPS",
+                "Slow",
+                "Curse",
+                "Expose",
+                "UTCrystalShield"
             ],
             "embed": {
                 "color": "#015c21",
-                "description": "To join, connect to the raiding channel by clicking its name\nIf you have a key react with <:ShattersKey:1008104345197346817>\nTo indicate your class or gear choices, react with <:Warrior:500083067386331136> <:Paladin:500083068019933204> <:Knight:662095356074524675> <:FungalTome:888890099511734312> <:Ogmur:662096955912224778> <:UTMarbleSeal:720401067086446672> <:RangedDPS:888985633270423584> <:Slow:723019533580894279> <:Curse:723019533681426472> <:Expose:723019533555597332>\nIf you plan on rushing, react with <a:Rusher:888889860964892693>\nIf you are able to solve the puzzle react with <:Puzzle:888887797530918952>\n<@&585542641975033859> to get early location react with <:nitro:701491230349066261>",
+                "description": "To join, connect to the raiding channel by clicking its name\nIf you have a key react with <:ShattersKey:shattersKey>\nTo indicate your class or gear choices, react with <:Warrior:500083067386331136> <:Paladin:500083068019933204> <:Knight:662095356074524675> <:FungalTome:888890099511734312> <:Ogmur:662096955912224778> <:UTMarbleSeal:UTMarbleSeal> <:RangedDPS:888985633270423584> <:Slow:Slow> <:Curse:Curse> <:Expose:Expose>\nIf you plan on rushing, react with <a:Rusher:888889860964892693>\nIf you are able to solve the puzzle react with <:Puzzle:888887797530918952>\n<@&585542641975033859> to get early location react with <:nitro:NitroBooster>",
                 "thumbnail": "https://cdn.discordapp.com/attachments/748200247716479159/890001562620035122/unknown.png",
                 "removeThumbnail": false
             },
@@ -1154,10 +1438,10 @@
             "runName": "Shatters",
             "symbol": "z",
             "reqsImageUrl": "",
-            "keyEmoteID": "888891037802696704",
+            "keyEmote": "shattersKey",
             "runLogName": "runs",
             "keyLogName": "shatterspops",
-            "headcountEmote": "888890697653047307",
+            "headcountEmote": "theShattersPortal",
             "headcountOnAfk": true,
             "pingRole": null,
             "isSplit": false,
@@ -1171,7 +1455,7 @@
             "keyCount": 2,
             "earlyLocationCost": 20,
             "earlyLocationReacts": [{
-                    "emoteID": "888889860964892693",
+                    "emote": "SwitchRusher",
                     "pointsGiven": 2,
                     "limit": 3,
                     "shortName": "Switch Rusher",
@@ -1180,7 +1464,7 @@
                     "noLocation": false
                 },
                 {
-                    "emoteID": "888887797530918952",
+                    "emote": "PuzzleBanner",
                     "pointsGiven": 0,
                     "limit": 1,
                     "shortName": "Puzzle",
@@ -1189,7 +1473,7 @@
                     "noLocation": true
                 },
                 {
-                    "emoteID": "888890099511734312",
+                    "emote": "tomeOfTheMushroomTribesFungal",
                     "pointsGiven": 2,
                     "limit": 3,
                     "shortName": "Fungal Tome",
@@ -1199,20 +1483,20 @@
                 }
             ],
             "reacts": [
-                "723018431489900595",
-                "723018431296831539",
-                "723018431598952498",
-                "720401153140981890",
-                "720401067086446672",
-                "888985633270423584",
-                "723019533580894279",
-                "723019533681426472",
-                "723019533555597332",
-                "720401152633470998"
+                "Warrior",
+                "Paladin",
+                "Knight",
+                "UTShieldofOgmur",
+                "UTMarbleSeal",
+                "rangedDPS",
+                "Slow",
+                "Curse",
+                "Expose",
+                "UTCrystalShield"
             ],
             "embed": {
                 "color": "#015c21",
-                "description": "To join, connect to the raiding channel by clicking its name\nIf you have a key react with <:ShattersKey:1008104345197346817>\nTo indicate your class or gear choices, react with <:Warrior:500083067386331136> <:Paladin:500083068019933204> <:Knight:662095356074524675> <:FungalTome:888890099511734312> <:Ogmur:662096955912224778> <:UTMarbleSeal:720401067086446672> <:RangedDPS:888985633270423584> <:Slow:723019533580894279> <:Curse:723019533681426472> <:Expose:723019533555597332>\nIf you plan on rushing, react with <a:Rusher:888889860964892693>\nIf you are able to solve the puzzle react with <:Puzzle:888887797530918952>\n<@&585542641975033859> to get early location react with <:nitro:701491230349066261>",
+                "description": "To join, connect to the raiding channel by clicking its name\nIf you have a key react with <:ShattersKey:shattersKey>\nTo indicate your class or gear choices, react with <:Warrior:500083067386331136> <:Paladin:500083068019933204> <:Knight:662095356074524675> <:FungalTome:888890099511734312> <:Ogmur:662096955912224778> <:UTMarbleSeal:UTMarbleSeal> <:RangedDPS:888985633270423584> <:Slow:Slow> <:Curse:Curse> <:Expose:Expose>\nIf you plan on rushing, react with <a:Rusher:888889860964892693>\nIf you are able to solve the puzzle react with <:Puzzle:888887797530918952>\n<@&585542641975033859> to get early location react with <:nitro:NitroBooster>",
                 "thumbnail": "https://cdn.discordapp.com/attachments/748200247716479159/890001562620035122/unknown.png",
                 "removeThumbnail": false
             },
@@ -1227,7 +1511,7 @@
             "aliases": ["o3", "oryx", "oryxthree", "oryxthemadgod", "oryxtheexaltedgod"],
             "reqsImageUrl": "",
             "runLogName": "o3runs",
-            "headcountEmote": "831046404252237855",
+            "headcountEmote": "o3portal",
             "headcountOnAfk": false,
             "pingRole": "o3Ping",
             "isSplit": false,
@@ -1241,7 +1525,7 @@
             "keyCount": 2,
             "earlyLocationCost": 20,
             "earlyLocationReacts": [{
-                    "emoteID": "831046532370530324",
+                    "emote": "swordRune",
                     "pointsGiven": 0,
                     "limit": 2,
                     "shortName": "Sword Rune",
@@ -1251,7 +1535,7 @@
                     "buttonStyle": 1
                 },
                 {
-                    "emoteID": "831046532232118292",
+                    "emote": "shieldRune",
                     "pointsGiven": 0,
                     "limit": 2,
                     "shortName": "Shield Rune",
@@ -1261,7 +1545,7 @@
                     "buttonStyle": 1
                 },
                 {
-                    "emoteID": "831046532115202078",
+                    "emote": "helmetRune",
                     "pointsGiven": 0,
                     "limit": 2,
                     "shortName": "Helmet Rune",
@@ -1271,7 +1555,7 @@
                     "buttonStyle": 1
                 },
                 {
-                    "emoteID": "831046532156620851",
+                    "emote": "inc",
                     "pointsGiven": 0,
                     "limit": 2,
                     "shortName": "Wine Cellars Incantation",
@@ -1281,7 +1565,7 @@
                     "buttonStyle": 1
                 },
                 {
-                    "emoteID": "720401067086446672",
+                    "emote": "UTMarbleSeal",
                     "pointsGiven": 0,
                     "limit": 2,
                     "shortName": "Marble Seal",
@@ -1290,7 +1574,7 @@
                     "inline": true
                 },
                 {
-                    "emoteID": "723019533580894279",
+                    "emote": "Slow",
                     "pointsGiven": 0,
                     "limit": 2,
                     "shortName": "Slow",
@@ -1299,7 +1583,7 @@
                     "inline": true
                 },
                 {
-                    "emoteID": "723019533597802507",
+                    "emote": "Ogmur",
                     "pointsGiven": 0,
                     "limit": 1,
                     "shortName": "Ogmur",
@@ -1308,16 +1592,16 @@
                     "inline": true
                 },
                 {
-                    "emoteID": "1050171338515566723",
+                    "emote": "tomeOfTheMushroomTribesFungal",
                     "pointsGiven": 0,
                     "limit": 2,
-                    "shortName": "Fungal",
+                    "shortName": "Fungal Tome",
                     "noConfirm": false,
                     "noLocation": false,
                     "inline": true
                 },
                 {
-                    "emoteID": "1050156574330589295",
+                    "emote": "2dpsRanged",
                     "pointsGiven": 0,
                     "limit": 2,
                     "shortName": "2/4 DPS Ranged",
@@ -1326,7 +1610,7 @@
                     "inline": true
                 },
                 {
-                    "emoteID": "1050156576259977247",
+                    "emote": "3dpsRanged",
                     "pointsGiven": 0,
                     "limit": 2,
                     "shortName": "3/4 DPS ranged",
@@ -1338,7 +1622,7 @@
             "reacts": [],
             "embed": {
                 "color": "#dc143c",
-                "description": "To join, connect to the raiding channel by clicking its name\nIf you have a rune react with the corresponding rune icon\nTo indicate your class or gear choices, react with <:Mystic:723018431275859969> <:UTMarbleSeal:720401067086446672> <:Trickster:723018431275728918> <:effusionOfAttack:1050171903224053811> <:effusionOfDexterity:1050171892797026366> <:Slow:723019533580894279> <:Ogmur:723019533597802507> <:fungalTome:1050171338515566723> <:2dpsRanged:1050156574330589295> <:3dpsRanged:1050156576259977247>\n<@&585542641975033859> to get early location react with <:nitro:701491230349066261>",
+                "description": "To join, connect to the raiding channel by clicking its name\nIf you have a rune react with the corresponding rune icon\nTo indicate your class or gear choices, react with <:Mystic:Mystic> <:UTMarbleSeal:UTMarbleSeal> <:Trickster:Trickster> <:effusionOfAttack:effusionOfAttack> <:effusionOfDexterity:effusionOfDexterity> <:Slow:Slow> <:Ogmur:Ogmur> <:fungalTome:tomeOfTheMushroomTribesFungal> <:2dpsRanged:2dpsRanged> <:3dpsRanged:3dpsRanged>\n<@&585542641975033859> to get early location react with <:nitro:NitroBooster>",
                 "thumbnail": "https://cdn.discordapp.com/emojis/1050173254121291827.png?v=1",
                 "removeThumbnail": false
             },

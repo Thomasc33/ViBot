@@ -47,7 +47,7 @@ const yn = (b) => b ? 'Yes' : 'No';
 
 class AfkTemplate {
     constructor(original, bot, data, symbol) {
-        this.data = data || { earlyLocationReacts: [], reacts: [], embed: {}, keyEmoteID: "701491230260985877" };
+        this.data = data || { earlyLocationReacts: [], reacts: [], embed: {}, keyEmote: "defaultPortal" };
         if (!data)
             this.brandnew = true;
         this.symbol = symbol;
@@ -75,7 +75,7 @@ class AfkTemplate {
         const f = [
             { name: 'VC Name', value: this.data.runType || 'None!', inline: true },
             { name: 'Run Name', value: this.data.runName || 'None!', inline: true },
-            { name: 'Key Type', value: `${this.bot.emojis.resolve(this.data.keyEmoteID || "701491230260985877")}`, inline: true },
+            { name: 'Key Type', value: `${this.bot.storedEmojis[this.data.keyEmote].text}`, inline: true },
             { name: 'AFK Symbol', value: this.symbol || 'None!', inline: true }
         ];
         if (!this.data.reqsImageUrl)
@@ -92,11 +92,11 @@ class AfkTemplate {
             .setFooter({ text: `Time Remaining: 1 minute` })
             .setTimestamp(new Date());
         const message = await channel.send('***This is a preview***\r\nReact to the ❌ to remove it. Preview will timeout automatically after 45 seconds', preview);
-        await message.react(this.data.keyEmoteID);
+        await message.react(this.bot.storedEmojis[this.data.keyEmote].id);
         if (this.data.vialReact)
-            await message.react(this.data.vialEmoteID);
+            await message.react(this.bot.storedEmojis[this.data.vialEmote].id);
         for (const react of this.data.earlyLocationReacts)
-            await message.react(react.emoteID);
+            await message.react(this.bot.storedEmojis[react.emote].id);
         await message.react('701491230349066261');
         await message.react('🎟️');
         await message.react('❌')
@@ -158,7 +158,7 @@ class AfkTemplate {
             .setAuthor({ name: `${this.nickname}'s ${this.data.runType} Reactions` });
         const fields = [];
         for (const reaction of this.data.earlyLocationReacts) {
-            const emoji = this.bot.emojis.resolve(reaction.emoteID);
+            const emoji = this.bot.storedEmojis[reaction.emote].text;
             const role = this.guild.roles.resolve(this.bot.settings[this.guild.id].roles[reaction.requiredRole]);
             fields.push({
                 name: `${emoji} ${reaction.shortName} ${emoji}`,
@@ -213,18 +213,18 @@ class AfkTemplate {
                 }
             })
             await keySelection.react('❌');
-            await keySelection.react(botSettings.emoteIDs.LostHallsKey);
+            await keySelection.react(this.bot.storedEmojis['hallsK'].id);
             for (const event in eventTemplates)
                 keySelection.react(eventTemplates[event].keyEmojiId);
         });
-        this.data.keyEmoteID = emoji.id;
+        this.data.keyEmote = this.bot.storedEmojis[emoji.id].name;
     }
     async editSymbol() {
         await this.updateDM('**Symbol**: What symbol do you want to use to start this afk check (aka. `;afk symbol`)? First letter must be unique. Type cancel to cancel');
         const unavailable = [];
 
         for (const key in afkTemplates) {
-            if (afkTemplates[key].keyEmoteID) {
+            if (afkTemplates[key].keyEmote) {
                 unavailable.push(key.toLowerCase());
                 if (!unavailable.includes(afkTemplates[key].symbol.toLowerCase()))
                     unavailable.push(afkTemplates[key].symbol.toLowerCase());
@@ -290,13 +290,13 @@ class AfkTemplate {
         await this.updateDM(`**Ping Role**: Should this afk ping ${this.guild.roles.resolve(this.bot.settings[this.guild.id].roles.voidping)} or ${this.guild.roles.resolve(this.bot.settings[this.guild.id].roles.cultping)}?`);
         this.data.pingRole = await new Promise(async (resolve, reject) => {
             const collector = await this.dm.then(d => d.createReactionCollector((reaction, user) => user.id == this.author.id &&
-                (reaction.emoji.name == '❌' || [botSettings.emoteIDs.voidd,
-                botSettings.emoteIDs.malus
+                (reaction.emoji.name == '❌' || [this.bot.storedEmojis['void'].id,
+                    this.bot.storedEmojis['cultist'].id
                 ].includes(reaction.emoji.id)), { time: ext.MAX_WAIT }));
             let resolved = false;
             new Promise(async () => {
-                await this.dm.then(d => d.react(botSettings.emote.voidd));
-                await this.dm.then(d => d.react(botSettings.emote.malus));
+                await this.dm.then(d => d.react(this.bot.storedEmojis['void'].id));
+                await this.dm.then(d => d.react(this.bot.storedEmojis['cultist'].id));
                 await this.dm.then(d => d.react('❌'));
             })
             collector.once('collect', async (reaction) => {
@@ -304,9 +304,9 @@ class AfkTemplate {
                 collector.stop();
                 await this.dm.then(d => d.reactions.removeAll());
                 switch (reaction.emoji.id) {
-                    case botSettings.emoteIDs.voidd:
+                    case this.bot.storedEmojis['void'].id:
                         return resolve('voidping');
-                    case botSettings.emoteIDs.malus:
+                    case this.bot.storedEmojis['cultist'].id:
                         return resolve('cultping');
                     default:
                         return resolve('');
@@ -331,11 +331,11 @@ class AfkTemplate {
         this.data.embed.data.description = (await this.channel.then(c => c.next(null, null, this.author.id))).content;
     }
     async editEarlyReacts() {
-        this.updateReacts(`React to this message with all early reactions. ${this.bot.emojis.resolve(this.data.keyEmoteID)} ${this.data.vialReact ? 'and <' + botSettings.emote.Vial + '> are' : 'is'} automatically added. Any not accessible by me will be removed. React to the ❌ to finish adding reactions.`);
+        this.updateReacts(`React to this message with all early reactions. ${this.bot.storedEmojis[this.data.keyEmote].id} ${this.data.vialReact ? 'and ' + this.bot.storedEmojis[vialEmote].text + ' are' : 'is'} automatically added. Any not accessible by me will be removed. React to the ❌ to finish adding reactions.`);
 
         const earlyReacts = (await this.rm.then(r => r.getReactionBatch(this.author.id))).slice(0, 23);
         for (const emoji of earlyReacts) {
-            const reaction = { emoteID: emoji.id, pointsGiven: 0 };
+            const reaction = { emote: emoji.id, pointsGiven: 0 };
             await this.rm.then(r => r.edit({ embeds: [this.reactEmbed.setDescription(`${emoji}: **How many people should get early location?**`)] }));
             reaction.limit = await this.channel.then(c => c.nextInt(res => res > 0, 'Please enter a number equal to or greater than 1.', this.author.id));
 

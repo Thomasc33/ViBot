@@ -210,8 +210,8 @@ class afkCheck {
      * @param {String} afkInfo.location
      * @param {String} afkInfo.symbol
      * @param {String} afkInfo.reqsImageUrl
-     * @param {String} afkInfo.keyEmoteID
-     * @param {String} afkInfo.vialEmoteID
+     * @param {String} afkInfo.keyEmote
+     * @param {String} afkInfo.vialEmote
      * @param {String} afkInfo.keyLogName
      * @param {String} afkInfo.headcountEmote
      * @param {Boolean} afkInfo.isVet
@@ -242,6 +242,7 @@ class afkCheck {
         this.afkInfo = afkInfo;
         if (!this.settings.backend.allowAdvancedRuns)
             this.afkInfo.isAdvanced = false;
+
         this.bot = bot;
         this.db = db;
         this.guild = guild;
@@ -277,6 +278,7 @@ class afkCheck {
         this.leaderOnLeave = guild.roles.cache.get(this.settings.roles.lol)
         this.trialRaidLeader = guild.roles.cache.get(this.settings.roles.trialrl)
         this.keys = []
+        this.earlyReacts = {}
         this.moddedKeys = false
         this.nitro = []
         this.vials = []
@@ -315,6 +317,26 @@ class afkCheck {
             runType: this.afkInfo,
             active: true,
             vcSize: this.channel.members.size,
+        }
+        if (!this.afkInfo.hasOwnProperty('embed')) { this.afkInfo.embed = {} }
+        this.afkInfo.embed.description = ""
+        if (this.channel) { this.afkInfo.embed.description += `To join, **click here** ${this.channel}\n` }
+        if (this.afkInfo.keyEmote) { this.afkInfo.embed.description += `If you have a key react with ${this.bot.storedEmojis[this.afkInfo.keyEmote].text}\n` }
+        if (this.afkInfo.vialEmote) { this.afkInfo.embed.description += `If you have a vial react with ${this.bot.storedEmojis[this.afkInfo.vialEmote].text}\n` }
+        if (this.afkInfo.earlyLocationReacts.length >= 1) {
+            this.afkInfo.embed.description += `If you have any of the following react with ${this.afkInfo.earlyLocationReacts.map(
+                emoji => this.bot.storedEmojis[emoji.emote].text
+            ).join(', ')}\n`
+        }
+        if (this.afkInfo.reacts.length >= 1) {
+            this.afkInfo.embed.description += `If you have any of the following react with it to indicate you are bringing it ${this.afkInfo.reacts.map(
+                emoji => this.bot.storedEmojis[emoji].text
+            ).join(', ')}\n`
+        }
+        if (this.perkRoles.length >= 1) {
+            this.afkInfo.embed.description += `If you have any of the following roles ${this.perkRoles.map(
+                role => role
+            ).join(', ')} react with ${this.bot.storedEmojis.NitroBooster.text}\n`
         }
         fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot, this.guild) })
         this.sendMessage()
@@ -378,9 +400,9 @@ class afkCheck {
             .setTitle(`${this.message.member.nickname}'s ${this.afkInfo.runName}`)
             .setFooter({ text: `${this.afkInfo.twoPhase ? 'Click ✅ to open the channel, ' : ''}Click ❌ to abort, Click 🔑 for keys to be logged as Modded` })
             .setDescription(`**Raid Leader: ${this.message.member} \`\`${this.message.member.nickname}\`\`\nVC: ${this.channel}\nLocation:** \`\`${this.afkInfo.location}\`\``)
-        if (this.afkInfo.keyEmoteID) this.leaderEmbed.addFields({ name: `${this.bot.emojis.cache.get(this.afkInfo.keyEmoteID)} Keys`, value: 'None!', inline: true})
+        if (this.afkInfo.keyEmote) this.leaderEmbed.addFields({ name: `${this.bot.storedEmojis[this.afkInfo.keyEmote].text} Keys`, value: 'None!', inline: true})
         if (this.afkInfo.vialReact) this.leaderEmbed.addFields({ name: '<:VialOfPureDarkness:1050494410770632794> Vials', value: 'None!', inline: true})
-        this.afkInfo.earlyLocationReacts.forEach(r => this.leaderEmbed.addFields({ name: `${this.bot.emojis.cache.get(r.emoteID)} ${r.shortName}`, value: 'None!', inline: true }))
+        this.afkInfo.earlyLocationReacts.forEach(r => this.leaderEmbed.addFields({ name: `${this.bot.storedEmojis[r.emote].text} ${r.shortName}`, value: 'None!', inline: true }))
         this.leaderEmbed.addFields([
             { name: '🗺️ Early Location', value: 'None!', inline: true },
             { name: '<:NitroBooster:1050492863257002035> Nitro', value: 'None!', inline: true },
@@ -483,10 +505,10 @@ class afkCheck {
     async interactionHandler(interaction) {
         if (!interaction.isButton()) return;
         if (this.openInteractions.includes(interaction.user.id)) return interaction.deferUpdate()
-        if (interaction.customId == this.afkInfo.keyEmoteID) {
+        if (interaction.customId == this.afkInfo.keyEmote) {
             this.confirmSelection(interaction, 0, 'key', this.afkInfo.keyCount)
         }
-        else if (this.afkInfo.vialReact && interaction.customId == this.afkInfo.vialEmoteID) this.confirmSelection(interaction, 1, 'vial', 3)
+        else if (this.afkInfo.vialReact && interaction.customId == this.afkInfo.vialEmote) this.confirmSelection(interaction, 1, 'vial', 3)
         else if (interaction.customId === 'nitro') return this.useNitro(interaction, this.leaderEmbed.data.fields.length - 1)
         else if (interaction.customId === 'supporter') return this.supporterUse(interaction, this.leaderEmbed.data.fields.length - 2)
         else if (interaction.customId === 'points') return this.pointsUse(interaction, this.leaderEmbed.data.fields.length - 2)
@@ -564,7 +586,7 @@ class afkCheck {
                         this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] })
                     }, 5000, this)
                     setTimeout(async tempM => { tempM.delete(); }, 20000, tempM);
-                    for (let i of this.afkInfo.reacts) await this.raidStatusMessage.react(i)
+                    for (let i of this.afkInfo.reacts) try { await this.raidStatusMessage.react(this.bot.storedEmojis[i].id) } catch (error) { ErrorLogger.log(error, this.bot, this.guild) }
                 } else {
                     interaction.reply({ ephemeral: true, content: 'You are not a staff member' })
                     interaction.deferUpdate()
@@ -574,7 +596,7 @@ class afkCheck {
         }
         else for (let i in this.afkInfo.earlyLocationReacts) {
             let react = this.afkInfo.earlyLocationReacts[i]
-            if (react.emoteID == interaction.customId) {
+            if (react.emote == interaction.customId) {
                 if (react.requiredRole && !interaction.member.roles.cache.has(this.settings.roles[react.requiredRole])) return interaction.deferUpdate()
                 this.confirmSelection(interaction, +i + +1, react.shortName, react.limit, react.noConfirm, react.noLocation)
             }
@@ -600,9 +622,9 @@ class afkCheck {
 
         // Organize reacts into above arrays
         if (this.afkInfo.headcountEmote && this.afkInfo.headcountOnAfk) reacts.push(this.afkInfo.headcountEmote)
-        if (this.afkInfo.keyEmoteID) addButton({ emoji: this.afkInfo.keyEmoteID, style: Discord.ButtonStyle.Primary, customId: this.afkInfo.keyEmoteID })
-        if (this.afkInfo.vialReact) addButton({ emoji: this.afkInfo.vialEmoteID, style: Discord.ButtonStyle.Secondary, customId: this.afkInfo.vialEmoteID })
-        if (this.afkInfo.earlyLocationReacts.length > 0) for (let i of this.afkInfo.earlyLocationReacts) addButton({ emoji: i.emoteID, style: i.buttonStyle ? i.buttonStyle : Discord.ButtonStyle.Secondary, customId: i.emoteID })
+        if (this.afkInfo.keyEmote) addButton({ emoji: this.bot.storedEmojis[this.afkInfo.keyEmote].id, label: `0/${this.afkInfo.keyCount}`, style: Discord.ButtonStyle.Primary, customId: this.afkInfo.keyEmote })
+        if (this.afkInfo.vialReact) addButton({ emoji: this.bot.storedEmojis[this.afkInfo.vialEmote].id, label: `0/3`, style: Discord.ButtonStyle.Secondary, customId: this.afkInfo.vialEmote })
+        if (this.afkInfo.earlyLocationReacts.length > 0) for (let i of this.afkInfo.earlyLocationReacts) addButton({ emoji: this.bot.storedEmojis[i.emote].id, label: `0/${i.limit}`, style: i.buttonStyle ? i.buttonStyle : Discord.ButtonStyle.Secondary, customId: i.emote })
         if (!this.afkInfo.twoPhase) for (let i of this.afkInfo.reacts) reacts.push(i)
         //split row
         if (curRow.length > 0) { actionRows.push(curRow); curRow = [] }
@@ -620,7 +642,7 @@ class afkCheck {
         const components = []
         for (let i of actionRows) { let n = new Discord.ActionRowBuilder({ components: i }); components.push(n) }
         await this.raidStatusMessage.edit({ components: components })
-        for (let i of reacts) await this.raidStatusMessage.react(i)
+        for (let i of reacts) try { await this.raidStatusMessage.react(this.bot.storedEmojis[i].id) } catch (error) { ErrorLogger.log(error, this.bot, this.guild) }
     }
 
     /**
@@ -635,8 +657,7 @@ class afkCheck {
         this.openInteractions.push(interaction.user.id)
 
         // Prompt
-        let id = interaction.customId
-        let emote = this.bot.emojis.cache.get(id)
+        let emote = this.bot.storedEmojis[interaction.customId].text
         /**
          *
          * @param {afkCheck} afk
@@ -647,22 +668,32 @@ class afkCheck {
             //check for full
             if (!checkType(afk)) return
             //set into type
+
+            let current_limit = 0
             setType(afk)
+
             function setType(afk) {
                 //key, vial, other
                 switch (type.toLowerCase()) {
                     case 'key':
                         afk.keys.push(interaction.user.id)
+                        current_limit = afk.keys.length
                         break;
                     case 'vial':
                         afk.vials.push(interaction.user.id)
+                        current_limit = afk.vials.length
                         break;
                     default:
                         afk.reactables[type].users.push(interaction.user.id)
+                        current_limit = afk.reactables[type].users.length
                         break;
                 }
                 afk.earlyLocation.push(interaction.user);
             }
+
+            // Disable button if react limit is hit
+            if (current_limit >= limit) interaction.message.editButton(interaction.component.customId, `${current_limit}/${limit}`, true)
+            else interaction.message.editButton(interaction.component.customId, `${current_limit}/${limit}`)
 
             //allow another interaction
             afk.removeFromActiveInteractions(interaction.user.id)
@@ -680,7 +711,7 @@ class afkCheck {
             }
 
             //add to leader embed
-            if (!afk.afkInfo.keyEmoteID) index--;
+            if (!afk.afkInfo.keyEmote) index--;
             if (afk.afkInfo.vialReact && !(type == 'key' || type == 'vial')) index++;
             if (afk.leaderEmbed.data.fields[index].value == `None!`) {
                 afk.leaderEmbed.data.fields[index].value = `${emote}: <@!${interaction.user.id}>`;
@@ -703,13 +734,15 @@ class afkCheck {
             }
         }
 
+        let endAfter = null
+
         // If confirmation not needed, just send the location
         if (noConfirm) return sendLocation(this, true)
 
         // Otherwise prompt for confirmation
 
         // Will end the confirmation automatically after 60s to save resources
-        let endAfter = setInterval(() => {
+        endAfter = setInterval(() => {
             try {
                 dmIntereactionCollector.stop();
                 embed.setDescription('Reaction took too long to receive, or another vial already confirmed. Re-react to try again')
@@ -745,6 +778,9 @@ class afkCheck {
                     `You reacted as ${emote} **${emoteName}**\n\n${reactInfo.confirmationMessage}\n\nPress ✅ to confirm your reaction. Otherwise press ❌` :
                     `You reacted as ${emote} **${emoteName}**\nPress ✅ to confirm your reaction. Otherwise press ❌`
             )
+
+            if (reactInfo && reactInfo.confirmationMedia) embed.setImage(reactInfo.confirmationMedia)
+
             let ar = new Discord.ActionRowBuilder().addComponents([
                 new Discord.ButtonBuilder()
                     .setLabel('✅ Confirm')
@@ -757,6 +793,8 @@ class afkCheck {
             ])
             await interaction.reply({ embeds: [embed], ephemeral: true, components: [ar] })
             let em = await interaction.fetchReply()
+            
+            embed.setImage(null)
 
             //Update Rushers table
             if (reactInfo && reactInfo.requiredRole == 'rusher') {
@@ -779,24 +817,7 @@ class afkCheck {
                         return interaction.editReply({ embeds: [embed], components: [] })
                     }
 
-                    //check realmeye if applicable
-                    if (reactInfo && reactInfo.checkRealmEye) {
-                        let found = false;
-                        let characters = await realmEyeScrape.getUserInfo(this.message.guild.members.cache.get(interaction.user.id).nickname.replace(/[^a-z|]/gi, '').split('|')[0]).catch(er => found = true)
-                        if (characters.characters) characters.characters.forEach(c => {
-                            if (!found && (c.class == 'Mystic' && c.stats == '8/8')) {
-                                found = true;
-                            }
-                        })
-                        if (!found) {
-                            embed.setDescription(`I could not find any 8/8 mystics under \`${this.message.guild.members.cache.get(interaction.user.id).nickname.replace(/[^a-z|]/gi, '').split('|')[0]}\`. React with :white_check_mark: if you do have an 8/8 mystic on another account`)
-                            interaction.editReply({ embeds: [embed] })
-                            let subInteractionCollector = new Discord.InteractionCollector(this.bot, { message: em, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
-                            subInteractionCollector.on('collect', subSubInteraction => {
-                                if (subSubInteraction.customId == 'confirm') sendLocation(this)
-                            })
-                        } else sendLocation(this)
-                    } else sendLocation(this)
+                    sendLocation(this)
                 } else {
                     embed.setDescription('Cancelled. You can dismiss this message')
                     interaction.editReply({ embeds: [embed], components: [] })
@@ -838,6 +859,7 @@ class afkCheck {
             }
         }
         if (this.nitro.length + 1 > this.settings.numerical.nitrocount) {
+            interaction.message.editButton(interaction.component.customId, null, true)
             embed.setDescription('Too many Nitro Boosters have already received location for this run. Try again in the next run!');
             interaction.reply({ embeds: [embed], ephemeral: true })
             this.removeFromActiveInteractions(interaction.user.id)
@@ -903,7 +925,10 @@ class afkCheck {
             return this.removeFromActiveInteractions(interaction.user.id)
         }
         let ticketLimit = this.settings.numerical.ticketlimit
-        if (this.pointsUsers.length >= ticketLimit) return;
+        if (this.pointsUsers.length >= ticketLimit) {
+            interaction.message.editButton(interaction.component.customId, null, true)
+            return
+        }
         let embed = new Discord.EmbedBuilder()
             .setColor(this.afkInfo.embed.color)
             .setFooter({ text: `React with ✅ to confirm, or ❌ to cancel` })
@@ -938,6 +963,7 @@ class afkCheck {
                 }
                 else if (int.customId == 'confirm') {
                     if (this.pointsUsers.length >= ticketLimit) {
+                        interaction.message.editButton(interaction.component.customId, null, true)
                         embed.setDescription('Unfortunately too many people have used their points for this run. No points have been deducted.')
                         if (embed.data.footer) delete embed.data.footer
                         if (embed.data.author) delete embed.data.author
@@ -994,6 +1020,7 @@ class afkCheck {
         }
         let tier = await patreonHelper.getTier(interaction.user, this.bot, this.tokenDB)
         if (this.supporters.length >= this.bot.settings[this.message.guild.id].numerical.supporterlimit) {
+            interaction.message.editButton(interaction.component.customId, null, true)
             if ([0, 1, 2].includes(tier)) {
                 embed.setDescription('Unfortunately, all spots for early location have been taken.')
                 interaction.reply({ embeds: [embed], ephemeral: true })
@@ -1078,7 +1105,6 @@ class afkCheck {
     }
 
     async postAfk() {
-        console.log(this.afkInfo.postAfkCheck)
         if (!this.afkInfo.postAfkCheck) return this.endAfk();
 
         //stop main timer
@@ -1116,7 +1142,7 @@ class afkCheck {
         ])
 
         //post afk check embed
-        this.mainEmbed.setDescription(`__**Post AFK Move-in**__\nIf you got moved out of vc, or missed the afk check:\n**1.** Join lounge\n**2** Click on ${this.bot.emojis.cache.get(this.afkInfo.headcountEmote)} to get moved in.\n__Time Remaining:__ ${this.postTime} seconds.`)
+        this.mainEmbed.setDescription(`__**Post AFK Move-in**__\nIf you got moved out of vc, or missed the afk check:\n**1.** Join lounge\n**2** Click on ${this.bot.storedEmojis[this.afkInfo.headcountEmote].text} to get moved in.\n__Time Remaining:__ ${this.postTime} seconds.`)
             .setFooter({ text: `The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}` });
         this.raidStatusMessage.edit({ content: null, embeds: [this.mainEmbed], components: [ar] }).catch(er => console.log(er));
         this.postAfkInteractionCollector = new Discord.InteractionCollector(this.bot, { message: this.raidStatusMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
@@ -1140,7 +1166,7 @@ class afkCheck {
         this.postTime -= 5;
         if (this.postTime == 0) return this.endAfk();
 
-        this.mainEmbed.setDescription(`__**Post AFK Move-in**__\nIf you got moved out of vc, or missed the afk check:\n**1.** Join lounge\n**2** Click on ${this.bot.emojis.cache.get(this.afkInfo.headcountEmote)} to get moved in.\n__Time Remaining:__ ${this.postTime} seconds.`);
+        this.mainEmbed.setDescription(`__**Post AFK Move-in**__\nIf you got moved out of vc, or missed the afk check:\n**1.** Join lounge\n**2** Click on ${this.bot.storedEmojis[this.afkInfo.headcountEmote].text} to get moved in.\n__Time Remaining:__ ${this.postTime} seconds.`);
         this.raidStatusMessage.edit({ content: null, embeds: [this.mainEmbed] }).catch(er => console.log(er));
     }
 
@@ -1165,7 +1191,7 @@ class afkCheck {
         }
         const rules = `<#${this.settings.channels.raidingrules}>` || '#raiding-rules';
         //update embeds/messages
-        this.mainEmbed.setDescription(`This afk check has been ended.\n${this.keys.length > 0 && this.afkInfo.keyEmoteID ? `Thank you to ${this.keys.map(k => `<@!${k}> `)} for popping a ${this.bot.emojis.cache.get(this.afkInfo.keyEmoteID)} for us!\n` : ''}${this.simp ? `Thank you to <@!${this.simp.id}> for being a ViBot SIMP` : ''}If you get disconnected during the run, **JOIN LOUNGE** *then* press the huge **RECONNECT** button`)
+        this.mainEmbed.setDescription(`This afk check has been ended.\n${this.keys.length > 0 && this.afkInfo.keyEmote ? `Thank you to ${this.keys.map(k => `<@!${k}> `)} for popping a ${this.bot.storedEmojis[this.afkInfo.keyEmote].text} for us!\n` : ''}${this.simp ? `Thank you to <@!${this.simp.id}> for being a ViBot SIMP` : ''}If you get disconnected during the run, **JOIN LOUNGE** *then* press the huge **RECONNECT** button`)
             .setFooter({ text: `The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}` })
 
         if (this.afkInfo.isAdvanced)
