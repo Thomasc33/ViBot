@@ -28,9 +28,9 @@ module.exports = {
         let promptEmbed = new Discord.EmbedBuilder()
             .setDescription('Select a reaction to request')
         let m = await message.channel.send({ embeds: [promptEmbed] })
-        let reacts = [afk.afkInfo.keyEmoteID]
-        if (afk.afkInfo.vialReact) reacts.push(afk.afkInfo.vialEmoteID)
-        for (let i of afk.afkInfo.earlyLocationReacts) reacts.push(i.emoteID)
+        let reacts = [bot.storedEmojis[afk.afkInfo.keyEmote].id]
+        if (afk.afkInfo.vialReact) reacts.push(bot.storedEmojis[afk.afkInfo.vialEmote].id)
+        for (let i of afk.afkInfo.earlyLocationReacts) reacts.push(bot.storedEmojis[i.emote].id)
 
         let reactionCollector = new Discord.ReactionCollector(m, { filter: (r, u) => !u.bot && reacts.includes(r.emoji.id) })
         reactionCollector.on('collect', async (r, u) => {

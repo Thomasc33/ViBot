@@ -54,7 +54,7 @@
                 "Knight",
                 "Wizard",
                 "UTMarbleSeal",
-                "tomeOfTheMushroomTribesFungal",
+                "UTTomeoftheMushroomTribes",
                 "Trickster"
             ],
             "embed": {
@@ -119,7 +119,7 @@
                 "Knight",
                 "Wizard",
                 "UTMarbleSeal",
-                "tomeOfTheMushroomTribesFungal",
+                "UTTomeoftheMushroomTribes",
                 "Trickster"
             ],
             "embed": {
@@ -176,7 +176,7 @@
                 "Knight",
                 "Wizard",
                 "UTMarbleSeal",
-                "tomeOfTheMushroomTribesFungal",
+                "UTTomeoftheMushroomTribes",
                 "Trickster"
             ],
             "embed": {
@@ -233,7 +233,7 @@
                 "Knight",
                 "Wizard",
                 "UTMarbleSeal",
-                "tomeOfTheMushroomTribesFungal",
+                "UTTomeoftheMushroomTribes",
                 "Trickster"
             ],
             "embed": {
@@ -307,7 +307,7 @@
                 "Knight",
                 "Wizard",
                 "UTMarbleSeal",
-                "tomeOfTheMushroomTribesFungal",
+                "UTTomeoftheMushroomTribes",
                 "Trickster"
             ],
             "embed": {
@@ -381,7 +381,7 @@
                 "Knight",
                 "Wizard",
                 "UTMarbleSeal",
-                "tomeOfTheMushroomTribesFungal",
+                "UTTomeoftheMushroomTribes",
                 "Trickster"
             ],
             "embed": {
@@ -416,10 +416,10 @@
             "earlyLocationCost": 20,
             "earlyLocationReacts": [
                 {
-                    "emote": "tomeOfTheMushroomTribesFungal",
+                    "emote": "UTTomeoftheMushroomTribes",
                     "pointsGiven": 1,
                     "limit": 2,
-                    "shortName": "Fungal",
+                    "shortName": "Fungal Tome",
                     "noConfirm": false,
                     "noLocation": false
                 },
@@ -489,10 +489,10 @@
             "earlyLocationCost": 20,
             "earlyLocationReacts": [
                 {
-                    "emote": "tomeOfTheMushroomTribesFungal",
+                    "emote": "UTTomeoftheMushroomTribes",
                     "pointsGiven": 1,
                     "limit": 2,
-                    "shortName": "Fungal",
+                    "shortName": "Fungal Tome",
                     "noConfirm": false,
                     "noLocation": false
                 },
@@ -594,7 +594,7 @@
                 "Knight",
                 "Wizard",
                 "UTMarbleSeal",
-                "tomeOfTheMushroomTribesFungal",
+                "UTTomeoftheMushroomTribes",
                 "Trickster"
             ],
             "embed": {
@@ -659,7 +659,7 @@
                 "Knight",
                 "Wizard",
                 "UTMarbleSeal",
-                "tomeOfTheMushroomTribesFungal",
+                "UTTomeoftheMushroomTribes",
                 "Trickster"
             ],
             "embed": {
@@ -716,7 +716,7 @@
                 "Knight",
                 "Wizard",
                 "UTMarbleSeal",
-                "tomeOfTheMushroomTribesFungal",
+                "UTTomeoftheMushroomTribes",
                 "Trickster"
             ],
             "embed": {
@@ -773,7 +773,7 @@
                 "Knight",
                 "Wizard",
                 "UTMarbleSeal",
-                "tomeOfTheMushroomTribesFungal",
+                "UTTomeoftheMushroomTribes",
                 "Trickster"
             ],
             "embed": {
@@ -847,7 +847,7 @@
                 "Knight",
                 "Wizard",
                 "UTMarbleSeal",
-                "tomeOfTheMushroomTribesFungal",
+                "UTTomeoftheMushroomTribes",
                 "Trickster"
             ],
             "embed": {
@@ -921,7 +921,7 @@
                 "Knight",
                 "Wizard",
                 "UTMarbleSeal",
-                "tomeOfTheMushroomTribesFungal",
+                "UTTomeoftheMushroomTribes",
                 "Trickster"
             ],
             "embed": {
@@ -956,10 +956,10 @@
             "earlyLocationCost": 20,
             "earlyLocationReacts": [
                 {
-                    "emote": "tomeOfTheMushroomTribesFungal",
+                    "emote": "UTTomeoftheMushroomTribes",
                     "pointsGiven": 1,
                     "limit": 2,
-                    "shortName": "Fungal",
+                    "shortName": "Fungal Tome",
                     "noConfirm": false,
                     "noLocation": false
                 },
@@ -1029,10 +1029,10 @@
             "earlyLocationCost": 20,
             "earlyLocationReacts": [
                 {
-                    "emote": "tomeOfTheMushroomTribesFungal",
+                    "emote": "UTTomeoftheMushroomTribes",
                     "pointsGiven": 1,
                     "limit": 2,
-                    "shortName": "Fungal",
+                    "shortName": "Fungal Tome",
                     "noConfirm": false,
                     "noLocation": false
                 },
@@ -1308,10 +1308,10 @@
                     "inline": true
                 },
                 {
-                    "emote": "tomeOfTheMushroomTribesFungal",
+                    "emote": "UTTomeoftheMushroomTribes",
                     "pointsGiven": 0,
                     "limit": 2,
-                    "shortName": "Fungal",
+                    "shortName": "Fungal Tome",
                     "noConfirm": false,
                     "noLocation": false,
                     "inline": true
@@ -1338,7 +1338,7 @@
             "reacts": [],
             "embed": {
                 "color": "#dc143c",
-                "description": "To join, connect to the raiding channel by clicking its name\nIf you have a rune react with the corresponding rune icon\nTo indicate your class or gear choices, react with <:Mystic:Mystic> <:UTMarbleSeal:UTMarbleSeal> <:Trickster:Trickster> <:effusionOfAttack:effusionOfAttack> <:effusionOfDexterity:effusionOfDexterity> <:Slow:Slow> <:Ogmur:Ogmur> <:fungalTome:tomeOfTheMushroomTribesFungal> <:2dpsRanged:2dpsRanged> <:3dpsRanged:3dpsRanged>\n<@&585542641975033859> to get early location react with <:nitro:NitroBooster>",
+                "description": "To join, connect to the raiding channel by clicking its name\nIf you have a rune react with the corresponding rune icon\nTo indicate your class or gear choices, react with <:Mystic:Mystic> <:UTMarbleSeal:UTMarbleSeal> <:Trickster:Trickster> <:effusionOfAttack:effusionOfAttack> <:effusionOfDexterity:effusionOfDexterity> <:Slow:Slow> <:Ogmur:Ogmur> <:fungalTome:UTTomeoftheMushroomTribes> <:2dpsRanged:2dpsRanged> <:3dpsRanged:3dpsRanged>\n<@&585542641975033859> to get early location react with <:nitro:NitroBooster>",
                 "thumbnail": "https://cdn.discordapp.com/emojis/1050173254121291827.png?v=1",
                 "removeThumbnail": false
             },
