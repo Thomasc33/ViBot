@@ -776,6 +776,9 @@ class afkCheck {
                     `You reacted as ${emote} **${emoteName}**\n\n${reactInfo.confirmationMessage}\n\nPress ✅ to confirm your reaction. Otherwise press ❌` :
                     `You reacted as ${emote} **${emoteName}**\nPress ✅ to confirm your reaction. Otherwise press ❌`
             )
+
+            if (reactInfo && reactInfo.confirmationMedia) embed.setImage(reactInfo.confirmationMedia)
+
             let ar = new Discord.ActionRowBuilder().addComponents([
                 new Discord.ButtonBuilder()
                     .setLabel('✅ Confirm')
@@ -788,6 +791,8 @@ class afkCheck {
             ])
             await interaction.reply({ embeds: [embed], ephemeral: true, components: [ar] })
             let em = await interaction.fetchReply()
+            
+            embed.setImage(null)
 
             //Update Rushers table
             if (reactInfo && reactInfo.requiredRole == 'rusher') {

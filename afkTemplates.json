@@ -24,7 +24,7 @@
             "earlyLocationCost": 20,
             "earlyLocationReacts": [{
                     "emote": "UTCloakofthePlanewalker",
-                    "pointsGiven": 5,
+                    "pointsGiven": 2,
                     "limit": 3,
                     "shortName": "Rusher",
                     "requiredRole": "rusher",
@@ -46,6 +46,29 @@
                     "shortName": "Expose",
                     "noConfirm": false,
                     "noLocation": false
+                },
+                {   "emote": "daze",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Daze",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "UTTomeoftheMushroomTribes",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Fungal Tome",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "UTMarbleSeal",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Marble Seal",
+                    "noConfirm": false,
+                    "noLocation": true
                 }
             ],
             "reacts": [
@@ -53,6 +76,7 @@
                 "Paladin",
                 "Knight",
                 "Wizard",
+                "Curse",
                 "UTMarbleSeal",
                 "UTTomeoftheMushroomTribes",
                 "Trickster"
@@ -111,6 +135,29 @@
                     "shortName": "Expose",
                     "noConfirm": false,
                     "noLocation": false
+                },
+                {   "emote": "daze",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Daze",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "UTTomeoftheMushroomTribes",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Fungal Tome",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "UTMarbleSeal",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Marble Seal",
+                    "noConfirm": false,
+                    "noLocation": true
                 }
             ],
             "reacts": [
@@ -118,6 +165,7 @@
                 "Paladin",
                 "Knight",
                 "Wizard",
+                "Curse",
                 "UTMarbleSeal",
                 "UTTomeoftheMushroomTribes",
                 "Trickster"
@@ -168,6 +216,22 @@
                     "shortName": "Expose",
                     "noConfirm": false,
                     "noLocation": false
+                },
+                {
+                    "emote": "UTTomeoftheMushroomTribes",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Fungal Tome",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "UTMarbleSeal",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Marble Seal",
+                    "noConfirm": false,
+                    "noLocation": true
                 }
             ],
             "reacts": [
@@ -175,8 +239,8 @@
                 "Paladin",
                 "Knight",
                 "Wizard",
-                "UTMarbleSeal",
                 "UTTomeoftheMushroomTribes",
+                "Curse",
                 "Trickster"
             ],
             "embed": {
@@ -225,6 +289,22 @@
                     "shortName": "Expose",
                     "noConfirm": false,
                     "noLocation": false
+                },
+                {
+                    "emote": "UTTomeoftheMushroomTribes",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Fungal Tome",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "UTMarbleSeal",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Marble Seal",
+                    "noConfirm": false,
+                    "noLocation": true
                 }
             ],
             "reacts": [
@@ -232,8 +312,8 @@
                 "Paladin",
                 "Knight",
                 "Wizard",
-                "UTMarbleSeal",
                 "UTTomeoftheMushroomTribes",
+                "Curse",
                 "Trickster"
             ],
             "embed": {
@@ -270,9 +350,9 @@
             "earlyLocationReacts": [{
                     "emote": "Mystic",
                     "pointsGiven": 25,
-                    "limit": 3,
+                    "limit": 4,
                     "shortName": "Mystic",
-                    "confirmationMessage": "**__REQUIRED__**\n- Your pet must have **level 85+ magic heal.**\n- You must have a <:T2ImprisonmentOrb:720265039164211241> or <:T3NeutralizationOrb:720265039004565544> available.",
+                    "confirmationMessage": "**__REQUIRED__**\n- Your pet must have **level 85+ magic heal.**\n- You must have a **8/8 Mystic** with a <:T2ImprisonmentOrb:720265039164211241> (T2) or <:T3NeutralizationOrb:720265039004565544> (T3) Orb available.",
                     "noConfirm": false,
                     "noLocation": false
                 },
@@ -281,8 +361,17 @@
                     "pointsGiven": 25,
                     "limit": 3,
                     "shortName": "Brain",
+                    "confirmationMessage": "**__REQUIRED__**\n- Your pet must have **level 85+ magic heal.**\n- You must have a **8/8 Trickster** with a <:STBrainoftheGolem:720263764309704704> (Brain) and a Tiered Prism available.",
                     "noConfirm": false,
                     "noLocation": false
+                },
+                {
+                    "emote": "UTTomeoftheMushroomTribes",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Fungal Tome",
+                    "noConfirm": false,
+                    "noLocation": true
                 },
                 {
                     "emote": "Ogmur",
@@ -344,9 +433,9 @@
             "earlyLocationReacts": [{
                     "emote": "Mystic",
                     "pointsGiven": 25,
-                    "limit": 3,
+                    "limit": 4,
                     "shortName": "Mystic",
-                    "confirmationMessage": "**__REQUIRED__**\n- Your pet must have **level 85+ magic heal.**\n- You must have a <:T2ImprisonmentOrb:720265039164211241> or <:T3NeutralizationOrb:720265039004565544> available.",
+                    "confirmationMessage": "**__REQUIRED__**\n- Your pet must have **level 85+ magic heal.**\n- You must have a **8/8 Mystic** with a <:T2ImprisonmentOrb:720265039164211241> (T2) or <:T3NeutralizationOrb:720265039004565544> (T3) Orb available.",
                     "noConfirm": false,
                     "noLocation": false
                 },
@@ -355,8 +444,17 @@
                     "pointsGiven": 25,
                     "limit": 3,
                     "shortName": "Brain",
+                    "confirmationMessage": "**__REQUIRED__**\n- Your pet must have **level 85+ magic heal.**\n- You must have a **8/8 Trickster** with a <:STBrainoftheGolem:720263764309704704> (Brain) and a Tiered Prism available.",
                     "noConfirm": false,
                     "noLocation": false
+                },
+                {
+                    "emote": "UTTomeoftheMushroomTribes",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Fungal Tome",
+                    "noConfirm": false,
+                    "noLocation": true
                 },
                 {
                     "emote": "Ogmur",
@@ -416,12 +514,28 @@
             "earlyLocationCost": 20,
             "earlyLocationReacts": [
                 {
+                    "emote": "UTCrystalShield",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "CShield",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
                     "emote": "UTTomeoftheMushroomTribes",
                     "pointsGiven": 1,
                     "limit": 2,
                     "shortName": "Fungal Tome",
                     "noConfirm": false,
                     "noLocation": false
+                },
+                {
+                    "emote": "UTCloakofthePlanewalker",
+                    "pointsGiven": 5,
+                    "limit": 3,
+                    "shortName": "Rusher",
+                    "noConfirm": false,
+                    "noLocation": true
                 },
                 {
                     "emote": "UTMarbleSeal",
@@ -440,10 +554,18 @@
                     "noLocation": true
                 },
                 {
-                    "emote": "UTCloakofthePlanewalker",
-                    "pointsGiven": 5,
-                    "limit": 3,
-                    "shortName": "Rusher",
+                    "emote": "Ogmur",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Armor Break",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "Expose",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Expose",
                     "noConfirm": false,
                     "noLocation": true
                 }
@@ -453,9 +575,7 @@
                 "Paladin",
                 "Knight",
                 "Bard",
-                "Curse",
-                "Ogmur",
-                "Expose"
+                "Curse"
             ],
             "embed": {
                 "color": "#013220",
@@ -489,12 +609,28 @@
             "earlyLocationCost": 20,
             "earlyLocationReacts": [
                 {
+                    "emote": "UTCrystalShield",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "CShield",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
                     "emote": "UTTomeoftheMushroomTribes",
                     "pointsGiven": 1,
                     "limit": 2,
                     "shortName": "Fungal Tome",
                     "noConfirm": false,
                     "noLocation": false
+                },
+                {
+                    "emote": "UTCloakofthePlanewalker",
+                    "pointsGiven": 5,
+                    "limit": 3,
+                    "shortName": "Rusher",
+                    "noConfirm": false,
+                    "noLocation": true
                 },
                 {
                     "emote": "UTMarbleSeal",
@@ -513,10 +649,18 @@
                     "noLocation": true
                 },
                 {
-                    "emote": "UTCloakofthePlanewalker",
-                    "pointsGiven": 5,
-                    "limit": 3,
-                    "shortName": "Rusher",
+                    "emote": "Ogmur",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Armor Break",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "Expose",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Expose",
                     "noConfirm": false,
                     "noLocation": true
                 }
@@ -526,9 +670,7 @@
                 "Paladin",
                 "Knight",
                 "Bard",
-                "Curse",
-                "Ogmur",
-                "Expose"
+                "Curse"
             ],
             "embed": {
                 "color": "#013220",
@@ -564,7 +706,7 @@
             "earlyLocationCost": 20,
             "earlyLocationReacts": [{
                     "emote": "UTCloakofthePlanewalker",
-                    "pointsGiven": 5,
+                    "pointsGiven": 2,
                     "limit": 3,
                     "shortName": "Rusher",
                     "requiredRole": "rusher",
@@ -586,6 +728,29 @@
                     "shortName": "Expose",
                     "noConfirm": false,
                     "noLocation": false
+                },
+                {   "emote": "daze",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Daze",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "UTTomeoftheMushroomTribes",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Fungal Tome",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "UTMarbleSeal",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Marble Seal",
+                    "noConfirm": false,
+                    "noLocation": true
                 }
             ],
             "reacts": [
@@ -593,6 +758,7 @@
                 "Paladin",
                 "Knight",
                 "Wizard",
+                "Curse",
                 "UTMarbleSeal",
                 "UTTomeoftheMushroomTribes",
                 "Trickster"
@@ -651,6 +817,29 @@
                     "shortName": "Expose",
                     "noConfirm": false,
                     "noLocation": false
+                },
+                {   "emote": "daze",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Daze",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "UTTomeoftheMushroomTribes",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Fungal Tome",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "UTMarbleSeal",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Marble Seal",
+                    "noConfirm": false,
+                    "noLocation": true
                 }
             ],
             "reacts": [
@@ -658,6 +847,7 @@
                 "Paladin",
                 "Knight",
                 "Wizard",
+                "Curse",
                 "UTMarbleSeal",
                 "UTTomeoftheMushroomTribes",
                 "Trickster"
@@ -708,6 +898,22 @@
                     "shortName": "Expose",
                     "noConfirm": false,
                     "noLocation": false
+                },
+                {
+                    "emote": "UTTomeoftheMushroomTribes",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Fungal Tome",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "UTMarbleSeal",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Marble Seal",
+                    "noConfirm": false,
+                    "noLocation": true
                 }
             ],
             "reacts": [
@@ -715,8 +921,8 @@
                 "Paladin",
                 "Knight",
                 "Wizard",
-                "UTMarbleSeal",
                 "UTTomeoftheMushroomTribes",
+                "Curse",
                 "Trickster"
             ],
             "embed": {
@@ -765,6 +971,22 @@
                     "shortName": "Expose",
                     "noConfirm": false,
                     "noLocation": false
+                },
+                {
+                    "emote": "UTTomeoftheMushroomTribes",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Fungal Tome",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "UTMarbleSeal",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Marble Seal",
+                    "noConfirm": false,
+                    "noLocation": true
                 }
             ],
             "reacts": [
@@ -772,8 +994,8 @@
                 "Paladin",
                 "Knight",
                 "Wizard",
-                "UTMarbleSeal",
                 "UTTomeoftheMushroomTribes",
+                "Curse",
                 "Trickster"
             ],
             "embed": {
@@ -810,9 +1032,9 @@
             "earlyLocationReacts": [{
                     "emote": "Mystic",
                     "pointsGiven": 25,
-                    "limit": 3,
+                    "limit": 4,
                     "shortName": "Mystic",
-                    "confirmationMessage": "**__REQUIRED__**\n- Your pet must have **level 85+ magic heal.**\n- You must have a <:T2ImprisonmentOrb:720265039164211241> or <:T3NeutralizationOrb:720265039004565544> available.",
+                    "confirmationMessage": "**__REQUIRED__**\n- Your pet must have **level 85+ magic heal.**\n- You must have a **8/8 Mystic** with a <:T2ImprisonmentOrb:720265039164211241> (T2) or <:T3NeutralizationOrb:720265039004565544> (T3) Orb available.",
                     "noConfirm": false,
                     "noLocation": false
                 },
@@ -821,8 +1043,17 @@
                     "pointsGiven": 25,
                     "limit": 3,
                     "shortName": "Brain",
+                    "confirmationMessage": "**__REQUIRED__**\n- Your pet must have **level 85+ magic heal.**\n- You must have a **8/8 Trickster** with a <:STBrainoftheGolem:720263764309704704> (Brain) and a Tiered Prism available.",
                     "noConfirm": false,
                     "noLocation": false
+                },
+                {
+                    "emote": "UTTomeoftheMushroomTribes",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Fungal Tome",
+                    "noConfirm": false,
+                    "noLocation": true
                 },
                 {
                     "emote": "Ogmur",
@@ -884,9 +1115,9 @@
             "earlyLocationReacts": [{
                     "emote": "Mystic",
                     "pointsGiven": 25,
-                    "limit": 3,
+                    "limit": 4,
                     "shortName": "Mystic",
-                    "confirmationMessage": "**__REQUIRED__**\n- Your pet must have **level 85+ magic heal.**\n- You must have a <:T2ImprisonmentOrb:720265039164211241> or <:T3NeutralizationOrb:720265039004565544> available.",
+                    "confirmationMessage": "**__REQUIRED__**\n- Your pet must have **level 85+ magic heal.**\n- You must have a **8/8 Mystic** with a <:T2ImprisonmentOrb:720265039164211241> (T2) or <:T3NeutralizationOrb:720265039004565544> (T3) Orb available.",
                     "noConfirm": false,
                     "noLocation": false
                 },
@@ -895,8 +1126,17 @@
                     "pointsGiven": 25,
                     "limit": 3,
                     "shortName": "Brain",
+                    "confirmationMessage": "**__REQUIRED__**\n- Your pet must have **level 85+ magic heal.**\n- You must have a **8/8 Trickster** with a <:STBrainoftheGolem:720263764309704704> (Brain) and a Tiered Prism available.",
                     "noConfirm": false,
                     "noLocation": false
+                },
+                {
+                    "emote": "UTTomeoftheMushroomTribes",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Fungal Tome",
+                    "noConfirm": false,
+                    "noLocation": true
                 },
                 {
                     "emote": "Ogmur",
@@ -956,12 +1196,28 @@
             "earlyLocationCost": 20,
             "earlyLocationReacts": [
                 {
+                    "emote": "UTCrystalShield",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "CShield",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
                     "emote": "UTTomeoftheMushroomTribes",
                     "pointsGiven": 1,
                     "limit": 2,
                     "shortName": "Fungal Tome",
                     "noConfirm": false,
                     "noLocation": false
+                },
+                {
+                    "emote": "UTCloakofthePlanewalker",
+                    "pointsGiven": 5,
+                    "limit": 3,
+                    "shortName": "Rusher",
+                    "noConfirm": false,
+                    "noLocation": true
                 },
                 {
                     "emote": "UTMarbleSeal",
@@ -980,10 +1236,18 @@
                     "noLocation": true
                 },
                 {
-                    "emote": "UTCloakofthePlanewalker",
-                    "pointsGiven": 5,
-                    "limit": 3,
-                    "shortName": "Rusher",
+                    "emote": "Ogmur",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Armor Break",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "Expose",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Expose",
                     "noConfirm": false,
                     "noLocation": true
                 }
@@ -993,9 +1257,7 @@
                 "Paladin",
                 "Knight",
                 "Bard",
-                "Curse",
-                "Ogmur",
-                "Expose"
+                "Curse"
             ],
             "embed": {
                 "color": "#013220",
@@ -1029,12 +1291,28 @@
             "earlyLocationCost": 20,
             "earlyLocationReacts": [
                 {
+                    "emote": "UTCrystalShield",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "CShield",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
                     "emote": "UTTomeoftheMushroomTribes",
                     "pointsGiven": 1,
                     "limit": 2,
                     "shortName": "Fungal Tome",
                     "noConfirm": false,
                     "noLocation": false
+                },
+                {
+                    "emote": "UTCloakofthePlanewalker",
+                    "pointsGiven": 5,
+                    "limit": 3,
+                    "shortName": "Rusher",
+                    "noConfirm": false,
+                    "noLocation": true
                 },
                 {
                     "emote": "UTMarbleSeal",
@@ -1053,10 +1331,18 @@
                     "noLocation": true
                 },
                 {
-                    "emote": "UTCloakofthePlanewalker",
-                    "pointsGiven": 5,
-                    "limit": 3,
-                    "shortName": "Rusher",
+                    "emote": "Ogmur",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Armor Break",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "Expose",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Expose",
                     "noConfirm": false,
                     "noLocation": true
                 }
@@ -1066,9 +1352,7 @@
                 "Paladin",
                 "Knight",
                 "Bard",
-                "Curse",
-                "Ogmur",
-                "Expose"
+                "Curse"
             ],
             "embed": {
                 "color": "#013220",

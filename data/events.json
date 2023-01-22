@@ -1722,6 +1722,16 @@
         "isExalt": true,
         "earlyLocationReacts": [
             {
+                "emote": "armor",
+                "pointsGiven": 0,
+                "limit": 1,
+                "shortName": "High Defense Dragger",
+                "confirmationMessage": "**__REQUIRED__**\n- You must know how to drag the boss around in the Enforcer: Minefield phase (Check GIF Below).\n- You are recommended to have **80+ Defense** on your character.",
+                "confirmationMedia": "https://cdn.discordapp.com/attachments/230500411835023362/1059570168558256178/how_to_drag_minefields.gif",
+                "noConfirm": false,
+                "noLocation": false
+            },
+            {
                 "emote": "UTMarbleSeal",
                 "pointsGiven": 0,
                 "limit": 1,
@@ -1778,7 +1788,13 @@
                 "noLocation": false
             }
         ],
-        "reacts": [],
+        "reacts": [
+            "Curse",
+            "Warrior",
+            "Paladin",
+            "Knight",
+            "Bard"
+        ],
         "earlyLocationCost": 15
     },
     "advancedsteamworks": {
@@ -1814,6 +1830,16 @@
         "isExalt": true,
         "earlyLocationReacts": [
             {
+                "emote": "armor",
+                "pointsGiven": 0,
+                "limit": 1,
+                "shortName": "High Defense Dragger",
+                "confirmationMessage": "**__REQUIRED__**\n- You must know how to drag the boss around in the Enforcer: Minefield phase (Check GIF Below).\n- You are recommended to have **80+ Defense** on your character.",
+                "confirmationMedia": "https://cdn.discordapp.com/attachments/230500411835023362/1059570168558256178/how_to_drag_minefields.gif",
+                "noConfirm": false,
+                "noLocation": false
+            },
+            {
                 "emote": "UTMarbleSeal",
                 "pointsGiven": 0,
                 "limit": 1,
@@ -1870,7 +1896,13 @@
                 "noLocation": false
             }
         ],
-        "reacts": [],
+        "reacts": [
+            "Curse",
+            "Warrior",
+            "Paladin",
+            "Knight",
+            "Bard"
+        ],
         "earlyLocationCost": 15
     },
     "701483950559985705": {
@@ -1897,13 +1929,12 @@
             "pingRole": "fungalReact",
             "isExalt": true,
             "reacts": [
-                "UTCloakofthePlanewalker",
-                "Collo",
                 "daze",
                 "Curse",
                 "Expose",
                 "Warrior",
                 "Paladin",
+                "Knight",
                 "Bard",
                 "Trickster",
                 "Priest"
@@ -1918,10 +1949,18 @@
                     "noLocation": false
                 },
                 {
-                    "emote": "Ogmur",
-                    "pointsGiven": 1,
+                    "emote": "UTTomeoftheMushroomTribes",
+                    "pointsGiven": 0,
                     "limit": 1,
-                    "shortName": "Armor Break",
+                    "shortName": "Fungal Tome",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "daze",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Daze",
                     "noConfirm": false,
                     "noLocation": false
                 },
@@ -1934,10 +1973,18 @@
                     "noLocation": false
                 },
                 {
-                    "emote": "Knight",
+                    "emote": "Collo",
                     "pointsGiven": 0,
                     "limit": 2,
-                    "shortName": "Knight",
+                    "shortName": "Stun",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emote": "Ogmur",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Armor Break",
                     "noConfirm": false,
                     "noLocation": false
                 }
@@ -1970,13 +2017,12 @@
             "isExalt": true,
             "isAdvanced": true,
             "reacts": [
-                "UTCloakofthePlanewalker",
-                "Collo",
                 "daze",
                 "Curse",
                 "Expose",
                 "Warrior",
                 "Paladin",
+                "Knight",
                 "Bard",
                 "Trickster",
                 "Priest"
@@ -1991,10 +2037,18 @@
                     "noLocation": false
                 },
                 {
-                    "emote": "Ogmur",
-                    "pointsGiven": 1,
+                    "emote": "UTTomeoftheMushroomTribes",
+                    "pointsGiven": 0,
                     "limit": 1,
-                    "shortName": "Armor Break",
+                    "shortName": "Fungal Tome",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "daze",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Daze",
                     "noConfirm": false,
                     "noLocation": false
                 },
@@ -2007,10 +2061,18 @@
                     "noLocation": false
                 },
                 {
-                    "emote": "Knight",
+                    "emote": "Collo",
                     "pointsGiven": 0,
                     "limit": 2,
-                    "shortName": "Knight",
+                    "shortName": "Stun",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emote": "Ogmur",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Armor Break",
                     "noConfirm": false,
                     "noLocation": false
                 }
@@ -2030,8 +2092,6 @@
             "color": "#ffd700",
             "twoPhase": true,
             "reacts": [
-                "UTCloakofthePlanewalker",
-                "Collo",
                 "Curse",
                 "Expose",
                 "Warrior",
@@ -2057,6 +2117,14 @@
                     "noLocation": false
                 },
                 {
+                    "emote": "Collo",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "Stun",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
                     "emote": "Slow",
                     "pointsGiven": 0,
                     "limit": 2,
@@ -2076,7 +2144,7 @@
                     "emote": "daze",
                     "pointsGiven": 0,
                     "limit": 1,
-                    "shortName": "daze",
+                    "shortName": "Daze",
                     "noConfirm": false,
                     "noLocation": false
                 }
@@ -2107,8 +2175,6 @@
             "isExalt": true,
             "isAdvanced": true,
             "reacts": [
-                "UTCloakofthePlanewalker",
-                "Collo",
                 "Curse",
                 "Expose",
                 "Warrior",
@@ -2126,6 +2192,14 @@
                     "shortName": "Marble Seal",
                     "noConfirm": false,
                     "noLocation": false
+                },
+                {
+                    "emote": "Collo",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "Stun",
+                    "noConfirm": false,
+                    "noLocation": true
                 },
                 {
                     "emote": "Slow",
@@ -2147,7 +2221,7 @@
                     "emote": "daze",
                     "pointsGiven": 0,
                     "limit": 1,
-                    "shortName": "daze",
+                    "shortName": "Daze",
                     "noConfirm": false,
                     "noLocation": false
                 }
@@ -2177,8 +2251,6 @@
             "pingRole": "nestReact",
             "isExalt": true,
             "reacts": [
-                "UTCloakofthePlanewalker",
-                "Collo",
                 "Curse",
                 "Expose",
                 "Warrior",
@@ -2196,6 +2268,14 @@
                     "shortName": "Marble Seal",
                     "noConfirm": false,
                     "noLocation": false
+                },
+                {
+                    "emote": "Collo",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "Stun",
+                    "noConfirm": false,
+                    "noLocation": true
                 },
                 {
                     "emote": "Slow",
@@ -2217,7 +2297,7 @@
                     "emote": "daze",
                     "pointsGiven": 0,
                     "limit": 1,
-                    "shortName": "daze",
+                    "shortName": "Daze",
                     "noConfirm": false,
                     "noLocation": false
                 }
@@ -2240,8 +2320,6 @@
             "thumbnail": "https://i.imgur.com/hUWc3IV.png",
             "color": "#ffd700",
             "reacts": [
-                "UTCloakofthePlanewalker",
-                "Collo",
                 "Curse",
                 "Expose",
                 "Warrior",
@@ -2269,6 +2347,14 @@
                     "noLocation": false
                 },
                 {
+                    "emote": "Collo",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "Stun",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
                     "emote": "Slow",
                     "pointsGiven": 0,
                     "limit": 2,
@@ -2288,7 +2374,7 @@
                     "emote": "daze",
                     "pointsGiven": 0,
                     "limit": 1,
-                    "shortName": "daze",
+                    "shortName": "Daze",
                     "noConfirm": false,
                     "noLocation": false
                 }
@@ -2383,13 +2469,12 @@
             "pingRole": "fungalReact",
             "isExalt": true,
             "reacts": [
-                "UTCloakofthePlanewalker",
-                "Collo",
                 "daze",
                 "Curse",
                 "Expose",
                 "Warrior",
                 "Paladin",
+                "Knight",
                 "Bard",
                 "Trickster",
                 "Priest"
@@ -2404,6 +2489,22 @@
                     "noLocation": false
                 },
                 {
+                    "emote": "UTTomeoftheMushroomTribes",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Fungal Tome",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "daze",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Daze",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
                     "emote": "Slow",
                     "pointsGiven": 0,
                     "limit": 2,
@@ -2412,18 +2513,18 @@
                     "noLocation": false
                 },
                 {
-                    "emote": "Ogmur",
-                    "pointsGiven": 1,
-                    "limit": 1,
-                    "shortName": "Armor Break",
+                    "emote": "Collo",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "Stun",
                     "noConfirm": false,
                     "noLocation": false
                 },
                 {
-                    "emote": "Knight",
-                    "pointsGiven": 0,
-                    "limit": 2,
-                    "shortName": "Knight",
+                    "emote": "Ogmur",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Armor Break",
                     "noConfirm": false,
                     "noLocation": false
                 }
@@ -2456,13 +2557,12 @@
             "isExalt": true,
             "isAdvanced": true,
             "reacts": [
-                "UTCloakofthePlanewalker",
-                "Collo",
                 "daze",
                 "Curse",
                 "Expose",
                 "Warrior",
                 "Paladin",
+                "Knight",
                 "Bard",
                 "Trickster",
                 "Priest"
@@ -2477,6 +2577,22 @@
                     "noLocation": false
                 },
                 {
+                    "emote": "UTTomeoftheMushroomTribes",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Fungal Tome",
+                    "noConfirm": false,
+                    "noLocation": true
+                },
+                {
+                    "emote": "daze",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Daze",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
                     "emote": "Slow",
                     "pointsGiven": 0,
                     "limit": 2,
@@ -2485,18 +2601,18 @@
                     "noLocation": false
                 },
                 {
-                    "emote": "Ogmur",
-                    "pointsGiven": 1,
-                    "limit": 1,
-                    "shortName": "Armor Break",
+                    "emote": "Collo",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "Stun",
                     "noConfirm": false,
                     "noLocation": false
                 },
                 {
-                    "emote": "Knight",
-                    "pointsGiven": 0,
-                    "limit": 2,
-                    "shortName": "Knight",
+                    "emote": "Ogmur",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Armor Break",
                     "noConfirm": false,
                     "noLocation": false
                 }
@@ -2516,8 +2632,6 @@
             "color": "#ffd700",
             "twoPhase": true,
             "reacts": [
-                "UTCloakofthePlanewalker",
-                "Collo",
                 "Curse",
                 "Expose",
                 "Warrior",
@@ -2541,6 +2655,14 @@
                     "shortName": "Marble Seal",
                     "noConfirm": false,
                     "noLocation": false
+                },
+                {
+                    "emote": "Collo",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "Stun",
+                    "noConfirm": false,
+                    "noLocation": true
                 },
                 {
                     "emote": "Slow",
@@ -2593,8 +2715,6 @@
             "isExalt": true,
             "isAdvanced": true,
             "reacts": [
-                "UTCloakofthePlanewalker",
-                "Collo",
                 "Knight",
                 "Curse",
                 "Expose",
@@ -2612,6 +2732,14 @@
                     "shortName": "Marble Seal",
                     "noConfirm": false,
                     "noLocation": false
+                },
+                {
+                    "emote": "Collo",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "Stun",
+                    "noConfirm": false,
+                    "noLocation": true
                 },
                 {
                     "emote": "Slow",
@@ -2663,8 +2791,6 @@
             "pingRole": "nestReact",
             "isExalt": true,
             "reacts": [
-                "UTCloakofthePlanewalker",
-                "Collo",
                 "Knight",
                 "Curse",
                 "Expose",
@@ -2682,6 +2808,14 @@
                     "shortName": "Marble Seal",
                     "noConfirm": false,
                     "noLocation": false
+                },
+                {
+                    "emote": "Collo",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "Stun",
+                    "noConfirm": false,
+                    "noLocation": true
                 },
                 {
                     "emote": "Slow",
@@ -2726,8 +2860,6 @@
             "thumbnail": "https://i.imgur.com/hUWc3IV.png",
             "color": "#ffd700",
             "reacts": [
-                "UTCloakofthePlanewalker",
-                "Collo",
                 "Knight",
                 "Curse",
                 "Expose",
@@ -2753,6 +2885,14 @@
                     "shortName": "Marble Seal",
                     "noConfirm": false,
                     "noLocation": false
+                },
+                {
+                    "emote": "Collo",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "Stun",
+                    "noConfirm": false,
+                    "noLocation": true
                 },
                 {
                     "emote": "Slow",
