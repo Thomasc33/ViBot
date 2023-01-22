@@ -38,7 +38,7 @@ module.exports = {
                     tag: `:${emoji.name}:${emoji.id}`,
                     name: emoji.name,
                     id: emoji.id,
-                    text: `<:${emoji.name}:${emoji.id}>`,
+                    text: emoji.animated ? `<a:${emoji.name}:${emoji.id}>` : `<:${emoji.name}:${emoji.id}>`,
                     guildid: guild.id,
                     guildname: guild.name,
                     animated: emoji.animated

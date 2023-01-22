@@ -31,8 +31,6 @@ const stats = require('./commands/stats')
 const modmail = require('./commands/modmail')
 const setup = require('./commands/setup')
 const restarting = require('./commands/restart')
-const createTemplate = require('./commands/createTemplate')
-const hostkeys = require('./commands/hostkey');
 const excuses = require('./commands/excuse');
 const quotas = require('./data/quotas.json');
 const emoji = require('./commands/emoji.js');
@@ -111,7 +109,6 @@ bot.on('messageCreate', message => {
         }
         if (message.author.bot) return;
         if (!bot.serverWhiteList.includes(message.guild.id)) return
-        if (createTemplate.checkActive(message.author.id) && message.channel.id === bot.settings[message.guild.id].channels.vetcommands) return;
         if (!message.content.startsWith(prefix)) return autoMod(message);
         if (!bot.settings[message.guild.id]) return
         const args = message.content.slice(prefix.length).split(/ +/);
@@ -355,7 +352,7 @@ bot.on("ready", async () => {
     let keyAlertsInterval = setInterval(() => {
         bot.guilds.cache.each(g => {
             const settings = bot.settings[g.id];
-            if (!settings || !settings.commands.hostkey || !settings.channels.keyalerts || !settings.numerical.keyalertsage)
+            if (!settings || !settings.channels.keyalerts || !settings.numerical.keyalertsage)
                 return;
 
             const channel = bot.channels.cache.get(settings.channels.keyalerts);
@@ -693,7 +690,6 @@ tokenDB.on('error', err => {
 async function dmHandler(message) {
     if (message.author.bot) return;
     if (verification.checkActive(message.author.id)) return
-    if (hostkeys.checkActive(message.author.id)) return
     let cancelled = false;
     let statsTypos = ['stats', 'satts', 'stat', 'status', 'sats', 'stata', 'stts', 'stas']
     if (statsTypos.includes(message.content.split(' ')[0].replace(/[^a-z0-9]/gi, '').toLowerCase())) {

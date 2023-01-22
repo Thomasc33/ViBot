@@ -32,7 +32,7 @@ module.exports = {
         if (old)
             this.oldSends = this.oldSends.filter(s => s.id != message.author.id);
 
-        const eventMsg = await events.send(dm);
+        const eventMsg = await events.send(dm, bot);
         const eventsLink = eventMsg.url;
 
         this.activePanels.push(message.author.id);

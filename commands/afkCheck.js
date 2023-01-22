@@ -734,13 +734,15 @@ class afkCheck {
             }
         }
 
+        let endAfter = null
+
         // If confirmation not needed, just send the location
         if (noConfirm) return sendLocation(this, true)
 
         // Otherwise prompt for confirmation
 
         // Will end the confirmation automatically after 60s to save resources
-        let endAfter = setInterval(() => {
+        endAfter = setInterval(() => {
             try {
                 dmIntereactionCollector.stop();
                 embed.setDescription('Reaction took too long to receive, or another vial already confirmed. Re-react to try again')
@@ -1103,7 +1105,6 @@ class afkCheck {
     }
 
     async postAfk() {
-        console.log(this.afkInfo.postAfkCheck)
         if (!this.afkInfo.postAfkCheck) return this.endAfk();
 
         //stop main timer
