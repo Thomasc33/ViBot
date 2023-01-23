@@ -669,7 +669,6 @@ class afkCheck {
             if (!checkType(afk)) return
             //set into type
 
-            let current_limit = 0
             setType(afk)
 
             function setType(afk) {
@@ -677,19 +676,18 @@ class afkCheck {
                 switch (type.toLowerCase()) {
                     case 'key':
                         afk.keys.push(interaction.user.id)
-                        current_limit = afk.keys.length
                         break;
                     case 'vial':
                         afk.vials.push(interaction.user.id)
-                        current_limit = afk.vials.length
                         break;
                     default:
                         afk.reactables[type].users.push(interaction.user.id)
-                        current_limit = afk.reactables[type].users.length
                         break;
                 }
                 afk.earlyLocation.push(interaction.user);
             }
+
+            let current_limit = getLength(afk)
 
             // Disable button if react limit is hit
             if (current_limit >= limit) interaction.message.editButton(interaction.component.customId, `${current_limit}/${limit}`, true)
@@ -733,6 +731,17 @@ class afkCheck {
                     if (afk.reactables[type].users.length >= limit || afk.reactables[type].users.includes(interaction.member.id)) return false; else return true;
             }
         }
+        function getLength(afk) { //true = spot open
+            //key, vial, other
+            switch (type) {
+                case 'key':
+                    return afk.keys.length
+                case 'vial':
+                    return afk.vials.length
+                default:
+                    return afk.reactables[type].users.length
+            }
+        }
 
         let endAfter = null
 
@@ -759,6 +768,9 @@ class afkCheck {
 
         try {
             if (!checkType(this)) {
+                let current_limit = getLength(this)
+                if (current_limit >= limit) interaction.message.editButton(interaction.component.customId, `${current_limit}/${limit}`, true)
+                else interaction.message.editButton(interaction.component.customId, `${current_limit}/${limit}`)
                 embed.setDescription(`Too many people have already reacted and confirmed for that. Try another react or try again next run.`)
                 interaction.reply({ embeds: [embed], ephemeral: true })
                 return this.removeFromActiveInteractions(interaction.member.id)

@@ -24,7 +24,8 @@ module.exports = {
         if (`${member.nickname} | ${altName}`.length > 32) return message.channel.send(`User exceeds the allowable nickname length of 32 characters with the addition of \`${altName}\`. Please remove an alt before proceeding.`)
         
         member.setNickname(`${member.nickname} | ${altName}`, `Old Name: ${member.nickname}\nNew Name: ${member.nickname} | ${altName}\nChange by: ${message.member}`);
-        
+        message.react('✅')
+
         let embed = new Discord.EmbedBuilder()
             .setTitle('Alt Added')
             .setDescription(member.toString())
