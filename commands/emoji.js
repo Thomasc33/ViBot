@@ -6,13 +6,14 @@ module.exports = {
     name: 'emoji',
     description: 'Lets you view or update all of the emojis on ViBots Database',
     alias: ['emojis'],
-    args: '(list/update)',
+    args: '(list/update/find) [emojis]',
     requiredArgs: 0,
     role: 'developer',
     async execute(message, args, bot, db) {
         var choice = undefined
         if (args.length == 0) { choice = 'update' }
         else choice = args[0].toLowerCase()
+        args.shift();
         switch (choice.toLowerCase()) {
             case 'update':
                 try {
@@ -25,6 +26,34 @@ module.exports = {
                 break;
             case 'list':
                 await message.channel.send('Currently not setup. Please be patient as we set this up')
+                break;
+            case 'find':
+                let emojisNotFound = [];
+                args.map(
+                    async emoji => {
+                        if (bot.storedEmojis.hasOwnProperty(emoji)) {
+                            let storedEmoji = bot.storedEmojis[emoji]
+                            emoji = await bot.emojis.cache.get(bot.storedEmojis[emoji].id)
+                            let embed = new Discord.EmbedBuilder()  
+                                .setTitle(emoji.name)
+                                .setDescription(Object.keys(storedEmoji).map(
+                                    property => `${property}: ${storedEmoji[property]}`
+                                ).join('\n'))
+                                // .setAuthor({ iconURL: })
+                                .setColor('#FF0000')
+                            await message.channel.send({ embeds: [embed] })
+                        } else {
+                            emojisNotFound.push(emoji)
+                        }
+                    }
+                );
+                if (emojisNotFound.length >= 1) {
+                    let notFoundEmbed = new Discord.EmbedBuilder()
+                        .setTitle('Emojis Not Found')
+                        .setDescription('*Keep in mind that searching the Emoji database requires it to be case sensitive*\n' + emojisNotFound.join(', '))
+                        .setColor('#FFFF00')
+                    await message.channel.send({ embeds: [notFoundEmbed] })
+                }
                 break;
         }
     },

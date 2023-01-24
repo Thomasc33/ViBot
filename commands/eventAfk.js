@@ -5,7 +5,7 @@ const oldStyleAfkGuilds = ['451171819672698920']
 module.exports = {
     name: 'eventafk',
     description: 'Starts a new style afk check for event dungeons',
-    args: '<dungeon> [Location]',
+    args: '(#/raiding vc) <dungeon> [Location]',
     requiredArgs: 1,
     role: 'eventrl',
     alias: ['eafk'],
@@ -14,6 +14,8 @@ module.exports = {
         let settings = bot.settings[message.guild.id]
 
         //check for vet run
+        let raidingVC;
+        if (settings.backend.useStaticVCForRaiding) { raidingVC = args[0]; args.shift(); }
         var eventType = args[0]
         let event = getEventType(eventType, eventFile, message.guild.id)
         if (!event) return message.channel.send(`${eventType} does not exist. Do \`\`;events\`\` to see every event type`);
@@ -51,7 +53,7 @@ module.exports = {
         if (!event.enabled) return message.channel.send(`${event.name} is currently disabled.`);
 
         //start afkcheck
-        afkCheck.eventAfkExecute(message, args, bot, db, tokenDB, event, isVet)
+        afkCheck.eventAfkExecute(message, args, bot, db, tokenDB, event, isVet, raidingVC)
     },
     getEventType,
     getMatchingEvents,

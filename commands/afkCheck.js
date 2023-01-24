@@ -118,7 +118,7 @@ module.exports = {
         runs.push({ channel: channel.id, afk: afkModule })
         if (runInfo.startDelay > 0) setTimeout(begin, runInfo.startDelay, afkModule)
     },
-    async eventAfkExecute(message, args, bot, db, tokenDB, event, isVet) {
+    async eventAfkExecute(message, args, bot, db, tokenDB, event, isVet, raidingVC) {
         settings = bot.settings[message.guild.id]
         if (!registeredWithRestart) {
             restart.registerAFKCheck(module.exports);
@@ -128,9 +128,7 @@ module.exports = {
             Channels.registerAFKCheck(module.exports);
             registeredWithVibotChannels = true;
         }
-        let raidingVC;
         args.shift();
-        if (settings.backend.useStaticVCForRaiding) { raidingVC = args[0]; args.shift(); }
         //clear out runs array
         destroyInactiveRuns();
 
@@ -387,6 +385,7 @@ class afkCheck {
                 if (parentName === settingCategories.raiding.toLowerCase()) partneredChannel = otherServerCache.get(partneredSettings.channels.raidstatus)
                 else if (parentName === settingCategories.veteran.toLowerCase()) partneredChannel = otherServerCache.get(partneredSettings.channels.vetstatus)
                 else partneredChannel = otherServerCache.get(partneredSettings.channels.eventstatus)
+                if (this.afkInfo.partneredServerPingPriority) partneredChannel = otherServerCache.get(partneredSettings.channels[this.afkInfo.partneredServerPingPriority])
                 this.partneredPings = this.afkInfo.pingRole ? (typeof this.afkInfo.pingRole != "string" ? this.afkInfo.pingRole.map(r => `<@&${partneredSettings.roles[r]}>`).join(' ') : `<@&${partneredSettings.roles[this.afkInfo.pingRole]}>`) + ' @here' : '@here';
                 this.partneredMessageSent = true
                 this.partneredMessage = await partneredChannel.send(`${this.partneredPings},  **${this.afkInfo.runName}** is starting inside of **${this.message.guild.name}** in ${this.channel} at \`\`${this.afkInfo.location}\`\``)
