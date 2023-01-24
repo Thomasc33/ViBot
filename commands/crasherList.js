@@ -54,7 +54,7 @@ module.exports = {
                         added: Date.now()
                     }
                     fs.writeFileSync('./data/crasherList.json', JSON.stringify(bot.crasherList, null, 4), async function (err) {
-                        if (err) ErrorLogger.log(err, bot)
+                        if (err) ErrorLogger.log(err, bot, message.guild)
                         await message.channel.send(`${args[1].toLowerCase()} has been added to the crasher list. Would you like to update the message?`).then(async confirmMessageUpdater => {
                             if (await confirmMessageUpdater.confirmButton(message.author.id)) {
                                 module.exports.update(message, args, bot)

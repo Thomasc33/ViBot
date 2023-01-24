@@ -1,9 +1,7 @@
 const eventFile = require('../data/events.json')
 const afkCheck = require('./afkCheck')
-const botSettings = require('../settings.json')
 const dbInfo = require('../data/database.json')
 const oldStyleAfkGuilds = ['451171819672698920']
-const emojis = require('../data/emojis.json')
 module.exports = {
     name: 'eventafk',
     description: 'Starts a new style afk check for event dungeons',
@@ -41,15 +39,14 @@ module.exports = {
                 color: event.color,
                 thumbnail: event.thumbnail,
                 description: `To join, **click here** {voicechannel}\n` +
-                `${event.keyEmote ? `If you have a key react with <${event.keyEmote}>\n` : ''}` + 
-                `${event.reacts.length > 0 ? `To indicate your class or gear choices, react with ${event.reacts.map(m => `${bot.emojis.cache.get(botSettings.emoteIDs[m])}`).join(' ')}\n` : ''}` +
+                `${event.keyEmote ? `If you have a key react with <${bot.storedEmojis[event.keyEmote].text}>\n` : ''}` + 
+                `${event.reacts.length > 0 ? `To indicate your class or gear choices, react with ${event.reacts.map(m => `${bot.storedEmojis[m]}`).join(' ')}\n` : ''}` +
                 `If you have one of the following roles ${settings.lists.perkRoles.map(role => `<@&${settings.roles[role]}>`).join(', ')} ` +
                 `react with <:nitro:701491230349066261> to get into VC`
             }
         }
 
         if (!event.pingRole) 'eventBoi'
-        event.reacts = event.reacts.map(r => botSettings.emoteIDs[r])
 
         let isVet = message.channel.id == settings.channels.vetcommands;
         if (event.isAdvanced && !settings.backend.allowAdvancedRuns) return message.channel.send(`Advanced runs are not enabled for this server.`);

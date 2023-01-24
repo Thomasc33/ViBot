@@ -118,7 +118,7 @@ module.exports = {
                 }
             })
         } catch (er) {
-            ErrorLogger.log(er, bot)
+            ErrorLogger.log(er, bot, message.guild)
             message.channel.send("Error with command. Please check syntax and try again");
         }
     }

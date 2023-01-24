@@ -8,7 +8,7 @@ module.exports = {
     alias: ['ping'],
     role: 'almostrl',
     async execute(message, args, bot) {
-        const m = await message.channel.send('Pinging...').catch(er => { ErrorLogger.log(er, bot); return; });
+        const m = await message.channel.send('Pinging...').catch(er => { ErrorLogger.log(er, bot, message.guild); return; });
         let latency = m.createdTimestamp - message.createdTimestamp;
         var embed = new Discord.EmbedBuilder()
             .setColor('#ffffff')

@@ -66,7 +66,7 @@ module.exports = {
 				{ name: `${d.higher.length} members with a higher role than \`${guildRole.name}\``, value: d.higher.length > 0 ? higherString : 'None' },
 				{ name: `${d.highest.length} members with \`${guildRole.name}\` as their highest role`, value: d.highest.length > 0 ? highestString : 'None' }
 			);
-		message.channel.send({ embeds: [roleCheckEmbed] }).catch(err => ErrorLogger.log(err, bot));
+		message.channel.send({ embeds: [roleCheckEmbed] }).catch(err => ErrorLogger.log(err, bot, message.guild));
 	}
 }
 

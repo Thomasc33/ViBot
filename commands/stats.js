@@ -1,7 +1,6 @@
 const Discord = require('discord.js')
 const botSettings = require('../settings.json')
 const axios = require('axios')
-const emojiServers = require('../data/emojiServers.json')
 const keyRoles = require('../data/keyRoles.json')
 
 module.exports = {
@@ -41,13 +40,13 @@ module.exports = {
             let errored = false
             let rows = {} // {schema:row}
             bot.guilds.cache.each(g => {
-                if (!emojiServers.includes(g.id)) {
-                    if (bot.dbs[g.id] && g.members.cache.get(id)) {
-                        promises.push(getRow(bot.dbs[g.id], id, rows).catch(er => {
-                            errored = true
-                            rej(er)
-                        }))
-                    }
+                if (bot.emojiServers.includes(g.id)) { return }
+                if (bot.devServers.includes(g.id)) { return }
+                if (bot.dbs[g.id] && g.members.cache.get(id)) {
+                    promises.push(getRow(bot.dbs[g.id], id, rows).catch(er => {
+                        errored = true
+                        rej(er)
+                    }))
                 }
             })
             await Promise.all(promises)
@@ -98,7 +97,7 @@ module.exports = {
             if (settings && popInfo && member) {
                 const keyRows = popInfo.map(ki => ki.types.map(t => t[0]).join(", ")).join(", ");
                 if (bot.dbs['343704644712923138']) bot.dbs['343704644712923138'].query(`SELECT id, ${keyRows} FROM users WHERE id = '${member.id}'`, (err, keyRows) => {
-                    if (err) ErrorLogger.log(err, bot)
+                    if (err) ErrorLogger.log(err, bot, message.guild)
                     if (keyRows && keyRows[0]) checkRow(guild, bot, keyRows[0], member);
                 })
             }

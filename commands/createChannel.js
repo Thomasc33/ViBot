@@ -94,7 +94,7 @@ module.exports = {
                     guildId: message.guild.id,
                 }
                 channelCache.push(cacheData)
-                fs.writeFileSync('./createdChannels.json', JSON.stringify(channelCache, null, 4), err => { if (err) ErrorLogger.log(err, bot) })
+                fs.writeFileSync('./createdChannels.json', JSON.stringify(channelCache, null, 4), err => { if (err) ErrorLogger.log(err, bot, message.guild) })
 
                 let afkInfo = {
                     leader: message.author.id,
@@ -111,7 +111,7 @@ module.exports = {
                     endedAt: Date.now()
                 }
                 bot.afkChecks[channel.id] = afkInfo
-                fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot) })
+                fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot, message.guild) })
                 return;
             case 'rename':
                 function rename() {
@@ -136,7 +136,7 @@ module.exports = {
                     if (!bot.afkChecks[channel.channelId].runType) bot.afkChecks[channel.channelId].runType = {}
                     bot.afkChecks[channel.channelId].runType.runType = name;
                     bot.afkChecks[channel.channelId].runType.runName = name;
-                    fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot) })
+                    fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot, message.guild) })
 
                     //change messages
 
@@ -171,7 +171,7 @@ module.exports = {
                     channel.channel.members.each(m => query = query.concat(`id = '${m.id}' OR `))
                     query = query.substring(0, query.length - 4)
                     db.query(query, err => {
-                        if (err) ErrorLogger.log(err, bot)
+                        if (err) ErrorLogger.log(err, bot, message.guild)
                         message.react('✅')
                     })
                 }
@@ -279,8 +279,8 @@ async function createChannel(name, isVet, message, bot, rsaMessage, isAccursed) 
         await message.member.voice.setChannel(channel).catch(er => { })
 
         //allows raiders to view
-        channel.permissionOverwrites.edit(raider.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot))
-        if (eventBoi && settings.backend.giveEventRoleOnDenial2) channel.permissionOverwrites.edit(eventBoi.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot))
+        channel.permissionOverwrites.edit(raider.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot, message.guild))
+        if (eventBoi && settings.backend.giveEventRoleOnDenial2) channel.permissionOverwrites.edit(eventBoi.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot, message.guild))
 
         // Embed to Remove
         let embed = new Discord.EmbedBuilder()
@@ -365,8 +365,8 @@ function open(message, settings, bot) {
                     else var raider = message.guild.roles.cache.get(settings.roles.vetraider)
                 }
 
-                channel.channel.permissionOverwrites.edit(raider.id, { Connect: true, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot))
-                    .then(eventBoi && settings.backend.giveEventRoleOnDenial2 ? channel.channel.permissionOverwrites.edit(eventBoi.id, { Connect: true, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot)) : null)
+                channel.channel.permissionOverwrites.edit(raider.id, { Connect: true, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot, message.guild))
+                    .then(eventBoi && settings.backend.giveEventRoleOnDenial2 ? channel.channel.permissionOverwrites.edit(eventBoi.id, { Connect: true, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot, message.guild)) : null)
 
                 //edit message in raid status
                 channel.embed.data.fields[0].value = '**Open**'
@@ -375,7 +375,7 @@ function open(message, settings, bot) {
                 if (!bot.afkChecks[channel.channelId]) bot.afkChecks[channel.channelId] = {}
                 bot.afkChecks[channel.channelId].active = true;
                 bot.afkChecks[channel.channelId].started = Date.now();
-                fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot) })
+                fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot, message.guild) })
                 break;
         }
         iteration++;
@@ -395,8 +395,8 @@ function close(message, settings, bot) {
         var raider = message.guild.roles.cache.get(settings.roles.vetraider)
     }
 
-    channel.channel.permissionOverwrites.edit(raider.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot))
-        .then(eventBoi && settings.backend.giveEventRoleOnDenial2 ? channel.channel.permissionOverwrites.edit(eventBoi.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot)) : null)
+    channel.channel.permissionOverwrites.edit(raider.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot, message.guild))
+        .then(eventBoi && settings.backend.giveEventRoleOnDenial2 ? channel.channel.permissionOverwrites.edit(eventBoi.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot, message.guild)) : null)
 
     //edit message in raid status
     channel.embed.data.fields[0].value = '**Closed**'
@@ -404,7 +404,7 @@ function close(message, settings, bot) {
     if (bot.afkChecks[channel.channelId]) {
         bot.afkChecks[channel.channelId].active = false;
         bot.afkChecks[channel.channelId].endedAt = Date.now();
-        fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot) })
+        fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot, message.guild) })
     }
 }
 

@@ -13,6 +13,6 @@ module.exports = {
 
         channel.permissionOverwrites.edit(message.guild.id, { SendMessages: false })
             .then(message.react('✅'))
-            .catch(er => ErrorLogger.log(er, bot))
+            .catch(er => ErrorLogger.log(er, bot, message.guild))
     }
 }

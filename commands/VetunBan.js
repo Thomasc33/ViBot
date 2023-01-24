@@ -19,7 +19,7 @@ module.exports = {
         if (!member) return message.channel.send("User not found, please try again");
         if (!member.roles.cache.has(settings.roles.vetban)) return message.channel.send(`${member} is not vetbanned`)
         db.query(`SELECT * FROM vetbans WHERE id = ${member.id} AND suspended = true`, async (err, rows) => {
-            if (err) ErrorLogger.log(err, bot)
+            if (err) ErrorLogger.log(err, bot, message.guild)
             if (rows.length != 0) {
                 const proofLogID = rows[0].logmessage;
                 member.roles.remove(settings.roles.vetban)
@@ -49,7 +49,7 @@ module.exports = {
                             message.channel.send("User unbanned successfully");
                         }
                     } catch (er) {
-                        ErrorLogger.log(er, bot)
+                        ErrorLogger.log(er, bot, message.guild)
                     }
                 });
             }

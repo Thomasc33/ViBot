@@ -13,7 +13,7 @@ module.exports = {
         let member = message.guild.findMember(args[0])
         if (!member) return message.channel.send('Member not found. Please try again')
         db.query(`SELECT * FROM warns WHERE id = '${member.user.id}' AND guildid = '${message.guild.id}'`, async function (err, rows) {
-            if (err) ErrorLogger.log(err, bot)
+            if (err) ErrorLogger.log(err, bot, message.guild)
             for (let i in rows) { let index = parseInt(i); rows[i].index = index}
             let embed = new Discord.EmbedBuilder()
                 .setColor('#F04747')

@@ -5,7 +5,15 @@ module.exports = {
     role: 'security',
     description: 'Checks expelled list for verified people',
     async execute(message, args, bot, db) {
-        let members = await getList(db)
+        return await message.channel.send('This command has been disabled until further notice.')
+
+        /*
+
+        REASON FOR DISABLING THIS COMMAND, IS BECAUSE IT CURRENTLY MASS REMOVES EVERYONE FROM THE VERIFICATION BLACKLIST. IT SEEMS VERY BROKEN
+
+        */
+
+        /*let members = await getList(db)
         let toRemove = []
         for (const m of members) {
             let member = message.guild.members.cache.get(m.id)
@@ -21,7 +29,7 @@ module.exports = {
         }
         await message.channel.send({ embeds: [embed] })
 
-        if (toRemove.length > 0) db.query(`DELETE FROM veriblacklist WHERE ${toRemove.map(m => `id = '${m}'`).join(' OR ')}`)
+        if (toRemove.length > 0) db.query(`DELETE FROM veriblacklist WHERE ${toRemove.map(m => `id = '${m}'`).join(' OR ')}`)*/
     }
 }
 

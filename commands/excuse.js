@@ -95,7 +95,7 @@ module.exports = {
     },
     async listAll(message, args, bot, db) {
         db.query(`SELECT * FROM excuses where guildid = '${message.guild.id}'`, async (err, rows) => {
-            if (err) ErrorLogger.log(err, bot)
+            if (err) ErrorLogger.log(err, bot, message.guild)
             let embed = new Discord.EmbedBuilder()
                 .setTitle(`Excused Staff`)
                 .setDescription('None!')
@@ -113,7 +113,7 @@ module.exports = {
             return member;
         }).filter(m => m).map(m => m.id);
         db.query(`SELECT * FROM excuses WHERE id IN (${members.map(a => "'" + a + "'").join(', ')}) AND guildid = '${message.guild.id}'`, async (err, rows) => {
-            if (err) ErrorLogger.log(err, bot);
+            if (err) ErrorLogger.log(err, bot, message.guild);
             let embed = new Discord.EmbedBuilder()
                 .setTitle(`Excused Staff`);
             if (!rows || !rows.length)
@@ -166,7 +166,7 @@ module.exports = {
                   as e(id, modid, reason, guildid, image)
                   on duplicate key update modid = e.modid, reason = e.reason, image = e.image`, (err) => {
             if (err) {
-                ErrorLogger.log(err, bot);
+                ErrorLogger.log(err, bot, message.guild);
                 message.channel.send(`Error adding excuse for \`${id}\`: ${err.message}`);
             } else
                 message.react('✅');
@@ -239,7 +239,7 @@ module.exports = {
             await new Promise(res => db.query(`insert into archivedExcuses select *, current_date() as archivedOn from excuses where guildid = '${guild.id}'`, () => res()));
         }
         db.query(`delete from excuses where guildid = '${guild.id}'`, e => {
-            if (e) ErrorLogger.log(e, bot);
+            if (e) ErrorLogger.log(e, bot, guild);
         })
     },
     /**
@@ -255,7 +255,7 @@ module.exports = {
         return new Promise((res, rej) => {
             const unmet = {};
             db.query(`select u.*, e.reason as reason, e.image as image, e.modid as modid from users u left join excuses e on u.id = e.id where e.guildid is null or e.guildid = '${guild.id}'`, (err, rows) => {
-                if (err) ErrorLogger.log(err, bot);
+                if (err) ErrorLogger.log(err, bot, guild);
                 if (!rows || !rows.length) { return res({}); }
                 for (const row of rows) {
                     const member = guild.members.cache.get(row.id);
@@ -409,7 +409,7 @@ module.exports = {
             if (!issues.excuse) unexcused.push(id);
             try {
                 activitylog.send({ embeds: [embed] })
-            } catch (e) { ErrorLogger.log(e); }
+            } catch (e) { ErrorLogger.log(e, bot, guild); }
 
         }
     }

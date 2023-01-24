@@ -23,7 +23,7 @@ module.exports = {
                 .setFooter({ text: member.user.id })
             let partneredServer = bot.fetchPartneredServer(message.guild.id)
             db.query(`SELECT * FROM warns WHERE id = '${member.user.id}'`, async function (err, rows) {
-                if (err) ErrorLogger.log(err, bot)
+                if (err) ErrorLogger.log(err, bot, message.guild)
                 for (let i in rows) { let index = parseInt(i); rows[i].index = index}
                 let warningsServer = []
                 let warningsPartnered = []

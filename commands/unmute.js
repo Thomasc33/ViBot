@@ -21,7 +21,7 @@ module.exports = {
             return;
         }
         db.query(`SELECT * FROM mutes WHERE id = '${member.id}' AND muted = true`, async (err, rows) => {
-            if (err) ErrorLogger.log(err, bot)
+            if (err) ErrorLogger.log(err, bot, message.guild)
             if (!rows || rows.length == 0) {
                 let embed = new Discord.EmbedBuilder()
                     .setTitle('Confirm Action')
@@ -32,7 +32,7 @@ module.exports = {
                 reactionCollector.on('collect', async (r, u) => {
                     confirmMessage.delete()
                     if (r.emoji.name !== '✅') return;
-                    member.roles.remove(muted).catch(er => ErrorLogger.log(er, bot))
+                    member.roles.remove(muted).catch(er => ErrorLogger.log(er, bot, message.guild))
                     message.channel.send(`${member} has been unmuted`)
                 })
                 await confirmMessage.react('✅')
@@ -51,7 +51,7 @@ module.exports = {
                 reactionCollector.on('collect', async (r, u) => {
                     confirmMessage.delete()
                     if (r.emoji.name !== '✅') return;
-                    await member.roles.remove(muted).catch(er => ErrorLogger.log(er, bot))
+                    await member.roles.remove(muted).catch(er => ErrorLogger.log(er, bot, message.guild))
                     message.channel.send(`${member} has been unmuted`)
                     db.query(`UPDATE mutes SET muted = false WHERE id = '${member.id}'`)
                 })

@@ -16,7 +16,7 @@ module.exports = {
         if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
         if (!member) { message.channel.send('User not found'); return; }
         db.query(`SELECT * FROM users WHERE id = '${member.id}'`, (err, rows) => {
-            if (err) ErrorLogger.log(err, bot)
+            if (err) ErrorLogger.log(err, bot, message.guild)
             let points
             if (settings.backend.points) {
                 if (member.roles.cache.hasAny(...settings.lists.perkRoles.map(role => settings.roles[role]))) points = settings.points.vialpop * settings.points.nitromultiplier

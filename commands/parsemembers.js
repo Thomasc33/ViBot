@@ -270,7 +270,7 @@ module.exports = {
                             }
                             return res()
                         }).catch(er => {
-                            ErrorLogger.log(er, bot)
+                            ErrorLogger.log(er, bot, message.guild)
                             unreachable.push(players[i])
                             return res()
                         })
