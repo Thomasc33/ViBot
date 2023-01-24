@@ -579,7 +579,6 @@ class afkCheck {
                     setTimeout(async (afk) => {
                         await afk.channel.permissionOverwrites.edit(afk.verifiedRaiderRole.id, { Connect: true, ViewChannel: true })
                         if (afk.eventBoi) await afk.channel.permissionOverwrites.edit(afk.eventBoi.id, { Connect: true, ViewChannel: true })
-                        afk.mainEmbed.data.description = `To join, **click here** <#${afk.channel.id}>\n` + afk.mainEmbed.data.description;
                         afk.raidStatusMessage = await afk.raidStatusMessage.edit({ embed: afk.mainEmbed });
                         await tempM.edit(`<#${this.channel.id}> is open!`);
                         this.leaderEmbed.data.footer.text = `Channel is open.`
