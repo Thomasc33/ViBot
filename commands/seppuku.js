@@ -14,7 +14,7 @@ module.exports = {
         let userRolesString = '', userRoles = []
         message.member.roles.cache.each(r => {
             if (!r.managed) return
-            if (settings.lists.perkRoles.map(role => settings.roles[role]).includes(r.id)) return
+            if (settings.lists.discordRoles.map(role => settings.roles[role]).includes(r.id)) return
             userRoles.push(r.id)
             userRolesString = userRolesString.concat(`${r.id} `)
         })

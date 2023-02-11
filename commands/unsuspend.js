@@ -52,8 +52,8 @@ module.exports = {
                 const member = guild.members.cache.get(rows[0].id);
                 rolesString.split(' ').forEach(r => { if (r != '') roles.push(r) })
                 try {
-                    for (let i in settings.lists.perkRoles) {
-                        role = settings.roles[settings.lists.perkRoles[i]]
+                    for (let i in settings.lists.discordRoles) {
+                        role = settings.roles[settings.lists.discordRoles[i]]
                         if (member.roles.cache.get(role)) roles.push(role)
                     }
                     await member.edit({

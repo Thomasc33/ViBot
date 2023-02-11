@@ -504,8 +504,15 @@ bot.on('guildMemberUpdate', async (oldMember, newMember) => {
 
     const partneredSettings = bot.settings[partneredServer.id]
     let otherServer = bot.guilds.cache.find(g => g.id == partneredServer.id)
+    let otherServerRaider = otherServer.roles.cache.get(partneredSettings.roles.raider)
+    let otherServerPermaSuspend = otherServer.roles.cache.get(partneredSettings.roles.permasuspended)
+    let otherServerTempSuspend = otherServer.roles.cache.get(partneredSettings.roles.tempsuspended)
     let partneredMember = await otherServer.members.cache.get(newMember.id)
+
     if (!partneredMember) { return }
+    if (!partneredMember.roles.cache.has(otherServerRaider.id)) { return }
+    if (partneredMember.roles.cache.hasAny(...[otherServerPermaSuspend.id, otherServerTempSuspend])) { return }
+
     let partneredModLogs = otherServer.channels.cache.get(partneredSettings.channels.modlogs)
     let as = otherServer.roles.cache.get(partneredSettings.roles.affiliatestaff)
     let vas = otherServer.roles.cache.get(partneredSettings.roles.vetaffiliate)
@@ -542,6 +549,14 @@ bot.on('guildMemberUpdate', async (oldMember, newMember) => {
             embed.setDescription(`Given role ${vas} to ${partneredMember} \`\`${partneredMember.displayName}\`\``)
             embed.setColor(vas.hexColor)
             await partneredModLogs.send({ embeds: [embed] })
+            partneredMember = await otherServer.members.cache.get(partneredMember.id)
+            let partneredMemberOldNickname = partneredMember.displayName
+            if (partneredMember.roles.highest.position == vas.position && isLetter(partneredMember.displayName[0])) {
+                await partneredMember.setNickname(`${partneredServer.prefix}${partneredMember.displayName}`, 'Automatic Nickname Change: User just got Veteran Affiliate Staff as their highest role')
+                embed.setDescription(`Automatic Prefix Change for ${partneredMember}\nOld Nickname: \`${partneredMemberOldNickname}\`\nNew Nickname: \`${partneredMember.displayName}\`\nPrefix: \`${partneredServer.prefix}\``)
+                embed.setColor(partneredMember.roles.highest.hexColor)
+                await partneredModLogs.send({ embeds: [embed] })
+            }
         }, 1000)
         
     } else if (!vasEligable && hasVetAffiliate) {
@@ -551,6 +566,11 @@ bot.on('guildMemberUpdate', async (oldMember, newMember) => {
             embed.setColor(vas.hexColor)
             await partneredModLogs.send({ embeds: [embed] })
         }, 1000)
+    }
+
+    // I don't think there is a built in javascript method to check if a character is a letter or special character. true if letter; else false
+    function isLetter(c) {
+        return c.toLowerCase() != c.toUpperCase();
     }
 
     function hasRoleInList(user, settings, roles) {

@@ -188,6 +188,7 @@ function getFields(row, schema) {
                 `<:SteamworksBoss:1050156577920917574> ${row.steamworkLead}\n` +
                 `<:epicMysteryKey:831051424187940874> ${parseInt(row.eventsLead) * 10} Minutes\n` +
                 `<:feedback:858920770806087710> ${row.feedback + row.exaltFeedback}\n` +
+                `<:shattersFeedback:1071433377879707728> ${row.shattersFeedback}\n` +
                 `🤝 ${row.assists} Assists\n` +
                 `🔎 ${row.parses} Parses\n`,
             inline: true

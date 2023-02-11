@@ -37,7 +37,17 @@ module.exports = {
         for (const quota of quotaList) {
             switch (cmd) {
                 case 'reset':
-                    this.newWeek(message.guild, bot, db, settings, guildQuotas, quota);
+                    let embed = new Discord.EmbedBuilder()
+                        .setTitle('Confirm Action')
+                        .setDescription(`This will reset this weeks quota/points for **${quota.name}**\n\n**VIBOT DOES NOT KEEP TRACK OF RESET POINTS, YOU WILL NEED TO MANUALLY ADD THESE POINTS BACK IF THIS WAS A MISTAKE**`)
+                        .setColor('#FF0000')
+                    await message.channel.send({ embeds: [embed] }).then(async confirmMessage => {
+                        if (await confirmMessage.confirmButton(message.member.id)) {
+                            this.newWeek(message.guild, bot, db, settings, guildQuotas, quota);
+                            await message.channel.send(`Successfully reset ${quota.name}`)
+                            await confirmMessage.delete()
+                        } else { await confirmMessage.delete() }
+                    })
                     break;
                 case 'update':
                     await this.update(message.guild, db, bot, settings, guildQuotas, quota);

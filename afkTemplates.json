@@ -536,7 +536,7 @@
                     "limit": 3,
                     "shortName": "Rusher",
                     "noConfirm": false,
-                    "noLocation": true
+                    "noLocation": false
                 },
                 {
                     "emote": "UTMarbleSeal",
@@ -632,7 +632,7 @@
                     "limit": 3,
                     "shortName": "Rusher",
                     "noConfirm": false,
-                    "noLocation": true
+                    "noLocation": false
                 },
                 {
                     "emote": "UTMarbleSeal",

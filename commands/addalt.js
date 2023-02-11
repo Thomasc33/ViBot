@@ -43,7 +43,7 @@ module.exports = {
                 return;
                 
             const expelEmbed = new Discord.EmbedBuilder()
-                .setTitle('Automatic Expel Removal')
+                .setTitle('Expel Removal')
                 .setDescription(`The following expels will be removed from the database tied to ${altName}. Are you sure you want to do this?`)
                 .setColor('#E0B0FF');
 

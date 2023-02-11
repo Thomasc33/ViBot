@@ -26,6 +26,7 @@
                     "currentweekSteamwork",
                     "currentweekAssists",
                     "currentweekFeedback",
+                    "currentweekshattersFeedback",
                     "rollingQuota"
                 ],
                 "logVet": true,
@@ -56,6 +57,7 @@
                     "currentweekSteamwork",
                     "currentweekAssists",
                     "currentweekFeedback",
+                    "currentweekshattersFeedback",
                     "rollingQuota"
                 ],
                 "logVet": true
@@ -86,6 +88,7 @@
                     "currentweekSteamwork",
                     "currentweekAssists",
                     "currentweekFeedback",
+                    "currentweekshattersFeedback",
                     "rollingQuota"
                 ],
                 "logVet": true
@@ -116,6 +119,38 @@
                     "currentweekSteamwork",
                     "currentweekAssists",
                     "currentweekFeedback",
+                    "currentweekshattersFeedback",
+                    "rollingQuota"
+                ],
+                "logVet": true
+            },
+            {
+                "key": "sf",
+                "name": "shatters feedback",
+                "alias": [
+                    "sfeedback",
+                    "sfb"
+                ],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": true,
+                "confirmSuffix": "shatters feedbacks",
+                "main": "shatters feedback",
+                "currentweek": "currentweekshattersFeedback",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/858920770806087710.png?v=1",
+                "desc": "`Shatters Feedback`",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweekCult",
+                    "currentweekVoid",
+                    "currentweekShatters",
+                    "currentweekFungals",
+                    "currentweekNests",
+                    "currentweekSteamwork",
+                    "currentweekAssists",
+                    "currentweekFeedback",
+                    "currentweekshattersFeedback",
                     "rollingQuota"
                 ],
                 "logVet": true
@@ -145,6 +180,7 @@
                     "currentweekSteamwork",
                     "currentweekAssists",
                     "currentweekFeedback",
+                    "currentweekshattersFeedback",
                     "rollingQuota"
                 ],
                 "logVet": true
@@ -177,6 +213,7 @@
                     "currentweekSteamwork",
                     "currentweekAssists",
                     "currentweekFeedback",
+                    "currentweekshattersFeedback",
                     "rollingQuota"
                 ],
                 "logVet": true
@@ -270,6 +307,7 @@
                     "currentweekSteamwork",
                     "currentweekAssists",
                     "currentweekFeedback",
+                    "currentweekshattersFeedback",
                     "rollingQuota"
                 ],
                 "logVet": true,
@@ -300,6 +338,7 @@
                     "currentweekSteamwork",
                     "currentweekAssists",
                     "currentweekFeedback",
+                    "currentweekshattersFeedback",
                     "rollingQuota"
                 ],
                 "logVet": true
@@ -330,6 +369,7 @@
                     "currentweekSteamwork",
                     "currentweekAssists",
                     "currentweekFeedback",
+                    "currentweekshattersFeedback",
                     "rollingQuota"
                 ],
                 "logVet": true
@@ -360,6 +400,38 @@
                     "currentweekSteamwork",
                     "currentweekAssists",
                     "currentweekFeedback",
+                    "currentweekshattersFeedback",
+                    "rollingQuota"
+                ],
+                "logVet": true
+            },
+            {
+                "key": "sf",
+                "name": "shatters feedback",
+                "alias": [
+                    "sfeedback",
+                    "sfb"
+                ],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": true,
+                "confirmSuffix": "shatters feedbacks",
+                "main": "shattersFeedback",
+                "currentweek": "currentweekshattersFeedback",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/1071433377879707728.png?v=1",
+                "desc": "`Shatters Feedback`",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweekCult",
+                    "currentweekVoid",
+                    "currentweekShatters",
+                    "currentweekFungals",
+                    "currentweekNests",
+                    "currentweekSteamwork",
+                    "currentweekAssists",
+                    "currentweekFeedback",
+                    "currentweekshattersFeedback",
                     "rollingQuota"
                 ],
                 "logVet": true
@@ -389,6 +461,7 @@
                     "currentweekSteamwork",
                     "currentweekAssists",
                     "currentweekFeedback",
+                    "currentweekshattersFeedback",
                     "rollingQuota"
                 ],
                 "logVet": true
@@ -421,6 +494,7 @@
                     "currentweekSteamwork",
                     "currentweekAssists",
                     "currentweekFeedback",
+                    "currentweekshattersFeedback",
                     "rollingQuota"
                 ],
                 "logVet": true
@@ -457,8 +531,7 @@
                     "steamworks",
                     "steamwork",
                     "steam",
-                    "work",
-                    "sw"
+                    "work"
                 ],
                 "multiply": null,
                 "allowAssists": true,

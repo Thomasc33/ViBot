@@ -14,27 +14,19 @@ module.exports = {
 	 * @param {Discord.Client} bot
 	 */
 	async execute(message, args, bot) {
-		let choice = args.join(' ').toLowerCase();
-
+		let roles = args.join(' ').toLowerCase().split('|');
+		for (let i in roles) { roles[i] = roles[i].trim(); }
+		if (roles.length == 1) { module.exports.normalList(message, args, bot, roles[0]) }
+		else module.exports.combinedList(message, args, bot, roles)
+	},
+	async normalList(message, args, bot, role) {
 		// Search for role in guild
-		const guildRoles = message.guild.roles.cache.sort((a, b) => b.position - a.position).map(r => r);
-		let guildRole = null;
-		for (const role of guildRoles) {
-			if (role.id == args[0]) guildRole = role;
-			else if (role.name.toLowerCase() == choice) guildRole = role;
-			else if (role.name.toLowerCase().replace(/ /g, '') == choice.replace(/ /g, '')) guildRole = role;
-			else if (role.name.toLowerCase().split(' ').map(([v]) => v).join('') == choice) guildRole = role;
-			else if (role.name.toLowerCase().substring(0, choice.length) == choice) guildRole = role;
-			else if (role == message.mentions.roles.first()) guildRole = role;
-			if (guildRole) break;
-		}
-		if (!guildRole) return message.channel.send('No role was found with that name/ID.');
+		let guildRole = message.guild.findRole(role)
+		if (!guildRole) return message.channel.send(`No role found for: \`${role}\``)
 
 		const memberList = message.guild.roles.cache.get(guildRole.id).members.map(member => member);
-		const rolePosition = guildRole.position;
 
-		const d = { highest: [], higher: [] }
-		for (const member of memberList) if (member.roles.highest.position == rolePosition) d.highest.push(member); else d.higher.push(member);
+		const d = { highest: message.guild.findUsersWithRoleAsHighest(guildRole.id), higher: message.guild.findUsersWithRoleNotAsHighest(guildRole.id) }
 
 		// List of users where given role is highest position
 		let highestString = '';
@@ -67,12 +59,32 @@ module.exports = {
 				{ name: `${d.highest.length} members with \`${guildRole.name}\` as their highest role`, value: d.highest.length > 0 ? highestString : 'None' }
 			);
 		message.channel.send({ embeds: [roleCheckEmbed] }).catch(err => ErrorLogger.log(err, bot, message.guild));
+	},
+	async combinedList(message, args, bot, roles) {
+		roles = roles.map(role => message.guild.findRole(role))
+        var roleObjects = {}
+        for (let i in roles) {
+            roleObjects[roles[i]] = message.guild.findUsersWithRole(roles[i].id).map(member => member.id)
+        }
+        var memberList = Object.values(roleObjects).reduce((acc, array) => {
+            return acc.filter(id => array.includes(id));
+          });
+		let memberString = '';
+		for (const member of memberList) {
+			if (memberString.length < 950) memberString += `<@!${member}> `;
+			else {
+				memberString += 'and ' + (memberList.length - memberList.indexOf(member)) + ' others...';
+				break;
+			}
+		}
+        let embed = new Discord.EmbedBuilder()
+            .setTitle('Combined List')
+            .setDescription(`**Roles: ${roles.map(role => role).join(' | ')}**`)
+            .setColor(roles[0].hexColor)
+        embed.addFields({
+            name: 'These users have all of the roles combined',
+            value: memberString
+        })
+        await message.channel.send({ embeds: [embed] })
 	}
 }
-
-const getHighestRole = (guildMember) => {
-	const rolePosition = guildMember.roles.cache.reduce(function (acc, role) {
-		return Math.max(acc, role.position);
-	}, 0);
-	return guildMember.roles.cache.find(role => role.position == rolePosition);
-};
