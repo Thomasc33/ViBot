@@ -165,6 +165,7 @@ bot.on('messageCreate', message => {
         }
         try {
             command.execute(message, args, bot, bot.dbs[message.guild.id], tokenDB)
+            bot.dbs[message.guild.id].query(`INSERT INTO commandusage (command, userid, guildid, utime) VALUES ('${command.name}', '${message.member.id}', '${message.guild.id}', '${Date.now()}')`);
             CommandLogger.log(message, bot)
         } catch (er) {
             ErrorLogger.log(er, bot, message.guild)

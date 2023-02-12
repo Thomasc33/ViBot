@@ -35,13 +35,13 @@ const quotapoints = ['voidLeading', 'cultLeading', 'shattersLeading', 'oryx3Lead
 'eventLeading', 'failedRun', 'feedback', 'feedbackOnFeedback', 'assist', 'parsing', 'rolledquota', 'rlWeeklyQuota', 'arlWeeklyQuota', 'securityWeeklyQuota', 'wardenWeeklyQuota',
 'eventrlWeeklyQuota', 'arlVote']
 const modmail = ['sendMessage', 'forwardMessage', 'closeModmail', 'blacklistUser', 'lockModmail']
-const supporter = ['supporterCooldown1', 'supporterCooldown2', 'supporterCooldown3', 'supporterCooldown4', 'supporterCooldown5', 'supporterCooldown6',
+const supporter = ['supporterCooldownSeconds1', 'supporterCooldownSeconds2', 'supporterCooldownSeconds3', 'supporterCooldownSeconds4', 'supporterCooldownSeconds5', 'supporterCooldownSeconds6',
     'supporterUses1', 'supporterUses2', 'supporterUses3', 'supporterUses4', 'supporterUses5', 'supporterUses6']
 var commands = []
 var commandsRolePermissions = []
 
 const menus = ['roles', 'channels', 'voice', 'voiceprefixes', 'backend', 'numerical', 'runreqs', 'autoveri',
-'vetverireqs', 'points', 'commands', 'categories', 'lists', 'strings', 'quotapoints', 'modmail', 'commandsRolePermissions']
+'vetverireqs', 'points', 'commands', 'categories', 'lists', 'strings', 'quotapoints', 'modmail', 'commandsRolePermissions', 'supporter']
 
 module.exports = {
     name: 'setup',
@@ -92,6 +92,7 @@ module.exports = {
                         case '15': menu(quotapoints, 'quotapoints', 'float'); break;
                         case '16': menu(modmail, 'modmail', 'boolean'); break;
                         case '17': menu(commandsRolePermissions, 'commandsRolePermissions', 'string'); break;
+                        case '18': menu(supporter, 'supporter', 'int'); break;
                     }
                 }
                 /**
@@ -390,6 +391,11 @@ module.exports = {
         for (let i in modmail) {
             if (!bot.settings[guild.id].modmail[modmail[i]]) {
                 bot.settings[guild.id].modmail[modmail[i]] = true
+            }
+        }
+        for (let i in supporter) {
+            if (!bot.settings[guild.id].supporter[supporter[i]]) {
+                bot.settings[guild.id].supporter[supporter[i]] = 0
             }
         }
         fs.writeFileSync('./guildSettings.json', JSON.stringify(bot.settings, null, 4), err => message.channel.send(err.toString()))
