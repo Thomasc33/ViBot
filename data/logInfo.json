@@ -135,7 +135,7 @@
                 "allowAssists": false,
                 "confirm": true,
                 "confirmSuffix": "shatters feedbacks",
-                "main": "shatters feedback",
+                "main": "shattersFeedback",
                 "currentweek": "currentweekshattersFeedback",
                 "color": "#8c00ff",
                 "icon": "https://cdn.discordapp.com/emojis/858920770806087710.png?v=1",
