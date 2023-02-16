@@ -33,7 +33,7 @@ module.exports = {
             confirmMessage.delete();
             let type = getLeaderboardType(choice, guild.id)
             if (!type) return
-            db.query(`SELECT * FROM users ORDER BY ${type.dbNames.map(n => n).join(' + ')} DESC LIMIT 25`, (err, rows) => {
+            db.query(`SELECT * FROM users ORDER BY ${type.dbNames.map(n => `cast(${n} as unsigned)`).join(' + ')} DESC LIMIT 25`, (err, rows) => {
                 if (err) ErrorLogger.log(err, bot, message.guild)
                 embed.data.author.name = `Top 25 ${type.name}`
                 embed.data.description = 'None!'
