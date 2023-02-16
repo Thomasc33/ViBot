@@ -771,6 +771,32 @@
                 "toUpdate": "raiding",
                 "toDisplay": [
                     "currentweek",
+                    "currentweekhardmodeLead",
+                    "currentweekfailed",
+                    "currentweekVeteranShattersLead",
+                    "currentweekassists"
+                ]
+            },
+            {
+                "key": "h",
+                "name": "hard mode",
+                "alias": [
+                    "hard",
+                    "hardmode",
+                    "mode"
+                ],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": true,
+                "main": "hardmodeLead",
+                "currentweek": "currentweekhardmodeLead",
+                "color": "#308a00",
+                "icon": "https://cdn.discordapp.com/emojis/849406533435523093.png?v=1",
+                "desc": "`Hardmode` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweek",
+                    "currentweekhardmodeLead",
                     "currentweekfailed",
                     "currentweekVeteranShattersLead",
                     "currentweekassists"
@@ -794,6 +820,7 @@
                 "toUpdate": "raiding",
                 "toDisplay": [
                     "currentweek",
+                    "currentweekhardmodeLead",
                     "currentweekfailed",
                     "currentweekVeteranShattersLead",
                     "currentweekassists"
@@ -839,6 +866,7 @@
                 "toUpdate": "raiding",
                 "toDisplay": [
                     "currentweek",
+                    "currentweekhardmodeLead",
                     "currentweekfailed",
                     "currentweekVeteranShattersLead",
                     "currentweekassists"

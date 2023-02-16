@@ -210,11 +210,25 @@
         ]
     },
     "451171819672698920": {
-        "logtypes": ["shatterspops", "eventpops", "eventpops", "successruns", "failruns", "assists", "eventslead", "veteranShattersLead"],
+        "logtypes": [
+            "shatterspops",
+            "eventpops",
+            "eventpops",
+            "successruns",
+            "failruns",
+            "assists",
+            "eventslead",
+            "veteranShattersLead",
+            "hardmodeLead"
+        ],
         "currentweeks": [
             {
                 "case": "successruns",
                 "currentWeekName": "currentweek"
+            },
+            {
+                "case": "hardmodeLead",
+                "currentWeekName": "currentweekhardmodeLead"
             },
             {
                 "case": "failruns",

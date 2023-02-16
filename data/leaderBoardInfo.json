@@ -144,6 +144,18 @@
         },
         {
             "dbNames": [
+                "veteranShattersLead"
+            ],
+            "name": "Veteran Shatters Lead"
+        },
+        {
+            "dbNames": [
+                "hardmodeLead"
+            ],
+            "name": "Hardmodes Lead"
+        },
+        {
+            "dbNames": [
                 "points"
             ],
             "name": "Points"
