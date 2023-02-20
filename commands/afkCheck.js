@@ -278,14 +278,13 @@ class afkCheck {
         this.keys = []
         this.earlyReacts = {}
         this.moddedKeys = false
-        this.nitro = []
         this.vials = []
         this.earlyLocation = []
         this.openInteractions = []
         this.raiders = []
         this.pointsUsers = []
-        this.supporters = []
-        this.nitroReacts = []
+        this.supporter = []
+        this.supporterReacts = []
         this.endedBy
         this.time = this.afkInfo.timeLimit
         this.postTime = 20;
@@ -334,7 +333,7 @@ class afkCheck {
         if (this.perkRoles.length >= 1) {
             this.afkInfo.embed.description += `If you have any of the following roles ${this.perkRoles.map(
                 role => role
-            ).join(', ')} react with ${this.bot.storedEmojis.NitroBooster.text}\n`
+            ).join(', ')} react with ${this.bot.storedEmojis['NitroBooster'].text}\n`
         }
         fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot, this.guild) })
         this.sendMessage()
@@ -404,7 +403,7 @@ class afkCheck {
         this.afkInfo.earlyLocationReacts.forEach(r => this.leaderEmbed.addFields({ name: `${this.bot.storedEmojis[r.emote].text} ${r.shortName}`, value: 'None!', inline: true }))
         this.leaderEmbed.addFields([
             { name: '🗺️ Early Location', value: 'None!', inline: true },
-            { name: '<:NitroBooster:1050492863257002035> Nitro', value: 'None!', inline: true },
+            { name: `${this.bot.storedEmojis.NitroBooster.text} Supporters`, value: 'None!', inline: true },
         ])
 
         let lar;
@@ -508,8 +507,7 @@ class afkCheck {
             this.confirmSelection(interaction, 0, 'key', this.afkInfo.keyCount)
         }
         else if (this.afkInfo.vialReact && interaction.customId == this.afkInfo.vialEmote) this.confirmSelection(interaction, 1, 'vial', 3)
-        else if (interaction.customId === 'nitro') return this.useNitro(interaction, this.leaderEmbed.data.fields.length - 1)
-        else if (interaction.customId === 'supporter') return this.supporterUse(interaction, this.leaderEmbed.data.fields.length - 2)
+        else if (interaction.customId === 'supporter') return this.useSupporter(interaction, this.leaderEmbed.data.fields.length - 1)
         else if (interaction.customId === 'points') return this.pointsUse(interaction, this.leaderEmbed.data.fields.length - 2)
         else if (interaction.customId === 'start') {
             if (this.guild.members.cache.get(interaction.user.id).roles.highest.position >= this.staffRole.position) {
@@ -626,8 +624,7 @@ class afkCheck {
         if (!this.afkInfo.twoPhase) for (let i of this.afkInfo.reacts) reacts.push(i)
         //split row
         if (curRow.length > 0) { actionRows.push(curRow); curRow = [] }
-        addButton({ emoji: '701491230349066261', style: Discord.ButtonStyle.Secondary, label: 'Nitro', customId: 'nitro' })
-        if (this.settings.backend.supporter) addButton({ emoji: '752368122551337061', label: 'ViBot Supporter', style: Discord.ButtonStyle.Success, customId: 'supporter' })
+        if (this.settings.backend.supporter) addButton({ emoji: this.bot.storedEmojis['NitroBooster'].id, label: 'Supporter', style: Discord.ButtonStyle.Success, customId: 'supporter' })
         if (this.settings.backend.points) addButton({ label: '🎟️ Use Tickets', style: Discord.ButtonStyle.Secondary, customId: 'points' })
         //split row
         if (curRow.length > 0) { actionRows.push(curRow); curRow = [] }
@@ -843,18 +840,18 @@ class afkCheck {
      * @param {Discord.MessageComponentInteraction} interaction
      * @param {Number} index
      */
-    async useNitro(interaction, index) {
+    async useSupporter(interaction, index) {
         let embed = new Discord.EmbedBuilder({ description: 'placeholder' }).setColor(this.afkInfo.embed.color)
         let reactor = interaction.member
         if (this.earlyLocation.includes(interaction.user)) {
             embed.setDescription(`The location for this run has been set to \`${this.afkInfo.location}\``)
-            interaction.reply({ embeds: [embed], ephemeral: true })
+            await interaction.reply({ embeds: [embed], ephemeral: true })
             this.removeFromActiveInteractions(interaction.user.id)
-            return;
+            return
         }
         if (reactor.roles.highest.position >= this.trialRaidLeader.position) {
             embed.setDescription(`The location for this run has been set to \`${this.afkInfo.location}\``)
-            interaction.reply({ embeds: [embed], ephemeral: true })
+            await interaction.reply({ embeds: [embed], ephemeral: true })
             this.earlyLocation.push(interaction.user);
             this.removeFromActiveInteractions(interaction.user.id)
             return;
@@ -862,66 +859,84 @@ class afkCheck {
         for (let i of this.settings.lists.earlyLocation) { //custom early location roles
             if (reactor.roles.cache.has(i)) {
                 embed.setDescription(`The location for this run has been set to \`${this.afkInfo.location}\``)
-                interaction.reply({ embeds: [embed], ephemeral: true })
+                await interaction.reply({ embeds: [embed], ephemeral: true })
                 this.earlyLocation.push(interaction.user);
                 this.removeFromActiveInteractions(interaction.user.id)
                 return
             }
         }
-        if (this.nitro.length + 1 > this.settings.numerical.nitrocount) {
+        if (this.supporter.length + 1 > this.settings.numerical.supporterlimit) {
             interaction.message.editButton(interaction.component.customId, null, true)
-            embed.setDescription('Too many Nitro Boosters have already received location for this run. Try again in the next run!');
-            interaction.reply({ embeds: [embed], ephemeral: true })
+            embed.setDescription('Too many Supporters have already received location for this run. Try again in the next run!');
+            await interaction.reply({ embeds: [embed], ephemeral: true })
+            this.removeFromActiveInteractions(interaction.user.id)
+            return
+        }
+        if (!interaction.member.roles.cache.hasAny(...this.perkRoles.map(role => role.id))) {
+            embed.setDescription(`You are not eligible for this reaction`)
+            await interaction.reply({ embeds: [embed], ephemeral: true })
+            this.removeFromActiveInteractions(interaction.user.id)
+            return
+        }
+        if (reactor.voice.channel && reactor.voice.channel.id == this.channel.id) {
+            embed.setDescription(`Supporter benefits in \`${this.message.guild.name}\` only gives guaranteed spot in VC. You are already in the VC so this use hasn\'t been counted`);
+            await interaction.reply({ embeds: [embed], ephemeral: true })
             this.removeFromActiveInteractions(interaction.user.id)
             return
         }
 
-        if (await interaction.member.roles.cache.hasAny(...this.perkRoles.map(role => role.id))) {
-            if (reactor.voice.channel && reactor.voice.channel.id == this.channel.id) {
-                embed.setDescription(`Nitro benefits in \`${this.message.guild.name}\` only gives guaranteed spot in VC. You are already in the VC so this use hasn\'t been counted`);
-                interaction.reply({ embeds: [embed], ephemeral: true })
-                this.removeFromActiveInteractions(interaction.user.id)
-            } else {
-                await this.db.query(`SELECT * FROM users WHERE id = '${interaction.user.id}'`, async (err, rows) => {
-                    if (err) ErrorLogger.log(err, bot, this.guild)
-                    this.removeFromActiveInteractions(interaction.user.id)
-                    if (rows.length == 0) return await this.db.query(`INSERT INTO users (id) VALUES('${interaction.user.id}')`)
-                    if (Date.now() - this.settings.numerical.nitrocooldown > parseInt(rows[0].lastnitrouse)) {
-                        if (this.settings.backend.nitroearlylocation) {
-                            embed.setDescription(`The location for this run has been set to \`${this.afkInfo.location}\``)
-                            interaction.reply({ embeds: [embed], ephemeral: true })
-                            this.earlyLocation.push(interaction.user);
-                        }
-                        let moved = true
-                        await reactor.voice.setChannel(this.channel.id).catch(er => { moved = false })
-                        if (!this.settings.backend.nitroearlylocation) {
-                            if (moved) embed.setDescription('You have been moved into the voice channel. If you get disconnected while the afk check is up, join lounge and you will get moved in automatically.')
-                            else embed.setDescription('Join the lounge to be moved in to the raiding channel')
-                            interaction.reply({ embeds: [embed], ephemeral: true })
-                        }
-                        this.nitro.push(interaction.user)
-                        this.nitroReacts.push(interaction.user.id)
-                        this.leaderEmbed.data.fields[index].value = '<@!' + this.nitroReacts.join('>,\n<@!') + '>'
-                        this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot, this.guild));
-                        this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot, this.guild));
-                        emitter.on('Ended', (channelID, aborted) => {
-                            if (channelID == this.channel.id) {
-                                if (!aborted) this.db.query(`UPDATE users SET lastnitrouse = '${Date.now()}' WHERE id = ${interaction.user.id}`);
-                                else interaction.user.send(`The afk check was aborted, you have been refunded your nitro perk use.`);
-                            }
-                        })
-                    } else {
-                        let lastUse = Math.round((Date.now() - rows[0].lastnitrouse) / 60000)
-                        embed.setDescription(`Nitro perks are limited to once an hour. Your last use was \`${lastUse}\` minutes ago`)
-                        interaction.reply({ embeds: [embed], ephemeral: true })
-                        this.removeFromActiveInteractions(interaction.user.id)
-                    }
-                })
-            }
-        } else {
+        let supporterRole = this.message.member.supporterHierarchy(this.settings)
+        if (!supporterRole) {
             embed.setDescription(`You are not eligible for this reaction`)
             await interaction.reply({ embeds: [embed], ephemeral: true })
+            this.removeFromActiveInteractions(interaction.user.id)
+            return
         }
+        if (this.supporter.length + 1 > this.settings.supporter[`supporterLimit${supporterRole}`]) {
+            embed.setDescription(`Too many Supporters have already received location for this run. Try again in the next run!`)
+            await interaction.reply({ embeds: [embed], ephemeral: true })
+            this.removeFromActiveInteractions(interaction.user.id)
+            return
+        }
+        let cooldown = this.settings.supporter[`supporterCooldownSeconds${supporterRole}`]
+        let uses = this.settings.supporter[`supporterUses${supporterRole}`]
+        let lastUseCheck = Date.now() - (cooldown * 1000)
+        this.db.query(`SELECT * FROM supporterusage WHERE guildid = '${interaction.guild.id}' AND userid = '${interaction.member.id}' AND utime > '${lastUseCheck}'`,
+            async (err, rows) => {
+            if (err) {
+                ErrorLogger.log(err, this.bot, this.guild)
+                this.removeFromActiveInteractions(interaction.user.id)
+                return
+            }
+            if (rows.length >= uses) {
+                let cooldown_text = ''
+                if (cooldown < 3600) cooldown_text = `${(cooldown/60).toFixed(0)} minutes`
+                else cooldown_text = `${(cooldown/3600).toFixed(0)} hours`
+                embed.setDescription(
+                    `Your perks are limited to ${uses} times every ${cooldown_text}. Your next use is available <t:${(((cooldown*1000)+parseInt(rows[0].utime))/1000).toFixed(0)}:R>`
+                )
+                await interaction.reply({ embeds: [embed], ephemeral: true })
+                this.removeFromActiveInteractions(interaction.user.id)
+                return
+            }
+
+            embed.setDescription(`The location for this run has been set to \`${this.afkInfo.location}\``)
+            await interaction.reply({ embeds: [embed], ephemeral: true })
+            this.earlyLocation.push(interaction.user);
+            let moved = true
+            await reactor.voice.setChannel(this.channel.id).catch(er => { moved = false })
+            this.supporter.push(interaction.user)
+            this.supporterReacts.push(interaction.user.id)
+            this.leaderEmbed.data.fields[index].value = '<@!' + this.supporterReacts.join('>,\n<@!') + '>'
+            this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot, this.guild));
+            this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot, this.guild));
+            emitter.on('Ended', (channelID, aborted) => {
+                if (channelID == this.channel.id) {
+                    if (!aborted) this.db.query(`INSERT INTO supporterusage (guildid, userid, utime) VALUES ('${interaction.guild.id}', '${interaction.member.id}', '${Date.now()}')`);
+                    else interaction.user.send(`The afk check was aborted, you have been refunded your supporter perk use.`);
+                }
+            })
+        })
     }
 
     /**
@@ -1014,67 +1029,6 @@ class afkCheck {
         })
     }
 
-    /**
-     *
-     * @param {Discord.MessageComponentInteraction} interaction
-     * @param {Number} index
-     */
-    async supporterUse(interaction, index) {
-        let embed = new Discord.EmbedBuilder({ color: this.afkInfo.embed.color, description: 'placeholder', footer: { text: 'Thank you for supporting ViBot ❤️' } })
-        let reactor = this.message.guild.members.cache.get(interaction.user.id);
-        if (this.earlyLocation.includes(interaction.user)) {
-            embed.setDescription(`The location for this run has been set to \`${this.afkInfo.location}\``)
-            interaction.reply({ embeds: [embed], ephemeral: true })
-            this.removeFromActiveInteractions(interaction.user.id)
-            return
-        }
-        let tier = await patreonHelper.getTier(interaction.user, this.bot, this.tokenDB)
-        if (this.supporters.length >= this.bot.settings[this.message.guild.id].numerical.supporterlimit) {
-            interaction.message.editButton(interaction.component.customId, null, true)
-            if ([0, 1, 2].includes(tier)) {
-                embed.setDescription('Unfortunately, all spots for early location have been taken.')
-                interaction.reply({ embeds: [embed], ephemeral: true })
-                this.removeFromActiveInteractions(interaction.user.id)
-                return
-            }
-            else if (tiers == -1) return
-        }
-        switch (tier) {
-            case -1:
-                return;
-            case 0:
-                return giveLocation(this, null);
-            case 1:
-                return giveLocation(this, 2);
-            case 2:
-                return giveLocation(this, 4);
-            case 3:
-                this.simp = u
-                return giveLocation(this, null);
-            default:
-                return;
-        }
-        function giveLocation(afkcheck, cooldown) {
-            this.removeFromActiveInteractions(interaction.user.id)
-            let moved = true
-            reactor.voice.setChannel(afkcheck.channel.id).catch(er => { moved = false })
-            embed.setDescription(`The location for this run has been set to \`${afkcheck.afkInfo.location}\`\n\n${moved ? 'You have been moved into the raiding channel. If you get moved out during the AFK check, join lounge and you will be moved back in automatically' : 'To be moved into the raiding channel join lounge. You will be moved automatically (allow a few seconds)'}`)
-            interaction.reply({ embeds: [embed], ephemeral: true })
-            afkcheck.earlyLocation.push(interaction.user);
-            afkcheck.supporters.push(interaction.user)
-            if (afkcheck.leaderEmbed.data.fields[index].value == `None!`) afkcheck.leaderEmbed.data.fields[index].value = `<@!${interaction.user.id}> `;
-            else afkcheck.leaderEmbed.data.fields[index].value += `,\n<@!${interaction.user.id}>`
-            afkcheck.leaderEmbedMessage.edit({ embeds: [afkcheck.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot, this.guild));
-            afkcheck.runInfoMessage.edit({ embeds: [afkcheck.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot, this.guild));
-            if (cooldown) {
-                afkcheck.tokenDB.query(`SELECT * FROM patreon WHERE id = '${interaction.user.id}'`, (err, rows) => {
-                    if (rows.length == 0) afkcheck.tokenDB.query(`INSERT INTO patreon (id, lastuse) VALUES ('${interaction.user.id}', '${Date.now() + (3600000 * cooldown)}')`, (err, rows) => { })
-                    else afkcheck.tokenDB.query(`UPDATE patreon SET lastuse = '${Date.now() + (3600000 * cooldown)}' WHERE id = '${interaction.user.id}'`, (err, rows) => { })
-                })
-            }
-        }
-    }
-
     async timerInterval() {
         this.time = this.time - 5;
         if (this.time == 0) {
@@ -1105,7 +1059,7 @@ class afkCheck {
                 await member.voice.setChannel(this.channel.id).catch(er => { });
             }
         }
-        for (let u of this.nitro) {
+        for (let u of this.supporter) {
             let member = this.message.guild.members.cache.get(u.id);
             if (!member.voice.channel) continue;
             if (member.voice.channel.name == 'lounge' || member.voice.channel.name == 'Veteran Lounge' || member.voice.channel.name.includes('drag')) {
@@ -1251,7 +1205,7 @@ class afkCheck {
                 { name: 'Key', value: 'None!' },
                 { name: 'Early Location', value: 'None!' },
                 { name: 'Raiders', value: 'None!' },
-                { name: 'Nitro User', value: 'None!' },
+                { name: 'Supporter Use', value: 'None!' },
                 { name: `Points Users ${this.afkInfo.earlyLocationCost}`, value: 'None!' },
                 { name: 'Points Log MID', value: 'None!' }
             ])
@@ -1293,7 +1247,7 @@ class afkCheck {
                 else historyEmbed.data.fields[4].value == 'None!' ? historyEmbed.data.fields[4].value = `<@!${m}>` : historyEmbed.data.fields[4].value += `, <@!${m}>`
             }
         });
-        this.nitro.forEach(m => {
+        this.supporter.forEach(m => {
             if (historyEmbed.data.fields[5].value == `None!`) historyEmbed.data.fields[5].value = `<@!${m.id}>`
             else historyEmbed.data.fields[5].value += `, <@!${m.id}>`
         });
@@ -1323,7 +1277,7 @@ class afkCheck {
             for (let u of this.keys) {
                 let points = this.settings.points.keypop
                 if (this.afkInfo.keyPopPointsOverride) points = this.afkInfo.keyPopPointsOverride
-                if (this.guild.members.cache.get(u).roles.cache.hasAny(...this.perkRoles.map(role => role.id))) points = points * this.settings.points.nitromultiplier
+                if (this.guild.members.cache.get(u).roles.cache.hasAny(...this.perkRoles.map(role => role.id))) points = points * this.settings.points.supportermultiplier
                 if (this.moddedKeys) points = points * this.settings.points.keymultiplier
                 await this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u}'`, er => { if (er) console.log('error logging key points in ', this.guild.id) })
                 pointsLog.push({
@@ -1335,7 +1289,7 @@ class afkCheck {
             for (let r in this.reactables) {
                 if (this.reactables[r].users) this.reactables[r].users.forEach(u => {
                     let points = +this.reactables[r].points
-                    if (this.message.guild.members.cache.get(u).roles.cache.hasAny(...this.perkRoles.map(role => role.id))) points = +points * +this.settings.points.nitromultiplier
+                    if (this.message.guild.members.cache.get(u).roles.cache.hasAny(...this.perkRoles.map(role => role.id))) points = +points * +this.settings.points.supportermultiplier
                     this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u}'`, er => { if (er) console.log('error logging reactable points in ', this.guild.id) })
                     pointsLog.push({
                         uid: u,
@@ -1378,9 +1332,9 @@ class afkCheck {
                 if (afkCheck.settings.backend.points) {
                     //give points to everyone in run
                     let regular = []
-                    let nitros = []
+                    let supporters = []
                     afkCheck.channel.members.each(m => {
-                        if (m.roles.cache.has(afkCheck.nitroBooster.id)) nitros.push(m)
+                        if (m.roles.cache.hasAny(...this.perkRoles.map(role => role.id))) supporters.push(m)
                         else regular.push(m)
                     })
                     //regular raiders point logging
@@ -1390,12 +1344,12 @@ class afkCheck {
                         regularQuery = regularQuery.substring(0, regularQuery.length - 4)
                         afkCheck.db.query(regularQuery, er => { if (er) console.log('error logging points for run completes in ', afkCheck.guild.id) })
                     }
-                    if (afkCheck.settings.points.perrun != 0 && nitros.length != 0) {
-                        //nitro raiders point logging
-                        let nitroQuery = `UPDATE users SET points = points + ${afkCheck.settings.points.perrun * afkCheck.settings.points.nitromultiplier} WHERE `;
-                        nitros.forEach(m => nitroQuery = nitroQuery.concat(`id = '${m.id}' OR `));
-                        nitroQuery = nitroQuery.substring(0, nitroQuery.length - 4);
-                        afkCheck.db.query(nitroQuery, er => { if (er) console.log('error logging points for run (nitro) completes in ', afkCheck.guild.id) })
+                    if (afkCheck.settings.points.perrun != 0 && supporters.length != 0) {
+                        //supporter raiders point logging
+                        let supporterQuery = `UPDATE users SET points = points + ${afkCheck.settings.points.perrun * afkCheck.settings.points.supportermultiplier} WHERE `;
+                        supporters.forEach(m => supporterQuery = supporterQuery.concat(`id = '${m.id}' OR `));
+                        supporterQuery = supporterQuery.substring(0, supporterQuery.length - 4);
+                        afkCheck.db.query(supporterQuery, er => { if (er) console.log('error logging points for run (supporter) completes in ', afkCheck.guild.id) })
                     }
                 }
             }
