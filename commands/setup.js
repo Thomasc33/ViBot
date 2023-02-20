@@ -3,10 +3,10 @@ const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
 const roles = ['admin', 'moderator', 'officer', 'headrl', 'headdev', 'assistantdev', 'vetrl', 'fsvrl', 'mrvrl', 'security', 'fullskip', 'developer', 'rl', 'almostrl',
     'trialrl', 'headeventrl', 'eventrl',
-    'rusher', 'nitro', 'lol', 'accursed', 'vetraider', 'raider', 'eventraider', 'muted',
+    'rusher', 'lol', 'accursed', 'vetraider', 'raider', 'eventraider', 'muted',
     'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'keyjesus', 'moddedkey', 'topkey', 'bottomkey', 'cultping', 'voidping', 'shattsReact', 'fungalReact', 'nestReact',
     'fskipReact', 'fameReact', 'rcPing', 'o3Ping', 'eventBoi', 'veteventrl',
-    'priest', 'warden', 'vetaffiliate', 'affiliatestaff', `toprune`, `bottomrune`, 'helper', 'steamworksping', 'supporter', 'supporterTierOne', 'supporterTierTwo', 'supporterTierThree', 'supporterTierFour', 'supporterTierFive']
+    'priest', 'warden', 'vetaffiliate', 'affiliatestaff', `toprune`, `bottomrune`, 'helper', 'steamworksping', 'supporter', 'supporterTierOne', 'supporterTierTwo', 'supporterTierThree', 'supporterTierFour', 'supporterTierFive', 'supporterTierSix']
 const channels = ['modmail', 'verification', 'manualverification', 'vetverification', 'manualvetverification', 'verificationlog', 'activeverification', 'modlogs', 'history', 'suspendlog',
     'viallog', 'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel', 'raidstatus', 'eventstatus',
     'vetstatus', 'exaltstatus', 'raidcommands', 'eventcommands', 'vetcommands', 'accursedcommands', 'accursedstatus', 'raidingchannels', 'eventchannels', 'vetchannels', 'runlogs', 'dmcommands', 'veriactive', 'pointlogging',
@@ -17,17 +17,16 @@ const voice = ['raidingtemplate', 'eventtemplate', 'vettemplate', 'accursedtempl
     'veteranraiding1', 'veteranraiding2', 'veteranraiding3', 'veteranraiding4', 'veteranraiding5', 'veteranraiding6', 'veteranraiding7', 'veteranraiding8', 'veteranraiding9',
     'eventraiding1', 'eventraiding2', 'eventraiding3', 'eventraiding4', 'eventraiding5', 'eventraiding6', 'eventraiding7', 'eventraiding8', 'eventraiding9']
 const voiceprefixes = ['raidingprefix', 'vetprefix']
-const backend = ['modmail', 'currentweek', 'eventcurrentweek', 'parsecurrentweek', 'verification', 'vetverification', 'points', 'supporter', 'roleassignment', 'realmeyestats', 'automod',
-    'nitroearlylocation', 'removekeyreacts', 'characterparse', 'forwadedMessageThumbsUpAndDownReactions',
+const backend = ['modmail', 'currentweek', 'eventcurrentweek', 'parsecurrentweek', 'verification', 'vetverification', 'points', 'supporter', 'roleassignment', 'realmeyestats', 'automod', 'removekeyreacts', 'characterparse', 'forwadedMessageThumbsUpAndDownReactions',
     'giveeventroleonverification', 'eventcurrentweekdisplaysalleventrl', 'upgradedCheck', 'raidResetMonthly', 'eventResetMonthly', 'parseResetMonthly', 'exaltedEvents', 'sendmissedquota',
     'exaltsInRSA', 'allowAdvancedRuns', 'raidResetBiweekly', 'eventResetBiweekly', 'parseResetBiweekly', 'onlyUpperStaffSuspendStaff', 'giveEventRoleOnDenial2', 'disableEventsFromHeadcounts',
     'useStaticVCForRaiding']
-const numerical = ['afktime', 'eventafktime', 'nitrocount', 'nitrocooldown', 'topkey', 'bottomkey', 'ticketlimit', 'supporterlimit', 'keyalertsage', 'waitnewkeyalert', 'prunerushersoffset',
+const numerical = ['afktime', 'eventafktime', 'topkey', 'bottomkey', 'ticketlimit', 'supporterlimit', 'keyalertsage', 'waitnewkeyalert', 'prunerushersoffset',
     `toprune`, `bottomrune`]
 const runreqs = ['weapon', 'ability', 'armor', 'ring']
 const autoveri = ['fame', 'stars', 'realmage', 'discordage', 'deathcount']
 const vetverireqs = ['maxed', 'meleemaxed', 'runs']
-const points = ['earlylocation', 'perrun', 'nitromultiplier', 'keypop', 'vialpop', 'rushing', 'brain', 'mystic', 'eventkey', 'cultlocation', 'voidlocation', 'fsvlocation', 'o3streaming',
+const points = ['earlylocation', 'perrun', 'supportermultiplier', 'keypop', 'vialpop', 'rushing', 'brain', 'mystic', 'eventkey', 'cultlocation', 'voidlocation', 'fsvlocation', 'o3streaming',
     'o3trickster', 'o3puri', 'exaltkey', 'shattskey', 'fungalkey', 'nestkey', 'keymultiplier', 'runepop', 'steamworkKey']
 const lists = ['earlyLocation', 'runningEvents', 'warningRoles', 'perkRoles', 'discordRoles']
 const strings = ['hallsAdvancedReqsImage', 'exaltsAdvancedReqsImage']
@@ -36,7 +35,8 @@ const quotapoints = ['voidLeading', 'cultLeading', 'shattersLeading', 'oryx3Lead
 'eventrlWeeklyQuota', 'arlVote']
 const modmail = ['sendMessage', 'forwardMessage', 'closeModmail', 'blacklistUser', 'lockModmail']
 const supporter = ['supporterCooldownSeconds1', 'supporterCooldownSeconds2', 'supporterCooldownSeconds3', 'supporterCooldownSeconds4', 'supporterCooldownSeconds5', 'supporterCooldownSeconds6',
-    'supporterUses1', 'supporterUses2', 'supporterUses3', 'supporterUses4', 'supporterUses5', 'supporterUses6']
+    'supporterUses1', 'supporterUses2', 'supporterUses3', 'supporterUses4', 'supporterUses5', 'supporterUses6', 
+    'supporterLimit1', 'supporterLimit2', 'supporterLimit3', 'supporterLimit4', 'supporterLimit5', 'supporterLimit6']
 var commands = []
 var commandsRolePermissions = []
 
@@ -420,7 +420,6 @@ function getDefaultRoleName(name) {
         case 'headeventrl': return 'Head Event Organizer'
         case 'eventrl': return 'Event Organizer'
         case 'rusher': return 'Official Rusher'
-        case 'nitro': return 'Nitro Booster'
         case 'lol': return 'Leader on Leave'
         case 'vetraider': return 'Veteran Raider'
         case 'raider': return 'Verified Raider'
@@ -524,12 +523,10 @@ function getDefaultNumericalValue(name) {
     switch (name) {
         case 'afktime': return 360;
         case 'eventafktime': return 360;
-        case 'nitrocount': return 5;
-        case 'nitrocooldown': return 3600000;
         case 'topkey': return 50;
         case 'bottomkey': return 15;
         case 'ticketlimit': return 5;
-        case 'supporterlimit': return 5;
+        case 'supporterlimit': return 8;
         case 'keyalertsage': return 120;
         case 'waitnewkeyalert': return 30;
         case 'prunerushersoffset': return 90;
@@ -569,7 +566,7 @@ function getDefaultPointValue(name) {
     switch (name) {
         case 'earlylocation': return 20;
         case 'perrun': return 1;
-        case 'nitromultiplier': return 2;
+        case 'supportermultiplier': return 2;
         case 'keypop': return 20;
         case 'vialpop': return 3;
         case 'rushing': return 1;
