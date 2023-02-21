@@ -73,7 +73,7 @@ module.exports = {
                 if (member.roles.cache.has(suspendedRole.id)) {
                     db.query(`SELECT * FROM suspensions WHERE id = '${member.id}' AND suspended = true`, async (err, rows) => {
                         if (rows.length != 0) {
-                            message.channel.send(member.nickname.concat(' is already suspended. Reply __**Y**__es to overwrite.'));
+                            message.channel.send(`${member.nickname} is already suspended. Reply __**Y**__es to overwrite.`);
                             let collector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id === message.author.id, time: 10000 });
                             collector.on('collect', message => {
                                 if (message.content.charAt(0).toLowerCase() == 'y') {
@@ -97,7 +97,7 @@ module.exports = {
                     let embed = new Discord.EmbedBuilder()
                         .setColor('#ff0000')
                         .setTitle('Suspension Information')
-                        .setDescription(`The suspension is for ${parseInt(args[0])} ${timeTypeString}`)
+                        .setDescription(`The suspension is for ${parseInt(args[0])} ${timeTypeString} until <t:${((Date.now() + time)/1000).toFixed(0)}:f>`)
                         .addFields([{name: `User Information \`${member.nickname}\``, value: `<@!${member.id}> (Tag: ${member.user.tag})`, inline: true}])
                         .addFields([{name: `Mod Information \`${message.guild.members.cache.get(message.author.id).nickname}\``, value: `<@!${message.author.id}> (Tag: ${message.author.tag})`, inline: true}])
                         .addFields([{name: `Reason:`, value: reason}])

@@ -27,15 +27,15 @@ module.exports = {
                         if (err) ErrorLogger.log(err, bot, message.guild)
                         if (warnings.length > 0) {
                             for (let i in warnings) { let index = parseInt(i); warnings[i].index = index}
-                            embed.addFields({ name: `Warnings`, value: warnings.map(warning => `${warning.index+1}. By <@!${warning.modid}> ${moment().to(new Date(parseInt(warning.time)))}\`\`\`${warning.reason}\`\`\``).join('\n'), inline: false })
+                            embed.addFields({ name: `Warnings`, value: warnings.map(warning => `${warning.index+1}. By <@!${warning.modid}> <t:${(parseInt(warning.time)/1000).toFixed(0)}:R> at <t:${(parseInt(warning.time)/1000).toFixed(0)}:f>\`\`\`${warning.reason}\`\`\``).join('\n'), inline: false })
                         }
                         if (suspensions.length > 0) {
                             for (let i in suspensions) { let index = parseInt(i); suspensions[i].index = index}
-                            embed.addFields({ name: `Suspensions`, value: suspensions.map(warning => `${warning.index+1}. By <@!${warning.modid}> ${warning.suspended ? 'Ends in' : 'Ended'} ${moment().to(new Date(parseInt(warning.uTime)))}\`\`\`${warning.reason}\`\`\``).join('\n'), inline: false })
+                            embed.addFields({ name: `Suspensions`, value: suspensions.map(suspension => `${suspension.index+1}. By <@!${suspension.modid}> ${suspension.suspended ? 'Ends' : 'Ended'} <t:${(parseInt(suspension.uTime)/1000).toFixed(0)}:R> at <t:${(parseInt(suspension.uTime)/1000).toFixed(0)}:f>\`\`\`${suspension.reason}\`\`\``).join('\n'), inline: false })
                         }
                         if (mutes.length > 0) {
                             for (let i in mutes) { let index = parseInt(i); mutes[i].index = index}
-                            embed.addFields({ name: `Mutes`, value: mutes.map(warning => `${warning.index+1}. By <@!${warning.modid}> ${warning.muted ? 'Ends in' : 'Ended'} ${moment().to(new Date(parseInt(warning.uTime)))}\`\`\`${warning.reason}\`\`\``).join('\n'), inline: false })
+                            embed.addFields({ name: `Mutes`, value: mutes.map(mute => `${mute.index+1}. By <@!${mute.modid}> ${mute.muted ? 'Ends' : 'Ended'} <t:${(parseInt(mute.uTime)/1000).toFixed(0)}:R> at <t:${(parseInt(mute.uTime)/1000).toFixed(0)}:f>\`\`\`${mute.reason}\`\`\``).join('\n'), inline: false })
                         }
                         if (!embed.data.fields || embed.data.fields.length == 0) {
                             embed.setDescription(`No punishments have been issued for ${member}`)

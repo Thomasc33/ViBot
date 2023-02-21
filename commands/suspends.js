@@ -26,7 +26,7 @@ module.exports = {
                 let i = 0;
                 for (let suspension of rows) {
                     i++;
-                    let string = `__Suspension ${i} case for ${member}__\`${member.nickname}\` in ${bot.guilds.cache.get(suspension.guildid).name}\nReason: \`${suspension.reason.trim()}\`\nSuspended by: <@!${suspension.modid}> ${suspension.suspended ? 'Ends' : 'Ended'} ${moment().to(new Date(parseInt(suspension.uTime)))}\n`;
+                    let string = `__Suspension ${i} case for ${member}__\`${member.nickname}\` in ${bot.guilds.cache.get(suspension.guildid).name}\nReason: \`${suspension.reason.trim()}\`\nSuspended by: <@!${suspension.modid}> ${suspension.suspended ? 'Ends' : 'Ended'} <t:${(parseInt(suspension.uTime)/1000).toFixed(0)}:R> at <t:${(parseInt(suspension.uTime)/1000).toFixed(0)}:f>\n`;
                     fitStringIntoEmbed(embed, string, message.channel)
                 }
                 message.channel.send({ embeds: [embed] })

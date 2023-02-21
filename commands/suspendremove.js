@@ -20,7 +20,7 @@ module.exports = {
             let embed = new Discord.EmbedBuilder()
                 .setTitle(`Confirm Action`)
                 .setColor('#F04747')
-                .setDescription(rows.map(sus => `${sus.index + 1}. By <@!${sus.modid}> ended ${moment().to(new Date(parseInt(sus.uTime)))}\`\`\`${sus.reason}\`\`\``).join('\n'))
+                .setDescription(rows.map(sus => `${sus.index + 1}. By <@!${sus.modid}> ended <t:${(parseInt(sus.uTime)/1000).toFixed(0)}:R> at <t:${(parseInt(sus.uTime)/1000).toFixed(0)}:f>\`\`\`${sus.reason}\`\`\``).join('\n'))
             let confirmMessage = await message.channel.send({ embeds: [embed] })
             const choice = await confirmMessage.confirmNumber(rows.length, message.member.id);
             if (!choice || isNaN(choice) || choice == 'Cancelled') return await confirmMessage.delete();
