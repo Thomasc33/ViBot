@@ -39,11 +39,11 @@ module.exports = {
                 await confirmMessage.react('❌')
             } else {
                 const reason = rows[0].reason
-                const unmuteDate = new Date(rows[0].uTime)
+                const unmuteUTime = parseInt(rows[0].uTime)
                 let embed = new Discord.EmbedBuilder()
                     .setTitle('Confirm Action')
                     .setColor('#ff0000')
-                    .setDescription(`Are you sure you want to unmute ${member}\nReason: ${reason}\nMuted by <@!${rows[0].modid}>\nMuted until: ${unmuteDate.toDateString()}`)
+                    .setDescription(`Are you sure you want to unmute ${member}\nReason: ${reason}\nMuted by <@!${rows[0].modid}>\nUnmute: <t:${(unmuteUTime/1000).toFixed(0)}:R> at <t:${(unmuteUTime/1000).toFixed(0)}:f>`)
                 let confirmMessage = await message.channel.send({ embeds: [embed] })
                 let reactionCollector = new Discord.ReactionCollector(confirmMessage, { filter: (r, u) => !u.bot && u.id == message.author.id && (r.emoji.name === '✅' || r.emoji.name === '❌') })
                 await confirmMessage.react('✅')

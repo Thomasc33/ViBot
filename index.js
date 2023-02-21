@@ -81,7 +81,7 @@ bot.fetchPartneredServer = function (guildId) {
     }
     return null
 }
-bot.adminUsers = ['277636691227836419', '258286481167220738']
+bot.adminUsers = ['277636691227836419', '258286481167220738', '190572077219184650']
 bot.partneredServers = moduleIsAvailable('./data/partneredServers.json') ? require('./data/partneredServers.json') : {}
 bot.emojiServers = moduleIsAvailable('./data/emojiServers.json') ? require('./data/emojiServers.json') : {}
 bot.devServers = ["739623118833713214"]

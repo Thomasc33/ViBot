@@ -36,16 +36,16 @@ module.exports = {
                 }
                 if (warningsServer.length > 0) {
                     for (let i in warningsServer) { let index = parseInt(i); warningsServer[i].index = index}
-                    embed.addFields({ name: `${message.guild.name}'s Section`, value: warningsServer.map(warning => `${warning.index+1}. By <@!${warning.modid}> ${moment().to(new Date(parseInt(warning.time)))}\`\`\`${warning.reason}\`\`\``).join('\n'), inline: false })
+                    embed.addFields({ name: `${message.guild.name}'s Section`, value: warningsServer.map(warning => `${warning.index+1}. By <@!${warning.modid}> <t:${(parseInt(warning.time)/1000).toFixed(0)}:R> at <t:${(parseInt(warning.time)/1000).toFixed(0)}:f>\`\`\`${warning.reason}\`\`\``).join('\n'), inline: false })
                 }
                 if (message.member.roles.highest.position >= securityRole.position || bot.adminUsers.includes(message.member.id)) {
                     if (warningsPartnered.length > 0) {
                         for (let i in warningsPartnered) { let index = parseInt(i); warningsPartnered[i].index = index}
-                        embed.addFields({ name: `${partneredServer.name}'s Section`, value: warningsPartnered.map(warning => `${warning.index+1}. By <@!${warning.modid}> ${moment().to(new Date(parseInt(warning.time)))}\`\`\`${warning.reason}\`\`\``).join('\n'), inline: false })
+                        embed.addFields({ name: `${partneredServer.name}'s Section`, value: warningsPartnered.map(warning => `${warning.index+1}. By <@!${warning.modid}> <t:${(parseInt(warning.time)/1000).toFixed(0)}:R> at <t:${(parseInt(warning.time)/1000).toFixed(0)}:f>\`\`\`${warning.reason}\`\`\``).join('\n'), inline: false })
                     }
                     if (warningsNull.length > 0) {
                         for (let i in warningsNull) { let index = parseInt(i); warningsNull[i].index = index}
-                        embed.addFields({ name: 'Unknown Server', value: warningsNull.map(warning => `${warning.index+1}. By <@!${warning.modid}> ${moment().to(new Date(parseInt(warning.time)))}\`\`\`${warning.reason}\`\`\``).join('\n'), inline: false })
+                        embed.addFields({ name: 'Unknown Server', value: warningsNull.map(warning => `${warning.index+1}. By <@!${warning.modid}> <t:${(parseInt(warning.time)/1000).toFixed(0)}:R> at <t:${(parseInt(warning.time)/1000).toFixed(0)}:f>\`\`\`${warning.reason}\`\`\``).join('\n'), inline: false })
                     }
                 }
                 if (!embed.data.fields || embed.data.fields.length == 0) {
