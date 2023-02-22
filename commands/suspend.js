@@ -5,7 +5,7 @@ const ErrorLogger = require('../lib/logError')
 module.exports = {
     name: 'suspend',
     description: 'Suspends user',
-    args: '[users] <time> <time type d/m/s/w/y> <reason>',
+    args: '[users] <time> <time type s/m/h/d/w/y> <reason>',
     requiredArgs: 3,
     role: 'warden',
     async execute(message, args, bot, db) {
@@ -33,13 +33,13 @@ module.exports = {
             var timeTypeString;
 
             switch (timeType.toLowerCase()) {
-                case 'd': time *= 86400000; timeTypeString = 'day(s)'; break;
-                case 'm': time *= 60000; timeTypeString = 'minute(s)'; break;
                 case 's': time *= 1000; timeTypeString = 'second(s)'; break;
+                case 'm': time *= 60000; timeTypeString = 'minute(s)'; break;
+                case 'h': time *= 3600000; timeTypeString = 'hour(s)'; break;
+                case 'd': time *= 86400000; timeTypeString = 'day(s)'; break;
                 case 'w': time *= 604800000; timeTypeString = 'week(s)'; break;
                 case 'y': time *= 31536000000; timeTypeString = 'year(s)'; break;
-                case 'h': time *= 3600000; timeTypeString = 'hour(s)'; break;
-                default: return message.channel.send("Please enter a valid time type __**d**__ay, __**m**__inute, __**h**__our, __**s**__econd, __**w**__eek, __**y**__ear");
+                default: return message.channel.send("Please enter a valid time type __**s**__econd, __**m**__inute, __**h**__our, __**d**__ay, __**w**__eek, __**y**__ear");
             }
         } catch (er) {
             return message.channel.send("Invalid time given. Please try again");
