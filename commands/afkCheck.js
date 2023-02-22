@@ -31,7 +31,7 @@ module.exports = {
     },
     emitter,
     getRunType,
-    requestReactionHandler,
+    requestButtonHandler,
     get runs() {
         return [...runs];
     },
@@ -599,6 +599,21 @@ class afkCheck {
         }
     }
 
+    async buttonHandler(interaction, limit) {
+        if (!interaction.isButton()) return;
+        if (interaction.customId == this.afkInfo.keyEmote) {
+            this.confirmSelection(interaction, 0, 'key', limit, false, false, true, this.afkInfo.keyCount)
+        }
+        else if (interaction.customId == this.afkInfo.vialEmote) this.confirmSelection(interaction, 1, 'vial', limit, false, false, true, 3)
+        else for (let i in this.afkInfo.earlyLocationReacts) {
+            let react = this.afkInfo.earlyLocationReacts[i]
+            if (interaction.customId == react.emote) {
+                if (react.requiredRole && !interaction.member.roles.cache.has(this.settings.roles[react.requiredRole])) return interaction.deferUpdate()
+                this.confirmSelection(interaction, +i + +1, react.shortName, limit, react.noConfirm, react.noLocation, true, react.limit)
+            }
+        }
+    }
+
     async reactionHandler(r, u) {
         if (r.emoji.name.toLowerCase() == 'knight') this.knights.push(u)
         else if (r.emoji.name.toLowerCase() == 'warrior') this.warriors.push(u)
@@ -647,7 +662,7 @@ class afkCheck {
      * @param {String} type
      * @param {Number} limit
      */
-    async confirmSelection(interaction, index, type, limit, noConfirm = false, noLocation = false) {
+    async confirmSelection(interaction, index, type, limit, noConfirm = false, noLocation = false, request = false, origLimit = 0) {
         let embed = new Discord.EmbedBuilder({ description: 'placeholder' })
         this.openInteractions.push(interaction.user.id)
 
@@ -682,7 +697,7 @@ class afkCheck {
                 afk.earlyLocation.push(interaction.user);
             }
 
-            let current_limit = getLength(afk)
+            let current_limit = request ? getLength(afk) - origLimit : getLength(afk)
 
             // Disable button if react limit is hit
             if (current_limit >= limit) interaction.message.editButton(interaction.component.customId, `${current_limit}/${limit}`, true)
@@ -717,13 +732,14 @@ class afkCheck {
         }
         function checkType(afk) { //true = spot open
             //key, vial, other
+            let lenLimit = request ? origLimit + limit : limit
             switch (type) {
                 case 'key':
-                    if (afk.keys.length >= limit || afk.keys.includes(interaction.member.id)) return false; else return true;
+                    if (afk.keys.length >= lenLimit || afk.keys.includes(interaction.member.id)) return false; else return true;
                 case 'vial':
-                    if (afk.vials.length >= limit || afk.vials.includes(interaction.member.id)) return false; else return true;
+                    if (afk.vials.length >= lenLimit || afk.vials.includes(interaction.member.id)) return false; else return true;
                 default:
-                    if (afk.reactables[type].users.length >= limit || afk.reactables[type].users.includes(interaction.member.id)) return false; else return true;
+                    if (afk.reactables[type].users.length >= lenLimit || afk.reactables[type].users.includes(interaction.member.id)) return false; else return true;
             }
         }
         function getLength(afk) { //true = spot open
@@ -763,7 +779,7 @@ class afkCheck {
 
         try {
             if (!checkType(this)) {
-                let current_limit = getLength(this)
+                let current_limit = request ? getLength(this) - origLimit : getLength(this)
                 if (current_limit >= limit) interaction.message.editButton(interaction.component.customId, `${current_limit}/${limit}`, true)
                 else interaction.message.editButton(interaction.component.customId, `${current_limit}/${limit}`)
                 embed.setDescription(`Too many people have already reacted and confirmed for that. Try another react or try again next run.`)
@@ -1209,48 +1225,34 @@ class afkCheck {
                 { name: `Points Users ${this.afkInfo.earlyLocationCost}`, value: 'None!' },
                 { name: 'Points Log MID', value: 'None!' }
             ])
+        let i = 2
         this.keys.forEach(m => {
-            if (historyEmbed.data.fields[2].value == 'None!') historyEmbed.data.fields[2].value = `<@!${m}>`;
-            else historyEmbed.data.fields[2].value += `, <@!${m}>`;
+            if (historyEmbed.data.fields[i].value == 'None!') historyEmbed.data.fields[i].value = `<@!${m}>`;
+            else historyEmbed.data.fields[i].value += `, <@!${m}>`;
         })
+        i++
         this.earlyLocation.forEach(m => {
-            if (historyEmbed.data.fields[3].value == `None!`) historyEmbed.data.fields[3].value = `<@!${m.id}>`
-            else historyEmbed.data.fields[3].value += `, <@!${m.id}>`
+            if (historyEmbed.data.fields[i].value == `None!`) historyEmbed.data.fields[i].value = `<@!${m.id}>`
+            else historyEmbed.data.fields[i].value += `, <@!${m.id}>`
         })
-        this.pointsUsers.forEach(m => {
-            if (historyEmbed.data.fields[6].value == `None!`) historyEmbed.data.fields[6].value = `<@!${m.id}>`
-            else historyEmbed.data.fields[6].value += `, <@!${m.id}>`
-        })
-        let bigEmbed = false
-        let biggerEmbed = false
-        let biggestEmbed = false
+        i++
         raiders.forEach(m => {
-            if (bigEmbed) {
-                if (historyEmbed.data.fields[5].value.length >= 1000) {
-                    biggerEmbed = true;
-                    historyEmbed.addFields({ name: '-', value: `, <@!${m}>` })
-                }
-                else historyEmbed.data.fields[5].value += `, <@!${m}>`
-            } else if (biggerEmbed) {
-                if (historyEmbed.data.fields[6].value.length >= 1000) {
-                    biggestEmbed = true;
-                    historyEmbed.addFields({ name: '-', value: `, <@!${m}>` })
-                }
-                else historyEmbed.data.fields[6].value += `, <@!${m}>`
-            } else if (biggestEmbed) {
-                historyEmbed.data.fields[7].value += `, <@!${m}>`
-            } else {
-                if (historyEmbed.data.fields[4].value.length >= 1000) {
-                    bigEmbed = true;
-                    historyEmbed.addFields({ name: '-', value: `, <@!${m}>` })
-                }
-                else historyEmbed.data.fields[4].value == 'None!' ? historyEmbed.data.fields[4].value = `<@!${m}>` : historyEmbed.data.fields[4].value += `, <@!${m}>`
-            }
+            if (historyEmbed.data.fields[i].value.length >= 1000) {
+                i++
+                historyEmbed.spliceFields(i, 0, { name: '-', value: `, <@!${m}>` })
+            } else historyEmbed.data.fields[i].value == 'None!' ? historyEmbed.data.fields[i].value = `<@!${m}>` : historyEmbed.data.fields[i].value += `, <@!${m}>`
         });
+        i++
         this.supporter.forEach(m => {
-            if (historyEmbed.data.fields[5].value == `None!`) historyEmbed.data.fields[5].value = `<@!${m.id}>`
-            else historyEmbed.data.fields[5].value += `, <@!${m.id}>`
+            if (historyEmbed.data.fields[i].value == `None!`) historyEmbed.data.fields[i].value = `<@!${m.id}>`
+            else historyEmbed.data.fields[i].value += `, <@!${m.id}>`
         });
+        i++
+        this.pointsUsers.forEach(m => {
+            if (historyEmbed.data.fields[i].value == `None!`) historyEmbed.data.fields[i].value = `<@!${m.id}>`
+            else historyEmbed.data.fields[i].value += `, <@!${m.id}>`
+        })
+        i++
 
         //make sure everyone in run is in db
         if (this.channel.members) {
@@ -1301,7 +1303,7 @@ class afkCheck {
             var pointlog_mid = await pointLogger.pointLogging(pointsLog, this.message.guild, this.bot, this.mainEmbed);
         }
 
-        if (pointlog_mid) historyEmbed.data.fields[7].value = pointlog_mid;
+        if (pointlog_mid) historyEmbed.data.fields[i].value = pointlog_mid;
 
         historyEmbed.setFooter({ text: `${this.channel.id} • ${this.raidStatusMessage.id} • ${this.leaderEmbedMessage.id} • ${raiders.length} Raiders` })
         this.message.guild.channels.cache.get(this.settings.channels.history).send({ embeds: [historyEmbed] })
@@ -1600,10 +1602,10 @@ async function destroyInactiveRuns() {
     runs = runs.filter((v, i, r) => v.afk)
 }
 
-function requestReactionHandler(r, u, channelId) {
+function requestButtonHandler(interaction, channelId, limit) {
     for (let i of runs) {
         if (i.channel == channelId) {
-            i.afk.reactionHandler(r, u)
+            i.afk.buttonHandler(interaction, limit)
             return
         }
     }
