@@ -935,12 +935,11 @@ class afkCheck {
                 this.removeFromActiveInteractions(interaction.user.id)
                 return
             }
-
-            embed.setDescription(`The location for this run has been set to \`${this.afkInfo.location}\``)
-            await interaction.reply({ embeds: [embed], ephemeral: true })
-            this.earlyLocation.push(interaction.user);
             let moved = true
             await reactor.voice.setChannel(this.channel.id).catch(er => { moved = false })
+            if (moved) embed.setDescription('You have been moved into the voice channel. If you get disconnected while the afk check is up, join lounge and you will get moved in automatically.')
+            else embed.setDescription('Join the lounge to be moved in to the raiding channel')
+            await interaction.reply({ embeds: [embed], ephemeral: true })
             this.supporter.push(interaction.user)
             this.supporterReacts.push(interaction.user.id)
             this.leaderEmbed.data.fields[index].value = '<@!' + this.supporterReacts.join('>,\n<@!') + '>'
