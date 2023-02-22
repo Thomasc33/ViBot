@@ -16,7 +16,9 @@ module.exports = {
 
         console.log('Pulling from github')
         try {
-            const gitpull = spawn('git', ['pull'])
+            const gitpull = spawn('git', ['pull'], {
+                cwd: 'C:\\Users\\Thomas\\Desktop\\ViBot'
+            })
 
             gitpull.on('error', (err) => {
                 console.error(`Error running command: ${err}`);
