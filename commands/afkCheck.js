@@ -879,13 +879,13 @@ class afkCheck {
             return
         }
         if (reactor.voice.channel && reactor.voice.channel.id == this.channel.id) {
-            embed.setDescription(`Supporter benefits in \`${this.message.guild.name}\` only gives guaranteed spot in VC. You are already in the VC so this use hasn\'t been counted`);
+            embed.setDescription(`Supporter benefits in \`${interaction.guild.name}\` only gives guaranteed spot in VC. You are already in the VC so this use hasn\'t been counted`);
             await interaction.reply({ embeds: [embed], ephemeral: true })
             this.removeFromActiveInteractions(interaction.user.id)
             return
         }
 
-        let supporterRole = this.message.member.supporterHierarchy(this.settings)
+        let supporterRole = interaction.member.supporterHierarchy(this.settings)
         if (!supporterRole) {
             embed.setDescription(`You are not eligible for this reaction`)
             await interaction.reply({ embeds: [embed], ephemeral: true })
@@ -1319,7 +1319,7 @@ class afkCheck {
             }
             keyRoles.checkUser(this.guild.members.cache.get(u), this.bot, this.db)
         }
-
+        let perkRoles = this.perkRoles
         //log run 1 minute after afk check
         if (restart.restarting) log(this)
         else setTimeout(log, 60000, this)
@@ -1334,7 +1334,7 @@ class afkCheck {
                     let regular = []
                     let supporters = []
                     afkCheck.channel.members.each(m => {
-                        if (m.roles.cache.hasAny(...this.perkRoles.map(role => role.id))) supporters.push(m)
+                        if (m.roles.cache.hasAny(...perkRoles.map(role => role.id))) supporters.push(m)
                         else regular.push(m)
                     })
                     //regular raiders point logging

@@ -6,7 +6,7 @@ const roles = ['admin', 'moderator', 'officer', 'headrl', 'headdev', 'assistantd
     'rusher', 'lol', 'accursed', 'vetraider', 'raider', 'eventraider', 'muted',
     'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'keyjesus', 'moddedkey', 'topkey', 'bottomkey', 'cultping', 'voidping', 'shattsReact', 'fungalReact', 'nestReact',
     'fskipReact', 'fameReact', 'rcPing', 'o3Ping', 'eventBoi', 'veteventrl',
-    'priest', 'warden', 'vetaffiliate', 'affiliatestaff', `toprune`, `bottomrune`, 'helper', 'steamworksping', 'supporter', 'supporterTierOne', 'supporterTierTwo', 'supporterTierThree', 'supporterTierFour', 'supporterTierFive', 'supporterTierSix']
+    'priest', 'warden', 'vetaffiliate', 'affiliatestaff', `toprune`, `bottomrune`, 'helper', 'steamworksping', 'supporterTierOne', 'supporterTierTwo', 'supporterTierThree', 'supporterTierFour', 'supporterTierFive', 'supporterTierSix']
 const channels = ['modmail', 'verification', 'manualverification', 'vetverification', 'manualvetverification', 'verificationlog', 'activeverification', 'modlogs', 'history', 'suspendlog',
     'viallog', 'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel', 'raidstatus', 'eventstatus',
     'vetstatus', 'exaltstatus', 'raidcommands', 'eventcommands', 'vetcommands', 'accursedcommands', 'accursedstatus', 'raidingchannels', 'eventchannels', 'vetchannels', 'runlogs', 'dmcommands', 'veriactive', 'pointlogging',
