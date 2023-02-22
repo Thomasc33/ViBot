@@ -7,5 +7,7 @@ module.exports = {
     requiredArgs: 0,
     guildspecific: true,
     role: 'developer',
-    async execute(message, args, bot, db) {}
+    async execute(message, args, bot, db) {
+        message.channel.send('Test command')
+    }
 }
