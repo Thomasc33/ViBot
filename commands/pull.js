@@ -12,7 +12,7 @@ module.exports = {
      * @param {import('mysql').Connection} db 
      */
     async execute(message, args, bot, db) {
-        if (message.author.id !== '277636691227836419') return;
+        if (!['277636691227836419','258286481167220738'].includes(message.author.id)) return;
 
         exec('git pull', (err, stdout, stderr) => {
             if (err) {

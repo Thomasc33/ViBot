@@ -4,7 +4,7 @@ module.exports = {
     args: '<cooldown> <time(ms)> <amount>',
     requiredArgs: 3,
     async execute(message, args, bot, db, tokenDB) {
-        if (message.author.id !== '277636691227836419') return
+        if (!['277636691227836419','258286481167220738'].includes(message.author.id)) return
 
         //arg 0
         let hasCooldown
