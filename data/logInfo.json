@@ -783,13 +783,15 @@
                 "alias": [
                     "hard",
                     "hardmode",
-                    "mode"
+                    "mode",
+                    "hm"
                 ],
                 "multiply": null,
                 "allowAssists": true,
                 "confirm": true,
                 "main": "hardmodeLead",
                 "currentweek": "currentweekhardmodeLead",
+                "confirmSuffix": "Hardmodes Lead",
                 "color": "#308a00",
                 "icon": "https://cdn.discordapp.com/emojis/849406533435523093.png?v=1",
                 "desc": "`Hardmode` Run",
