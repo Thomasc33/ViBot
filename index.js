@@ -152,9 +152,9 @@ bot.on('messageCreate', message => {
             if (command.userOverride.includes(memberId)) hasPermissionForCommand = true
         }
         if (bot.adminUsers.includes(memberId)) hasPermissionForCommand = true
-        
+
         if (!hasPermissionForCommand) return message.channel.send('You do not have permission to use this command')
-        
+
         if (command.requiredArgs && command.requiredArgs > args.length) return message.channel.send(`Command Entered incorrecty. \`${botSettings.prefix}${command.name} ${command.args}\``)
         if (command.cooldown) {
             if (cooldowns.get(command.name)) {
@@ -181,6 +181,21 @@ bot.on("ready", async () => {
     bot.user.setActivity(`vibot.tech`)
     let vi = bot.users.cache.get(botSettings.developerId)
     vi.send('Halls Bot Starting Back Up')
+
+    // Check to see if the bot was restarted and send message to channel that bot is back online
+    try {
+        let restart_info = require('./data/restart_channel.json')
+        if (restart_info && restart_info.channel && restart_info.guild) {
+            let guild = bot.guilds.cache.get(restart_info.guild)
+            if (guild) {
+                let channel = guild.channels.cache.get(restart_info.channel)
+                if (channel) {
+                    channel.send('I\'m back :flushed:')
+                    fs.writeFileSync('./data/restart_channel.json', '{}')
+                }
+            }
+        }
+    } catch (er) { }
 
     //start api
     startAPI()
@@ -490,12 +505,12 @@ bot.on('guildMemberUpdate', async (oldMember, newMember) => {
         let today = new Date()
         bot.dbs[newMember.guild.id].query(`DELETE FROM rushers WHERE id = "${newMember.id}"`)
     }
-    
+
     let roleDifference = await roleDiff(oldMember, newMember)
     if (!roleDifference.changed) { return }
     function getPartneredServers(guildId) {
         for (let i in bot.partneredServers) {
-            if (bot.partneredServers[i].guildId == guildId) { return bot.partneredServers[i]}
+            if (bot.partneredServers[i].guildId == guildId) { return bot.partneredServers[i] }
         }
         return null
     }
@@ -534,7 +549,7 @@ bot.on('guildMemberUpdate', async (oldMember, newMember) => {
             embed.setColor(as.hexColor)
             await partneredModLogs.send({ embeds: [embed] })
         }, 500)
-        
+
     } else if (!isStaff && hasAffiliate) {
         setTimeout(async () => {
             partneredMember.roles.remove(as)
@@ -542,7 +557,7 @@ bot.on('guildMemberUpdate', async (oldMember, newMember) => {
             embed.setColor(as.hexColor)
             await partneredModLogs.send({ embeds: [embed] })
         }, 500)
-        
+
     }
     if (vasEligable && !hasVetAffiliate) {
         setTimeout(async () => {
@@ -559,7 +574,7 @@ bot.on('guildMemberUpdate', async (oldMember, newMember) => {
                 await partneredModLogs.send({ embeds: [embed] })
             }
         }, 1000)
-        
+
     } else if (!vasEligable && hasVetAffiliate) {
         setTimeout(async () => {
             partneredMember.roles.remove(vas)
@@ -758,7 +773,7 @@ async function dmHandler(message) {
                 }
             }
         } else message.channel.send('This command does not work in DM\'s. Please use this inside of a server')
-        
+
         async function sendModMail() {
             let confirmModMailEmbed = new Discord.EmbedBuilder()
                 .setColor(`#ff0000`)
