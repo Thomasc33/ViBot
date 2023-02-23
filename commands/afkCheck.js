@@ -888,6 +888,12 @@ class afkCheck {
             this.removeFromActiveInteractions(interaction.user.id)
             return
         }
+        if (this.supporter.includes(interaction.member.user)) {
+            embed.setDescription('You have already used supporter perks on this run!');
+            await interaction.reply({ embeds: [embed], ephemeral: true })
+            this.removeFromActiveInteractions(interaction.user.id)
+            return
+        }
         if (!interaction.member.roles.cache.hasAny(...this.perkRoles.map(role => role.id))) {
             embed.setDescription(`You are not eligible for this reaction`)
             await interaction.reply({ embeds: [embed], ephemeral: true })
