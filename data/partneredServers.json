@@ -3,7 +3,7 @@
         "guildId": 343704644712923138,
         "id": "708026927721480254",
         "name": "Oryx Sanctuary",
-        "affiliatelist": ["admin", "moderator", "officer", "headrl", "headdev", "dev", "assdev", "security", "vetrl", "rl", "almostrl", "el"],
+        "affiliatelist": ["admin", "moderator", "officer", "headrl", "headdev", "developer", "assistantdev", "security", "vetrl", "rl", "almostrl", "eventrl"],
         "vaslist": ["vetrl", "headdev", "headrl", "officer", "moderator", "admin"],
         "prefix": "'"
     },
@@ -11,7 +11,7 @@
         "guildId": 708026927721480254,
         "id": "343704644712923138",
         "name": "Lost Halls",
-        "affiliatelist": ["admin", "moderator", "officer", "headrl", "headeventrl", "headdev", "security", "developer", "assdev", "vetrl", "rl", "warden", "almostrl", "eventrl"],
+        "affiliatelist": ["admin", "moderator", "officer", "headrl", "headeventrl", "headdev", "security", "developer", "assistantdev", "vetrl", "rl", "warden", "almostrl", "eventrl"],
         "vaslist": ["vetrl", "headdev", "headeventrl", "headrl", "officer", "moderator"],
         "prefix": ">"
     },
