@@ -27,7 +27,7 @@ module.exports = {
                         if (err) ErrorLogger.log(err, bot, message.guild)
                         if (warnings.length > 0) {
                             for (let i in warnings) { let index = parseInt(i); warnings[i].index = index}
-                            embed.addFields({ name: `Warnings`, value: warnings.map(warning => `${warning.index+1}. By <@!${warning.modid}> <t:${(parseInt(warning.time)/1000).toFixed(0)}:R> at <t:${(parseInt(warning.time)/1000).toFixed(0)}:f>\`\`\`${warning.reason}\`\`\``).join('\n'), inline: false })
+                            embed.addFields({ name: `Warnings`, value: warnings.map(warning => `${warning.index+1}. ${warning.silent ? 'Silently ' : ''}By <@!${warning.modid}> <t:${(parseInt(warning.time)/1000).toFixed(0)}:R> at <t:${(parseInt(warning.time)/1000).toFixed(0)}:f>\`\`\`${warning.reason}\`\`\``).join('\n'), inline: false })
                         }
                         if (suspensions.length > 0) {
                             for (let i in suspensions) { let index = parseInt(i); suspensions[i].index = index}
