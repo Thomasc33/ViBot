@@ -21,7 +21,7 @@ module.exports = {
             return;
         }
         db.query(`SELECT * FROM mutes WHERE id = '${member.id}' AND muted = true`, async (err, rows) => {
-            if (err) ErrorLogger.log(err, bot)
+            if (err) ErrorLogger.log(err, bot, message.guild)
             if (!rows || rows.length == 0) {
                 let embed = new Discord.EmbedBuilder()
                     .setTitle('Confirm Action')
@@ -32,18 +32,18 @@ module.exports = {
                 reactionCollector.on('collect', async (r, u) => {
                     confirmMessage.delete()
                     if (r.emoji.name !== '✅') return;
-                    member.roles.remove(muted).catch(er => ErrorLogger.log(er, bot))
+                    member.roles.remove(muted).catch(er => ErrorLogger.log(er, bot, message.guild))
                     message.channel.send(`${member} has been unmuted`)
                 })
                 await confirmMessage.react('✅')
                 await confirmMessage.react('❌')
             } else {
                 const reason = rows[0].reason
-                const unmuteDate = new Date(rows[0].uTime)
+                const unmuteUTime = parseInt(rows[0].uTime)
                 let embed = new Discord.EmbedBuilder()
                     .setTitle('Confirm Action')
                     .setColor('#ff0000')
-                    .setDescription(`Are you sure you want to unmute ${member}\nReason: ${reason}\nMuted by <@!${rows[0].modid}>\nMuted until: ${unmuteDate.toDateString()}`)
+                    .setDescription(`Are you sure you want to unmute ${member}\nReason: ${reason}\nMuted by <@!${rows[0].modid}>\nUnmute: <t:${(unmuteUTime/1000).toFixed(0)}:R> at <t:${(unmuteUTime/1000).toFixed(0)}:f>`)
                 let confirmMessage = await message.channel.send({ embeds: [embed] })
                 let reactionCollector = new Discord.ReactionCollector(confirmMessage, { filter: (r, u) => !u.bot && u.id == message.author.id && (r.emoji.name === '✅' || r.emoji.name === '❌') })
                 await confirmMessage.react('✅')
@@ -51,7 +51,7 @@ module.exports = {
                 reactionCollector.on('collect', async (r, u) => {
                     confirmMessage.delete()
                     if (r.emoji.name !== '✅') return;
-                    await member.roles.remove(muted).catch(er => ErrorLogger.log(er, bot))
+                    await member.roles.remove(muted).catch(er => ErrorLogger.log(er, bot, message.guild))
                     message.channel.send(`${member} has been unmuted`)
                     db.query(`UPDATE mutes SET muted = false WHERE id = '${member.id}'`)
                 })

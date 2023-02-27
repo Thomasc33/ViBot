@@ -31,12 +31,13 @@ module.exports = {
         let collector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id === message.author.id, time: 20000 });
         let confirmEmbed = new Discord.EmbedBuilder()
             .setColor('#ff0000')
-            .setDescription(`Are you sure you want to log ${count} ${keyInfo.name} pops for ${user.nickname}?\n\nRespond with __**Y**__es for a normal key.\nRespond with __**M**__od for a modified key.\nRespond with __**N**__o to cancel.`)
+            .setDescription(`Are you sure you want to log \`\`${count}\`\` **${keyInfo.name}** pops for ${user.nickname}?\n\nRespond with __**Y**__es for a **Normal Key.**${keyInfo.modded ? '\nRespond with __**M**__od for a **Modified key.**' : ''}\nRespond with __**N**__o to **Cancel.**`)
         let confirmMessage = await message.channel.send({ embeds: [confirmEmbed] })
         collector.on('collect', async m => {
             if (m.content.charAt(0).toLowerCase() == 'y' || m.content.charAt(0).toLowerCase() == 'm') {
                 collector.stop()
                 if (m.content.charAt(0).toLowerCase() == 'm') moddedKey = true
+                if (keyInfo.modded == false) moddedKey = false
                 db.query(`SELECT * FROM users WHERE id = '${user.id}'`, async(err, rows) => {
                     if (err) ErrorLogger.log(err, bot)
                     if (rows.length == 0) {
@@ -62,12 +63,13 @@ module.exports = {
                     });
                     let embed = new Discord.EmbedBuilder()
                         .setColor('#0000ff')
-                        .setDescription(`Key has been logged.\n${user.nickname} now has ${parseInt(rows[0][keyInfo.schema]) + parseInt(count)} pops`)
+                        .setTitle(`Key has been logged.`)
+                        .setDescription(`${user} now has \`\`${parseInt(rows[0][keyInfo.schema]) + parseInt(count)}\`\` Pops`)
                     message.channel.send({ embeds: [embed] })
                 })
                 if (settings.backend.points && keyInfo.points) {
                     let points = settings.points[keyInfo.points] * count
-                    if (user.roles.cache.has(settings.roles.nitro)) points = points * settings.points.nitromultiplier
+                    if (user.roles.cache.hasAny(...settings.lists.perkRoles.map(role => settings.roles[role]))) points = points * settings.points.nitromultiplier
                     if (moddedKey) points = points * settings.points.keymultiplier
                     db.query(`UPDATE users SET points = points + ${points} WHERE id = '${user.id}'`)
                 }

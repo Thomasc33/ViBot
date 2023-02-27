@@ -36,7 +36,8 @@
             "id": "451171819672698920",
             "runs": [
                 "currentweek",
-                "currentweekfailed"
+                "currentweekfailed",
+                "currentweekVeteranShattersLead"
             ],
             "assists": [
                 "currentweekassists"
@@ -61,9 +62,9 @@
         },
         {
             "id": "451171819672698920",
-            "disabled": true,
-            "parsecurrentweek": "",
-            "parsetotal": ""
+            "disabled": false,
+            "parsecurrentweek": "currentweekparses",
+            "parsetotal": "parses"
         },
         {
             "id": "697216053914370158",

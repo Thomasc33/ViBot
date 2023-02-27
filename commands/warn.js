@@ -35,7 +35,7 @@ module.exports = {
         for (let i = 1; i < args.length; i++) reason = reason.concat(` ${args[i]}`)
         if (reason == '') return message.channel.send('Please provide a reason')
         let errored = false
-        await db.query(`INSERT INTO warns (id, modid, reason, time, guildid) VALUES ('${member.user.id}', '${message.author.id}', ${db.escape(reason)}, '${Date.now()}', '${member.guild.id}')`, (err, rows) => {
+        await db.query(`INSERT INTO warns (id, modid, reason, time, guildid, silent) VALUES ('${member.user.id}', '${message.author.id}', ${db.escape(reason)}, '${Date.now()}', '${member.guild.id}', ${silent ? 1 : 0})`, (err, rows) => {
             if (err) {
                 message.channel.send(`There was an error: ${err}`);
                 errored = true
@@ -48,8 +48,10 @@ module.exports = {
                 member.send({ embeds: [warnEmbed] })
         })
         if (!errored) setTimeout(() => {
-            db.query(`SELECT * FROM warns WHERE id = '${member.user.id}'`, (err, rows) => {
-                message.channel.send(`${member.nickname}${silent ? ' silently' : ''} warned successfully. This is their \`${rows.length}\` warning`)
+            db.query(`SELECT * FROM warns WHERE id = '${member.user.id}'`, (err, rowsForAllWarnings) => {
+                db.query(`SELECT * FROM warns WHERE id = '${member.user.id}' and (guildid = '${message.guild.id}' OR guildid is null)`, (err, rowsForWarningsCurrentServer) => {
+                    message.channel.send(`${member.nickname}${silent ? ' silently' : ''} warned successfully. This is their \`${rowsForWarningsCurrentServer.length}\` warning for this server. And has a total of \`${rowsForAllWarnings.length}\` warnings`)
+                })
             })
         }, 500)
     }

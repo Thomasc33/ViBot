@@ -1,6 +1,7 @@
 const Discord = require('discord.js')
 const botSettings = require('../settings.json')
 const pointLogger = require('../lib/pointLogger')
+const adminUsers = ['277636691227836419', '258286481167220738', '178840516882989056', '120540036855889921']
 
 module.exports = {
     name: 'points',
@@ -15,8 +16,8 @@ module.exports = {
     getNotes(guildid, member) {
         let settings = member.client.settings[guildid]
         if (!settings) return null
-        if (member.roles.highest.position >= member.guild.roles.cache.get(settings.roles.headrl).position || member.id == '277636691227836419') return 'EO+ <user> | HRL+ <add/remove> <user>'
-        if (member.roles.highest.position >= member.guild.roles.cache.get(settings.roles.eventrl).position || member.id == '277636691227836419') return '<user> to see someones points'
+        if (member.roles.highest.position >= member.guild.roles.cache.get(settings.roles.headrl).position || adminUsers.includes(member.id)) return 'EO+ <user> | HRL+ <add/remove> <user>'
+        if (member.roles.highest.position >= member.guild.roles.cache.get(settings.roles.eventrl).position || adminUsers.includes(member.id)) return '<user> to see someones points'
         else return null
     },
     dms: true,
@@ -27,7 +28,7 @@ module.exports = {
         if (message.member.roles.highest.position < message.guild.roles.cache.get(settings.roles.eventrl).position) {
             await message.member.send({ embeds: [await this.getPointEmbed(message.member, db)] })
             message.react('✅')
-        } else if (message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.headrl).position || message.member.id == '277636691227836419') {
+        } else if (message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.headrl).position || bot.adminUsers.includes(member.id)) {
             if (args.length == 0) return await message.member.send({ embeds: [await this.getPointEmbed(message.member, db)] }).then(message.react('✅'))
             switch (args[0].toLowerCase()) {
                 case 'add':

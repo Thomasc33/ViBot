@@ -23,29 +23,15 @@ module.exports = {
             .setColor('#ff0000')
             .setDescription('None!')
         for (let i = 1; i < names.length; i++) {
-            if (embed.data.description == 'None!') embed.data.description = `**${i}:** ${names[i]}`
-            else embed.data.description += `\n**${i}:** ${names[i]}`
+            if (embed.data.description == 'None!') embed.data.description = `${names[i]}`
+            else embed.data.description += `\n${names[i]}`
         }
-        let mes = await message.channel.send({ embeds: [embed] })
-        let reactionCollector = new Discord.ReactionCollector(mes, { filter: (r, u) => !u.bot })
-        let choice
-        reactionCollector.on('collect', async (r, u) => {
-            switch (r.emoji.name) {
-                case '1️⃣': choice = 1; await mes.delete(); reactionCollector.stop(); break;
-                case '2️⃣': choice = 2; await mes.delete(); reactionCollector.stop(); break;
-                case '3️⃣': choice = 3; await mes.delete(); reactionCollector.stop(); break;
-                case '4️⃣': choice = 4; await mes.delete(); reactionCollector.stop(); break;
-                case '5️⃣': choice = 5; await mes.delete(); reactionCollector.stop(); break;
-                case '6️⃣': choice = 6; await mes.delete(); reactionCollector.stop(); break;
-                case '7️⃣': choice = 7; await mes.delete(); reactionCollector.stop(); break;
-                case '8️⃣': choice = 8; await mes.delete(); reactionCollector.stop(); break;
-                case '9️⃣': choice = 9; await mes.delete(); reactionCollector.stop(); break;
-                case '🔟': choice = 10; await mes.delete(); reactionCollector.stop(); break;
-                case '❌': await message.react('✅'); await mes.delete(); reactionCollector.stop(); break;
-                default:
-                    let retryMessage = await message.channel.send('There was an issue with the reaction. Please try again');
-                    setTimeout(() => { retryMessage.delete() }, 5000)
-                    break;
+        await message.channel.send({ embeds: [embed] }).then(async confirmMessage => {
+            authorName = names.shift();
+            const choice = await confirmMessage.confirmList(names, message.author.id)
+            if (!choice || choice == 'Cancelled') {
+                await message.react('✅');
+                return confirmMessage.delete();
             }
             if (choice) {
                 await message.react('✅')
@@ -53,22 +39,25 @@ module.exports = {
                 let prefix = member.nickname.charAt(0)
                 if (prefix.replace(/[a-z0-9]/gi, '') != '') newname = prefix
                 for (let i in names) {
-                    if (choice != i)
-                        if (i == 0) newname += names[i]
+                    if (choice.toLowerCase() != names[i].toLowerCase()) {
+                        if (i == 0) newname += `${authorName} | ${names[i]}`
                         else newname += ` | ${names[i]}`
+                        continue;
+                    }
+                    if (i == 0) newname += `${authorName}`
                 }
                 await member.setNickname(newname, `Old Name: ${member.nickname}\nNew Name: ${newname}\nChange by: ${message.member}`);
-                db.query(`INSERT INTO veriblacklist (id, modid, guildid, reason) VALUES ('${names[choice]}', '${message.author.id}', '${message.guild.id}', 'Alt account removed from user.')`)
+                db.query(`INSERT INTO veriblacklist (id, modid, guildid, reason) VALUES ('${choice}', '${message.author.id}', '${message.guild.id}', 'Alt account removed from user.')`)
                 let embed = new Discord.EmbedBuilder()
                     .setTitle('Alt Removed')
                     .setColor('#fefefe')
                     .setDescription(member.toString())
-                    .addFields([{ name: 'Main', value: member.nickname, inline: true }])
-                    .addFields([{ name: 'Alt Removed', value: names[choice], inline: true }])
-                    .addFields([{ name: 'Removed By', value: `<@!${message.author.id}> ` }])
+                    .addFields([{ name: 'Main', value: authorName, inline: true }])
+                    .addFields([{ name: 'Alt Removed', value: choice, inline: true }])
+                    .addFields([{ name: 'Removed By', value: `<@!${message.author.id}> `, inline: false }])
                     .setTimestamp(Date.now());
                 let reason = ''
-                for (let i = 1; i < args.length; i++) reason += args[i]
+                for (let i = 1; i < args.length; i++) reason += args[i] + " "
                 if (reason != '')
                     if (reason.length > 1024) {
                         embed.addFields([{ name: 'Reason 1', value: reason.substring(0, 1024) }])
@@ -76,21 +65,7 @@ module.exports = {
                     } else embed.addFields([{ name: 'Reason', value: reason }])
                 await message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });
             }
+            confirmMessage.delete();
         })
-        for (let i = 1; i < names.length; i++) {
-            switch (i) {
-                case 1: await mes.react('1️⃣'); break;
-                case 2: await mes.react('2️⃣'); break;
-                case 3: await mes.react('3️⃣'); break;
-                case 4: await mes.react('4️⃣'); break;
-                case 5: await mes.react('5️⃣'); break;
-                case 6: await mes.react('6️⃣'); break;
-                case 7: await mes.react('7️⃣'); break;
-                case 8: await mes.react('8️⃣'); break;
-                case 9: await mes.react('9️⃣'); break;
-                case 10: await mes.react('🔟'); break;
-            }
-        }
-        await mes.react('❌')
     }
 }

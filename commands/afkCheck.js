@@ -24,14 +24,14 @@ module.exports = {
     // alias: ['nafk'],
     description: 'The new version of the afk check',
     requiredArgs: 1,
-    args: '<run symbol> (key count) <location>',
+    args: '<run symbol> (key count) (#/raiding vc) <location>',
     role: 'almostrl',
     getNotes(guildid, member) {
         return `${afkTemplates[guildid] ? Object.keys(afkTemplates[guildid]).map(afk => `\`${afkTemplates[guildid][afk].symbol}\``).join(', ') : 'None for guild'}${afkTemplates[member.id] ? `, ${Object.keys(afkTemplates[member.id]).map(afk => `\`${afkTemplates[member.id][afk].symbol}\``).join(', ')}` : ''}`
     },
     emitter,
     getRunType,
-    requestReactionHandler,
+    requestButtonHandler,
     get runs() {
         return [...runs];
     },
@@ -44,6 +44,7 @@ module.exports = {
      * @param {import('mysql').Connection} tokenDB
      */
     async execute(message, args, bot, db, tokenDB, event) {
+        let settings = bot.settings[message.guild.id]
         if (!registeredWithRestart) {
             restart.registerAFKCheck(module.exports);
             registeredWithRestart = true;
@@ -60,12 +61,14 @@ module.exports = {
         if (symbol[0] == 'a') {
             isAdvanced = true;
         }
+        let raidingVC;
+        if (settings.backend.useStaticVCForRaiding) { raidingVC = args[0]; args.shift(); }
         //Check Run Type
         let runType = getRunType(symbol, message.guild.id);
         if (isAdvanced && !bot.settings[message.guild.id].backend.allowAdvancedRuns) return
         if (!runType && message.member.roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles.vetrl).position) return message.channel.send('Run Type Not Recognized')
-        if (!runType) runType = await getTemplate(message, afkTemplates, shift).catch(er => message.channel.send(`Unable to get template. Error: \`${er}\``))
-        if (!runType) return
+        if (!runType) runType = await getTemplate(message, afkTemplates, shift)
+        if (!runType) return await message.channel.send(`Could not find run type ${symbol}`)
 
         //Check for keycount
         let keyCount
@@ -99,17 +102,24 @@ module.exports = {
 
         //get/set channel
         let channel = null;
-        if (runInfo.newChannel) channel = await createChannel(runInfo, message, bot)
-        else channel = message.member.voice.channel;
-        if (!channel) return message.channel.send(`Unable to create/find the channel you are in`)
-        else runInfo.channel = channel.id;
+        if (settings.backend.useStaticVCForRaiding) {
+            runInfo.channel = settings.voice["raiding" + raidingVC]
+            channel = bot.channels.cache.get(runInfo.channel)
+            if (!channel) return message.channel.send(`Unable to create/find the channel you are in`)
+        } else {
+            if (runInfo.newChannel) channel = await createChannel(runInfo, message, bot)
+            else channel = message.member.voice.channel;
+            if (!channel) return message.channel.send(`Unable to create/find the channel you are in`)
+            else runInfo.channel = channel.id;
+        }
 
         //begin afk check
         let afkModule = new afkCheck(runInfo, bot, db, message.guild, channel, message, tokenDB)
         runs.push({ channel: channel.id, afk: afkModule })
         if (runInfo.startDelay > 0) setTimeout(begin, runInfo.startDelay, afkModule)
     },
-    async eventAfkExecute(message, args, bot, db, tokenDB, event, isVet) {
+    async eventAfkExecute(message, args, bot, db, tokenDB, event, isVet, raidingVC) {
+        settings = bot.settings[message.guild.id]
         if (!registeredWithRestart) {
             restart.registerAFKCheck(module.exports);
             registeredWithRestart = true;
@@ -118,6 +128,7 @@ module.exports = {
             Channels.registerAFKCheck(module.exports);
             registeredWithVibotChannels = true;
         }
+        args.shift();
         //clear out runs array
         destroyInactiveRuns();
 
@@ -131,8 +142,7 @@ module.exports = {
         runInfo.raidLeader = message.author.id;
 
         //get/set location
-        let location = ''
-        for (i = 1; i < args.length; i++) location = location.concat(args[i]) + ' ';
+        let location = args.join(' ')
         if (location.length >= 1024) return message.channel.send('Location must be below 1024 characters, try again');
         if (location == '') location = 'None'
         runInfo.location = location.trim();
@@ -142,10 +152,16 @@ module.exports = {
 
         //get/set channel
         let channel = null;
-        if (runInfo.newChannel) channel = await createChannel(runInfo, message, bot)
-        else channel = message.member.voice.channel;
-        if (!channel) return message.channel.send(`Unable to create/find the channel you are in`)
-        else runInfo.channel = channel.id;
+        if (settings.backend.useStaticVCForRaiding) {
+            runInfo.channel = settings.voice["raiding" + raidingVC]
+            channel = bot.channels.cache.get(runInfo.channel)
+            if (!channel) return message.channel.send(`Unable to create/find the channel you are in`)
+        } else {
+            if (runInfo.newChannel) channel = await createChannel(runInfo, message, bot)
+            else channel = message.member.voice.channel;
+            if (!channel) return message.channel.send(`Unable to create/find the channel you are in`)
+            else runInfo.channel = channel.id;
+        }
 
         //begin afk check
         let afkModule = new afkCheck(runInfo, bot, db, message.guild, channel, message, tokenDB)
@@ -192,8 +208,8 @@ class afkCheck {
      * @param {String} afkInfo.location
      * @param {String} afkInfo.symbol
      * @param {String} afkInfo.reqsImageUrl
-     * @param {String} afkInfo.keyEmoteID
-     * @param {String} afkInfo.vialEmoteID
+     * @param {String} afkInfo.keyEmote
+     * @param {String} afkInfo.vialEmote
      * @param {String} afkInfo.keyLogName
      * @param {String} afkInfo.headcountEmote
      * @param {Boolean} afkInfo.isVet
@@ -224,6 +240,7 @@ class afkCheck {
         this.afkInfo = afkInfo;
         if (!this.settings.backend.allowAdvancedRuns)
             this.afkInfo.isAdvanced = false;
+
         this.bot = bot;
         this.db = db;
         this.guild = guild;
@@ -251,20 +268,23 @@ class afkCheck {
             else this.verifiedRaiderRole = this.guild.roles.cache.get(this.settings.roles.raider)
             this.staffRole = guild.roles.cache.get(this.afkInfo.isEvent ? this.settings.roles.eventrl : this.settings.roles.almostrl)
         }
-        this.afkChannel = guild.channels.cache.find(c => c.name === 'afk')
+        this.afkChannel = guild.channels.cache.find(c => c.name.toLowerCase() === 'afk')
+        if (!this.afkChannel) this.afkChannel = guild.channels.cache.find(c => c.name.toLowerCase() === 'lounge')
         this.runInfoChannel = guild.channels.cache.get(this.settings.channels.runlogs)
         this.officialRusher = guild.roles.cache.get(this.settings.roles.rusher)
-        this.nitroBooster = guild.roles.cache.get(this.settings.roles.nitro)
+        this.perkRoles = this.settings.lists.perkRoles.map(role => guild.roles.cache.get(this.settings.roles[role]))
         this.leaderOnLeave = guild.roles.cache.get(this.settings.roles.lol)
+        this.trialRaidLeader = guild.roles.cache.get(this.settings.roles.trialrl)
         this.keys = []
+        this.earlyReacts = {}
         this.moddedKeys = false
-        this.nitro = []
         this.vials = []
         this.earlyLocation = []
         this.openInteractions = []
         this.raiders = []
         this.pointsUsers = []
-        this.supporters = []
+        this.supporter = []
+        this.supporterReacts = []
         this.endedBy
         this.time = this.afkInfo.timeLimit
         this.postTime = 20;
@@ -275,6 +295,9 @@ class afkCheck {
                 this.reactables[i.shortName] = { users: [], points: i.pointsGiven }
             }
         }
+        this.partneredMessageSent = false
+        this.partneredMessage = null
+        this.partneredPings = null
         this.knights = []
         this.warriors = []
         this.pallies = []
@@ -292,7 +315,27 @@ class afkCheck {
             active: true,
             vcSize: this.channel.members.size,
         }
-        fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot) })
+        if (!this.afkInfo.hasOwnProperty('embed')) { this.afkInfo.embed = {} }
+        this.afkInfo.embed.description = ""
+        if (this.channel) { this.afkInfo.embed.description += `To join, **click here** ${this.channel}\n` }
+        if (this.afkInfo.keyEmote) { this.afkInfo.embed.description += `If you have a key react with ${this.bot.storedEmojis[this.afkInfo.keyEmote].text}\n` }
+        if (this.afkInfo.vialEmote) { this.afkInfo.embed.description += `If you have a vial react with ${this.bot.storedEmojis[this.afkInfo.vialEmote].text}\n` }
+        if (this.afkInfo.earlyLocationReacts.length >= 1) {
+            this.afkInfo.embed.description += `If you have any of the following react with ${this.afkInfo.earlyLocationReacts.map(
+                emoji => this.bot.storedEmojis[emoji.emote].text
+            ).join(', ')}\n`
+        }
+        if (this.afkInfo.reacts.length >= 1) {
+            this.afkInfo.embed.description += `If you have any of the following react with it to indicate you are bringing it ${this.afkInfo.reacts.map(
+                emoji => this.bot.storedEmojis[emoji].text
+            ).join(', ')}\n`
+        }
+        if (this.perkRoles.length >= 1) {
+            this.afkInfo.embed.description += `If you have any of the following roles ${this.perkRoles.map(
+                role => role
+            ).join(', ')} react with ${this.bot.storedEmojis['NitroBooster'].text}\n`
+        }
+        fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot, this.guild) })
         this.sendMessage()
     }
 
@@ -323,22 +366,46 @@ class afkCheck {
             this.raidStatusMessage = await this.raidStatus.send(`${pings}, \`${this.afkInfo.runName}\`${flag ? ` (${flag})` : ''} is beginning now. ${this.afkInfo.twoPhase ? `Only reactables will be moved in at first. After everything is confirmed, the channel will open up.` : `Please join ${this.channel.name}`}`)
             this.start()
         }
+        if (this.afkInfo.partneredServerPing) {
+            function getPartneredServers(guildId, bot) {
+                for (let i in bot.partneredServers) {
+                    if (bot.partneredServers[i].guildId == guildId) { return bot.partneredServers[i]}
+                }
+                return null
+            }
+            let partneredServer = getPartneredServers(this.message.guild.id, this.bot)
+            if (partneredServer) {
+                const partneredSettings = this.bot.settings[partneredServer.id]
+                let otherServer = this.bot.guilds.cache.find(g => g.id == partneredServer.id)
+                let partneredChannel;
+                let otherServerCache = otherServer.channels.cache
+                let settingCategories = this.settings.categories
+                let parentName = this.message.channel.parent.name.toLowerCase()
+                if (parentName === settingCategories.raiding.toLowerCase()) partneredChannel = otherServerCache.get(partneredSettings.channels.raidstatus)
+                else if (parentName === settingCategories.veteran.toLowerCase()) partneredChannel = otherServerCache.get(partneredSettings.channels.vetstatus)
+                else partneredChannel = otherServerCache.get(partneredSettings.channels.eventstatus)
+                if (this.afkInfo.partneredServerPingPriority) partneredChannel = otherServerCache.get(partneredSettings.channels[this.afkInfo.partneredServerPingPriority])
+                this.partneredPings = this.afkInfo.pingRole ? (typeof this.afkInfo.pingRole != "string" ? this.afkInfo.pingRole.map(r => `<@&${partneredSettings.roles[r]}>`).join(' ') : `<@&${partneredSettings.roles[this.afkInfo.pingRole]}>`) + ' @here' : '@here';
+                this.partneredMessageSent = true
+                this.partneredMessage = await partneredChannel.send(`${this.partneredPings},  **${this.afkInfo.runName}** is starting inside of **${this.message.guild.name}** in ${this.channel} at \`\`${this.afkInfo.location}\`\``)
+            }
+        }
     }
 
     async start() {
-        //create/send leader embed
         this.leaderEmbed = new Discord.EmbedBuilder()
             .setColor(this.afkInfo.embed.color || "#fefefe")
             .setTitle(`${this.message.member.nickname}'s ${this.afkInfo.runName}`)
-            .addFields({ name: 'Our current keys', value: 'None!' })
             .setFooter({ text: `${this.afkInfo.twoPhase ? 'Click ✅ to open the channel, ' : ''}Click ❌ to abort, Click 🔑 for keys to be logged as Modded` })
-        if (this.afkInfo.vialReact) this.leaderEmbed.addFields({ name: 'Our current vials', value: 'None!' })
-        this.afkInfo.earlyLocationReacts.forEach(r => this.leaderEmbed.addFields({ name: `Our current ${r.shortName}`, value: 'None!' }))
+            .setDescription(`**Raid Leader: ${this.message.member} \`\`${this.message.member.nickname}\`\`\nVC: ${this.channel}\nLocation:** \`\`${this.afkInfo.location}\`\``)
+        if (this.afkInfo.keyEmote) this.leaderEmbed.addFields({ name: `${this.bot.storedEmojis[this.afkInfo.keyEmote].text} Keys`, value: 'None!', inline: true})
+        if (this.afkInfo.vialReact) this.leaderEmbed.addFields({ name: '<:VialOfPureDarkness:1050494410770632794> Vials', value: 'None!', inline: true})
+        this.afkInfo.earlyLocationReacts.forEach(r => this.leaderEmbed.addFields({ name: `${this.bot.storedEmojis[r.emote].text} ${r.shortName}`, value: 'None!', inline: true }))
         this.leaderEmbed.addFields([
-            { name: 'Location', value: this.afkInfo.location },
-            { name: 'Other Early Location', value: 'None!' },
-            { name: 'Nitro', value: 'None!' },
+            { name: '🗺️ Early Location', value: 'None!', inline: true },
+            { name: `${this.bot.storedEmojis.NitroBooster.text} Supporters`, value: 'None!', inline: true },
         ])
+
         let lar;
         if (this.afkInfo.twoPhase) {
             lar = new Discord.ActionRowBuilder()
@@ -436,19 +503,18 @@ class afkCheck {
     async interactionHandler(interaction) {
         if (!interaction.isButton()) return;
         if (this.openInteractions.includes(interaction.user.id)) return interaction.deferUpdate()
-        if (interaction.customId == this.afkInfo.keyEmoteID) {
+        if (interaction.customId == this.afkInfo.keyEmote) {
             this.confirmSelection(interaction, 0, 'key', this.afkInfo.keyCount)
         }
-        else if (this.afkInfo.vialReact && interaction.customId == this.afkInfo.vialEmoteID) this.confirmSelection(interaction, 1, 'vial', 3)
-        else if (interaction.customId === 'nitro') return this.useNitro(interaction, this.leaderEmbed.data.fields.length - 1)
-        else if (interaction.customId === 'supporter') return this.supporterUse(interaction, this.leaderEmbed.data.fields.length - 2)
+        else if (this.afkInfo.vialReact && interaction.customId == this.afkInfo.vialEmote) this.confirmSelection(interaction, 1, 'vial', 3)
+        else if (interaction.customId === 'supporter') return this.useSupporter(interaction, this.leaderEmbed.data.fields.length - 1)
         else if (interaction.customId === 'points') return this.pointsUse(interaction, this.leaderEmbed.data.fields.length - 2)
         else if (interaction.customId === 'start') {
             if (this.guild.members.cache.get(interaction.user.id).roles.highest.position >= this.staffRole.position) {
                 this.endedBy = interaction.user;
                 interaction.deferUpdate()
                 return this.postAfk()
-            }
+            } else { return interaction.reply({ ephemeral: true, content: 'You are not a staff member' }) }
         }
         else if (interaction.customId === 'end') {
             if (this.guild.members.cache.get(interaction.user.id).roles.highest.position >= this.staffRole.position) {
@@ -506,18 +572,17 @@ class afkCheck {
                     this.raidStatusMessage = await this.raidStatusMessage.edit({ components: temp_rs_components });
                     this.leaderEmbed.data.footer.text = `Channel is opening...`
                     this.leaderEmbedMessage = await this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed], components: temp_leader_components })
-                    let tempM = await this.raidStatus.send(`${this.channel.name} will open in 5 seconds...`);
+                    let tempM = await this.raidStatus.send(`${this.channel} will open in 5 seconds...`);
                     setTimeout(async (afk) => {
                         await afk.channel.permissionOverwrites.edit(afk.verifiedRaiderRole.id, { Connect: true, ViewChannel: true })
                         if (afk.eventBoi) await afk.channel.permissionOverwrites.edit(afk.eventBoi.id, { Connect: true, ViewChannel: true })
-                        afk.mainEmbed.data.description = `To join, **click here** <#${afk.channel.id}>\n` + afk.mainEmbed.data.description;
                         afk.raidStatusMessage = await afk.raidStatusMessage.edit({ embed: afk.mainEmbed });
                         await tempM.edit(`<#${this.channel.id}> is open!`);
                         this.leaderEmbed.data.footer.text = `Channel is open.`
                         this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] })
                     }, 5000, this)
                     setTimeout(async tempM => { tempM.delete(); }, 20000, tempM);
-                    for (let i of this.afkInfo.reacts) await this.raidStatusMessage.react(i)
+                    for (let i of this.afkInfo.reacts) try { await this.raidStatusMessage.react(this.bot.storedEmojis[i].id) } catch (error) { ErrorLogger.log(error, this.bot, this.guild) }
                 } else {
                     interaction.reply({ ephemeral: true, content: 'You are not a staff member' })
                     interaction.deferUpdate()
@@ -527,9 +592,24 @@ class afkCheck {
         }
         else for (let i in this.afkInfo.earlyLocationReacts) {
             let react = this.afkInfo.earlyLocationReacts[i]
-            if (react.emoteID == interaction.customId) {
+            if (react.emote == interaction.customId) {
                 if (react.requiredRole && !interaction.member.roles.cache.has(this.settings.roles[react.requiredRole])) return interaction.deferUpdate()
                 this.confirmSelection(interaction, +i + +1, react.shortName, react.limit, react.noConfirm, react.noLocation)
+            }
+        }
+    }
+
+    async buttonHandler(interaction, limit) {
+        if (!interaction.isButton()) return;
+        if (interaction.customId == this.afkInfo.keyEmote) {
+            this.confirmSelection(interaction, 0, 'key', limit, false, false, true, this.afkInfo.keyCount)
+        }
+        else if (interaction.customId == this.afkInfo.vialEmote) this.confirmSelection(interaction, 1, 'vial', limit, false, false, true, 3)
+        else for (let i in this.afkInfo.earlyLocationReacts) {
+            let react = this.afkInfo.earlyLocationReacts[i]
+            if (interaction.customId == react.emote) {
+                if (react.requiredRole && !interaction.member.roles.cache.has(this.settings.roles[react.requiredRole])) return interaction.deferUpdate()
+                this.confirmSelection(interaction, +i + +1, react.shortName, limit, react.noConfirm, react.noLocation, true, react.limit)
             }
         }
     }
@@ -553,17 +633,16 @@ class afkCheck {
 
         // Organize reacts into above arrays
         if (this.afkInfo.headcountEmote && this.afkInfo.headcountOnAfk) reacts.push(this.afkInfo.headcountEmote)
-        addButton({ emoji: this.afkInfo.keyEmoteID, style: Discord.ButtonStyle.Primary, customId: this.afkInfo.keyEmoteID })
-        if (this.afkInfo.vialReact) addButton({ emoji: this.afkInfo.vialEmoteID, style: Discord.ButtonStyle.Secondary, customId: this.afkInfo.vialEmoteID })
-        for (let i of this.afkInfo.earlyLocationReacts) addButton({ emoji: i.emoteID, style: Discord.ButtonStyle.Secondary, customId: i.emoteID })
+        if (this.afkInfo.keyEmote) addButton({ emoji: this.bot.storedEmojis[this.afkInfo.keyEmote].id, label: `0/${this.afkInfo.keyCount}`, style: Discord.ButtonStyle.Primary, customId: this.afkInfo.keyEmote })
+        if (this.afkInfo.vialReact) addButton({ emoji: this.bot.storedEmojis[this.afkInfo.vialEmote].id, label: `0/3`, style: Discord.ButtonStyle.Secondary, customId: this.afkInfo.vialEmote })
+        if (this.afkInfo.earlyLocationReacts.length > 0) for (let i of this.afkInfo.earlyLocationReacts) addButton({ emoji: this.bot.storedEmojis[i.emote].id, label: `0/${i.limit}`, style: i.buttonStyle ? i.buttonStyle : Discord.ButtonStyle.Secondary, customId: i.emote })
         if (!this.afkInfo.twoPhase) for (let i of this.afkInfo.reacts) reacts.push(i)
         //split row
-        actionRows.push(curRow); curRow = []
-        addButton({ emoji: '701491230349066261', style: Discord.ButtonStyle.Secondary, label: 'Nitro', customId: 'nitro' })
-        if (this.settings.backend.supporter) addButton({ emoji: '752368122551337061', label: 'ViBot Supporter', style: Discord.ButtonStyle.Success, customId: 'supporter' })
+        if (curRow.length > 0) { actionRows.push(curRow); curRow = [] }
+        if (this.settings.backend.supporter) addButton({ emoji: this.bot.storedEmojis['NitroBooster'].id, label: 'Supporter', style: Discord.ButtonStyle.Success, customId: 'supporter' })
         if (this.settings.backend.points) addButton({ label: '🎟️ Use Tickets', style: Discord.ButtonStyle.Secondary, customId: 'points' })
         //split row
-        actionRows.push(curRow); curRow = []
+        if (curRow.length > 0) { actionRows.push(curRow); curRow = [] }
         if (this.afkInfo.twoPhase) addButton({ label: '✅ Open Channel', style: Discord.ButtonStyle.Success, customId: 'openvc' })
         else addButton({ label: '✅ Start Run', style: Discord.ButtonStyle.Success, customId: 'start' })
         addButton({ label: '❌ Abort Run', style: Discord.ButtonStyle.Danger, customId: 'end' })
@@ -573,7 +652,7 @@ class afkCheck {
         const components = []
         for (let i of actionRows) { let n = new Discord.ActionRowBuilder({ components: i }); components.push(n) }
         await this.raidStatusMessage.edit({ components: components })
-        for (let i of reacts) await this.raidStatusMessage.react(i)
+        for (let i of reacts) try { await this.raidStatusMessage.react(this.bot.storedEmojis[i].id) } catch (error) { ErrorLogger.log(error, this.bot, this.guild) }
     }
 
     /**
@@ -583,13 +662,12 @@ class afkCheck {
      * @param {String} type
      * @param {Number} limit
      */
-    async confirmSelection(interaction, index, type, limit, noConfirm = false, noLocation = false) {
+    async confirmSelection(interaction, index, type, limit, noConfirm = false, noLocation = false, request = false, origLimit = 0) {
         let embed = new Discord.EmbedBuilder({ description: 'placeholder' })
         this.openInteractions.push(interaction.user.id)
 
         // Prompt
-        let id = interaction.customId
-        let emote = this.bot.emojis.cache.get(id)
+        let emote = this.bot.storedEmojis[interaction.customId].text
         /**
          *
          * @param {afkCheck} afk
@@ -600,7 +678,9 @@ class afkCheck {
             //check for full
             if (!checkType(afk)) return
             //set into type
+
             setType(afk)
+
             function setType(afk) {
                 //key, vial, other
                 switch (type.toLowerCase()) {
@@ -616,6 +696,12 @@ class afkCheck {
                 }
                 afk.earlyLocation.push(interaction.user);
             }
+
+            let current_limit = request ? getLength(afk) - origLimit : getLength(afk)
+
+            // Disable button if react limit is hit
+            if (current_limit >= limit) interaction.message.editButton(interaction.component.customId, `${current_limit}/${limit}`, true)
+            else interaction.message.editButton(interaction.component.customId, `${current_limit}/${limit}`)
 
             //allow another interaction
             afk.removeFromActiveInteractions(interaction.user.id)
@@ -633,27 +719,42 @@ class afkCheck {
             }
 
             //add to leader embed
+            if (!afk.afkInfo.keyEmote) index--;
             if (afk.afkInfo.vialReact && !(type == 'key' || type == 'vial')) index++;
             if (afk.leaderEmbed.data.fields[index].value == `None!`) {
                 afk.leaderEmbed.data.fields[index].value = `${emote}: <@!${interaction.user.id}>`;
             } else afk.leaderEmbed.data.fields[index].value += `\n${emote}: ${`<@!${interaction.user.id}>`}`
-            afk.leaderEmbedMessage.edit({ embeds: [afk.leaderEmbed] }).catch(er => ErrorLogger.log(er, afk.bot));
-            afk.runInfoMessage.edit({ embeds: [afk.leaderEmbed] }).catch(er => ErrorLogger.log(er, afk.bot));
+            afk.leaderEmbedMessage.edit({ embeds: [afk.leaderEmbed] }).catch(er => ErrorLogger.log(er, afk.bot, this.guild));
+            afk.runInfoMessage.edit({ embeds: [afk.leaderEmbed] }).catch(er => ErrorLogger.log(er, afk.bot, this.guild));
 
             //end interval
             if (endAfter) clearInterval(endAfter);
         }
         function checkType(afk) { //true = spot open
             //key, vial, other
+            let lenLimit = request ? origLimit + limit : limit
             switch (type) {
                 case 'key':
-                    if (afk.keys.length >= limit || afk.keys.includes(interaction.member.id)) return false; else return true;
+                    if (afk.keys.length >= lenLimit || afk.keys.includes(interaction.member.id)) return false; else return true;
                 case 'vial':
-                    if (afk.vials.length >= limit || afk.vials.includes(interaction.member.id)) return false; else return true;
+                    if (afk.vials.length >= lenLimit || afk.vials.includes(interaction.member.id)) return false; else return true;
                 default:
-                    if (afk.reactables[type].users.length >= limit || afk.reactables[type].users.includes(interaction.member.id)) return false; else return true;
+                    if (afk.reactables[type].users.length >= lenLimit || afk.reactables[type].users.includes(interaction.member.id)) return false; else return true;
             }
         }
+        function getLength(afk) { //true = spot open
+            //key, vial, other
+            switch (type) {
+                case 'key':
+                    return afk.keys.length
+                case 'vial':
+                    return afk.vials.length
+                default:
+                    return afk.reactables[type].users.length
+            }
+        }
+
+        let endAfter = null
 
         // If confirmation not needed, just send the location
         if (noConfirm) return sendLocation(this, true)
@@ -661,7 +762,7 @@ class afkCheck {
         // Otherwise prompt for confirmation
 
         // Will end the confirmation automatically after 60s to save resources
-        let endAfter = setInterval(() => {
+        endAfter = setInterval(() => {
             try {
                 dmIntereactionCollector.stop();
                 embed.setDescription('Reaction took too long to receive, or another vial already confirmed. Re-react to try again')
@@ -678,6 +779,9 @@ class afkCheck {
 
         try {
             if (!checkType(this)) {
+                let current_limit = request ? getLength(this) - origLimit : getLength(this)
+                if (current_limit >= limit) interaction.message.editButton(interaction.component.customId, `${current_limit}/${limit}`, true)
+                else interaction.message.editButton(interaction.component.customId, `${current_limit}/${limit}`)
                 embed.setDescription(`Too many people have already reacted and confirmed for that. Try another react or try again next run.`)
                 interaction.reply({ embeds: [embed], ephemeral: true })
                 return this.removeFromActiveInteractions(interaction.member.id)
@@ -687,11 +791,19 @@ class afkCheck {
                 if (type == r.shortName) reactInfo = r;
             }
 
+            let emoteName = null
+            if (reactInfo && reactInfo.shortName) emoteName = reactInfo.shortName
+            if (type == "key") emoteName = 'Key'
+            if (type == "vial") emoteName = 'Vial'
+
             embed.setDescription(
                 reactInfo && reactInfo.confirmationMessage ?
-                    `You reacted as ${emote}\n\n${reactInfo.confirmationMessage}\n\nPress ✅ to confirm your reaction. Otherwise press ❌` :
-                    `You reacted as ${emote}\nPress ✅ to confirm your reaction. Otherwise press ❌`
+                    `You reacted as ${emote} **${emoteName}**\n\n${reactInfo.confirmationMessage}\n\nPress ✅ to confirm your reaction. Otherwise press ❌` :
+                    `You reacted as ${emote} **${emoteName}**\nPress ✅ to confirm your reaction. Otherwise press ❌`
             )
+
+            if (reactInfo && reactInfo.confirmationMedia) embed.setImage(reactInfo.confirmationMedia)
+
             let ar = new Discord.ActionRowBuilder().addComponents([
                 new Discord.ButtonBuilder()
                     .setLabel('✅ Confirm')
@@ -704,6 +816,8 @@ class afkCheck {
             ])
             await interaction.reply({ embeds: [embed], ephemeral: true, components: [ar] })
             let em = await interaction.fetchReply()
+            
+            embed.setImage(null)
 
             //Update Rushers table
             if (reactInfo && reactInfo.requiredRole == 'rusher') {
@@ -726,24 +840,7 @@ class afkCheck {
                         return interaction.editReply({ embeds: [embed], components: [] })
                     }
 
-                    //check realmeye if applicable
-                    if (reactInfo && reactInfo.checkRealmEye) {
-                        let found = false;
-                        let characters = await realmEyeScrape.getUserInfo(this.message.guild.members.cache.get(interaction.user.id).nickname.replace(/[^a-z|]/gi, '').split('|')[0]).catch(er => found = true)
-                        if (characters.characters) characters.characters.forEach(c => {
-                            if (!found && (c.class == 'Mystic' && c.stats == '8/8')) {
-                                found = true;
-                            }
-                        })
-                        if (!found) {
-                            embed.setDescription(`I could not find any 8/8 mystics under \`${this.message.guild.members.cache.get(interaction.user.id).nickname.replace(/[^a-z|]/gi, '').split('|')[0]}\`. React with :white_check_mark: if you do have an 8/8 mystic on another account`)
-                            interaction.editReply({ embeds: [embed] })
-                            let subInteractionCollector = new Discord.InteractionCollector(this.bot, { message: em, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
-                            subInteractionCollector.on('collect', subSubInteraction => {
-                                if (subSubInteraction.customId == 'confirm') sendLocation(this)
-                            })
-                        } else sendLocation(this)
-                    } else sendLocation(this)
+                    sendLocation(this)
                 } else {
                     embed.setDescription('Cancelled. You can dismiss this message')
                     interaction.editReply({ embeds: [embed], components: [] })
@@ -759,18 +856,18 @@ class afkCheck {
      * @param {Discord.MessageComponentInteraction} interaction
      * @param {Number} index
      */
-    async useNitro(interaction, index) {
+    async useSupporter(interaction, index) {
         let embed = new Discord.EmbedBuilder({ description: 'placeholder' }).setColor(this.afkInfo.embed.color)
         let reactor = interaction.member
         if (this.earlyLocation.includes(interaction.user)) {
             embed.setDescription(`The location for this run has been set to \`${this.afkInfo.location}\``)
-            interaction.reply({ embeds: [embed], ephemeral: true })
+            await interaction.reply({ embeds: [embed], ephemeral: true })
             this.removeFromActiveInteractions(interaction.user.id)
-            return;
+            return
         }
-        if (reactor.roles.highest.position >= this.leaderOnLeave.position) {
+        if (reactor.roles.highest.position >= this.trialRaidLeader.position) {
             embed.setDescription(`The location for this run has been set to \`${this.afkInfo.location}\``)
-            interaction.reply({ embeds: [embed], ephemeral: true })
+            await interaction.reply({ embeds: [embed], ephemeral: true })
             this.earlyLocation.push(interaction.user);
             this.removeFromActiveInteractions(interaction.user.id)
             return;
@@ -778,61 +875,89 @@ class afkCheck {
         for (let i of this.settings.lists.earlyLocation) { //custom early location roles
             if (reactor.roles.cache.has(i)) {
                 embed.setDescription(`The location for this run has been set to \`${this.afkInfo.location}\``)
-                interaction.reply({ embeds: [embed], ephemeral: true })
+                await interaction.reply({ embeds: [embed], ephemeral: true })
                 this.earlyLocation.push(interaction.user);
                 this.removeFromActiveInteractions(interaction.user.id)
                 return
             }
         }
-        if (this.nitro.length + 1 > this.settings.numerical.nitrocount) {
-            embed.setDescription('Too many Nitro Boosters have already received location for this run. Try again in the next run!');
-            interaction.reply({ embeds: [embed], ephemeral: true })
+        if (this.supporter.length + 1 > this.settings.numerical.supporterlimit) {
+            interaction.message.editButton(interaction.component.customId, null, true)
+            embed.setDescription('Too many Supporters have already received location for this run. Try again in the next run!');
+            await interaction.reply({ embeds: [embed], ephemeral: true })
             this.removeFromActiveInteractions(interaction.user.id)
             return
         }
-        if (reactor.roles.cache.has(this.nitroBooster.id)) {
-            if (reactor.voice.channel && reactor.voice.channel.id == this.channel.id) {
-                embed.setDescription(`Nitro benefits in \`${this.message.guild.name}\` only gives guaranteed spot in VC. You are already in the VC so this use hasn\'t been counted`);
-                interaction.reply({ embeds: [embed], ephemeral: true })
-                this.removeFromActiveInteractions(interaction.user.id)
-            } else {
-                await this.db.query(`SELECT * FROM users WHERE id = '${interaction.user.id}'`, async (err, rows) => {
-                    if (err) ErrorLogger.log(err, bot)
-                    this.removeFromActiveInteractions(interaction.user.id)
-                    if (rows.length == 0) return await this.db.query(`INSERT INTO users (id) VALUES('${interaction.user.id}')`)
-                    if (Date.now() - this.settings.numerical.nitrocooldown > parseInt(rows[0].lastnitrouse)) {
-                        if (this.settings.backend.nitroearlylocation) {
-                            embed.setDescription(`The location for this run has been set to \`${this.afkInfo.location}\``)
-                            interaction.reply({ embeds: [embed], ephemeral: true })
-                            this.earlyLocation.push(interaction.user);
-                        }
-                        let moved = true
-                        await reactor.voice.setChannel(this.channel.id).catch(er => { moved = false })
-                        if (!this.settings.backend.nitroearlylocation) {
-                            if (moved) embed.setDescription('You have been moved into the voice channel. If you get disconnected while the afk check is up, join lounge and you will get moved in automatically.')
-                            else embed.setDescription('Join the lounge to be moved in to the raiding channel')
-                            interaction.reply({ embeds: [embed], ephemeral: true })
-                        }
-                        this.nitro.push(interaction.user)
-                        if (this.leaderEmbed.data.fields[index].value == `None!`) this.leaderEmbed.data.fields[index].value = `<@!${interaction.user.id}> `;
-                        else this.leaderEmbed.data.fields[index].value += `, <@!${interaction.user.id}>`
-                        this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
-                        this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
-                        emitter.on('Ended', (channelID, aborted) => {
-                            if (channelID == this.channel.id) {
-                                if (!aborted) this.db.query(`UPDATE users SET lastnitrouse = '${Date.now()}' WHERE id = ${interaction.user.id}`);
-                                else interaction.user.send(`The afk check was aborted, you have been refunded your nitro perk use.`);
-                            }
-                        })
-                    } else {
-                        let lastUse = Math.round((Date.now() - rows[0].lastnitrouse) / 60000)
-                        embed.setDescription(`Nitro perks are limited to once an hour. Your last use was \`${lastUse}\` minutes ago`)
-                        interaction.reply({ embeds: [embed], ephemeral: true })
-                        this.removeFromActiveInteractions(interaction.user.id)
-                    }
-                })
-            }
+        if (this.supporter.includes(interaction.member.user)) {
+            embed.setDescription('You have already used supporter perks on this run!');
+            await interaction.reply({ embeds: [embed], ephemeral: true })
+            this.removeFromActiveInteractions(interaction.user.id)
+            return
         }
+        if (!interaction.member.roles.cache.hasAny(...this.perkRoles.map(role => role.id))) {
+            embed.setDescription(`You are not eligible for this reaction`)
+            await interaction.reply({ embeds: [embed], ephemeral: true })
+            this.removeFromActiveInteractions(interaction.user.id)
+            return
+        }
+        if (reactor.voice.channel && reactor.voice.channel.id == this.channel.id) {
+            embed.setDescription(`Supporter benefits in \`${interaction.guild.name}\` only gives guaranteed spot in VC. You are already in the VC so this use hasn\'t been counted`);
+            await interaction.reply({ embeds: [embed], ephemeral: true })
+            this.removeFromActiveInteractions(interaction.user.id)
+            return
+        }
+
+        let supporterRole = interaction.member.supporterHierarchy(this.settings)
+        if (!supporterRole) {
+            embed.setDescription(`You are not eligible for this reaction`)
+            await interaction.reply({ embeds: [embed], ephemeral: true })
+            this.removeFromActiveInteractions(interaction.user.id)
+            return
+        }
+        if (this.supporter.length + 1 > this.settings.supporter[`supporterLimit${supporterRole}`]) {
+            embed.setDescription(`Too many Supporters have already received location for this run. Try again in the next run!`)
+            await interaction.reply({ embeds: [embed], ephemeral: true })
+            this.removeFromActiveInteractions(interaction.user.id)
+            return
+        }
+        let cooldown = this.settings.supporter[`supporterCooldownSeconds${supporterRole}`]
+        let uses = this.settings.supporter[`supporterUses${supporterRole}`]
+        let lastUseCheck = Date.now() - (cooldown * 1000)
+        this.db.query(`SELECT * FROM supporterusage WHERE guildid = '${interaction.guild.id}' AND userid = '${interaction.member.id}' AND utime > '${lastUseCheck}'`,
+            async (err, rows) => {
+            if (err) {
+                ErrorLogger.log(err, this.bot, this.guild)
+                this.removeFromActiveInteractions(interaction.user.id)
+                return
+            }
+            if (rows.length >= uses) {
+                let cooldown_text = ''
+                if (cooldown < 3600) cooldown_text = `${(cooldown/60).toFixed(0)} minutes`
+                else cooldown_text = `${(cooldown/3600).toFixed(0)} hours`
+                embed.setDescription(
+                    `Your perks are limited to ${uses} times every ${cooldown_text}. Your next use is available <t:${(((cooldown*1000)+parseInt(rows[0].utime))/1000).toFixed(0)}:R>`
+                )
+                await interaction.reply({ embeds: [embed], ephemeral: true })
+                this.removeFromActiveInteractions(interaction.user.id)
+                return
+            }
+            let moved = true
+            await reactor.voice.setChannel(this.channel.id).catch(er => { moved = false })
+            if (moved) embed.setDescription('You have been moved into the voice channel. If you get disconnected while the afk check is up, join lounge and you will get moved in automatically.')
+            else embed.setDescription('Join the lounge to be moved in to the raiding channel')
+            await interaction.reply({ embeds: [embed], ephemeral: true })
+            this.supporter.push(interaction.user)
+            this.supporterReacts.push(interaction.user.id)
+            this.leaderEmbed.data.fields[index].value = '<@!' + this.supporterReacts.join('>,\n<@!') + '>'
+            this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot, this.guild));
+            this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot, this.guild));
+            emitter.on('Ended', (channelID, aborted) => {
+                if (channelID == this.channel.id) {
+                    if (!aborted) this.db.query(`INSERT INTO supporterusage (guildid, userid, utime) VALUES ('${interaction.guild.id}', '${interaction.member.id}', '${Date.now()}')`);
+                    else interaction.user.send(`The afk check was aborted, you have been refunded your supporter perk use.`);
+                }
+            })
+        })
     }
 
     /**
@@ -846,7 +971,10 @@ class afkCheck {
             return this.removeFromActiveInteractions(interaction.user.id)
         }
         let ticketLimit = this.settings.numerical.ticketlimit
-        if (this.pointsUsers.length >= ticketLimit) return;
+        if (this.pointsUsers.length >= ticketLimit) {
+            interaction.message.editButton(interaction.component.customId, null, true)
+            return
+        }
         let embed = new Discord.EmbedBuilder()
             .setColor(this.afkInfo.embed.color)
             .setFooter({ text: `React with ✅ to confirm, or ❌ to cancel` })
@@ -881,6 +1009,7 @@ class afkCheck {
                 }
                 else if (int.customId == 'confirm') {
                     if (this.pointsUsers.length >= ticketLimit) {
+                        interaction.message.editButton(interaction.component.customId, null, true)
                         embed.setDescription('Unfortunately too many people have used their points for this run. No points have been deducted.')
                         if (embed.data.footer) delete embed.data.footer
                         if (embed.data.author) delete embed.data.author
@@ -897,11 +1026,11 @@ class afkCheck {
                         if (embed.data.author) delete embed.data.author
                         interaction.editReply({ embeds: [embed], components: [] })
                         if (this.leaderEmbed.data.fields[index].value == 'None!') this.leaderEmbed.data.fields[index].value = `<@!${interaction.user.id}>`
-                        else this.leaderEmbed.data.fields[index].value += `, <@!${interaction.user.id}>`
+                        else this.leaderEmbed.data.fields[index].value += `,\n<@!${interaction.user.id}>`
                         this.pointsUsers.push(interaction.user)
                         this.earlyLocation.push(interaction.user)
-                        await this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, bot));
-                        await this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, bot));
+                        await this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, bot, this.guild));
+                        await this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, bot, this.guild));
                         emitter.on('Ended', (channelID, aborted) => {
                             if (aborted && channelID == this.channel.id) {
                                 this.db.query(`UPDATE users SET points = points + ${earlyLocationCost} WHERE id = ${interaction.user.id}`);
@@ -919,66 +1048,6 @@ class afkCheck {
                 }
             })
         })
-    }
-
-    /**
-     *
-     * @param {Discord.MessageComponentInteraction} interaction
-     * @param {Number} index
-     */
-    async supporterUse(interaction, index) {
-        let embed = new Discord.EmbedBuilder({ color: this.afkInfo.embed.color, description: 'placeholder', footer: { text: 'Thank you for supporting ViBot ❤️' } })
-        let reactor = this.message.guild.members.cache.get(interaction.user.id);
-        if (this.earlyLocation.includes(interaction.user)) {
-            embed.setDescription(`The location for this run has been set to \`${this.afkInfo.location}\``)
-            interaction.reply({ embeds: [embed], ephemeral: true })
-            this.removeFromActiveInteractions(interaction.user.id)
-            return
-        }
-        let tier = await patreonHelper.getTier(interaction.user, this.bot, this.tokenDB)
-        if (this.supporters.length >= this.bot.settings[this.message.guild.id].numerical.supporterlimit) {
-            if ([0, 1, 2].includes(tier)) {
-                embed.setDescription('Unfortunately, all spots for early location have been taken.')
-                interaction.reply({ embeds: [embed], ephemeral: true })
-                this.removeFromActiveInteractions(interaction.user.id)
-                return
-            }
-            else if (tiers == -1) return
-        }
-        switch (tier) {
-            case -1:
-                return;
-            case 0:
-                return giveLocation(this, null);
-            case 1:
-                return giveLocation(this, 2);
-            case 2:
-                return giveLocation(this, 4);
-            case 3:
-                this.simp = u
-                return giveLocation(this, null);
-            default:
-                return;
-        }
-        function giveLocation(afkcheck, cooldown) {
-            this.removeFromActiveInteractions(interaction.user.id)
-            let moved = true
-            reactor.voice.setChannel(afkcheck.channel.id).catch(er => { moved = false })
-            embed.setDescription(`The location for this run has been set to \`${afkcheck.afkInfo.location}\`\n\n${moved ? 'You have been moved into the raiding channel. If you get moved out during the AFK check, join lounge and you will be moved back in automatically' : 'To be moved into the raiding channel join lounge. You will be moved automatically (allow a few seconds)'}`)
-            interaction.reply({ embeds: [embed], ephemeral: true })
-            afkcheck.earlyLocation.push(interaction.user);
-            afkcheck.supporters.push(interaction.user)
-            if (afkcheck.leaderEmbed.data.fields[index].value == `None!`) afkcheck.leaderEmbed.data.fields[index].value = `<@!${interaction.user.id}> `;
-            else afkcheck.leaderEmbed.data.fields[index].value += `, <@!${interaction.user.id}>`
-            afkcheck.leaderEmbedMessage.edit({ embeds: [afkcheck.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
-            afkcheck.runInfoMessage.edit({ embeds: [afkcheck.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
-            if (cooldown) {
-                afkcheck.tokenDB.query(`SELECT * FROM patreon WHERE id = '${interaction.user.id}'`, (err, rows) => {
-                    if (rows.length == 0) afkcheck.tokenDB.query(`INSERT INTO patreon (id, lastuse) VALUES ('${interaction.user.id}', '${Date.now() + (3600000 * cooldown)}')`, (err, rows) => { })
-                    else afkcheck.tokenDB.query(`UPDATE patreon SET lastuse = '${Date.now() + (3600000 * cooldown)}' WHERE id = '${interaction.user.id}'`, (err, rows) => { })
-                })
-            }
-        }
     }
 
     async timerInterval() {
@@ -1011,7 +1080,7 @@ class afkCheck {
                 await member.voice.setChannel(this.channel.id).catch(er => { });
             }
         }
-        for (let u of this.nitro) {
+        for (let u of this.supporter) {
             let member = this.message.guild.members.cache.get(u.id);
             if (!member.voice.channel) continue;
             if (member.voice.channel.name == 'lounge' || member.voice.channel.name == 'Veteran Lounge' || member.voice.channel.name.includes('drag')) {
@@ -1030,7 +1099,7 @@ class afkCheck {
         this.leaderInteractionCollector.stop();
 
         //move out people
-        this.channel.members.each(async u => {
+        if (this.afkChannel) this.channel.members.each(async u => {
             if (!this.raiders.includes(u.id)) {
                 let reactor = this.message.guild.members.cache.get(u.id)
                 if (reactor.roles.highest.position >= this.leaderOnLeave.position) return;
@@ -1058,7 +1127,7 @@ class afkCheck {
         ])
 
         //post afk check embed
-        this.mainEmbed.setDescription(`__**Post AFK Move-in**__\nIf you got moved out of vc, or missed the afk check:\n**1.** Join lounge\n**2** Click on ${this.bot.emojis.cache.get(this.afkInfo.headcountEmote)} to get moved in.\n__Time Remaining:__ ${this.postTime} seconds.`)
+        this.mainEmbed.setDescription(`__**Post AFK Move-in**__\nIf you got moved out of vc, or missed the afk check:\n**1.** Join lounge\n**2** Click on ${this.bot.storedEmojis[this.afkInfo.headcountEmote].text} to get moved in.\n__Time Remaining:__ ${this.postTime} seconds.`)
             .setFooter({ text: `The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}` });
         this.raidStatusMessage.edit({ content: null, embeds: [this.mainEmbed], components: [ar] }).catch(er => console.log(er));
         this.postAfkInteractionCollector = new Discord.InteractionCollector(this.bot, { message: this.raidStatusMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
@@ -1082,7 +1151,7 @@ class afkCheck {
         this.postTime -= 5;
         if (this.postTime == 0) return this.endAfk();
 
-        this.mainEmbed.setDescription(`__**Post AFK Move-in**__\nIf you got moved out of vc, or missed the afk check:\n**1.** Join lounge\n**2** Click on ${this.bot.emojis.cache.get(this.afkInfo.headcountEmote)} to get moved in.\n__Time Remaining:__ ${this.postTime} seconds.`);
+        this.mainEmbed.setDescription(`__**Post AFK Move-in**__\nIf you got moved out of vc, or missed the afk check:\n**1.** Join lounge\n**2** Click on ${this.bot.storedEmojis[this.afkInfo.headcountEmote].text} to get moved in.\n__Time Remaining:__ ${this.postTime} seconds.`);
         this.raidStatusMessage.edit({ content: null, embeds: [this.mainEmbed] }).catch(er => console.log(er));
     }
 
@@ -1102,12 +1171,12 @@ class afkCheck {
         //lock channel
         await this.channel.permissionOverwrites.edit(this.verifiedRaiderRole.id, { Connect: false, ViewChannel: true })
         if (this.eventBoi) await this.channel.permissionOverwrites.edit(this.eventBoi.id, { Connect: false, ViewChannel: true })
-        if (this.afkInfo.newChannel && !this.isVet) {
+        if (this.afkInfo.newChannel && !this.isVet && this.afkChannel) {
             this.channel.setPosition(this.afkChannel.position)
         }
         const rules = `<#${this.settings.channels.raidingrules}>` || '#raiding-rules';
         //update embeds/messages
-        this.mainEmbed.setDescription(`This afk check has been ended.\n${this.keys.length > 0 ? `Thank you to ${this.keys.map(k => `<@!${k}> `)} for popping a ${this.bot.emojis.cache.get(this.afkInfo.keyEmoteID)} for us!\n` : ''}${this.simp ? `Thank you to <@!${this.simp.id}> for being a ViBot SIMP` : ''}If you get disconnected during the run, **JOIN LOUNGE** *then* DM ${this.bot.user} \`join\` to get back in`)
+        this.mainEmbed.setDescription(`This afk check has been ended.\n${this.keys.length > 0 && this.afkInfo.keyEmote ? `Thank you to ${this.keys.map(k => `<@!${k}> `)} for popping a ${this.bot.storedEmojis[this.afkInfo.keyEmote].text} for us!\n` : ''}${this.simp ? `Thank you to <@!${this.simp.id}> for being a ViBot SIMP` : ''}If you get disconnected during the run, **JOIN LOUNGE** *then* press the huge **RECONNECT** button`)
             .setFooter({ text: `The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}` })
 
         if (this.afkInfo.isAdvanced)
@@ -1116,9 +1185,9 @@ class afkCheck {
         this.leaderEmbed.setFooter({ text: `The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname} at` })
             .setTimestamp();
 
-        this.raidStatusMessage.edit({ content: null, embeds: [this.mainEmbed], components: [] }).catch(er => ErrorLogger.log(er, this.bot))
-            .then(this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed], components: [] }).catch(er => ErrorLogger.log(er, this.bot)))
-            .then(this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot)))
+        this.raidStatusMessage.edit({ content: null, embeds: [this.mainEmbed], components: [] }).catch(er => ErrorLogger.log(er, this.bot, this.guild))
+            .then(this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed], components: [] }).catch(er => ErrorLogger.log(er, this.bot, this.guild)))
+            .then(this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot, this.guild)))
             .then(this.leaderEmbedMessage.reactions.removeAll())
 
         Channels.addReconnectButton(this.bot, this.raidStatusMessage, this.channel.id);
@@ -1141,7 +1210,7 @@ class afkCheck {
             this.bot.afkChecks[this.channel.id].mainGroup = this.splitGroup
             this.bot.afkChecks[this.channel.id].splitChannel = 'na'
         }
-        fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot) })
+        fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot, this.guild) })
 
         //send embed to history
         let history_run_title = "";
@@ -1157,52 +1226,38 @@ class afkCheck {
                 { name: 'Key', value: 'None!' },
                 { name: 'Early Location', value: 'None!' },
                 { name: 'Raiders', value: 'None!' },
-                { name: 'Nitro User', value: 'None!' },
+                { name: 'Supporter Use', value: 'None!' },
                 { name: `Points Users ${this.afkInfo.earlyLocationCost}`, value: 'None!' },
                 { name: 'Points Log MID', value: 'None!' }
             ])
+        let i = 2
         this.keys.forEach(m => {
-            if (historyEmbed.data.fields[2].value == 'None!') historyEmbed.data.fields[2].value = `<@!${m}>`;
-            else historyEmbed.data.fields[2].value += `, <@!${m}>`;
+            if (historyEmbed.data.fields[i].value == 'None!') historyEmbed.data.fields[i].value = `<@!${m}>`;
+            else historyEmbed.data.fields[i].value += `, <@!${m}>`;
         })
+        i++
         this.earlyLocation.forEach(m => {
-            if (historyEmbed.data.fields[3].value == `None!`) historyEmbed.data.fields[3].value = `<@!${m.id}>`
-            else historyEmbed.data.fields[3].value += `, <@!${m.id}>`
+            if (historyEmbed.data.fields[i].value == `None!`) historyEmbed.data.fields[i].value = `<@!${m.id}>`
+            else historyEmbed.data.fields[i].value += `, <@!${m.id}>`
         })
-        this.pointsUsers.forEach(m => {
-            if (historyEmbed.data.fields[6].value == `None!`) historyEmbed.data.fields[6].value = `<@!${m.id}>`
-            else historyEmbed.data.fields[6].value += `, <@!${m.id}>`
-        })
-        let bigEmbed = false
-        let biggerEmbed = false
-        let biggestEmbed = false
+        i++
         raiders.forEach(m => {
-            if (bigEmbed) {
-                if (historyEmbed.data.fields[5].value.length >= 1000) {
-                    biggerEmbed = true;
-                    historyEmbed.addFields({ name: '-', value: `, <@!${m}>` })
-                }
-                else historyEmbed.data.fields[5].value += `, <@!${m}>`
-            } else if (biggerEmbed) {
-                if (historyEmbed.data.fields[6].value.length >= 1000) {
-                    biggestEmbed = true;
-                    historyEmbed.addFields({ name: '-', value: `, <@!${m}>` })
-                }
-                else historyEmbed.data.fields[6].value += `, <@!${m}>`
-            } else if (biggestEmbed) {
-                historyEmbed.data.fields[7].value += `, <@!${m}>`
-            } else {
-                if (historyEmbed.data.fields[4].value.length >= 1000) {
-                    bigEmbed = true;
-                    historyEmbed.addFields({ name: '-', value: `, <@!${m}>` })
-                }
-                else historyEmbed.data.fields[4].value == 'None!' ? historyEmbed.data.fields[4].value = `<@!${m}>` : historyEmbed.data.fields[4].value += `, <@!${m}>`
-            }
+            if (historyEmbed.data.fields[i].value.length >= 1000) {
+                i++
+                historyEmbed.spliceFields(i, 0, { name: '-', value: `, <@!${m}>` })
+            } else historyEmbed.data.fields[i].value == 'None!' ? historyEmbed.data.fields[i].value = `<@!${m}>` : historyEmbed.data.fields[i].value += `, <@!${m}>`
         });
-        this.nitro.forEach(m => {
-            if (historyEmbed.data.fields[5].value == `None!`) historyEmbed.data.fields[5].value = `<@!${m.id}>`
-            else historyEmbed.data.fields[5].value += `, <@!${m.id}>`
+        i++
+        this.supporter.forEach(m => {
+            if (historyEmbed.data.fields[i].value == `None!`) historyEmbed.data.fields[i].value = `<@!${m.id}>`
+            else historyEmbed.data.fields[i].value += `, <@!${m.id}>`
         });
+        i++
+        this.pointsUsers.forEach(m => {
+            if (historyEmbed.data.fields[i].value == `None!`) historyEmbed.data.fields[i].value = `<@!${m.id}>`
+            else historyEmbed.data.fields[i].value += `, <@!${m.id}>`
+        })
+        i++
 
         //make sure everyone in run is in db
         if (this.channel.members) {
@@ -1229,7 +1284,7 @@ class afkCheck {
             for (let u of this.keys) {
                 let points = this.settings.points.keypop
                 if (this.afkInfo.keyPopPointsOverride) points = this.afkInfo.keyPopPointsOverride
-                if (this.guild.members.cache.get(u).roles.cache.has(this.nitroBooster.id)) points = points * this.settings.points.nitromultiplier
+                if (this.guild.members.cache.get(u).roles.cache.hasAny(...this.perkRoles.map(role => role.id))) points = points * this.settings.points.supportermultiplier
                 if (this.moddedKeys) points = points * this.settings.points.keymultiplier
                 await this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u}'`, er => { if (er) console.log('error logging key points in ', this.guild.id) })
                 pointsLog.push({
@@ -1241,7 +1296,7 @@ class afkCheck {
             for (let r in this.reactables) {
                 if (this.reactables[r].users) this.reactables[r].users.forEach(u => {
                     let points = +this.reactables[r].points
-                    if (this.message.guild.members.cache.get(u).roles.cache.has(this.nitroBooster.id)) points = +points * +this.settings.points.nitromultiplier
+                    if (this.message.guild.members.cache.get(u).roles.cache.hasAny(...this.perkRoles.map(role => role.id))) points = +points * +this.settings.points.supportermultiplier
                     this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u}'`, er => { if (er) console.log('error logging reactable points in ', this.guild.id) })
                     pointsLog.push({
                         uid: u,
@@ -1253,7 +1308,7 @@ class afkCheck {
             var pointlog_mid = await pointLogger.pointLogging(pointsLog, this.message.guild, this.bot, this.mainEmbed);
         }
 
-        if (pointlog_mid) historyEmbed.data.fields[7].value = pointlog_mid;
+        if (pointlog_mid) historyEmbed.data.fields[i].value = pointlog_mid;
 
         historyEmbed.setFooter({ text: `${this.channel.id} • ${this.raidStatusMessage.id} • ${this.leaderEmbedMessage.id} • ${raiders.length} Raiders` })
         this.message.guild.channels.cache.get(this.settings.channels.history).send({ embeds: [historyEmbed] })
@@ -1271,7 +1326,7 @@ class afkCheck {
             }
             keyRoles.checkUser(this.guild.members.cache.get(u), this.bot, this.db)
         }
-
+        let perkRoles = this.perkRoles
         //log run 1 minute after afk check
         if (restart.restarting) log(this)
         else setTimeout(log, 60000, this)
@@ -1284,9 +1339,9 @@ class afkCheck {
                 if (afkCheck.settings.backend.points) {
                     //give points to everyone in run
                     let regular = []
-                    let nitros = []
+                    let supporters = []
                     afkCheck.channel.members.each(m => {
-                        if (m.roles.cache.has(afkCheck.nitroBooster.id)) nitros.push(m)
+                        if (m.roles.cache.hasAny(...perkRoles.map(role => role.id))) supporters.push(m)
                         else regular.push(m)
                     })
                     //regular raiders point logging
@@ -1296,12 +1351,12 @@ class afkCheck {
                         regularQuery = regularQuery.substring(0, regularQuery.length - 4)
                         afkCheck.db.query(regularQuery, er => { if (er) console.log('error logging points for run completes in ', afkCheck.guild.id) })
                     }
-                    if (afkCheck.settings.points.perrun != 0 && nitros.length != 0) {
-                        //nitro raiders point logging
-                        let nitroQuery = `UPDATE users SET points = points + ${afkCheck.settings.points.perrun * afkCheck.settings.points.nitromultiplier} WHERE `;
-                        nitros.forEach(m => nitroQuery = nitroQuery.concat(`id = '${m.id}' OR `));
-                        nitroQuery = nitroQuery.substring(0, nitroQuery.length - 4);
-                        afkCheck.db.query(nitroQuery, er => { if (er) console.log('error logging points for run (nitro) completes in ', afkCheck.guild.id) })
+                    if (afkCheck.settings.points.perrun != 0 && supporters.length != 0) {
+                        //supporter raiders point logging
+                        let supporterQuery = `UPDATE users SET points = points + ${afkCheck.settings.points.perrun * afkCheck.settings.points.supportermultiplier} WHERE `;
+                        supporters.forEach(m => supporterQuery = supporterQuery.concat(`id = '${m.id}' OR `));
+                        supporterQuery = supporterQuery.substring(0, supporterQuery.length - 4);
+                        afkCheck.db.query(supporterQuery, er => { if (er) console.log('error logging points for run (supporter) completes in ', afkCheck.guild.id) })
                     }
                 }
             }
@@ -1323,7 +1378,7 @@ class afkCheck {
 
         await this.channel.permissionOverwrites.edit(this.verifiedRaiderRole.id, { Connect: false, ViewChannel: false })
         if (this.eventBoi) await this.channel.permissionOverwrites.edit(this.eventBoi.id, { Connect: false, ViewChannel: false })
-        if (this.afkInfo.newChannel && !this.isVet) {
+        if (this.afkInfo.newChannel && !this.isVet && this.afkChannel) {
             this.channel.setPosition(this.afkChannel.position)
         }
         this.mainEmbed.setImage(null);
@@ -1340,9 +1395,9 @@ class afkCheck {
         }
         this.raidStatusMessage.reactions.removeAll();
 
-        this.raidStatusMessage.edit({ content: null, embeds: [this.mainEmbed], components: [] }).catch(er => ErrorLogger.log(er, this.bot))
-        this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed], components: [] }).catch(er => ErrorLogger.log(er, this.bot))
-        this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot))
+        this.raidStatusMessage.edit({ content: null, embeds: [this.mainEmbed], components: [] }).catch(er => ErrorLogger.log(er, this.bot, this.guild))
+        this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed], components: [] }).catch(er => ErrorLogger.log(er, this.bot, this.guild))
+        this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot, this.guild))
 
         let earlyLocationIDS = []
         for (let i in this.earlyLocation) earlyLocationIDS.push(this.earlyLocation[i].id)
@@ -1359,7 +1414,7 @@ class afkCheck {
         this.bot.afkChecks[this.channel.id].active = false
         if (this.keys.length > 0)
             fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => {
-                if (err) ErrorLogger.log(err, this.bot)
+                if (err) ErrorLogger.log(err, this.bot, this.guild)
             })
 
 
@@ -1444,11 +1499,12 @@ class afkCheck {
         this.afkInfo.location = location;
 
         if (!this.leaderEmbed) return
-
-        this.leaderEmbed.data.fields[this.leaderEmbed.data.fields.length - 3].value = this.afkInfo.location;
-
-        this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
-        this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
+        this.leaderEmbed.setDescription(`**Raid Leader: ${this.message.member} \`\`${this.message.member.nickname}\`\`\nVC: ${this.channel}\nLocation:** \`\`${this.afkInfo.location}\`\``)
+        this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot, this.guild));
+        this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot, this.guild));
+        if (this.partneredMessageSent && this.partneredMessage) {
+            this.partneredMessage.edit(`${this.partneredPings},  **${this.afkInfo.runName}** is starting inside of **${this.message.guild.name}** in ${this.channel} at \`\`${this.afkInfo.location}\`\``)
+        }
 
         for (let i of this.earlyLocation) {
             await i.send(`The location for this run has changed to \`${this.afkInfo.location}\``)
@@ -1501,9 +1557,9 @@ async function createChannel(runInfo, message, bot) {
 
         await message.member.voice.setChannel(channel).catch(er => { })
         //allows raiders to view
-        channel.permissionOverwrites.edit(raider.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot))
-        channel.permissionOverwrites.edit(runInfo.raidLeader, { Connect: true, ViewChannel: true, Speak: true }).catch(er => ErrorLogger.log(er, bot))
-        if (eventBoi) channel.permissionOverwrites.edit(eventBoi.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot))
+        channel.permissionOverwrites.edit(raider.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot, message.guild))
+        channel.permissionOverwrites.edit(runInfo.raidLeader, { Connect: true, ViewChannel: true, Speak: true }).catch(er => ErrorLogger.log(er, bot, message.guild))
+        if (eventBoi) channel.permissionOverwrites.edit(eventBoi.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot, message.guild))
 
         //Embed to remove
         let embed = new Discord.EmbedBuilder()
@@ -1538,10 +1594,8 @@ function getRunType(char, guildid) {
 }
 
 async function getTemplate(message, afkTemplates, runType) {
-    return new Promise(async (res, rej) => {
-        if (afkTemplates[message.author.id] && afkTemplates[message.author.id][runType.toLowerCase()]) return res(afkTemplates[message.author.id][runType.toLowerCase()])
-        else rej(`No templates for user under: ${runType}`)
-    })
+    if (afkTemplates[message.author.id] && afkTemplates[message.author.id][runType.toLowerCase()]) return afkTemplates[message.author.id][runType.toLowerCase()]
+    else return null
 }
 
 async function destroyInactiveRuns() {
@@ -1553,10 +1607,10 @@ async function destroyInactiveRuns() {
     runs = runs.filter((v, i, r) => v.afk)
 }
 
-function requestReactionHandler(r, u, channelId) {
+function requestButtonHandler(interaction, channelId, limit) {
     for (let i of runs) {
         if (i.channel == channelId) {
-            i.afk.reactionHandler(r, u)
+            i.afk.buttonHandler(interaction, limit)
             return
         }
     }

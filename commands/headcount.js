@@ -1,6 +1,4 @@
 const Discord = require('discord.js');
-const botSettings = require('../settings.json');
-const emojis = require('../data/emojis.json');
 const ErrorLogger = require('../lib/logError');
 const afkCheck = require('./afkCheck');
 const eventAfk = require('./eventAfk');
@@ -23,9 +21,12 @@ module.exports = {
         if (![settings.categories.raiding, settings.categories.event, settings.categories.veteran].includes(message.channel.parent.name.toLowerCase())) return message.channel.send("Try again in a correct category");
         if (!bot) bot = bott;
 
-        let symbol = args[0].charAt(0).toLowerCase();
-        if (symbol == 'a' && args[0].length > 1)
-            symbol += args[0].charAt(1).toLowerCase();
+        let symbol = args[0].toLowerCase();
+        let isAvanced = false;
+        if (symbol.charAt(0) == 'a' && args[0].length > 1){
+            isAvanced = true;
+            // symbol += args[0].charAt(1).toLowerCase();
+            }
         const runType = afkCheck.getRunType(symbol, message.guild.id)
         const eventTypes = eventAfk.getMatchingEvents(args[0], eventFile, message.guild.id)
         if (runType && (message.channel.parent.name.toLowerCase() != settings.categories.event || settings.categories.event == settings.categories.raiding)) {
@@ -33,6 +34,11 @@ module.exports = {
                 if (eventTypes.length && eventTypes.length == 1 && eventTypes[0].runName == runType.runName) return hallsHC(runType)
                 else eventTypes.push(runType)
             else return hallsHC(runType)
+        }
+        if (settings.backend.disableEventsFromHeadcounts) { // If you disable events/exalts that are not prioritized with the server from headcounts.
+            let eventType = eventAfk.getEventTypeFromServer(args[0], message.guild.id);
+            if (eventType == null) return;
+            else return hallsHC(eventType);
         }
         if (!eventTypes.length) return message.channel.send('Run Type not recognized')
         if (eventTypes.length == 1) {
@@ -71,25 +77,26 @@ module.exports = {
             if (channel) {
                 let embed = new Discord.EmbedBuilder()
                     .setAuthor({ name: `Headcount for ${run.runName} by ${message.member.nickname}` })
-                    .setDescription(run.embed && run.embed.headcountDescription ? run.embed.headcountDescription : `${run.headcountEmote ? `React with ${bot.emojis.cache.get(run.headcountEmote)} if you are coming\n` : ''}React with ${bot.emojis.cache.get(run.keyEmoteID)} if you have a key\nOtherwise react with your gear/class choices below`)
+                    .setDescription(run.embed && run.embed.headcountDescription ? run.embed.headcountDescription : `${run.headcountEmote ? `React with ${bot.storedEmojis[run.headcountEmote].text} if you are coming\n` : ''}${ run.keyEmote ? `React with ${bot.storedEmojis[run.keyEmote].text} if you plan to bring a key\n` : '' }Otherwise react with your gear/class choices below`)
                     .setColor(run.embed ? run.embed.color : run.color)
                     .setTimestamp()
 
-                if (symbol.charAt(0) == 'a')
-                    embed.data.description += `\n\n**__Advanced Runs__**\nThis is an **advanced run**, meaning there are extended requirements you **MUST** meet. You must be both **__8/8__** and follow the requirements sheet listed in the afk check.\n\nIf you are caught not meeting these requirements, you will be removed from the run and suspended.`;
-
+                if (isAvanced){
+                    embed.data.description += `\n\n**__Advanced Runs__**\nThis is an **advanced run**, meaning there are extended requirements you **MUST** meet. You must be both **__8/8__** and follow the requirements sheet listed below.\n\nIf you are caught not meeting these requirements, you will be removed from the run and suspended.`;
+                    embed.setImage(settings.strings.hallsAdvancedReqsImage);
+                }
                 if (message.author.avatarURL()) embed.setAuthor({ name: `Headcount for ${run.runName} by ${message.member.nickname}`, iconURL: message.author.avatarURL() })
                 const pingRole = run.pingRole || run.rolePing;
                 const pings = pingRole ? (typeof pingRole != "string" ? pingRole.map(r => `<@&${settings.roles[r]}>`).join(' ') : `<@&${settings.roles[pingRole]}>`) + ' @here' : '@here';
 
                 let m = await channel.send({ content: `${pings}`, embeds: [embed], components: [] })
-                if (run.headcountEmote) await m.react(run.headcountEmote)
-                if (run.keyEmoteID) await m.react(run.keyEmoteID)
-                if (run.vialReact) await m.react(botSettings.emoteIDs.Vial)
-                for (let i of run.earlyLocationReacts) await m.react(i.emoteID)
+                if (run.headcountEmote) await m.react(bot.storedEmojis[run.headcountEmote].id)
+                if (run.keyEmote) await m.react(bot.storedEmojis[run.keyEmote].id)
+                if (run.vialReact) await m.react(bot.storedEmojis[run.vialEmote].id)
+                for (let i of run.earlyLocationReacts) await m.react(bot.storedEmojis[i.emote].id)
                 for (let i of run.reacts) {
-                    if (isNaN(+i)) await m.react(emojis[i]["id"])
-                    else await m.react(i)
+                    if (isNaN(+i)) await m.react(bot.storedEmojis[i].id)
+                    else await m.react(bot.storedEmojis[i].id)
                 }
             }
         }

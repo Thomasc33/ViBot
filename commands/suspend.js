@@ -5,7 +5,7 @@ const ErrorLogger = require('../lib/logError')
 module.exports = {
     name: 'suspend',
     description: 'Suspends user',
-    args: '[users] <time> <time type d/m/s/w/y> <reason>',
+    args: '[users] <time> <time type s/m/h/d/w/y> <reason>',
     requiredArgs: 3,
     role: 'warden',
     async execute(message, args, bot, db) {
@@ -33,13 +33,13 @@ module.exports = {
             var timeTypeString;
 
             switch (timeType.toLowerCase()) {
-                case 'd': time *= 86400000; timeTypeString = 'day(s)'; break;
-                case 'm': time *= 60000; timeTypeString = 'minute(s)'; break;
                 case 's': time *= 1000; timeTypeString = 'second(s)'; break;
+                case 'm': time *= 60000; timeTypeString = 'minute(s)'; break;
+                case 'h': time *= 3600000; timeTypeString = 'hour(s)'; break;
+                case 'd': time *= 86400000; timeTypeString = 'day(s)'; break;
                 case 'w': time *= 604800000; timeTypeString = 'week(s)'; break;
                 case 'y': time *= 31536000000; timeTypeString = 'year(s)'; break;
-                case 'h': time *= 3600000; timeTypeString = 'hour(s)'; break;
-                default: return message.channel.send("Please enter a valid time type __**d**__ay, __**m**__inute, __**h**__our, __**s**__econd, __**w**__eek, __**y**__ear");
+                default: return message.channel.send("Please enter a valid time type __**s**__econd, __**m**__inute, __**h**__our, __**d**__ay, __**w**__eek, __**y**__ear");
             }
         } catch (er) {
             return message.channel.send("Invalid time given. Please try again");
@@ -56,12 +56,24 @@ module.exports = {
                 if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(u.toLowerCase()));
                 if (!member) member = message.guild.members.cache.get(u.replace(/[<>@!]/gi, ''))
                 if (!member) return message.channel.send(`${u} not found, please try again`);
+                //check if person being suspended is staff
+                if (bot.settings[message.guild.id].backend.onlyUpperStaffSuspendStaff) {
+                    let lowest_staff_role = bot.settings[message.guild.id].roles["lol"];
+                    if (lowest_staff_role) {
+                        if (member.roles.highest.comparePositionTo(lowest_staff_role) >= 0) {
+                            //the suspend should only happen if message.member is like an admin or something
+                            let suspendingRoles = settings.lists.suspendingRoles.length ? settings.lists.suspendingRoles : ['moderator', 'headrl', 'headeventrl', 'officer', 'developer']
+                            let suspendingIds = suspendingRoles.map(m => settings.roles[m])
+                            if (!message.member.roles.cache.filter(role => suspendingIds.includes(role.id)).size) return message.channel.send("Could not suspend that user as they are staff and your highest role isn't high enough. Ask for a promotion and then try again.");
+                        }
+                    }
+                }
                 if (member.roles.highest.position >= message.member.roles.highest.position) return message.channel.send(`${member} has a role greater than or equal to you and cannot be suspended`);
                 if (member.roles.cache.has(pSuspendRole.id)) return message.channel.send('User is perma suspended already, no need to suspend again')
                 if (member.roles.cache.has(suspendedRole.id)) {
                     db.query(`SELECT * FROM suspensions WHERE id = '${member.id}' AND suspended = true`, async (err, rows) => {
                         if (rows.length != 0) {
-                            message.channel.send(member.nickname.concat(' is already suspended. Reply __**Y**__es to overwrite.'));
+                            message.channel.send(`${member.nickname} is already suspended. Reply __**Y**__es to overwrite.`);
                             let collector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id === message.author.id, time: 10000 });
                             collector.on('collect', message => {
                                 if (message.content.charAt(0).toLowerCase() == 'y') {
@@ -85,7 +97,7 @@ module.exports = {
                     let embed = new Discord.EmbedBuilder()
                         .setColor('#ff0000')
                         .setTitle('Suspension Information')
-                        .setDescription(`The suspension is for ${parseInt(args[0])} ${timeTypeString}`)
+                        .setDescription(`The suspension is for ${parseInt(args[0])} ${timeTypeString} until <t:${((Date.now() + time)/1000).toFixed(0)}:f>`)
                         .addFields([{name: `User Information \`${member.nickname}\``, value: `<@!${member.id}> (Tag: ${member.user.tag})`, inline: true}])
                         .addFields([{name: `Mod Information \`${message.guild.members.cache.get(message.author.id).nickname}\``, value: `<@!${message.author.id}> (Tag: ${message.author.tag})`, inline: true}])
                         .addFields([{name: `Reason:`, value: reason}])
@@ -98,13 +110,13 @@ module.exports = {
                         suspensionLog.send({ embeds: [embed] }).then(member.user.send({ embeds: [embed] }))
                     } else {
                         let userRolesString = '', userRoles = []
-                        const roles = [...member.roles.cache.filter(r => !r.managed && r.id != settings.roles.nitro).values()];
+                        const roles = [...member.roles.cache.filter(r => !r.managed && (!settings.lists.discordRoles.map(role => settings.roles[role]).includes(r.id))).values()];
                         embed.data.fields[3].value = roles.join(', ') || 'None!';
                         member.roles.cache.each(r => {
-                            if (!r.managed && r.id != settings.roles.nitro) {
-                                userRoles.push(r.id)
-                                userRolesString = userRolesString.concat(`${r.id} `)
-                            }
+                            if (r.managed) return
+                            if (settings.lists.discordRoles.map(role => settings.roles[role]).includes(r.id)) return
+                            userRoles.push(r.id)
+                            userRolesString = userRolesString.concat(`${r.id} `)
                         })
                         messageId = await suspensionLog.send({ embeds: [embed] });
                         await member.roles.remove(userRoles)
@@ -117,7 +129,7 @@ module.exports = {
 
             })
         } catch (er) {
-            ErrorLogger.log(er, bot)
+            ErrorLogger.log(er, bot, message.guild)
             message.channel.send("Error with command. Please check syntax and try again");
         }
     }

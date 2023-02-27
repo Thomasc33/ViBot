@@ -9,6 +9,11 @@
             "types": [ ["eventpops", "Event Keys"], ["keypops", "Lost Halls Keys"], ["nestPops", "Nest Keys"], ["shattersPops", "Shatters Keys"], ["fungalPops", "Fungal Keys"] ],
             "amount": 50,
             "role": "topkey"
+        },
+        {
+            "types": [ ["moddedPops"] ],
+            "amount": 100,
+            "role": "moddedkey"
         }
     ],
     "451171819672698920": [

@@ -28,18 +28,19 @@ module.exports = {
                 nick = nick.charAt(0).toUpperCase() + nick.substring(1, nick.length)
             }
         } else nick = args[1]
+
         await member.setNickname(nick)
+
         let embed = new Discord.EmbedBuilder()
             .setTitle('Manual Verify')
             .setDescription(member.toString())
             .addFields([{name: 'User', value: member.displayName, inline: true}])
             .addFields([{name: 'Verified By', value: `<@!${message.author.id}>`, inline: true}])
             .setTimestamp(Date.now());
-        message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });
+        await message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });
         let confirmEmbed = new Discord.EmbedBuilder().setDescription(`${member} has been given ${raiderRole}`)
-        message.channel.send({ embeds: [confirmEmbed] })
-
-        member.user.send(`You have been verified on \`${message.guild.name}\`. Please head over to rules, faq, and raiding-rules channels to familiarize yourself with the server. Happy raiding`)
+        await message.channel.send({ embeds: [confirmEmbed] })
+        await member.user.send(`You have been verified on \`${message.guild.name}\`. Please head over to rules, faq, and raiding-rules channels to familiarize yourself with the server. Happy raiding`)
 
         db.query(`SELECT * FROM veriblacklist WHERE id = '${member.id}' OR id = '${nick}'`, async (err, rows) => {
             if (!rows || !rows.length)
@@ -47,29 +48,26 @@ module.exports = {
 
             const expelEmbed = new Discord.EmbedBuilder()
                 .setTitle('Automatic Expel Removal')
-                .setDescription(`The follow expels have been removed from the database tied to ${member}. If these should stick, please react with ❌ in the next 10 seconds.`)
+                .setDescription(`The following expels will be removed from the database tied to ${member}. Are you sure you want to do this?`)
                 .setColor('#E0B0FF');
 
             for (const row of rows) {
                 expelEmbed.addFields([{name: `${row.id}`, value: `Expelled by <@${row.modid}> in ${bot.guilds.cache.get(row.guildid).name || row.guildid}:\`\`\`${row.reason}\`\`\``}]);
             }
 
-            const expelMessage = await message.channel.send({ embeds: [expelEmbed] });
-            expelMessage.react('❌');
-            expelMessage.collector = expelMessage.createReactionCollector({ filter: (r, u) => u.id == message.author.id && r.emoji.name == '❌', time: 10000 });
-            expelMessage.collector.on('collect', (r, u) => {
-                expelMessage.collector.stop();
-            })
-            expelMessage.collector.on('end', (collected, reason) => {
-                if (collected.size == 0) {
+            await message.channel.send({ embeds: [expelEmbed] }).then(async confirmMessage => {
+                if (await confirmMessage.confirmButton(message.author.id)) {
+                    expelEmbed.setTitle('Expels Successfully Removed')
                     expelEmbed.setDescription(`The follow expels have been removed from the database tied to ${member}.`);
+                    expelEmbed.setColor('#33FF33')
                     db.query(`DELETE FROM veriblacklist WHERE id = '${member.id}' OR id = '${nick}'`);
-                    expelMessage.reactions.removeAll();
-                    expelMessage.react('✅');
                 } else {
-                    expelEmbed.setDescription(`The following expels for ${member} have not been removed.`);
+                    expelEmbed.setTitle('Expels Not Removed')
+                    expelEmbed.setDescription(`The expels for ${member} have not been removed.`);
+                    expelEmbed.setColor('#FF3300')
+                    expelEmbed.spliceFields(0, expelEmbed.data.fields.length);
                 }
-                expelMessage.edit({ embeds: [expelEmbed] });
+                confirmMessage.edit({ embeds: [expelEmbed], components: [] });
             })
         })
     }

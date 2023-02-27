@@ -80,7 +80,7 @@ module.exports = {
 
             const staff = blGuild.members.cache.get(blInfo.modid);
             if (!staff || staff.id == bot.user.id || staff.roles.highest.comparePositionTo(bot.settings[blGuild.id].roles.security) < 0) {
-                 if (guild.id == botSettings.hallsId) return u.send(`You are currently blacklisted from the __${blGuild.name}__ server and cannot verify. The person who blacklisted you is no longer staff. Please DM any online officer to appeal.`);
+                 if (guild.id == botSettings.hallsId) return u.send(`You are currently blacklisted from the __${blGuild.name}__ server and cannot verify. The person who blacklisted you is no longer staff. Please DM any online security to appeal.`);
                  return u.send(`You are currently blacklisted from the __${blGuild.name}__ server and cannot verify. The person who blacklisted you is no longer staff. Please DM me and send mod-mail to that server to appeal.`);
             }
 
@@ -591,10 +591,10 @@ module.exports = {
     async reVerify(u, guild, bot, db) {
         return new Promise(async (res, rej) => {
             //check to see if they are in other servers   
-            let emojiServers = require('../data/emojiServers.json')
             let nicks = []
             await bot.guilds.cache.each(async g => {
-                if (emojiServers.includes(g.id)) return
+                if (bot.emojiServers.includes(g.id)) return
+                if (bot.devServers.includes(g.id)) return
                 let member = await g.members.cache.get(u.id)
                 let settings = bot.settings[g.id]
                 if (!settings) return

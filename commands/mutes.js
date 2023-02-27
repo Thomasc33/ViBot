@@ -21,12 +21,12 @@ module.exports = {
             .setDescription(`None!`)
         if (!member) {
             db.query(`SELECT * FROM mutes WHERE muted = true AND guildid = ${message.guild.id}`, async (err, rows) => {
-                if (err) ErrorLogger.log(err, bot);
+                if (err) ErrorLogger.log(err, bot, message.guild);
                 const members = message.guild.roles.cache.get(require('../guildSettings.json')[message.guild.id].roles.muted).members.clone();
                 if (rows && rows.length) {
                     for (const row of rows) {
                         members.delete(row.id);
-                        fitStringIntoEmbed(embed, `<@!${row.id}> by <@!${row.modid}> ending ${moment().to(new Date(parseInt(row.uTime)))}`, message.channel);
+                        fitStringIntoEmbed(embed, `<@!${row.id}> by <@!${row.modid}> ending <t:${(parseInt(row.uTime)/1000).toFixed(0)}:R> at <t:${(parseInt(row.uTime)/1000).toFixed(0)}:f>`, message.channel);
                     }
                 }
                 message.channel.send({ embeds: [embed] })
@@ -38,14 +38,14 @@ module.exports = {
             })
         } else {
             db.query(`SELECT * FROM mutes WHERE id = ${member.id} AND guildid = ${message.guild.id} ORDER BY muted DESC`, async (err, rows) => {
-                if (err) ErrorLogger.log(err, bot);
+                if (err) ErrorLogger.log(err, bot, message.guild);
                 if (!rows || !rows.length)
                     return message.channel.send({ embeds: [embed] });
                 for (const row of rows) {
                     if (row.muted)
-                        fitStringIntoEmbed(embed, `**Ends ${moment().to(new Date(parseInt(row.uTime)))} by <@!${row.modid}>: ${row.reason}**`);
+                        fitStringIntoEmbed(embed, `**Ends <t:${(parseInt(row.uTime)/1000).toFixed(0)}:R> at <t:${(parseInt(row.uTime)/1000).toFixed(0)}:f> by <@!${row.modid}>: ${row.reason}**`);
                     else
-                        fitStringIntoEmbed(embed, `Ended ${moment().to(new Date(parseInt(row.uTime)))} by <@!${row.modid}>: ${row.reason}`);
+                        fitStringIntoEmbed(embed, `Ended <t:${(parseInt(row.uTime)/1000).toFixed(0)}:R> at <t:${(parseInt(row.uTime)/1000).toFixed(0)}:f> by <@!${row.modid}>: ${row.reason}`);
                 }
                 message.channel.send({ embeds: [embed] });
             });

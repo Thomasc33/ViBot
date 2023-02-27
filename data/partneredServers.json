@@ -1,0 +1,34 @@
+[
+    {
+        "guildId": 343704644712923138,
+        "id": "708026927721480254",
+        "name": "Oryx Sanctuary",
+        "affiliatelist": ["admin", "moderator", "officer", "headrl", "headdev", "developer", "assistantdev", "security", "vetrl", "rl", "almostrl", "eventrl"],
+        "vaslist": ["vetrl", "headdev", "headrl", "officer", "moderator", "admin"],
+        "prefix": "'"
+    },
+    {
+        "guildId": 708026927721480254,
+        "id": "343704644712923138",
+        "name": "Lost Halls",
+        "affiliatelist": ["admin", "moderator", "officer", "headrl", "headeventrl", "headdev", "security", "developer", "assistantdev", "vetrl", "rl", "warden", "almostrl", "eventrl"],
+        "vaslist": ["vetrl", "headdev", "headeventrl", "headrl", "officer", "moderator"],
+        "prefix": ">"
+    },
+    {
+        "guildId": 934611202787643412,
+        "id": "701483950559985705",
+        "name": "Dev Halls",
+        "affiliatelist": ["admin", "moderator", "officer", "headrl", "headeventrl", "headdev", "security", "developer", "assdev", "vetrl", "rl", "warden", "almostrl", "eventrl"],
+        "vaslist": ["vetrl", "headdev", "headeventrl", "headrl", "officer", "moderator"],
+        "prefix": ">"
+    },
+    {
+        "guildId": 701483950559985705,
+        "id": "934611202787643412",
+        "name": "osanc test",
+        "affiliatelist": ["admin", "moderator", "officer", "headrl", "headdev", "dev", "assdev", "security", "vetrl", "rl", "almostrl", "el"],
+        "vaslist": ["vetrl", "headdev", "headrl", "officer", "moderator", "admin"],
+        "prefix": "'"
+    }
+]

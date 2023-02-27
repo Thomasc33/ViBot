@@ -158,7 +158,7 @@ const changeName = async (message, bot, settings, member, names, idx, altName, u
                     await member.setNickname(newName, `Old Name: ${oldNickname}\nNew Name: ${newName}\nChange by: ${message.member}`);
                 } catch (err) {
                     reject(`There was an issue changing ${member}'s nickname: \`${err.toString().split('\n')[0]}\``)
-                    return ErrorLogger.log(err, bot);
+                    return ErrorLogger.log(err, bot, message.guild);
                 }
                 let embed = new Discord.EmbedBuilder()
                     .setTitle(image || historyName ? 'Name Changed' : 'Name Adjusted')
@@ -193,7 +193,7 @@ const changeName = async (message, bot, settings, member, names, idx, altName, u
             resolve();
         } catch (err) {
             reject(`There was an error changing ${member}'s name.`);
-            ErrorLogger.log(err, bot);
+            ErrorLogger.log(err, bot, message.guild);
         }
     });
 }

@@ -32,7 +32,7 @@ module.exports = {
         if (old)
             this.oldSends = this.oldSends.filter(s => s.id != message.author.id);
 
-        const eventMsg = await events.send(dm);
+        const eventMsg = await events.send(dm, bot);
         const eventsLink = eventMsg.url;
 
         this.activePanels.push(message.author.id);
@@ -87,9 +87,9 @@ module.exports = {
                                 embeds: [
                                     new Discord.EmbedBuilder()
                                         .setAuthor({ name: `${message.member.nickname || message.author.tag} has ${key.event.name} Keys`, iconURL: message.author.displayAvatarURL() })
-                                        .setDescription(`<${key.event.keyEmote}> ${message.member} has \`${key.count}\` ${key.event.name} keys.`)
+                                        .setDescription(`${bot.storedEmojis[key.event.keyEmote].text} ${message.member} has \`${key.count}\` ${key.event.name} keys.`)
                                         .setTimestamp()
-                                        .setThumbnail(bot.emojis.cache.get(key.event.portalEmojiId).url)
+                                        .setThumbnail(key.event.thumbnail)
                                         .setColor(key.event.color)
                                 ]
                             });
@@ -117,7 +117,7 @@ module.exports = {
                             }
                             const { eventId, event } = events.find(content);
 
-                            request.embeds[0].setDescription(`<${event.keyEmote}> You have selected \`${event.name}\`. Is this correct?`)
+                            request.embeds[0].setDescription(`${bot.storedEmojis[event.keyEmote]} You have selected \`${event.name}\`. Is this correct?`)
                                 .setColor(event.color)
                                 .setAuthor({ name: "Confirm Dungeon" })
                                 .setThumbnail(bot.emojis.cache.get(event.portalEmojiId).url);
@@ -126,7 +126,7 @@ module.exports = {
                             panel.collector.resetTimer();
                             if (confirm) {
                                 request.embeds[0].setAuthor({ name: "Select Key Count" })
-                                    .setDescription(`<${event.keyEmote}> How many \`${event.name}\` keys are you willing to pop? To remove a key, say 0.`);
+                                    .setDescription(`${bot.storedEmojis[event.keyEmote]} How many \`${event.name}\` keys are you willing to pop? To remove a key, say 0.`);
                                 request.edit({ embed: request.embeds[0] });
                                 let count = -1;
                                 while (count == -1) {
@@ -173,7 +173,7 @@ module.exports = {
 
                         for (const key of keys) {
                             fields.push({
-                                name: `<${key.event.keyEmote}> ${key.event.name} <${key.event.keyEmote}>`,
+                                name: `${bot.storedEmojis[key.event.keyEmote]} ${key.event.name} ${bot.storedEmojis[key.event.keyEmote]}`,
                                 value: `${key.count}`,
                                 inline: true
                             });

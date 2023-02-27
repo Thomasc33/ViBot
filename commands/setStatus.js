@@ -4,15 +4,14 @@ module.exports = {
     description: 'Sets the bots custom status',
     requiredArgs: 1,
     role: 'developer',
-    execute(message, args, bot) {
-        if (message.author.id !== '277636691227836419') return
-        let status = ''
-        for (let i in args) status = status.concat(` ${args[i]}`)
-        if (status == '') return;
-        status = status.slice()
+    async execute(message, args, bot) {
+        if (!bot.adminUsers.includes(message.member.id)) return
+        let activityType = undefined
+        if (['PLAYING', 'STREAMING', 'LISTENING', 'WATCHING', 'CUSTOM', 'COMPETING'].includes(args[0])) { activityType = args[0]; args.shift(); }
+        let status = args.join(' ')
         if (status.length > 128) { message.channel.send("Max length is 128"); return; }
-        bot.user.setActivity(status).catch(er => ErrorLogger.log(er, bot));
-        message.channel.send("Success")
+        if (status.length == 0) { message.channel.send('Minimum length is 1'); return; }
+        await bot.user.setActivity(status, activityType ? activityType : "PLAYING")
     },
     dmExecution(message, args, bot, db, guild) {
         this.execute(message, args, bot)

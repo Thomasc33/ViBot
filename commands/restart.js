@@ -1,3 +1,4 @@
+const fs = require('fs')
 //const afkChecks = require('./afkCheck')
 //afkCheck includes restart so we will just have afkCheck register at startup
 let afkChecks = undefined;
@@ -11,6 +12,16 @@ module.exports = {
     allowedInRestart: true,
 
     async execute(message, args, bot) {
+        // Log channel the message was sent to
+        const channel = message.channel;
+        const d = {
+            guild: channel.guild.id,
+            channel: channel.id
+        }
+        // Save channel object to file
+        fs.writeFileSync('./data/restart_channel.json', JSON.stringify(d, null, 2));
+
+
         if (args.length != 0 && args[0].toLowerCase() == 'force') process.exit()
         else module.exports.restarting = true;
         message.channel.send('Restart Queued')
@@ -20,7 +31,7 @@ module.exports = {
         let Promises = []
 
         //afk checks
-        if(afkChecks) {
+        if (afkChecks) {
             let activeRuns = await afkChecks.checkRuns()
             let afkChecksEmitter = afkChecks.emitter;
             for (let i of activeRuns) {

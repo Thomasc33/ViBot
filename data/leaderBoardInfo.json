@@ -1,21 +1,24 @@
 {
     "343704644712923138": [
         {
-            "index": 0,
             "dbNames": [
                 "keypops"
             ],
             "name": "Key Pops"
         },
         {
-            "index": 1,
             "dbNames": [
                 "eventpops"
             ],
             "name": "Event Key Pops"
         },
         {
-            "index": 2,
+            "dbNames": [
+                "moddedPops"
+            ],
+            "name": "Modded Key Pops"
+        },
+        {
             "dbNames": [
                 "cultRuns",
                 "voidRuns"
@@ -23,7 +26,6 @@
             "name": "Total Runs"
         },
         {
-            "index": 3,
             "dbNames": [
                 "cultsLead",
                 "voidsLead"
@@ -31,28 +33,25 @@
             "name": "Total Runs Lead"
         },
         {
-            "index": 4,
             "dbNames": [
                 "vialUsed"
             ],
             "name": "Vials Used"
         },
         {
-            "index": 5,
             "dbNames": [
                 "points"
             ],
             "name": "Points"
         },
         {
-            "index": 6,
             "dbNames": [
-                "feedback"
+                "feedback",
+                "shattersFeedback"
             ],
             "name": "Feedbacks"
         },
         {
-            "index": 7,
             "dbNames": [
                 "parses"
             ],
@@ -61,21 +60,24 @@
     ],
     "701483950559985705": [
         {
-            "index": 0,
             "dbNames": [
                 "keypops"
             ],
             "name": "Key Pops"
         },
         {
-            "index": 1,
             "dbNames": [
                 "eventpops"
             ],
             "name": "Event Key Pops"
         },
         {
-            "index": 2,
+            "dbNames": [
+                "moddedPops"
+            ],
+            "name": "Modded Key Pops"
+        },
+        {
             "dbNames": [
                 "cultRuns",
                 "voidRuns"
@@ -83,7 +85,6 @@
             "name": "Total Runs"
         },
         {
-            "index": 3,
             "dbNames": [
                 "cultsLead",
                 "voidsLead"
@@ -91,28 +92,25 @@
             "name": "Total Runs Lead"
         },
         {
-            "index": 4,
             "dbNames": [
                 "vialUsed"
             ],
             "name": "Vials Used"
         },
         {
-            "index": 5,
             "dbNames": [
                 "points"
             ],
             "name": "Points"
         },
         {
-            "index": 6,
             "dbNames": [
-                "feedback"
+                "feedback",
+                "shattersFeedback"
             ],
             "name": "Feedbacks"
         },
         {
-            "index": 7,
             "dbNames": [
                 "parses"
             ],
@@ -121,53 +119,98 @@
     ],
     "451171819672698920": [
         {
-            "index": 0,
             "dbNames": [
                 "shatterspops"
             ],
             "name": "Key Pops"
         },
         {
-            "index": 1,
             "dbNames": [
                 "eventpops"
             ],
             "name": "Event Key Pops"
         },
         {
-            "index": 2,
             "dbNames": [
                 "runs"
             ],
             "name": "Total Runs"
         },
         {
-            "index": 3,
             "dbNames": [
                 "successruns"
             ],
             "name": "Total Runs Lead"
         },
         {
-            "index": 4,
+            "dbNames": [
+                "veteranShattersLead"
+            ],
+            "name": "Veteran Shatters Lead"
+        },
+        {
+            "dbNames": [
+                "hardmodeLead"
+            ],
+            "name": "Hardmodes Lead"
+        },
+        {
             "dbNames": [
                 "points"
             ],
             "name": "Points"
         },
         {
-            "index": 5,
             "dbNames": [
                 "oldruns"
             ],
             "name": "Legacy Runs"
         },
         {
-            "index": 6,
             "dbNames": [
                 "oldsuccessruns"
             ],
             "name": "Legacy Shatters Lead"
+        }
+    ],
+    "708026927721480254": [
+        {
+            "dbNames": [
+                "o3leads"
+            ],
+            "name": "Runs Lead"
+        },
+        {
+            "dbNames": [
+                "o3feedback"
+            ],
+            "name": "Feedbacks"
+        },
+        {
+            "dbNames": [
+                "o3parses"
+            ],
+            "name": "Parses"
+        }
+    ],
+    "934611202787643412": [
+        {
+            "dbNames": [
+                "o3leads"
+            ],
+            "name": "Runs Lead"
+        },
+        {
+            "dbNames": [
+                "o3feedback"
+            ],
+            "name": "Feedbacks"
+        },
+        {
+            "dbNames": [
+                "o3parses"
+            ],
+            "name": "Parses"
         }
     ]
 }

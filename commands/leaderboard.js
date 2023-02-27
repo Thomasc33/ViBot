@@ -22,23 +22,19 @@ module.exports = {
         let embed = new Discord.EmbedBuilder()
             .setColor(`#0000ff`)
             .setAuthor({ name: `Select a leaderboard` })
-            .setDescription(leaderBoardTypes[guild.id].map(lb => `${numberToEmote(lb.index)} ${lb.name}`).join('\n'))
+            .setDescription(leaderBoardTypes[guild.id].map(lb => `${lb.name}`).join('\n'))
         if (message.author.avatarURL()) embed.setAuthor({ name: `Select a leaderboard`, iconURL: message.author.avatarURL() })
-        let embedMessage = await message.channel.send({ embeds: [embed] })
-        let reacted = false
-        let reactionCollector = new Discord.ReactionCollector(embedMessage, { filter: (r, u) => u.id == message.author.id && ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟', '❌'] })
-        reactionCollector.on('collect', async (r, u) => {
-            if (r.emoji.name == '❌') {
-                reactionCollector.stop()
-                embedMessage.delete()
-                return
+        await message.channel.send({ embeds: [embed] }).then(async confirmMessage => {
+            const choice = await confirmMessage.confirmList(leaderBoardTypes[guild.id].map(lb => `${lb.name}`), message.author.id)
+            if (!choice || choice == 'Cancelled') {
+                await message.react('✅');
+                return confirmMessage.delete();
             }
-            let type = leaderBoardTypes[guild.id][emoteToIndex(r.emoji.name)]
+            confirmMessage.delete();
+            let type = getLeaderboardType(choice, guild.id)
             if (!type) return
-            reactionCollector.stop();
-            reacted = true;
-            db.query(`SELECT * FROM users ORDER BY ${type.dbNames.map(n => n).join(' + ')} DESC LIMIT 25`, (err, rows) => {
-                if (err) ErrorLogger.log(err, bot)
+            db.query(`SELECT * FROM users ORDER BY ${type.dbNames.map(n => `cast(${n} as unsigned)`).join(' + ')} DESC LIMIT 25`, (err, rows) => {
+                if (err) ErrorLogger.log(err, bot, message.guild)
                 embed.data.author.name = `Top 25 ${type.name}`
                 embed.data.description = 'None!'
                 for (let i in rows) {
@@ -51,25 +47,8 @@ module.exports = {
                     fitStringIntoEmbed(embed, desc, message.channel)
                 }
                 message.channel.send({ embeds: [embed] })
-                embedMessage.delete()
             })
         })
-        for (let i = 0; i < leaderBoardTypes[guild.id].length; i++) {
-            if (reacted) break;
-            switch (i) {
-                case 0: await embedMessage.react('1️⃣').catch(er => { }); break;
-                case 1: await embedMessage.react('2️⃣').catch(er => { }); break;
-                case 2: await embedMessage.react('3️⃣').catch(er => { }); break;
-                case 3: await embedMessage.react('4️⃣').catch(er => { }); break;
-                case 4: await embedMessage.react('5️⃣').catch(er => { }); break;
-                case 5: await embedMessage.react('6️⃣').catch(er => { }); break;
-                case 6: await embedMessage.react('7️⃣').catch(er => { }); break;
-                case 7: await embedMessage.react('8️⃣').catch(er => { }); break;
-                case 8: await embedMessage.react('9️⃣').catch(er => { }); break;
-                case 9: await embedMessage.react('🔟').catch(er => { }); break;
-            }
-        }
-        if (!reacted) embedMessage.react('❌').catch(er => { });
     }
 }
 function fitStringIntoEmbed(embed, string, channel) {
@@ -100,34 +79,8 @@ function fitStringIntoEmbed(embed, string, channel) {
     }
 }
 
-function numberToEmote(i) {
-    switch (i) {
-        case 0: return '1️⃣'
-        case 1: return '2️⃣'
-        case 2: return '3️⃣'
-        case 3: return '4️⃣'
-        case 4: return '5️⃣'
-        case 5: return '6️⃣'
-        case 6: return '7️⃣'
-        case 7: return '8️⃣'
-        case 8: return '9️⃣'
-        case 9: return '🔟'
-        default: return null
-    }
-}
-
-function emoteToIndex(emote) {
-    switch (emote) {
-        case '1️⃣': return 0
-        case '2️⃣': return 1
-        case '3️⃣': return 2
-        case '4️⃣': return 3
-        case '5️⃣': return 4
-        case '6️⃣': return 5
-        case '7️⃣': return 6
-        case '8️⃣': return 7
-        case '9️⃣': return 8
-        case '🔟': return 9
-        default: return null
+function getLeaderboardType(option, guildId) {
+    for (let i in leaderBoardTypes[guildId]) {
+        if (option.toLowerCase() == leaderBoardTypes[guildId][i].name.toLowerCase()) return leaderBoardTypes[guildId][i];
     }
 }

@@ -2,38 +2,33 @@ const Discord = require('discord.js');
 
 module.exports = {
     name: 'clean',
-    description: 'Cleans the given voice channel',
-    args: '<channel>',
-    requiredArgs: 1,
+    description: 'Cleans the voice channel you are in',
+    args: '(channelId)',
+    requiredArgs: 0,
     role: 'eventrl',
     async execute(message, args, bot) {
+        if (!message.member.voice) { return message.channel.send('You are not in any voice channel') }
+        let channel = message.channel
         let settings = bot.settings[message.guild.id]
-        if (!(message.channel.parent.name.toLowerCase() === settings.categories.raiding || message.channel.parent.name.toLowerCase() === settings.categories.veteran || message.channel.parent.name.toLowerCase() === settings.categories.event)) return message.channel.send("Try again in a correct category");
-        if (message.channel.parent.name.toLowerCase() === settings.categories.veteran) {
-            let lounge = message.guild.channels.cache.get(settings.voice.vetlounge);
-            let channel = message.guild.channels.cache.find(c => c.name.includes(`${settings.voiceprefixes.vetprefix}${args[0]}`))
-            if (!channel) channel = message.guild.channels.cache.find(c => c.name.includes(`${settings.voiceprefixes.vetprefix} ${args[0]}`))
-            if (!channel || !lounge) return message.channel.send('I could not find one of the voice channels (channel or lounge)')
-            await this.clean(channel, lounge, message, settings)
-        } else if (message.channel.parent.name.toLowerCase() === settings.categories.raiding) {
-            let lounge = message.guild.channels.cache.get(settings.voice.lounge);
-            let channel = message.guild.channels.cache.find(c => c.name.includes(`${settings.voiceprefixes.raidingprefix}${args[0]}`))
-            if (!channel) channel = message.guild.channels.cache.find(c => c.name.includes(`${settings.voiceprefixes.raidingprefix} ${args[0]}`))
-            if (!channel || !lounge) return message.channel.send('I could not find one of the voice channels (channel or lounge)')
-            await this.clean(channel, lounge, message, settings)
-        } else if (message.channel.parent.name.toLowerCase() === settings.categories.event) {
-            let channel = message.guild.channels.cache.find(c => c.type == Discord.ChannelType.GuildCategory && c.name.toLowercase() == settings.categories.event.toLowerCase()).children.find(c => c.name.includes(args[0]))
-            let lounge = message.guild.channels.cache.get(settings.voice.eventlounge)
-            if (!channel || !lounge) return message.channel.send('I could not find one of the voice channels (channel or lounge)')
-            await this.clean(channel, lounge, message, settings)
-        }
+        let lounge = null;
+        if (channel.parent.name.toLowerCase() === settings.categories.raiding) lounge = message.guild.channels.cache.get(settings.voice.lounge)
+        else if (channel.parent.name.toLowerCase() === settings.categories.veteran) lounge = message.guild.channels.cache.get(settings.voice.vetlounge)
+        else lounge = message.guild.channels.cache.get(settings.voice.eventlounge)
+        if (channel.id === settings.channels.accursedcommands) lounge = message.guild.channels.cache.get(settings.voice.vetlounge)
+        if (!lounge) lounge = message.guild.channels.cache.get(settings.voice.lounge)
+        if (!lounge) lounge = message.guild.channels.cache.get(settings.voice.afk)
+        if (!lounge) await message.channel.send('I could not find any lounge to move all of the raiders to')
+        let vc = null;
+        if (args.length > 0) vc = await message.guild.channels.cache.get(args[0]) 
+        if (!vc) vc = await message.guild.channels.cache.get(message.member.voice.channelId)
+        if (!vc) return message.channel.send('Something went wrong trying to fetch the channel you are in')
+        await this.clean(vc, lounge, message.guild, settings);
         await message.channel.send("Channel successfully cleaned");
     },
-    async clean(channel, lounge, message, settings) {
-        channel.members.each(async m => {
-            if (m.roles.highest.position < message.guild.roles.cache.get(settings.roles.eventrl).position) {
-                await m.voice.setChannel(lounge, 'cleaning').catch(er => { })
-            }
+    async clean(voiceChannel, lounge, guild, settings) {
+        voiceChannel.members.each(async member => {
+            if (member.roles.highest.position >= guild.roles.cache.get(settings.roles.eventrl).position) { return }
+            await member.voice.setChannel(lounge, 'cleaning').catch(er => { })
         })
     }
 }

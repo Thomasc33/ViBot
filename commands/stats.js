@@ -1,7 +1,6 @@
 const Discord = require('discord.js')
 const botSettings = require('../settings.json')
 const axios = require('axios')
-const emojiServers = require('../data/emojiServers.json')
 const keyRoles = require('../data/keyRoles.json')
 
 module.exports = {
@@ -41,13 +40,13 @@ module.exports = {
             let errored = false
             let rows = {} // {schema:row}
             bot.guilds.cache.each(g => {
-                if (!emojiServers.includes(g.id)) {
-                    if (bot.dbs[g.id] && g.members.cache.get(id)) {
-                        promises.push(getRow(bot.dbs[g.id], id, rows).catch(er => {
-                            errored = true
-                            rej(er)
-                        }))
-                    }
+                if (bot.emojiServers.includes(g.id)) { return }
+                if (bot.devServers.includes(g.id)) { return }
+                if (bot.dbs[g.id] && g.members.cache.get(id)) {
+                    promises.push(getRow(bot.dbs[g.id], id, rows).catch(er => {
+                        errored = true
+                        rej(er)
+                    }))
                 }
             })
             await Promise.all(promises)
@@ -98,7 +97,7 @@ module.exports = {
             if (settings && popInfo && member) {
                 const keyRows = popInfo.map(ki => ki.types.map(t => t[0]).join(", ")).join(", ");
                 if (bot.dbs['343704644712923138']) bot.dbs['343704644712923138'].query(`SELECT id, ${keyRows} FROM users WHERE id = '${member.id}'`, (err, keyRows) => {
-                    if (err) ErrorLogger.log(err, bot)
+                    if (err) ErrorLogger.log(err, bot, message.guild)
                     if (keyRows && keyRows[0]) checkRow(guild, bot, keyRows[0], member);
                 })
             }
@@ -161,6 +160,7 @@ function getFields(row, schema) {
                 `<:shattersKey:1008104345197346817> ${row.shattersPops}\n` +
                 `<:fungalK:723001429614395402> ${row.fungalPops}\n` +
                 `<:nestK:723001429693956106> ${row.nestPops}\n` +
+                `<:steamworksKey:1050848141492109372> ${row.steamworkPops}\n` +
                 `<:epicMysteryKey:831051424187940874> ${row.eventpops}\n` +
                 `<:modded_key:1027356831565217812> ${row.moddedPops}\n` +
                 `<${botSettings.emote.Vial}> ${row.vialStored} Dropped\n` +
@@ -174,6 +174,7 @@ function getFields(row, schema) {
                 `<:forgottenking:1008068892071055512> ${row.shattersRuns}\n` +
                 `<:crystal:1008068893056696410> ${row.fungalRuns}\n` +
                 `<:queenbee:1008068890791780433> ${row.nestRuns}\n` +
+                `<a:steamworksPortal:1050156386547413012> ${row.steamworkRuns}\n` +
                 `<:epicMysteryKey:831051424187940874> ${row.eventruns}`,
             inline: true
         },
@@ -184,10 +185,12 @@ function getFields(row, schema) {
                 `<:forgottenking:1008068892071055512> ${row.shattersLead}\n` +
                 `<:crystal:1008068893056696410> ${row.fungalsLead}\n` +
                 `<:queenbee:1008068890791780433> ${row.nestsLead}\n` +
+                `<:SteamworksBoss:1050156577920917574> ${row.steamworkLead}\n` +
                 `<:epicMysteryKey:831051424187940874> ${parseInt(row.eventsLead) * 10} Minutes\n` +
                 `<:feedback:858920770806087710> ${row.feedback + row.exaltFeedback}\n` +
+                `<:shattersFeedback:1071433377879707728> ${row.shattersFeedback}\n` +
                 `🤝 ${row.assists} Assists\n` +
-                `🔎 ${row.parses} Parses`,
+                `🔎 ${row.parses} Parses\n`,
             inline: true
         }
     ]

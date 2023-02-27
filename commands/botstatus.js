@@ -64,7 +64,7 @@ module.exports = {
         await m.edit({ embeds: [StatusEmbed] })
     },
     async updateAll() {
-        if (!DB || !Bot || StatusEmbed.data.fields.length < 3) return //happens on bot initialization
+        if (!DB || !Bot || !StatusEmbed || !StatusEmbed.data || StatusEmbed.data.fields.length < 3) return //happens on bot initialization
         if (StatusEmbed.data.fields[0].value == 'Initializing') {
             StatusEmbed.data.fields[0].value = 'Chilling';
             StatusEmbed.setColor('#00ff00')

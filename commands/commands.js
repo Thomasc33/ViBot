@@ -16,7 +16,7 @@ module.exports = {
      */
     execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
-        const override = userOverride(message.author.id);
+        const override = userOverride(message.author.id, bot);
 
         if (args.length != 0) {
             bot.commands.get(args[0].toLowerCase())
@@ -30,10 +30,17 @@ module.exports = {
             })
             if (!command) return message.channel.send('Command doesnt exist, check \`commands\` and try again');
 
-            if (!message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role])) return message.channel.send('Permissions not setup for that commands role')
-            if ((message.guild.members.cache.get(message.author.id).roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role]).position
-                && !override) || !bot.settings[message.guild.id].commands[command.name])
-                return message.channel.send('Command doesnt exist, check \`commands\` and try again');
+            let member = message.guild.members.cache.get(message.author.id)
+            let memberPosition = member.roles.highest.position;
+            let roleCache = message.guild.roles.cache
+            if (!message.guild.roles.cache.get(settings.roles[command.role])) return message.channel.send('Permissions not setup for that commands role')
+            if ((memberPosition < roleCache.get(settings.roles[command.role]).position && !override) || !settings.commands[command.name]) {
+                if (!settings.commandsRolePermissions[command.name]) {
+                    return message.channel.send('Command doesnt exist, check \`commands\` and try again');
+                } else if (memberPosition < roleCache.get(settings.roles[settings.commandsRolePermissions[command.name]]).position) {
+                    return message.channel.send('Command doesnt exist, check \`commands\` and try again');
+                }
+            }
             var commandPanel = new Discord.EmbedBuilder()
                 .setTitle(command.name)
                 .setColor('#ff0000')
@@ -44,8 +51,9 @@ module.exports = {
             if (command.getNotes && command.getNotes(message.guild.id, message.member)) commandPanel.addFields({ name: 'Special Notes', value: command.getNotes(message.guild.id, message.member) })
 
             var roleOverride
-            if (command.roleOverride && command.roleOverride[message.guildId]) roleOverride = message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.roleOverride[message.guildId]])
-            var minimumRole = message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role])
+            var minimumRole
+            if (settings.commandsRolePermissions[command.name]) roleOverride = message.guild.roles.cache.get(settings.roles[settings.commandsRolePermissions[command.name]])
+            if (settings.roles[command.role]) minimumRole = message.guild.roles.cache.get(bot.settings[message.guild.id].roles[command.role])
             if (roleOverride) commandPanel.addFields({ name: 'Minimum Role', value: roleOverride.toString() });
             else if (minimumRole) commandPanel.addFields({ name: 'Minimum Role', value: minimumRole.toString() });
             else commandPanel.addFields({ name: 'Minimum Role', value: 'Role not set up' });
@@ -63,12 +71,18 @@ module.exports = {
                 if (!role) continue;
                 if (message.member.roles.highest.position < role.position && !override) continue;
                 if (!fields[role.name]) fields[role.name] = { position: role.position, commands: [] };
-                bot.commands.each(c => {
-                    if (c.roleOverride && c.roleOverride[message.guildId] && bot.settings[message.guild.id].commands[c.name]) {
+                bot.commands.each(command => {
+                    /*if (c.roleOverride && c.roleOverride[message.guildId] && bot.settings[message.guild.id].commands[c.name]) {
                         if (c.roleOverride[message.guildId] == roleName) fields[role.name].commands.push(';' + c.name);
                     }
                     else if (c.role == roleName && bot.settings[message.guild.id].commands[c.name])
-                        fields[role.name].commands.push(';' + c.name);
+                        fields[role.name].commands.push(';' + c.name);*/
+                    if (!settings.commands[command.name]) { return }
+                    if (settings.commandsRolePermissions[command.name] && settings.commandsRolePermissions[command.name] == roleName) {
+                        fields[role.name].commands.push(';' + command.name)
+                    } else if (command.role == roleName) {
+                        fields[role.name].commands.push(';' + command.name)
+                    }
                 })
             }
             for (const name of Object.keys(fields).sort((a, b) => fields[a].position - fields[b].position))
@@ -79,6 +93,6 @@ module.exports = {
     },
 };
 
-function userOverride(id) {
-    return ['277636691227836419'].includes(id);
+function userOverride(id, bot) {
+    return bot.adminUsers.includes(id);
 }

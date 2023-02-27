@@ -29,7 +29,7 @@ module.exports = {
         },
         async listAll(message, args, bot, db) {
             db.query(`SELECT * FROM veriblacklist`, async(err, rows) => {
-                if (err) ErrorLogger.log(err, bot)
+                if (err) ErrorLogger.log(err, bot, message.guild)
                 let embed = new Discord.EmbedBuilder()
                     .setTitle(`Expelled / Veriblacklisted users`)
                     .setDescription('None!')
@@ -41,7 +41,7 @@ module.exports = {
         },
         async listUsers(message, args, bot, db) {
             db.query(`SELECT * FROM veriblacklist WHERE id IN (${args.map(a => `'${a}'`).join(', ')})`, async(err, rows) => {
-            if (err) ErrorLogger.log(err, bot);
+            if (err) ErrorLogger.log(err, bot, message.guild);
             let embed = new Discord.EmbedBuilder()
                 .setTitle(`Expelled / Veriblacklisted users`)
                 .setDescription('None!');
@@ -60,7 +60,7 @@ module.exports = {
         db.query(`INSERT INTO veriblacklist (id, modid, guildid, reason) VALUES (${db.escape(id)}, '${message.author.id}', '${message.guild.id}', ${db.escape(args.join(' ') || 'No reason provided.')})`, (err) => {
             if (err)
             {
-                ErrorLogger.log(err, bot);
+                ErrorLogger.log(err, bot, message.guild);
                 message.channel.send(`Error adding \`${id}\` to the blacklist: ${err.message}`);
             } else 
                 message.react('✅');

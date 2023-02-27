@@ -26,8 +26,6 @@ module.exports = {
         let run = getRunInfo(guildInfo, args[0])
         if (!run) return message.channel.send('Run Type not recognized\n' + this.getNotes(message.guild.id))
 
-
-
         /* RUN LOGGING LOGIC */
 
         //count
@@ -45,6 +43,7 @@ module.exports = {
 
         //send query
         promises.push(new Promise(res => {
+            db.query(`INSERT INTO loggedusage (logged, userid, guildid, utime) VALUES ('${run.name}', '${message.member.id}', '${message.guild.id}', '${Date.now()}')`);
             db.query(`UPDATE users SET ${run.main} = ${run.main} + ${count}, ${run.currentweek} = ${run.currentweek} + ${count} WHERE id = '${message.author.id}'`, (err, rows) => {
                 //return if any errors
                 if (err) { res(null); return message.channel.send(`Error: ${err}`) }
@@ -53,7 +52,7 @@ module.exports = {
                     if (err) { res(null); return message.channel.send(`Error: ${err}`) }
                     if (rows.length < 1) { res(null); return message.channel.send('Current week stats could not be retrived. However, run was still logged') }
                     currentWeekEmbed.setDescription(`Run Logged for ${`<@!${message.author.id}>`}${message.member.displayName ? ` \`${message.member.displayName}\`` : ''}`)
-                        .addFields({ name: 'Current week:', value: run.toDisplay.map(c => ` \`${rows[0][c]}\` ${c.replace('currentweek', '')}`).join('\n') })
+                        .addFields({ name: 'Current week:', value: run.toDisplay.map(c => ` \`${rows[0][c]}\` ${c.replace('currentweek', '').replace('rollingQuota', 'Rollover')}`).join('\n') })
                         .setTimestamp()
                         .setColor(run.color)
                     if (run.icon) currentWeekEmbed.setThumbnail(run.icon)
@@ -64,7 +63,6 @@ module.exports = {
                 })
             })
         }))
-
 
         //assists
         if (run.allowAssists && guildInfo.assist) {
@@ -114,16 +112,12 @@ function confirm(runInfo, message, count) {
             .setDescription(`Are you sure you want to log ${parseInt(count) * multiplier} ${runInfo.confirmSuffix}?`)
             .setFooter({ text: message.member.displayName })
             .setTimestamp()
-        let confirmMessage = await message.channel.send({ embeds: [confirmEmbed] })
-        let confirmCollector = new Discord.ReactionCollector(confirmMessage, { filter: (r, u) => !u.bot && u.id == message.author.id && (r.emoji.name === '✅' || r.emoji.name === '❌') })
-        confirmMessage.react('✅')
-        confirmMessage.react('❌')
-        confirmCollector.on('collect', async function (r, u) {
-            confirmMessage.delete()
-            if (r.emoji.name === '✅') return res(true)
-            else return res(false)
+        await message.channel.send({ embeds: [confirmEmbed] }).then(async confirmMessage => {
+            if (await confirmMessage.confirmButton(message.author.id)) {
+                await confirmMessage.delete()
+                return res(true)
+            } else await confirmMessage.delete(); return res(false)
         })
-        confirmCollector.on('end', async (r, u) => { confirmMessage.delete(); res(false); })
     })
 }
 

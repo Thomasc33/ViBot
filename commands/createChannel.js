@@ -2,6 +2,7 @@ const ChannelsCommand = require('./vibotChannels')
 const Discord = require('discord.js')
 const fs = require('fs')
 const dbInfo = require('../data/database.json')
+const logs = require('../data/logInfo.json')
 const afkCheck = require('./afkCheck')
 const ErrorLogger = require('../lib/logError')
 
@@ -13,9 +14,9 @@ module.exports = {
     alias: ['channels'],
     role: 'eventrl',
     description: 'Create a channel that stays open and is able to be edited. Useful for simply started a long lasting channel for run types where afk checks don\'t make sense. *Default cap is 50*',
-    args: '<create/open/close/rename/log/setcap> (data)',
+    args: '<create/rename/log/setcap> (data)',
     getNotes(guildid, member) {
-        return '`create <name>` creates new channel\n`open` unlocks the channel\n`close` locks the channel\n`rename <new name>` renames the channel\n`log` (c/ve) logs a dungeon complete for everyone in vc *c/v/e required for channels in vet section only*\n`setcap <#>` sets the vc cap'
+        return `\`create <name>\` creates new channel\n\`rename <new name>\` renames the channel\n\`log\` (${logs[guildid].main.map(log => log.key).join('/')}) logs a dungeon complete for everyone in vc *${logs[guildid].main.map(log => log.key).join('/')} required for channels in vet section only*\n\`setcap <#>\` sets the vc cap`
     },
     requiredArgs: 1,
     async execute(message, args, bot, db) {
@@ -24,7 +25,11 @@ module.exports = {
             case 'create':
                 //get channel parent
                 let isVet = false;
-                if (message.channel.parent.name.toLowerCase() == settings.categories.veteran) isVet = true;
+                let isAccursed = false;
+                if (message.channel.parent.name.toLowerCase() == settings.categories.veteran){
+                    if(message.channel.id == settings.channels.accursedcommands) isAccursed = true
+                    else isVet = true;
+                }
                 else if (message.channel.parent.name.toLowerCase() == settings.categories.event) isVet = false;
                 else return message.channel.send('Channel category is invalid')
 
@@ -35,22 +40,39 @@ module.exports = {
                 if (name == '') return message.channel.send("Please provide a name")
                 name = name.trim();
 
-                //create channel default unlocked using same code from afkcheck
-                let channel = await createChannel(name, isVet, message, bot)
-
                 //post a message in raid status
                 let embed = new Discord.EmbedBuilder()
                     .setColor('#eeeeee')
                     .setAuthor({ name: `${name}` })
-                    .setDescription(`Join \`${channel.name}\` to participate`)
                     .addFields({ name: 'Status', value: '**Closed**' })
                     .setFooter({ text: 'Started at' })
                     .setTimestamp(Date.now())
                 let raidStatus
                 if (isVet) raidStatus = message.guild.channels.cache.get(settings.channels.vetstatus)
+                else if (isAccursed) raidStatus = message.guild.channels.cache.get(settings.channels.accursedstatus)
                 else raidStatus = message.guild.channels.cache.get(settings.channels.eventstatus)
                 if (!raidStatus) return message.channel.send('Could not find raid-status')
-                let m = await raidStatus.send({ content: `@here`, embeds: [embed] })
+                embedComponents = new Discord.ActionRowBuilder()
+                    .addComponents([
+                        new Discord.ButtonBuilder()
+                            .setLabel('🔓 Open VC')
+                            .setStyle(2)
+                            .setCustomId('open')
+                    ])
+                let m = await raidStatus.send({ content: `@here Run will be starting very soon`, embeds: [], components: [] })
+
+                //create channel default unlocked using same code from afkcheck
+                let channel = await createChannel(name, isVet, message, bot, m, isAccursed)
+
+                // Modify the Raid Status Embed
+                embed.setDescription(`**Raid Leader:** ${message.member}\n**VC:** ${channel}`)
+
+                await m.edit({ content: `@here`, embeds: [embed], components: [embedComponents] })
+
+                //add interaction collectors
+                this.leaderInteractionCollector = new Discord.InteractionCollector(bot, { message: m, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
+                this.leaderInteractionCollector.on('collect', (interaction) => interactionHandler(interaction, m, settings, bot))
+                
 
                 //add to channels array
                 let runInfo = {
@@ -72,7 +94,7 @@ module.exports = {
                     guildId: message.guild.id,
                 }
                 channelCache.push(cacheData)
-                fs.writeFileSync('./createdChannels.json', JSON.stringify(channelCache, null, 4), err => { if (err) ErrorLogger.log(err, bot) })
+                fs.writeFileSync('./createdChannels.json', JSON.stringify(channelCache, null, 4), err => { if (err) ErrorLogger.log(err, bot, message.guild) })
 
                 let afkInfo = {
                     leader: message.author.id,
@@ -89,83 +111,8 @@ module.exports = {
                     endedAt: Date.now()
                 }
                 bot.afkChecks[channel.id] = afkInfo
-                fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot) })
+                fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot, message.guild) })
                 return;
-            case 'open':
-                function open() {
-                    let channel = getChannel(message)
-                    if (!channel) return
-
-                    if (!channel.message) return message.channel.send(`Error finding the message in RSA, try recreating the channel`)
-                    if (!channel.channel) return message.channel.send(`Voice channel not found, try recreating it`)
-
-                    //10 second timer
-                    let iteration = 0;
-                    let timer = setInterval(unlockInterval, 5000)
-                    async function unlockInterval() {
-                        switch (iteration) {
-                            case 0:
-                                channel.message.edit(`@here Channel will open in 10 seconds...`)
-                                break;
-                            case 1:
-                                channel.message.edit(`@here Channel will open in 5 seconds...`)
-                                break;
-                            case 2:
-                                clearInterval(timer)
-                                //unlock the channel (event boi for events :^))
-                                if (channel.channel.parent.name.toLowerCase() == 'events') {
-                                    var eventBoi = message.guild.roles.cache.get(settings.roles.eventraider)
-                                    var raider = message.guild.roles.cache.get(settings.roles.raider)
-                                } else {
-                                    var raider = message.guild.roles.cache.get(settings.roles.vetraider)
-                                }
-
-                                channel.channel.permissionOverwrites.edit(raider.id, { Connect: true, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot))
-                                    .then(eventBoi && settings.backend.giveEventRoleOnDenial2 ? channel.channel.permissionOverwrites.edit(eventBoi.id, { Connect: true, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot)) : null)
-
-                                //edit message in raid status
-                                channel.embed.data.fields[0].value = '**Open**'
-                                channel.message.edit({ content: '@here', embeds: [channel.embed] })
-
-                                if (!bot.afkChecks[channel.channelId]) bot.afkChecks[channel.channelId] = {}
-                                bot.afkChecks[channel.channelId].active = true;
-                                bot.afkChecks[channel.channelId].started = Date.now();
-                                fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot) })
-                                break;
-                        }
-                        iteration++;
-
-                    }
-                }
-                open()
-                break;
-            case 'close':
-                function close() {
-                    let channel = getChannel(message)
-                    if (!channel) return
-                    if (!channel.channel) return message.channel.send("Could not find your channel");
-                    //lock the channel (event boi for events :^))
-                    if (channel.channel.parent.name.toLowerCase() == 'events') {
-                        var eventBoi = message.guild.roles.cache.get(settings.roles.eventraider)
-                        var raider = message.guild.roles.cache.get(settings.roles.raider)
-                    } else {
-                        var raider = message.guild.roles.cache.get(settings.roles.vetraider)
-                    }
-
-                    channel.channel.permissionOverwrites.edit(raider.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot))
-                        .then(eventBoi && settings.backend.giveEventRoleOnDenial2 ? channel.channel.permissionOverwrites.edit(eventBoi.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot)) : null)
-
-                    //edit message in raid status
-                    channel.embed.data.fields[0].value = '**Closed**'
-                    channel.message.edit({ content: null, embeds: [channel.embed] })
-                    if (bot.afkChecks[channel.channelId]) {
-                        bot.afkChecks[channel.channelId].active = false;
-                        bot.afkChecks[channel.channelId].endedAt = Date.now();
-                        fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot) })
-                    }
-                }
-                close()
-                break;
             case 'rename':
                 function rename() {
                     //get channel info
@@ -189,14 +136,21 @@ module.exports = {
                     if (!bot.afkChecks[channel.channelId].runType) bot.afkChecks[channel.channelId].runType = {}
                     bot.afkChecks[channel.channelId].runType.runType = name;
                     bot.afkChecks[channel.channelId].runType.runName = name;
-                    fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot) })
+                    fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot, message.guild) })
 
                     //change messages
 
                 }
                 rename()
                 break;
+            case 'open':
+                open(message, settings, bot)
+                break;
+            case 'close':
+                close(message, settings, bot)
+                break;
             case 'log':
+                console.log(1)
                 function log() {
                     //get channel info
                     let channel = getChannel(message)
@@ -217,7 +171,7 @@ module.exports = {
                     channel.channel.members.each(m => query = query.concat(`id = '${m.id}' OR `))
                     query = query.substring(0, query.length - 4)
                     db.query(query, err => {
-                        if (err) ErrorLogger.log(err, bot)
+                        if (err) ErrorLogger.log(err, bot, message.guild)
                         message.react('✅')
                     })
                 }
@@ -288,23 +242,31 @@ function getChannel(message) {
 }
 
 
-async function createChannel(name, isVet, message, bot) {
+async function createChannel(name, isVet, message, bot, rsaMessage, isAccursed) {
     let settings = bot.settings[message.guild.id]
     return new Promise(async (res, rej) => {
         //channel creation
         if (isVet) {
-            var parent = 'veteran raiding';
+            var parent = settings.categories.veteran;
             var template = message.guild.channels.cache.get(settings.voice.vettemplate)
             var raider = message.guild.roles.cache.get(settings.roles.vetraider)
             var vibotChannels = message.guild.channels.cache.get(settings.channels.vetchannels)
-            var lounge = message.guild.channels.cache.find(c => c.name.toLowerCase() == 'veteran lounge')
-        } else {
-            var parent = 'events';
+            var lounge = message.guild.channels.cache.get(settings.voice.vetlounge)
+        }
+        else if (isAccursed) {
+            var parent = settings.categories.veteran;
+            var template = message.guild.channels.cache.get(settings.voice.accursedtemplate)
+            var raider = message.guild.roles.cache.get(settings.roles.accursed)
+            var vibotChannels = message.guild.channels.cache.get(settings.channels.vetchannels)
+            var lounge = message.guild.channels.cache.get(settings.voice.vetlounge)
+        }
+        else {
+            var parent = settings.categories.event;
             var template = message.guild.channels.cache.get(settings.voice.eventtemplate)
             var raider = message.guild.roles.cache.get(settings.roles.raider)
             var eventBoi = message.guild.roles.cache.get(settings.roles.eventraider)
             var vibotChannels = message.guild.channels.cache.get(settings.channels.eventchannels)
-            var lounge = message.guild.channels.cache.find(c => c.name.toLowerCase() == 'event lounge')
+            var lounge = message.guild.channels.cache.get(settings.voice.eventlounge)
         }
         if (!template) return rej(`Template channel not found`)
         if (!message.guild.channels.cache.filter(c => c.type == Discord.ChannelType.GuildCategory).find(c => c.name.toLowerCase() === parent)) return rej(`${parent} category not found`)
@@ -317,22 +279,133 @@ async function createChannel(name, isVet, message, bot) {
         await message.member.voice.setChannel(channel).catch(er => { })
 
         //allows raiders to view
-        channel.permissionOverwrites.edit(raider.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot))
-        if (eventBoi && settings.backend.giveEventRoleOnDenial2) channel.permissionOverwrites.edit(eventBoi.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot))
+        channel.permissionOverwrites.edit(raider.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot, message.guild))
+        if (eventBoi && settings.backend.giveEventRoleOnDenial2) channel.permissionOverwrites.edit(eventBoi.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot, message.guild))
 
-        //Embed to remove
+        // Embed to Remove
         let embed = new Discord.EmbedBuilder()
-            .setDescription(`Whenever the run is over. React with the ❌ to delete the channel. View the timestamp for more information`)
-            .setFooter({ text: channel.id })
+            .setDescription(`**Raid Leader:** <@!${message.author.id}>\n**VC:** <#${channel.id}>\n\nWhenever the run is over. Click the button to delete the channel. View the timestamp for more information`)
+            .setFooter({ text: `${channel.id}` })
             .setTimestamp()
             .setTitle(channel.name)
-            .setColor(`#eeeeee`)
-        let m = await vibotChannels.send({ content: `${message.member}`, embeds: [embed] })
-        await m.react('❌')
-        setTimeout(() => { ChannelsCommand.watchMessage(m, bot, settings) }, 5000)
+            .setColor('#eeeeee')
+        setTimeout(async () => {
+            let m = await vibotChannels.send({ content: `${message.member}`, embeds: [embed] });
+            await ChannelsCommand.addCloseChannelButtons(bot, m, rsaMessage);
+        }, 1);
         if (!channel) rej('No channel was made')
         res(channel);
     })
+}
+
+async function interactionHandler(interaction, message, settings, bot) {
+    if (!interaction.isButton()) return;
+    if (interaction.customId == "open") {
+        veteranAffiliate = message.guild.roles.cache.get(settings.roles.vetaffiliate)
+        if (message.guild.members.cache.get(interaction.user.id).roles.highest.position < veteranAffiliate.position) { return await interaction.reply({ content: 'This Voice Channel is currently **CLOSED**\nYou are not a Staff Member and can not open this Voice Channel', ephemeral: true}) }
+        await interaction.reply({ ephemeral: true, content: "Opening channel!"})
+        open(interaction, settings, bot)
+
+        let temp_m_components = message.components
+        for (let i = 0; i < temp_m_components.length; i++) {
+            for (let j = 0; j < temp_m_components[i].components.length; j++) {
+                if (temp_m_components[i].components[j].customId === 'open') {
+                    temp_m_components[i].components[j] = new Discord.ButtonBuilder({ label: '🔒 Close VC', customId: 'close', disabled: false, style: Discord.ButtonStyle.Primary });
+                }
+            }
+        }
+        message = await message.edit({ components: temp_m_components })
+    } else if (interaction.customId == "close") {
+        veteranAffiliate = message.guild.roles.cache.get(settings.roles.vetaffiliate)
+        if (message.guild.members.cache.get(interaction.user.id).roles.highest.position < veteranAffiliate.position) { return interaction.reply({ content: 'This Voice Channel is currently **OPEN**\nYou are not a Staff Member and can not open this Voice Channel', ephemeral: true}) }
+        interaction.reply({ ephemeral: true, content: "Closing channel!"})
+        close(interaction, settings, bot)
+
+        let temp_m_components = message.components
+        for (let i = 0; i < temp_m_components.length; i++) {
+            for (let j = 0; j < temp_m_components[i].components.length; j++) {
+                if (temp_m_components[i].components[j].customId === 'close') {
+                    temp_m_components[i].components[j] = new Discord.ButtonBuilder({ label: '🔓 Open VC', customId: 'open', disabled: false, style: Discord.ButtonStyle.Secondary });
+                }
+            }
+        }
+        message = await message.edit({ components: temp_m_components })
+    } else {
+        interaction.reply({ content: "Something went wrong, please try again!", ephemeral: true })
+    }
+}
+
+function open(message, settings, bot) {
+    let channel = getChannel(message)
+    if (!channel) return
+
+    if (!channel.message) return message.channel.send(`Error finding the message in RSA, try recreating the channel`)
+    if (!channel.channel) return message.channel.send(`Voice channel not found, try recreating it`)
+
+    // 5 second timer
+    let iteration = 0;
+    let timer = setInterval(unlockInterval, 2500)
+    async function unlockInterval() {
+        switch (iteration) {
+            case 0:
+                channel.message.edit(`@here Channel will open in 5 seconds...`)
+                break;
+            case 1:
+                channel.message.edit(`@here Channel will open in 2.5 seconds...`)
+                break;
+            case 2:
+                clearInterval(timer)
+                //unlock the channel (event boi for events :^))
+                if (channel.channel.parent.name.toLowerCase() == 'events') {
+                    var eventBoi = message.guild.roles.cache.get(settings.roles.eventraider)
+                    var raider = message.guild.roles.cache.get(settings.roles.raider)
+                }
+                 else {
+                    if(message.channelId == settings.channels.accursedstatus || message.channelId == settings.channels.accursedcommands) var raider = message.guild.roles.cache.get(settings.roles.accursed)
+                    else var raider = message.guild.roles.cache.get(settings.roles.vetraider)
+                }
+
+                channel.channel.permissionOverwrites.edit(raider.id, { Connect: true, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot, message.guild))
+                    .then(eventBoi && settings.backend.giveEventRoleOnDenial2 ? channel.channel.permissionOverwrites.edit(eventBoi.id, { Connect: true, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot, message.guild)) : null)
+
+                //edit message in raid status
+                channel.embed.data.fields[0].value = '**Open**'
+                channel.message.edit({ content: '@here', embeds: [channel.embed] })
+
+                if (!bot.afkChecks[channel.channelId]) bot.afkChecks[channel.channelId] = {}
+                bot.afkChecks[channel.channelId].active = true;
+                bot.afkChecks[channel.channelId].started = Date.now();
+                fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot, message.guild) })
+                break;
+        }
+        iteration++;
+
+    }
+}
+
+function close(message, settings, bot) {
+    let channel = getChannel(message)
+    if (!channel) return
+    if (!channel.channel) return message.channel.send("Could not find your channel");
+    //lock the channel (event boi for events :^))
+    if (channel.channel.parent.name.toLowerCase() == 'events') {
+        var eventBoi = message.guild.roles.cache.get(settings.roles.eventraider)
+        var raider = message.guild.roles.cache.get(settings.roles.raider)
+    } else {
+        var raider = message.guild.roles.cache.get(settings.roles.vetraider)
+    }
+
+    channel.channel.permissionOverwrites.edit(raider.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot, message.guild))
+        .then(eventBoi && settings.backend.giveEventRoleOnDenial2 ? channel.channel.permissionOverwrites.edit(eventBoi.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, bot, message.guild)) : null)
+
+    //edit message in raid status
+    channel.embed.data.fields[0].value = '**Closed**'
+    channel.message.edit({ content: null, embeds: [channel.embed] })
+    if (bot.afkChecks[channel.channelId]) {
+        bot.afkChecks[channel.channelId].active = false;
+        bot.afkChecks[channel.channelId].endedAt = Date.now();
+        fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot, message.guild) })
+    }
 }
 
 function moduleIsAvailable(path) {

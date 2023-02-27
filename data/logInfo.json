@@ -23,8 +23,11 @@
                     "currentweekShatters",
                     "currentweekFungals",
                     "currentweekNests",
+                    "currentweekSteamwork",
                     "currentweekAssists",
-                    "currentweekFeedback"
+                    "currentweekFeedback",
+                    "currentweekshattersFeedback",
+                    "rollingQuota"
                 ],
                 "logVet": true,
                 "promotable": [ { "roles": ["almostrl"], "column": "arlRollingQuotaVoids" } ]
@@ -51,8 +54,11 @@
                     "currentweekShatters",
                     "currentweekFungals",
                     "currentweekNests",
+                    "currentweekSteamwork",
                     "currentweekAssists",
-                    "currentweekFeedback"
+                    "currentweekFeedback",
+                    "currentweekshattersFeedback",
+                    "rollingQuota"
                 ],
                 "logVet": true
             },
@@ -79,8 +85,11 @@
                     "currentweekShatters",
                     "currentweekFungals",
                     "currentweekNests",
+                    "currentweekSteamwork",
                     "currentweekAssists",
-                    "currentweekFeedback"
+                    "currentweekFeedback",
+                    "currentweekshattersFeedback",
+                    "rollingQuota"
                 ],
                 "logVet": true
             },
@@ -107,8 +116,42 @@
                     "currentweekShatters",
                     "currentweekFungals",
                     "currentweekNests",
+                    "currentweekSteamwork",
                     "currentweekAssists",
-                    "currentweekFeedback"
+                    "currentweekFeedback",
+                    "currentweekshattersFeedback",
+                    "rollingQuota"
+                ],
+                "logVet": true
+            },
+            {
+                "key": "sf",
+                "name": "shatters feedback",
+                "alias": [
+                    "sfeedback",
+                    "sfb"
+                ],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": true,
+                "confirmSuffix": "shatters feedbacks",
+                "main": "shattersFeedback",
+                "currentweek": "currentweekshattersFeedback",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/858920770806087710.png?v=1",
+                "desc": "`Shatters Feedback`",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweekCult",
+                    "currentweekVoid",
+                    "currentweekShatters",
+                    "currentweekFungals",
+                    "currentweekNests",
+                    "currentweekSteamwork",
+                    "currentweekAssists",
+                    "currentweekFeedback",
+                    "currentweekshattersFeedback",
+                    "rollingQuota"
                 ],
                 "logVet": true
             },
@@ -134,8 +177,11 @@
                     "currentweekShatters",
                     "currentweekFungals",
                     "currentweekNests",
+                    "currentweekSteamwork",
                     "currentweekAssists",
-                    "currentweekFeedback"
+                    "currentweekFeedback",
+                    "currentweekshattersFeedback",
+                    "rollingQuota"
                 ],
                 "logVet": true
             },
@@ -164,8 +210,11 @@
                     "currentweekShatters",
                     "currentweekFungals",
                     "currentweekNests",
+                    "currentweekSteamwork",
                     "currentweekAssists",
-                    "currentweekFeedback"
+                    "currentweekFeedback",
+                    "currentweekshattersFeedback",
+                    "rollingQuota"
                 ],
                 "logVet": true
             },
@@ -190,6 +239,40 @@
                 "toDisplay": [
                     "currentweekEvents"
                 ]
+            },
+            {
+                "key": "k",
+                "name": "kogbold steamworks",
+                "alias": [
+                    "kogbold",
+                    "kogbol",
+                    "kog",
+                    "steamworks",
+                    "steamwork",
+                    "steam",
+                    "work"
+                ],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "steamworkLead",
+                "currentweek": "currentweekSteamwork",
+                "color": "#0ba6ee",
+                "icon": "https://cdn.discordapp.com/emojis/1050156577920917574.webp",
+                "desc": "`Steamworks` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweekCult",
+                    "currentweekVoid",
+                    "currentweekShatters",
+                    "currentweekFungals",
+                    "currentweekNests",
+                    "currentweekSteamwork",
+                    "currentweekAssists",
+                    "currentweekFeedback",
+                    "rollingQuota"
+                ],
+                "logVet": true
             }
         ],
         "assist": {
@@ -221,8 +304,11 @@
                     "currentweekShatters",
                     "currentweekFungals",
                     "currentweekNests",
+                    "currentweekSteamwork",
                     "currentweekAssists",
-                    "currentweekFeedback"
+                    "currentweekFeedback",
+                    "currentweekshattersFeedback",
+                    "rollingQuota"
                 ],
                 "logVet": true,
                 "promotable": [ { "roles": ["almostrl"], "column": "arlRollingQuotaVoids" } ]
@@ -249,8 +335,11 @@
                     "currentweekShatters",
                     "currentweekFungals",
                     "currentweekNests",
+                    "currentweekSteamwork",
                     "currentweekAssists",
-                    "currentweekFeedback"
+                    "currentweekFeedback",
+                    "currentweekshattersFeedback",
+                    "rollingQuota"
                 ],
                 "logVet": true
             },
@@ -267,7 +356,7 @@
                 "confirm": false,
                 "main": "shattersLead",
                 "currentweek": "currentweekShatters",
-                "color": "#013220",
+                "color": "#ff0000",
                 "icon": "https://cdn.discordapp.com/emojis/924899045154103296.webp",
                 "desc": "`Shatters` Run",
                 "toUpdate": "raiding",
@@ -277,8 +366,11 @@
                     "currentweekShatters",
                     "currentweekFungals",
                     "currentweekNests",
+                    "currentweekSteamwork",
                     "currentweekAssists",
-                    "currentweekFeedback"
+                    "currentweekFeedback",
+                    "currentweekshattersFeedback",
+                    "rollingQuota"
                 ],
                 "logVet": true
             },
@@ -305,8 +397,42 @@
                     "currentweekShatters",
                     "currentweekFungals",
                     "currentweekNests",
+                    "currentweekSteamwork",
                     "currentweekAssists",
-                    "currentweekFeedback"
+                    "currentweekFeedback",
+                    "currentweekshattersFeedback",
+                    "rollingQuota"
+                ],
+                "logVet": true
+            },
+            {
+                "key": "sf",
+                "name": "shatters feedback",
+                "alias": [
+                    "sfeedback",
+                    "sfb"
+                ],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": true,
+                "confirmSuffix": "shatters feedbacks",
+                "main": "shattersFeedback",
+                "currentweek": "currentweekshattersFeedback",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/1071433377879707728.png?v=1",
+                "desc": "`Shatters Feedback`",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweekCult",
+                    "currentweekVoid",
+                    "currentweekShatters",
+                    "currentweekFungals",
+                    "currentweekNests",
+                    "currentweekSteamwork",
+                    "currentweekAssists",
+                    "currentweekFeedback",
+                    "currentweekshattersFeedback",
+                    "rollingQuota"
                 ],
                 "logVet": true
             },
@@ -322,7 +448,7 @@
                 "confirm": false,
                 "main": "nestsLead",
                 "currentweek": "currentweekNests",
-                "color": "#ffd700",
+                "color": "#ff0000",
                 "icon": "https://cdn.discordapp.com/emojis/926313806567719032.webp",
                 "desc": "`Nest` Run",
                 "toUpdate": "raiding",
@@ -332,8 +458,11 @@
                     "currentweekShatters",
                     "currentweekFungals",
                     "currentweekNests",
+                    "currentweekSteamwork",
                     "currentweekAssists",
-                    "currentweekFeedback"
+                    "currentweekFeedback",
+                    "currentweekshattersFeedback",
+                    "rollingQuota"
                 ],
                 "logVet": true
             },
@@ -352,9 +481,9 @@
                 "confirm": false,
                 "main": "fungalsLead",
                 "currentweek": "currentweekFungals",
-                "color": "#fefefe",
+                "color": "#ff0000",
                 "icon": "https://cdn.discordapp.com/emojis/926313805888225342.webp",
-                "desc": "`Fungal` Run",
+                "desc": "`Cult` Run",
                 "toUpdate": "raiding",
                 "toDisplay": [
                     "currentweekCult",
@@ -362,8 +491,11 @@
                     "currentweekShatters",
                     "currentweekFungals",
                     "currentweekNests",
+                    "currentweekSteamwork",
                     "currentweekAssists",
-                    "currentweekFeedback"
+                    "currentweekFeedback",
+                    "currentweekshattersFeedback",
+                    "rollingQuota"
                 ],
                 "logVet": true
             },
@@ -388,6 +520,40 @@
                 "toDisplay": [
                     "currentweekEvents"
                 ]
+            },
+            {
+                "key": "k",
+                "name": "kogbold steamworks",
+                "alias": [
+                    "kogbold",
+                    "kogbol",
+                    "kog",
+                    "steamworks",
+                    "steamwork",
+                    "steam",
+                    "work"
+                ],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "steamworkLead",
+                "currentweek": "currentweekSteamwork",
+                "color": "#0ba6ee",
+                "icon": "https://cdn.discordapp.com/emojis/1050156577920917574.webp",
+                "desc": "`Steamworks` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweekCult",
+                    "currentweekVoid",
+                    "currentweekShatters",
+                    "currentweekFungals",
+                    "currentweekNests",
+                    "currentweekSteamwork",
+                    "currentweekAssists",
+                    "currentweekFeedback",
+                    "rollingQuota"
+                ],
+                "logVet": true
             }
         ],
         "assist": {
@@ -416,7 +582,8 @@
                 "toDisplay": [
                     "currentweeko3",
                     "currentweekAssistso3",
-                    "currentweeko3Feedback"
+                    "currentweeko3Feedback",
+                    "rollingQuotao3"
                 ]
             },
             {
@@ -478,7 +645,102 @@
                 "toDisplay": [
                     "currentweeko3",
                     "currentweekAssistso3",
-                    "currentweeko3Feedback"
+                    "currentweeko3Feedback",
+                    "rollingQuotao3"
+                ]
+            }
+        ],
+        "assist": {
+            "main": "assistso3",
+            "currentweek": "currentweekAssistso3"
+        }
+    },
+    "934611202787643412": {
+        "main": [
+            {
+                "key": "o",
+                "name": "o3",
+                "alias": [
+                    "o3",
+                    "oryx"
+                ],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "o3leads",
+                "currentweek": "currentweeko3",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/831047591096745984.png?v=1",
+                "desc": "`Oryx` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweeko3",
+                    "currentweekAssistso3",
+                    "currentweeko3Feedback",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "p",
+                "name": "parse",
+                "alias": [
+                    "parse"
+                ],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": false,
+                "main": "o3parses",
+                "currentweek": "o3currentweekparses",
+                "color": "#8c00ff",
+                "icon": null,
+                "desc": "`Parse`",
+                "toUpdate": "security",
+                "toDisplay": [
+                    "o3currentweekparses"
+                ]
+            },
+            {
+                "key": "e",
+                "name": "events",
+                "alias": [
+                    "event",
+                    "events"
+                ],
+                "multiply": 10,
+                "allowAssists": false,
+                "confirm": true,
+                "confirmSuffix": "minutes",
+                "main": "o3eventsLead",
+                "currentweek": "currentweekEventso3",
+                "color": "#00FF00",
+                "icon": "https://cdn.discordapp.com/emojis/831052176507535360.png?v=1",
+                "desc": "`Event` run",
+                "toUpdate": "events",
+                "toDisplay": [
+                    "currentweekEventso3"
+                ]
+            },
+            {
+                "key": "f",
+                "name": "feedback",
+                "alias": [
+                    "feedback",
+                    "fb"
+                ],
+                "multiply": 2,
+                "allowAssists": false,
+                "confirm": false,
+                "main": "o3feedback",
+                "currentweek": "currentweeko3Feedback",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/858920770806087710.png?v=1",
+                "desc": "`Feedback`",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweeko3",
+                    "currentweekAssistso3",
+                    "currentweeko3Feedback",
+                    "rollingQuotao3"
                 ]
             }
         ],
@@ -509,7 +771,36 @@
                 "toUpdate": "raiding",
                 "toDisplay": [
                     "currentweek",
+                    "currentweekhardmodeLead",
                     "currentweekfailed",
+                    "currentweekVeteranShattersLead",
+                    "currentweekassists"
+                ]
+            },
+            {
+                "key": "h",
+                "name": "hard mode",
+                "alias": [
+                    "hard",
+                    "hardmode",
+                    "mode",
+                    "hm"
+                ],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": true,
+                "main": "hardmodeLead",
+                "currentweek": "currentweekhardmodeLead",
+                "confirmSuffix": "Hardmodes Lead",
+                "color": "#308a00",
+                "icon": "https://cdn.discordapp.com/emojis/849406533435523093.png?v=1",
+                "desc": "`Hardmode` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweek",
+                    "currentweekhardmodeLead",
+                    "currentweekfailed",
+                    "currentweekVeteranShattersLead",
                     "currentweekassists"
                 ]
             },
@@ -531,7 +822,9 @@
                 "toUpdate": "raiding",
                 "toDisplay": [
                     "currentweek",
+                    "currentweekhardmodeLead",
                     "currentweekfailed",
+                    "currentweekVeteranShattersLead",
                     "currentweekassists"
                 ]
             },
@@ -554,6 +847,31 @@
                 "toUpdate": "events",
                 "toDisplay": [
                     "currentweekEvents"
+                ]
+            },
+            {
+                "key": "v",
+                "name": "veteran",
+                "alias": [
+                    "vet",
+                    "veteran"
+                ],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": true,
+                "confirmSuffix": "veterans",
+                "main": "veteranShattersLead",
+                "currentweek": "currentweekVeteranShattersLead",
+                "color": "#308a00",
+                "icon": "https://cdn.discordapp.com/emojis/849406533435523093.png?v=1",
+                "desc": "Veteran Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweek",
+                    "currentweekhardmodeLead",
+                    "currentweekfailed",
+                    "currentweekVeteranShattersLead",
+                    "currentweekassists"
                 ]
             }
         ],

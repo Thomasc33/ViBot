@@ -26,7 +26,7 @@ module.exports = {
         if (!member.roles.cache.has(settings.roles.tempsuspended)) return message.channel.send("User is not suspended")
 
         db.query(`SELECT * FROM suspensions WHERE id = '${member.id}' AND suspended = true`, async (err, rows) => {
-            if (err) ErrorLogger.log(err, bot)
+            if (err) ErrorLogger.log(err, bot, message.guild)
             if (rows && rows.length == 0) {
                 message.channel.send(`This user was not suspended by ${bot.user}. Would you still like to unsuspend them (removes suspended and gives raider role back)? Y/N`)
                 let collector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id === message.author.id, time: 10000 });
@@ -40,7 +40,7 @@ module.exports = {
                             message.channel.send("User unsuspended successfully");
                         }
                     } catch (er) {
-                        ErrorLogger.log(er, bot)
+                        ErrorLogger.log(er, bot, message.guild)
                     }
                 });
             } else {
@@ -52,8 +52,10 @@ module.exports = {
                 const member = guild.members.cache.get(rows[0].id);
                 rolesString.split(' ').forEach(r => { if (r != '') roles.push(r) })
                 try {
-                    if (member.roles.cache.get(settings.roles.nitro))
-                        roles.push(settings.roles.nitro);
+                    for (let i in settings.lists.discordRoles) {
+                        role = settings.roles[settings.lists.discordRoles[i]]
+                        if (member.roles.cache.get(role)) roles.push(role)
+                    }
                     await member.edit({
                         roles: roles
                     })
@@ -70,13 +72,14 @@ module.exports = {
                     db.query(`UPDATE suspensions SET suspended = 0 WHERE id = '${member.id}'`)
                     message.channel.send(`${member} has been unsuspended`)
                 } catch (er) {
-                    ErrorLogger.log(er, bot)
+                    ErrorLogger.log(er, bot, message.guild)
                 }
             }
         })
 
         function unPerma() {
-            if (member.roles.highest.position < message.guild.roles.cache.get(settings.roles.security).position && message.author.id !== '277636691227836419') return
+            const staffRole = message.guild.roles.cache.get(settings.roles.trialrl);
+            if (member.roles.highest.position >= staffRole.position) return message.channel.send(`${member} Is a Staff member and because of that you can not unsuspend them`)
             db.query(`SELECT * FROM suspensions WHERE perma = true AND suspended = true AND id = '${member.id}'`, async (err, rows) => {
                 if (rows.length == 0) {
                     let confirm = await message.channel.send(`I do not have any records of ${member} being perma suspended. Would you like to remove suspended, and add raider back?`)
@@ -87,8 +90,11 @@ module.exports = {
                     reactionCollector.on('collect', (r, u) => {
                         reactionCollector.stop()
                         if (r.emoji.name == '✅') {
-                            member.edit({ roles: [settings.roles.raider] })
-                                .then(message.channel.send(`${member} has been unsuspended`))
+                            const suspendedRole = message.guild.roles.cache.get(settings.roles.tempsuspended);
+                            const raiderRole = message.guild.roles.cache.get(settings.roles.raider);
+                            member.roles.remove(suspendedRole)
+                                .then(member.roles.add(raiderRole));
+                            message.channel.send(`${member} has been unsuspended`)
                                 .then(message.guild.channels.cache.get(settings.channels.suspendlog).send(`${member} unsuspended`))
                         }
                     })

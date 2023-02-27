@@ -20,13 +20,13 @@ module.exports = {
                 search = ` AND guildid = '${message.guild.id}' AND (suspended = 1 OR perma = 1) ORDER BY uTime DESC LIMIT 0, 1`;
             db.query(`SELECT * FROM suspensions WHERE id = '${member.id}'${search}`, async (err, rows) => {
                 if (!rows || rows.length == 0) return message.channel.send('User has no suspends logged under me')
-                if (err) ErrorLogger.log(err, bot)
+                if (err) ErrorLogger.log(err, bot, message.guild)
                 let embed = new Discord.EmbedBuilder()
                     .setDescription('None!')
                 let i = 0;
                 for (let suspension of rows) {
                     i++;
-                    let string = `__Suspension ${i} case for ${member}__\`${member.nickname}\` in ${bot.guilds.cache.get(suspension.guildid).name}\nReason: \`${suspension.reason.trim()}\`\nSuspended by: <@!${suspension.modid}> ${suspension.suspended ? 'Ends' : 'Ended'} ${moment().to(new Date(parseInt(suspension.uTime)))}\n`;
+                    let string = `__Suspension ${i} case for ${member}__\`${member.nickname}\` in ${bot.guilds.cache.get(suspension.guildid).name}\nReason: \`${suspension.reason.trim()}\`\nSuspended by: <@!${suspension.modid}> ${suspension.suspended ? 'Ends' : 'Ended'} <t:${(parseInt(suspension.uTime)/1000).toFixed(0)}:R> at <t:${(parseInt(suspension.uTime)/1000).toFixed(0)}:f>\n`;
                     fitStringIntoEmbed(embed, string, message.channel)
                 }
                 message.channel.send({ embeds: [embed] })

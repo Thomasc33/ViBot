@@ -1,35 +1,47 @@
 const fs = require('fs')
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
-const roles = ['moderator', 'officer', 'headrl', 'vetrl', 'fsvrl', 'mrvrl', 'security', 'fullskip', 'developer', 'rl', 'almostrl', 'trialrl', 'headeventrl', 'eventrl',
-'rusher', 'nitro', 'lol', 'vetraider', 'raider', 'eventraider', 'muted',
+const roles = ['admin', 'moderator', 'officer', 'headrl', 'headdev', 'assistantdev', 'vetrl', 'fsvrl', 'mrvrl', 'security', 'fullskip', 'developer', 'rl', 'almostrl',
+    'trialrl', 'headeventrl', 'eventrl',
+    'rusher', 'lol', 'accursed', 'vetraider', 'raider', 'eventraider', 'muted',
     'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'keyjesus', 'moddedkey', 'topkey', 'bottomkey', 'cultping', 'voidping', 'shattsReact', 'fungalReact', 'nestReact',
     'fskipReact', 'fameReact', 'rcPing', 'o3Ping', 'eventBoi', 'veteventrl',
-    'priest', 'warden', 'vetaffiliate', `toprune`, `bottomrune`]
+    'priest', 'warden', 'vetaffiliate', 'affiliatestaff', `toprune`, `bottomrune`, 'helper', 'steamworksping', 'supporterTierOne', 'supporterTierTwo', 'supporterTierThree', 'supporterTierFour', 'supporterTierFive', 'supporterTierSix']
 const channels = ['modmail', 'verification', 'manualverification', 'vetverification', 'manualvetverification', 'verificationlog', 'activeverification', 'modlogs', 'history', 'suspendlog',
     'viallog', 'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel', 'raidstatus', 'eventstatus',
-    'vetstatus', 'exaltstatus', 'raidcommands', 'eventcommands', 'vetcommands', 'raidingchannels', 'eventchannels', 'vetchannels', 'runlogs', 'dmcommands', 'veriactive', 'pointlogging',
-    'veriattempts',
-    'modmailinfo', 'parsecurrentweek', 'pastparseweeks', 'roleassignment', 'botstatus', 'keyalerts', 'activitylog', 'raidingrules']
+    'vetstatus', 'exaltstatus', 'raidcommands', 'eventcommands', 'vetcommands', 'accursedcommands', 'accursedstatus', 'raidingchannels', 'eventchannels', 'vetchannels', 'runlogs', 'dmcommands', 'veriactive', 'pointlogging',
+    'veriattempts', 'modmailinfo', 'parsecurrentweek', 'pastparseweeks', 'roleassignment', 'botstatus', 'keyalerts', 'activitylog', 'raidingrules', 'forwardedModmailMessage']
 const categories = ['raiding', 'veteran', 'event']
-const voice = ['raidingtemplate', 'eventtemplate', 'vettemplate', 'veteventtemplate', 'lounge', 'vetlounge', 'eventlounge', 'afk']
+const voice = ['raidingtemplate', 'eventtemplate', 'vettemplate', 'accursedtemplate','veteventtemplate', 'lounge', 'vetlounge', 'eventlounge', 'afk',
+    'raiding1', 'raiding2', 'raiding3', 'raiding4', 'raiding5', 'raiding6', 'raiding7', 'raiding8', 'raiding9',
+    'veteranraiding1', 'veteranraiding2', 'veteranraiding3', 'veteranraiding4', 'veteranraiding5', 'veteranraiding6', 'veteranraiding7', 'veteranraiding8', 'veteranraiding9',
+    'eventraiding1', 'eventraiding2', 'eventraiding3', 'eventraiding4', 'eventraiding5', 'eventraiding6', 'eventraiding7', 'eventraiding8', 'eventraiding9']
 const voiceprefixes = ['raidingprefix', 'vetprefix']
-const backend = ['modmail', 'currentweek', 'eventcurrentweek', 'parsecurrentweek', 'verification', 'vetverification', 'points', 'supporter', 'roleassignment', 'realmeyestats', 'automod',
-'nitroearlylocation', 'removekeyreacts', 'characterparse',
+const backend = ['modmail', 'currentweek', 'eventcurrentweek', 'parsecurrentweek', 'verification', 'vetverification', 'points', 'supporter', 'roleassignment', 'realmeyestats', 'automod', 'removekeyreacts', 'characterparse', 'forwadedMessageThumbsUpAndDownReactions',
     'giveeventroleonverification', 'eventcurrentweekdisplaysalleventrl', 'upgradedCheck', 'raidResetMonthly', 'eventResetMonthly', 'parseResetMonthly', 'exaltedEvents', 'sendmissedquota',
-    'exaltsInRSA', 'allowAdvancedRuns', 'raidResetBiweekly', 'eventResetBiweekly', 'parseResetBiweekly', 'onlyUpperStaffWarnStaff', 'giveEventRoleOnDenial2']
-const numerical = ['afktime', 'eventafktime', 'nitrocount', 'nitrocooldown', 'topkey', 'bottomkey', 'ticketlimit', 'supporterlimit', 'keyalertsage', 'waitnewkeyalert', 'prunerushersoffset',
-`toprune`, `bottomrune`]
+    'exaltsInRSA', 'allowAdvancedRuns', 'raidResetBiweekly', 'eventResetBiweekly', 'parseResetBiweekly', 'onlyUpperStaffSuspendStaff', 'giveEventRoleOnDenial2', 'disableEventsFromHeadcounts',
+    'useStaticVCForRaiding']
+const numerical = ['afktime', 'eventafktime', 'topkey', 'bottomkey', 'ticketlimit', 'supporterlimit', 'keyalertsage', 'waitnewkeyalert', 'prunerushersoffset',
+    `toprune`, `bottomrune`]
 const runreqs = ['weapon', 'ability', 'armor', 'ring']
 const autoveri = ['fame', 'stars', 'realmage', 'discordage', 'deathcount']
 const vetverireqs = ['maxed', 'meleemaxed', 'runs']
-const points = ['earlylocation', 'perrun', 'nitromultiplier', 'keypop', 'vialpop', 'rushing', 'brain', 'mystic', 'eventkey', 'cultlocation', 'voidlocation', 'fsvlocation', 'o3streaming',
-'o3trickster', 'o3puri', 'exaltkey', 'shattskey', 'fungalkey', 'nestkey', 'keymultiplier']
-const lists = ['earlyLocation', 'runningEvents', 'warningRoles']
+const points = ['earlylocation', 'perrun', 'supportermultiplier', 'keypop', 'vialpop', 'rushing', 'brain', 'mystic', 'eventkey', 'cultlocation', 'voidlocation', 'fsvlocation', 'o3streaming',
+    'o3trickster', 'o3puri', 'exaltkey', 'shattskey', 'fungalkey', 'nestkey', 'keymultiplier', 'runepop', 'steamworkKey']
+const lists = ['earlyLocation', 'runningEvents', 'warningRoles', 'perkRoles', 'discordRoles']
 const strings = ['hallsAdvancedReqsImage', 'exaltsAdvancedReqsImage']
+const quotapoints = ['voidLeading', 'cultLeading', 'shattersLeading', 'oryx3Leading', 'fungalLeading', 'nestLeading', 'steamworkLeading',
+'eventLeading', 'failedRun', 'feedback', 'feedbackOnFeedback', 'assist', 'parsing', 'rolledquota', 'rlWeeklyQuota', 'arlWeeklyQuota', 'securityWeeklyQuota', 'wardenWeeklyQuota',
+'eventrlWeeklyQuota', 'arlVote']
+const modmail = ['sendMessage', 'forwardMessage', 'closeModmail', 'blacklistUser', 'lockModmail']
+const supporter = ['supporterCooldownSeconds1', 'supporterCooldownSeconds2', 'supporterCooldownSeconds3', 'supporterCooldownSeconds4', 'supporterCooldownSeconds5', 'supporterCooldownSeconds6',
+    'supporterUses1', 'supporterUses2', 'supporterUses3', 'supporterUses4', 'supporterUses5', 'supporterUses6', 
+    'supporterLimit1', 'supporterLimit2', 'supporterLimit3', 'supporterLimit4', 'supporterLimit5', 'supporterLimit6']
 var commands = []
+var commandsRolePermissions = []
 
-const menus = ['roles', 'channels', 'voice', 'voiceprefixes', 'backend', 'numerical', 'runreqs', 'autoveri', 'vetverireqs', 'points', 'commands', 'categories', 'lists', 'strings']
+const menus = ['roles', 'channels', 'voice', 'voiceprefixes', 'backend', 'numerical', 'runreqs', 'autoveri',
+'vetverireqs', 'points', 'commands', 'categories', 'lists', 'strings', 'quotapoints', 'modmail', 'commandsRolePermissions', 'supporter']
 
 module.exports = {
     name: 'setup',
@@ -49,7 +61,7 @@ module.exports = {
                 .setTitle('Setup')
                 .setColor('#54d1c2')
                 .setFooter({ text: `Type 'cancel' to stop` })
-                .setDescription(`\`\`\`Please select what you wish to edit:\n${menus.map((m, i) => `${parseInt(i) + 1}: ${m}`).join('\n')}\`\`\``)
+                .setDescription(`\`\`\`coffeescript\nPlease select what you wish to edit:\n${menus.map((m, i) => `[ ${`${parseInt(i) + 1}`.padStart(3, ' ')} ] ${m}`).join('\n')}\`\`\``)
             let setupMessage = await message.channel.send({ embeds: [setupEmbed] })
             let mainMenu = new Discord.MessageCollector(message.channel, { filter: m => m.author.id == message.author.id })
             mainMenu.on('collect', async m => {
@@ -77,6 +89,10 @@ module.exports = {
                         case '12': menu(categories, 'categories', 'string'); break;
                         case '13': menu(lists, 'lists', 'array'); break;
                         case '14': menu(strings, 'strings', 'string'); break;
+                        case '15': menu(quotapoints, 'quotapoints', 'float'); break;
+                        case '16': menu(modmail, 'modmail', 'boolean'); break;
+                        case '17': menu(commandsRolePermissions, 'commandsRolePermissions', 'string'); break;
+                        case '18': menu(supporter, 'supporter', 'int'); break;
                     }
                 }
                 /**
@@ -87,15 +103,20 @@ module.exports = {
                  */
                 async function menu(array, arrayName, type) {
                     setupEmbed.setTitle(`${arrayName} Menu`)
-                        .setDescription(`\`\`\`Please select what you wish to edit`)
+                        .setDescription(`\`\`\`coffeescript\nPlease select what you wish to edit`)
                     let fieldIndex = 0;
+                    let padSize = 0;
+                    for (let i in array) { if (padSize < array[i].length) { padSize = array[i].length; } }
+                    padSize = padSize + 3;
                     for (let i in array) {
-                        let s = `\n${parseInt(i) + 1}: ${array[i]} ${type == 'array' ? `- ${bot.settings[message.guild.id][arrayName][array[i]].length} Items` : `'${bot.settings[message.guild.id][arrayName][array[i]]}'`}`
+                        settings = bot.settings[message.guild.id]
+                        arrayItem = bot.settings[message.guild.id][arrayName][array[i]]
+                        let s = `\n${`${parseInt(i) + 1}`.padStart(3, ' ')}: ${array[i].padEnd(padSize, ' ')} ${type == 'array' ? `- ${arrayItem.length} Items` : `'${arrayItem}'`}`
                         if (setupEmbed.data.description.length + s.length + `\n\`\`\``.length >= 2048) {
-                            if (!setupEmbed.data.fields || !setupEmbed.data.fields[fieldIndex]) setupEmbed.addFields([{name: '** **', value: `\`\`\`${s}`}])
+                            if (!setupEmbed.data.fields || !setupEmbed.data.fields[fieldIndex]) setupEmbed.addFields([{ name: '** **', value: `\`\`\`coffeescript\n${s}` }])
                             else if (setupEmbed.data.fields[fieldIndex].value.length + s.length + `\n\`\`\``.length >= 1024) {
                                 fieldIndex++
-                                setupEmbed.addFields([{name: '** **', value: s}])
+                                setupEmbed.addFields([{ name: '** **', value: `\`\`\`coffeescript\n${s}` }])
                             } else setupEmbed.data.fields[fieldIndex].value += s;
                         } else setupEmbed.data.description += s
                     }
@@ -111,9 +132,10 @@ module.exports = {
                                 message.react('✅')
                                 menuCollector.stop()
                             } else message.channel.send('Invalid number recieved. Please try again')
-                        } else if (['string', 'boolean', 'int'].includes(type)) {
+                        } else if (['string', 'boolean', 'int', 'float'].includes(type)) {
                             menuCollector.stop()
-                            setupEmbed.setDescription(`\`\`\`Please enter in the new value\`\`\`\nCurrent Value:\n**${array[parseInt(num) - 1]}** = ${bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]]}`)
+                            setupEmbed.setDescription(`\`\`\`coffeescript\nPlease enter in the new value\`\`\`\nCurrent Value:\n**${array[parseInt(num) - 1]}** = ${bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]]}`)
+                            setupEmbed.spliceFields(0, 5)
                             setupMessage.edit({ embeds: [setupEmbed] })
                             let menuMessageCollector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id == message.author.id })
                             menuMessageCollector.on('collect', async mes => {
@@ -122,24 +144,28 @@ module.exports = {
                                     message.react('✅')
                                     menuCollector.stop()
                                 } else {
-                                    let change = `\`\`\`${array[parseInt(num) - 1]}: ${bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]]} -> ${mes.content}\`\`\``
+                                    let change = `\`\`\`coffeescript\n${array[parseInt(num) - 1]}: ${bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]]} -> ${mes.content}\`\`\``
                                     switch (type) {
-                                        case 'string': bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]] = mes.content; break;
+                                        case 'string':
+                                            let result = mes.content; if (['null', 'none'].includes(result.toLocaleLowerCase())) result = null
+                                            bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]] = result; break;
                                         case 'boolean':
                                             if (mes.content.charAt(0).toLowerCase() == 't') {
-                                                change = `\`\`\`${array[parseInt(num) - 1]}: ${bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]]} -> true\`\`\``
+                                                change = `\`\`\`coffeescript\n${array[parseInt(num) - 1]}: ${bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]]} -> true\`\`\``
                                                 bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]] = true
                                             } else {
-                                                change = `\`\`\`${array[parseInt(num) - 1]}: ${bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]]} -> false\`\`\``
+                                                change = `\`\`\`coffeescript\n${array[parseInt(num) - 1]}: ${bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]]} -> false\`\`\``
                                                 bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]] = false
                                             }
                                             break;
                                         case 'int': bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]] = parseInt(mes.content); break;
+                                        case 'float': bot.settings[message.guild.id][arrayName][[array[parseFloat(num) - 1]]] = parseFloat(mes.content); break;
                                     }
                                     fs.writeFileSync('./guildSettings.json', JSON.stringify(bot.settings, null, 4), err => message.channel.send(err.toString()))
                                     setupEmbed.setDescription(change)
                                         .setTitle(`Changes Made`)
                                         .setFooter({ text: `Setup completed` })
+                                        .spliceFields(0, 5)
                                     await setupMessage.edit({ embeds: [setupEmbed] })
                                     message.react('✅')
                                     mes.delete()
@@ -160,19 +186,19 @@ module.exports = {
                             let str = cur.map((v, i) => `${parseInt(i) + 1}: ${v}`).join('\n')
 
                             // Send
-                            setupEmbed.setDescription(`\`\`\`Please select a value to REMOVE\n\nCurrent Values:\n${str}\`\`\`\nOr Say "add", "new", or "clear"`)
+                            setupEmbed.setDescription(`\`\`\`coffeescript\nPlease select a value to REMOVE\n\nCurrent Values:\n${str}\`\`\`\nOr Say "add", "new", or "clear"`)
                             setupMessage.edit({ embeds: [setupEmbed] })
 
                             // Add reaction collector
                             const collector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id == message.author.id })
                             collector.on('collect', async m => {
-                                let change = '\`\`\`Errored\`\`\`'
+                                let change = '\`\`\`coffeescript\nErrored\`\`\`'
                                 if (m.content.toLowerCase() == 'add' || m.content.toLowerCase() == 'new') {
                                     // End collector
                                     collector.stop()
 
                                     // Prompt for new value
-                                    setupEmbed.setDescription(`\`\`\`Please enter in the new value\`\`\`\nCurrent Value:\n**${array[parseInt(num) - 1]}** = ${bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]]}`)
+                                    setupEmbed.setDescription(`\`\`\`coffeescript\nPlease enter in the new value\`\`\`\nCurrent Value:\n**${array[parseInt(num) - 1]}** = ${bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]]}`)
                                     setupMessage.edit({ embeds: [setupEmbed] })
                                     const newCollector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id == message.author.id })
                                     newCollector.on('collect', async mes => {
@@ -181,7 +207,7 @@ module.exports = {
                                             message.react('✅')
                                             collector.stop()
                                         } else {
-                                            change = `\`\`\`${mes.content} added to ${arrayName}\`\`\``
+                                            change = `\`\`\`coffeescript\n${mes.content} added to ${arrayName}\`\`\``
                                             bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]].push(mes.content)
                                             newCollector.stop()
                                             exit()
@@ -196,7 +222,7 @@ module.exports = {
                                     bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]] = []
 
                                     // Update embed/Return
-                                    change = `\`\`\`Cleared Array ${arrayName}\`\`\``
+                                    change = `\`\`\`coffeescript\nCleared Array ${arrayName}\`\`\``
                                     exit()
                                 } else if (m.content.toLowerCase() == 'cancel') {
                                     setupMessage.delete()
@@ -217,9 +243,9 @@ module.exports = {
                                     // Delete
                                     try {
                                         bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]].splice(selectionIndex, 1)
-                                        change = `\`\`\`Removed ${selection}\`\`\``
+                                        change = `\`\`\`coffeescript\nRemoved ${selection}\`\`\``
                                     } catch (er) {
-                                        change = `\`\`\`Error removing from list. Try again\`\`\``
+                                        change = `\`\`\`coffeescript\nError removing from list. Try again\`\`\``
                                     } finally { exit() }
                                 }
                                 async function exit() {
@@ -248,6 +274,7 @@ module.exports = {
     },
     autoSetup(guild, bot) {
         if (commands.length == 0) commands = Array.from(bot.commands.keys())
+        if (commandsRolePermissions.length == 0) commandsRolePermissions = Array.from(bot.commands.keys())
         if (!bot.settings[guild.id]) {
             bot.settings[guild.id] = {
                 name: guild.name,
@@ -264,7 +291,10 @@ module.exports = {
                 commands: {},
                 categories: {},
                 lists: {},
-                strings: {}
+                strings: {},
+                quotapoints: {},
+                modmail: {},
+                commandsRolePermissions: {}
             }
         }
         for (let i of menus) {
@@ -338,6 +368,9 @@ module.exports = {
         for (let i of commands) {
             if (!bot.settings[guild.id].commands[i] && bot.settings[guild.id].commands[i] !== false) bot.settings[guild.id].commands[i] = bot.commands.get(i).guildSpecific ? false : true //this might not work lol
         }
+        for (let i of commandsRolePermissions) {
+            if (!bot.settings[guild.id].commandsRolePermissions[i] && bot.settings[guild.id].commandsRolePermissions[i] !== false) bot.settings[guild.id].commandsRolePermissions[i] = null
+        }
         for (let i of categories) {
             if (!bot.settings[guild.id].categories[i]) bot.settings[guild.id].categories[i] = getDefaultCategoryName(i)
         }
@@ -348,6 +381,22 @@ module.exports = {
         if (!bot.settings[guild.id].strings) bot.settings[guild.id].strings = {}
         for (let i of strings) {
             if (!bot.settings[guild.id].strings[i]) bot.settings[guild.id].strings[i] = null
+        }
+        for (let i in quotapoints) {
+            let n = quotapoints[i]
+            if (!bot.settings[guild.id].quotapoints[n] && bot.settings[guild.id].quotapoints[n] != 0) {
+                bot.settings[guild.id].quotapoints[n] = getDefaultQuotaPoint(n)
+            }
+        }
+        for (let i in modmail) {
+            if (!bot.settings[guild.id].modmail[modmail[i]]) {
+                bot.settings[guild.id].modmail[modmail[i]] = true
+            }
+        }
+        for (let i in supporter) {
+            if (!bot.settings[guild.id].supporter[supporter[i]]) {
+                bot.settings[guild.id].supporter[supporter[i]] = 0
+            }
         }
         fs.writeFileSync('./guildSettings.json', JSON.stringify(bot.settings, null, 4), err => message.channel.send(err.toString()))
     }
@@ -371,7 +420,6 @@ function getDefaultRoleName(name) {
         case 'headeventrl': return 'Head Event Organizer'
         case 'eventrl': return 'Event Organizer'
         case 'rusher': return 'Official Rusher'
-        case 'nitro': return 'Nitro Booster'
         case 'lol': return 'Leader on Leave'
         case 'vetraider': return 'Veteran Raider'
         case 'raider': return 'Verified Raider'
@@ -382,7 +430,7 @@ function getDefaultRoleName(name) {
         case 'vetban': return 'Banned Veteran Raider'
         case 'tempkey': return 'Temporary Key Popper'
         case 'topkey': return 'Veteran Key Popper'
-        case 'moddedkey': return 'ModdedKey'
+        case 'moddedkey': return 'Modded Key Popper'
         case 'bottomkey': return 'Verified Key Popper'
         case 'cultping': return 'Cult boi'
         case 'voidping': return 'Void boi'
@@ -395,8 +443,11 @@ function getDefaultRoleName(name) {
         case 'eventBoi': return 'Event Boi'
         case 'priest': return 'Supreme Priest'
         case 'vetaffiliate': return 'Veteran Affiliate Staff'
-        case 'toprune' : return 'Veteran Rune Popper'
-        case 'bottomrune' : return 'Verified Rune Popper'
+        case 'affiliatestaff': return 'Affiliate Staff'
+        case 'toprune': return 'Veteran Rune Popper'
+        case 'bottomrune': return 'Verified Rune Popper'
+        case 'helper': return 'Helper'
+        case 'steamworksping': return 'Steamworks boi'
     }
 }
 
@@ -472,12 +523,10 @@ function getDefaultNumericalValue(name) {
     switch (name) {
         case 'afktime': return 360;
         case 'eventafktime': return 360;
-        case 'nitrocount': return 5;
-        case 'nitrocooldown': return 3600000;
         case 'topkey': return 50;
         case 'bottomkey': return 15;
         case 'ticketlimit': return 5;
-        case 'supporterlimit': return 5;
+        case 'supporterlimit': return 8;
         case 'keyalertsage': return 120;
         case 'waitnewkeyalert': return 30;
         case 'prunerushersoffset': return 90;
@@ -517,7 +566,7 @@ function getDefaultPointValue(name) {
     switch (name) {
         case 'earlylocation': return 20;
         case 'perrun': return 1;
-        case 'nitromultiplier': return 2;
+        case 'supportermultiplier': return 2;
         case 'keypop': return 20;
         case 'vialpop': return 3;
         case 'rushing': return 1;
@@ -535,6 +584,8 @@ function getDefaultPointValue(name) {
         case 'fungalkey': return 5;
         case 'nestkey': return 5;
         case 'keymultiplier': return 2;
+        case 'runepop': return 20;
+        case 'incpop': return 0;
     }
 }
 
@@ -543,5 +594,24 @@ function getDefaultCategoryName(name) {
         case 'raiding': return 'raiding';
         case 'veteran': return 'veteran raiding'
         case 'event': return 'events'
+    }
+}
+
+function getDefaultQuotaPoint(name) {
+    switch (name) {
+        case 'voidLeading': return 1;
+        case 'cultLeading': return 1;
+        case 'shattersLeading': return 1;
+        case 'oryx3Leading': return 1;
+        case 'fungalLeading': return 1;
+        case 'nestLeading': return 1;
+        case 'steamworkLeading': return 1;
+        case 'eventLeading': return 1;
+        case 'failedRun': return 1;
+        case 'feedback': return 1;
+        case 'feedbackOnFeedback': return 1;
+        case 'assist': return 0.5;
+        case 'parsing': return 1;
+        case 'rolledquota': return 1;
     }
 }

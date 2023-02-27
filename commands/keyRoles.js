@@ -63,7 +63,7 @@ module.exports = {
         //map to "(apops + bpops >= 15) OR (cpops >= 20)"
         const wheres = popInfo.map(ki => `(${ki.types.map(t => t[0]).join(" + ")} >= ${ki.amount})`).join(" OR ");
         db.query(`SELECT id, ${rows} FROM users WHERE ${wheres}`, (err, rows) => {
-            if (err) ErrorLogger.log(err, bot)
+            if (err) ErrorLogger.log(err, bot, guild)
             for (let i in rows)
                 checkRow(guild, bot, rows[i]);
         })
@@ -79,7 +79,7 @@ module.exports = {
         //map to "(apops + bpops >= 15) OR (cpops >= 20)"
         const wheres = popInfo.map(ki => `(${ki.types.map(t => t[0]).join(" + ")} >= ${ki.amount})`).join(" OR ");
         db.query(`SELECT id, ${rows} FROM users WHERE ${wheres}`, (err, rows) => {
-            if (err) ErrorLogger.log(err, bot)
+            if (err) ErrorLogger.log(err, bot, guild)
             const dbmembers = {};
             rows.forEach(r => dbmembers[r.id] = r);
             guild.members.fetch().then(members => {
@@ -121,7 +121,7 @@ module.exports = {
         if (!settings || !popInfo) return
         const rows = popInfo.map(ki => ki.types.map(t => t[0]).join(", ")).join(", ");
         db.query(`SELECT id, ${rows} FROM users WHERE id = '${member.id}'`, (err, rows) => {
-            if (err) ErrorLogger.log(err, bot)
+            if (err) ErrorLogger.log(err, bot, guild)
             if (!rows || !rows[0]) return db.query(`INSERT INTO users (id) VALUES ('${member.id}')`)
             checkRow(member.guild, bot, rows[0], member);
         })

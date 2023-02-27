@@ -103,7 +103,7 @@ module.exports = {
                     let embed = new Discord.EmbedBuilder()
                         .setColor('#ff0000')
                         .setTitle('Vet Ban Information')
-                        .setDescription(`The ban is for ${parseInt(args[0])} ${timeTypeString}`)
+                        .setDescription(`The ban is for ${parseInt(args[0])} ${timeTypeString} until <t:${((Date.now() + time)/1000).toFixed(0)}:f>`)
                         .addFields([{name: `User Information \`${member.nickname}\``, value: `<@!${member.id}> (Tag: ${member.user.tag})`, inline: true}])
                         .addFields([{name: `Mod Information \`${message.guild.members.cache.get(message.author.id).nickname}\``, value: `<@!${message.author.id}> (Tag: ${message.author.tag})`, inline: true}])
                         .addFields([{name: `Reason:`, value: reason}])
@@ -118,7 +118,7 @@ module.exports = {
                 }
             })
         } catch (er) {
-            ErrorLogger.log(er, bot)
+            ErrorLogger.log(er, bot, message.guild)
             message.channel.send("Error with command. Please check syntax and try again");
         }
     }

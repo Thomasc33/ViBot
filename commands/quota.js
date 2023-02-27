@@ -1,12 +1,10 @@
 const Discord = require('discord.js')
-const tables = require('../data/currentweekInfo.json').currentweek
 const ErrorLogger = require('../lib/logError');
 const moment = require('moment')
 const quotas = require('../data/quotas.json');
 require('../lib/extensions');
 const CachedMessages = {}
 const excuses = require('./excuse');
-const emojiServers = moduleIsAvailable('../data/emojiServers.json') ? require('../data/emojiServers.json') : {}
 
 module.exports = {
     name: 'quota',
@@ -39,7 +37,17 @@ module.exports = {
         for (const quota of quotaList) {
             switch (cmd) {
                 case 'reset':
-                    this.newWeek(message.guild, bot, db, settings, guildQuotas, quota);
+                    let embed = new Discord.EmbedBuilder()
+                        .setTitle('Confirm Action')
+                        .setDescription(`This will reset this weeks quota/points for **${quota.name}**\n\n**VIBOT DOES NOT KEEP TRACK OF RESET POINTS, YOU WILL NEED TO MANUALLY ADD THESE POINTS BACK IF THIS WAS A MISTAKE**`)
+                        .setColor('#FF0000')
+                    await message.channel.send({ embeds: [embed] }).then(async confirmMessage => {
+                        if (await confirmMessage.confirmButton(message.member.id)) {
+                            this.newWeek(message.guild, bot, db, settings, guildQuotas, quota);
+                            await message.channel.send(`Successfully reset ${quota.name}`)
+                            await confirmMessage.delete()
+                        } else { await confirmMessage.delete() }
+                    })
                     break;
                 case 'update':
                     await this.update(message.guild, db, bot, settings, guildQuotas, quota);
@@ -53,7 +61,7 @@ module.exports = {
                     switch (args.shift().toLowerCase()) {
                         case 'monthly':
                             bot.guilds.cache.each(g => {
-                                if (!emojiServers.includes(g.id)) {
+                                if (!bot.emojiServers.includes(g.id)) {
                                     const quotaList = guildQuotas.quotas.filter(q => q.reset == "weekly" || (q.reset == "biweekly" && biweekly));
                                     if (!quotaList.length) return;
                                     for (const q of quotaList)
@@ -66,7 +74,7 @@ module.exports = {
                             biweekly = !(moment().diff(moment(1413378000), 'week') % 2);
                         case 'weekly':
                             bot.guilds.cache.each(g => {
-                                if (!emojiServers.includes(g.id)) {
+                                if (!bot.emojiServers.includes(g.id)) {
                                     const quotaList = guildQuotas.quotas.filter(q => q.reset == "weekly" || (q.reset == "biweekly" && biweekly));
                                     if (!quotaList.length) return;
                     
@@ -141,6 +149,8 @@ module.exports = {
         if (!settings) return;
         let csvData = 'Leader ID,Leader Nickname,Currentweek Total,Total\n';
         return new Promise(async (resolve, reject) => {
+            let emojiList = quota.values.map(value => value.emoji ? `${value.emoji}: **${value.name}**` : '')
+            for (let i in emojiList) { if (emojiList[i] == '') { emojiList.splice(i, 1) } }
             let embed = new Discord.EmbedBuilder()
                 .setTitle('This weeks current logged runs!')
                 .setColor('#00ff00')
@@ -149,16 +159,17 @@ module.exports = {
             const embeds = [];
             if (channel.id != settings.channels[quota.pastweeks]) {
                 const nextReset = getNextReset(quota.reset);
-                if (nextReset)
-                    fitStringIntoEmbed(embeds, embed, `Quota reset <t:${nextReset}:R>\n`);
+                if (nextReset) fitStringIntoEmbed(embeds, embed, `Quota reset <t:${nextReset}:R>\n`);
             }
+            if (emojiList.length > 0) { fitStringIntoEmbed(embeds, embed, emojiList.join('\n') + '\n') }
             const combine = quota.values.map(v => `(${v.column}*${v.value})`).join(' + ') + ' as total';
             const unrolled = quota.values.filter(v => !v.rolling).map(v => `(${v.column}*${v.value})`).join(' + ') + ' as unrolled';
             const query = db.query(`SELECT id, ` + quota.values.map(v => v.column).join(', ') + `, ${combine}, ${unrolled} FROM Users WHERE ` + quota.values.map(v => `${v.column} != 0`).join(' OR ') + ` order by total desc`, async (err, rows) => {
                 if (err) return reject(err);
                 let runCount = 0;
                 const roles = quota.roles.map(r => channel.guild.roles.cache.get(settings.roles[r])?.id).filter(r => r);
-                const ignore = (guildQuotas.ignoreRoles || []).map(r => settings.roles[r]).filter(r => r);
+                var ignore = (guildQuotas.ignoreRolesDisplay || []).map(r => settings.roles[r]).filter(r => r);
+                if (quota.ignoreRolesDisplay) ignore = (quota.ignoreRolesDisplay || []).map(r => settings.roles[r]).filter(r => r);
                 for (const idx in rows) {
                     const user = rows[idx];
                     const member = channel.guild.members.cache.get(user.id);
