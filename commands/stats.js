@@ -214,7 +214,9 @@ function getFields(row, schema) {
         },
         {
             name: `<:TheForgottenCrown:719931358889115680> __**Runs Led**__ <:TheForgottenCrown:719931358889115680>`,
-            value: `<:forgottenKing:849406533435523093> ${row.successruns}\n` +
+            value: `<:forgottenKing:849406533435523093> ${row.successruns} Normal\n` +
+                `<:forgottenKing:849406533435523093> ${row.veteranShattersLead} Veteran\n` +
+                `<:forgottenKing:849406533435523093> ${row.hardmodeLead} Hardmode\n` +
                 `❌ ${row.failruns}\n` +
                 `<:epicMysteryKey:831051424187940874> ${parseInt(row.eventslead) * 10} Minutes\n` +
                 `🤝 ${row.assists} Assists\n` +
