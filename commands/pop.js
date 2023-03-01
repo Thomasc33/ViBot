@@ -63,7 +63,7 @@ module.exports = {
                     })
                     if (!success) return;
                 }
-                db.query(`UPDATE users SET ${keyInfo.schema} = ${keyInfo.schema} + ${count} WHERE id = '${user.id}'`, (err, rows) => {
+                db.query(`UPDATE users SET ${keyInfo.schema} = ${keyInfo.schema } + ${count} WHERE id = '${user.id}'`, (err, rows) => {
                     keyRoles.checkUser(user, bot, db);
                 });
                 if (moddedKey) db.query(`UPDATE users SET moddedPops = moddedPops + ${count} WHERE id = '${user.id}'`, (err, rows) => {
