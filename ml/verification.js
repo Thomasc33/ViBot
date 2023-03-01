@@ -1,4 +1,5 @@
-const tf = require('@tensorflow/tfjs-node')
+// const tf = require('@tensorflow/tfjs-node')
+/*
 const fs = require('fs')
 const botSettings = require('../settings.json')
 const realmEyeScrape = require('../lib/realmEyeScrape')
@@ -264,10 +265,10 @@ async function train() {
     }
 }
 
-/**
+**
  * 
  * @param {Object} userInfo
- */
+ *
 async function altDetection(userInfo) {
     return new Promise(async (res, rej) => {
         let data = arrayFromUserInfo(userInfo)
@@ -278,13 +279,13 @@ async function altDetection(userInfo) {
     })
 }
 
-/**
+**
  * 
  * @param {Object} userInfo 
  * @param {Number} verified 
  * @param {Number} Epochs
  * @returns 
- */
+ *
 async function trainNewData(userInfo, verified, epochs = 3) {
     return new Promise(async (res, rej) => {
         if (!botSettings.MLActiveTraining) return res(NaN)
@@ -490,4 +491,4 @@ module.exports = {
     saveInterval,
     trainNewData,
     RealmeyeFucker
-}
+} */

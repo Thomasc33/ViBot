@@ -1,4 +1,5 @@
-const tf = require('@tensorflow/tfjs-node')
+// const tf = require('@tensorflow/tfjs-node')
+/*
 
 const TRAIN_DATA_PATH = 'file://C:/Users/Carrt/OneDrive/Desktop/ViBot/verificationData.csv'
 const TRAIN_DATA_LENGTH = 6248;
@@ -149,7 +150,7 @@ function resToString(num) {
     }
 }
 
-*/
+*
 
 
 module.exports = {
@@ -160,4 +161,4 @@ module.exports = {
     testValidationData,
     trainingData,
     TRAIN_TEST_DATA_LENGTH
-}
+}*/
