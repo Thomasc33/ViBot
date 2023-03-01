@@ -85,6 +85,7 @@ module.exports = {
             name: 'These users have all of the roles combined',
             value: memberString
         })
+		embed.setFooter({ text: `There are ${memberList.length} users who have all of the roles combined` })
         await message.channel.send({ embeds: [embed] })
 	}
 }
