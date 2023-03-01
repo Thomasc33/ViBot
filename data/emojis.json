@@ -62,51 +62,6 @@
         "guildname": "realmetc",
         "animated": false
     },
-    "hallsK": {
-        "tag": ":hallsK:1066377664279097354",
-        "name": "hallsK",
-        "id": "1066377664279097354",
-        "text": "<:hallsK:1066377664279097354>",
-        "guildid": "1056966825797226517",
-        "guildname": "realmetc2",
-        "animated": false
-    },
-    "void": {
-        "tag": ":void:1066377665621282946",
-        "name": "void",
-        "id": "1066377665621282946",
-        "text": "<:void:1066377665621282946>",
-        "guildid": "1056966825797226517",
-        "guildname": "realmetc2",
-        "animated": false
-    },
-    "fullskip": {
-        "tag": ":fullskip:1066377667559030824",
-        "name": "fullskip",
-        "id": "1066377667559030824",
-        "text": "<:fullskip:1066377667559030824>",
-        "guildid": "1056966825797226517",
-        "guildname": "realmetc2",
-        "animated": false
-    },
-    "cultist": {
-        "tag": ":cultist:1066377668901228555",
-        "name": "cultist",
-        "id": "1066377668901228555",
-        "text": "<:cultist:1066377668901228555>",
-        "guildid": "1056966825797226517",
-        "guildname": "realmetc2",
-        "animated": false
-    },
-    "shattersFeedback": {
-        "tag": ":shattersFeedback:1071433377879707728",
-        "name": "shattersFeedback",
-        "id": "1071433377879707728",
-        "text": "<:shattersFeedback:1071433377879707728>",
-        "guildid": "1056966825797226517",
-        "guildname": "realmetc2",
-        "animated": false
-    },
     "starLightBlue": {
         "tag": ":starLightBlue:1058454226033967124",
         "name": "starLightBlue",
@@ -223,6 +178,15 @@
         "guildid": "1056966993049301002",
         "guildname": "realmverification",
         "animated": false
+    },
+    "drip": {
+        "tag": ":drip:821654411574116352",
+        "name": "drip",
+        "id": "821654411574116352",
+        "text": "<:drip:821654411574116352>",
+        "guildid": "739623118833713214",
+        "guildname": "ViBot Info",
+        "animated": true
     },
     "T7CloakofNightmares": {
         "tag": ":T7CloakofNightmares:738506771462619168",
@@ -6429,7 +6393,7 @@
         "tag": ":machine:767953802909188116",
         "name": "machine",
         "id": "767953802909188116",
-        "text": "<a:machine:767953802909188116>",
+        "text": "<:machine:767953802909188116>",
         "guildid": "722999001460244491",
         "guildname": "realmportals",
         "animated": true
@@ -6474,7 +6438,7 @@
         "tag": ":lab:723001215260033037",
         "name": "lab",
         "id": "723001215260033037",
-        "text": "<a:lab:723001215260033037>",
+        "text": "<:lab:723001215260033037>",
         "guildid": "722999001460244491",
         "guildname": "realmportals",
         "animated": true
@@ -6528,7 +6492,7 @@
         "tag": ":lib:723001215297912903",
         "name": "lib",
         "id": "723001215297912903",
-        "text": "<a:lib:723001215297912903>",
+        "text": "<:lib:723001215297912903>",
         "guildid": "722999001460244491",
         "guildname": "realmportals",
         "animated": true
@@ -6555,7 +6519,7 @@
         "tag": ":cem:723001215373541378",
         "name": "cem",
         "id": "723001215373541378",
-        "text": "<a:cem:723001215373541378>",
+        "text": "<:cem:723001215373541378>",
         "guildid": "722999001460244491",
         "guildname": "realmportals",
         "animated": true
@@ -6681,7 +6645,7 @@
         "tag": ":udl:723001215528468492",
         "name": "udl",
         "id": "723001215528468492",
-        "text": "<a:udl:723001215528468492>",
+        "text": "<:udl:723001215528468492>",
         "guildid": "722999001460244491",
         "guildname": "realmportals",
         "animated": true
@@ -6690,7 +6654,7 @@
         "tag": ":parasite:723001215545245718",
         "name": "parasite",
         "id": "723001215545245718",
-        "text": "<a:parasite:723001215545245718>",
+        "text": "<:parasite:723001215545245718>",
         "guildid": "722999001460244491",
         "guildname": "realmportals",
         "animated": true
@@ -6717,7 +6681,7 @@
         "tag": ":snake:723001215646171166",
         "name": "snake",
         "id": "723001215646171166",
-        "text": "<a:snake:723001215646171166>",
+        "text": "<:snake:723001215646171166>",
         "guildid": "722999001460244491",
         "guildname": "realmportals",
         "animated": true
@@ -6726,7 +6690,7 @@
         "tag": ":hudl:723001215654297640",
         "name": "hudl",
         "id": "723001215654297640",
-        "text": "<a:hudl:723001215654297640>",
+        "text": "<:hudl:723001215654297640>",
         "guildid": "722999001460244491",
         "guildname": "realmportals",
         "animated": true
@@ -6771,7 +6735,7 @@
         "tag": ":udl2:767950706577113130",
         "name": "udl2",
         "id": "767950706577113130",
-        "text": "<a:udl2:767950706577113130>",
+        "text": "<:udl2:767950706577113130>",
         "guildid": "722999001460244491",
         "guildname": "realmportals",
         "animated": true
@@ -6780,7 +6744,7 @@
         "tag": ":abyss:767951332073144390",
         "name": "abyss",
         "id": "767951332073144390",
-        "text": "<a:abyss:767951332073144390>",
+        "text": "<:abyss:767951332073144390>",
         "guildid": "722999001460244491",
         "guildname": "realmportals",
         "animated": true
@@ -6789,7 +6753,7 @@
         "tag": ":lib2:767951597804060702",
         "name": "lib2",
         "id": "767951597804060702",
-        "text": "<a:lib2:767951597804060702>",
+        "text": "<:lib2:767951597804060702>",
         "guildid": "722999001460244491",
         "guildname": "realmportals",
         "animated": true
@@ -6798,7 +6762,7 @@
         "tag": ":lab2:767951828766687275",
         "name": "lab2",
         "id": "767951828766687275",
-        "text": "<a:lab2:767951828766687275>",
+        "text": "<:lab2:767951828766687275>",
         "guildid": "722999001460244491",
         "guildname": "realmportals",
         "animated": true
@@ -6807,7 +6771,7 @@
         "tag": ":parasite2:767952088256479262",
         "name": "parasite2",
         "id": "767952088256479262",
-        "text": "<a:parasite2:767952088256479262>",
+        "text": "<:parasite2:767952088256479262>",
         "guildid": "722999001460244491",
         "guildname": "realmportals",
         "animated": true
@@ -6816,7 +6780,7 @@
         "tag": ":cem2:767952240987865098",
         "name": "cem2",
         "id": "767952240987865098",
-        "text": "<a:cem2:767952240987865098>",
+        "text": "<:cem2:767952240987865098>",
         "guildid": "722999001460244491",
         "guildname": "realmportals",
         "animated": true
@@ -6825,7 +6789,7 @@
         "tag": ":snake2:767953167362687018",
         "name": "snake2",
         "id": "767953167362687018",
-        "text": "<a:snake2:767953167362687018>",
+        "text": "<:snake2:767953167362687018>",
         "guildid": "722999001460244491",
         "guildname": "realmportals",
         "animated": true
@@ -6834,7 +6798,7 @@
         "tag": ":davys:767955903001395200",
         "name": "davys",
         "id": "767955903001395200",
-        "text": "<a:davys:767955903001395200>",
+        "text": "<:davys:767955903001395200>",
         "guildid": "722999001460244491",
         "guildname": "realmportals",
         "animated": true
@@ -6843,7 +6807,7 @@
         "tag": ":hudl2:767957135358165014",
         "name": "hudl2",
         "id": "767957135358165014",
-        "text": "<a:hudl2:767957135358165014>",
+        "text": "<:hudl2:767957135358165014>",
         "guildid": "722999001460244491",
         "guildname": "realmportals",
         "animated": true
@@ -6852,7 +6816,7 @@
         "tag": ":htt:768163469034782721",
         "name": "htt",
         "id": "768163469034782721",
-        "text": "<a:htt:768163469034782721>",
+        "text": "<:htt:768163469034782721>",
         "guildid": "722999001460244491",
         "guildname": "realmportals",
         "animated": true
@@ -6861,7 +6825,7 @@
         "tag": ":3DPortal:788778792188379137",
         "name": "3DPortal",
         "id": "788778792188379137",
-        "text": "<a:3DPortal:788778792188379137>",
+        "text": "<:3DPortal:788778792188379137>",
         "guildid": "722999001460244491",
         "guildname": "realmportals",
         "animated": true
@@ -6897,28 +6861,10 @@
         "tag": ":steamworksPortal:1050156386547413012",
         "name": "steamworksPortal",
         "id": "1050156386547413012",
-        "text": "<a:steamworksPortal:1050156386547413012>",
+        "text": "<:steamworksPortal:1050156386547413012>",
         "guildid": "722999001460244491",
         "guildname": "realmportals",
         "animated": true
-    },
-    "halls": {
-        "tag": ":halls:1066377219926134876",
-        "name": "halls",
-        "id": "1066377219926134876",
-        "text": "<:halls:1066377219926134876>",
-        "guildid": "722999001460244491",
-        "guildname": "realmportals",
-        "animated": false
-    },
-    "theShattersPortal": {
-        "tag": ":theShattersPortal:1066729186993119322",
-        "name": "theShattersPortal",
-        "id": "1066729186993119322",
-        "text": "<:theShattersPortal:1066729186993119322>",
-        "guildid": "722999001460244491",
-        "guildname": "realmportals",
-        "animated": false
     },
     "UTMightyStein": {
         "tag": ":UTMightyStein:720400999411351594",
@@ -7667,6 +7613,15 @@
         "guildname": "realmetc",
         "animated": false
     },
+    "Expose": {
+        "tag": ":Expose:723019533555597332",
+        "name": "Expose",
+        "id": "723019533555597332",
+        "text": "<:Expose:723019533555597332>",
+        "guildid": "722999694212726858",
+        "guildname": "realmetc",
+        "animated": false
+    },
     "Paralyze": {
         "tag": ":Paralyze:723019533560053761",
         "name": "Paralyze",
@@ -7690,6 +7645,15 @@
         "name": "Collo",
         "id": "723019533593608233",
         "text": "<:Collo:723019533593608233>",
+        "guildid": "722999694212726858",
+        "guildname": "realmetc",
+        "animated": false
+    },
+    "Ogmur": {
+        "tag": ":Ogmur:723019533597802507",
+        "name": "Ogmur",
+        "id": "723019533597802507",
+        "text": "<:Ogmur:723019533597802507>",
         "guildid": "722999694212726858",
         "guildname": "realmetc",
         "animated": false
@@ -7797,7 +7761,7 @@
         "tag": ":shattersswitch:883780914134540328",
         "name": "shattersswitch",
         "id": "883780914134540328",
-        "text": "<a:shattersswitch:883780914134540328>",
+        "text": "<:shattersswitch:883780914134540328>",
         "guildid": "722999694212726858",
         "guildname": "realmetc",
         "animated": true
@@ -7941,7 +7905,7 @@
         "tag": ":oryxSkating:1050173254121291827",
         "name": "oryxSkating",
         "id": "1050173254121291827",
-        "text": "<a:oryxSkating:1050173254121291827>",
+        "text": "<:oryxSkating:1050173254121291827>",
         "guildid": "722999694212726858",
         "guildname": "realmetc",
         "animated": true
@@ -8068,24 +8032,6 @@
         "name": "Leader",
         "id": "1056598986091397141",
         "text": "<:Leader:1056598986091397141>",
-        "guildid": "722999694212726858",
-        "guildname": "realmetc",
-        "animated": false
-    },
-    "Expose": {
-        "tag": ":Expose:1066714543780282468",
-        "name": "Expose",
-        "id": "1066714543780282468",
-        "text": "<:Expose:1066714543780282468>",
-        "guildid": "722999694212726858",
-        "guildname": "realmetc",
-        "animated": false
-    },
-    "Ogmur": {
-        "tag": ":Ogmur:1066714553586552956",
-        "name": "Ogmur",
-        "id": "1066714553586552956",
-        "text": "<:Ogmur:1066714553586552956>",
         "guildid": "722999694212726858",
         "guildname": "realmetc",
         "animated": false
@@ -9177,33 +9123,6 @@
         "text": "<:UTRitualRobe:719919781620351057>",
         "guildid": "719905651337461820",
         "guildname": "rotmgrobe",
-        "animated": false
-    },
-    "SwitchRusher": {
-        "tag": ":SwitchRusher:1066730830971555930",
-        "name": "SwitchRusher",
-        "id": "1066730830971555930",
-        "text": "<a:SwitchRusher:1066730830971555930>",
-        "guildid": "1066420981205311630",
-        "guildname": "realmShatters",
-        "animated": true
-    },
-    "rangedDPS": {
-        "tag": ":rangedDPS:1066731151160529007",
-        "name": "rangedDPS",
-        "id": "1066731151160529007",
-        "text": "<:rangedDPS:1066731151160529007>",
-        "guildid": "1066420981205311630",
-        "guildname": "realmShatters",
-        "animated": false
-    },
-    "PuzzleBanner": {
-        "tag": ":PuzzleBanner:1066731164666179605",
-        "name": "PuzzleBanner",
-        "id": "1066731164666179605",
-        "text": "<:PuzzleBanner:1066731164666179605>",
-        "guildid": "1066420981205311630",
-        "guildname": "realmShatters",
         "animated": false
     }
 }
