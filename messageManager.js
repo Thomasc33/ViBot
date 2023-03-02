@@ -10,21 +10,26 @@ const stats = require('./commands/stats')
 const modmail = require('./commands/modmail')
 
 class MessageManager {
-    constructor(bot, botSettings) {
-        this.bot = bot
-        this.botSettings = botSettings
-        this.prefix = botSettings.prefix
-        this.tokenDB = mysql.createConnection(botSettings.tokenDBInfo)
-        this.cooldowns = new Discord.Collection()
-        this.vibotControlGuild;
+    #bot;
+    #botSettings;
+    #prefix;
+    #tokenDB;
+    #cooldowns = new Discord.Collection();
+    #vibotControlGuild;
 
-        this.tokenDB.connect(err => {
+    constructor(bot, botSettings) {
+        this.#bot = bot
+        this.#botSettings = botSettings
+        this.#prefix = botSettings.prefix
+        this.#tokenDB = mysql.createConnection(botSettings.tokenDBInfo)
+
+        this.#tokenDB.connect(err => {
             if (err) ErrorLogger.log(err, bot);
             console.log('Connected to token database')
         })
 
-        this.tokenDB.on('error', err => {
-            if (err.code == 'PROTOCOL_CONNECTION_LOST') this.tokenDB = mysql.createConnection(botSettings.tokenDBInfo)
+        this.#tokenDB.on('error', err => {
+            if (err.code == 'PROTOCOL_CONNECTION_LOST') this.#tokenDB = mysql.createConnection(botSettings.tokenDBInfo)
             else ErrorLogger.log(err, bot)
         })
     }
@@ -38,9 +43,9 @@ class MessageManager {
         switch (message.channel.type) {
             case Discord.ChannelType.GuildText:
                 // Ignore messages to non-whitelisted servers
-                if (!this.bot.serverWhiteList.includes(message.guild.id)) break;
+                if (!this.#bot.serverWhiteList.includes(message.guild.id)) break;
 
-                if (message.content.startsWith(this.prefix) && message.content[this.prefix.length] != ' ') {
+                if (message.content.startsWith(this.#prefix) && message.content[this.#prefix.length] != ' ') {
                     // Handle commands (messages that start with a prefix + command)
                     this.handleCommand(message);
                 } else {
@@ -53,7 +58,7 @@ class MessageManager {
                 try {
                     this.dmHandler(message);
                 } catch (er) {
-                    ErrorLogger.log(er, this.bot, message.guild);
+                    ErrorLogger.log(er, this.#bot, message.guild);
                 }
 
                 break;
@@ -73,7 +78,7 @@ class MessageManager {
     commandPermitted(member, guild, command) {
         // All of these are for user readibility, making it much easier for you reading this right now. You're welcome :)
         const memberPosition = member.roles.highest.position
-        const settings = this.bot.settings[guild.id]
+        const settings = this.#bot.settings[guild.id]
         const roleCache = guild.roles.cache
         const memberId = member.id
 
@@ -87,7 +92,7 @@ class MessageManager {
             // Check user override
             || (command.userOverride && command.userOverride.includes(memberId))
             // Check admin override
-            || this.bot.adminUsers.includes(memberId)
+            || this.#bot.adminUsers.includes(memberId)
         );
     }
 
@@ -97,34 +102,34 @@ class MessageManager {
      * @returns
      */
     handleCommand(message) {
-        const [commandName, ...args] = message.content.slice(this.prefix.length).split(/ +/gi)
+        const [commandName, ...args] = message.content.slice(this.#prefix.length).split(/ +/gi)
 
-        const command = this.bot.commands.get(commandName) || this.bot.commands.find(cmd => cmd.alias && cmd.alias.includes(commandName))
+        const command = this.#bot.commands.get(commandName) || this.#bot.commands.find(cmd => cmd.alias && cmd.alias.includes(commandName))
 
-        if (!command || !this.bot.settings[message.guild.id].commands[command.name]) return message.channel.send(`Command doesnt exist, check \`${this.prefix}commands\` and try again`);
+        if (!command || !this.#bot.settings[message.guild.id].commands[command.name]) return message.channel.send(`Command doesnt exist, check \`${this.#prefix}commands\` and try again`);
 
         if (restarting.restarting && !command.allowedInRestart) return message.channel.send('Cannot execute command as a restart is pending')
 
-        if (!message.guild.roles.cache.get(this.bot.settings[message.guild.id].roles[command.role])) return message.channel.send('Permissions not set up for this commands role')
+        if (!message.guild.roles.cache.get(this.#bot.settings[message.guild.id].roles[command.role])) return message.channel.send('Permissions not set up for this commands role')
 
         if (!this.commandPermitted(message.member, message.guild, command)) return message.channel.send('You do not have permission to use this command')
 
-        if (command.requiredArgs && command.requiredArgs > args.length) return message.channel.send(`Command Entered incorrecty. \`${this.botSettings.prefix}${command.name} ${command.args}\``)
+        if (command.requiredArgs && command.requiredArgs > args.length) return message.channel.send(`Command Entered incorrecty. \`${this.#botSettings.prefix}${command.name} ${command.args}\``)
         if (command.cooldown) {
-            if (this.cooldowns.get(command.name)) {
-                if (Date.now() + command.cooldown * 1000 < Date.now()) this.cooldowns.delete(command.name)
+            if (this.#cooldowns.get(command.name)) {
+                if (Date.now() + command.cooldown * 1000 < Date.now()) this.#cooldowns.delete(command.name)
                 else return
-            } else this.cooldowns.set(command.name, Date.now())
-            setTimeout(() => { this.cooldowns.delete(command.name) }, command.cooldown * 1000)
+            } else this.#cooldowns.set(command.name, Date.now())
+            setTimeout(() => { this.#cooldowns.delete(command.name) }, command.cooldown * 1000)
         }
 
         try {
-            command.execute(message, args, this.bot, this.bot.dbs[message.guild.id], this.tokenDB)
-            this.bot.dbs[message.guild.id].query(`INSERT INTO commandusage (command, userid, guildid, utime) VALUES ('${command.name}', '${message.member.id}', '${message.guild.id}', '${Date.now()}')`);
-            CommandLogger.log(message, this.bot)
+            command.execute(message, args, this.#bot, this.#bot.dbs[message.guild.id], this.#tokenDB)
+            this.#bot.dbs[message.guild.id].query(`INSERT INTO commandusage (command, userid, guildid, utime) VALUES ('${command.name}', '${message.member.id}', '${message.guild.id}', '${Date.now()}')`);
+            CommandLogger.log(message, this.#bot)
         } catch (er) {
-            ErrorLogger.log(er, this.bot, message.guild)
-            message.channel.send(`Issue executing the command, check \`${this.prefix}commands\` and try again`);
+            ErrorLogger.log(er, this.#bot, message.guild)
+            message.channel.send(`Issue executing the command, check \`${this.#prefix}commands\` and try again`);
         }
     }
 
@@ -140,7 +145,7 @@ class MessageManager {
         const statsTypos = ['stats', 'satts', 'stat', 'status', 'sats', 'stata', 'stts', 'stas']
         if (statsTypos.includes(message.content.split(' ')[0].replace(/[^a-z0-9]/gi, '').toLowerCase())) {
             let guild;
-            this.bot.guilds.cache.forEach(g => {
+            this.#bot.guilds.cache.forEach(g => {
                 if (g.members.cache.get(message.author.id)) {
                     guild = g;
                 }
@@ -149,7 +154,7 @@ class MessageManager {
             logCommand(guild)
             if (!cancelled) {
                 try {
-                    message.channel.send({ embeds: [await stats.getStatsEmbed(message.author.id, guild, this.bot)] })
+                    message.channel.send({ embeds: [await stats.getStatsEmbed(message.author.id, guild, this.#bot)] })
                 } catch (er) {
                     message.channel.send('You are not currently logged in the database. The database gets updated every 24-48 hours')
                 }
@@ -158,13 +163,13 @@ class MessageManager {
             const guild = await this.getGuild(message).catch(er => cancelled = true)
             logCommand(guild)
             if (!cancelled) {
-                require('./commands/joinRun').dmExecution(message, message.content.split(/\s+/), this.bot, this.bot.dbs[guild.id], guild, this.tokenDB);
+                require('./commands/joinRun').dmExecution(message, message.content.split(/\s+/), this.#bot, this.#bot.dbs[guild.id], guild, this.#tokenDB);
             }
         } else {
             if (message.content.replace(/[^0-9]/g, '') == message.content) return;
             const args = message.content.split(/ +/)
-            const commandName = args.shift().toLowerCase().replace(this.prefix, '')
-            const command = this.bot.commands.get(commandName) || this.bot.commands.find(c => c.alias && c.alias.includes(commandName))
+            const commandName = args.shift().toLowerCase().replace(this.#prefix, '')
+            const command = this.#bot.commands.get(commandName) || this.#bot.commands.find(c => c.alias && c.alias.includes(commandName))
             if (!command) sendModMail()
             else if (command.dms) {
                 let guild
@@ -174,12 +179,12 @@ class MessageManager {
                 }
 
                 if (!cancelled) {
-                    if (!command.dmNeedsGuild) command.dmExecution(message, args, this.bot, null, guild, this.tokenDB)
+                    if (!command.dmNeedsGuild) command.dmExecution(message, args, this.#bot, null, guild, this.#tokenDB)
                     else {
                         const member = guild.members.cache.get(message.author.id)
-                        if (member.roles.highest.position < guild.roles.cache.get(this.bot.settings[guild.id].roles[command.role]).position && !this.bot.adminUsers.includes(message.member.id)) {
+                        if (member.roles.highest.position < guild.roles.cache.get(this.#bot.settings[guild.id].roles[command.role]).position && !this.#bot.adminUsers.includes(message.member.id)) {
                             sendModMail();
-                        } else command.dmExecution(message, args, this.bot, this.bot.dbs[guild.id], guild, this.tokenDB)
+                        } else command.dmExecution(message, args, this.#bot, this.#bot.dbs[guild.id], guild, this.#tokenDB)
                     }
                 }
             } else message.channel.send('This command does not work in DM\'s. Please use this inside of a server')
@@ -193,7 +198,7 @@ class MessageManager {
                 const guild = await this.getGuild(message).catch(er => { cancelled = true })
                 await message.channel.send({ embeds: [confirmModMailEmbed] }).then(async confirmMessage => {
                     if (await confirmMessage.confirmButton(message.author.id)) {
-                        modmail.sendModMail(message, guild, this.bot, this.bot.dbs[guild.id])
+                        modmail.sendModMail(message, guild, this.#bot, this.#bot.dbs[guild.id])
                         return confirmMessage.delete()
                     }
 
@@ -205,7 +210,7 @@ class MessageManager {
         }
 
         async function logCommand(guild) {
-            if (!guild || !this.bot.settings[guild.id]) return
+            if (!guild || !this.#bot.settings[guild.id]) return
             const logEmbed = new Discord.EmbedBuilder()
                 .setAuthor({ name: message.author.tag })
                 .setColor('#0000ff')
@@ -213,7 +218,7 @@ class MessageManager {
                 .setFooter({ text: `User ID: ${message.author.id}` })
                 .setTimestamp()
             if (message.author.avatarURL()) logEmbed.setAuthor({ name: message.author.tag, iconURL: message.author.avatarURL() })
-            guild.channels.cache.get(this.bot.settings[guild.id].channels.dmcommands).send({ embeds: [logEmbed] }).catch(er => { ErrorLogger.log(new Error(`Unable to find/send in settings.channels.dmcommands channel for ${guild.id}`), this.bot, guild) })
+            guild.channels.cache.get(this.#bot.settings[guild.id].channels.dmcommands).send({ embeds: [logEmbed] }).catch(er => { ErrorLogger.log(new Error(`Unable to find/send in settings.channels.dmcommands channel for ${guild.id}`), this.#bot, guild) })
         }
     }
 
@@ -223,7 +228,7 @@ class MessageManager {
      * @returns
      */
     async autoMod(message) {
-        const settings = this.bot.settings[message.guild.id]
+        const settings = this.#bot.settings[message.guild.id]
         if (!settings || !settings.backend.automod) return;
         if (!message.member.roles.highest || message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.eventrl).position) return
         if (message.mentions.roles.size != 0) mute('Pinging Roles', 2);
@@ -240,11 +245,11 @@ class MessageManager {
             }
 
             message.member.roles.add(settings.roles.muted)
-                .then(() => this.bot.dbs[message.guild.id].query(`INSERT INTO mutes (id, guildid, muted, reason, modid, uTime) VALUES ('${message.author.id}', '${message.guild.id}', true, '${reason}','${this.bot.user.id}', '${Date.now() + timeValue}')`))
+                .then(() => this.#bot.dbs[message.guild.id].query(`INSERT INTO mutes (id, guildid, muted, reason, modid, uTime) VALUES ('${message.author.id}', '${message.guild.id}', true, '${reason}','${this.#bot.user.id}', '${Date.now() + timeValue}')`))
                 .then(() => message.author.send(`You have been muted in \`${message.guild.name}\` for \`${reason}\`. This will last for \`${timeString}\``))
                 .then(() => {
                     const modlog = message.guild.channels.cache.get(settings.channels.modlog)
-                    if (!modlog) return ErrorLogger.log(new Error('Mod log not found for automod'), this.bot, message.guild)
+                    if (!modlog) return ErrorLogger.log(new Error('Mod log not found for automod'), this.#bot, message.guild)
                     modlog.send(`${message.member} was muted for \`${timeString}\` for \`${reason}\``)
                 })
         }
@@ -259,9 +264,9 @@ class MessageManager {
         return new Promise(async (resolve, reject) => {
             const guilds = []
             const guildNames = []
-            this.bot.guilds.cache.each(g => {
-                if (this.bot.emojiServers.includes(g.id)) { return }
-                if (this.bot.devServers.includes(g.id)) { return }
+            this.#bot.guilds.cache.each(g => {
+                if (this.#bot.emojiServers.includes(g.id)) { return }
+                if (this.#bot.devServers.includes(g.id)) { return }
                 guilds.push(g)
                 guildNames.push(g.name)
             })
@@ -295,8 +300,8 @@ class MessageManager {
      * @returns
      */
     checkPatreon(patreonRoleId, userId) {
-        if (!this.vibotControlGuild) this.vibotControlGuild = this.bot.guilds.cache.get('739623118833713214')
-        if (this.vibotControlGuild.members.cache.get(userId) && this.vibotControlGuild.members.cache.get(userId).roles.cache.has(patreonRoleId)) return true
+        if (!this.#vibotControlGuild) this.#vibotControlGuild = this.#bot.guilds.cache.get('739623118833713214')
+        if (this.#vibotControlGuild.members.cache.get(userId) && this.#vibotControlGuild.members.cache.get(userId).roles.cache.has(patreonRoleId)) return true
         return false
     }
 }
