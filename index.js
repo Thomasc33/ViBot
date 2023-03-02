@@ -216,6 +216,7 @@ bot.on("ready", async () => {
         if (!dbSchemas[g.id] || !dbSchemas[g.id].schema) return console.log('Missing Schema name (schema.json) for: ', g.id)
         let dbInfo = {
             host: dbSchemas[g.id].host || botSettings.defaultDbInfo.host,
+            port: botSettings.defaultDbInfo.port || 3306,
             user: dbSchemas[g.id].user || botSettings.defaultDbInfo.user,
             password: dbSchemas[g.id].password || botSettings.defaultDbInfo.password,
             database: dbSchemas[g.id].schema
