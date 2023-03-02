@@ -11,7 +11,7 @@
             "role": "topkey"
         },
         {
-            "types": [ ["moddedPops"] ],
+            "types": [ ["moddedPops", "Modded Pops"] ],
             "amount": 100,
             "role": "moddedkey"
         }
