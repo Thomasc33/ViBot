@@ -30,82 +30,6 @@ class MessageManager {
     }
 
     /**
-     * Checks to see if a user has permission to use a command in a server
-     * @param {GuildMember} member
-     * @param {Guild} guild
-     * @param {Command Module} commmand
-     * @returns {Boolean}
-     */
-    commandPermitted(member, guild, command) {
-        // All of these are for user readibility, making it much easier for you reading this right now. You're welcome :)
-        const memberPosition = member.roles.highest.position
-        const settings = this.bot.settings[guild.id]
-        const roleCache = guild.roles.cache
-        const memberId = member.id
-
-        return (
-            // Check command role permission
-            (memberPosition >= roleCache.get(settings.roles[command.role]).position)
-            // Check role overrides
-            || (settings.commandsRolePermissions[command.name] && memberPosition >= roleCache.get(settings.roles[settings.commandsRolePermissions[command.name]]).position)
-            // Check patreon
-            || (command.patreonRole && this.checkPatreon(command.patreonRole, memberId))
-            // Check user override
-            || (command.userOverride && command.userOverride.includes(memberId))
-            // Check admin override
-            || this.bot.adminUsers.includes(memberId)
-        );
-    }
-
-    /**
-     * Executes a command
-     * @param {String} commmand
-     * @param {[String]} args
-     * @param {Message} message
-     * @returns
-     */
-    runCommand(command, args, message) {
-        if (command.requiredArgs && command.requiredArgs > args.length) return message.channel.send(`Command Entered incorrecty. \`${this.botSettings.prefix}${command.name} ${command.args}\``)
-        if (command.cooldown) {
-            if (this.cooldowns.get(command.name)) {
-                if (Date.now() + command.cooldown * 1000 < Date.now()) this.cooldowns.delete(command.name)
-                else return
-            } else this.cooldowns.set(command.name, Date.now())
-            setTimeout(() => { this.cooldowns.delete(command.name) }, command.cooldown * 1000)
-        }
-
-        try {
-            command.execute(message, args, this.bot, this.bot.dbs[message.guild.id], this.tokenDB)
-            this.bot.dbs[message.guild.id].query(`INSERT INTO commandusage (command, userid, guildid, utime) VALUES ('${command.name}', '${message.member.id}', '${message.guild.id}', '${Date.now()}')`);
-            CommandLogger.log(message, this.bot)
-        } catch (er) {
-            ErrorLogger.log(er, this.bot, message.guild)
-            message.channel.send(`Issue executing the command, check \`${this.prefix}commands\` and try again`);
-        }
-    }
-
-    /**
-     * Runs the command processing pipeline including parsing, state checks, permissions checks, etc.
-     * @param {Message} message
-     * @returns
-     */
-    handleCommand(message) {
-        const [commandName, ...args] = message.content.slice(this.prefix.length).split(/ +/gi)
-
-        const command = this.bot.commands.get(commandName) || this.bot.commands.find(cmd => cmd.alias && cmd.alias.includes(commandName))
-
-        if (!command || !this.bot.settings[message.guild.id].commands[command.name]) return message.channel.send(`Command doesnt exist, check \`${this.prefix}commands\` and try again`);
-
-        if (restarting.restarting && !command.allowedInRestart) return message.channel.send('Cannot execute command as a restart is pending')
-
-        if (!message.guild.roles.cache.get(this.bot.settings[message.guild.id].roles[command.role])) return message.channel.send('Permissions not set up for this commands role')
-
-        if (!this.commandPermitted(message.member, message.guild, command)) return message.channel.send('You do not have permission to use this command')
-
-        this.runCommand(command, args, message)
-    }
-
-    /**
      * Handles any messages sent to the bot. Seperates out DMs, normal messages, and commands.
      * @param {Message} message
      * @returns
@@ -135,6 +59,72 @@ class MessageManager {
                 break;
             default:
                 // Log an error? I guess?
+        }
+    }
+
+
+    /**
+     * Checks to see if a user has permission to use a command in a server
+     * @param {GuildMember} member
+     * @param {Guild} guild
+     * @param {Command Module} commmand
+     * @returns {Boolean}
+     */
+    commandPermitted(member, guild, command) {
+        // All of these are for user readibility, making it much easier for you reading this right now. You're welcome :)
+        const memberPosition = member.roles.highest.position
+        const settings = this.bot.settings[guild.id]
+        const roleCache = guild.roles.cache
+        const memberId = member.id
+
+        return (
+            // Check command role permission
+            (memberPosition >= roleCache.get(settings.roles[command.role]).position)
+            // Check role overrides
+            || (settings.commandsRolePermissions[command.name] && memberPosition >= roleCache.get(settings.roles[settings.commandsRolePermissions[command.name]]).position)
+            // Check patreon
+            || (command.patreonRole && this.checkPatreon(command.patreonRole, memberId))
+            // Check user override
+            || (command.userOverride && command.userOverride.includes(memberId))
+            // Check admin override
+            || this.bot.adminUsers.includes(memberId)
+        );
+    }
+
+    /**
+     * Runs the command processing pipeline including parsing, state checks, permissions checks, etc.
+     * @param {Message} message
+     * @returns
+     */
+    handleCommand(message) {
+        const [commandName, ...args] = message.content.slice(this.prefix.length).split(/ +/gi)
+
+        const command = this.bot.commands.get(commandName) || this.bot.commands.find(cmd => cmd.alias && cmd.alias.includes(commandName))
+
+        if (!command || !this.bot.settings[message.guild.id].commands[command.name]) return message.channel.send(`Command doesnt exist, check \`${this.prefix}commands\` and try again`);
+
+        if (restarting.restarting && !command.allowedInRestart) return message.channel.send('Cannot execute command as a restart is pending')
+
+        if (!message.guild.roles.cache.get(this.bot.settings[message.guild.id].roles[command.role])) return message.channel.send('Permissions not set up for this commands role')
+
+        if (!this.commandPermitted(message.member, message.guild, command)) return message.channel.send('You do not have permission to use this command')
+
+        if (command.requiredArgs && command.requiredArgs > args.length) return message.channel.send(`Command Entered incorrecty. \`${this.botSettings.prefix}${command.name} ${command.args}\``)
+        if (command.cooldown) {
+            if (this.cooldowns.get(command.name)) {
+                if (Date.now() + command.cooldown * 1000 < Date.now()) this.cooldowns.delete(command.name)
+                else return
+            } else this.cooldowns.set(command.name, Date.now())
+            setTimeout(() => { this.cooldowns.delete(command.name) }, command.cooldown * 1000)
+        }
+
+        try {
+            command.execute(message, args, this.bot, this.bot.dbs[message.guild.id], this.tokenDB)
+            this.bot.dbs[message.guild.id].query(`INSERT INTO commandusage (command, userid, guildid, utime) VALUES ('${command.name}', '${message.member.id}', '${message.guild.id}', '${Date.now()}')`);
+            CommandLogger.log(message, this.bot)
+        } catch (er) {
+            ErrorLogger.log(er, this.bot, message.guild)
+            message.channel.send(`Issue executing the command, check \`${this.prefix}commands\` and try again`);
         }
     }
 
