@@ -29,7 +29,7 @@ class MessageManager {
         })
 
         this.#tokenDB.on('error', err => {
-            if (err.code == 'PROTOCOL_CONNECTION_LOST') this.#tokenDB = mysql.createConnection(botSettings.tokenDBInfo)
+            if (err.code === 'PROTOCOL_CONNECTION_LOST') this.#tokenDB = mysql.createConnection(botSettings.tokenDBInfo)
             else ErrorLogger.log(err, bot)
         })
     }
@@ -45,7 +45,7 @@ class MessageManager {
                 // Ignore messages to non-whitelisted servers
                 if (!this.#bot.serverWhiteList.includes(message.guild.id)) break;
 
-                if (message.content.startsWith(this.#prefix) && message.content[this.#prefix.length] != ' ') {
+                if (message.content.startsWith(this.#prefix) && message.content[this.#prefix.length] !== ' ') {
                     // Handle commands (messages that start with a prefix + command)
                     this.handleCommand(message);
                 } else {
@@ -66,7 +66,6 @@ class MessageManager {
                 // Log an error? I guess?
         }
     }
-
 
     /**
      * Checks to see if a user has permission to use a command in a server
@@ -117,7 +116,7 @@ class MessageManager {
         if (command.requiredArgs && command.requiredArgs > args.length) return message.channel.send(`Command Entered incorrecty. \`${this.#botSettings.prefix}${command.name} ${command.args}\``)
         if (command.cooldown) {
             if (this.#cooldowns.get(command.name)) {
-                if (Date.now() + command.cooldown * 1000 < Date.now()) this.#cooldowns.delete(command.name)
+                if ((Date.now() + (command.cooldown * 1000)) < Date.now()) this.#cooldowns.delete(command.name)
                 else return
             } else this.#cooldowns.set(command.name, Date.now())
             setTimeout(() => { this.#cooldowns.delete(command.name) }, command.cooldown * 1000)
