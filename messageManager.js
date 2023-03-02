@@ -1,7 +1,7 @@
 const Discord = require('discord.js')
 const mysql = require('mysql')
 
-const ErrorLogger = require(`./lib/logError`)
+const ErrorLogger = require('./lib/logError')
 const CommandLogger = require('./lib/logCommand')
 
 const restarting = require('./commands/restart')
@@ -31,14 +31,14 @@ class MessageManager {
 
     commandPermitted(message, command) {
         // All of these are for user readibility, making it much easier for you reading this right now. You're welcome :)
-        let memberPosition = message.member.roles.highest.position
-        let settings = this.bot.settings[message.guild.id]
-        let roleCache = message.guild.roles.cache
-        let memberId = message.member.id
+        const memberPosition = message.member.roles.highest.position
+        const settings = this.bot.settings[message.guild.id]
+        const roleCache = message.guild.roles.cache
+        const memberId = message.member.id
 
         return (
             // Check command role permission
-               (memberPosition >= roleCache.get(settings.roles[command.role]).position)
+            (memberPosition >= roleCache.get(settings.roles[command.role]).position)
             // Check role overrides
             || (settings.commandsRolePermissions[command.name] && memberPosition >= roleCache.get(settings.roles[settings.commandsRolePermissions[command.name]]).position)
             // Check patreon
@@ -59,13 +59,14 @@ class MessageManager {
             } else this.cooldowns.set(command.name, Date.now())
             setTimeout(() => { this.cooldowns.delete(command.name) }, command.cooldown * 1000)
         }
+
         try {
             command.execute(message, args, this.bot, this.bot.dbs[message.guild.id], this.tokenDB)
             this.bot.dbs[message.guild.id].query(`INSERT INTO commandusage (command, userid, guildid, utime) VALUES ('${command.name}', '${message.member.id}', '${message.guild.id}', '${Date.now()}')`);
             CommandLogger.log(message, this.bot)
         } catch (er) {
             ErrorLogger.log(er, this.bot, message.guild)
-            message.channel.send("Issue executing the command, check `;commands` and try again");
+            message.channel.send(`Issue executing the command, check \`${this.prefix}commands\` and try again`);
         }
     }
 
@@ -74,7 +75,7 @@ class MessageManager {
 
         const command = this.bot.commands.get(commandName) || this.bot.commands.find(cmd => cmd.alias && cmd.alias.includes(commandName))
 
-        if (!command || !this.bot.settings[message.guild.id].commands[command.name]) return message.channel.send('Command doesnt exist, check `commands` and try again');
+        if (!command || !this.bot.settings[message.guild.id].commands[command.name]) return message.channel.send(`Command doesnt exist, check \`${this.prefix}commands\` and try again`);
 
         if (restarting.restarting && !command.allowedInRestart) return message.channel.send('Cannot execute command as a restart is pending')
 
@@ -99,6 +100,7 @@ class MessageManager {
                     // Handle non-command messages
                     this.autoMod(message)
                 }
+
                 break;
             case Discord.ChannelType.DM:
                 try {
@@ -106,6 +108,7 @@ class MessageManager {
                 } catch (er) {
                     ErrorLogger.log(er, this.bot, message.guild);
                 }
+
                 break;
             default:
                 // Log an error? I guess?
@@ -114,14 +117,14 @@ class MessageManager {
 
     /**
      * Handles DM's sent to the bot. Seperates modmail from commands. Executes commands or sends to modmail
-     * @param {Discord.Message} message 
-     * @returns 
+     * @param {Discord.Message} message
+     * @returns
      */
     async dmHandler(message) {
         if (message.author.bot) return;
         if (verification.checkActive(message.author.id)) return
         let cancelled = false;
-        let statsTypos = ['stats', 'satts', 'stat', 'status', 'sats', 'stata', 'stts', 'stas']
+        const statsTypos = ['stats', 'satts', 'stat', 'status', 'sats', 'stata', 'stts', 'stas']
         if (statsTypos.includes(message.content.split(' ')[0].replace(/[^a-z0-9]/gi, '').toLowerCase())) {
             let guild;
             this.bot.guilds.cache.forEach(g => {
@@ -134,21 +137,20 @@ class MessageManager {
             if (!cancelled) {
                 try {
                     message.channel.send({ embeds: [await stats.getStatsEmbed(message.author.id, guild, this.bot)] })
-                }
-                catch (er) {
+                } catch (er) {
                     message.channel.send('You are not currently logged in the database. The database gets updated every 24-48 hours')
                 }
             }
         } else if (/^.?(pl[ea]{0,2}se?\s*)?(j[oi]{2}n|d[ra]{2}g\s*(me)?)(\s*pl[ea]{0,2}se?)?$/i.test(message.content)) {
-            let guild = await this.getGuild(message).catch(er => cancelled = true)
+            const guild = await this.getGuild(message).catch(er => cancelled = true)
             logCommand(guild)
             if (!cancelled) {
                 require('./commands/joinRun').dmExecution(message, message.content.split(/\s+/), this.bot, this.bot.dbs[guild.id], guild, this.tokenDB);
             }
         } else {
             if (message.content.replace(/[^0-9]/g, '') == message.content) return;
-            let args = message.content.split(/ +/)
-            let commandName = args.shift().toLowerCase().replace(this.prefix, '')
+            const args = message.content.split(/ +/)
+            const commandName = args.shift().toLowerCase().replace(this.prefix, '')
             const command = this.bot.commands.get(commandName) || this.bot.commands.find(c => c.alias && c.alias.includes(commandName))
             if (!command) sendModMail()
             else if (command.dms) {
@@ -157,10 +159,11 @@ class MessageManager {
                     guild = await this.getGuild(message).catch(er => cancelled = true)
                     logCommand(guild)
                 }
+
                 if (!cancelled) {
                     if (!command.dmNeedsGuild) command.dmExecution(message, args, this.bot, null, guild, this.tokenDB)
                     else {
-                        let member = guild.members.cache.get(message.author.id)
+                        const member = guild.members.cache.get(message.author.id)
                         if (member.roles.highest.position < guild.roles.cache.get(this.bot.settings[guild.id].roles[command.role]).position && !this.bot.adminUsers.includes(message.member.id)) {
                             sendModMail();
                         } else command.dmExecution(message, args, this.bot, this.bot.dbs[guild.id], guild, this.tokenDB)
@@ -169,25 +172,28 @@ class MessageManager {
             } else message.channel.send('This command does not work in DM\'s. Please use this inside of a server')
 
             async function sendModMail() {
-                let confirmModMailEmbed = new Discord.EmbedBuilder()
-                    .setColor(`#ff0000`)
+                const confirmModMailEmbed = new Discord.EmbedBuilder()
+                    .setColor('#ff0000')
                     .setTitle('Are you sure you want to message modmail?')
                     .setFooter({ text: 'Spamming modmail with junk will result in being modmail blacklisted' })
                     .setDescription(`\`\`\`${message.content}\`\`\``)
-                let guild = await this.getGuild(message).catch(er => { cancelled = true })
+                const guild = await this.getGuild(message).catch(er => { cancelled = true })
                 await message.channel.send({ embeds: [confirmModMailEmbed] }).then(async confirmMessage => {
                     if (await confirmMessage.confirmButton(message.author.id)) {
                         modmail.sendModMail(message, guild, this.bot, this.bot.dbs[guild.id])
                         return confirmMessage.delete()
-                    } else return confirmMessage.delete()
+                    }
+
+                    return confirmMessage.delete()
                 })
 
-                //Check blacklist
+                // Check blacklist
             }
         }
+
         async function logCommand(guild) {
             if (!guild || !this.bot.settings[guild.id]) return
-            let logEmbed = new Discord.EmbedBuilder()
+            const logEmbed = new Discord.EmbedBuilder()
                 .setAuthor({ name: message.author.tag })
                 .setColor('#0000ff')
                 .setDescription(`<@!${message.author.id}> sent the bot: "${message.content}"`)
@@ -200,18 +206,18 @@ class MessageManager {
 
     /**
      * If enabled, will mute users for pinging roles
-     * @param {Discord.Message} message 
-     * @returns 
+     * @param {Discord.Message} message
+     * @returns
      */
     async autoMod(message) {
-        let settings = this.bot.settings[message.guild.id]
+        const settings = this.bot.settings[message.guild.id]
         if (!settings || !settings.backend.automod) return;
         if (!message.member.roles.highest || message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.eventrl).position) return
         if (message.mentions.roles.size != 0) mute('Pinging Roles', 2);
 
         function mute(reason, time) {
-            //time: 1=1 hour, 2=1 day
-            let timeString, timeValue;
+            // Time: 1=1 hour, 2=1 day
+            let timeString; let timeValue;
             if (time == 1) {
                 timeString = '1 Hour';
                 timeValue = 3600000
@@ -219,11 +225,12 @@ class MessageManager {
                 timeString = '1 Day';
                 timeValue = 86400000
             }
+
             message.member.roles.add(settings.roles.muted)
                 .then(() => this.bot.dbs[message.guild.id].query(`INSERT INTO mutes (id, guildid, muted, reason, modid, uTime) VALUES ('${message.author.id}', '${message.guild.id}', true, '${reason}','${this.bot.user.id}', '${Date.now() + timeValue}')`))
                 .then(() => message.author.send(`You have been muted in \`${message.guild.name}\` for \`${reason}\`. This will last for \`${timeString}\``))
                 .then(() => {
-                    let modlog = message.guild.channels.cache.get(settings.channels.modlog)
+                    const modlog = message.guild.channels.cache.get(settings.channels.modlog)
                     if (!modlog) return ErrorLogger.log(new Error('Mod log not found for automod'), this.bot, message.guild)
                     modlog.send(`${message.member} was muted for \`${timeString}\` for \`${reason}\``)
                 })
@@ -232,13 +239,13 @@ class MessageManager {
 
     /**
      * Returns common guild, or prompts for a guild selection
-     * @param {Discord.Message} message 
+     * @param {Discord.Message} message
      * @returns {Discord.Guild} guild
      */
     async getGuild(message) {
         return new Promise(async (resolve, reject) => {
-            let guilds = []
-            let guildNames = []
+            const guilds = []
+            const guildNames = []
             this.bot.guilds.cache.each(g => {
                 if (this.bot.emojiServers.includes(g.id)) { return }
                 if (this.bot.devServers.includes(g.id)) { return }
@@ -248,20 +255,21 @@ class MessageManager {
             if (guilds.length == 0) reject('We dont share any servers')
             else if (guilds.length == 1) resolve(guilds[0])
             else {
-                let guildSelectionEmbed = new Discord.EmbedBuilder()
+                const guildSelectionEmbed = new Discord.EmbedBuilder()
                     .setTitle('Please select a server')
                     .setColor('#fefefe')
                     .setDescription('Press Cancel if you don\'t wanna proceed')
-                let guildSelectionMessage = await message.channel.send({ embeds: [guildSelectionEmbed] })
+                const guildSelectionMessage = await message.channel.send({ embeds: [guildSelectionEmbed] })
                 const choice = await guildSelectionMessage.confirmList(guildNames, message.author.id);
                 if (!choice || choice == 'Cancelled') return guildSelectionMessage.delete();
                 guildSelectionMessage.delete();
 
                 function getGuildByName(guildName) {
-                    for (let i in guilds) {
+                    for (const i in guilds) {
                         if (guilds[i].name == choice) return guilds[i]
                     }
                 }
+
                 resolve(getGuildByName(choice));
             }
         })
@@ -269,16 +277,15 @@ class MessageManager {
 
     /**
      * Checks user by ID's to see if they have a patreon role in control panel discord
-     * @param {String} patreonRoleId 
-     * @param {String} userId 
-     * @returns 
+     * @param {String} patreonRoleId
+     * @param {String} userId
+     * @returns
      */
     checkPatreon(patreonRoleId, userId) {
         if (!this.vibotControlGuild) this.vibotControlGuild = this.bot.guilds.cache.get('739623118833713214')
         if (this.vibotControlGuild.members.cache.get(userId) && this.vibotControlGuild.members.cache.get(userId).roles.cache.has(patreonRoleId)) return true
-        else return false
+        return false
     }
 }
-
 
 module.exports = { MessageManager };
