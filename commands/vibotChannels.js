@@ -4,7 +4,7 @@ const botSettings = require('../settings.json')
 const ErrorLogger = require('../lib/logError')
 const vibotChannel = require('./vibotChannels.js')
 const modmail = require('./modmail.js')
-const roleassignment = require('./roleassignment.js')
+const roleassignment = require('./roleAssignment.js')
 var watchedMessages = []
 var watchedButtons = {}; //the keys for this are the id of a VC
 //{VC_ID: {hndlr: ACTIVATE_CHANNEL_MESSAGE_HANDLER,
