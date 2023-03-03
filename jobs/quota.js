@@ -1,6 +1,6 @@
-const RepeatedJob = require('./jobs/RepeatedJob.js')
-const quotas = require('./data/quotas.json');
-const { iterServers } = require('./jobs/util.js')
+const RepeatedJob = require('./RepeatedJob.js').RepeatedJob
+const quotas = require('../data/quotas.json');
+const { iterServers } = require('./util.js')
 const moment = require('moment');
 
 class MonthlyQuota extends RepeatedJob {
@@ -31,3 +31,5 @@ class BiWeeklyQuota extends RepeatedJob {
         })
     }
 }
+
+module.exports = { MonthlyQuota, BiWeeklyQuota }

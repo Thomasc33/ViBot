@@ -1,22 +1,26 @@
 const cron = require('cron')
 
-class RepeatJob {
-    #bot
+class RepeatedJob {
+    bot
     #intervalId = null
     #cronJob = null
 
     constructor(bot) {
-        this.#bot = bot
+        this.bot = bot
+    }
+
+    run() {
+        throw new Error("`run` not implimented for RepeatedJob " + this)
     }
 
     runOnce() {
-        return this.run(this.#bot)
+        return this.run(this.bot)
     }
 
     runAtInterval(msec) {
         if (this.#intervalId !== null) return false
 
-        this.#intervalId = setInterval(this.runOnce, msec)
+        this.#intervalId = setInterval(() => this.runOnce(), msec)
         return true;
     }
 
@@ -43,3 +47,5 @@ class RepeatJob {
         return true;
     }
 }
+
+module.exports = { RepeatedJob }

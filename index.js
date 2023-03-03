@@ -174,7 +174,7 @@ bot.on("ready", async () => {
     let vi = bot.users.cache.get(botSettings.developerId)
     vi.send('Halls Bot Starting Back Up')
 
-    botSetup.setup()
+    await botSetup.setup(bot)
 });
 
 bot.on('guildMemberAdd', member => {

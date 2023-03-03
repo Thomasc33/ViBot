@@ -1,4 +1,4 @@
-const RepeatedJob = require('./jobs/RepeatedJob.js')
+const RepeatedJob = require('./RepeatedJob.js').RepeatedJob
 
 class KeyAlert extends RepeatedJob {
     run(bot) {
@@ -9,7 +9,7 @@ class KeyAlert extends RepeatedJob {
             const channel = bot.channels.cache.get(settings.channels.keyalerts);
             channel.messages.fetch()
                 .then(messages => {
-                    bulk = [];
+                    let bulk = [];
 
                     messages.each(message => {
                         if (new Date() - message.createdAt > 60000 * settings.numerical.keyalertsage) {bulk.push(message);}

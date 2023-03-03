@@ -1,5 +1,5 @@
-const RepeatedJob = require('./jobs/RepeatedJob.js')
-const iterServersWithQuery = require('./jobs/util.js').iterServersWithQuery
+const RepeatedJob = require('./RepeatedJob.js').RepeatedJob
+const iterServersWithQuery = require('./util.js').iterServersWithQuery
 
 async function tryUnsuspend(bot, row, isVetBan) {
     let settings = bot.settings[guildId]

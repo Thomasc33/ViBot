@@ -11,19 +11,23 @@ const dbSchemas = require('./data/schemas.json')
 const ErrorLogger = require(`./lib/logError`)
 // Commands
 const emoji = require('./commands/emoji.js');
-const setup = require('./commands/setup')
+const globalSetup = require('./commands/setup')
 const vibotChannels = require('./commands/vibotChannels')
 const vetVerification = require('./commands/vetVerification')
 const verification = require('./commands/verification')
 const botstatus = require('./commands/botstatus')
 // Specific Jobs
 const unbanJobs = require('./jobs/unbanMeta.js')
-const keyAlertJob = require('./jobs/keyAlert.js')
-const muteJob = require('./jobs/mute.js')
+const UnbanVet = unbanJobs.UnbanVet;
+const Unsuspend = unbanJobs.Unsuspend;
+const KeyAlert = require('./jobs/keyAlert.js').KeyAlert
+const Mute = require('./jobs/mute.js').Mute
 const quotaJobs = require('./jobs/quota.js')
+const BiWeeklyQuota = quotaJobs.BiWeeklyQuota;
+const MonthlyQuota = quotaJobs.MonthlyQuota;
 const iterServers = require('./jobs/util.js').iterServers;
 
-function connectDB(db) {
+function connectDB(bot, db) {
     db.connect(err => {
         if (err) ErrorLogger.log(err, bot);
         else console.log("Connected to database: ", db.config.database);
@@ -65,7 +69,7 @@ function startAPI() {
     }
 }
 
-function setup() {
+async function setup(bot) {
     // Check to see if the bot was restarted and send message to channel that bot is back online
     try {
         let restart_info = require('./data/restart_channel.json')
@@ -97,12 +101,12 @@ function setup() {
             database: dbSchemas[g.id].schema
         }
         bot.dbs[g.id] = mysql.createConnection(dbInfo)
-        connectDB(bot.dbs[g.id])
+        connectDB(bot, bot.dbs[g.id])
 
         bot.dbs[g.id].on('error', err => {
             if (err.code == 'PROTOCOL_CONNECTION_LOST' || err.code == 'PROTOCOL_ENQUEUE_AFTER_FATAL_ERROR') {
                 bot.dbs[g.id] = mysql.createConnection(dbInfo)
-                connectDB(bot.dbs[g.id])
+                connectDB(bot, bot.dbs[g.id])
             }
             else ErrorLogger.log(err, bot, g)
         })
@@ -114,7 +118,7 @@ function setup() {
 
     //generate default settings
     iterServers(bot, function(bot, g) {
-        setup.autoSetup(g, bot)
+        globalSetup.autoSetup(g, bot)
     })
 
     //purge veri-active
@@ -123,12 +127,12 @@ function setup() {
         veriActive && veriActive.bulkDelete(100).catch(er => { })
     })
 
-    const unbanVetJob = new unbanJobs.UnbanVet(bot)
-    const unsuspendJob = new unbanJobs.Unsuspend(bot)
-    const keyAlertJob = new keyAlertJob.KeyAlert(bot)
-    const muteJob = new muteJob.Mute(bot)
-    const biWeeklyQuotaJob = new quotaJobs.BiWeeklyQuota(bot)
-    const monthlyQuotaJob = new quotaJobs.MonthlyQuota(bot)
+    const unbanVetJob = new UnbanVet(bot)
+    const unsuspendJob = new Unsuspend(bot)
+    const keyAlertJob = new KeyAlert(bot)
+    const muteJob = new Mute(bot)
+    const biWeeklyQuotaJob = new BiWeeklyQuota(bot)
+    const monthlyQuotaJob = new MonthlyQuota(bot)
 
     unbanVetJob.runAtInterval(120000)
     unsuspendJob.runAtInterval(60000)
@@ -149,3 +153,5 @@ function setup() {
     //initialize channels from createchannel.js
     require('./commands/createChannel').init(bot)
 }
+
+module.exports = { setup }

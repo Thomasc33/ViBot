@@ -1,6 +1,6 @@
-const RepeatedJob = require('./jobs/RepeatedJob.js')
-const ErrorLogger = require(`./lib/logError`)
-const iterServersWithQuery = require('./jobs/util.js').iterServersWithQuery
+const RepeatedJob = require('./RepeatedJob.js').RepeatedJob
+const ErrorLogger = require(`../lib/logError`)
+const iterServersWithQuery = require('./util.js').iterServersWithQuery
 
 class Mute extends RepeatedJob {
     run(bot) {

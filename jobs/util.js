@@ -1,4 +1,4 @@
-const ErrorLogger = require('./lib/logError')
+const ErrorLogger = require('../lib/logError')
 
 async function iterServers(bot, f) {
     await Promise.all(bot.guilds.cache.map(g => {
