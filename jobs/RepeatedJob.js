@@ -35,7 +35,7 @@ class RepeatedJob {
     schedule(cronString) {
         if (this.#cronJob !== null) return false
 
-        this.#cronJob = cron.job(cronString, this.runOnce, null, true, 'America/New_York', null, false)
+        this.#cronJob = cron.job(cronString, () => this.runOnce(), null, true, 'America/New_York', null, false)
         return true;
     }
 

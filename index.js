@@ -21,7 +21,6 @@ const botSetup = require('./botSetup.js')
 // Specific Commands
 const vetVerification = require('./commands/vetVerification')
 const verification = require('./commands/verification')
-const quota = require('./commands/quota')
 const roleAssignment = require('./commands/roleAssignment')
 const stats = require('./commands/stats')
 const modmail = require('./commands/modmail')
