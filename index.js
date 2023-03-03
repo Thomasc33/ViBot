@@ -8,10 +8,7 @@ const https = require('https')
 const http = require('http')
 const bodyParser = require('body-parser')
 const rateLimit = require('express-rate-limit')
-const cookieParser = require('cookie-parser')
-const cors = require('cors')
 const path = require('path');
-const moment = require('moment');
 require('./lib/extensions.js')
 // global.appRoot = path.resolve(__dirname); //put here so verification ml doenst break
 
@@ -19,21 +16,17 @@ require('./lib/extensions.js')
 // Import Internal Libraries
 const ErrorLogger = require(`./lib/logError`)
 const CommandLogger = require('./lib/logCommand')
+const botSetup = require('./botSetup.js')
 
 // Specific Commands
-const botstatus = require('./commands/botstatus')
-const vibotChannels = require('./commands/vibotChannels')
 const vetVerification = require('./commands/vetVerification')
 const verification = require('./commands/verification')
 const quota = require('./commands/quota')
 const roleAssignment = require('./commands/roleAssignment')
 const stats = require('./commands/stats')
 const modmail = require('./commands/modmail')
-const setup = require('./commands/setup')
 const restarting = require('./commands/restart')
 const excuses = require('./commands/excuse');
-const quotas = require('./data/quotas.json');
-const emoji = require('./commands/emoji.js');
 // Global Variables/Data
 const botSettings = require('./settings.json')
 const token = require('./botKey.json')
@@ -86,7 +79,6 @@ bot.partneredServers = moduleIsAvailable('./data/partneredServers.json') ? requi
 bot.emojiServers = moduleIsAvailable('./data/emojiServers.json') ? require('./data/emojiServers.json') : {}
 bot.devServers = ["739623118833713214"]
 bot.storedEmojis = moduleIsAvailable('./data/emojis.json') ? require('./data/emojis.json') : {}
-const dbSchemas = require('./data/schemas.json')
 const { channel } = require('diagnostics_channel')
 const app = express();
 const rootCas = require('ssl-root-cas').create();
@@ -182,252 +174,7 @@ bot.on("ready", async () => {
     let vi = bot.users.cache.get(botSettings.developerId)
     vi.send('Halls Bot Starting Back Up')
 
-    // Check to see if the bot was restarted and send message to channel that bot is back online
-    try {
-        let restart_info = require('./data/restart_channel.json')
-        if (restart_info && restart_info.channel && restart_info.guild) {
-            let guild = bot.guilds.cache.get(restart_info.guild)
-            if (guild) {
-                let channel = guild.channels.cache.get(restart_info.channel)
-                if (channel) {
-                    channel.send('I\'m back :flushed:')
-                    fs.writeFileSync('./data/restart_channel.json', '{}')
-                }
-            }
-        }
-    } catch (er) { }
-
-    //start api
-    startAPI()
-
-    // Update emojis.json
-    try {
-        await emoji.update(bot)
-        console.log('Emoji file updated')
-    } catch (error) {
-        await ErrorLogger.log(error, bot)
-        console.log('Emoji file failed to update')
-    }
-
-    //connect databases
-    bot.guilds.cache.each(g => {
-        if (bot.emojiServers.includes(g.id)) { return }
-        if (bot.devServers.includes(g.id)) { return }
-        if (!dbSchemas[g.id] || !dbSchemas[g.id].schema) return console.log('Missing Schema name (schema.json) for: ', g.id)
-        let dbInfo = {
-            host: dbSchemas[g.id].host || botSettings.defaultDbInfo.host,
-            user: dbSchemas[g.id].user || botSettings.defaultDbInfo.user,
-            password: dbSchemas[g.id].password || botSettings.defaultDbInfo.password,
-            database: dbSchemas[g.id].schema
-        }
-        bot.dbs[g.id] = mysql.createConnection(dbInfo)
-        connectDB(bot.dbs[g.id])
-
-        bot.dbs[g.id].on('error', err => {
-            if (err.code == 'PROTOCOL_CONNECTION_LOST' || err.code == 'PROTOCOL_ENQUEUE_AFTER_FATAL_ERROR') {
-                bot.dbs[g.id] = mysql.createConnection(dbInfo)
-                connectDB(bot.dbs[g.id])
-            }
-            else ErrorLogger.log(err, bot, g)
-        })
-    })
-
-    //to hide dev server
-    if (bot.user.id == botSettings.prodBotId) bot.devServers.push('701483950559985705');
-
-    //generate default settings
-    bot.guilds.cache.each(g => {
-        if (bot.emojiServers.includes(g.id)) { return }
-        if (bot.devServers.includes(g.id)) { return }
-        setup.autoSetup(g, bot)
-    })
-
-    //purge veri-active
-    bot.guilds.cache.each(g => {
-        if (bot.emojiServers.includes(g.id)) { return }
-        if (bot.devServers.includes(g.id)) { return }
-        let veriActive = g.channels.cache.get(bot.settings[g.id].channels.veriactive)
-        if (!veriActive) return;
-        veriActive.bulkDelete(100).catch(er => { })
-    })
-
-    function tryUnsuspend(bot, row, isVetBan) {
-        let settings = bot.settings[guildId]
-        const guildId = row.guildid;
-        const proofLogID = row.logmessage;
-        const guild = bot.guilds.cache.get(guildId);
-        const member = guild.members.cache.get(row.id);
-
-        if (!member) {
-            if (!isVetBan) guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${row.id}> has been unsuspended automatically. However, they are not in the server`)
-            return bot.dbs[g.id].query(`UPDATE ${isVetBan ? "vetbans" : "suspensions"} SET suspended = false WHERE id = '${row.id}'`)
-        }
-
-        try {
-            if (isVetBan) {
-                await member.roles.remove(settings.roles.vetban)
-                setTimeout(() => { member.roles.add(settings.roles.vetraider); }, 1000)
-                setTimeout(() => {
-                    if (!member.roles.cache.has(settings.roles.vetraider))
-                        member.roles.add(settings.roles.vetraider).catch(er => ErrorLogger.log(er, bot, g))
-                }, 5000)
-            } else {
-                let roles = []
-                const rolesString = row.roles;
-                rolesString.split(' ').forEach(r => { if (r !== '') roles.push(r) })
-
-                await member.edit({ roles: roles }).catch(er => ErrorLogger.log(er, bot, g))
-                setTimeout(() => {
-                    if (member.roles.cache.has(settings.roles.tempsuspended))
-                        member.edit({ roles: roles }).catch(er => ErrorLogger.log(er, bot, g))
-                }, 5000)
-            }
-            const unsuspendPing = `<@!${row.id}> has been ${isVetBan ? "un-vet-banned" : "unsuspended"} automatically`;
-            try {
-                let messages = await guild.channels.cache.get(settings.channels.suspendlog).messages.fetch({ limit: 100 })
-                let m = messages.get(proofLogID)
-                if (!m) {
-                    guild.channels.cache.get(settings.channels.suspendlog).send(unsuspendPing)
-                } else {
-                    let embed = new Discord.EmbedBuilder()
-                    embed.data = m.embeds.shift().data;
-                    embed.setColor('#00ff00')
-                        .setDescription(embed.data.description.concat(`\nUn${isVetBan ? "-vet-banned" : "suspended"} automatically`))
-                        .setFooter({ text: 'Unsuspended at' })
-                        .setTimestamp(Date.now())
-                        m.edit({ embeds: [embed] })
-                }
-            } catch (er) {
-                guild.channels.cache.get(settings.channels.suspendlog).send(unsuspendPing)
-            } finally {
-                await bot.dbs[g.id].query(`UPDATE ${isVetBan ? "vetbans" : "suspensions"} SET suspended = false WHERE id = '${row.id}'`)
-            }
-        } catch (er) {
-            ErrorLogger.log(er, bot, g)
-        }
-    }
-
-    function checkBanServers(isVets) {
-        let checked = []
-        bot.guilds.cache.each(g => {
-            if (bot.emojiServers.includes(g.id)) { return }
-            if (bot.devServers.includes(g.id)) { return }
-            if (bot.dbs[g.id] && !checked.includes(bot.dbs[g.id].config.databse)) {
-                checked.push(bot.dbs[g.id].config.databse) //prevents people from being unsuspended twice
-                const dbQuery = isVets ? `SELECT * FROM vetbans WHERE suspended = true` : `SELECT * FROM suspensions WHERE suspended = true AND perma = false`;
-                bot.dbs[g.id].query(dbQuery, async (err, rows) => {
-                    if (err) ErrorLogger.log(err, bot, g)
-                    for (let i in rows) {
-                        if (Date.now() > parseInt(rows[i].uTime)) {
-                            tryUnsuspend(bot, row, isVets)
-                        }
-                    }
-                })
-            }
-        })
-    }
-
-    let vetbanInterval = setInterval(() => checkBanServers(true), 120000);
-    let suspensionInterval = setInterval(() => checkBanServers(false), 60000);
-
-    //key alerts check
-    let keyAlertsInterval = setInterval(() => {
-        bot.guilds.cache.each(g => {
-            const settings = bot.settings[g.id];
-            if (!settings || !settings.channels.keyalerts || !settings.numerical.keyalertsage)
-                return;
-
-            const channel = bot.channels.cache.get(settings.channels.keyalerts);
-            channel.messages.fetch()
-                .then(messages => {
-                    bulk = [];
-
-                    messages.each(message => {
-                        if (new Date() - message.createdAt > 60000 * settings.numerical.keyalertsage)
-                            bulk.push(message);
-                    })
-                    if (bulk.length == 1)
-                        bulk[0].delete();
-                    else if (bulk.length > 1)
-                        channel.bulkDelete(bulk);
-                })
-        })
-    }, 300000);
-
-    //mute check
-    let muteInterval = setInterval(() => {
-        let checked = []
-        bot.guilds.cache.each(g => {
-            if (bot.emojiServers.includes(g.id)) { return }
-            if (bot.devServers.includes(g.id)) { return }
-            if (bot.dbs[g.id] && !checked.includes(bot.dbs[g.id].config.databse)) {
-                checked.push(bot.dbs[g.id].config.databse) //prevents people from being unsuspended twice
-                bot.dbs[g.id].query(`SELECT * FROM mutes WHERE muted = true`, async (err, rows) => {
-                    if (err) ErrorLogger.log(err, bot, g)
-                    for (let i in rows) {
-                        if (Date.now() > parseInt(rows[i].uTime)) {
-                            const guildId = rows[i].guildid;
-                            let settings = bot.settings[guildId]
-                            const guild = bot.guilds.cache.get(guildId);
-                            if (guild) {
-                                const member = guild.members.cache.get(rows[i].id);
-                                if (!member) return bot.dbs[g.id].query(`UPDATE mutes SET muted = false WHERE id = '${rows[i].id}'`)
-                                try {
-                                    await member.roles.remove(settings.roles.muted)
-                                    await bot.dbs[g.id].query(`UPDATE mutes SET muted = false WHERE id = '${rows[i].id}'`)
-                                } catch (er) {
-                                    ErrorLogger.log(er, bot, g)
-                                }
-                            }
-                        }
-                    }
-                })
-            }
-        })
-    }, 90000);
-
-    //initialize components (eg. modmail, verification)
-    bot.guilds.cache.each(g => {
-        if (bot.emojiServers.includes(g.id)) { return }
-        if (bot.devServers.includes(g.id)) { return }
-        vibotChannels.update(g, bot).catch(er => { })
-        // if (bot.settings[g.id].backend.modmail) modmail.init(g, bot, bot.dbs[g.id]).catch(er => { ErrorLogger.log(er, bot, g); })
-        if (bot.settings[g.id].backend.verification) verification.init(g, bot, bot.dbs[g.id]).catch(er => { ErrorLogger.log(er, bot, g); })
-        if (bot.settings[g.id].backend.vetverification) vetVerification.init(g, bot, bot.dbs[g.id]).catch(er => { ErrorLogger.log(er, bot, g); })
-        botstatus.init(g, bot, bot.dbs[g.id])
-    })
-
-    //initialize channels from createchannel.js
-    require('./commands/createChannel').init(bot)
-
-    //reset currentweek
-    const currentWeekReset = cron.job('0 0 * * SUN', () => {
-        const biweekly = !(moment().diff(moment(1413378000), 'week') % 2);
-        bot.guilds.cache.each(g => {
-            if (bot.emojiServers.includes(g.id)) { return }
-            if (bot.devServers.includes(g.id)) { return }
-            const guildQuotas = quotas[g.id];
-            if (!guildQuotas) { return }
-            const quotaList = guildQuotas.quotas.filter(q => q.reset == "weekly" || (q.reset == "biweekly" && biweekly));
-            if (!quotaList.length) return;
-
-            quota.fullReset(g, bot.dbs[g.id], bot, quotaList);
-        })
-    }, null, true, 'America/New_York', null, false)
-
-    const currentMonthReset = cron.job('0 0 1 * *', () => {
-        bot.guilds.cache.each(g => {
-            if (bot.emojiServers.includes(g.id)) { return }
-            if (bot.devServers.includes(g.id)) { return }
-            const guildQuotas = quotas[g.id];
-            if (!guildQuotas) { return }
-            const quotaList = guildQuotas.quotas.filter(q => q.reset == "weekly" || (q.reset == "biweekly" && biweekly));
-            if (!quotaList.length) return;
-            for (const q of quotaList)
-                if (q.reset == "monthly")
-                    quota.newWeek(g, bot, bot.dbs[g.id], bot.settings[g.id], guildQuotas, q);
-        })
-    }, null, true, 'America/New_York', null, false)
+    botSetup.setup()
 });
 
 bot.on('guildMemberAdd', member => {
@@ -664,13 +411,6 @@ process.on('unhandledRejection', err => {
 // Data Base Connectors (Global DB was here, now moved to bot ready listener)
 var tokenDB = mysql.createConnection(botSettings.tokenDBInfo)
 
-function connectDB(db) {
-    db.connect(err => {
-        if (err) ErrorLogger.log(err, bot);
-        else console.log("Connected to database: ", db.config.database);
-    })
-}
-
 tokenDB.connect(err => {
     if (err) ErrorLogger.log(err, bot);
     console.log('Connected to token database')
@@ -898,41 +638,6 @@ function moduleIsAvailable(path) {
 
 
 
-// API
-function startAPI() {
-    if (botSettings.api) {
-        console.log('api starting')
-        var credentials = {}
-        try {
-            credentials.key = fs.readFileSync('C:\\Certbot\\live\\a.vibot.tech\\privkey.pem', 'utf8')
-            credentials.cert = fs.readFileSync('C:\\Certbot\\live\\a.vibot.tech\\cert.pem', 'utf8')
-        } catch (e) { }
-
-        const apiLimit = rateLimit({
-            windowMs: 1 * 10 * 1000,
-            max: 10
-        })
-
-        app.use(express.urlencoded({ extended: true }));
-        app.use(express.json());
-        app.use(cookieParser())
-        app.use(cors())
-        app.use('/api/', apiLimit)
-        app.use('/api', require('./lib/API'))
-
-        app.use((req, res, next) => {
-            let d = new Date();
-            let formatted_date = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
-            let log = `[${formatted_date}] ${req.method}:${req.url} ${res.statusCode}`;
-            console.log(log);
-            next();
-        })
-
-        const httpsServer = credentials.key && credentials.cert ? https.createServer(credentials, app) : http.createServer(app)
-        const port = botSettings.apiPort
-        httpsServer.listen(port)
-    }
-}
 
 
 module.exports = {
