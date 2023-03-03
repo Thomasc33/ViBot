@@ -1,4 +1,4 @@
-const RepeatedJob = require('./RepeatedJob.js').RepeatedJob
+const { RepeatedJob } = require('./RepeatedJob.js')
 const quotas = require('../data/quotas.json');
 const quota = require('../commands/quota')
 const { iterServers } = require('./util.js')
@@ -6,6 +6,8 @@ const moment = require('moment');
 
 class MonthlyQuota extends RepeatedJob {
     run(bot) {
+        const biweekly = !(moment().diff(moment(1413378000), 'week') % 2);
+
         iterServers(bot, (bot, g) => {
             const guildQuotas = quotas[g.id];
             if (!guildQuotas) { return }

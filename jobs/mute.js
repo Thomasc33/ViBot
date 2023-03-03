@@ -1,13 +1,13 @@
-const RepeatedJob = require('./RepeatedJob.js').RepeatedJob
-const ErrorLogger = require(`../lib/logError`)
-const iterServersWithQuery = require('./util.js').iterServersWithQuery
+const { RepeatedJob } = require('./RepeatedJob.js')
+const ErrorLogger = require('../lib/logError')
+const { iterServersWithQuery } = require('./util.js')
 
 class Mute extends RepeatedJob {
     run(bot) {
-        iterServersWithQuery(bot, `SELECT * FROM mutes WHERE muted = true`, async function(bot, row) {
+        iterServersWithQuery(bot, 'SELECT * FROM mutes WHERE muted = true', async (bot, row, g) => {
             if (Date.now() > parseInt(row.uTime)) {
                 const guildId = row.guildid;
-                let settings = bot.settings[guildId]
+                const settings = bot.settings[guildId]
                 const guild = bot.guilds.cache.get(guildId);
                 if (guild) {
                     const member = guild.members.cache.get(row.id);

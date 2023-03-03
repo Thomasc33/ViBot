@@ -10,7 +10,7 @@ class RepeatedJob {
     }
 
     run() {
-        throw new Error("`run` not implimented for RepeatedJob " + this)
+        throw new Error('`run` not implimented for RepeatedJob ' + this)
     }
 
     runOnce() {

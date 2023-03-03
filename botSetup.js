@@ -17,7 +17,7 @@ const vetVerification = require('./commands/vetVerification')
 const verification = require('./commands/verification')
 const botstatus = require('./commands/botstatus')
 // Specific Jobs
-const unbanJobs = require('./jobs/unbanMeta.js')
+const unbanJobs = require('./jobs/unban.js')
 const UnbanVet = unbanJobs.UnbanVet;
 const Unsuspend = unbanJobs.Unsuspend;
 const KeyAlert = require('./jobs/keyAlert.js').KeyAlert
