@@ -27,7 +27,7 @@ module.exports = {
         message.channel.send('Restart Queued')
         botStatus.StatusEmbed.data.fields[0].value = 'Restart Pending'
         botStatus.StatusEmbed.setColor('#ff0000')
-        botStatus.updateAll()
+        botStatus.updateAll(bot.dbs[channel.guild.id])
         let Promises = []
 
         //afk checks

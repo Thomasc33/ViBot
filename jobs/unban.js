@@ -1,5 +1,5 @@
 const Discord = require('discord.js')
-const ErrorLogger = require('./lib/logError')
+const ErrorLogger = require('../lib/logError')
 const { RepeatedJob } = require('./RepeatedJob.js')
 const { iterServersWithQuery } = require('./util.js')
 

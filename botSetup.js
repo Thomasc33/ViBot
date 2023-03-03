@@ -25,12 +25,36 @@ const Mute = require('./jobs/mute.js').Mute
 const quotaJobs = require('./jobs/quota.js')
 const BiWeeklyQuota = quotaJobs.BiWeeklyQuota;
 const MonthlyQuota = quotaJobs.MonthlyQuota;
+const BotStatusUpdate = require('./jobs/botstatus.js').BotStatusUpdate;
 const iterServers = require('./jobs/util.js').iterServers;
 
 function connectDB(bot, db) {
     db.connect(err => {
         if (err) ErrorLogger.log(err, bot);
         else console.log("Connected to database: ", db.config.database);
+    })
+}
+
+function setupBotDBs(bot) {
+    iterServers(bot, function(bot, g) {
+        if (!dbSchemas[g.id] || !dbSchemas[g.id].schema) return console.log('Missing Schema name (schema.json) for: ', g.id)
+        let dbInfo = {
+            port: botSettings.defaultDbInfo.port || 3360,
+            host: dbSchemas[g.id].host || botSettings.defaultDbInfo.host,
+            user: dbSchemas[g.id].user || botSettings.defaultDbInfo.user,
+            password: dbSchemas[g.id].password || botSettings.defaultDbInfo.password,
+            database: dbSchemas[g.id].schema
+        }
+        bot.dbs[g.id] = mysql.createConnection(dbInfo)
+        connectDB(bot, bot.dbs[g.id])
+
+        bot.dbs[g.id].on('error', err => {
+            if (err.code == 'PROTOCOL_CONNECTION_LOST' || err.code == 'PROTOCOL_ENQUEUE_AFTER_FATAL_ERROR') {
+                bot.dbs[g.id] = mysql.createConnection(dbInfo)
+                connectDB(bot, bot.dbs[g.id])
+            }
+            else ErrorLogger.log(err, bot, g)
+        })
     })
 }
 
@@ -92,26 +116,7 @@ async function setup(bot) {
     await emoji.update(bot)
 
     //connect databases
-    iterServers(bot, function(bot, g) {
-        if (!dbSchemas[g.id] || !dbSchemas[g.id].schema) return console.log('Missing Schema name (schema.json) for: ', g.id)
-        let dbInfo = {
-            host: dbSchemas[g.id].host || botSettings.defaultDbInfo.host,
-            user: dbSchemas[g.id].user || botSettings.defaultDbInfo.user,
-            password: dbSchemas[g.id].password || botSettings.defaultDbInfo.password,
-            database: dbSchemas[g.id].schema
-        }
-        bot.dbs[g.id] = mysql.createConnection(dbInfo)
-        connectDB(bot, bot.dbs[g.id])
-
-        bot.dbs[g.id].on('error', err => {
-            if (err.code == 'PROTOCOL_CONNECTION_LOST' || err.code == 'PROTOCOL_ENQUEUE_AFTER_FATAL_ERROR') {
-                bot.dbs[g.id] = mysql.createConnection(dbInfo)
-                connectDB(bot, bot.dbs[g.id])
-            }
-            else ErrorLogger.log(err, bot, g)
-        })
-    })
-
+    setupBotDBs(bot)
 
     //to hide dev server
     if (bot.user.id == botSettings.prodBotId) bot.devServers.push('701483950559985705');
@@ -133,6 +138,7 @@ async function setup(bot) {
     const muteJob = new Mute(bot)
     const biWeeklyQuotaJob = new BiWeeklyQuota(bot)
     const monthlyQuotaJob = new MonthlyQuota(bot)
+    const botStatusUpdateJob = new BotStatusUpdate(bot)
 
     unbanVetJob.runAtInterval(120000)
     unsuspendJob.runAtInterval(60000)
@@ -150,8 +156,10 @@ async function setup(bot) {
         botstatus.init(g, bot, bot.dbs[g.id])
     })
 
+    botStatusUpdateJob.runAtInterval(30000)
+
     //initialize channels from createchannel.js
     require('./commands/createChannel').init(bot)
 }
 
-module.exports = { setup }
+module.exports = { setup, setupBotDBs }

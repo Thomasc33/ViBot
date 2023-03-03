@@ -5,10 +5,10 @@ const { iterServers } = require('./util.js')
 const moment = require('moment');
 
 class MonthlyQuota extends RepeatedJob {
-    run(bot) {
+    async run(bot) {
         const biweekly = !(moment().diff(moment(1413378000), 'week') % 2);
 
-        iterServers(bot, (bot, g) => {
+        await iterServers(bot, (bot, g) => {
             const guildQuotas = quotas[g.id];
             if (!guildQuotas) { return }
             const quotaList = guildQuotas.quotas.filter(q => q.reset == 'weekly' || (q.reset == 'biweekly' && biweekly));
@@ -21,16 +21,16 @@ class MonthlyQuota extends RepeatedJob {
 }
 
 class BiWeeklyQuota extends RepeatedJob {
-    run(bot) {
+    async run(bot) {
         const biweekly = !(moment().diff(moment(1413378000), 'week') % 2);
 
-        iterServers(bot, (bot, g) => {
+        await iterServers(bot, async (bot, g) => {
             const guildQuotas = quotas[g.id];
             if (!guildQuotas) { return }
             const quotaList = guildQuotas.quotas.filter(q => q.reset == 'weekly' || (q.reset == 'biweekly' && biweekly));
             if (!quotaList.length) return;
 
-            quota.fullReset(g, bot.dbs[g.id], bot, quotaList);
+            await quota.fullReset(g, bot.dbs[g.id], bot, quotaList);
         })
     }
 }

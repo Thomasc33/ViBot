@@ -3,6 +3,7 @@ const cron = require('cron')
 class RepeatedJob {
     bot
     #intervalId = null
+    #intervalPromiseResolver
     #cronJob = null
 
     constructor(bot) {
@@ -21,7 +22,9 @@ class RepeatedJob {
         if (this.#intervalId !== null) return false
 
         this.#intervalId = setInterval(() => this.runOnce(), msec)
-        return true;
+        return new Promise(resolve => {
+            this.#intervalPromiseResolver = resolve
+        })
     }
 
     stopInterval() {
@@ -29,6 +32,7 @@ class RepeatedJob {
 
         clearInterval(this.#intervalId)
         this.#intervalId = null
+        this.#intervalPromiseResolver();
         return true;
     }
 
