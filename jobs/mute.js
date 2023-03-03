@@ -4,7 +4,7 @@ const iterServersWithQuery = require('./jobs/util.js').iterServersWithQuery
 
 class Mute extends RepeatedJob {
     run(bot) {
-        iterServersWithQuery(bot, `SELECT * FROM mutes WHERE muted = true`, function(bot, row) {
+        iterServersWithQuery(bot, `SELECT * FROM mutes WHERE muted = true`, async function(bot, row) {
             if (Date.now() > parseInt(row.uTime)) {
                 const guildId = row.guildid;
                 let settings = bot.settings[guildId]

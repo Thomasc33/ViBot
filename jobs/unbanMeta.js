@@ -1,7 +1,7 @@
 const RepeatedJob = require('./jobs/RepeatedJob.js')
 const iterServersWithQuery = require('./jobs/util.js').iterServersWithQuery
 
-function tryUnsuspend(bot, row, isVetBan) {
+async function tryUnsuspend(bot, row, isVetBan) {
     let settings = bot.settings[guildId]
     const guildId = row.guildid;
     const proofLogID = row.logmessage;
@@ -60,9 +60,9 @@ function tryUnsuspend(bot, row, isVetBan) {
 class UnbanVet extends RepeatedJob {
     run(bot) {
         const dbQuery = `SELECT * FROM vetbans WHERE suspended = true`;
-        iterServersWithQuery(bot, dbQuery, function(bot, row) {
+        iterServersWithQuery(bot, dbQuery, async function(bot, row) {
             if (Date.now() > parseInt(row.uTime)) {
-                tryUnsuspend(bot, row, true)
+                await tryUnsuspend(bot, row, true)
             }
         })
     }
@@ -71,9 +71,9 @@ class UnbanVet extends RepeatedJob {
 class Unsuspend extends RepeatedJob {
     run(bot) {
         const dbQuery = `SELECT * FROM suspensions WHERE suspended = true AND perma = false`;
-        iterServersWithQuery(bot, dbQuery, function(bot, row) {
+        iterServersWithQuery(bot, dbQuery, async function(bot, row) {
             if (Date.now() > parseInt(row.uTime)) {
-                tryUnsuspend(bot, row, false)
+                await tryUnsuspend(bot, row, false)
             }
         })
     }
