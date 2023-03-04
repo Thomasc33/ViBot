@@ -1,11 +1,7 @@
 // Imports
-const fs = require('fs')
 const Discord = require('discord.js')
 const mysql = require('mysql')
-const express = require('express')
 require('./lib/extensions.js')
-// global.appRoot = path.resolve(__dirname); //put here so verification ml doenst break
-
 
 // Import Internal Libraries
 const ErrorLogger = require(`./lib/logError`)
@@ -17,6 +13,7 @@ const verification = require('./commands/verification')
 const stats = require('./commands/stats')
 const modmail = require('./commands/modmail')
 const restarting = require('./commands/restart')
+
 // Global Variables/Data
 const botSettings = require('./settings.json')
 const token = require('./botKey.json')
@@ -105,6 +102,58 @@ bot.on('messageCreate', message => {
         ErrorLogger.log(er, bot, message.guild)
     }
 });
+
+bot.on('interactionCreate', async interaction => {
+    // Validate the interaction is a command
+    if (!interaction.isChatInputCommand()) return;
+    // Validate the server is whitelisted
+    if (!bot.serverWhiteList.includes(interaction.guild.id)) return
+    // Validate the server has settings
+    if (!bot.settings[interaction.guild.id]) return
+    // Get the command
+    const command = bot.commands.get(interaction.commandName);
+    // Validate the command exists
+    if (!command) return interaction.reply('Command doesnt exist, check \`commands\` and try again');
+    // Validate the command is enabled
+    if (!bot.settings[interaction.guild.id].commands[command.name]) return interaction.reply('This command is disabled');
+    // Validate the command is not disabled during restart if a restart is pending
+    if (restarting.restarting && !command.allowedInRestart) return interaction.reply('Cannot execute command as a restart is pending')
+    // Validate the user has permission to use the command
+    if (!interaction.guild.roles.cache.get(bot.settings[interaction.guild.id].roles[command.role])) return interaction.reply('Permissions not set up for this commands role')
+
+    let hasPermissionForCommand = false // The default will be set to FALSE, if the user has the permission, we will change this to TRUE
+    let memberPosition = interaction.member.roles.highest.position
+    let settings = bot.settings[interaction.guild.id]
+    let roleCache = interaction.guild.roles.cache
+    let memberId = interaction.member.id
+
+    if (memberPosition >= roleCache.get(settings.roles[command.role]).position) hasPermissionForCommand = true
+    if (settings.commandsRolePermissions[command.name]) {
+        if (memberPosition >= roleCache.get(settings.roles[settings.commandsRolePermissions[command.name]]).position) hasPermissionForCommand = true
+        else hasPermissionForCommand = false
+    }
+    if (command.patreonRole && checkPatreon(command.patreonRole, memberId)) hasPermissionForCommand = true
+    if (command.userOverride && command.userOverride.includes(memberId)) hasPermissionForCommand = true
+    if (bot.adminUsers.includes(memberId)) hasPermissionForCommand = true
+    if (!hasPermissionForCommand) return interaction.reply('You do not have permission to use this command')
+    if (command.requiredArgs && command.requiredArgs > interaction.options.length) return interaction.reply(`Command Entered incorrecty. \`${botSettings.prefix}${command.name} ${command.args}\``)
+    if (command.cooldown) {
+        if (cooldowns.get(command.name)) {
+            if (Date.now() + command.cooldown * 1000 < Date.now()) cooldowns.delete(command.name)
+            else return
+        } else cooldowns.set(command.name, Date.now())
+        setTimeout(() => { cooldowns.delete(command.name) }, command.cooldown * 1000)
+    }
+    try {
+        command.slashCommandExecute(interaction, bot, bot.dbs[interaction.guild.id], tokenDB)
+        bot.dbs[interaction.guild.id].query(`INSERT INTO commandusage (command, userid, guildid, utime) VALUES ('${command.name}', '${interaction.member.id}', '${interaction.guild.id}', '${Date.now()}')`);
+        CommandLogger.logInteractionCommand(interaction, bot)
+    }
+    catch (er) {
+        ErrorLogger.log(er, bot, interaction.guild)
+        interaction.reply("Issue executing the command, check \`;commands\` and try again");
+    }
+})
 
 bot.on("ready", async () => {
     console.log(`Bot loaded: ${bot.user.username}`);

@@ -7,6 +7,7 @@ const cors = require('cors')
 const https = require('https')
 const http = require('http')
 const mysql = require('mysql')
+const Discord = require('discord.js')
 
 const botSettings = require('./settings.json')
 const dbSchemas = require('./data/schemas.json')
@@ -38,7 +39,7 @@ function connectDB(bot, db) {
 }
 
 function setupBotDBs(bot) {
-    iterServers(bot, function(bot, g) {
+    iterServers(bot, function (bot, g) {
         if (!dbSchemas[g.id] || !dbSchemas[g.id].schema) return console.log('Missing Schema name (schema.json) for: ', g.id)
         let dbInfo = {
             port: botSettings.defaultDbInfo.port || 3306,
@@ -58,6 +59,25 @@ function setupBotDBs(bot) {
             else ErrorLogger.log(err, bot, g)
         })
     })
+}
+
+async function deployCommands(bot, guild) {
+    // Organize commands
+    let slashCommands = []
+    bot.commands.filter(c => c.getSlashCommandData).each(c => {
+        let data = c.getSlashCommandData(guild)
+        if (data) slashCommands.push(data.toJSON())
+    })
+
+    // Deploy commands
+    const rest = new Discord.REST({ version: '10' }).setToken(require('./botKey.json').key)
+    try {
+        console.log(`Deploying ${slashCommands.length} slash commands to ${guild.name} (${guild.id})`)
+        await rest.put(Discord.Routes.applicationGuildCommands(bot.user.id, guild.id), { body: slashCommands })
+        console.log(`Deployed ${slashCommands.length} slash commands to ${guild.name} (${guild.id})`)
+    } catch (er) {
+        console.log(`Error deploying slash commands: ${er}`)
+    }
 }
 
 function startAPI() {
@@ -124,12 +144,12 @@ async function setup(bot) {
     if (bot.user.id == botSettings.prodBotId) bot.devServers.push('701483950559985705');
 
     //generate default settings
-    iterServers(bot, function(bot, g) {
+    iterServers(bot, function (bot, g) {
         globalSetup.autoSetup(g, bot)
     })
 
     //purge veri-active
-    iterServers(bot, function(bot, g) {
+    iterServers(bot, function (bot, g) {
         let veriActive = g.channels.cache.get(bot.settings[g.id].channels.veriactive)
         veriActive && veriActive.bulkDelete(100).catch(er => { })
     })
@@ -150,7 +170,7 @@ async function setup(bot) {
     monthlyQuotaJob.schedule('0 0 1 * *')
 
     //initialize components (eg. modmail, verification)
-    iterServers(bot, function(bot, g) {
+    iterServers(bot, function (bot, g) {
         vibotChannels.update(g, bot).catch(er => { })
         // if (bot.settings[g.id].backend.modmail) modmail.init(g, bot, bot.dbs[g.id]).catch(er => { ErrorLogger.log(er, bot, g); })
         if (bot.settings[g.id].backend.verification) verification.init(g, bot, bot.dbs[g.id]).catch(er => { ErrorLogger.log(er, bot, g); })
@@ -162,6 +182,9 @@ async function setup(bot) {
 
     //initialize channels from createchannel.js
     require('./commands/createChannel').init(bot)
+
+    // Initialize the bot's slash commands
+    iterServers(bot, deployCommands)
 }
 
 module.exports = { setup, setupBotDBs }
