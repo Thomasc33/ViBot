@@ -17,7 +17,6 @@ const globalSetup = require('./commands/setup')
 const vibotChannels = require('./commands/vibotChannels')
 const vetVerification = require('./commands/vetVerification')
 const verification = require('./commands/verification')
-const botstatus = require('./commands/botstatus')
 // Specific Jobs
 const unbanJobs = require('./jobs/unban.js')
 const UnbanVet = unbanJobs.UnbanVet;
@@ -158,7 +157,6 @@ async function setup(bot) {
         if (bot.settings[g.id].backend.verification) verification.init(g, bot, bot.dbs[g.id]).catch(er => { ErrorLogger.log(er, bot, g); })
         if (bot.settings[g.id].backend.vetverification) vetVerification.init(g, bot, bot.dbs[g.id]).catch(er => { ErrorLogger.log(er, bot, g); })
     })
-    botstatus.updateAll(bot)
 
     //initialize channels from createchannel.js
     require('./commands/createChannel').init(bot)
