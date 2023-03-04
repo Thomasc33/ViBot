@@ -1,5 +1,6 @@
 const Discord = require('discord.js')
 const reScrape = require('../lib/realmEyeScrape')
+const uptimeString = require('./status.js').uptimeString
 const { iterServers } = require('../jobs/util.js')
 
 async function checkDataBase(db) {
@@ -11,12 +12,12 @@ async function checkDataBase(db) {
 }
 
 const embedTemplate = {
-    'Status': async () => "Initializing",
     'DB OK': async (bot, guild) => {
         if (!bot.dbs[guild.id]) return "N/A"
         return await checkDataBase(bot.dbs[guild.id])
     },
-    'RealmEye': async () => !!(await reScrape.handler.next())
+    'RealmEye': async () => !!(await reScrape.handler.next()),
+    'Uptime': async (bot) => uptimeString(bot)
 }
 
 // Generate an Embed from the base `embedTemplate` and any overrides
@@ -25,14 +26,13 @@ async function generateEmbed(bot, guild, templateOverrides) {
     // Apply overrides to the `embedTemplate` if they exist
     const fieldGenerator = templateOverrides ? { ...embedTemplate, ...templateOverrides } : embedTemplate;
     // Build the embed from the `fieldGenerator`
-    builder.setColor('#0000ff')
-           .setTitle('ViBot Status')
+    builder.setTitle('ViBot Status')
            .addFields(await Promise.all(Object.entries(fieldGenerator).map(async ([key, valueGenerator]) => {
-               let v = await valueGenerator(bot, guild)
-               // If the field generator function returns a boolean, emoji-ify it
-               if (typeof v === 'boolean') v = v ? '✅' : '❌'
-               return { name: key, value: v, inline: true }
-           })))
+                                            let v = await valueGenerator(bot, guild)
+                                            // If the field generator function returns a boolean, emoji-ify it
+                                            if (typeof v === 'boolean') v = v ? '✅' : '❌'
+                                            return { name: key, value: v, inline: true }
+                                        })))
            .setTimestamp()
     return builder
 }
@@ -80,12 +80,14 @@ module.exports = {
     },
     async updateAll(bot) {
         // Cache realmeye status across all servers
-        const reStatus = Boolean(await reScrape.handler.next())
+        const overrides = {
+            'RealmEye': async () => Boolean(await reScrape.handler.next())
+        }
 
         await iterServers(bot, async (bot, guild) => {
             const botstatusChannel = guild.channels.cache.get(bot.settings[guild.id].channels.botstatus)
             if (!botstatusChannel) return console.log('botstatus not found for ', guild.id)
-            const embed = await generateEmbed(bot, guild, { RealmEye: async () => reStatus })
+            const embed = await generateEmbed(bot, guild, overrides)
             await update(bot, botstatusChannel, embed)
         })
     },
