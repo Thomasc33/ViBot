@@ -10,7 +10,6 @@ require('./lib/extensions.js')
 // Import Internal Libraries
 const ErrorLogger = require(`./lib/logError`)
 const CommandLogger = require('./lib/logCommand')
-const botSetup = require('./botSetup.js')
 
 // Specific Commands
 const verification = require('./commands/verification')
@@ -26,6 +25,7 @@ const rootCas = require('ssl-root-cas').create();
 require('https').globalAgent.options.ca = rootCas;
 
 const bot = require('./botMeta.js').bot
+const botSetup = require('./botSetup.js')
 
 
 // Bot Event Handlers
