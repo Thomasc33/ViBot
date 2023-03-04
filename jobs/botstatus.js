@@ -1,5 +1,4 @@
 const { RepeatedJob } = require('./RepeatedJob.js')
-const { iterServers } = require('./util.js')
 const botStatus = require('../commands/botstatus.js')
 
 class BotStatusUpdate extends RepeatedJob {
