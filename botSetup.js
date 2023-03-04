@@ -39,7 +39,7 @@ function setupBotDBs(bot) {
     iterServers(bot, function(bot, g) {
         if (!dbSchemas[g.id] || !dbSchemas[g.id].schema) return console.log('Missing Schema name (schema.json) for: ', g.id)
         let dbInfo = {
-            port: botSettings.defaultDbInfo.port || 3360,
+            port: botSettings.defaultDbInfo.port || 3306,
             host: dbSchemas[g.id].host || botSettings.defaultDbInfo.host,
             user: dbSchemas[g.id].user || botSettings.defaultDbInfo.user,
             password: dbSchemas[g.id].password || botSettings.defaultDbInfo.password,
