@@ -18,7 +18,6 @@ const globalSetup = require('./commands/setup')
 const vibotChannels = require('./commands/vibotChannels')
 const vetVerification = require('./commands/vetVerification')
 const verification = require('./commands/verification')
-const botstatus = require('./commands/botstatus')
 // Specific Jobs
 const unbanJobs = require('./jobs/unban.js')
 const UnbanVet = unbanJobs.UnbanVet;
@@ -168,6 +167,8 @@ async function setup(bot) {
     muteJob.runAtInterval(90000)
     biWeeklyQuotaJob.schedule('0 0 * * SUN')
     monthlyQuotaJob.schedule('0 0 1 * *')
+    await botStatusUpdateJob.runOnce()
+    botStatusUpdateJob.runAtInterval(30000)
 
     //initialize components (eg. modmail, verification)
     iterServers(bot, function (bot, g) {
@@ -175,10 +176,7 @@ async function setup(bot) {
         // if (bot.settings[g.id].backend.modmail) modmail.init(g, bot, bot.dbs[g.id]).catch(er => { ErrorLogger.log(er, bot, g); })
         if (bot.settings[g.id].backend.verification) verification.init(g, bot, bot.dbs[g.id]).catch(er => { ErrorLogger.log(er, bot, g); })
         if (bot.settings[g.id].backend.vetverification) vetVerification.init(g, bot, bot.dbs[g.id]).catch(er => { ErrorLogger.log(er, bot, g); })
-        botstatus.init(g, bot, bot.dbs[g.id])
     })
-
-    botStatusUpdateJob.runAtInterval(30000)
 
     //initialize channels from createchannel.js
     require('./commands/createChannel').init(bot)
