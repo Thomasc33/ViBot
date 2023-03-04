@@ -1,14 +1,8 @@
 // Imports
 const fs = require('fs')
 const Discord = require('discord.js')
-const cron = require('cron')
 const mysql = require('mysql')
 const express = require('express')
-const https = require('https')
-const http = require('http')
-const bodyParser = require('body-parser')
-const rateLimit = require('express-rate-limit')
-const path = require('path');
 require('./lib/extensions.js')
 // global.appRoot = path.resolve(__dirname); //put here so verification ml doenst break
 
@@ -19,21 +13,15 @@ const CommandLogger = require('./lib/logCommand')
 const botSetup = require('./botSetup.js')
 
 // Specific Commands
-const vetVerification = require('./commands/vetVerification')
 const verification = require('./commands/verification')
-const roleAssignment = require('./commands/roleAssignment')
 const stats = require('./commands/stats')
 const modmail = require('./commands/modmail')
 const restarting = require('./commands/restart')
-const excuses = require('./commands/excuse');
 // Global Variables/Data
 const botSettings = require('./settings.json')
 const token = require('./botKey.json')
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 const prefix = botSettings.prefix;
 const cooldowns = new Discord.Collection()
-const { channel } = require('diagnostics_channel')
-const app = express();
 const rootCas = require('ssl-root-cas').create();
 require('https').globalAgent.options.ca = rootCas;
 
@@ -80,7 +68,6 @@ bot.on('messageCreate', message => {
         let memberPosition = message.member.roles.highest.position
         let settings = bot.settings[message.guild.id]
         let roleCache = message.guild.roles.cache
-        let guildId = message.guild.id
         let memberId = message.member.id
 
         if (memberPosition >= roleCache.get(settings.roles[command.role]).position) hasPermissionForCommand = true
@@ -166,7 +153,6 @@ bot.on('guildMemberUpdate', async (oldMember, newMember) => {
         let today = new Date()
         bot.dbs[newMember.guild.id].query(`INSERT IGNORE INTO rushers (id, guildid, time) values ("${newMember.id}", "${newMember.guild.id}", ${today.valueOf()})`)
     } else if (settings && settings.commands.prunerushers && oldMember.roles.cache.has(settings.roles.rusher) && !newMember.roles.cache.has(settings.roles.rusher)) {
-        let today = new Date()
         bot.dbs[newMember.guild.id].query(`DELETE FROM rushers WHERE id = "${newMember.id}"`)
     }
 
@@ -530,40 +516,6 @@ async function getGuild(message) {
     })
 }
 
-/**
- * Fits a string into an embed as tightly as possible, or sends the embed and resets the embed variable to an empty embed
- * @param {Discord.MessageEmbed} embed 
- * @param {String} string 
- * @param {Discord.TextChannel} channel 
- */
-function fitStringIntoEmbed(embed, string, channel) {
-    if (embed.data.description == 'None!') {
-        embed.setDescription(string)
-    } else if (embed.data.description.length + `\n${string}`.length >= 2048) {
-        if (embed.data.fields.length == 0) {
-            embed.addFields({ name: '-', value: string })
-        } else if (embed.data.fields[embed.data.fields.length - 1].value.length + `\n${string}`.length >= 1024) {
-            if (JSON.stringify(embed.toJSON()).length + `\n${string}`.length >= 6000) {
-                channel.send({ embeds: [embed] })
-                embed.setDescription('None!')
-                embed.data.fields = []
-            } else {
-                embed.addFields({ name: '-', value: string })
-            }
-        } else {
-            if (JSON.stringify(embed.toJSON()).length + `\n${string}`.length >= 6000) {
-                channel.send({ embeds: [embed] })
-                embed.setDescription('None!')
-                embed.data.fields = []
-            } else {
-                embed.data.fields[embed.data.fields.length - 1].value = embed.data.fields[embed.data.fields.length - 1].value.concat(`\n${string}`)
-            }
-        }
-    } else {
-        embed.setDescription(embed.data.description.concat(`\n${string}`))
-    }
-}
-
 var vibotControlGuild
 /**
  * Checks user by ID's to see if they have a patreon role in control panel discord
@@ -577,20 +529,4 @@ function checkPatreon(patreonRoleId, userId) {
     else return false
 }
 
-function moduleIsAvailable(path) {
-    try {
-        require.resolve(path);
-        require(path)
-        return true;
-    } catch (e) {
-        return false;
-    }
-}
-
-
-
-
-
-module.exports = {
-    bot
-}
+module.exports = { bot }
