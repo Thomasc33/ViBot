@@ -7,6 +7,7 @@ require('./lib/extensions.js')
 const ErrorLogger = require(`./lib/logError`)
 const CommandLogger = require('./lib/logCommand')
 const botSetup = require('./botSetup.js')
+const memberHandler = require('./memberHandler.js')
 
 // Specific Commands
 const verification = require('./commands/verification')
@@ -164,10 +165,7 @@ bot.on("ready", async () => {
     await botSetup.setup(bot)
 });
 
-const memberHandler = require('./memberHandler.js')
-
 bot.on('guildMemberAdd', member => {
-    // I kinda think we should be able to assume this?
     if (!bot.dbs[member.guild.id]) return
 
     await memberHandler.checkWasSuspended(bot, member)
@@ -176,6 +174,8 @@ bot.on('guildMemberAdd', member => {
 })
 
 bot.on('guildMemberUpdate', async (oldMember, newMember) => {
+    if (!bot.dbs[member.guild.id]) return
+
     const settings = bot.settings[newMember.guild.id];
 
     if (!oldMember.roles.cache.equals(newMember.roles.cache)) return
