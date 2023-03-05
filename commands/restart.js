@@ -24,10 +24,8 @@ module.exports = {
 
         if (args.length != 0 && args[0].toLowerCase() == 'force') process.exit()
         else module.exports.restarting = true;
-        message.channel.send('Restart Queued')
-        botStatus.StatusEmbed.data.fields[0].value = 'Restart Pending'
-        botStatus.StatusEmbed.setColor('#ff0000')
-        botStatus.updateAll(bot.dbs[channel.guild.id])
+        await message.channel.send('Restart Queued')
+        await botStatus.updateStatus(bot, 'Restart Pending', '#ff0000')
         let Promises = []
 
         //afk checks

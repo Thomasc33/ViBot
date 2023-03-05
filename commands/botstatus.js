@@ -3,6 +3,11 @@ const reScrape = require('../lib/realmEyeScrape')
 const { uptimeString } = require('./status.js')
 const { iterServers } = require('../jobs/util.js')
 
+let StatusData = {
+    'color': '#00ff00',
+    'text': 'Chilling'
+}
+
 async function checkDataBase(db) {
     return new Promise(res => {
         db.query('SELECT id FROM users LIMIT 1', (err, rows) => {
@@ -27,12 +32,15 @@ async function generateEmbed(bot, guild, templateOverrides) {
     const fieldGenerator = templateOverrides ? { ...embedTemplate, ...templateOverrides } : embedTemplate;
     // Build the embed from the `fieldGenerator`
     builder.setTitle('ViBot Status')
-           .addFields(await Promise.all(Object.entries(fieldGenerator).map(async ([key, valueGenerator]) => {
-                                            let v = await valueGenerator(bot, guild)
-                                            // If the field generator function returns a boolean, emoji-ify it
-                                            if (typeof v === 'boolean') v = v ? '✅' : '❌'
-                                            return { name: key, value: v, inline: true }
-                                        })))
+           .setColor(StatusData.color)
+           .addFields([{ name: 'Status', value: StatusData.text, inline: true },
+                       ...await Promise.all(Object.entries(fieldGenerator).map(async ([key, valueGenerator]) => {
+                                                let v = await valueGenerator(bot, guild)
+                                                // If the field generator function returns a boolean, emoji-ify it
+                                                if (typeof v === 'boolean') v = v ? '✅' : '❌'
+                                                return { name: key, value: v, inline: true }
+                                            }))
+                     ])
            .setTimestamp()
     return builder
 }
@@ -90,5 +98,10 @@ module.exports = {
             const embed = await generateEmbed(bot, guild, overrides)
             await update(bot, botstatusChannel, embed)
         })
+    },
+    async updateStatus(bot, newStatus, newColor) {
+        StatusData.text = newStatus
+        if (newColor) StatusData.color = newColor
+        await this.updateAll(bot)
     },
 }
