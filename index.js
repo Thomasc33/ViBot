@@ -322,7 +322,7 @@ bot.on('guildMemberUpdate', async (oldMember, newMember) => {
 bot.on('guildMemberRemove', member => {
     if (bot.dbs[member.guild.id]) {
         let db = bot.dbs[member.guild.id]
-        db.query(`SELECT suspended FROM suspensions WHERE id = '${member.id}' AND suspended = true AND guildid = '${member.guild.id}`, (err, rows) => {
+        db.query(`SELECT suspended FROM suspensions WHERE id = '${member.id}' AND suspended = true AND guildid = '${member.guild.id}'`, (err, rows) => {
             if (err) return ErrorLogger.log(err, bot, member.guild)
             if (rows.length !== 0) {
                 let modlog = member.guild.channels.cache.get(bot.settings[member.guild.id].channels.modlogs)
