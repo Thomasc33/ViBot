@@ -164,159 +164,27 @@ bot.on("ready", async () => {
     await botSetup.setup(bot)
 });
 
+const memberHandler = require('./memberHandler.js')
+
 bot.on('guildMemberAdd', member => {
-    if (bot.dbs[member.guild.id]) {
-        let db = bot.dbs[member.guild.id]
-        db.query(`SELECT suspended, ignOnLeave FROM suspensions WHERE id = '${member.id}' AND suspended = true AND guildid = '${member.guild.id}'`, (err, rows) => {
-            if (rows.length !== 0) {
-                let msg = `${member} rejoined server after leaving while suspended. `;
-                member.roles.add(bot.settings[member.guild.id].roles.tempsuspended)
-                if (rows[0].ignOnLeave) {
-                    if (rows[0].ignOnLeave != 'undefined' && rows[0].ignOnLeave != 'null') {
-                        member.setNickname(rows[0].ignOnLeave);
-                        msg += `Giving suspended role and nickname back.`
-                    } else
-                        msg += `Could not assign a nickname as it was either null or undefined. Giving suspended role back.`;
-                } else
-                    msg += `Could not assign a nickname as it was either null or undefined. Giving suspended role back.`;
-                let modlog = member.guild.channels.cache.get(bot.settings[member.guild.id].channels.modlogs)
-                if (!modlog) return ErrorLogger.log(new Error(`mod log not found in ${member.guild.id}`), bot, member.guild)
-                modlog.send(`${member} rejoined server after leaving while suspended. Giving suspended role and nickname back.`)
-            }
-        })
-        db.query(`SELECT muted FROM mutes WHERE id = '${member.id}' AND muted = true`, (err, rows) => {
-            if (rows.length !== 0) {
-                member.roles.add(bot.settings[member.guild.id].roles.muted)
-                let modlog = member.guild.channels.cache.get(bot.settings[member.guild.id].channels.modlogs)
-                if (!modlog) return ErrorLogger.log(new Error(`mod log not found in ${member.guild.id}`), bot, member.guild)
-                modlog.send(`${member} rejoined server after leaving while muted. Giving muted role back.`)
-            }
-        })
-    }
+    // I kinda think we should be able to assume this?
+    if (!bot.dbs[member.guild.id]) return
+
+    memberHandler.checkWasSuspended(bot, member)
+
+    memberHandler.checkWasMuted(bot, member)
 })
 
 bot.on('guildMemberUpdate', async (oldMember, newMember) => {
     const settings = bot.settings[newMember.guild.id];
-    const guildId = newMember.guild.id
-    if (settings && settings.commands.prunerushers && !oldMember.roles.cache.has(settings.roles.rusher) && newMember.roles.cache.has(settings.roles.rusher)) {
-        let today = new Date()
-        bot.dbs[newMember.guild.id].query(`INSERT IGNORE INTO rushers (id, guildid, time) values ("${newMember.id}", "${newMember.guild.id}", ${today.valueOf()})`)
-    } else if (settings && settings.commands.prunerushers && oldMember.roles.cache.has(settings.roles.rusher) && !newMember.roles.cache.has(settings.roles.rusher)) {
-        bot.dbs[newMember.guild.id].query(`DELETE FROM rushers WHERE id = "${newMember.id}"`)
-    }
 
-    let roleDifference = await roleDiff(oldMember, newMember)
-    if (!roleDifference.changed) { return }
-    function getPartneredServers(guildId) {
-        for (let i in bot.partneredServers) {
-            if (bot.partneredServers[i].guildId == guildId) { return bot.partneredServers[i] }
-        }
-        return null
-    }
-    let partneredServer = getPartneredServers(guildId)
-    if (!partneredServer) { return }
-    if (newMember.roles.cache.has(settings.roles.lol)) { return }
+    if (!oldMember.roles.cache.equals(newMember.roles.cache)) return
 
-    const partneredSettings = bot.settings[partneredServer.id]
-    let otherServer = bot.guilds.cache.find(g => g.id == partneredServer.id)
-    let otherServerRaider = otherServer.roles.cache.get(partneredSettings.roles.raider)
-    let otherServerPermaSuspend = otherServer.roles.cache.get(partneredSettings.roles.permasuspended)
-    let otherServerTempSuspend = otherServer.roles.cache.get(partneredSettings.roles.tempsuspended)
-    let partneredMember = await otherServer.members.cache.get(newMember.id)
+    if (settings.commands.prunerushers) memberHandler.pruneRushers(bot.dbs[newMember.guild.id], settings.roles.rusher, oldMember, newMember)
 
-    if (!partneredMember) { return }
-    if (!partneredMember.roles.cache.has(otherServerRaider.id)) { return }
-    if (partneredMember.roles.cache.hasAny(...[otherServerPermaSuspend.id, otherServerTempSuspend])) { return }
+    if (newMember.roles.cache.has(settings.roles.lol)) return
 
-    let partneredModLogs = otherServer.channels.cache.get(partneredSettings.channels.modlogs)
-    let as = otherServer.roles.cache.get(partneredSettings.roles.affiliatestaff)
-    let vas = otherServer.roles.cache.get(partneredSettings.roles.vetaffiliate)
-
-    if (partneredMember.roles.cache.has(as.id)) hasAffiliate = true; else hasAffiliate = false
-    if (partneredMember.roles.cache.has(vas.id)) hasVetAffiliate = true; else hasVetAffiliate = false
-
-    const isStaff = hasRoleInList(newMember, settings, partneredServer.affiliatelist)
-    const vasEligable = hasRoleInList(newMember, settings, partneredServer.vaslist)
-    let iconUrl = 'https://cdn.discordapp.com/avatars/' + newMember.id + '/' + newMember.user.avatar + '.webp'
-    embed = new Discord.EmbedBuilder()
-        .setAuthor({ name: `${partneredMember.displayName}`, iconURL: iconUrl })
-
-    if (isStaff && !hasAffiliate) {
-        setTimeout(async () => {
-            partneredMember.roles.add(as)
-            embed.setDescription(`Given role ${as} to ${partneredMember} \`\`${partneredMember.displayName}\`\``)
-            embed.setColor(as.hexColor)
-            await partneredModLogs.send({ embeds: [embed] })
-        }, 500)
-
-    } else if (!isStaff && hasAffiliate) {
-        setTimeout(async () => {
-            partneredMember.roles.remove(as)
-            embed.setDescription(`Removed role ${as} from ${partneredMember} \`\`${partneredMember.displayName}\`\``)
-            embed.setColor(as.hexColor)
-            await partneredModLogs.send({ embeds: [embed] })
-        }, 500)
-
-    }
-    if (vasEligable && !hasVetAffiliate) {
-        setTimeout(async () => {
-            partneredMember.roles.add(vas)
-            embed.setDescription(`Given role ${vas} to ${partneredMember} \`\`${partneredMember.displayName}\`\``)
-            embed.setColor(vas.hexColor)
-            await partneredModLogs.send({ embeds: [embed] })
-            partneredMember = await otherServer.members.cache.get(partneredMember.id)
-            let partneredMemberOldNickname = partneredMember.displayName
-            if (partneredMember.roles.highest.position == vas.position && isLetter(partneredMember.displayName[0])) {
-                await partneredMember.setNickname(`${partneredServer.prefix}${partneredMember.displayName}`, 'Automatic Nickname Change: User just got Veteran Affiliate Staff as their highest role')
-                embed.setDescription(`Automatic Prefix Change for ${partneredMember}\nOld Nickname: \`${partneredMemberOldNickname}\`\nNew Nickname: \`${partneredMember.displayName}\`\nPrefix: \`${partneredServer.prefix}\``)
-                embed.setColor(partneredMember.roles.highest.hexColor)
-                await partneredModLogs.send({ embeds: [embed] })
-            }
-        }, 1000)
-
-    } else if (!vasEligable && hasVetAffiliate) {
-        setTimeout(async () => {
-            partneredMember.roles.remove(vas)
-            embed.setDescription(`Removed role ${vas} from ${partneredMember} \`\`${partneredMember.displayName}\`\``)
-            embed.setColor(vas.hexColor)
-            await partneredModLogs.send({ embeds: [embed] })
-        }, 1000)
-    }
-
-    // I don't think there is a built in javascript method to check if a character is a letter or special character. true if letter; else false
-    function isLetter(c) {
-        return c.toLowerCase() != c.toUpperCase();
-    }
-
-    function hasRoleInList(user, settings, roles) {
-        for (let i in roles) {
-            role = roles[i]
-            if (user.roles.cache.has(settings.roles[role])) return true
-        }
-        return false
-    }
-
-    async function roleDiff(oldMember, newMember) {
-        let oldRoles = oldMember.roles.cache.map(r => r.id)
-        let newRoles = newMember.roles.cache.map(r => r.id)
-        var removed = []
-        var added = []
-        for (var i in newRoles) {
-            if (!oldRoles.includes(newRoles[i])) {
-                added.push(newRoles[i])
-            }
-        }
-        for (var i in oldRoles) {
-            if (!newRoles.includes(oldRoles[i])) {
-                removed.push(oldRoles[i])
-            }
-        }
-        return {
-            "changed": (added.length > 0 || removed.length > 0) ? true : false,
-            "added": added,
-            "removed": removed
-        }
-    }
+    await updateAffiliateRoles(bot, newMember)
 })
 
 bot.on('guildMemberRemove', member => {
