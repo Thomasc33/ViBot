@@ -33,14 +33,14 @@ async function generateEmbed(bot, guild, templateOverrides) {
     // Build the embed from the `fieldGenerator`
     builder.setTitle('ViBot Status')
            .setColor(StatusData.color)
-           .addFields({'Status': StatusData.text,
+           .addFields([{ name: 'Status', value: StatusData.text, inline: true },
                        ...await Promise.all(Object.entries(fieldGenerator).map(async ([key, valueGenerator]) => {
                                                 let v = await valueGenerator(bot, guild)
                                                 // If the field generator function returns a boolean, emoji-ify it
                                                 if (typeof v === 'boolean') v = v ? '✅' : '❌'
                                                 return { name: key, value: v, inline: true }
                                             }))
-                     })
+                     ])
            .setTimestamp()
     return builder
 }
