@@ -10,7 +10,7 @@ const restart = require('./restart')
 const EventEmitter = require('events').EventEmitter
 const pointLogger = require('../lib/pointLogger')
 const patreonHelper = require('../lib/patreonHelper')
-const afkTemplates = require('../afkTemplates.json')
+const afkTemplates = require('../data/afkTemplates.json')
 var emitter = new EventEmitter()
 
 var runs = [] //{channel: id, afk: afk instance}
@@ -263,7 +263,7 @@ class afkCheck {
             active: true,
             vcSize: this.channel.members.size,
         }
-        fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot) })
+        fs.writeFileSync('./data/afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot) })
         this.sendMessage()
     }
 
@@ -814,7 +814,7 @@ class afkCheck {
             this.bot.afkChecks[this.channel.id].mainGroup = this.splitGroup
             this.bot.afkChecks[this.channel.id].splitChannel = 'na'
         }
-        fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot) })
+        fs.writeFileSync('./data/afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot) })
 
         //send embed to history
         let historyEmbed = new Discord.EmbedBuilder()
@@ -990,7 +990,7 @@ class afkCheck {
         }
         this.bot.afkChecks[this.channel.id].active = false
         if (this.keys.length > 0)
-            fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => {
+            fs.writeFileSync('./data/afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => {
                 if (err) ErrorLogger.log(err, this.bot)
             })
 

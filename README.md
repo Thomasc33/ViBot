@@ -1,9 +1,10 @@
 # ViBot
 
 ## Requirements
-* [Node.js v16+](https://nodejs.org/en/)
+* [Node.js v19+](https://nodejs.org/en/)
 * [MySQL WorkBench](https://www.mysql.com/products/workbench/)
 ## Optional
+* Node Version Manager [Windows](https://github.com/coreybutler/nvm-windows) [Mac/Linux](https://github.com/nvm-sh/nvm)
 * [Github Desktop](https://desktop.github.com/)
 * [Visual Studio Code](https://code.visualstudio.com/)
 

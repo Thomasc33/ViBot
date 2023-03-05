@@ -2,7 +2,7 @@ node_modules/
 .vs/
 settings.json
 guildSettings.json
-afkChecks.json
+data/afkChecks.json
 createdChannels.json
 package-lock.json
 emojis.json

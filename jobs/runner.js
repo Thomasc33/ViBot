@@ -1,5 +1,5 @@
 const { bot } = require('../botMeta.js');
-const token = require('../botKey.json')
+const token = require('../data/botKey.json')
 const { setupBotDBs } = require('../botSetup.js')
 
 // Jobs

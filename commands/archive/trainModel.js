@@ -1,4 +1,4 @@
-const ml = require('../ml/verification')
+// const ml = require('../ml/verification')
 const botSettings = require('../settings.json')
 
 module.exports = {

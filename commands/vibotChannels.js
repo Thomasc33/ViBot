@@ -92,7 +92,7 @@ module.exports = {
                 if (rsa_m) module.exports.addReconnectButton(bot, rsa_m, i);
             }
         }
-        fs.writeFile('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => {
+        fs.writeFile('./data/afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => {
             if (err) ErrorLogger.log(err, bot, guild)
         })
     },
@@ -141,7 +141,7 @@ module.exports = {
                             await key.roles.remove(keyRole.id).catch(r => ErrorLogger.log(r, bot, message.guild))
                         }
                         delete bot.afkChecks[i];
-                        fs.writeFile('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => {
+                        fs.writeFile('./data/afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => {
                             if (err) ErrorLogger.log(err, bot, message.guild)
                         })
                     }
@@ -224,7 +224,7 @@ module.exports = {
             }
         }
         delete (bot.afkChecks[vc_channel_id]);
-        fs.writeFile('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => {
+        fs.writeFile('./data/afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => {
             if (err) ErrorLogger.log(err, bot, message.guild)
         });
         let channel = guild.channels.cache.get(vc_channel_id);

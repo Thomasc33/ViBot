@@ -111,7 +111,7 @@ module.exports = {
                     endedAt: Date.now()
                 }
                 bot.afkChecks[channel.id] = afkInfo
-                fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot, message.guild) })
+                fs.writeFileSync('./data/afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot, message.guild) })
                 return;
             case 'rename':
                 function rename() {
@@ -136,7 +136,7 @@ module.exports = {
                     if (!bot.afkChecks[channel.channelId].runType) bot.afkChecks[channel.channelId].runType = {}
                     bot.afkChecks[channel.channelId].runType.runType = name;
                     bot.afkChecks[channel.channelId].runType.runName = name;
-                    fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot, message.guild) })
+                    fs.writeFileSync('./data/afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot, message.guild) })
 
                     //change messages
 
@@ -375,7 +375,7 @@ function open(message, settings, bot) {
                 if (!bot.afkChecks[channel.channelId]) bot.afkChecks[channel.channelId] = {}
                 bot.afkChecks[channel.channelId].active = true;
                 bot.afkChecks[channel.channelId].started = Date.now();
-                fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot, message.guild) })
+                fs.writeFileSync('./data/afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot, message.guild) })
                 break;
         }
         iteration++;
@@ -404,7 +404,7 @@ function close(message, settings, bot) {
     if (bot.afkChecks[channel.channelId]) {
         bot.afkChecks[channel.channelId].active = false;
         bot.afkChecks[channel.channelId].endedAt = Date.now();
-        fs.writeFileSync('./afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot, message.guild) })
+        fs.writeFileSync('./data/afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot, message.guild) })
     }
 }
 

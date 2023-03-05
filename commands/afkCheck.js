@@ -10,7 +10,7 @@ const restart = require('./restart')
 const EventEmitter = require('events').EventEmitter
 const pointLogger = require('../lib/pointLogger')
 const patreonHelper = require('../lib/patreonHelper')
-const afkTemplates = require('../afkTemplates.json')
+const afkTemplates = require('../data/afkTemplates.json')
 const bannedNames = require('../data/bannedNames.json')
 var emitter = new EventEmitter()
 require(`../lib/extensions`)
@@ -335,7 +335,7 @@ class afkCheck {
                 role => role
             ).join(', ')} react with ${this.bot.storedEmojis['NitroBooster'].text}\n`
         }
-        fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot, this.guild) })
+        fs.writeFileSync('./data/afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot, this.guild) })
         this.sendMessage()
     }
 
@@ -1210,7 +1210,7 @@ class afkCheck {
             this.bot.afkChecks[this.channel.id].mainGroup = this.splitGroup
             this.bot.afkChecks[this.channel.id].splitChannel = 'na'
         }
-        fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot, this.guild) })
+        fs.writeFileSync('./data/afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot, this.guild) })
 
         //send embed to history
         let history_run_title = "";
@@ -1413,7 +1413,7 @@ class afkCheck {
         }
         this.bot.afkChecks[this.channel.id].active = false
         if (this.keys.length > 0)
-            fs.writeFileSync('./afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => {
+            fs.writeFileSync('./data/afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => {
                 if (err) ErrorLogger.log(err, this.bot, this.guild)
             })
 

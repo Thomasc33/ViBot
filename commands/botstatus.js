@@ -86,7 +86,7 @@ module.exports = {
 
         await iterServers(bot, async (bot, guild) => {
             const botstatusChannel = guild.channels.cache.get(bot.settings[guild.id].channels.botstatus)
-            if (!botstatusChannel) return console.log('botstatus not found for ', guild.id)
+            if (!botstatusChannel) return
             const embed = await generateEmbed(bot, guild, overrides)
             await update(bot, botstatusChannel, embed)
         })

@@ -16,7 +16,7 @@ const restarting = require('./commands/restart')
 
 // Global Variables/Data
 const botSettings = require('./settings.json')
-const token = require('./botKey.json')
+const token = require('./data/botKey.json')
 const prefix = botSettings.prefix;
 const cooldowns = new Discord.Collection()
 const rootCas = require('ssl-root-cas').create();
