@@ -14,7 +14,7 @@ class Mute extends RepeatedJob {
                     if (!member) return bot.dbs[g.id].query(`UPDATE mutes SET muted = false WHERE id = '${row.id}'`)
                     try {
                         await member.roles.remove(settings.roles.muted)
-                        await bot.dbs[g.id].query(`UPDATE mutes SET muted = false WHERE id = '${row.id}'`)
+                        await bot.dbs[g.id].promise().query(`UPDATE mutes SET muted = false WHERE id = '${row.id}'`)
                     } catch (er) {
                         ErrorLogger.log(er, bot, g)
                     }

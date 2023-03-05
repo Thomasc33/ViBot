@@ -210,7 +210,6 @@ module.exports = {
                                     currentWeekConfirmEmbed.setDescription('Error updating currentweek')
                                     i2.reply({ embeds: [currentWeekConfirmEmbed], components: [], ephemeral: true })
                                 }
-                                })
                             } else send(i2)
                         })
                     }
