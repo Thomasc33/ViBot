@@ -56,8 +56,8 @@ async function postVote2(message, member, bot, db) {
             promotion = await retrievePromotionType(settings, message.channel, message.author, member, role, info).catch(err => ErrorLogger.log(err, bot, message.guild));
         if (!promotion) return message.channel.send(`Cancelled vote for ${member}`);
 
-        await db.query(`SELECT * FROM users WHERE id = ${member.id}`, async (err, rows) => {
-            if (err) ErrorLogger.log(err, bot, message.guild);
+        try {
+            const rows = await db.promise().query(`SELECT * FROM users WHERE id = ${member.id}`)
             const feedback = await getFeedback.getFeedback(member, message.guild, bot);
             const promo_role = message.guild.roles.cache.get(settings.roles[promotion]);
             const embed = new Discord.EmbedBuilder()
@@ -86,7 +86,9 @@ async function postVote2(message, member, bot, db) {
             if (message.guild.id !== '708026927721480254') await msg.react('😐');
             await msg.react('❌');
             if (rolekey == 'almostrl' && message.guild.id !== '708026927721480254') await msg.react('👀');
-        })
+        } catch (err) {
+            ErrorLogger.log(err, bot, message.guild);
+        }
         return;
     }
 
