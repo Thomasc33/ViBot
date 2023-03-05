@@ -1,6 +1,6 @@
 // Imports
 const Discord = require('discord.js')
-const mysql = require('mysql')
+const mysql = require('mysql2')
 require('./lib/extensions.js')
 
 // Import Internal Libraries
