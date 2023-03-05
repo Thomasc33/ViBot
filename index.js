@@ -170,9 +170,9 @@ bot.on('guildMemberAdd', member => {
     // I kinda think we should be able to assume this?
     if (!bot.dbs[member.guild.id]) return
 
-    memberHandler.checkWasSuspended(bot, member)
+    await memberHandler.checkWasSuspended(bot, member)
 
-    memberHandler.checkWasMuted(bot, member)
+    await memberHandler.checkWasMuted(bot, member)
 })
 
 bot.on('guildMemberUpdate', async (oldMember, newMember) => {
@@ -184,27 +184,13 @@ bot.on('guildMemberUpdate', async (oldMember, newMember) => {
 
     if (newMember.roles.cache.has(settings.roles.lol)) return
 
-    await updateAffiliateRoles(bot, newMember)
+    await memberHandler.updateAffiliateRoles(bot, newMember)
 })
 
 bot.on('guildMemberRemove', member => {
-    if (bot.dbs[member.guild.id]) {
-        let db = bot.dbs[member.guild.id]
-        db.query(`SELECT suspended FROM suspensions WHERE id = '${member.id}' AND suspended = true AND guildid = '${member.guild.id}'`, (err, rows) => {
-            if (err) return ErrorLogger.log(err, bot, member.guild)
-            if (rows.length !== 0) {
-                let modlog = member.guild.channels.cache.get(bot.settings[member.guild.id].channels.modlogs)
-                if (!modlog) return ErrorLogger.log(new Error(`mod log not found in ${member.guild.id}`), bot, member.guild)
-                modlog.send(`${member} is attempting to dodge a suspension by leaving the server`)
-                db.query(`UPDATE suspensions SET ignOnLeave = '${member.nickname}' WHERE id = '${member.id}' AND suspended = true`)
-                if (member.nickname) {
-                    member.nickname.replace(/[^a-z|]/gi, '').split('|').forEach(n => {
-                        db.query(`INSERT INTO veriblacklist (id, guildid, modid, reason) VALUES ('${n}', '${member.guild.id}', '${bot.user.id}', 'Left Server While Suspended')`)
-                    })
-                }
-            }
-        })
-    }
+    if (!bot.dbs[member.guild.id]) return
+
+    memberHandler.checkSuspensionEvasion(bot, member)
 })
 
 bot.on('messageReactionAdd', async (r, u) => {

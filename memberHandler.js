@@ -1,5 +1,5 @@
 const Discord = require('discord.js')
-const ErrorLogger = require(`./lib/logError`)
+const ErrorLogger = require('./lib/logError')
 
 async function modLog(member, logChannel, color, msg) {
     const iconUrl = 'https://cdn.discordapp.com/avatars/' + member.id + '/' + member.user.avatar + '.webp'
@@ -10,10 +10,10 @@ async function modLog(member, logChannel, color, msg) {
     await logChannel.send({ embeds: [embed] })
 }
 
-function modlogLegacy(member, bot, msg) {
-    const modlog = member.guild.channels.cache.get(bot.settings[member.guild.id].channels.modlogs)
-    if (!modlog) return ErrorLogger.log(new Error(`mod log not found in ${member.guild.id}`), bot, member.guild)
-    modlog.send(msg)
+function modlogChannel(bot, guild) {
+    const modlog = guild.channels.cache.get(bot.settings[guild.id].channels.modlogs)
+    if (!modlog) ErrorLogger.log(new Error(`mod log not found in ${guild.id}`), bot, guild)
+    return modlog
 }
 
 async function removeRole(member, role, logChannel) {
@@ -28,43 +28,46 @@ async function addRole(member, role, logChannel) {
     await modLog(member, logChannel, role.hexColor, `Given role ${role} to ${member} \`\`${member.displayName}\`\``)
 }
 
+async function suspendedMemberRejoin(bot, member, ignOnLeave) {
+    let msg = `${member} rejoined server after leaving while suspended. `;
+    const logChannel = modlogChannel(bot, member.guild)
+    await member.roles.add(bot.settings[member.guild.id].roles.tempsuspended)
+    if (ignOnLeave) {
+        member.setNickname(ignOnLeave);
+        if (logChannel) await logChannel.send(`${member} rejoined server after leaving while suspended. Giving suspended role and nickname back.`)
+    } else {
+        if (logChannel) await logChannel.send(`${member} rejoined server after leaving while suspended. Could not assign a nickname as it was either null or undefined. Giving suspended role back.`);
+    }
+}
+
+function dbQueryPromise(db, query) {
+    return new Promise((resolve) => {
+        db.query(query, (err, rows) => { if (err) throw err; resolve(rows) })
+    })
+}
+
 module.exports = {
-    suspendedMemberRejoin(bot, member, ignOnLeave) {
-        let msg = `${member} rejoined server after leaving while suspended. `;
-        member.roles.add(bot.settings[member.guild.id].roles.tempsuspended)
-        if (ignOnLeave) {
-            if (ignOnLeave != 'undefined' && ignOnLeave != 'null') {
-                member.setNickname(ignOnLeave);
-                msg += `Giving suspended role and nickname back.`
-            } else
-                msg += `Could not assign a nickname as it was either null or undefined. Giving suspended role back.`;
-        } else
-            msg += `Could not assign a nickname as it was either null or undefined. Giving suspended role back.`;
-        // Probably could make this more commuicative with `msg`
-        modlogLegacy(bot, member, `${member} rejoined server after leaving while suspended. Giving suspended role and nickname back.`)
-    },
-    checkWasSuspended(bot, member) {
+    async checkWasSuspended(bot, member) {
         const db = bot.dbs[member.guild.id]
 
-        db.query(`SELECT suspended, ignOnLeave FROM suspensions WHERE id = '${member.id}' AND suspended = true AND guildid = '${member.guild.id}'`, (err, rows) => {
-            if (rows.length !== 0) {
-                this.suspendedMemberRejoin(bot, member, rows[0].ignOnLeave)
-            } else if (rows.length > 1) {
-                // Probably should log an error here?
-            }
-        })
+        const rows = await dbQueryPromise(db, `SELECT suspended, ignOnLeave FROM suspensions WHERE id = '${member.id}' AND suspended = true AND guildid = '${member.guild.id}'`)
+        if (rows.length !== 0) {
+            await suspendedMemberRejoin(bot, member, rows[0].ignOnLeave)
+        } else if (rows.length > 1) {
+            // Probably should log an error here?
+        }
     },
-    checkWasMuted(bot, member) {
+    async checkWasMuted(bot, member) {
         const db = bot.dbs[member.guild.id]
 
-        db.query(`SELECT muted FROM mutes WHERE id = '${member.id}' AND muted = true`, (err, rows) => {
-            if (rows.length !== 0) {
-                member.roles.add(bot.settings[member.guild.id].roles.muted)
-                modlogLegacy(bot, member, `${member} rejoined server after leaving while muted. Giving muted role back.`)
-            } else if (rows.length > 1) {
-                // Probably should log an error here?
-            }
-        })
+        const rows = await dbQueryPromise(db, `SELECT muted FROM mutes WHERE id = '${member.id}' AND muted = true`)
+        if (rows.length !== 0) {
+            member.roles.add(bot.settings[member.guild.id].roles.muted)
+            const modlogChannel = modlogChannel(bot, member.guild)
+            if (modlogChannel) await modlogChannel.send(`${member} rejoined server after leaving while muted. Giving muted role back.`)
+        } else if (rows.length > 1) {
+            // Probably should log an error here?
+        }
     },
     pruneRushers(db, rusherRoleId, oldMember, newMember) {
         if (!oldMember.roles.cache.has(rusherRoleId) && newMember.roles.cache.has(rusherRoleId)) {
@@ -103,5 +106,21 @@ module.exports = {
                 await modLog(partneredMember, partneredModLogs, partneredMember.roles.highest.hexColor, `Automatic Prefix Change for ${partneredMember}\nOld Nickname: \`${partneredMember.displayName}\`\nNew Nickname: \`${partneredMember.displayName}\`\nPrefix: \`${partneredServer.prefix}\``)
             }
         }))
+    },
+    detectSuspensionEvasion(bot, member) {
+        const db = bot.dbs[member.guild.id]
+        db.query(`SELECT suspended FROM suspensions WHERE id = '${member.id}' AND suspended = true AND guildid = '${member.guild.id}'`, (err, rows) => {
+            if (err) return ErrorLogger.log(err, bot, member.guild)
+            if (rows.length !== 0) {
+                let modlog = modlogChannel(bot, member.guild)
+                if (modlog) modlog.send(`${member} is attempting to dodge a suspension by leaving the server`)
+                db.query(`UPDATE suspensions SET ignOnLeave = '${member.nickname}' WHERE id = '${member.id}' AND suspended = true`)
+                if (member.nickname) {
+                    member.nickname.replace(/[^a-z|]/gi, '').split('|').forEach(n => {
+                        db.query(`INSERT INTO veriblacklist (id, guildid, modid, reason) VALUES ('${n}', '${member.guild.id}', '${bot.user.id}', 'Left Server While Suspended')`)
+                    })
+                }
+            }
+        })
     }
 }
