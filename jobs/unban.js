@@ -4,8 +4,8 @@ const { RepeatedJob } = require('./RepeatedJob.js')
 const { iterServersWithQuery } = require('./util.js')
 
 async function tryUnsuspend(bot, g, row, isVetBan) {
-    const settings = bot.settings[guildId]
     const guildId = row.guildid;
+    const settings = bot.settings[guildId]
     const proofLogID = row.logmessage;
     const guild = bot.guilds.cache.get(guildId);
     const member = guild.members.cache.get(row.id);
