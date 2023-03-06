@@ -35,24 +35,17 @@ module.exports = {
         for (let i = 1; i < args.length; i++) reason = reason.concat(` ${args[i]}`)
         if (reason == '') return message.channel.send('Please provide a reason')
         let errored = false
-        try {
-            await db.promise().query(`INSERT INTO warns (id, modid, reason, time, guildid, silent) VALUES ('${member.user.id}', '${message.author.id}', ${db.escape(reason)}, '${Date.now()}', '${member.guild.id}', ${silent ? 1 : 0})`);
-            let warnEmbed = new Discord.EmbedBuilder()
-                .setColor('#ff0000')
-                .setTitle(`Warning Issued on the Server: ${message.guild.name}`)
-                .setDescription(`__Moderator:__ <@!${message.author.id}> (${message.member.nickname})\n__Reason:__ ${reason}`)
-            if (!silent)
-                member.send({ embeds: [warnEmbed] })
-        } catch (err) {
-            message.channel.send(`There was an error: ${err}`);
-            errored = true
-        }
-        if (!errored) setTimeout(() => {
-            db.query(`SELECT * FROM warns WHERE id = '${member.user.id}'`, (err, rowsForAllWarnings) => {
-                db.query(`SELECT * FROM warns WHERE id = '${member.user.id}' and (guildid = '${message.guild.id}' OR guildid is null)`, (err, rowsForWarningsCurrentServer) => {
-                    message.channel.send(`${member.nickname}${silent ? ' silently' : ''} warned successfully. This is their \`${rowsForWarningsCurrentServer.length}\` warning for this server. And has a total of \`${rowsForAllWarnings.length}\` warnings`)
-                })
-            })
+        await db.promise().query('INSERT INTO warns (id, modid, reason, time, guildid, silent) VALUES (?, ?, ?, ?, ?, ?)', [member.user.id, message.author.id, reason, Date.now(), member.guild.id, silent ? 1 : 0]).catch((err) => message.channel.send(`There was an error: ${err}`));
+        let warnEmbed = new Discord.EmbedBuilder()
+            .setColor('#ff0000')
+            .setTitle(`Warning Issued on the Server: ${message.guild.name}`)
+            .setDescription(`__Moderator:__ <@!${message.author.id}> (${message.member.nickname})\n__Reason:__ ${reason}`)
+        if (!silent)
+            member.send({ embeds: [warnEmbed] })
+        setTimeout(async () => {
+            const [[{ total_warn_count }], ] = await db.promise().query(`SELECT COUNT(*) as total_warn_count FROM warns WHERE id = '${member.user.id}'`);
+            const [[{ server_warn_count }], ] = await db.promise().query(`SELECT COUNT(*) as server_warn_count FROM warns WHERE id = '${member.user.id}' and (guildid = '${message.guild.id}' OR guildid is null)`);
+            message.channel.send(`${member.nickname}${silent ? ' silently' : ''} warned successfully. This is their \`${server_warn_count}\` warning for this server. And has a total of \`${total_warn_count}\` warnings`)
         }, 500)
     }
 }
