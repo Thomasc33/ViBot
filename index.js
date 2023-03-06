@@ -174,7 +174,7 @@ bot.on('guildMemberAdd', async (member) => {
 })
 
 bot.on('guildMemberUpdate', async (oldMember, newMember) => {
-    if (!bot.dbs[member.guild.id]) return
+    if (!bot.dbs[newMember.guild.id]) return
 
     const settings = bot.settings[newMember.guild.id];
 
