@@ -30,7 +30,6 @@ const bot = new Discord.Client({
 })
 bot.commands = new Discord.Collection()
 bot.dbs = {}
-bot.crasherList = moduleIsAvailable('./data/crasherList.json') ? require('./data/crasherList.json') : {}
 bot.afkChecks = moduleIsAvailable('./data/afkChecks.json') ? require('./data/afkChecks.json') : {}
 bot.settings = moduleIsAvailable('./guildSettings.json') ? require('./guildSettings.json') : {}
 bot.serverWhiteList = moduleIsAvailable('./data/serverWhiteList.json') ? require('./data/serverWhiteList.json') : {}

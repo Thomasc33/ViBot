@@ -2,6 +2,15 @@ const Discord = require('discord.js')
 const fs = require('fs')
 const ErrorLogger = require('../lib/logError')
 
+let crasherList;
+try {
+    crasherList = JSON.parse(fs.readFileSync('./data/crasherList.json', 'utf-8'))
+} catch (err) {
+    console.log("Error while reading the crasherList:")
+    console.log(err)
+    crasherList = {}
+}
+
 module.exports = {
     name: 'crasherlist',
     description: 'Crasher List Related Commands',
@@ -34,7 +43,7 @@ module.exports = {
     send(channel, bot) {
         if (!channel) return;
         let crashers = 'None!'
-        let guildCrashers = bot.crasherList[channel.guild.id]
+        let guildCrashers = crasherList[channel.guild.id]
         if (!guildCrashers) return
         for (let i in guildCrashers) {
             if (crashers == 'None!') crashers = `/kick ${i}`
@@ -48,12 +57,12 @@ module.exports = {
     async add(message, args, bot) {
         message.channel.send(`Are you sure you want to add ${args[1].toLowerCase()} to the crasher list?`).then(async confirmMessage => {
             if (await confirmMessage.confirmButton(message.author.id)) {
-                    if (!bot.crasherList[message.guild.id]) bot.crasherList[message.guild.id] = {}
-                    bot.crasherList[message.guild.id][args[1].toLowerCase()] = {
+                    if (!crasherList[message.guild.id]) crasherList[message.guild.id] = {}
+                    crasherList[message.guild.id][args[1].toLowerCase()] = {
                         addedBy: message.author.id,
                         added: Date.now()
                     }
-                    fs.writeFileSync('./data/crasherList.json', JSON.stringify(bot.crasherList, null, 4), async function (err) {
+                    fs.writeFileSync('./data/crasherList.json', JSON.stringify(crasherList, null, 4), async function (err) {
                         if (err) ErrorLogger.log(err, bot, message.guild)
                         await message.channel.send(`${args[1].toLowerCase()} has been added to the crasher list. Would you like to update the message?`).then(async confirmMessageUpdater => {
                             if (await confirmMessageUpdater.confirmButton(message.author.id)) {
@@ -71,7 +80,7 @@ module.exports = {
     },
     async remove(message, args, bot) {
         let found = false;
-        let guildCrashers = bot.crasherList[message.guild.id]
+        let guildCrashers = crasherList[message.guild.id]
         if (!guildCrashers) return message.channel.send('No crashers for this guild')
         for (let i in guildCrashers) {
             if (args[1].toLowerCase() == i) {
@@ -87,8 +96,8 @@ module.exports = {
                     ])
                 await message.channel.send({ embeds: [embed] }).then(async confirmMessage => {
                     if (await confirmMessage.confirmButton(message.author.id)) {
-                        delete bot.crasherList[message.guild.id][i];
-                        fs.writeFileSync('./data/crasherList.json', JSON.stringify(bot.crasherList, null, 4), async function (err) {
+                        delete crasherList[message.guild.id][i];
+                        fs.writeFileSync('./data/crasherList.json', JSON.stringify(crasherList, null, 4), async function (err) {
                             reactionCollector.stop()
                             let newEmbed = new Discord.EmbedBuilder()
                                 .setTitle('Confirm Action')
