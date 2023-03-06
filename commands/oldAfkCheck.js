@@ -569,30 +569,28 @@ class afkCheck {
             if (reactor.voice.channel && reactor.voice.channel.id == this.channel.id) {
                 reactor.send(`Nitro benefits in \`${this.message.guild.name}\` only gives garunteed spot in VC. You are already in the VC so this use hasn\'t been counted`).catch(er => this.commandChannel.send(`<@!${u.id}> tried to react with <${botSettings.emote.shard}> but their DMs are private`))
             } else {
-                await this.db.query(`SELECT * FROM users WHERE id = '${u.id}'`, async (err, rows) => {
-                    if (err) ErrorLogger.log(err, bot)
-                    if (rows.length == 0) return await this.db.query(`INSERT INTO users (id) VALUES('${u.id}')`)
-                    if (Date.now() - this.settings.numerical.nitrocooldown > parseInt(rows[0].lastnitrouse)) {
-                        if (this.settings.backend.nitroearlylocation) {
-                            reactor.send(`The location for this run has been set to \`${this.afkInfo.location}\``);
-                            this.earlyLocation.push(u);
-                        }
-                        reactor.voice.setChannel(this.channel.id).catch(er => { reactor.send('Please join a voice channel and you will be moved in automatically') })
-                        this.nitro.push(u)
-                        if (this.leaderEmbed.data.fields[index].value == `None!`) this.leaderEmbed.data.fields[index].value = `<@!${u.id}> `;
-                        else this.leaderEmbed.data.fields[index].value += `, <@!${u.id}>`
-                        this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
-                        this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
-                        emitter.on('Ended', (channelID, aborted) => {
-                            if (channelID == this.channel.id) {
-                                if (!aborted) this.db.query(`UPDATE users SET lastnitrouse = '${Date.now()}' WHERE id = ${u.id}`)
-                            }
-                        })
-                    } else {
-                        let lastUse = Math.round((Date.now() - rows[0].lastnitrouse) / 60000)
-                        reactor.send(`Nitro perks are limited to once an hour. Your last use was \`${lastUse}\` minutes ago`).catch(er => this.commandChannel.send(`<@!${u.id}> tried to react with <${botSettings.emote.shard}> but their DMs are private`))
+                const [rows, _] = await this.db.promise().query('SELECT * FROM users WHERE id = ?', [u.id]).catch((err) => ErrorLogger.log(err, bot))
+                if (rows.length == 0) return await this.db.promise().query('INSERT INTO users (id) VALUES(?)', [u.id])
+                if (Date.now() - this.settings.numerical.nitrocooldown > parseInt(rows[0].lastnitrouse)) {
+                    if (this.settings.backend.nitroearlylocation) {
+                        reactor.send(`The location for this run has been set to \`${this.afkInfo.location}\``);
+                        this.earlyLocation.push(u);
                     }
-                })
+                    reactor.voice.setChannel(this.channel.id).catch(er => { reactor.send('Please join a voice channel and you will be moved in automatically') })
+                    this.nitro.push(u)
+                    if (this.leaderEmbed.data.fields[index].value == `None!`) this.leaderEmbed.data.fields[index].value = `<@!${u.id}> `;
+                    else this.leaderEmbed.data.fields[index].value += `, <@!${u.id}>`
+                    this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
+                    this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot));
+                    emitter.on('Ended', (channelID, aborted) => {
+                        if (channelID == this.channel.id) {
+                            if (!aborted) this.db.query(`UPDATE users SET lastnitrouse = '${Date.now()}' WHERE id = ${u.id}`)
+                        }
+                    })
+                } else {
+                    let lastUse = Math.round((Date.now() - rows[0].lastnitrouse) / 60000)
+                    reactor.send(`Nitro perks are limited to once an hour. Your last use was \`${lastUse}\` minutes ago`).catch(er => this.commandChannel.send(`<@!${u.id}> tried to react with <${botSettings.emote.shard}> but their DMs are private`))
+                }
             }
         }
     }
@@ -886,7 +884,7 @@ class afkCheck {
                 let points = this.settings.points.keypop
                 if (this.afkInfo.keyPopPointsOverride) points = this.afkInfo.keyPopPointsOverride
                 if (this.guild.members.cache.get(u).roles.cache.has(this.nitroBooster.id)) points = points * this.settings.points.nitromultiplier
-                await this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u}'`, er => { if (er) console.log('error logging key points in ', this.guild.id) })
+                await this.db.promise().query('UPDATE users SET points = points + ? WHERE id = ?', [points, u]).catch(er => console.log('error logging key points in ', this.guild.id))
                 pointsLog.push({
                     uid: u,
                     points: points,
