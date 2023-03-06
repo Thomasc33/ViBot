@@ -126,11 +126,7 @@ module.exports = {
                     })
                     if (ids.length) {
                         const query = `UPDATE users SET ${rolling[0].column} = LEAST(GREATEST(` + quota.values.filter(v => !v.rolling).map(v => `(${v.column}*${v.value})`).join(' + ') + ` - ${req}, 0), ${req}) WHERE id IN (${ids.join(', ')})`;
-                        try {
-                            await db.promise().query(query)
-                        } catch (err) {
-                            console.log(err)
-                        }
+                        await db.promise().query(query).catch(console.log)
                     }
                 }
             }
