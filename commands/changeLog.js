@@ -202,15 +202,14 @@ module.exports = {
                                         break;
                                 }
                                 currentWeekQuery += `WHERE id = '${member.id}'`
-                                await db.query(currentWeekQuery, (err, result) => {
-                                    if (err) {
-                                        console.log(err)
-                                        currentWeekConfirmEmbed.setDescription('Error updating currentweek')
-                                        i2.reply({ embeds: [currentWeekConfirmEmbed], components: [], ephemeral: true })
-                                    } else {
-                                        send(i2)
-                                    }
-                                })
+                                try {
+                                    const result = await db.promise().query(currentWeekQuery)
+                                    send(i2)
+                                } catch (err) {
+                                    console.log(err)
+                                    currentWeekConfirmEmbed.setDescription('Error updating currentweek')
+                                    i2.reply({ embeds: [currentWeekConfirmEmbed], components: [], ephemeral: true })
+                                }
                             } else send(i2)
                         })
                     }

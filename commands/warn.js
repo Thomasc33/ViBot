@@ -35,18 +35,18 @@ module.exports = {
         for (let i = 1; i < args.length; i++) reason = reason.concat(` ${args[i]}`)
         if (reason == '') return message.channel.send('Please provide a reason')
         let errored = false
-        await db.query(`INSERT INTO warns (id, modid, reason, time, guildid, silent) VALUES ('${member.user.id}', '${message.author.id}', ${db.escape(reason)}, '${Date.now()}', '${member.guild.id}', ${silent ? 1 : 0})`, (err, rows) => {
-            if (err) {
-                message.channel.send(`There was an error: ${err}`);
-                errored = true
-            }
+        try {
+            await db.promise().query(`INSERT INTO warns (id, modid, reason, time, guildid, silent) VALUES ('${member.user.id}', '${message.author.id}', ${db.escape(reason)}, '${Date.now()}', '${member.guild.id}', ${silent ? 1 : 0})`);
             let warnEmbed = new Discord.EmbedBuilder()
                 .setColor('#ff0000')
                 .setTitle(`Warning Issued on the Server: ${message.guild.name}`)
                 .setDescription(`__Moderator:__ <@!${message.author.id}> (${message.member.nickname})\n__Reason:__ ${reason}`)
             if (!silent)
                 member.send({ embeds: [warnEmbed] })
-        })
+        } catch (err) {
+            message.channel.send(`There was an error: ${err}`);
+            errored = true
+        }
         if (!errored) setTimeout(() => {
             db.query(`SELECT * FROM warns WHERE id = '${member.user.id}'`, (err, rowsForAllWarnings) => {
                 db.query(`SELECT * FROM warns WHERE id = '${member.user.id}' and (guildid = '${message.guild.id}' OR guildid is null)`, (err, rowsForWarningsCurrentServer) => {

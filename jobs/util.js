@@ -13,10 +13,12 @@ async function iterServersWithQuery(bot, query, f) {
     await iterServers(bot, async (bot, g) => {
         if (bot.dbs[g.id] && !checked.includes(bot.dbs[g.id].config.databse)) {
             checked.push(bot.dbs[g.id].config.databse) // Prevents people from being unsuspended twice
-            await bot.dbs[g.id].query(query, async (err, rows) => {
-                if (err) ErrorLogger.log(err, bot, g)
+            try {
+                const rows = await bot.dbs[g.id].promise().query(query)
                 await Promise.all(rows.map(row => Promise.resolve(f(bot, row, g))))
-            })
+            } catch (err) {
+                ErrorLogger.log(err, bot, g)
+            }
         }
     })
 }

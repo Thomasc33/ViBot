@@ -51,7 +51,7 @@ async function tryUnsuspend(bot, g, row, isVetBan) {
         } catch (er) {
             guild.channels.cache.get(settings.channels.suspendlog).send(unsuspendPing)
         } finally {
-            await bot.dbs[g.id].query(`UPDATE ${isVetBan ? 'vetbans' : 'suspensions'} SET suspended = false WHERE id = '${row.id}'`)
+            await bot.dbs[g.id].promise().query(`UPDATE ${isVetBan ? 'vetbans' : 'suspensions'} SET suspended = false WHERE id = '${row.id}'`)
         }
     } catch (er) {
         ErrorLogger.log(er, bot, g)

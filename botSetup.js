@@ -6,7 +6,7 @@ const app = express()
 const cors = require('cors')
 const https = require('https')
 const http = require('http')
-const mysql = require('mysql')
+const mysql = require('mysql2')
 const Discord = require('discord.js')
 
 const botSettings = require('./settings.json')

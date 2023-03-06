@@ -102,7 +102,7 @@ module.exports = {
             await this.newWeek(guild, bot, bot.dbs[guild.id], bot.settings[guild.id], quotas[guild.id], quota);
         }
         if (ignore)
-            await db.query(`DELETE FROM ignoreCurrentWeek WHERE guildId = ${guild.id}`)
+            await db.promise().query(`DELETE FROM ignoreCurrentWeek WHERE guildId = ${guild.id}`)
     },
     async newWeek(guild, bot, db, settings, guildQuotas, quota) {
         const leaderLog = guild.channels.cache.get(settings.channels[quota.pastweeks])
@@ -112,7 +112,7 @@ module.exports = {
         if (rolling.length) {
             const ignore = await excuses.getIgnore(guild.id, db);
             if (ignore)
-                await db.query(`UPDATE users SET ${rolling[0].column} = 0`);
+                await db.promise().query(`UPDATE users SET ${rolling[0].column} = 0`);
             else {
                 const rlist = quota.roles.map((role, i) => { return { role: guild.roles.cache.get(settings.roles[role]), req: quota.quota[i] } }).sort((a, b) => b.position - a.position)
                 const members_updated = {};
@@ -126,13 +126,17 @@ module.exports = {
                     })
                     if (ids.length) {
                         const query = `UPDATE users SET ${rolling[0].column} = LEAST(GREATEST(` + quota.values.filter(v => !v.rolling).map(v => `(${v.column}*${v.value})`).join(' + ') + ` - ${req}, 0), ${req}) WHERE id IN (${ids.join(', ')})`;
-                        await db.query(query, (err, rows) => { if (err) console.log(err) });
+                        try {
+                            await db.promise().query(query)
+                        } catch (err) {
+                            console.log(err)
+                        }
                     }
                 }
             }
         }
         let q = `UPDATE users SET ${quota.values.filter(v => !v.rolling).map(v => `${v.column} = 0`).join(', ')}`
-        await db.query(q)
+        await db.promise().query(q)
         await this.update(guild, db, bot, settings, guildQuotas, quota)
 
     },
