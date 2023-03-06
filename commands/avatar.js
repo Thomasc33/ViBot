@@ -6,7 +6,13 @@ module.exports = {
     args: '(user)',
     alias: ['ava'],
     role: 'eventrl',
-    execute(message, args, bot) {
+	getSlashCommandData() {
+        return new Discord.SlashCommandBuilder()
+            .setName('avatar')
+            .setDescription('Posts avatar of user provided')
+            .addUserOption(option => option.setName('user').setDescription('User to add alt to').setRequired(true))
+    },
+    execute(message, args) {
         let member = null
         if (args.length == 0) member = message.member
         if (!member) member = message.mentions.members.first()
@@ -15,8 +21,16 @@ module.exports = {
         if (!member) return message.channel.send('User not found')
         let embed = new Discord.EmbedBuilder()
             .setColor('#fefefe')
-            .setDescription(member.toString())
+            .setDescription(`__**Avatar of**__ <@${member.id}> ${member ? '\`' + (member.nickname || member.user.tag) + '\`' : ''}`)
             .setImage(member.user.avatarURL({ dynamic: true, size: 4096 }))
         message.channel.send({ embeds: [embed] })
-    }
+    },
+	async slashCommandExecute(interaction) {
+		let member = interaction.options.getMember('user')
+        let embed = new Discord.EmbedBuilder()
+            .setColor('#fefefe')
+            .setDescription(`__**Avatar of**__ <@${member.id}> ${member ? '\`' + (member.nickname || member.user.tag) + '\`' : ''}`)
+            .setImage(member.user.avatarURL({ dynamic: true, size: 4096 }))
+        interaction.channel.send({ embeds: [embed] })
+	}
 }
