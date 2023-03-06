@@ -31,6 +31,6 @@ module.exports = {
             .setColor('#fefefe')
             .setDescription(`__**Avatar of**__ <@${member.id}> ${member ? '\`' + (member.nickname || member.user.tag) + '\`' : ''}`)
             .setImage(member.user.avatarURL({ dynamic: true, size: 4096 }))
-        interaction.channel.send({ embeds: [embed] })
+        interaction.reply({ embeds: [embed] })
 	}
 }
