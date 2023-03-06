@@ -165,7 +165,7 @@ bot.on("ready", async () => {
     await botSetup.setup(bot)
 });
 
-bot.on('guildMemberAdd', member => {
+bot.on('guildMemberAdd', async (member) => {
     if (!bot.dbs[member.guild.id]) return
 
     await memberHandler.checkWasSuspended(bot, member)
@@ -180,17 +180,17 @@ bot.on('guildMemberUpdate', async (oldMember, newMember) => {
 
     if (!oldMember.roles.cache.equals(newMember.roles.cache)) return
 
-    if (settings.commands.prunerushers) memberHandler.pruneRushers(bot.dbs[newMember.guild.id], settings.roles.rusher, oldMember, newMember)
+    if (settings.commands.prunerushers) await memberHandler.pruneRushers(bot.dbs[newMember.guild.id], settings.roles.rusher, oldMember, newMember)
 
     if (newMember.roles.cache.has(settings.roles.lol)) return
 
     await memberHandler.updateAffiliateRoles(bot, newMember)
 })
 
-bot.on('guildMemberRemove', member => {
+bot.on('guildMemberRemove', async (member) => {
     if (!bot.dbs[member.guild.id]) return
 
-    memberHandler.checkSuspensionEvasion(bot, member)
+    await memberHandler.detectSuspensionEvasion(bot, member)
 })
 
 bot.on('messageReactionAdd', async (r, u) => {

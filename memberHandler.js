@@ -40,41 +40,29 @@ async function suspendedMemberRejoin(bot, member, ignOnLeave) {
     }
 }
 
-function dbQueryPromise(db, query) {
-    return new Promise((resolve) => {
-        db.query(query, (err, rows) => { if (err) throw err; resolve(rows) })
-    })
-}
-
 module.exports = {
     async checkWasSuspended(bot, member) {
         const db = bot.dbs[member.guild.id]
 
-        const rows = await dbQueryPromise(db, `SELECT suspended, ignOnLeave FROM suspensions WHERE id = '${member.id}' AND suspended = true AND guildid = '${member.guild.id}'`)
-        if (rows.length !== 0) {
-            await suspendedMemberRejoin(bot, member, rows[0].ignOnLeave)
-        } else if (rows.length > 1) {
-            // Probably should log an error here?
-        }
+        const [[{ ignOnLeave }], ] = await db.promise().query(`SELECT suspended, ignOnLeave FROM suspensions WHERE id = ? AND suspended = true AND guildid = ?`, [member.id, member.guild.id])
+        if (ignOnLeave) await suspendedMemberRejoin(bot, member, ignOnLeave)
     },
     async checkWasMuted(bot, member) {
         const db = bot.dbs[member.guild.id]
 
-        const rows = await dbQueryPromise(db, `SELECT muted FROM mutes WHERE id = '${member.id}' AND muted = true`)
-        if (rows.length !== 0) {
+        const [[{ mute_count }], ] = await db.promise().query(`SELECT COUNT(*) as mute_count FROM mutes WHERE id = ? AND muted = true`, [member.id])
+        if (mute_count !== 0) {
             member.roles.add(bot.settings[member.guild.id].roles.muted)
             const modlogChannel = modlogChannel(bot, member.guild)
             if (modlogChannel) await modlogChannel.send(`${member} rejoined server after leaving while muted. Giving muted role back.`)
-        } else if (rows.length > 1) {
-            // Probably should log an error here?
         }
     },
-    pruneRushers(db, rusherRoleId, oldMember, newMember) {
+    async pruneRushers(db, rusherRoleId, oldMember, newMember) {
         if (!oldMember.roles.cache.has(rusherRoleId) && newMember.roles.cache.has(rusherRoleId)) {
             const today = new Date()
-            db.query(`INSERT IGNORE INTO rushers (id, guildid, time) values ("${newMember.id}", "${newMember.guild.id}", ${today.valueOf()})`)
+            await db.promise().query('INSERT IGNORE INTO rushers (id, guildid, time) values (?, ?, ?)', [newMember.id, newMember.guild.id, today.valueOf()])
         } else if (oldMember.roles.cache.has(rusherRoleId) && !newMember.roles.cache.has(rusherRoleId)) {
-            db.query(`DELETE FROM rushers WHERE id = "${newMember.id}"`)
+            await db.promise().query('DELETE FROM rushers WHERE id = ?', [newMember.id])
         }
     },
     async updateAffiliateRoles(bot, member) {
@@ -107,20 +95,21 @@ module.exports = {
             }
         }))
     },
-    detectSuspensionEvasion(bot, member) {
+    async detectSuspensionEvasion(bot, member) {
         const db = bot.dbs[member.guild.id]
-        db.query(`SELECT suspended FROM suspensions WHERE id = '${member.id}' AND suspended = true AND guildid = '${member.guild.id}'`, (err, rows) => {
-            if (err) return ErrorLogger.log(err, bot, member.guild)
-            if (rows.length !== 0) {
-                let modlog = modlogChannel(bot, member.guild)
-                if (modlog) modlog.send(`${member} is attempting to dodge a suspension by leaving the server`)
-                db.query(`UPDATE suspensions SET ignOnLeave = '${member.nickname}' WHERE id = '${member.id}' AND suspended = true`)
-                if (member.nickname) {
-                    member.nickname.replace(/[^a-z|]/gi, '').split('|').forEach(n => {
-                        db.query(`INSERT INTO veriblacklist (id, guildid, modid, reason) VALUES ('${n}', '${member.guild.id}', '${bot.user.id}', 'Left Server While Suspended')`)
-                    })
-                }
+        await db.promise().query('SELECT COUNT(*) as suspension_count FROM suspensions WHERE id = ? AND suspended = true AND guildid = ?', [member.id, member.guild.id]).then(async ([[{ suspension_count }], ]) => {
+            if (suspension_count === 0) return
+            let modlog = modlogChannel(bot, member.guild)
+            if (modlog) await modlog.send(`${member} is attempting to dodge a suspension by leaving the server`)
+            await db.promise().query('UPDATE suspensions SET ignOnLeave = ? WHERE id = ? AND suspended = true', [member.nickname, member.id])
+            if (member.nickname) {
+                await Promise.all(member.nickname.replace(/[^a-z|]/gi, '').split('|').map(async (n) => {
+                    await db.promise().query('INSERT INTO veriblacklist (id, guildid, modid, reason) VALUES (?, ?, ?, ?)', [n, member.guild.id, bot.user.id, 'Left Server While Suspended'])
+                }))
             }
+
+        }, (err) => {
+            ErrorLogger.log(err, bot, member.guild)
         })
     }
 }
