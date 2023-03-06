@@ -42,9 +42,6 @@ class MessageManager {
     handleMessage(message) {
         switch (message.channel.type) {
             case Discord.ChannelType.GuildText:
-                // Ignore messages to non-whitelisted servers
-                if (!this.#bot.serverWhiteList.includes(message.guild.id)) break;
-
                 if (message.content.startsWith(this.#prefix) && message.content[this.#prefix.length] !== ' ') {
                     // Handle commands (messages that start with a prefix + command)
                     this.handleCommand(message);

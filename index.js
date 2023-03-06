@@ -16,17 +16,19 @@ const roleAssignment = require('./commands/roleAssignment')
 const botSettings = require('./settings.json')
 const token = require('./data/botKey.json')
 const prefix = botSettings.prefix;
-const { channel } = require('diagnostics_channel')
-const app = express();
 const rootCas = require('ssl-root-cas').create();
 require('https').globalAgent.options.ca = rootCas;
-
 const bot = require('./botMeta.js').bot
-
+const serverWhiteList = require('./data/serverWhiteList.json')
 const MessageManager = require('./messageManager.js').MessageManager;
+
 const messageManager = new MessageManager(bot, botSettings);
+
 // Bot Event Handlers
 bot.on('messageCreate', message => {
+    // Ignore messages to non-whitelisted servers (but let DMs through)
+    if (message.guild && !serverWhiteList.includes(message.guild.id)) break;
+
     try {
         return messageManager.handleMessage(message);
     } catch (er) {
@@ -38,7 +40,7 @@ bot.on('interactionCreate', async interaction => {
     // Validate the interaction is a command
     if (!interaction.isChatInputCommand()) return;
     // Validate the server is whitelisted
-    if (!bot.serverWhiteList.includes(interaction.guild.id)) return
+    if (!serverWhiteList.includes(interaction.guild.id)) return
     // Validate the server has settings
     if (!bot.settings[interaction.guild.id]) return
     // Get the command
