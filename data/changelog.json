@@ -21,7 +21,8 @@
             "nestsLead",
             "steamworkRuns",
             "steamworkLead",
-            "steamworkPops"
+            "steamworkPops",
+            "totalUnexcused"
         ],
         "currentweeks": [
             {
