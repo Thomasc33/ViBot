@@ -147,7 +147,7 @@ class MessageManager {
                 }
             })
             if (!guild) cancelled = true;
-            logCommand(guild)
+            this.#logCommand(guild, message)
             if (!cancelled) {
                 try {
                     message.channel.send({ embeds: [await stats.getStatsEmbed(message.author.id, guild, this.#bot)] })
@@ -157,7 +157,7 @@ class MessageManager {
             }
         } else if (/^.?(pl[ea]{0,2}se?\s*)?(j[oi]{2}n|d[ra]{2}g\s*(me)?)(\s*pl[ea]{0,2}se?)?$/i.test(message.content)) {
             const guild = await this.getGuild(message).catch(er => cancelled = true)
-            logCommand(guild)
+            this.#logCommand(guild, message)
             if (!cancelled) {
                 require('./commands/joinRun').dmExecution(message, message.content.split(/\s+/), this.#bot, this.#bot.dbs[guild.id], guild, this.#tokenDB);
             }
@@ -166,12 +166,12 @@ class MessageManager {
             const args = message.content.split(/ +/)
             const commandName = args.shift().toLowerCase().replace(this.#prefix, '')
             const command = this.#bot.commands.get(commandName) || this.#bot.commands.find(c => c.alias && c.alias.includes(commandName))
-            if (!command) sendModMail()
+            if (!command) this.#sendModMail(message)
             else if (command.dms) {
                 let guild
                 if (command.dmNeedsGuild) {
                     guild = await this.getGuild(message).catch(er => cancelled = true)
-                    logCommand(guild)
+                    this.#logCommand(guild, message)
                 }
 
                 if (!cancelled) {
@@ -179,43 +179,44 @@ class MessageManager {
                     else {
                         const member = guild.members.cache.get(message.author.id)
                         if (member.roles.highest.position < guild.roles.cache.get(this.#bot.settings[guild.id].roles[command.role]).position && !this.#bot.adminUsers.includes(message.member.id)) {
-                            sendModMail();
+                            this.#sendModMail(message);
                         } else command.dmExecution(message, args, this.#bot, this.#bot.dbs[guild.id], guild, this.#tokenDB)
                     }
                 }
             } else message.channel.send('This command does not work in DM\'s. Please use this inside of a server')
 
-            async function sendModMail() {
-                const confirmModMailEmbed = new Discord.EmbedBuilder()
-                    .setColor('#ff0000')
-                    .setTitle('Are you sure you want to message modmail?')
-                    .setFooter({ text: 'Spamming modmail with junk will result in being modmail blacklisted' })
-                    .setDescription(`\`\`\`${message.content}\`\`\``)
-                const guild = await this.getGuild(message).catch(er => { cancelled = true })
-                await message.channel.send({ embeds: [confirmModMailEmbed] }).then(async confirmMessage => {
-                    if (await confirmMessage.confirmButton(message.author.id)) {
-                        modmail.sendModMail(message, guild, this.#bot, this.#bot.dbs[guild.id])
-                        return confirmMessage.delete()
-                    }
+        }
 
-                    return confirmMessage.delete()
-                })
+    }
+    async #logCommand(guild, message) {
+        if (!guild || !this.#bot.settings[guild.id]) return
+        const logEmbed = new Discord.EmbedBuilder()
+            .setAuthor({ name: message.author.tag })
+            .setColor('#0000ff')
+            .setDescription(`<@!${message.author.id}> sent the bot: "${message.content}"`)
+            .setFooter({ text: `User ID: ${message.author.id}` })
+            .setTimestamp()
+        if (message.author.avatarURL()) logEmbed.setAuthor({ name: message.author.tag, iconURL: message.author.avatarURL() })
+        guild.channels.cache.get(this.#bot.settings[guild.id].channels.dmcommands).send({ embeds: [logEmbed] }).catch(er => { ErrorLogger.log(new Error(`Unable to find/send in settings.channels.dmcommands channel for ${guild.id}`), this.#bot, guild) })
+    }
 
-                // Check blacklist
+    async #sendModMail(message) {
+        const confirmModMailEmbed = new Discord.EmbedBuilder()
+            .setColor('#ff0000')
+            .setTitle('Are you sure you want to message modmail?')
+            .setFooter({ text: 'Spamming modmail with junk will result in being modmail blacklisted' })
+            .setDescription(`\`\`\`${message.content}\`\`\``)
+        const guild = await this.getGuild(message).catch(er => { cancelled = true })
+        await message.channel.send({ embeds: [confirmModMailEmbed] }).then(async confirmMessage => {
+            if (await confirmMessage.confirmButton(message.author.id)) {
+                modmail.sendModMail(message, guild, this.#bot, this.#bot.dbs[guild.id])
+                return confirmMessage.delete()
             }
-        }
 
-        async function logCommand(guild) {
-            if (!guild || !this.#bot.settings[guild.id]) return
-            const logEmbed = new Discord.EmbedBuilder()
-                .setAuthor({ name: message.author.tag })
-                .setColor('#0000ff')
-                .setDescription(`<@!${message.author.id}> sent the bot: "${message.content}"`)
-                .setFooter({ text: `User ID: ${message.author.id}` })
-                .setTimestamp()
-            if (message.author.avatarURL()) logEmbed.setAuthor({ name: message.author.tag, iconURL: message.author.avatarURL() })
-            guild.channels.cache.get(this.#bot.settings[guild.id].channels.dmcommands).send({ embeds: [logEmbed] }).catch(er => { ErrorLogger.log(new Error(`Unable to find/send in settings.channels.dmcommands channel for ${guild.id}`), this.#bot, guild) })
-        }
+            return confirmMessage.delete()
+        })
+
+        // Check blacklist
     }
 
     /**
