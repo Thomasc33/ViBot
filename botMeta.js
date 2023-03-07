@@ -32,7 +32,6 @@ bot.commands = new Discord.Collection()
 bot.dbs = {}
 bot.afkChecks = moduleIsAvailable('./data/afkChecks.json') ? require('./data/afkChecks.json') : {}
 bot.settings = moduleIsAvailable('./guildSettings.json') ? require('./guildSettings.json') : {}
-bot.serverWhiteList = moduleIsAvailable('./data/serverWhiteList.json') ? require('./data/serverWhiteList.json') : {}
 bot.partneredServers = moduleIsAvailable('./data/partneredServers.json') ? require('./data/partneredServers.json') : []
 bot.fetchPartneredServer = function (guildId) {
     for (let i in bot.partneredServers) {
