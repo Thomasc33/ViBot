@@ -30,17 +30,20 @@ const MonthlyQuota = quotaJobs.MonthlyQuota;
 const BotStatusUpdate = require('./jobs/botstatus.js').BotStatusUpdate;
 const iterServers = require('./jobs/util.js').iterServers;
 
-function connectDB(bot, dbInfo) {
-    const pool = mysql.createPool(dbInfo)
-    // This property exists on single connections in `mysql` and `mysql2`, but for pools is replaced by `pool.config.connectionConfig.database`
-    // Override because we do still rely on it
-    pool.config.database = dbSchemas[g.id].schema
-    console.log(`Connected to database: ${dbSchemas[g.id].schema}`)
-    return pool
+async function connectDB(dbInfo, bot, guildId) {
+    const conn = mysql.createConnection(dbInfo)
+    conn.config.database = dbSchemas[guildId].schema
+    conn.on('error', (e) => {
+        console.log(`Database error on schema ${dbSchemas[guildId].schema}: ` + e);
+        setTimeout(async () => {
+            bot.dbs[guildId] = await connectDB(dbInfo, bot, guildId)
+        }, 500)
+    })
+    return conn
 }
 
-function setupBotDBs(bot) {
-    iterServers(bot, function (bot, g) {
+async function setupBotDBs(bot) {
+    await iterServers(bot, async function (bot, g) {
         if (!dbSchemas[g.id] || !dbSchemas[g.id].schema) return console.log('Missing Schema name (schema.json) for: ', g.id)
         let dbInfo = {
             port: botSettings.defaultDbInfo.port || 3306,
@@ -49,7 +52,8 @@ function setupBotDBs(bot) {
             password: dbSchemas[g.id].password || botSettings.defaultDbInfo.password,
             database: dbSchemas[g.id].schema
         }
-        bot.dbs[g.id] = connectDB(dbInfo)
+        bot.dbs[g.id] = await connectDB(dbInfo, bot, g.id)
+        console.log(`Connected to database: ${dbSchemas[g.id].schema}`)
     })
 }
 
@@ -130,7 +134,7 @@ async function setup(bot) {
     await emoji.update(bot)
 
     //connect databases
-    setupBotDBs(bot)
+    await setupBotDBs(bot)
 
     //to hide dev server
     if (bot.user.id == botSettings.prodBotId) bot.devServers.push('701483950559985705');
