@@ -42,7 +42,7 @@ module.exports = {
                 if (bot.devServers.includes(g.id)) { return }
                 if (bot.dbs[g.id] && g.members.cache.get(id)) {
                     const [userRows,] = await bot.dbs[g.id].promise().query('SELECT * FROM users WHERE id = ?', [id])
-                    console.log("SCHEMA: " + bot.dbs[g.id].config.database)
+                    // console.log("SCHEMA: " + bot.dbs[g.id].config.database)
                     rows[bot.dbs[g.id].config.database] = userRows
                 }
             }))
@@ -53,7 +53,7 @@ module.exports = {
                 participation: { reg: 0, vet: 0, completions: 0 },
                 leading: { reg: 0, vet: 0 },
                 pops: { inc: 0, shield: 0, sword: 0, helmet: 0 },
-                rows: rows.testinghalls[0]
+                // rows: rows.testinghalls[0]
             };
             if (botSettings.osancStats) {
 
