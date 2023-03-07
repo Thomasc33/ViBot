@@ -27,7 +27,7 @@ const messageManager = new MessageManager(bot, botSettings);
 // Bot Event Handlers
 bot.on('messageCreate', message => {
     // Ignore messages to non-whitelisted servers (but let DMs through)
-    if (message.guild && !serverWhiteList.includes(message.guild.id)) break;
+    if (message.guild && !serverWhiteList.includes(message.guild.id)) return;
 
     try {
         return messageManager.handleMessage(message);
