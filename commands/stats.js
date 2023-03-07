@@ -36,21 +36,16 @@ module.exports = {
             let ign = member && member.nickname ? member.nickname.replace(/[^a-z|]/gi, '').split('|')[0] : id;
 
             //All DB
-            let promises = []
-            let errored = false
             let rows = {} // {schema:row}
-            bot.guilds.cache.each(g => {
+            await Promise.all(bot.guilds.cache.map(async g => {
                 if (bot.emojiServers.includes(g.id)) { return }
                 if (bot.devServers.includes(g.id)) { return }
                 if (bot.dbs[g.id] && g.members.cache.get(id)) {
-                    promises.push(getRow(bot.dbs[g.id], id, rows).catch(er => {
-                        errored = true
-                        rej(er)
-                    }))
+                    const [userRows,] = await bot.dbs[g.id].promise().query('SELECT * FROM users WHERE id = ?', [id])
+                    console.log("SCHEMA: " + bot.dbs[g.id].config.database)
+                    rows[bot.dbs[g.id].config.database] = userRows
                 }
-            })
-            await Promise.all(promises)
-            if (errored) return
+            }))
 
             //OSanc Logic
             let data, hasO3 = false;
@@ -111,6 +106,7 @@ module.exports = {
 }
 
 function getRow(db, id, rowsObj) {
+    return 
     return new Promise((res, rej) => {
         db.query(`SELECT * FROM users WHERE id = '${id}'`, (err, rows) => {
             if (err) rej(err)
