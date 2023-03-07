@@ -98,7 +98,7 @@ class MessageManager {
      * @param {Message} message
      * @returns
      */
-    handleCommand(message) {
+    async handleCommand(message) {
         const [commandName, ...args] = message.content.slice(this.#prefix.length).split(/ +/gi)
 
         const command = this.#bot.commands.get(commandName) || this.#bot.commands.find(cmd => cmd.alias && cmd.alias.includes(commandName))
@@ -121,12 +121,12 @@ class MessageManager {
         }
 
         try {
-            command.execute(message, args, this.#bot, this.#bot.dbs[message.guild.id], this.#tokenDB)
-            this.#bot.dbs[message.guild.id].query(`INSERT INTO commandusage (command, userid, guildid, utime) VALUES ('${command.name}', '${message.member.id}', '${message.guild.id}', '${Date.now()}')`);
-            CommandLogger.log(message, this.#bot)
+            await command.execute(message, args, this.#bot, this.#bot.dbs[message.guild.id], this.#tokenDB)
+            await this.#bot.dbs[message.guild.id].promise().query(`INSERT INTO commandusage (command, userid, guildid, utime) VALUES ('${command.name}', '${message.member.id}', '${message.guild.id}', '${Date.now()}')`);
+            await CommandLogger.log(message, this.#bot)
         } catch (er) {
-            ErrorLogger.log(er, this.#bot, message.guild)
-            message.channel.send(`Issue executing the command, check \`${this.#prefix}commands\` and try again`);
+            await ErrorLogger.log(er, this.#bot, message.guild)
+            await message.channel.send(`Issue executing the command, check \`${this.#prefix}commands\` and try again`);
         }
     }
 
