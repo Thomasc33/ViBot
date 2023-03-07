@@ -18,90 +18,88 @@ module.exports = {
         let id = args[0];
         if (member) id = member.id;
         if (!/^[0-9]+$/.test(id))
-            return message.channel.send(`Could not find user by the name or id of ${id}.`);
-        let embed = await this.getStatsEmbed(id, message.guild, bot).catch(er => {
-            message.channel.send({
+            return await message.channel.send(`Could not find user by the name or id of ${id}.`);
+        let embed = await this.getStatsEmbed(id, message.guild, bot).catch(async er => {
+            await message.channel.send({
                 embeds:
                     [
                         new Discord.EmbedBuilder().setDescription(`${er}`)
                     ]
             });
         })
-        if (embed) message.channel.send({ embeds: [embed] })
+        if (embed) await message.channel.send({ embeds: [embed] })
     },
     async getStatsEmbed(id, guild, bot) {
-        return new Promise(async (res, rej) => {
-            //User
-            const member = guild.members.cache.get(id);
-            let ign = member && member.nickname ? member.nickname.replace(/[^a-z|]/gi, '').split('|')[0] : id;
+        //User
+        const member = guild.members.cache.get(id);
+        let ign = member && member.nickname ? member.nickname.replace(/[^a-z|]/gi, '').split('|')[0] : id;
 
-            //All DB
-            let rows = {} // {schema:row}
-            await Promise.all(bot.guilds.cache.map(async g => {
-                if (bot.emojiServers.includes(g.id)) { return }
-                if (bot.devServers.includes(g.id)) { return }
-                if (bot.dbs[g.id] && g.members.cache.get(id)) {
-                    const [userRows,] = await bot.dbs[g.id].promise().query('SELECT * FROM users WHERE id = ?', [id])
-                    // console.log("SCHEMA: " + bot.dbs[g.id].config.database)
-                    rows[bot.dbs[g.id].config.database] = userRows
-                }
-            }))
-
-            //OSanc Logic
-            let data, hasO3 = false;
-            const oryx3 = {
-                participation: { reg: 0, vet: 0, completions: 0 },
-                leading: { reg: 0, vet: 0 },
-                pops: { inc: 0, shield: 0, sword: 0, helmet: 0 },
-                rows: rows[bot.dbs[guild.id].config.database][0]
-            };
-            
-            if (botSettings.osancStats) {
-                if (ign) data = await axios.post(`https://api.osanc.net/getProfile`, { ign });
-                if (data) data = data.data;
-                if (data && data.profile && data.profile.oryx3) {
-                    hasO3 = true
-                    oryx3.participation = { ...oryx3.participation, ...data.profile.oryx3.participation };
-                    oryx3.leading = { ...oryx3.leading, ...data.profile.oryx3.leading };
-                    oryx3.pops = { ...oryx3.pops, ...data.profile.pops };
-                    if (bot.dbs['343704644712923138']) bot.dbs['343704644712923138'].query(`UPDATE users SET o3runs = ${data.profile.oryx3.participation.completions} WHERE id = '${id}'`);
-                    if (bot.dbs['343704644712923138']) bot.dbs['343704644712923138'].query(`UPDATE users SET runesused = ${oryx3.pops.shield + oryx3.pops.sword + oryx3.pops.helmet} WHERE id = '${id}'`);
-                    if (bot.dbs['343704644712923138']) bot.dbs['343704644712923138'].query(`UPDATE users SET incPops = ${oryx3.pops.inc} WHERE id = '${id}'`);
-                }
+        //All DB
+        let rows = {} // {schema:row}
+        await Promise.all(bot.guilds.cache.map(async g => {
+            if (bot.emojiServers.includes(g.id)) { return }
+            if (bot.devServers.includes(g.id)) { return }
+            if (bot.dbs[g.id] && g.members.cache.get(id)) {
+                const [userRows,] = await bot.dbs[g.id].promise().query('SELECT * FROM users WHERE id = ?', [id])
+                // console.log("SCHEMA: " + bot.dbs[g.id].config.database)
+                rows[bot.dbs[g.id].config.database] = userRows
             }
+        }))
 
-            //setup embed
-            const embed = new Discord.EmbedBuilder()
-                .setColor('#015c21')
-                .setDescription(`__**Stats for**__ <@${id}> ${member ? '\`' + (member.nickname || member.user.tag) + '\`' : ''}`)
-
-            //Add local database info
-            for (let i in rows) if (rows[i][0]) embed.addFields(getFields(rows[i][0], i, bot))
-
-            //Add o3 and misc(points)
-            let otherFields = []
-            if (hasO3) otherFields = getFields(oryx3, 'oryx3', bot)
-            if (rows['halls'] && rows['halls'][0]) otherFields.push({ name: `✨ Miscellaneous Stats ✨`, value: `🎟️ ${rows['halls'][0].points || 0} Points` })
-            if (rows['testinghalls']) otherFields.push({ name: `✨ (Testing) Miscellaneous Stats ✨`, value: `🎟️ ${rows['testinghalls'][0].points || 0} Points` })
-            if (otherFields.length > 0) embed.addFields(otherFields);
-
-            //add discord pfp
-            if (member) embed.setThumbnail(member.user.avatarURL());
-
-            // check for missing keyroles
-            const popInfo = keyRoles[guild.id];
-            const settings = bot.settings[guild.id];
-            if (settings && popInfo && member) {
-                const keyRows = popInfo.map(ki => ki.types.map(t => t[0]).join(", ")).join(", ");
-                if (bot.dbs['343704644712923138']) bot.dbs['343704644712923138'].query(`SELECT id, ${keyRows} FROM users WHERE id = '${member.id}'`, (err, keyRows) => {
-                    if (err) ErrorLogger.log(err, bot, message.guild)
-                    if (keyRows && keyRows[0]) checkRow(guild, bot, keyRows[0], member);
-                })
+        //OSanc Logic
+        let data, hasO3 = false;
+        const oryx3 = {
+            participation: { reg: 0, vet: 0, completions: 0 },
+            leading: { reg: 0, vet: 0 },
+            pops: { inc: 0, shield: 0, sword: 0, helmet: 0 },
+            rows: rows[bot.dbs[guild.id].config.database][0]
+        };
+        
+        if (botSettings.osancStats) {
+            if (ign) data = await axios.post(`https://api.osanc.net/getProfile`, { ign });
+            if (data) data = data.data;
+            if (data && data.profile && data.profile.oryx3) {
+                hasO3 = true
+                oryx3.participation = { ...oryx3.participation, ...data.profile.oryx3.participation };
+                oryx3.leading = { ...oryx3.leading, ...data.profile.oryx3.leading };
+                oryx3.pops = { ...oryx3.pops, ...data.profile.pops };
+                if (bot.dbs['343704644712923138']) bot.dbs['343704644712923138'].query(`UPDATE users SET o3runs = ${data.profile.oryx3.participation.completions} WHERE id = '${id}'`);
+                if (bot.dbs['343704644712923138']) bot.dbs['343704644712923138'].query(`UPDATE users SET runesused = ${oryx3.pops.shield + oryx3.pops.sword + oryx3.pops.helmet} WHERE id = '${id}'`);
+                if (bot.dbs['343704644712923138']) bot.dbs['343704644712923138'].query(`UPDATE users SET incPops = ${oryx3.pops.inc} WHERE id = '${id}'`);
             }
+        }
 
-            //return embed
-            res(embed);
-        })
+        //setup embed
+        const embed = new Discord.EmbedBuilder()
+            .setColor('#015c21')
+            .setDescription(`__**Stats for**__ <@${id}> ${member ? '\`' + (member.nickname || member.user.tag) + '\`' : ''}`)
+
+        //Add local database info
+        for (let i in rows) if (rows[i][0]) embed.addFields(getFields(rows[i][0], i, bot))
+
+        //Add o3 and misc(points)
+        let otherFields = []
+        if (hasO3) otherFields = getFields(oryx3, 'oryx3', bot)
+        if (rows['halls'] && rows['halls'][0]) otherFields.push({ name: `✨ Miscellaneous Stats ✨`, value: `🎟️ ${rows['halls'][0].points || 0} Points` })
+        if (rows['testinghalls']) otherFields.push({ name: `✨ (Testing) Miscellaneous Stats ✨`, value: `🎟️ ${rows['testinghalls'][0].points || 0} Points` })
+        if (otherFields.length > 0) embed.addFields(otherFields);
+
+        //add discord pfp
+        if (member) embed.setThumbnail(member.user.avatarURL());
+
+        // check for missing keyroles
+        const popInfo = keyRoles[guild.id];
+        const settings = bot.settings[guild.id];
+        if (settings && popInfo && member) {
+            const keyRows = popInfo.map(ki => ki.types.map(t => t[0]).join(", ")).join(", ");
+            if (bot.dbs['343704644712923138']) bot.dbs['343704644712923138'].query(`SELECT id, ${keyRows} FROM users WHERE id = '${member.id}'`, (err, keyRows) => {
+                if (err) ErrorLogger.log(err, bot, message.guild)
+                if (keyRows && keyRows[0]) checkRow(guild, bot, keyRows[0], member);
+            })
+        }
+
+        //return embed
+        return embed;
     }
 }
 

@@ -25,12 +25,12 @@ const MessageManager = require('./messageManager.js').MessageManager;
 const messageManager = new MessageManager(bot, botSettings);
 
 // Bot Event Handlers
-bot.on('messageCreate', message => {
+bot.on('messageCreate', async message => {
     // Ignore messages to non-whitelisted servers (but let DMs through)
     if (message.guild && !serverWhiteList.includes(message.guild.id)) return;
 
     try {
-        return messageManager.handleMessage(message);
+        return await messageManager.handleMessage(message);
     } catch (er) {
         ErrorLogger.log(er, bot, message.guild)
     }

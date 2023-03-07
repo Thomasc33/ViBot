@@ -30,18 +30,6 @@ const MonthlyQuota = quotaJobs.MonthlyQuota;
 const BotStatusUpdate = require('./jobs/botstatus.js').BotStatusUpdate;
 const iterServers = require('./jobs/util.js').iterServers;
 
-async function connectDB(dbInfo, bot, guildId) {
-    const conn = mysql.createConnection(dbInfo)
-    conn.config.database = dbSchemas[guildId].schema
-    conn.on('error', (e) => {
-        console.log(`Database error on schema ${dbSchemas[guildId].schema}: ` + e);
-        setTimeout(async () => {
-            bot.dbs[guildId] = await connectDB(dbInfo, bot, guildId)
-        }, 500)
-    })
-    return conn
-}
-
 async function setupBotDBs(bot) {
     await iterServers(bot, async function (bot, g) {
         if (!dbSchemas[g.id] || !dbSchemas[g.id].schema) return console.log('Missing Schema name (schema.json) for: ', g.id)
@@ -52,7 +40,13 @@ async function setupBotDBs(bot) {
             password: dbSchemas[g.id].password || botSettings.defaultDbInfo.password,
             database: dbSchemas[g.id].schema
         }
-        bot.dbs[g.id] = await connectDB(dbInfo, bot, g.id)
+        bot.dbs[g.id] = mysql.createPool(dbInfo)
+
+        // This is a property on single connections rather that pools, but we
+        // patch it back in to the pool since we depend on it in too many places
+        // to fix
+        bot.dbs[g.id].config.database = dbSchemas[g.id].schema
+
         console.log(`Connected to database: ${dbSchemas[g.id].schema}`)
     })
 }
