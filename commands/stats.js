@@ -53,10 +53,10 @@ module.exports = {
                 participation: { reg: 0, vet: 0, completions: 0 },
                 leading: { reg: 0, vet: 0 },
                 pops: { inc: 0, shield: 0, sword: 0, helmet: 0 },
-                // rows: rows.testinghalls[0]
+                rows: rows[bot.dbs[guild.id].config.database][0]
             };
+            
             if (botSettings.osancStats) {
-
                 if (ign) data = await axios.post(`https://api.osanc.net/getProfile`, { ign });
                 if (data) data = data.data;
                 if (data && data.profile && data.profile.oryx3) {
@@ -108,34 +108,34 @@ module.exports = {
 function getFields(row, schema, bot) {
     if (schema == 'oryx3') {
         return [
-        {
-            name: `<:oryxThree:831047591096745984> Oryx Sanctuary Stats <:oryxThree:831047591096745984>`,
-            value: '** **'
-        },
-        {
-            name: `<:o3portal:831046404252237855> __**Runes Popped**__ <:o3portal:831046404252237855>`,
-            value: `<:inc:831046532156620851> ${row.pops.inc}\n` +
-                `<:shieldRune:831046532232118292> ${row.pops.shield}\n` +
-                `<:swordRune:831046532370530324> ${row.pops.sword}\n` +
-                `<:helmetRune:831046532115202078> ${row.pops.helmet} `,
-            inline: true
-        },
-        {
-            name: `<:oryxThree:831047591096745984> __**Runs Done**__ <:oryxThree:831047591096745984>`,
-            value: `${bot.storedEmojis.oryxThree.text} ${row.participation.reg} Normal Runs\n` +
-                `${bot.storedEmojis.oryxThree.text} ${row.participation.vet} Veteran Runs\n` +
-                `${bot.storedEmojis.oryxThree.text} ${row.participation.completions} Completes`,
-            inline: true
-        },
-        {
-            name: `<:oryxThree:831047591096745984> __**Runs Lead**__ <:oryxThree:831047591096745984>`,
-            value: `${bot.storedEmojis.oryxThree.text} ${row.rows.o3leads} Normal Runs\n` +
-                `${bot.storedEmojis.oryxThree.text} ${row.leading.vet} Veteran Runs\n` +
-                `${bot.storedEmojis.feedback.text} ${row.rows.o3feedback} Feedbacks\n` +
-                `:mag: ${row.rows.o3parses} Parses`,
-            inline: true
-        }
-    ]
+            {
+                name: `<:oryxThree:831047591096745984> Oryx Sanctuary Stats <:oryxThree:831047591096745984>`,
+                value: '** **'
+            },
+            {
+                name: `<:o3portal:831046404252237855> __**Runes Popped**__ <:o3portal:831046404252237855>`,
+                value: `<:inc:831046532156620851> ${row.pops.inc}\n` +
+                    `<:shieldRune:831046532232118292> ${row.pops.shield}\n` +
+                    `<:swordRune:831046532370530324> ${row.pops.sword}\n` +
+                    `<:helmetRune:831046532115202078> ${row.pops.helmet} `,
+                inline: true
+            },
+            {
+                name: `<:oryxThree:831047591096745984> __**Runs Done**__ <:oryxThree:831047591096745984>`,
+                value: `${bot.storedEmojis.oryxThree.text} ${row.participation.reg} Normal Runs\n` +
+                    `${bot.storedEmojis.oryxThree.text} ${row.participation.vet} Veteran Runs\n` +
+                    `${bot.storedEmojis.oryxThree.text} ${row.participation.completions} Completes`,
+                inline: true
+            },
+            {
+                name: `<:oryxThree:831047591096745984> __**Runs Lead**__ <:oryxThree:831047591096745984>`,
+                value: `${bot.storedEmojis.oryxThree.text} ${row.rows.o3leads} Normal Runs\n` +
+                    `${bot.storedEmojis.oryxThree.text} ${row.leading.vet} Veteran Runs\n` +
+                    `${bot.storedEmojis.feedback.text} ${row.rows.o3feedback} Feedbacks\n` +
+                    `:mag: ${row.rows.o3parses} Parses`,
+                inline: true
+            }
+        ]
     }
     if (schema == 'halls' || schema == 'testinghalls') return [
         {
