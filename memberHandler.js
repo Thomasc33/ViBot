@@ -44,8 +44,8 @@ module.exports = {
     async checkWasSuspended(bot, member) {
         const db = bot.dbs[member.guild.id]
 
-        const [[{ ignOnLeave }], ] = await db.promise().query(`SELECT suspended, ignOnLeave FROM suspensions WHERE id = ? AND suspended = true AND guildid = ?`, [member.id, member.guild.id])
-        if (ignOnLeave) await suspendedMemberRejoin(bot, member, ignOnLeave)
+        const [rows, ] = await db.promise().query(`SELECT suspended, ignOnLeave FROM suspensions WHERE id = ? AND suspended = true AND guildid = ?`, [member.id, member.guild.id])
+        if (rows.length > 0) await suspendedMemberRejoin(bot, member, rows[0].ignOnLeave)
     },
     async checkWasMuted(bot, member) {
         const db = bot.dbs[member.guild.id]
