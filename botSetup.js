@@ -30,11 +30,13 @@ const MonthlyQuota = quotaJobs.MonthlyQuota;
 const BotStatusUpdate = require('./jobs/botstatus.js').BotStatusUpdate;
 const iterServers = require('./jobs/util.js').iterServers;
 
-function connectDB(bot, db) {
-    db.connect(err => {
-        if (err) ErrorLogger.log(err, bot);
-        else console.log("Connected to database: ", db.config.database);
-    })
+function connectDB(bot, dbInfo) {
+    const pool = mysql.createPool(dbInfo)
+    // This property exists on single connections in `mysql` and `mysql2`, but for pools is replaced by `pool.config.connectionConfig.database`
+    // Override because we do still rely on it
+    pool.config.database = dbSchemas[g.id].schema
+    console.log(`Connected to database: ${dbSchemas[g.id].schema}`)
+    return pool
 }
 
 function setupBotDBs(bot) {
@@ -47,16 +49,7 @@ function setupBotDBs(bot) {
             password: dbSchemas[g.id].password || botSettings.defaultDbInfo.password,
             database: dbSchemas[g.id].schema
         }
-        bot.dbs[g.id] = mysql.createConnection(dbInfo)
-        connectDB(bot, bot.dbs[g.id])
-
-        bot.dbs[g.id].on('error', err => {
-            if (err.code == 'PROTOCOL_CONNECTION_LOST' || err.code == 'PROTOCOL_ENQUEUE_AFTER_FATAL_ERROR') {
-                bot.dbs[g.id] = mysql.createConnection(dbInfo)
-                connectDB(bot, bot.dbs[g.id])
-            }
-            else ErrorLogger.log(err, bot, g)
-        })
+        bot.dbs[g.id] = connectDB(dbInfo)
     })
 }
 
