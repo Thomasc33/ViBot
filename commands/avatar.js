@@ -6,7 +6,7 @@ module.exports = {
     args: '(user)',
     alias: ['ava'],
     role: 'eventrl',
-	getSlashCommandData() {
+    getSlashCommandData() {
         return new Discord.SlashCommandBuilder()
             .setName('avatar')
             .setDescription('Posts avatar of user provided')
@@ -25,12 +25,12 @@ module.exports = {
             .setImage(member.user.avatarURL({ dynamic: true, size: 4096 }))
         message.channel.send({ embeds: [embed] })
     },
-	async slashCommandExecute(interaction) {
-		let member = interaction.options.getMember('user')
+    async slashCommandExecute(interaction) {
+        let member = interaction.options.getMember('user')
         let embed = new Discord.EmbedBuilder()
             .setColor('#fefefe')
             .setDescription(`__**Avatar of**__ <@${member.id}> ${member ? '\`' + (member.nickname || member.user.tag) + '\`' : ''}`)
             .setImage(member.user.avatarURL({ dynamic: true, size: 4096 }))
         interaction.reply({ embeds: [embed] })
-	}
+    }
 }
