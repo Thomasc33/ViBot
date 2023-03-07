@@ -1,5 +1,5 @@
 const Discord = require('discord.js')
-const mysql = require('mysql')
+const mysql = require('mysql2')
 
 const ErrorLogger = require('./lib/logError')
 const CommandLogger = require('./lib/logCommand')
