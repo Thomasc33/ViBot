@@ -105,20 +105,6 @@ module.exports = {
     }
 }
 
-function getRow(db, id, rowsObj) {
-    return 
-    return new Promise((res, rej) => {
-        db.query(`SELECT * FROM users WHERE id = '${id}'`, (err, rows) => {
-            if (err) rej(err)
-            else {
-                rowsObj[db.config.database] = rows
-                res(rows)
-            }
-        })
-    })
-}
-
-
 function getFields(row, schema, bot) {
     if (schema == 'oryx3') {
         return [
