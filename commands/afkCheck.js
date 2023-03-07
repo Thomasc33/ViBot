@@ -1286,7 +1286,7 @@ class afkCheck {
                 if (this.afkInfo.keyPopPointsOverride) points = this.afkInfo.keyPopPointsOverride
                 if (this.guild.members.cache.get(u).roles.cache.hasAny(...this.perkRoles.map(role => role.id))) points = points * this.settings.points.supportermultiplier
                 if (this.moddedKeys) points = points * this.settings.points.keymultiplier
-                await this.db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u}'`, er => { if (er) console.log('error logging key points in ', this.guild.id) })
+                await this.db.promise().query('UPDATE users SET points = points + ? WHERE id = ?', [points, u]).catch(er => console.log('error logging key points in ', this.guild.id))
                 pointsLog.push({
                     uid: u,
                     points: points,
