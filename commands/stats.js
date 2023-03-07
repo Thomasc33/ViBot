@@ -57,7 +57,8 @@ module.exports = {
             const oryx3 = {
                 participation: { reg: 0, vet: 0, completions: 0 },
                 leading: { reg: 0, vet: 0 },
-                pops: { inc: 0, shield: 0, sword: 0, helmet: 0 }
+                pops: { inc: 0, shield: 0, sword: 0, helmet: 0 },
+                rows: rows.testinghalls[0]
             };
             if (botSettings.osancStats) {
 
@@ -70,6 +71,7 @@ module.exports = {
                     oryx3.pops = { ...oryx3.pops, ...data.profile.pops };
                     if (bot.dbs['343704644712923138']) bot.dbs['343704644712923138'].query(`UPDATE users SET o3runs = ${data.profile.oryx3.participation.completions} WHERE id = '${id}'`);
                     if (bot.dbs['343704644712923138']) bot.dbs['343704644712923138'].query(`UPDATE users SET runesused = ${oryx3.pops.shield + oryx3.pops.sword + oryx3.pops.helmet} WHERE id = '${id}'`);
+                    if (bot.dbs['343704644712923138']) bot.dbs['343704644712923138'].query(`UPDATE users SET incPops = ${oryx3.pops.inc} WHERE id = '${id}'`);
                 }
             }
 
@@ -79,11 +81,11 @@ module.exports = {
                 .setDescription(`__**Stats for**__ <@${id}> ${member ? '\`' + (member.nickname || member.user.tag) + '\`' : ''}`)
 
             //Add local database info
-            for (let i in rows) if (rows[i][0]) embed.addFields(getFields(rows[i][0], i))
+            for (let i in rows) if (rows[i][0]) embed.addFields(getFields(rows[i][0], i, bot))
 
             //Add o3 and misc(points)
             let otherFields = []
-            if (hasO3) otherFields = getFields(oryx3, 'oryx3')
+            if (hasO3) otherFields = getFields(oryx3, 'oryx3', bot)
             if (rows['halls'] && rows['halls'][0]) otherFields.push({ name: `✨ Miscellaneous Stats ✨`, value: `🎟️ ${rows['halls'][0].points || 0} Points` })
             if (rows['testinghalls']) otherFields.push({ name: `✨ (Testing) Miscellaneous Stats ✨`, value: `🎟️ ${rows['testinghalls'][0].points || 0} Points` })
             if (otherFields.length > 0) embed.addFields(otherFields);
@@ -121,8 +123,9 @@ function getRow(db, id, rowsObj) {
 }
 
 
-function getFields(row, schema) {
-    if (schema == 'oryx3') return [
+function getFields(row, schema, bot) {
+    if (schema == 'oryx3') {
+        return [
         {
             name: `<:oryxThree:831047591096745984> Oryx Sanctuary Stats <:oryxThree:831047591096745984>`,
             value: '** **'
@@ -137,18 +140,21 @@ function getFields(row, schema) {
         },
         {
             name: `<:oryxThree:831047591096745984> __**Runs Done**__ <:oryxThree:831047591096745984>`,
-            value: `${row.participation.reg} Normal Runs\n` +
-                `${row.participation.vet} Veteran Runs\n` +
-                `${row.participation.completions} Completes`,
+            value: `${bot.storedEmojis.oryxThree.text} ${row.participation.reg} Normal Runs\n` +
+                `${bot.storedEmojis.oryxThree.text} ${row.participation.vet} Veteran Runs\n` +
+                `${bot.storedEmojis.oryxThree.text} ${row.participation.completions} Completes`,
             inline: true
         },
         {
             name: `<:oryxThree:831047591096745984> __**Runs Lead**__ <:oryxThree:831047591096745984>`,
-            value: `${row.leading.reg} Normal Runs\n` +
-                `${row.leading.vet} Veteran Runs`,
+            value: `${bot.storedEmojis.oryxThree.text} ${row.rows.o3leads} Normal Runs\n` +
+                `${bot.storedEmojis.oryxThree.text} ${row.leading.vet} Veteran Runs\n` +
+                `${bot.storedEmojis.feedback.text} ${row.rows.o3feedback} Feedbacks\n` +
+                `:mag: ${row.rows.o3parses} Parses`,
             inline: true
         }
     ]
+    }
     if (schema == 'halls' || schema == 'testinghalls') return [
         {
             name: `<${botSettings.emote.hallsPortal}> Lost Halls Stats <${botSettings.emote.hallsPortal}>`,
