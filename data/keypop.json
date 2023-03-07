@@ -23,7 +23,7 @@
                 "s",
                 "shatts"
             ],
-            "points": "exaltkey",
+            "points": "shattskey",
             "schema": "shattersPops",
             "name": "shatters",
             "modded": true
@@ -34,7 +34,7 @@
                 "fun",
                 "fungal"
             ],
-            "points": "exaltkey",
+            "points": "fungalkey",
             "schema": "fungalPops",
             "name": "fungal",
             "modded": true
@@ -43,7 +43,7 @@
             "alias": [
                 "n"
             ],
-            "points": "exaltkey",
+            "points": "nestkey",
             "schema": "nestPops",
             "name": "nest",
             "modded": true
@@ -55,7 +55,7 @@
                 "steamworks",
                 "kogbold"
             ],
-            "points": "steamworkKey",
+            "points": "steamworkkey",
             "schema": "steamworkPops",
             "name": "steamworks",
             "modded": true
@@ -85,7 +85,7 @@
                 "s",
                 "shatts"
             ],
-            "points": "exaltkey",
+            "points": "shattskey",
             "schema": "shattersPops",
             "name": "shatters",
             "modded": true
@@ -96,7 +96,7 @@
                 "fun",
                 "fungal"
             ],
-            "points": "exaltkey",
+            "points": "fungalkey",
             "schema": "fungalPops",
             "name": "fungal",
             "modded": true
@@ -105,7 +105,7 @@
             "alias": [
                 "n"
             ],
-            "points": "exaltkey",
+            "points": "nestkey",
             "schema": "nestPops",
             "name": "nest",
             "modded": true
@@ -117,7 +117,7 @@
                 "steamworks",
                 "kogbold"
             ],
-            "points": "steamworkKey",
+            "points": "steamworkkey",
             "schema": "steamworkPops",
             "name": "steamworks",
             "modded": true
