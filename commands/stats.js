@@ -41,8 +41,8 @@ module.exports = {
         let rows = {} // {schema:row}
         await iterServers(bot, async (bot, g) => {
             const db = getDB(g.id)
-            const schema = guildSchema(g.id)
             if (db && g.members.cache.get(id)) {
+                const schema = guildSchema(g.id)
                 const [userRows,] = await db.promise().query('SELECT * FROM users WHERE id = ?', [id])
                 // console.log("SCHEMA: " + db.config.database)
                 rows[schema] = userRows
