@@ -8,6 +8,7 @@ const restarting = require('./commands/restart')
 const verification = require('./commands/verification')
 const stats = require('./commands/stats')
 const modmail = require('./commands/modmail')
+const { getDB } = require('./dbSetup.js')
 
 class MessageManager {
     #bot;
@@ -121,8 +122,9 @@ class MessageManager {
         }
 
         try {
-            await command.execute(message, args, this.#bot, this.#bot.dbs[message.guild.id], this.#tokenDB)
-            await this.#bot.dbs[message.guild.id].promise().query(`INSERT INTO commandusage (command, userid, guildid, utime) VALUES ('${command.name}', '${message.member.id}', '${message.guild.id}', '${Date.now()}')`);
+            const db = getDB(message.guild.id)
+            await command.execute(message, args, this.#bot, db, this.#tokenDB)
+            await db.promise().query(`INSERT INTO commandusage (command, userid, guildid, utime) VALUES ('${command.name}', '${message.member.id}', '${message.guild.id}', '${Date.now()}')`);
             await CommandLogger.log(message, this.#bot)
         } catch (er) {
             await ErrorLogger.log(er, this.#bot, message.guild)
@@ -159,7 +161,7 @@ class MessageManager {
             const guild = await this.getGuild(message).catch(er => cancelled = true)
             this.#logCommand(guild, message)
             if (!cancelled) {
-                require('./commands/joinRun').dmExecution(message, message.content.split(/\s+/), this.#bot, this.#bot.dbs[guild.id], guild, this.#tokenDB);
+                require('./commands/joinRun').dmExecution(message, message.content.split(/\s+/), this.#bot, getDB(guild.id), guild, this.#tokenDB);
             }
         } else {
             if (message.content.replace(/[^0-9]/g, '') == message.content) return;
@@ -180,7 +182,7 @@ class MessageManager {
                         const member = guild.members.cache.get(message.author.id)
                         if (member.roles.highest.position < guild.roles.cache.get(this.#bot.settings[guild.id].roles[command.role]).position && !this.#bot.adminUsers.includes(message.member.id)) {
                             this.#sendModMail(message);
-                        } else command.dmExecution(message, args, this.#bot, this.#bot.dbs[guild.id], guild, this.#tokenDB)
+                        } else command.dmExecution(message, args, this.#bot, getDB(guild.id), guild, this.#tokenDB)
                     }
                 }
             } else message.channel.send('This command does not work in DM\'s. Please use this inside of a server')
@@ -209,7 +211,7 @@ class MessageManager {
         const guild = await this.getGuild(message).catch(er => { cancelled = true })
         await message.channel.send({ embeds: [confirmModMailEmbed] }).then(async confirmMessage => {
             if (await confirmMessage.confirmButton(message.author.id)) {
-                modmail.sendModMail(message, guild, this.#bot, this.#bot.dbs[guild.id])
+                modmail.sendModMail(message, guild, this.#bot, getDB(guild.id))
                 return confirmMessage.delete()
             }
 

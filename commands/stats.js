@@ -2,6 +2,8 @@ const Discord = require('discord.js')
 const botSettings = require('../settings.json')
 const axios = require('axios')
 const keyRoles = require('../data/keyRoles.json')
+const { getDB, guildSchema } = require('../dbSetup.js')
+const { iterServers } = require('../jobs/util.js')
 
 module.exports = {
     name: 'stats',
@@ -19,7 +21,8 @@ module.exports = {
         if (member) id = member.id;
         if (!/^[0-9]+$/.test(id))
             return await message.channel.send(`Could not find user by the name or id of ${id}.`);
-        let embed = await this.getStatsEmbed(id, message.guild, bot).catch(async er => {
+        let embed = await this.getStatsEmbed(id, message.guild, bot, db).catch(async er => {
+            console.log(er)
             await message.channel.send({
                 embeds:
                     [
@@ -36,15 +39,15 @@ module.exports = {
 
         //All DB
         let rows = {} // {schema:row}
-        await Promise.all(bot.guilds.cache.map(async g => {
-            if (bot.emojiServers.includes(g.id)) { return }
-            if (bot.devServers.includes(g.id)) { return }
-            if (bot.dbs[g.id] && g.members.cache.get(id)) {
-                const [userRows,] = await bot.dbs[g.id].promise().query('SELECT * FROM users WHERE id = ?', [id])
-                // console.log("SCHEMA: " + bot.dbs[g.id].config.database)
-                rows[bot.dbs[g.id].config.database] = userRows
+        await iterServers(bot, async (bot, g) => {
+            const db = getDB(g.id)
+            const schema = guildSchema(g.id)
+            if (db && g.members.cache.get(id)) {
+                const [userRows,] = await db.promise().query('SELECT * FROM users WHERE id = ?', [id])
+                // console.log("SCHEMA: " + db.config.database)
+                rows[schema] = userRows
             }
-        }))
+        })
 
         //OSanc Logic
         let data, hasO3 = false;
@@ -52,7 +55,7 @@ module.exports = {
             participation: { reg: 0, vet: 0, completions: 0 },
             leading: { reg: 0, vet: 0 },
             pops: { inc: 0, shield: 0, sword: 0, helmet: 0 },
-            rows: rows[bot.dbs[guild.id].config.database][0]
+            rows: rows[guildSchema(guild.id)][0]
         };
         
         if (botSettings.osancStats) {
@@ -63,9 +66,10 @@ module.exports = {
                 oryx3.participation = { ...oryx3.participation, ...data.profile.oryx3.participation };
                 oryx3.leading = { ...oryx3.leading, ...data.profile.oryx3.leading };
                 oryx3.pops = { ...oryx3.pops, ...data.profile.pops };
-                if (bot.dbs['343704644712923138']) bot.dbs['343704644712923138'].query(`UPDATE users SET o3runs = ${data.profile.oryx3.participation.completions} WHERE id = '${id}'`);
-                if (bot.dbs['343704644712923138']) bot.dbs['343704644712923138'].query(`UPDATE users SET runesused = ${oryx3.pops.shield + oryx3.pops.sword + oryx3.pops.helmet} WHERE id = '${id}'`);
-                if (bot.dbs['343704644712923138']) bot.dbs['343704644712923138'].query(`UPDATE users SET incPops = ${oryx3.pops.inc} WHERE id = '${id}'`);
+                const hallsdb = getDB('343704644712923138')
+                if (hallsdb) hallsdb.query(`UPDATE users SET o3runs = ${data.profile.oryx3.participation.completions} WHERE id = '${id}'`);
+                if (hallsdb) hallsdb.query(`UPDATE users SET runesused = ${oryx3.pops.shield + oryx3.pops.sword + oryx3.pops.helmet} WHERE id = '${id}'`);
+                if (hallsdb) hallsdb.query(`UPDATE users SET incPops = ${oryx3.pops.inc} WHERE id = '${id}'`);
             }
         }
 
@@ -92,7 +96,8 @@ module.exports = {
         const settings = bot.settings[guild.id];
         if (settings && popInfo && member) {
             const keyRows = popInfo.map(ki => ki.types.map(t => t[0]).join(", ")).join(", ");
-            if (bot.dbs['343704644712923138']) bot.dbs['343704644712923138'].query(`SELECT id, ${keyRows} FROM users WHERE id = '${member.id}'`, (err, keyRows) => {
+            const hallsdb = getDB('343704644712923138')
+            if (hallsdb) hallsdb.query(`SELECT id, ${keyRows} FROM users WHERE id = '${member.id}'`, (err, keyRows) => {
                 if (err) ErrorLogger.log(err, bot, message.guild)
                 if (keyRows && keyRows[0]) checkRow(guild, bot, keyRows[0], member);
             })

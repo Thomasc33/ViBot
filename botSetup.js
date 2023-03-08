@@ -10,7 +10,6 @@ const mysql = require('mysql2')
 const Discord = require('discord.js')
 
 const botSettings = require('./settings.json')
-const dbSchemas = require('./data/schemas.json')
 const ErrorLogger = require(`./lib/logError`)
 // Commands
 const emoji = require('./commands/emoji.js');
@@ -29,27 +28,7 @@ const BiWeeklyQuota = quotaJobs.BiWeeklyQuota;
 const MonthlyQuota = quotaJobs.MonthlyQuota;
 const BotStatusUpdate = require('./jobs/botstatus.js').BotStatusUpdate;
 const iterServers = require('./jobs/util.js').iterServers;
-
-async function setupBotDBs(bot) {
-    await iterServers(bot, async function (bot, g) {
-        if (!dbSchemas[g.id] || !dbSchemas[g.id].schema) return console.log('Missing Schema name (schema.json) for: ', g.id)
-        let dbInfo = {
-            port: botSettings.defaultDbInfo.port || 3306,
-            host: dbSchemas[g.id].host || botSettings.defaultDbInfo.host,
-            user: dbSchemas[g.id].user || botSettings.defaultDbInfo.user,
-            password: dbSchemas[g.id].password || botSettings.defaultDbInfo.password,
-            database: dbSchemas[g.id].schema
-        }
-        bot.dbs[g.id] = mysql.createPool(dbInfo)
-
-        // This is a property on single connections rather that pools, but we
-        // patch it back in to the pool since we depend on it in too many places
-        // to fix
-        bot.dbs[g.id].config.database = dbSchemas[g.id].schema
-
-        console.log(`Connected to database: ${dbSchemas[g.id].schema}`)
-    })
-}
+const dbSetup = require('./dbSetup.js');
 
 async function deployCommands(bot, guild) {
     // Organize commands
@@ -128,7 +107,7 @@ async function setup(bot) {
     await emoji.update(bot)
 
     //connect databases
-    await setupBotDBs(bot)
+    await dbSetup.init(bot)
 
     //to hide dev server
     if (bot.user.id == botSettings.prodBotId) bot.devServers.push('701483950559985705');
@@ -164,9 +143,10 @@ async function setup(bot) {
     //initialize components (eg. modmail, verification)
     iterServers(bot, function (bot, g) {
         vibotChannels.update(g, bot).catch(er => { })
-        // if (bot.settings[g.id].backend.modmail) modmail.init(g, bot, bot.dbs[g.id]).catch(er => { ErrorLogger.log(er, bot, g); })
-        if (bot.settings[g.id].backend.verification) verification.init(g, bot, bot.dbs[g.id]).catch(er => { ErrorLogger.log(er, bot, g); })
-        if (bot.settings[g.id].backend.vetverification) vetVerification.init(g, bot, bot.dbs[g.id]).catch(er => { ErrorLogger.log(er, bot, g); })
+        const db = dbSetup.getDB(g.id)
+        // if (bot.settings[g.id].backend.modmail) modmail.init(g, bot, db).catch(er => { ErrorLogger.log(er, bot, g); })
+        if (bot.settings[g.id].backend.verification) verification.init(g, bot, db).catch(er => { ErrorLogger.log(er, bot, g); })
+        if (bot.settings[g.id].backend.vetverification) vetVerification.init(g, bot, db).catch(er => { ErrorLogger.log(er, bot, g); })
     })
 
     //initialize channels from createchannel.js
@@ -176,4 +156,4 @@ async function setup(bot) {
     iterServers(bot, deployCommands)
 }
 
-module.exports = { setup, setupBotDBs }
+module.exports = { setup }

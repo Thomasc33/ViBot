@@ -1,6 +1,7 @@
 const { bot } = require('../botMeta.js');
 const token = require('../data/botKey.json')
 const { setupBotDBs } = require('../botSetup.js')
+const dbSetup = require('../dbSetup.js')
 
 // Jobs
 const unbanJobs = require('./unban.js')
@@ -44,7 +45,7 @@ process.argv.slice(2).forEach(arg => {
 
 bot.on('ready', async () => {
     console.log('Connecting to DB...')
-    await setupBotDBs(bot)
+    await dbSetup.init(bot)
     console.log('DB connecting complete')
     await Promise.all(jobsToRun.oneshot.map(async Job => {
         console.log('Running oneshot job ' + Job.cliRunnerJobName)
@@ -66,9 +67,7 @@ bot.on('ready', async () => {
     })
     await Promise.all(intervalJobPromises.concat(cronJobPromises))
     await bot.destroy()
-    Object.values(bot.dbs).forEach(db => {
-        db.end()
-    })
+    dbSetup.endAll()
 })
 
 bot.login(token.key);

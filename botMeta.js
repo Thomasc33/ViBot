@@ -29,7 +29,6 @@ const bot = new Discord.Client({
     ]
 })
 bot.commands = new Discord.Collection()
-bot.dbs = {}
 bot.afkChecks = moduleIsAvailable('./data/afkChecks.json') ? require('./data/afkChecks.json') : {}
 bot.settings = moduleIsAvailable('./guildSettings.json') ? require('./guildSettings.json') : {}
 bot.partneredServers = moduleIsAvailable('./data/partneredServers.json') ? require('./data/partneredServers.json') : []

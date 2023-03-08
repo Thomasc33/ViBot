@@ -2,6 +2,7 @@ const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
 const { RepeatedJob } = require('./RepeatedJob.js')
 const { iterServersWithQuery } = require('./util.js')
+const { getDB } = require('../dbSetup.js')
 
 async function tryUnsuspend(bot, g, row, isVetBan) {
     const guildId = row.guildid;
@@ -9,10 +10,11 @@ async function tryUnsuspend(bot, g, row, isVetBan) {
     const proofLogID = row.logmessage;
     const guild = bot.guilds.cache.get(guildId);
     const member = guild.members.cache.get(row.id);
+    const db = getDB(g.id)
 
     if (!member) {
         if (!isVetBan) guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${row.id}> has been unsuspended automatically. However, they are not in the server`)
-        return bot.dbs[g.id].query(`UPDATE ${isVetBan ? 'vetbans' : 'suspensions'} SET suspended = false WHERE id = '${row.id}'`)
+        return await db.promise().query(`UPDATE ${isVetBan ? 'vetbans' : 'suspensions'} SET suspended = false WHERE id = '${row.id}'`)
     }
 
     try {
@@ -51,7 +53,7 @@ async function tryUnsuspend(bot, g, row, isVetBan) {
         } catch (er) {
             guild.channels.cache.get(settings.channels.suspendlog).send(unsuspendPing)
         } finally {
-            await bot.dbs[g.id].promise().query(`UPDATE ${isVetBan ? 'vetbans' : 'suspensions'} SET suspended = false WHERE id = '${row.id}'`)
+            await db.promise().query(`UPDATE ${isVetBan ? 'vetbans' : 'suspensions'} SET suspended = false WHERE id = '${row.id}'`)
         }
     } catch (er) {
         ErrorLogger.log(er, bot, g)

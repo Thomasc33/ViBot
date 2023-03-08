@@ -1,5 +1,6 @@
 const Discord = require('discord.js')
 const ErrorLogger = require('./lib/logError')
+const { getDB } = require('./dbSetup.js')
 
 async function modLog(member, logChannel, color, msg) {
     const iconUrl = 'https://cdn.discordapp.com/avatars/' + member.id + '/' + member.user.avatar + '.webp'
@@ -42,13 +43,13 @@ async function suspendedMemberRejoin(bot, member, ignOnLeave) {
 
 module.exports = {
     async checkWasSuspended(bot, member) {
-        const db = bot.dbs[member.guild.id]
+        const db = getDB(member.guild.id)
 
         const [rows, ] = await db.promise().query(`SELECT suspended, ignOnLeave FROM suspensions WHERE id = ? AND suspended = true AND guildid = ?`, [member.id, member.guild.id])
         if (rows.length > 0) await suspendedMemberRejoin(bot, member, rows[0].ignOnLeave)
     },
     async checkWasMuted(bot, member) {
-        const db = bot.dbs[member.guild.id]
+        const db = getDB(member.guild.id)
 
         const [[{ mute_count }], ] = await db.promise().query(`SELECT COUNT(*) as mute_count FROM mutes WHERE id = ? AND muted = true`, [member.id])
         if (mute_count !== 0) {
@@ -96,7 +97,7 @@ module.exports = {
         }))
     },
     async detectSuspensionEvasion(bot, member) {
-        const db = bot.dbs[member.guild.id]
+        const db = getDB(member.guild.id)
         await db.promise().query('SELECT COUNT(*) as suspension_count FROM suspensions WHERE id = ? AND suspended = true AND guildid = ?', [member.id, member.guild.id]).then(async ([[{ suspension_count }], ]) => {
             if (suspension_count === 0) return
             let modlog = modlogChannel(bot, member.guild)

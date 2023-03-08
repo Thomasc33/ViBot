@@ -2,6 +2,7 @@ const Discord = require('discord.js')
 const reScrape = require('../lib/realmEyeScrape')
 const { uptimeString } = require('./status.js')
 const { iterServers } = require('../jobs/util.js')
+const { getDB } = require('../dbSetup.js')
 
 let StatusData = {
     'color': '#00ff00',
@@ -14,8 +15,9 @@ async function checkDataBase(db) {
 
 const embedTemplate = {
     'DB OK': async (bot, guild) => {
-        if (!bot.dbs[guild.id]) return 'N/A'
-        return checkDataBase(bot.dbs[guild.id])
+        const db = getDB(guild.id)
+        if (!db) return 'N/A'
+        return checkDataBase(db)
     },
     'RealmEye': async () => Boolean(await reScrape.handler.next()),
     'Uptime': async (bot) => uptimeString(bot)

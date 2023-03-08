@@ -94,12 +94,12 @@ module.exports = {
         const ignore = await excuses.getIgnore(guild.id, db);
         if (bot.settings[guild.id].backend.sendmissedquota) {
             if (!ignore) {
-                await excuses.calculateMissed(guild, bot, bot.dbs[guild.id], null, true);
-                await excuses.resetExcuses(guild, bot, bot.dbs[guild.id], true);
+                await excuses.calculateMissed(guild, bot, db, null, true);
+                await excuses.resetExcuses(guild, bot, db, true);
             }
         }
         for (const quota of quotaList) {
-            await this.newWeek(guild, bot, bot.dbs[guild.id], bot.settings[guild.id], quotas[guild.id], quota);
+            await this.newWeek(guild, bot, db, bot.settings[guild.id], quotas[guild.id], quota);
         }
         if (ignore)
             await db.promise().query(`DELETE FROM ignoreCurrentWeek WHERE guildId = ${guild.id}`)
