@@ -61,7 +61,7 @@ class MessageManager {
 
                 break;
             default:
-                // Log an error? I guess?
+            // Log an error? I guess?
         }
     }
 
@@ -262,8 +262,9 @@ class MessageManager {
             const guilds = []
             const guildNames = []
             this.#bot.guilds.cache.each(g => {
-                if (this.#bot.emojiServers.includes(g.id)) { return }
-                if (this.#bot.devServers.includes(g.id)) { return }
+                if (this.#bot.emojiServers.includes(g.id)) return
+                if (this.#bot.devServers.includes(g.id)) return
+                if (!g.members.cache.get(message.author.id)) return
                 guilds.push(g)
                 guildNames.push(g.name)
             })
