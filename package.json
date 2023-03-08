@@ -1,5 +1,5 @@
 {
-  "name": "vibot",
+  "name": "vibot", 
   "version": "6.1.0",
   "description": "ViBot",
   "main": "index.js",

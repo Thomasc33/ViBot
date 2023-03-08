@@ -10,7 +10,7 @@ let StatusData = {
 }
 
 async function checkDataBase(db) {
-    return await db.promise().query('SELECT id FROM users LIMIT 1 2').then(([rows, _]) => {return rows && rows.length}, () => false)
+    return await db.promise().query('SELECT id FROM users LIMIT 1').then(([rows, _]) => Boolean(rows && rows.length), () => false)
 }
 
 const embedTemplate = {
