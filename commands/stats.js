@@ -32,7 +32,7 @@ module.exports = {
         })
         if (embed) await message.channel.send({ embeds: [embed] })
     },
-    async getStatsEmbed(id, guild, bot, db) {
+    async getStatsEmbed(id, guild, bot) {
         //User
         const member = guild.members.cache.get(id);
         let ign = member && member.nickname ? member.nickname.replace(/[^a-z|]/gi, '').split('|')[0] : id;
