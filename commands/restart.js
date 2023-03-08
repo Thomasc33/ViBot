@@ -23,9 +23,6 @@ module.exports = {
 
 
         if (args.length != 0 && args[0].toLowerCase() == 'force') process.exit()
-        else module.exports.restarting = true;
-        await message.channel.send('Restart Queued')
-        await botStatus.updateStatus(bot, 'Restart Pending', '#ff0000')
         let Promises = []
 
         //afk checks
@@ -41,6 +38,11 @@ module.exports = {
             }
         }
         if (Promises.length == 0) process.exit()
+
+        module.exports.restarting = true;
+        await message.channel.send('Restart Queued')
+        await botStatus.updateStatus(bot, 'Restart Pending', '#ff0000')
+        
         await Promise.all(Promises).then(() => { process.exit() })
     },
     async registerAFKCheck(afkChecksModule) {
