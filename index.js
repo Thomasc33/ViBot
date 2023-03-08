@@ -6,6 +6,7 @@ require('./lib/extensions.js')
 // Import Internal Libraries
 const ErrorLogger = require(`./lib/logError`)
 const botSetup = require('./botSetup.js')
+const dbSetup = require('./dbSetup.js');
 const memberHandler = require('./memberHandler.js')
 
 // Specific Commands
@@ -79,8 +80,9 @@ bot.on('interactionCreate', async interaction => {
         setTimeout(() => { cooldowns.delete(command.name) }, command.cooldown * 1000)
     }
     try {
-        command.slashCommandExecute(interaction, bot, bot.dbs[interaction.guild.id], tokenDB)
-        bot.dbs[interaction.guild.id].query(`INSERT INTO commandusage (command, userid, guildid, utime) VALUES ('${command.name}', '${interaction.member.id}', '${interaction.guild.id}', '${Date.now()}')`);
+        const db = botSetup.getDB(interaction.guild.id)
+        command.slashCommandExecute(interaction, bot, db, tokenDB)
+        db.query(`INSERT INTO commandusage (command, userid, guildid, utime) VALUES ('${command.name}', '${interaction.member.id}', '${interaction.guild.id}', '${Date.now()}')`);
         CommandLogger.logInteractionCommand(interaction, bot)
     }
     catch (er) {
@@ -99,7 +101,7 @@ bot.on("ready", async () => {
 });
 
 bot.on('guildMemberAdd', async (member) => {
-    if (!bot.dbs[member.guild.id]) return
+    if (!dbSetup.guildHasDb(member.guild.id)) return
 
     await memberHandler.checkWasSuspended(bot, member)
 
@@ -107,13 +109,13 @@ bot.on('guildMemberAdd', async (member) => {
 })
 
 bot.on('guildMemberUpdate', async (oldMember, newMember) => {
-    if (!bot.dbs[newMember.guild.id]) return
+    if (!dbSetup.guildHasDb(newMember.guild.id)) return
 
     const settings = bot.settings[newMember.guild.id];
 
     if (!oldMember.roles.cache.equals(newMember.roles.cache)) return
 
-    if (settings.commands.prunerushers) await memberHandler.pruneRushers(bot.dbs[newMember.guild.id], settings.roles.rusher, oldMember, newMember)
+    if (settings.commands.prunerushers) await memberHandler.pruneRushers(dbSetup.getDB(newMember.guild.id), settings.roles.rusher, oldMember, newMember)
 
     if (newMember.roles.cache.has(settings.roles.lol)) return
 
@@ -121,7 +123,7 @@ bot.on('guildMemberUpdate', async (oldMember, newMember) => {
 })
 
 bot.on('guildMemberRemove', async (member) => {
-    if (!bot.dbs[member.guild.id]) return
+    if (!dbSetup.guildHasDb(member.guild.id)) return
 
     await memberHandler.detectSuspensionEvasion(bot, member)
 })

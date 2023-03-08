@@ -1,6 +1,7 @@
 const { RepeatedJob } = require('./RepeatedJob.js')
 const ErrorLogger = require('../lib/logError')
 const { iterServersWithQuery } = require('./util.js')
+const { getDB } = require('../dbSetup.js')
 
 class Mute extends RepeatedJob {
     run(bot) {
@@ -10,11 +11,12 @@ class Mute extends RepeatedJob {
                 const settings = bot.settings[guildId]
                 const guild = bot.guilds.cache.get(guildId);
                 if (guild) {
+                    const db = getDB(g.id)
                     const member = guild.members.cache.get(row.id);
-                    if (!member) return bot.dbs[g.id].query(`UPDATE mutes SET muted = false WHERE id = '${row.id}'`)
+                    if (!member) return await db.promise().query('UPDATE mutes SET muted = false WHERE id = ?', [row.id])
                     try {
                         await member.roles.remove(settings.roles.muted)
-                        await bot.dbs[g.id].promise().query(`UPDATE mutes SET muted = false WHERE id = '${row.id}'`)
+                        await db.promise().query('UPDATE mutes SET muted = false WHERE id = ?', [row.id])
                     } catch (er) {
                         ErrorLogger.log(er, bot, g)
                     }

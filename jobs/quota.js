@@ -2,6 +2,7 @@ const { RepeatedJob } = require('./RepeatedJob.js')
 const quotas = require('../data/quotas.json');
 const quota = require('../commands/quota')
 const { iterServers } = require('./util.js')
+const { getDB } = require('../dbSetup.js')
 const moment = require('moment');
 
 class MonthlyQuota extends RepeatedJob {
@@ -14,7 +15,7 @@ class MonthlyQuota extends RepeatedJob {
             const quotaList = guildQuotas.quotas.filter(q => q.reset == 'weekly' || (q.reset == 'biweekly' && biweekly));
             if (!quotaList.length) return;
             for (const q of quotaList) {
-                if (q.reset == 'monthly') {quota.newWeek(g, bot, bot.dbs[g.id], bot.settings[g.id], guildQuotas, q);}
+                if (q.reset == 'monthly') {quota.newWeek(g, bot, getDB(g.id), bot.settings[g.id], guildQuotas, q);}
             }
         })
     }
@@ -30,7 +31,7 @@ class BiWeeklyQuota extends RepeatedJob {
             const quotaList = guildQuotas.quotas.filter(q => q.reset == 'weekly' || (q.reset == 'biweekly' && biweekly));
             if (!quotaList.length) return;
 
-            await quota.fullReset(g, bot.dbs[g.id], bot, quotaList);
+            await quota.fullReset(g, getDB(g.id), bot, quotaList);
         })
     }
 }
