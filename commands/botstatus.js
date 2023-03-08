@@ -9,7 +9,7 @@ let StatusData = {
 }
 
 async function checkDataBase(db) {
-    return await db.promise().query('SELECT id FROM users LIMIT 1').then(([rows, _]) => Boolean(rows && rows.length), (e) => false)
+    return await db.promise().query('SELECT id FROM users LIMIT 1').then(([rows, _]) => Boolean(rows && rows.length), () => false)
 }
 
 const embedTemplate = {
@@ -33,7 +33,6 @@ async function generateEmbed(bot, guild, templateOverrides) {
                        ...await Promise.all(Object.entries(fieldGenerator).map(async ([key, valueGenerator]) => {
                                                 let v = await valueGenerator(bot, guild)
                                                 // If the field generator function returns a boolean, emoji-ify it
-                                                console.log(`${key}: ${v}`)
                                                 if (typeof v === 'boolean') v = v ? '✅' : '❌'
                                                 return { name: key, value: v, inline: true }
                                             }))
