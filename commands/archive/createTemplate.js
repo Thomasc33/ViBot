@@ -1,5 +1,5 @@
 const Discord = require('discord.js')
-const afkTemplates = require('../afkTemplates.json');
+const afkTemplates = require('../data/afkTemplates.json');
 const botSettings = require('../settings.json');
 const eventTemplates = require('../data/events.json');
 const fs = require('fs');
@@ -404,7 +404,7 @@ class AfkTemplate {
             if (!afkTemplates[this.author.id])
                 afkTemplates[this.author.id] = {};
             afkTemplates[this.author.id][this.symbol] = this.data;
-            fs.writeFile(require.resolve('../afkTemplates.json'), JSON.stringify(afkTemplates, null, 4), (err) => {
+            fs.writeFile(require.resolve('../data/afkTemplates.json'), JSON.stringify(afkTemplates, null, 4), (err) => {
                 if (err) {
                     reject(err);
                 }

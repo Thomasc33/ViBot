@@ -1,34 +1,35 @@
 {
-  "name": "vibot",
-  "version": "5.8.0",
+  "name": "vibot", 
+  "version": "6.1.1",
   "description": "ViBot",
   "main": "index.js",
   "dependencies": {
-    "@google-cloud/vision": "^2.3.1",
-    "@tensorflow/tfjs-node": "^3.8.0",
-    "axios": "^0.27.2",
-    "body-parser": "^1.19.0",
-    "cheerio": "^1.0.0-rc.6",
-    "cookie-parser": "^1.4.5",
+    "@google-cloud/vision": "^3.1.2",
+    "axios": "^1.3.4",
+    "body-parser": "^1.20.2",
+    "cheerio": "^1.0.0-rc.12",
+    "cookie": "^0.5.0",
+    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
-    "cron": "^2.1.0",
-    "discord.js": "^14.2.0",
-    "express": "^4.17.1",
-    "express-rate-limit": "^6.5.1",
-    "moment": "^2.29.1",
-    "mysql": "^2.18.1",
-    "node-gyp": "^9.1.0",
+    "cron": "^2.2.0",
+    "discord.js": "^14.7.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^6.7.0",
+    "moment": "^2.29.4",
+    "mysql2": "^3.2.0",
+    "node-gyp": "^9.3.1",
     "path": "^0.12.7",
-    "pem": "^1.14.4",
+    "pem": "^1.14.6",
     "request": "^2.88.2",
     "ssl-root-cas": "^1.3.1"
   },
   "scripts": {
-    "test": ";ping"
+    "test": ";ping",
+    "job": "node jobs/runner.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Tcarr9442/ViBot.git"
+    "url": "git+https://github.com/Thomasc33/ViBot.git"
   },
   "keywords": [
     "rotmg"
@@ -36,7 +37,7 @@
   "author": "Thomas Carr",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Tcarr9442/ViBot/issues"
+    "url": "https://github.com/Thomasc33/ViBot/issues"
   },
-  "homepage": "https://github.com/Tcarr9442/ViBot#readme"
+  "homepage": "https://github.com/Thomasc33/ViBot#readme"
 }

@@ -13,9 +13,11 @@ async function resetPoints(points_log_message, message, bot, db) {
         let points = +point_string_split[1];
         let user = point_string_split[0].slice(3, point_string_split[0].indexOf('>'))
 
-        await db.query(`UPDATE users SET points = points - ${points} WHERE id = '${user}'`,
-            er => { if (er) console.log('error running reset command (revoke points) in ', message.guild.id); }
-        );
+        try {
+            await db.promise().query(`UPDATE users SET points = points - ${points} WHERE id = '${user}'`)
+        } catch (er) {
+            console.log('error running reset command (revoke points) in ', message.guild.id)
+        }
         pointsLog.push({
             uid: user,
             points: -points,
@@ -33,7 +35,12 @@ async function resetPoints(points_log_message, message, bot, db) {
 async function resetPointsUsers(points_users, early_location_cost, message, db) {
     let sum = 0;
     for (let user of points_users) {
-        await db.query(`UPDATE users SET points = points + ${early_location_cost} WHERE id = '${user}'`, async er => { console.log("here"); if (er) console.log('error running reset command (refund points) in ', message.guild.id); })
+        try {
+            await db.promise().query(`UPDATE users SET points = points + ${early_location_cost} WHERE id = '${user}'`)
+            console.log("here")
+        } catch (er) {
+            console.log('error running reset command (refund points) in ', message.guild.id)
+        }
         sum++;
     }
     return sum;
@@ -43,9 +50,11 @@ async function resetPointsUsers(points_users, early_location_cost, message, db) 
 async function resetKeyPop(key_poppers, key_log_name, message, db) {
     let sum = 0;
     for (let user of key_poppers) {
-        await db.query(`UPDATE users SET ${key_log_name} = ${key_log_name} - 1 WHERE id = '${user}'`, er => {
-            if (er) console.log(`error running reset command: ${key_log_name} missing from ${message.guild.name} ${message.guild.id}`);
-        });
+        try {
+            await db.promise().query(`UPDATE users SET ${key_log_name} = ${key_log_name} - 1 WHERE id = '${user}'`)
+        } catch(er) {
+            console.log(`error running reset command: ${key_log_name} missing from ${message.guild.name} ${message.guild.id}`);
+        }
         sum++;
     }
     return sum;
@@ -55,8 +64,11 @@ async function resetKeyPop(key_poppers, key_log_name, message, db) {
 async function resetNitro(nitro_users, message, db) {
     let sum = 0;
     for (let user of nitro_users) {
-        await db.query(`UPDATE users SET lastnitrouse = 0 WHERE id = '${user}'`,
-            er => { if (er) console.log(`error running reset command (refund nitro points) in ${message.guild.id}`); });
+        try {
+            await db.promise().query(`UPDATE users SET lastnitrouse = 0 WHERE id = '${user}'`)
+        } catch (er) {
+            console.log(`error running reset command (refund nitro points) in ${message.guild.id}`)
+        }
         sum++;
     }
     return sum;
@@ -65,8 +77,11 @@ async function resetNitro(nitro_users, message, db) {
 async function resetLoggedRuns(raiders, run_log_name, message, db) {
     let sum = 0;
     for (let user of raiders) {
-        await db.query(`UPDATE users SET ${run_log_name} = ${run_log_name} - 1 WHERE id = '${user}'`,
-            er => { if (er) console.log(`error running reset command (remove logged run) in ${message.guild.id}`); });
+        try {
+            await db.promise().query(`UPDATE users SET ${run_log_name} = ${run_log_name} - 1 WHERE id = '${user}'`)
+        } catch (er) {
+            console.log(`error running reset command (remove logged run) in ${message.guild.id}`)
+        }
         sum++;
     }
     return sum;

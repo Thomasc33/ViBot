@@ -56,37 +56,35 @@ async function postVote2(message, member, bot, db) {
             promotion = await retrievePromotionType(settings, message.channel, message.author, member, role, info).catch(err => ErrorLogger.log(err, bot, message.guild));
         if (!promotion) return message.channel.send(`Cancelled vote for ${member}`);
 
-        await db.query(`SELECT * FROM users WHERE id = ${member.id}`, async (err, rows) => {
-            if (err) ErrorLogger.log(err, bot, message.guild);
-            const feedback = await getFeedback.getFeedback(member, message.guild, bot);
-            const promo_role = message.guild.roles.cache.get(settings.roles[promotion]);
-            const embed = new Discord.EmbedBuilder()
-                .setColor('#ff0000')
-                .setAuthor({ name: `${member.nickname} to ${promo_role.name}`, iconURL: member.user.displayAvatarURL({ dynamic: true }) })
-                .setDescription(`${member}\n`);
+        const rows = await db.promise().query(`SELECT * FROM users WHERE id = ${member.id}`).catch((err) => ErrorLogger.log(err, bot, message.guild))
+        const feedback = await getFeedback.getFeedback(member, message.guild, bot);
+        const promo_role = message.guild.roles.cache.get(settings.roles[promotion]);
+        const embed = new Discord.EmbedBuilder()
+            .setColor('#ff0000')
+            .setAuthor({ name: `${member.nickname} to ${promo_role.name}`, iconURL: member.user.displayAvatarURL({ dynamic: true }) })
+            .setDescription(`${member}\n`);
 
-            const min_role = Object.keys(promos)[Object.keys(promos).length - 2];
-            if (rolekey != min_role) {
-                if (rows[0]) embed.data.description += `Runs Logged: ` + promos.db_rows.map(r => `${rows[0][r[1]]} ${r[0]}`).join(', ');
-                else embed.data.description += 'Issue getting runs';
-                embed.addFields([{name: `Recent Feedback:`, value: '** **'}]);
-            } else embed.addFields([{name: 'Feedback:', value: '** **'}]);
+        const min_role = Object.keys(promos)[Object.keys(promos).length - 2];
+        if (rolekey != min_role) {
+            if (rows[0]) embed.data.description += `Runs Logged: ` + promos.db_rows.map(r => `${rows[0][r[1]]} ${r[0]}`).join(', ');
+            else embed.data.description += 'Issue getting runs';
+            embed.addFields([{name: `Recent Feedback:`, value: '** **'}]);
+        } else embed.addFields([{name: 'Feedback:', value: '** **'}]);
 
-            feedback.forEach(m => {
-                const link = `[Link](${m}) `;
-                let field = embed.data.fields[embed.data.fields.length - 1];
-                if (field.value.length + link.length < 1024)
-                    field.value += link;
-                else if (embed.data.fields.length < 15)
-                    embed.addFields([{name: '-', value: `[Link](${m}) `}]);
-            });
+        feedback.forEach(m => {
+            const link = `[Link](${m}) `;
+            let field = embed.data.fields[embed.data.fields.length - 1];
+            if (field.value.length + link.length < 1024)
+                field.value += link;
+            else if (embed.data.fields.length < 15)
+                embed.addFields([{name: '-', value: `[Link](${m}) `}]);
+        });
 
-            const msg = await message.guild.channels.cache.get(settings.channels[guilds.channels[rolekey]]).send({ embeds: [embed] });
-            await msg.react('✅');
-            if (message.guild.id !== '708026927721480254') await msg.react('😐');
-            await msg.react('❌');
-            if (rolekey == 'almostrl' && message.guild.id !== '708026927721480254') await msg.react('👀');
-        })
+        const msg = await message.guild.channels.cache.get(settings.channels[guilds.channels[rolekey]]).send({ embeds: [embed] });
+        await msg.react('✅');
+        if (message.guild.id !== '708026927721480254') await msg.react('😐');
+        await msg.react('❌');
+        if (rolekey == 'almostrl' && message.guild.id !== '708026927721480254') await msg.react('👀');
         return;
     }
 

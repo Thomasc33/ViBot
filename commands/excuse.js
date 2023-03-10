@@ -72,7 +72,7 @@ module.exports = {
         if (ignore) {
             embed.setDescription(`Current week is already ignored: \`\`\`${ignore.reason}\`\`\``)
         } else {
-            await db.query(`INSERT INTO ignoreCurrentWeek (guildId, reason) VALUES ('${message.guild.id}', ?)`, [args.join(' ')]);
+            await db.promise().query(`INSERT INTO ignoreCurrentWeek (guildId, reason) VALUES ('${message.guild.id}', ?)`, [args.join(' ')]);
             embed.setDescription(`Current week has been ignored for the following reason: \`\`\`${args.join(' ')}\`\`\``)
                 .setColor("#00FF00");
         }
@@ -86,7 +86,7 @@ module.exports = {
         if (!ignore) {
             embed.setDescription(`Current week is not currently ignored.`)
         } else {
-            await db.query(`DELETE FROM ignoreCurrentWeek WHERE guildId = '${message.guild.id}'`);
+            await db.promise().query(`DELETE FROM ignoreCurrentWeek WHERE guildId = '${message.guild.id}'`);
             embed.setDescription(`Current week has been unignored. It was previously ignored for the following reason: \`\`\`${ignore.reason}\`\`\``)
                 .setColor("#00FF00");
         }
@@ -231,7 +231,7 @@ module.exports = {
                 .map(u => `'${u.member.id}'`)
                 .filter(u => !excused.includes(u));
             const check = leave.length ? `id IN (${leave.join(', ')})` : 'false';
-            await db.query(`UPDATE users SET ${guildQuota.consecutiveLeave} = IF(${check}, ${guildQuota.consecutiveLeave} + 1, 0)`)
+            await db.promise().query(`UPDATE users SET ${guildQuota.consecutiveLeave} = IF(${check}, ${guildQuota.consecutiveLeave} + 1, 0)`)
             if (excused.length)
                 await new Promise(res => db.query(`UPDATE users SET ${guildQuota.consecutiveUnexcused} = 0 WHERE id IN (${excused.join(', ')})`, () => res()))
             if (unexcused.length)

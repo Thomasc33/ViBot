@@ -94,15 +94,15 @@ module.exports = {
         const ignore = await excuses.getIgnore(guild.id, db);
         if (bot.settings[guild.id].backend.sendmissedquota) {
             if (!ignore) {
-                await excuses.calculateMissed(guild, bot, bot.dbs[guild.id], null, true);
-                await excuses.resetExcuses(guild, bot, bot.dbs[guild.id], true);
+                await excuses.calculateMissed(guild, bot, db, null, true);
+                await excuses.resetExcuses(guild, bot, db, true);
             }
         }
         for (const quota of quotaList) {
-            this.newWeek(guild, bot, bot.dbs[guild.id], bot.settings[guild.id], quotas[guild.id], quota);
+            await this.newWeek(guild, bot, db, bot.settings[guild.id], quotas[guild.id], quota);
         }
         if (ignore)
-            db.query(`DELETE FROM ignoreCurrentWeek WHERE guildId = ${guild.id}`)
+            await db.promise().query(`DELETE FROM ignoreCurrentWeek WHERE guildId = ${guild.id}`)
     },
     async newWeek(guild, bot, db, settings, guildQuotas, quota) {
         const leaderLog = guild.channels.cache.get(settings.channels[quota.pastweeks])
@@ -112,7 +112,7 @@ module.exports = {
         if (rolling.length) {
             const ignore = await excuses.getIgnore(guild.id, db);
             if (ignore)
-                await db.query(`UPDATE users SET ${rolling[0].column} = 0`);
+                await db.promise().query(`UPDATE users SET ${rolling[0].column} = 0`);
             else {
                 const rlist = quota.roles.map((role, i) => { return { role: guild.roles.cache.get(settings.roles[role]), req: quota.quota[i] } }).sort((a, b) => b.position - a.position)
                 const members_updated = {};
@@ -126,20 +126,20 @@ module.exports = {
                     })
                     if (ids.length) {
                         const query = `UPDATE users SET ${rolling[0].column} = LEAST(GREATEST(` + quota.values.filter(v => !v.rolling).map(v => `(${v.column}*${v.value})`).join(' + ') + ` - ${req}, 0), ${req}) WHERE id IN (${ids.join(', ')})`;
-                        await db.query(query, (err, rows) => { if (err) console.log(err) });
+                        await db.promise().query(query).catch(console.log)
                     }
                 }
             }
         }
         let q = `UPDATE users SET ${quota.values.filter(v => !v.rolling).map(v => `${v.column} = 0`).join(', ')}`
-        await db.query(q)
-        this.update(guild, db, bot, settings, guildQuotas, quota)
+        await db.promise().query(q)
+        await this.update(guild, db, bot, settings, guildQuotas, quota)
 
     },
     async update(guild, db, bot, settings, guildQuotas, quota) {
         let currentweek = guild.channels.cache.get(settings.channels[quota.currentweek])
         if (!currentweek) return;
-        this.sendEmbed(currentweek, db, bot, false, guildQuotas, quota)
+        await this.sendEmbed(currentweek, db, bot, false, guildQuotas, quota)
     },
 
     sendEmbed(channel, db, bot, nw, guildQuotas, quota) {
@@ -196,8 +196,8 @@ module.exports = {
                     try {
                         if (CachedMessages[guild.id][quota.id] && CachedMessages[guild.id][quota.id].length > 0) {
                             if (embeds.length !== CachedMessages[guild.id][quota.id].length) resendMessages()
-                            else editMessages()
-                        } else gatherMessages()
+                            else await editMessages()
+                        } else await gatherMessages()
                         async function resendMessages() {
                             try {
                                 await channel.bulkDelete(20)
@@ -218,7 +218,7 @@ module.exports = {
                             if (messages.size !== embeds.length) resendMessages()
                             else {
                                 messages.forEach(m => CachedMessages[guild.id][quota.id].push(m))
-                                editMessages();
+                                await editMessages();
                             }
                         }
                         async function editMessages() {
@@ -227,13 +227,13 @@ module.exports = {
                                     i.delete()
                                     delete i
                                 }
-                                i.edit({ embeds: [embeds.pop()] })
+                                await i.edit({ embeds: [embeds.pop()] })
                             }
                         }
                     } catch (er) { console.log(er) }
                 } else for (let i in embeds) channel.send({ embeds: [embeds[i]] })
                 if (nw)
-                    channel.send({ files: [new Discord.AttachmentBuilder(Buffer.from(csvData, "utf-8"), { name: "currentweekResetData.csv" })] })
+                    await channel.send({ files: [new Discord.AttachmentBuilder(Buffer.from(csvData, "utf-8"), { name: "currentweekResetData.csv" })] })
                 resolve(true);
             });
         });

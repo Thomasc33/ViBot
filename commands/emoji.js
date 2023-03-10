@@ -58,27 +58,33 @@ module.exports = {
         }
     },
     async update(bot) {
-        var data = {}
-        var duplicates = {}
-        bot.emojiServers.forEach(id => {
-            let guild = bot.guilds.cache.get(id)
-            guild.emojis.cache.forEach(emoji => {
-                let dataTransfer = {
-                    tag: `:${emoji.name}:${emoji.id}`,
-                    name: emoji.name,
-                    id: emoji.id,
-                    text: emoji.animated ? `<a:${emoji.name}:${emoji.id}>` : `<:${emoji.name}:${emoji.id}>`,
-                    guildid: guild.id,
-                    guildname: guild.name,
-                    animated: emoji.animated
-                }
-                if (data.hasOwnProperty(emoji.name)) {
-                    duplicates[data[emoji.name].id] = data[emoji.name]
-                    duplicates[emoji.id] = dataTransfer
-                }
-                data[emoji.name] = dataTransfer
+        try {
+            var data = {}
+            var duplicates = {}
+            bot.emojiServers.forEach(id => {
+                let guild = bot.guilds.cache.get(id)
+                guild.emojis.cache.forEach(emoji => {
+                    let dataTransfer = {
+                        tag: `:${emoji.name}:${emoji.id}`,
+                        name: emoji.name,
+                        id: emoji.id,
+                        text: emoji.animated ? `<a:${emoji.name}:${emoji.id}>` : `<:${emoji.name}:${emoji.id}>`,
+                        guildid: guild.id,
+                        guildname: guild.name,
+                        animated: emoji.animated
+                    }
+                    if (data.hasOwnProperty(emoji.name)) {
+                        duplicates[data[emoji.name].id] = data[emoji.name]
+                        duplicates[emoji.id] = dataTransfer
+                    }
+                    data[emoji.name] = dataTransfer
+                })
             })
-        })
-        fs.writeFileSync('./data/emojis.json', JSON.stringify(data, null, 4))
+            fs.writeFileSync('./data/emojis.json', JSON.stringify(data, null, 4))
+            console.log('Emoji file updated')
+        } catch (error) {
+            await ErrorLogger.log(error, bot)
+            console.log('Emoji file failed to update')
+        }
     }
 }

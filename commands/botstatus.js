@@ -1,92 +1,105 @@
-const Discord = require("discord.js")
+const Discord = require('discord.js')
 const reScrape = require('../lib/realmEyeScrape')
+const { uptimeString } = require('./status.js')
+const { iterServers } = require('../jobs/util.js')
+const { getDB } = require('../dbSetup.js')
 
-var statusMessages = {}, Bot, DB
-const interval = setInterval(() => { module.exports.updateAll() }, 30000) //update every 2 mins
-const StatusEmbed = new Discord.EmbedBuilder()
+let StatusData = {
+    'color': '#00ff00',
+    'text': 'Chilling'
+}
+
+async function checkDataBase(db) {
+    return await db.promise().query('SELECT id FROM users LIMIT 1').then(([rows, _]) => Boolean(rows && rows.length), () => false)
+}
+
+const embedTemplate = {
+    'DB OK': async (bot, guild) => {
+        const db = getDB(guild.id)
+        if (!db) return 'N/A'
+        return checkDataBase(db)
+    },
+    'RealmEye': async () => Boolean(await reScrape.handler.next()),
+    'Uptime': async (bot) => uptimeString(bot)
+}
+
+// Generate an Embed from the base `embedTemplate` and any overrides
+async function generateEmbed(bot, guild, templateOverrides) {
+    const builder = new Discord.EmbedBuilder()
+    // Apply overrides to the `embedTemplate` if they exist
+    const fieldGenerator = templateOverrides ? { ...embedTemplate, ...templateOverrides } : embedTemplate;
+    // Build the embed from the `fieldGenerator`
+    builder.setTitle('ViBot Status')
+           .setColor(StatusData.color)
+           .addFields([{ name: 'Status', value: StatusData.text, inline: true },
+                       ...await Promise.all(Object.entries(fieldGenerator).map(async ([key, valueGenerator]) => {
+                                                let v = await valueGenerator(bot, guild)
+                                                // If the field generator function returns a boolean, emoji-ify it
+                                                if (typeof v === 'boolean') v = v ? '✅' : '❌'
+                                                return { name: key, value: v, inline: true }
+                                            }))
+                     ])
+           .setTimestamp()
+    return builder
+}
+
+// Returns true if the update was sucessful, returns false if the update failed
+async function update(bot, channel, embed) {
+    const recentMessages = await channel.messages.fetch({ limit: 10 })
+    const lastStatusMessage = recentMessages.find(m => m.author.id == bot.user.id && m.embeds.length == 1 && m.embeds[0].title == 'ViBot Status')
+    if (!lastStatusMessage) return false
+    await lastStatusMessage.edit({ embeds: [embed] })
+    return true
+}
+
 module.exports = {
     name: 'botstatus',
     role: 'developer',
     args: 'send/update',
     //requiredArgs: 1,
-    async execute(message, args, bot, db) {
-        if (!Bot) Bot = bot
-        let settings = bot.settings[message.guild.id]
+    async execute(message, args, bot) {
+        const settings = bot.settings[message.guild.id]
         if (!settings) return;
 
-        //get arg
+        const botstatusChannel = message.guild.channels.cache.get(settings.channels.botstatus)
+        if (!botstatusChannel) return console.log('botstatus not found for ', message.guild.id)
+
         if (args.length == 0) return
         switch (args[0].toLowerCase()) {
-            case 'send':
-                this.send(message.guild)
+            case 'send': {
+                const embed = await generateEmbed(bot, message.channel.guild)
+                await botstatusChannel.send({ embeds: [embed] })
+                await message.channel.send(`Message sent in <#${botstatusChannel.id}>`)
                 break;
-            case 'update':
-                this.update(message.guild)
+            }
+
+            case 'update': {
+                const embed = await generateEmbed(bot, message.channel.guild)
+                const updateSuccessful = await update(bot, botstatusChannel, embed)
+                await message.channel.send(updateSuccessful ? `Message updated in <#${botstatusChannel.id}>` : 'Could not find an existing message to update')
                 break;
+            }
+
             default:
-                return message.channel.send('Unknown arg')
+                await message.channel.send('Unknown argument, valid arguments are: "send", "update"')
         }
     },
-    async init(guild, bot, db) {
-        if (!Bot) Bot = bot
-        if (!DB) DB = db
-        if (!StatusEmbed.data.fields || StatusEmbed.data.fields.length == 0) {
-            //embed stuff
-            StatusEmbed.setColor('#0000ff')
-                .setTitle('ViBot Status')
-                .addFields([
-                    { name: 'Status', value: 'Initializing' },
-                    { name: 'DB OK', value: await this.checkDataBase() ? '✅' : '❌', inline: true },
-                    { name: 'RealmEye', value: await reScrape.handler.next() ? '✅' : '❌', inline: true },
-                ])
-                .setTimestamp()
+    async updateAll(bot) {
+        // Cache realmeye status across all servers
+        const overrides = {
+            'RealmEye': async () => Boolean(await reScrape.handler.next())
         }
-        let settings = bot.settings[guild.id]
-        if (!settings || !settings.channels.botstatus) return;
 
-        let c = guild.channels.cache.get(settings.channels.botstatus)
-        if (!c) return console.log('botstatus not found for ', guild.id)
-        let ms = await c.messages.fetch({ limit: 10 })
-        ms = ms.filter(m => m.author.id == bot.user.id)
-        statusMessages[guild.id] = ms.first()
-        this.update(guild)
-    },
-    async send(guild) {
-        let settings = Bot.settings[guild.id]
-        let c = guild.channels.cache.get(settings.channels.botstatus)
-        if (!c) return console.log('botstatus not found for ', guild.id)
-        let m = await c.send({ embeds: [StatusEmbed] })
-        statusMessages[guild.id] = m
-    },
-    async update(guild) {
-        if (!statusMessages[guild.id]) return
-        m = statusMessages[guild.id]
-        await m.edit({ embeds: [StatusEmbed] })
-    },
-    async updateAll() {
-        if (!DB || !Bot || !StatusEmbed || !StatusEmbed.data || StatusEmbed.data.fields.length < 3) return //happens on bot initialization
-        if (StatusEmbed.data.fields[0].value == 'Initializing') {
-            StatusEmbed.data.fields[0].value = 'Chilling';
-            StatusEmbed.setColor('#00ff00')
-        }
-        StatusEmbed.data.fields[1].value = await this.checkDataBase() ? '✅' : '❌'
-        StatusEmbed.data.fields[2].value = await reScrape.handler.next() ? '✅' : '❌'
-        for (let i in statusMessages) {
-            await statusMessages[i].edit({ embeds: [StatusEmbed] })
-        }
-    },
-    async setStatus() {
-
-    },
-    statusMessages,
-    StatusEmbed,
-    async checkDataBase() {
-        return new Promise((res) => {
-            if (!DB) DB = require('../index').bot.dbs['343704644712923138']
-            DB.query('SELECT id FROM users LIMIT 1', (err, rows) => {
-                if (!err || (rows && rows.length > 0)) return res(true)
-                else return res(false)
-            })
+        await iterServers(bot, async (bot, guild) => {
+            const botstatusChannel = guild.channels.cache.get(bot.settings[guild.id].channels.botstatus)
+            if (!botstatusChannel) return
+            const embed = await generateEmbed(bot, guild, overrides)
+            await update(bot, botstatusChannel, embed)
         })
-    }
+    },
+    async updateStatus(bot, newStatus, newColor) {
+        StatusData.text = newStatus
+        if (newColor) StatusData.color = newColor
+        await this.updateAll(bot)
+    },
 }

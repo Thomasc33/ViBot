@@ -2,8 +2,8 @@ const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
 const botSettings = require('../settings.json')
 const realmEyeScrape = require('../lib/realmEyeScrape')
-const VerificationML = require('../ml/verification')
-const TestAlt = require('./testAlt')
+// const VerificationML = require('../ml/verification')
+// const TestAlt = require('./testAlt')
 
 var verificationChannel
 var verificationMessage
@@ -336,7 +336,7 @@ module.exports = {
             LoggingEmbed.setDescription(`<@!${u.id}> Attempted to verify, however, they had issues with their profile and are now under manual review`)
             veriattempts.send({ embeds: [LoggingEmbed] })
 
-            let altDetectionScore = await TestAlt.testFromIGN(ign)
+            // let altDetectionScore = await TestAlt.testFromIGN(ign)
             let manualEmbed = new Discord.EmbedBuilder()
                 .setAuthor({ name: `${u.tag} is attempting to verify as: ${ign}`, iconURL: u.avatarURL() })
                 .setDescription(`<@!${u.id}> : [Realmeye Link](https://www.realmeye.com/player/${ign})`)
@@ -351,7 +351,7 @@ module.exports = {
                     { name: 'Last seen', value: `${data.player_last_seen || 'Unknown'}`, inline: true },
                     { name: 'Character Count', value: `${data.chars || 'Unknown'}`, inline: true },
                     { name: 'Skins', value: `${data.skins || 'Unknown'}`, inline: true },
-                    { name: 'Alt %', value: altDetectionScore ? `${altDetectionScore.toFixed(20)}%` : 'Error Gathering Data', inline: true },
+                    // { name: 'Alt %', value: altDetectionScore ? `${altDetectionScore.toFixed(20)}%` : 'Error Gathering Data', inline: true },
                     { name: 'Discord account created', value: u.createdAt.toString() || 'Unknown', inline: false }
                 )
                 .setFooter({ text: `${u.id}` })
@@ -396,7 +396,7 @@ module.exports = {
             active.splice(active.indexOf(u.id), 1)
 
             //data collection
-            TestAlt.trainFromIGN(ign, 0)
+            // TestAlt.trainFromIGN(ign, 0)
         }
     },
     async manualVerifyUpdate(guild, bot, db) {
@@ -492,7 +492,7 @@ module.exports = {
                     db.query(`DELETE FROM veriblacklist WHERE id = '${member.id}' OR id = '${ign}'`)
 
                     //train machine leaning model
-                    TestAlt.trainFromIGN(ign, 0)
+                    // TestAlt.trainFromIGN(ign, 0)
                 }
                 //x
                 else if (r.emoji.name === '❌') {
@@ -581,7 +581,7 @@ module.exports = {
                             watching.splice(watching.indexOf(u.id), 1)
 
                             //train from ign
-                            TestAlt.trainFromIGN(ign, 1)
+                            // TestAlt.trainFromIGN(ign, 1)
                         }
                     })
                 }

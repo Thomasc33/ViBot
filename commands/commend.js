@@ -1,12 +1,8 @@
 const Discord = require('discord.js')
-const commendations = require('../data/commends.json')
 module.exports = {
     name: 'commend',
     role: 'rl',
     args: '<user> <role *see below*>',
-    getNotes(guildid, member) {
-        return commendations ? `Role List: ${commendations[guildid].map(r => r.roleName).join(', ')}` : 'no roles found for this guild'
-    },
     requiredArgs: 2,
     description: 'Gives user a role',
     /**
@@ -19,76 +15,88 @@ module.exports = {
      */
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
-        let commendationInfo = commendations[message.guild.id]
-        if (!commendationInfo) return message.channel.send('Commendations not setup for this server')
+        // If there are no settings available for this server, commendations wont work
+        if (!settings) {
+           await message.channel.send("Commendations are not set up for this server")
+           return
+        }
+
+        let validRoles = settings.lists.commendRoles
+
+        if (!validRoles) {
+            await message.channel.send(`Unable to find commendRoles, please contact a developer!`)
+            return
+        }
 
         //check args length
         if (args.length < 2) return
 
-        //args 0
-        let member = message.mentions.members.first()
-        if (!member) member = message.guild.members.cache.get(args[0])
-        if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
-        if (!member) return message.channel.send('User not found')
+        // Find member using findMember prototype
+        const member = message.guild.findMember(args[0])
 
-        //args 1
-        let type = args[1].toLowerCase()
+        if (!member) {
+            await message.channel.send(`Error looking up ${args[0]}, ensure this is a valid user`)
+            return
+        }
 
-        //give role and log
-        let found = false
-        for (let i of commendationInfo) {
-            if (i.roleName == type.toLowerCase()) {
-                found = true
-                if (i.minimumRole) {
-                    let minRole = message.guild.roles.cache.get(settings.roles[i.minimumRole])
-                    if (minRole && message.member.roles.highest.position < minRole.position) return message.channel.send(`The minimum role to commend this role is \`${minRole.name}\``)
-                }
-                let role = message.guild.roles.cache.get(i.roleId)
-                if (!role) return message.channel.send(`\`${i.roleId}\` not found`)
-                if (member.roles.cache.has(role.id)) return message.channel.send(`${member} already has \`${role.name}\``)
-                let modlog = message.guild.channels.cache.get(settings.channels.modlogs)
+        // Verify that role is valid to add
+        if (!validRoles.includes(args[1])) {
+            await message.channel.send(`Error validating ${args[1]}, ensure this is a valid role (based on commends.json)`)
+            return
+        }
+
+        if (!settings.roles[args[1]]) {
+            await message.channel.send(`This role has not been configured on this server, please contact a moderator!`)
+            return
+        }
+        
+        // Find role using findRole prototype
+        let roleToAdd = message.guild.findRole(settings.roles[args[1]])
+
+        if (!roleToAdd) {
+            await message.channel.send(`This role is not assignable on this server!`)
+            return
+        }
+
+        // Verify the user has the permission to commend this role
+        let minimumStaffRole = message.guild.findRole(settings.roles.minimumStaffRole)
+
+        if (!minimumStaffRole) {
+            await message.channel.send(`Minimum staff role has not been configured on this server, please contact a moderator!`)
+            return
+        }
+
+        if (roleToAdd.position > minimumStaffRole.position) {
+            await message.channel.send(`The role you are trying to commend is a staff role!`)
+            return
+        }
+
+        // Ensure the user wants to go through with adding the role with a confirmation action
+        await message.channel.send(`Are you sure you want to give ${roleToAdd.name} to ${member.displayName}?`).then(async viMessage => {
+            if (await viMessage.confirmButton(message.author.id)) {
+                let modlog = viMessage.guild.channels.cache.get(settings.channels.modlogs)
                 if (modlog) await modlog.send({
                     embeds: [
                         new Discord.EmbedBuilder()
-                            .setTitle(`${role.name} Commendation`)
+                            .setTitle(`${roleToAdd.name} Commendation`)
                             .addFields([
                                 { name: 'Commender', value: `${message.author} \`${message.author.tag}\`` },
                                 { name: 'Commended', value: `${member} \`${member.user.tag}\`` },
-                                { name: 'Role', value: `${role}` }
+                                { name: 'Role', value: `${roleToAdd}` }
                             ])
-                            .setColor(role.hexColor)
+                            .setColor(roleToAdd.hexColor)
                             .setTimestamp()
                     ]
                 });
-                member.roles.add(role.id)
-                if (i.dbName) db.query(`UPDATE users SET ${i.dbName} = true WHERE id = '${member.id}'`)
-                if (i.prefix) addPrefix(i.prefix, member)
+    
+                await member.roles.add(roleToAdd.id)
+                await viMessage.edit({components: []})
+                await viMessage.edit(`Great, member has been commended!`)
             }
-        }
-
-        if (!found) return message.channel.send('Role name not found, get the list with `;help commend`')
-
-        //give confirmation
-        message.react('✅')
-    }
-}
-
-function addPrefix(p, member) {
-    let prefix = member.nickname.replace(/[a-z0-9|]/gi, '')
-    if (!prefix || prefix == '') member.setNickname(`${p}${member.nickname.replace(/[+-=]/gi, '')}`)
-    else if (prefix.replace(/[^+-=]/gi, '') != prefix) return console.log('returning');
-    switch (p) {
-        case '+':
-            member.setNickname(`${p}${prefix.replace('+', '')}${member.nickname.replace(/[+-=]/gi, '')}`)
-            break;
-        case '-':
-            member.setNickname(`${prefix.replace(/[=-]/gi, '')}${p}${prefix.replace(/[+-]/gi, '')}${member.nickname.replace(/[+-=]/gi, '')}`)
-            break;
-        case '=':
-            member.setNickname(`${prefix.replace('=', '')}${p}${member.nickname.replace(/[+-=]/gi, '')}`)
-            break;
-        default:
-            member.setNickname(`${p}${prefix.replace(p, '')}${member.nickname.replace(/[+-=]/gi, '')}`)
-            break;
+            else {
+                await viMessage.edit({components: []})
+                await viMessage.edit(`Commendation cancelled, have a nice day!`)
+            }
+        })
     }
 }

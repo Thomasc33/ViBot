@@ -1,7 +1,6 @@
 const Discord = require('discord.js');
 const botSettings = require('../settings.json');
 const ErrorLogger = require('../lib/logError');
-const emojis = require("../data/emojis.json")
 
 module.exports = {
     name: 'poll',
