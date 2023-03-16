@@ -3,6 +3,7 @@ const dbSchemas = require('./data/schemas.json')
 const mysql = require('mysql2')
 
 let dbs = null
+let uniq_dbs = []
 
 module.exports = {
     async init(bot) {
@@ -31,6 +32,7 @@ module.exports = {
                 dbs[guildId] = dbs[matchingGuild[1]]
             } else {
                 dbs[guildId] = mysql.createPool(dbInfo)
+                uniq_dbs.push(dbs[guildId])
                 dbInfos.push([dbInfo, guildId])
                 console.log(`Connected to database: ${dbConfig.schema}`)
             }
@@ -48,7 +50,7 @@ module.exports = {
         return Boolean(dbs[guildId])
     },
     endAll() {
-        Object.values(dbs).forEach(db => {
+        uniq_dbs.forEach(db => {
             db.end()
         })
         dbs = null
