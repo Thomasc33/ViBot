@@ -61,9 +61,9 @@ async function tryUnsuspend(bot, g, row, isVetBan) {
 }
 
 class UnbanVet extends RepeatedJob {
-    run(bot) {
+    async run(bot) {
         const dbQuery = 'SELECT * FROM vetbans WHERE suspended = true';
-        iterServersWithQuery(bot, dbQuery, async (bot, row, g) => {
+        await iterServersWithQuery(bot, dbQuery, async (bot, row, g) => {
             if (Date.now() > parseInt(row.uTime)) {
                 await tryUnsuspend(bot, g, row, true)
             }
@@ -72,9 +72,9 @@ class UnbanVet extends RepeatedJob {
 }
 
 class Unsuspend extends RepeatedJob {
-    run(bot) {
+    async run(bot) {
         const dbQuery = 'SELECT * FROM suspensions WHERE suspended = true AND perma = false';
-        iterServersWithQuery(bot, dbQuery, async (bot, row, g) => {
+        await iterServersWithQuery(bot, dbQuery, async (bot, row, g) => {
             if (Date.now() > parseInt(row.uTime)) {
                 await tryUnsuspend(bot, g, row, false)
             }

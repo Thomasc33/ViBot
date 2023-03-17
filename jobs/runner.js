@@ -50,7 +50,7 @@ bot.on('ready', async () => {
     await Promise.all(jobsToRun.oneshot.map(async Job => {
         console.log('Running oneshot job ' + Job.cliRunnerJobName)
         const jobExecutor = new Job(bot);
-        await Promise.resolve(jobExecutor.runOnce());
+        await jobExecutor.runOnce();
         console.log('Job ' + Job.cliRunnerJobName + ' complete')
     }))
     console.log('Launching interval jobs')

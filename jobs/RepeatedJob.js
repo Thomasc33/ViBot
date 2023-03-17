@@ -1,4 +1,5 @@
 const cron = require('cron')
+const LogError = require('../lib/logError.js')
 
 class RepeatedJob {
     bot
@@ -14,8 +15,12 @@ class RepeatedJob {
         throw new Error('`run` not implimented for RepeatedJob ' + this)
     }
 
-    runOnce() {
-        return this.run(this.bot)
+    async runOnce() {
+        try {
+            return await this.run(this.bot)
+        } catch (er) {
+            LogError.log(er, this.bot)
+        }
     }
 
     runAtInterval(msec) {
