@@ -601,15 +601,6 @@
             "earlyLocationCost": 20,
             "earlyLocationReacts": [
                 {
-                    "emote": "UTCrystalShield",
-                    "pointsGiven": 1,
-                    "limit": 1,
-                    "shortName": "CShield",
-                    "confirmationMessage": "**__REQUIRED__**\n- You must know how to decoy the Sentinal away in Rage phase.\n- You must know how to decoy the Forgotten King in Pre-Accursed Red and Post-Accursed phases.\n-You must have a **Knight** with a <:UTCrystalShield:720401152633470998> (CShield) available.",
-                    "noConfirm": false,
-                    "noLocation": false
-                },
-                {
                     "emote": "tomeOfTheMushroomTribesFungal",
                     "pointsGiven": 1,
                     "limit": 2,
@@ -1189,15 +1180,6 @@
             "earlyLocationCost": 20,
             "earlyLocationReacts": [
                 {
-                    "emote": "UTCrystalShield",
-                    "pointsGiven": 1,
-                    "limit": 1,
-                    "shortName": "CShield",
-                    "confirmationMessage": "**__REQUIRED__**\n- You must know how to decoy the Sentinal away in Rage phase.\n- You must know how to decoy the Forgotten King in Pre-Accursed Red and Post-Accursed phases.\n-You must have a **Knight** with a <:UTCrystalShield:720401152633470998> (CShield) available.",
-                    "noConfirm": false,
-                    "noLocation": false
-                },
-                {
                     "emote": "tomeOfTheMushroomTribesFungal",
                     "pointsGiven": 1,
                     "limit": 2,
@@ -1284,15 +1266,6 @@
             "keyCount": 1,
             "earlyLocationCost": 20,
             "earlyLocationReacts": [
-                {
-                    "emote": "UTCrystalShield",
-                    "pointsGiven": 1,
-                    "limit": 1,
-                    "shortName": "CShield",
-                    "confirmationMessage": "**__REQUIRED__**\n- You must know how to decoy the Sentinal away in Rage phase.\n- You must know how to decoy the Forgotten King in Pre-Accursed Red and Post-Accursed phases.\n-You must have a **Knight** with a <:UTCrystalShield:720401152633470998> (CShield) available.",
-                    "noConfirm": false,
-                    "noLocation": false
-                },
                 {
                     "emote": "tomeOfTheMushroomTribesFungal",
                     "pointsGiven": 1,
