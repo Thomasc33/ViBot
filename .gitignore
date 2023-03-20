@@ -8,3 +8,4 @@ package-lock.json
 emojis.json
 data/emojis.json
 data/restart_channel.json
+.DS_Store
