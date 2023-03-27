@@ -774,7 +774,8 @@
                     "currentweekhardmodeLead",
                     "currentweekfailed",
                     "currentweekVeteranShattersLead",
-                    "currentweekassists"
+                    "currentweekassists",
+                    "rollingQuota"
                 ]
             },
             {
@@ -801,7 +802,8 @@
                     "currentweekhardmodeLead",
                     "currentweekfailed",
                     "currentweekVeteranShattersLead",
-                    "currentweekassists"
+                    "currentweekassists",
+                    "rollingQuota"
                 ]
             },
             {
@@ -825,7 +827,8 @@
                     "currentweekhardmodeLead",
                     "currentweekfailed",
                     "currentweekVeteranShattersLead",
-                    "currentweekassists"
+                    "currentweekassists",
+                    "rollingQuota"
                 ]
             },
             {
@@ -871,7 +874,8 @@
                     "currentweekhardmodeLead",
                     "currentweekfailed",
                     "currentweekVeteranShattersLead",
-                    "currentweekassists"
+                    "currentweekassists",
+                    "rollingQuota"
                 ]
             }
         ],
