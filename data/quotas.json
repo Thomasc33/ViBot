@@ -239,7 +239,9 @@
             "currentweek": "parsecurrentweek",
             "pastweeks": "pastparseweeks",
             "values": [
-                { "column": "currentweekparses", "name": "Parses", "value": 1 }
+                { "column": "currentweekparses", "name": "Parses", "value": 1 },
+                { "column": "currentweekverifications", "name": "Verifications", "value": 2 },
+                { "column": "currentweekvetVerifications", "name": "Veteran Verifications", "value": 3 }
             ]
         }]
     }

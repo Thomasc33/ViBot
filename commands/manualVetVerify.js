@@ -1,5 +1,5 @@
 const Discord = require('discord.js')
-
+const { manualVetVerifyLog } = require('../commands/vetVerification.js')
 module.exports = {
     name: 'manualvetverify',
     description: 'Adds Veteran Raider Role to user',
@@ -8,7 +8,7 @@ module.exports = {
     role: 'security',
     roleOverride: { '343704644712923138': 'security' },
     alias: ['mvv'],
-    execute(message, args, bot) {
+    execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         const vetBanRole = message.guild.roles.cache.get(settings.roles.vetban)
         const vetRaiderRole = message.guild.roles.cache.get(settings.roles.vetraider);
@@ -27,5 +27,6 @@ module.exports = {
         message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });
         let confirmEmbed = new Discord.EmbedBuilder().setDescription(`${member} has been given ${vetRaiderRole}`)
         message.channel.send({ embeds: [confirmEmbed] })
+        manualVetVerifyLog(message, message.author.id, bot, db)
     }
 }

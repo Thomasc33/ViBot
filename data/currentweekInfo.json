@@ -44,6 +44,17 @@
             ]
         }
     ],
+    "verificationcurrentweek": [
+        {
+            "id": "451171819672698920",
+            "verificationcurrentweek": "currentweekverifications",
+            "verficationtotal": "verifications",
+            "vetverificationcurrentweek": "currentweekvetVerifications",
+            "vetverificationtotal": "vetVerifications",
+            "disabled": false,
+            "vetdisabled": false
+        }
+    ],
     "parsecurrentweek": [
         {
             "id": "343704644712923138",
