@@ -114,9 +114,9 @@ module.exports = {
             if (ignore)
                 await db.promise().query(`UPDATE users SET ${rolling[0].column} = 0`);
             else {
-                const rlist = quota.roles.map((role, i) => { return { role: guild.roles.cache.get(settings.roles[role]), req: quota.quota[i] } }).sort((a, b) => b.position - a.position)
+                const rlist = quota.roles.map((role, i) => { return { role: guild.roles.cache.get(settings.roles[role]), req: quota.quota[i], rollmax: quota.rollmax[i] } }).sort((a, b) => b.position - a.position)
                 const members_updated = {};
-                for (const { role, req }
+                for (const { role, req, rollmax }
                     of rlist) {
                     const ids = [];
                     role.members.forEach(member => {
@@ -125,7 +125,7 @@ module.exports = {
                         ids.push(`'${member.id}'`)
                     })
                     if (ids.length) {
-                        const query = `UPDATE users SET ${rolling[0].column} = LEAST(GREATEST(` + quota.values.filter(v => !v.rolling).map(v => `(${v.column}*${v.value})`).join(' + ') + ` - ${req}, 0), ${req}) WHERE id IN (${ids.join(', ')})`;
+                        const query = `UPDATE users SET ${rolling[0].column} = LEAST(GREATEST(` + quota.values.filter(v => !v.rolling).map(v => `(${v.column}*${v.value})`).join(' + ') + ` - ${req}, 0), ${rollmax}) WHERE id IN (${ids.join(', ')})`;
                         await db.promise().query(query).catch(console.log)
                     }
                 }
