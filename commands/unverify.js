@@ -19,6 +19,14 @@ module.exports = {
         if (member.roles.highest.position >= message.guild.roles.cache.get(bot.settings[message.guild.id].roles.eventrl).position)
             return message.channel.send('You can not unverify EO+');
 
+        //get role list, ignoring Discord managed roles
+        let userRoles = []
+        member.roles.cache.each(r => {
+            if (r.managed) return
+            if (settings.lists.discordRoles.map(role => settings.roles[role]).includes(r.id)) return
+            userRoles.push(r.id)
+        })
+
         const reason = args.join(' ');
         //unverify
         let embed = new Discord.EmbedBuilder()
@@ -28,7 +36,7 @@ module.exports = {
             .addFields([{name: 'Unverified By', value: `<@!${message.author.id}>`, inline: true}])
             .addFields([{name: 'Reason', value: reason || 'None!'}])
             .setTimestamp(Date.now());
-        member.roles.set([])
+        member.roles.remove(userRoles)
             .then(() => member.setNickname(''))
             .then(async() => { member.send(`You have been unverified${reason ? ': ' + reason : ''}. Please contact ${message.author} \`${message.author.tag}\` to appeal.`); })
             .then(() =>     message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] }))

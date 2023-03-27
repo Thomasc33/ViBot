@@ -62,7 +62,7 @@ module.exports = {
             let userRolesString = '',
                 userRoles = []
             member.roles.cache.each(r => {
-                if (!r.managed) {
+                if (!(r.managed || settings.lists.discordRoles.map(role => settings.roles[role]).includes(r.id))) {
                     userRoles.push(r.id)
                     userRolesString = userRolesString.concat(`${r.id} `)
                 }
@@ -72,7 +72,8 @@ module.exports = {
                     embed.data.fields[3].value += `, <@&${r.id}>`
                 }
             })
-            await member.edit({ roles: [pSuspendRole] })
+            await member.roles.remove(userRoles)
+            setTimeout(() => { member.roles.add(pSuspendRole.id); }, 1000)
             if (overwrite) db.query(`UPDATE suspensions SET perma = true, uTime = '0', modid = '${message.member.id}' WHERE id = '${member.id}' AND suspended = true`)
             else db.query(`INSERT INTO suspensions (id, guildid, suspended, uTime, reason, modid, roles, logmessage, perma) VALUES ('${member.id}', '${message.guild.id}', true, '0', ${db.escape(reason)}, '${message.author.id}', '${userRolesString}', 'n/a', true);`)
             message.channel.send(`${member} has been permanently suspended`)
