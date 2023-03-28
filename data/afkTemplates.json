@@ -1394,7 +1394,49 @@
             ],
             "embed": {
                 "color": "#015c21",
-                "description": "To join, connect to the raiding channel by clicking its name\nIf you have a key react with <:ShattersKey:shattersKey>\nTo indicate your class or gear choices, react with <:Warrior:500083067386331136> <:Paladin:500083068019933204> <:Knight:662095356074524675> <:FungalTome:888890099511734312> <:Ogmur:662096955912224778> <:UTMarbleSeal:UTMarbleSeal> <:RangedDPS:888985633270423584> <:Slow:Slow> <:Curse:Curse> <:Expose:Expose>\nIf you plan on rushing, react with <a:Rusher:888889860964892693>\nIf you are able to solve the puzzle react with <:Puzzle:888887797530918952>\n<@&585542641975033859> to get early location react with <:nitro:NitroBooster>",
+                "description": "To join, connect to the raiding channel by clicking its name\nIf you have a key react with <:shattersKey:1008104345197346817>\nTo indicate your class or gear choices, react with <:Warrior:500083067386331136> <:Paladin:500083068019933204> <:Knight:662095356074524675> <:FungalTome:888890099511734312> <:Ogmur:662096955912224778> <:UTMarbleSeal:UTMarbleSeal> <:RangedDPS:888985633270423584> <:Slow:Slow> <:Curse:Curse> <:Expose:Expose>\nIf you plan on rushing, react with <a:Rusher:888889860964892693>\nIf you are able to solve the puzzle react with <:Puzzle:888887797530918952>\n<@&585542641975033859> to get early location react with <:nitro:NitroBooster>",
+                "thumbnail": "https://cdn.discordapp.com/attachments/748200247716479159/890001562620035122/unknown.png",
+                "removeThumbnail": false
+            },
+            "font-color": "#fefefe"
+        },
+        "moonlight": {
+            "runType": "Moonlight Village",
+            "runName": "Moonlight Village",
+            "symbol": "mv",
+            "reqsImageUrl": "",
+            "keyEmote": "mvK",
+            "runLogName": "moonlightRuns",
+            "keyLogName": "moonlightPops",
+            "headcountEmote": "mv",
+            "headcountOnAfk": true,
+            "pingRole": null,
+            "isSplit": false,
+            "newChannel": false,
+            "vialReact": false,
+            "postAfkCheck": true,
+            "twoPhase": true,
+            "startDelay": 0,
+            "vcCap": 50,
+            "timeLimit": 360,
+            "keyCount": 2,
+            "earlyLocationCost": 20,
+            "earlyLocationReacts": [
+            ],
+            "reacts": [
+                "Warrior",
+                "Paladin",
+                "Knight",
+                "UTShieldofOgmur",
+                "UTMarbleSeal",
+                "rangedDPS",
+                "Slow",
+                "Curse",
+                "Expose"
+            ],
+            "embed": {
+                "color": "#015c21",
+                "description": "To join, connect to the raiding channel by clicking its name\nIf you have a key react with <:mvK:1090163553396334663>\nTo indicate your class or gear choices, react with <:Warrior:500083067386331136> <:Paladin:500083068019933204> <:Knight:662095356074524675> <:FungalTome:888890099511734312> <:Ogmur:662096955912224778> <:UTMarbleSeal:UTMarbleSeal> <:RangedDPS:888985633270423584> <:Slow:Slow> <:Curse:Curse> <:Expose:Expose>\n<@&585542641975033859> to get early location react with <:nitro:NitroBooster>",
                 "thumbnail": "https://cdn.discordapp.com/attachments/748200247716479159/890001562620035122/unknown.png",
                 "removeThumbnail": false
             },
@@ -1462,7 +1504,7 @@
             ],
             "embed": {
                 "color": "#015c21",
-                "description": "To join, connect to the raiding channel by clicking its name\nIf you have a key react with <:ShattersKey:shattersKey>\nTo indicate your class or gear choices, react with <:Warrior:500083067386331136> <:Paladin:500083068019933204> <:Knight:662095356074524675> <:FungalTome:888890099511734312> <:Ogmur:662096955912224778> <:UTMarbleSeal:UTMarbleSeal> <:RangedDPS:888985633270423584> <:Slow:Slow> <:Curse:Curse> <:Expose:Expose>\nIf you plan on rushing, react with <a:Rusher:888889860964892693>\nIf you are able to solve the puzzle react with <:Puzzle:888887797530918952>\n<@&585542641975033859> to get early location react with <:nitro:NitroBooster>",
+                "description": "To join, connect to the raiding channel by clicking its name\nIf you have a key react with <:shattersKey:1008104345197346817>\nTo indicate your class or gear choices, react with <:Warrior:500083067386331136> <:Paladin:500083068019933204> <:Knight:662095356074524675> <:FungalTome:888890099511734312> <:Ogmur:662096955912224778> <:UTMarbleSeal:UTMarbleSeal> <:RangedDPS:888985633270423584> <:Slow:Slow> <:Curse:Curse> <:Expose:Expose>\nIf you plan on rushing, react with <a:Rusher:888889860964892693>\nIf you are able to solve the puzzle react with <:Puzzle:888887797530918952>\n<@&585542641975033859> to get early location react with <:nitro:NitroBooster>",
                 "thumbnail": "https://cdn.discordapp.com/attachments/748200247716479159/890001562620035122/unknown.png",
                 "removeThumbnail": false
             },

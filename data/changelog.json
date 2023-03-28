@@ -22,6 +22,9 @@
             "steamworkRuns",
             "steamworkLead",
             "steamworkPops",
+            "moonlightRuns",
+            "moonlightLead",
+            "moonlightPops",
             "totalUnexcused"
         ],
         "currentweeks": [
@@ -76,6 +79,10 @@
             {
                 "case": "steamworkLead",
                 "currentWeekName": "currentweekSteamwork"
+            },
+            {
+                "case": "moonlightLead",
+                "currentWeekName": "currentweekMoonlight"
             }
         ]
     },
@@ -97,7 +104,14 @@
             "exaltFeedback",
             "shattersLead",
             "fungalsLead",
-            "nestsLead"
+            "nestsLead",
+            "steamworkRuns",
+            "steamworkLead",
+            "steamworkPops",
+            "moonlightRuns",
+            "moonlightLead",
+            "moonlightPops",
+            "totalUnexcused"
         ],
         "currentweeks": [
             {
@@ -143,6 +157,14 @@
             {
                 "case": "nestsLead",
                 "currentWeekName": "currentweekNests"
+            },
+            {
+                "case": "steamworkLead",
+                "currentWeekName": "currentweekSteamwork"
+            },
+            {
+                "case": "moonlightLead",
+                "currentWeekName": "currentweekMoonlight"
             }
         ]
     },
@@ -213,14 +235,17 @@
     "451171819672698920": {
         "logtypes": [
             "shatterspops",
+            "moonlightPops",
             "eventpops",
             "eventpops",
             "successruns",
             "failruns",
+            "moonlightRuns",
             "assists",
             "eventslead",
             "veteranShattersLead",
-            "hardmodeLead"
+            "hardmodeLead",
+            "moonlightLead"
         ],
         "currentweeks": [
             {
@@ -242,6 +267,10 @@
             {
                 "case": "veteranShattersLead",
                 "currentWeekName": "currentweekVeteranShattersLead"
+            },
+            {
+                "case": "moonlightLead",
+                "currentWeekName": "currentweekMoonlightLead"
             }
         ]
     }

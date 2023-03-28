@@ -21,6 +21,7 @@
                     { "column": "currentweekFungals", "emoji": "<:crystal:1008068893056696410>", "name": "Fungals", "value": 1, "isRun": true },
                     { "column": "currentweekNests", "emoji": "<:queenbee:1008068890791780433>", "name": "Nests", "value": 0.5, "isRun": true },
                     { "column": "currentweekSteamwork", "emoji": "<:SteamworksBoss:1050156577920917574>", "name": "Steamworks", "value": 1, "isRun": true },
+                    { "column": "currentweekMoonlight", "emoji": "<:MoonlightBoss:1090178399252783104>", "name": "Moonlight", "value": 1, "isRun": true },
                     { "column": "currentweekAssists", "emoji": ":handshake:", "name": "Assists", "value": 0.5 },
                     { "column": "currentweekFeedback", "emoji": "<:feedback:858920770806087710>", "name": "Feedback", "value": 1 },
                     { "column": "currentweekshattersFeedback", "emoji": "<:shattersFeedback:1071433377879707728>", "name": "Shatters Feedback", "value": 2 },
@@ -70,6 +71,7 @@
                     { "column": "currentweekFungals", "emoji": "<:crystal:1008068893056696410>", "name": "Fungals", "value": 1, "isRun": true },
                     { "column": "currentweekNests", "emoji": "<:queenbee:1008068890791780433>", "name": "Nests", "value": 0.5, "isRun": true },
                     { "column": "currentweekSteamwork", "emoji": "<:SteamworksBoss:1050156577920917574>", "name": "Steamworks", "value": 1, "isRun": true },
+                    { "column": "currentweekMoonlight", "emoji": "<:MoonlightBoss:1090178399252783104>", "name": "Moonlight", "value": 1, "isRun": true },
                     { "column": "currentweekAssists", "emoji": ":handshake:", "name": "Assists", "value": 0.5 },
                     { "column": "currentweekFeedback", "emoji": "<:feedback:858920770806087710>", "name": "Feedback", "value": 1 },
                     { "column": "currentweekshattersFeedback", "emoji": "<:shattersFeedback:1071433377879707728>", "name": "Shatters Feedback", "value": 2 },
@@ -213,6 +215,7 @@
                 { "column": "currentweekhardmodeLead", "name": "Hard Mode Runs", "value": 1, "isRun" : true},
                 { "column": "currentweekfailed", "name": "Failed Runs", "value": 0.5, "isRun": true },
                 { "column": "currentweekVeteranShattersLead", "name": "Veteran Runs", "value": 1, "isRun": true },
+                { "column": "currentweekMoonlightLead", "name": "Moonlight Runs", "value": 1, "isRun": true },
                 { "column": "currentweekAssists", "name": "Assists", "value": 0.5 },
                 { "column": "rollingQuota", "name": "Rolled Quota", "value": 1, "rolling": true }
             ]

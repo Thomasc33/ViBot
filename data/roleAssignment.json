@@ -47,6 +47,12 @@
             "name": "Steamworks",
             "emojiId": "1050156386547413012",
             "emoji": "<a:steamworksPortal:1050156386547413012>"
+        },
+        {
+            "role": "moonlightping",
+            "name": "Moonlight",
+            "emojiId": "1090163554872737866",
+            "emoji": "<:mv:1090163554872737866>"
         }
     ],
     "708026927721480254": [
@@ -133,6 +139,12 @@
             "name": "Steamworks",
             "emojiId": "1050156386547413012",
             "emoji": "<a:steamworksPortal:1050156386547413012>"
+        },
+        {
+            "role": "moonlightping",
+            "name": "Moonlight",
+            "emojiId": "1090163554872737866",
+            "emoji": "<:mv:1090163554872737866>"
         }
     ]
 }
