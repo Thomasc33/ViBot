@@ -1682,11 +1682,13 @@
             "nest",
             "steamworksPortal",
             "shatters",
+            "mv",
             "hallsK",
             "fungalK",
             "nestK",
             "shattersKey",
-            "steamworksKey"
+            "steamworksKey",
+            "mvK"
         ],
         "embed": {
             "headcountDescription": "React with any Dungeon Icon if you plan on joining\nReact with any Dungeon Key if you plan on bringing any key",
@@ -1892,6 +1894,115 @@
                 "pointsGiven": 0,
                 "limit": 1,
                 "shortName": "Trickster",
+                "noConfirm": false,
+                "noLocation": false
+            }
+        ],
+        "reacts": [
+            "Curse",
+            "Warrior",
+            "Paladin",
+            "Knight",
+            "Bard"
+        ],
+        "earlyLocationCost": 15
+    },
+    "moonlight": {
+        "runType": "Moonlight Village",
+        "runName": "Moonlight Village",
+        "aliases": [
+            "mv",
+            "moonv",
+            "moonlightv",
+            "moonlightvillage"
+        ],
+        "enabled": true,
+        "keyEmote": "mvK",
+        "pingRole": "moonlightping",
+        "headcountEmote": "mv",
+        "headcountOnAfk": false,
+        "runLogName": "moonlightRuns",
+        "isSplit": false,
+        "vialReact": false,
+        "twoPhase": true,
+        "startDelay": 5000,
+        "vcCap": 45,
+        "timeLimit": 300,
+        "keyCount": 1,
+        "thumbnail": "https://cdn.discordapp.com/emojis/1090178399252783104.webp",
+        "color": "#7a7a7a",
+        "isExalt": true,
+        "earlyLocationReacts": [
+            {
+                "emote": "UTMarbleSeal",
+                "pointsGiven": 0,
+                "limit": 1,
+                "shortName": "Marble Seal",
+                "noConfirm": false,
+                "noLocation": false
+            },
+            {
+                "emote": "tomeOfTheMushroomTribesFungal",
+                "pointsGiven": 0,
+                "limit": 2,
+                "shortName": "Fungal Tome",
+                "noConfirm": false,
+                "noLocation": false
+            }
+        ],
+        "reacts": [
+            "Curse",
+            "Warrior",
+            "Paladin",
+            "Knight",
+            "Bard"
+        ],
+        "earlyLocationCost": 15
+    },
+    "advancedmoonlight": {
+        "runType": "Advanced Moonlight Village",
+        "runName": "Advanced Moonlight Village",
+        "aliases": [
+            "amv",
+            "amoonv",
+            "amoonlight",
+            "amoonlightv",
+            "amoonlightvillage",
+            "advancedmv",
+            "advancedmoonv",
+            "advancedmoonlightv",
+            "advancedmoonlightvillage"
+        ],
+        "enabled": true,
+        "keyEmote": "mvK",
+        "pingRole": "moonlightping",
+        "headcountEmote": "mv",
+        "headcountOnAfk": false,
+        "runLogName": "moonlightRuns",
+        "isSplit": false,
+        "vialReact": false,
+        "twoPhase": true,
+        "startDelay": 5000,
+        "vcCap": 45,
+        "timeLimit": 300,
+        "keyCount": 1,
+        "color": "#7a7a7a",
+        "thumbnail": "https://cdn.discordapp.com/emojis/1090178399252783104.webp",
+        "isExalt": true,
+        "earlyLocationReacts": [
+            {
+                "emote": "UTMarbleSeal",
+                "pointsGiven": 0,
+                "limit": 1,
+                "shortName": "Marble Seal",
+                "noConfirm": false,
+                "noLocation": false
+            },
+            {
+                "emote": "tomeOfTheMushroomTribesFungal",
+                "pointsGiven": 0,
+                "limit": 2,
+                "shortName": "Fungal Tome",
                 "noConfirm": false,
                 "noLocation": false
             }

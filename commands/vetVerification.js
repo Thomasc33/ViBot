@@ -6,6 +6,9 @@ const charList = require('./characterList')
 const lootInfo = require('../data/lootInfo.json')
 const ext = require('../lib/extensions');
 const dungeons = require('../data/vetVerification.json')
+const VerificationCurrentWeek = require('../data/currentweekInfo.json').verificationcurrentweek
+const quota = require('./quota')
+const quotas = require('../data/quotas.json')
 
 var watching = []
 var embedMessage, bot
@@ -304,6 +307,7 @@ module.exports = {
                             //user has DMs off
                         }
                         //db.query(`UPDATE users SET isVet = true WHERE id = '${u.id}'`)
+                        this.manualVetVerifyLog(message, u.id, bot, db)
                         ManualVerificationCollector.stop()
                         keyCollector.stop()
                         removeFromArray(member.id)
@@ -337,6 +341,23 @@ module.exports = {
                 }
             })
         })
+    },
+    async manualVetVerifyLog(message, authorid, bot, db) {
+        let settings = bot.settings[message]
+        let currentweekverificationname, verificationtotalname
+        for (let i in VerificationCurrentWeek) {
+            i = ParseCurrentWeek[i]
+            if (message.guild.id == i.id && !i.vetdisabled) { 
+                currentweekverificationname = i.vetverificationcurrentweek
+                verificationtotalname = i.vetverificationtotal
+            }
+        }
+        if (!currentweekverificationname || !verificationtotalname) return
+        db.query(`UPDATE users SET ${verificationtotalname} = ${verificationtotalname} + 1, ${currentweekverificationname} = ${currentweekverificationname} + 1 WHERE id = '${authorid}'`)
+        const guildQuota = quotas[message.guild.id]
+        if (!guildQuota) return
+        const parseQuota = guildQuota.quotas.filter(q => q.id == "security")[0]
+        if (parseQuota) quota.update(message.guild, db, bot, settings, guildQuota, parseQuota)
     }
 }
 const checkFilter = (r, u) => !u.bot && r.emoji.name === '✅'

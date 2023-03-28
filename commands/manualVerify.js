@@ -1,4 +1,5 @@
 const Discord = require('discord.js')
+const { manualVerifyLog } = require('../commands/verification.js')
 module.exports = {
     name: 'manualverify',
     description: 'Manually verifies a user',
@@ -70,5 +71,6 @@ module.exports = {
                 confirmMessage.edit({ embeds: [expelEmbed], components: [] });
             })
         })
+        manualVerifyLog(message, message.author.id, bot, db)
     }
 }

@@ -152,6 +152,7 @@ function getFields(row, schema, bot) {
                 `<:fungalK:723001429614395402> ${row.fungalPops}\n` +
                 `<:nestK:723001429693956106> ${row.nestPops}\n` +
                 `<:steamworksKey:1050848141492109372> ${row.steamworkPops}\n` +
+                `<:mvK:1090163553396334663> ${row.moonlightPops}\n` +
                 `<:epicMysteryKey:831051424187940874> ${row.eventpops}\n` +
                 `<:modded_key:1027356831565217812> ${row.moddedPops}\n` +
                 `<${botSettings.emote.Vial}> ${row.vialStored} Dropped\n` +
@@ -166,6 +167,7 @@ function getFields(row, schema, bot) {
                 `<:crystal:1008068893056696410> ${row.fungalRuns}\n` +
                 `<:queenbee:1008068890791780433> ${row.nestRuns}\n` +
                 `<a:steamworksPortal:1050156386547413012> ${row.steamworkRuns}\n` +
+                `<:mv:1090163554872737866> ${row.moonlightRuns}\n` +
                 `<:epicMysteryKey:831051424187940874> ${row.eventruns}`,
             inline: true
         },
@@ -177,6 +179,7 @@ function getFields(row, schema, bot) {
                 `<:crystal:1008068893056696410> ${row.fungalsLead}\n` +
                 `<:queenbee:1008068890791780433> ${row.nestsLead}\n` +
                 `<:SteamworksBoss:1050156577920917574> ${row.steamworkLead}\n` +
+                `<:MoonlightBoss:1090178399252783104> ${row.moonlightLead}\n` +
                 `<:epicMysteryKey:831051424187940874> ${parseInt(row.eventsLead) * 10} Minutes\n` +
                 `<:feedback:858920770806087710> ${row.feedback + row.exaltFeedback}\n` +
                 `<:shattersFeedback:1071433377879707728> ${row.shattersFeedback}\n` +
@@ -193,26 +196,36 @@ function getFields(row, schema, bot) {
         {
             name: `<:legendaryMysteryKey:831052176507535360> __**Keys Popped**__ <:legendaryMysteryKey:831052176507535360>`,
             value: `<:shattersKey:1008104345197346817> ${row.shatterspops}\n` +
+                `<:mvK:1090163553396334663> ${row.moonlightPops}\n` +
                 `<:epicMysteryKey:831051424187940874> ${row.eventpops}\n`,
             inline: true
         },
         {
             name: `<:TheForgottenCrown:719931358889115680> __**Runs Done**__ <:TheForgottenCrown:719931358889115680>`,
             value: `<:forgottenKing:849406533435523093> ${row.runs}\n` +
+                `<:mv:1090163554872737866> ${row.moonlightRuns}\n` +
                 `<:epicMysteryKey:831051424187940874> ${row.eventruns}\n` +
                 `<:forgottenKing:849406533435523093> ${row.oldruns} *Legacy*\n`,
             inline: true
         },
         {
-            name: `<:TheForgottenCrown:719931358889115680> __**Runs Led**__ <:TheForgottenCrown:719931358889115680>`,
+            name: `<:TheForgottenCrown:719931358889115680> __**Shatters Runs Led**__ <:TheForgottenCrown:719931358889115680>`,
             value: `<:forgottenKing:849406533435523093> ${row.successruns} Normal\n` +
                 `<:forgottenKing:849406533435523093> ${row.veteranShattersLead} Veteran\n` +
                 `<:forgottenKing:849406533435523093> ${row.hardmodeLead} Hardmode\n` +
-                `❌ ${row.failruns}\n` +
-                `<:epicMysteryKey:831051424187940874> ${parseInt(row.eventslead) * 10} Minutes\n` +
-                `🤝 ${row.assists} Assists\n` +
-                `<:forgottenKing:849406533435523093> ${row.oldsuccessruns} *Legacy*\n` +
-                `🤝 ${row.oldassists} *Legacy Assists*`,
+                `❌ ${row.failruns}\n`,
+            inline: true
+        },        
+        {
+            name: `<:TheForgottenCrown:719931358889115680> __**Moonlight Runs Led**__ <:TheForgottenCrown:719931358889115680>`,
+            value: `<:MoonlightBoss:1090178399252783104> ${row.moonlightLead}`
+        },
+        {
+            name: `<:TheForgottenCrown:719931358889115680> __**Other Runs Led**__ <:TheForgottenCrown:719931358889115680>`,
+            value: `Normal\n``<:epicMysteryKey:831051424187940874> ${parseInt(row.eventslead) * 10} Minutes\n` +
+            `🤝 ${row.assists} Assists\n` +
+            `<:forgottenKing:849406533435523093> ${row.oldsuccessruns} *Legacy*\n` +
+            `🤝 ${row.oldassists} *Legacy Assists*`,
             inline: true
         }
     ]

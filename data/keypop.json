@@ -59,6 +59,18 @@
             "schema": "steamworkPops",
             "name": "steamworks",
             "modded": true
+        },
+        "moonlight": {
+            "alias": [
+                "mv",
+                "moonv",
+                "moonlightv",
+                "moonlightvillage"
+            ],
+            "points": "moonlightkey",
+            "schema": "moonlightPops",
+            "name": "moonlight village",
+            "modded": true
         }
     },
     "701483950559985705": {
@@ -121,6 +133,18 @@
             "schema": "steamworkPops",
             "name": "steamworks",
             "modded": true
+        },
+        "moonlight": {
+            "alias": [
+                "mv",
+                "moonv",
+                "moonlightv",
+                "moonlightvillage"
+            ],
+            "points": "moonlightkey",
+            "schema": "moonlightPops",
+            "name": "moonlight village",
+            "modded": true
         }
     },
     "451171819672698920": {
@@ -131,6 +155,18 @@
             "points": "keypop",
             "schema": "shatterspops",
             "name": "shatters",
+            "modded": true
+        },
+        "moonlight": {
+            "alias": [
+                "mv",
+                "moonv",
+                "moonlightv",
+                "moonlightvillage"
+            ],
+            "points": "keypop",
+            "schema": "moonlightPops",
+            "name": "moonlight village",
             "modded": true
         },
         "event": {

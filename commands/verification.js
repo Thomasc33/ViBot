@@ -2,6 +2,9 @@ const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
 const botSettings = require('../settings.json')
 const realmEyeScrape = require('../lib/realmEyeScrape')
+const VerificationCurrentWeek = require('../data/currentweekInfo.json').verificationcurrentweek
+const quota = require('./quota')
+const quotas = require('../data/quotas.json')
 // const VerificationML = require('../ml/verification')
 // const TestAlt = require('./testAlt')
 
@@ -491,6 +494,8 @@ module.exports = {
                     //remove them from expelled list
                     db.query(`DELETE FROM veriblacklist WHERE id = '${member.id}' OR id = '${ign}'`)
 
+                    this.manualVerifyLog(message, u.id, bot, db)
+
                     //train machine leaning model
                     // TestAlt.trainFromIGN(ign, 0)
                 }
@@ -646,6 +651,23 @@ module.exports = {
             }
             await m.react('❌')
         })
+    },
+    async manualVerifyLog(message, authorid, bot, db) {
+        let settings = bot.settings[guildid]
+        let currentweekverificationname, verificationtotalname
+        for (let i in VerificationCurrentWeek) {
+            i = ParseCurrentWeek[i]
+            if (message.guild.id == i.id && !i.disabled) { 
+                currentweekverificationname = i.verificationcurrentweek
+                verificationtotalname = i.verificationtotal
+            }
+        }
+        if (!currentweekverificationname || !verificationtotalname) return
+        db.query(`UPDATE users SET ${verificationtotalname} = ${verificationtotalname} + 1, ${currentweekverificationname} = ${currentweekverificationname} + 1 WHERE id = '${authorid}'`)
+        const guildQuota = quotas[message.guild.id]
+        if (!guildQuota) return
+        const parseQuota = guildQuota.quotas.filter(q => q.id == "security")[0]
+        if (parseQuota) quota.update(message.guild, db, bot, settings, guildQuota, parseQuota)
     },
     checkActive(id) {
         if (active.includes(id)) return true

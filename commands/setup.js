@@ -6,7 +6,7 @@ const roles = ['admin', 'moderator', 'officer', 'headrl', 'headdev', 'assistantd
     'rusher', 'lol', 'accursed', 'vetraider', 'raider', 'eventraider', 'muted',
     'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'keyjesus', 'moddedkey', 'topkey', 'bottomkey', 'cultping', 'voidping', 'shattsReact', 'fungalReact', 'nestReact',
     'fskipReact', 'fameReact', 'rcPing', 'o3Ping', 'eventBoi', 'veteventrl',
-    'priest', 'warden', 'vetaffiliate', 'affiliatestaff', `toprune`, `bottomrune`, 'helper', 'steamworksping', 'supporterTierOne', 'supporterTierTwo', 'supporterTierThree', 'supporterTierFour', 'supporterTierFive', 'supporterTierSix']
+    'priest', 'warden', 'vetaffiliate', 'affiliatestaff', `toprune`, `bottomrune`, 'helper', 'steamworksping', 'moonlightping', 'supporterTierOne', 'supporterTierTwo', 'supporterTierThree', 'supporterTierFour', 'supporterTierFive', 'supporterTierSix']
 const channels = ['modmail', 'verification', 'manualverification', 'vetverification', 'manualvetverification', 'verificationlog', 'activeverification', 'modlogs', 'history', 'suspendlog',
     'viallog', 'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel', 'raidstatus', 'eventstatus',
     'vetstatus', 'exaltstatus', 'raidcommands', 'eventcommands', 'vetcommands', 'accursedcommands', 'accursedstatus', 'raidingchannels', 'eventchannels', 'vetchannels', 'runlogs', 'dmcommands', 'veriactive', 'pointlogging',
@@ -27,7 +27,7 @@ const runreqs = ['weapon', 'ability', 'armor', 'ring']
 const autoveri = ['fame', 'stars', 'realmage', 'discordage', 'deathcount']
 const vetverireqs = ['maxed', 'meleemaxed', 'runs']
 const points = ['earlylocation', 'perrun', 'supportermultiplier', 'keypop', 'vialpop', 'rushing', 'brain', 'mystic', 'eventkey', 'cultlocation', 'voidlocation', 'fsvlocation', 'o3streaming',
-    'o3trickster', 'o3puri', 'exaltkey', 'shattskey', 'fungalkey', 'nestkey', 'keymultiplier', 'runepop', 'steamworkkey']
+    'o3trickster', 'o3puri', 'exaltkey', 'shattskey', 'fungalkey', 'nestkey', 'keymultiplier', 'runepop', 'steamworkkey', 'moonlightkey']
 const lists = ['earlyLocation', 'runningEvents', 'warningRoles', 'perkRoles', 'discordRoles', 'commendRoles']
 const strings = ['hallsAdvancedReqsImage', 'exaltsAdvancedReqsImage']
 const quotapoints = ['voidLeading', 'cultLeading', 'shattersLeading', 'oryx3Leading', 'fungalLeading', 'nestLeading', 'steamworkLeading',
@@ -450,6 +450,7 @@ function getDefaultRoleName(name) {
         case 'bottomrune': return 'Verified Rune Popper'
         case 'helper': return 'Helper'
         case 'steamworksping': return 'Steamworks boi'
+        case 'moonlightping': return 'Moonlight boi'
     }
 }
 
@@ -588,6 +589,8 @@ function getDefaultPointValue(name) {
         case 'keymultiplier': return 2;
         case 'runepop': return 20;
         case 'incpop': return 0;
+        case 'steamworkkey': return 5;
+        case 'moonlightkey': return 5;
     }
 }
 
@@ -608,6 +611,7 @@ function getDefaultQuotaPoint(name) {
         case 'fungalLeading': return 1;
         case 'nestLeading': return 1;
         case 'steamworkLeading': return 1;
+        case 'moonlightLeading': return 1;
         case 'eventLeading': return 1;
         case 'failedRun': return 1;
         case 'feedback': return 1;
