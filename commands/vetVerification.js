@@ -343,10 +343,10 @@ module.exports = {
         })
     },
     async manualVetVerifyLog(message, authorid, bot, db) {
-        let settings = bot.settings[message]
+        let settings = bot.settings[message.guild.id]
         let currentweekverificationname, verificationtotalname
         for (let i in VerificationCurrentWeek) {
-            i = ParseCurrentWeek[i]
+            i = VerificationCurrentWeek[i]
             if (message.guild.id == i.id && !i.vetdisabled) { 
                 currentweekverificationname = i.vetverificationcurrentweek
                 verificationtotalname = i.vetverificationtotal
