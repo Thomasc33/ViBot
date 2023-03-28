@@ -222,7 +222,7 @@ function getFields(row, schema, bot) {
         },
         {
             name: `<:TheForgottenCrown:719931358889115680> __**Other Runs Led**__ <:TheForgottenCrown:719931358889115680>`,
-            value: `Normal\n``<:epicMysteryKey:831051424187940874> ${parseInt(row.eventslead) * 10} Minutes\n` +
+            value: `<:epicMysteryKey:831051424187940874> ${parseInt(row.eventslead) * 10} Minutes\n` +
             `🤝 ${row.assists} Assists\n` +
             `<:forgottenKing:849406533435523093> ${row.oldsuccessruns} *Legacy*\n` +
             `🤝 ${row.oldassists} *Legacy Assists*`,
