@@ -366,6 +366,15 @@
                     "noLocation": false
                 },
                 {
+                    "emote": "UTScholarsSeal",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Scholar's seal",
+                    "confirmationMessage": "**__REQUIRED__**\n- You must have a **8/8 Paladin** with a <:UTScholarsSeal:720401067300356196> (Sseal) and a Tiered seal available.",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
                     "emote": "tomeOfTheMushroomTribesFungal",
                     "pointsGiven": 1,
                     "limit": 1,
@@ -445,6 +454,15 @@
                     "limit": 3,
                     "shortName": "Brain",
                     "confirmationMessage": "**__REQUIRED__**\n- Your pet must have **level 85+ magic heal.**\n- You must have a **8/8 Trickster** with a <:STBrainoftheGolem:720263764309704704> (Brain) and a Tiered Prism available.",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emote": "UTScholarsSeal",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Scholar's seal",
+                    "confirmationMessage": "**__REQUIRED__**\n- You must have a **8/8 Paladin** with a <:UTScholarsSeal:720401067300356196> (Sseal) and a Tiered seal available.",
                     "noConfirm": false,
                     "noLocation": false
                 },
@@ -1032,6 +1050,15 @@
                     "noLocation": false
                 },
                 {
+                    "emote": "UTScholarsSeal",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Scholar's seal",
+                    "confirmationMessage": "**__REQUIRED__**\n- You must have a **8/8 Paladin** with a <:UTScholarsSeal:720401067300356196> (Sseal) and a Tiered seal available.",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
                     "emote": "tomeOfTheMushroomTribesFungal",
                     "pointsGiven": 1,
                     "limit": 1,
@@ -1111,6 +1138,15 @@
                     "limit": 3,
                     "shortName": "Brain",
                     "confirmationMessage": "**__REQUIRED__**\n- Your pet must have **level 85+ magic heal.**\n- You must have a **8/8 Trickster** with a <:STBrainoftheGolem:720263764309704704> (Brain) and a Tiered Prism available.",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emote": "UTScholarsSeal",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Scholar's seal",
+                    "confirmationMessage": "**__REQUIRED__**\n- You must have a **8/8 Paladin** with a <:UTScholarsSeal:720401067300356196> (Sseal) and a Tiered seal available.",
                     "noConfirm": false,
                     "noLocation": false
                 },
