@@ -369,8 +369,8 @@
                     "emote": "UTScholarsSeal",
                     "pointsGiven": 1,
                     "limit": 1,
-                    "shortName": "Scholar's seal",
-                    "confirmationMessage": "**__REQUIRED__**\n- You must have a **8/8 Paladin** with a <:UTScholarsSeal:720401067300356196> (Sseal) and a Tiered seal available.",
+                    "shortName": "Scholar's Seal",
+                    "confirmationMessage": "**__REQUIRED__**\n- You must have a **8/8 Paladin** with a <:UTScholarsSeal:720401067300356196> (Scholar's Seal) and a Tiered seal available.",
                     "noConfirm": false,
                     "noLocation": false
                 },
@@ -461,8 +461,8 @@
                     "emote": "UTScholarsSeal",
                     "pointsGiven": 1,
                     "limit": 1,
-                    "shortName": "Scholar's seal",
-                    "confirmationMessage": "**__REQUIRED__**\n- You must have a **8/8 Paladin** with a <:UTScholarsSeal:720401067300356196> (Sseal) and a Tiered seal available.",
+                    "shortName": "Scholar's Seal",
+                    "confirmationMessage": "**__REQUIRED__**\n- You must have a **8/8 Paladin** with a <:UTScholarsSeal:720401067300356196> (Scholar's Seal) and a Tiered seal available.",
                     "noConfirm": false,
                     "noLocation": false
                 },
@@ -1053,8 +1053,8 @@
                     "emote": "UTScholarsSeal",
                     "pointsGiven": 1,
                     "limit": 1,
-                    "shortName": "Scholar's seal",
-                    "confirmationMessage": "**__REQUIRED__**\n- You must have a **8/8 Paladin** with a <:UTScholarsSeal:720401067300356196> (Sseal) and a Tiered seal available.",
+                    "shortName": "Scholar's Seal",
+                    "confirmationMessage": "**__REQUIRED__**\n- You must have a **8/8 Paladin** with a <:UTScholarsSeal:720401067300356196> (Scholar's Seal) and a Tiered seal available.",
                     "noConfirm": false,
                     "noLocation": false
                 },
@@ -1145,8 +1145,8 @@
                     "emote": "UTScholarsSeal",
                     "pointsGiven": 1,
                     "limit": 1,
-                    "shortName": "Scholar's seal",
-                    "confirmationMessage": "**__REQUIRED__**\n- You must have a **8/8 Paladin** with a <:UTScholarsSeal:720401067300356196> (Sseal) and a Tiered seal available.",
+                    "shortName": "Scholar's Seal",
+                    "confirmationMessage": "**__REQUIRED__**\n- You must have a **8/8 Paladin** with a <:UTScholarsSeal:720401067300356196> (Scholar's Seal) and a Tiered seal available.",
                     "noConfirm": false,
                     "noLocation": false
                 },
