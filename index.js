@@ -113,7 +113,7 @@ bot.on('guildMemberUpdate', async (oldMember, newMember) => {
 
     const settings = bot.settings[newMember.guild.id];
 
-    if (!oldMember.roles.cache.equals(newMember.roles.cache)) return
+    if (oldMember.roles.cache.equals(newMember.roles.cache)) return
 
     if (settings.commands.prunerushers) await memberHandler.pruneRushers(dbSetup.getDB(newMember.guild.id), settings.roles.rusher, oldMember, newMember)
 
