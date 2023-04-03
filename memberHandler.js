@@ -67,7 +67,7 @@ module.exports = {
         }
     },
     async updateAffiliateRoles(bot, member) {
-        await Promise.all(bot.partneredServers.filter((server) => server.guildId === member.guildId).map(async (partneredServer) => {
+        await Promise.all(bot.partneredServers.filter((server) => server.guildId == member.guildId).map(async (partneredServer) => {
             const partneredSettings = bot.settings[partneredServer.id]
             const otherServer = bot.guilds.cache.find(g => g.id == partneredServer.id)
             const partneredMember = otherServer.members.cache.get(member.id)
