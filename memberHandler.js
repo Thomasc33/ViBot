@@ -53,9 +53,9 @@ module.exports = {
 
         const [[{ mute_count }], ] = await db.promise().query(`SELECT COUNT(*) as mute_count FROM mutes WHERE id = ? AND muted = true`, [member.id])
         if (mute_count !== 0) {
-            member.roles.add(bot.settings[member.guild.id].roles.muted)
-            const modlogChannel = modlogChannel(bot, member.guild)
-            if (modlogChannel) await modlogChannel.send(`${member} rejoined server after leaving while muted. Giving muted role back.`)
+            await member.roles.add(bot.settings[member.guild.id].roles.muted)
+            const logChannel = modlogChannel(bot, member.guild)
+            if (logChannel) await logChannel.send(`${member} rejoined server after leaving while muted. Giving muted role back.`)
         }
     },
     async pruneRushers(db, rusherRoleId, oldMember, newMember) {
