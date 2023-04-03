@@ -67,7 +67,7 @@ module.exports = {
         }
     },
     async updateAffiliateRoles(bot, member) {
-        await Promise.all(bot.partneredServers.filter((server) => server.guildId == member.guildId).map(async (partneredServer) => {
+        await Promise.all(bot.partneredServers.filter((server) => server.guildId == member.guild.id).map(async (partneredServer) => {
             const partneredSettings = bot.settings[partneredServer.id]
             const otherServer = bot.guilds.cache.find(g => g.id == partneredServer.id)
             const partneredMember = otherServer.members.cache.get(member.id)
@@ -75,16 +75,17 @@ module.exports = {
             if (!partneredMember) { return }
 
             // Take `partneredSettings.roles` but convert the values from role IDs to complete role objects
-            const partneredRoles = Object.fromEntries(Object.entries(partneredSettings.roles).map((k, roleId) => [k, otherServer.roles.cache.get(roleId)]))
+            const partneredRoles = Object.fromEntries(Object.entries(partneredSettings.roles).map(([k, roleId]) => [k, otherServer.roles.cache.get(roleId)]))
 
             if (!partneredMember.roles.cache.has(partneredRoles.raider.id)) return
             if (partneredMember.roles.cache.hasAny(partneredRoles.permasuspended.id, partneredRoles.tempsuspended.id)) return
 
             const partneredModLogs = otherServer.channels.cache.get(partneredSettings.channels.modlogs)
 
-            const memberRoles = Array.from(member.roles.cache.values())
-            const isStaff     = memberRoles.any((role) => partneredServer.affiliatelist.include(role.name))
-            const vasEligable = memberRoles.any((role) => partneredServer.vaslist.include(role.name))
+            const memberRoleIds = Array.from(member.roles.cache.values()).map((role) => role.id.toString())
+            const partnerServerRoleIds = bot.settings[member.guild.id].roles
+            const isStaff     = !!partneredServer.affiliatelist.find((roletype) => memberRoleIds.includes(partnerServerRoleIds[roletype]))
+            const vasEligable = !!partneredServer.vaslist.find((roletype) => memberRoleIds.includes(partnerServerRoleIds[roletype]))
 
             // Not sure if this is too fancy/functional -- could reduce to a setRole(true / false)
             await (isStaff     ? addRole : removeRole)(partneredMember, partneredRoles.affiliatestaff,  partneredModLogs)
