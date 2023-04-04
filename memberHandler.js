@@ -92,7 +92,8 @@ module.exports = {
             await (vasEligable ? addRole : removeRole)(partneredMember, partneredRoles.vetaffiliate,    partneredModLogs)
 
             if (partneredMember.roles.highest.position == partneredRoles.vetaffiliate.position && !partneredMember.displayName.startsWith(partneredServer.prefix)) {
-                await partneredMember.setNickname(`${partneredServer.prefix}${partneredMember.displayName}`, 'Automatic Nickname Change: User just got Veteran Affiliate Staff as their highest role')
+                const baseName = partneredMember.displayName.replace(/^(\W+)/, '')
+                await partneredMember.setNickname(`${partneredServer.prefix}${baseName}`, 'Automatic Nickname Change: User just got Veteran Affiliate Staff as their highest role')
                 await modLog(partneredMember, partneredModLogs, partneredMember.roles.highest.hexColor, `Automatic Prefix Change for ${partneredMember}\nOld Nickname: \`${partneredMember.displayName}\`\nNew Nickname: \`${partneredMember.displayName}\`\nPrefix: \`${partneredServer.prefix}\``)
             }
         }))
