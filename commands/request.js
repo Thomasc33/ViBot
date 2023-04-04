@@ -9,7 +9,7 @@ module.exports = {
     description: 'In the event someone fake reacts, simply use this command and a message will be sent to raid-status/vet-status where a new raider can react and get sent location',
     args: '<number of reacts requested>',
     alias: ['rq'],
-    role: 'almostrl',
+    role: 'eventrl',
     /**
      * 
      * @param {Discord.Message} message 
