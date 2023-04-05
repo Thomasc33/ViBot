@@ -113,10 +113,29 @@ module.exports = {
             else runInfo.channel = channel.id;
         }
 
-        //begin afk check
-        let afkModule = new afkCheck(runInfo, bot, db, message.guild, channel, message, tokenDB)
-        runs.push({ channel: channel.id, afk: afkModule })
-        if (runInfo.startDelay > 0) setTimeout(begin, runInfo.startDelay, afkModule)
+        let afkModule = null
+        if (runInfo.isVet) {
+            let confirmEmbed = new Discord.EmbedBuilder()
+                .setColor(runInfo.embed.color)
+                .setDescription(`Do you want to add keys reacts to this run?`)
+            message.channel.send({ embeds: [confirmEmbed] }).then(async confirmMessage => {
+            if (!await confirmMessage.confirmButton(message.member.id)) {
+                runInfo.keyEmote = null;
+                confirmMessage.delete();
+                afkModule = new afkCheck(runInfo, bot, db, message.guild, channel, message, tokenDB)
+                runs.push({ channel: channel.id, afk: afkModule })
+                if (runInfo.startDelay > 0) setTimeout(begin, runInfo.startDelay, afkModule)
+            } else {
+                confirmMessage.delete();
+                afkModule = new afkCheck(runInfo, bot, db, message.guild, channel, message, tokenDB)
+                runs.push({ channel: channel.id, afk: afkModule })
+                if (runInfo.startDelay > 0) setTimeout(begin, runInfo.startDelay, afkModule)
+            }})
+        } else {
+            afkModule = new afkCheck(runInfo, bot, db, message.guild, channel, message, tokenDB)
+            runs.push({ channel: channel.id, afk: afkModule })
+            if (runInfo.startDelay > 0) setTimeout(begin, runInfo.startDelay, afkModule)
+        }
     },
     async eventAfkExecute(message, args, bot, db, tokenDB, event, isVet, raidingVC) {
         settings = bot.settings[message.guild.id]
@@ -295,6 +314,9 @@ class afkCheck {
                 this.reactables[i.shortName] = { users: [], points: i.pointsGiven }
             }
         }
+        if (this.afkInfo.minRole) {
+            this.reactables['minRole'] = { users: [], points: 0 }
+        }
         this.partneredMessageSent = false
         this.partneredMessage = null
         this.partneredPings = null
@@ -315,25 +337,34 @@ class afkCheck {
             active: true,
             vcSize: this.channel.members.size,
         }
-        if (!this.afkInfo.hasOwnProperty('embed')) { this.afkInfo.embed = {} }
-        this.afkInfo.embed.description = ""
-        if (this.channel) { this.afkInfo.embed.description += `To join, **click here** ${this.channel}\n` }
-        if (this.afkInfo.keyEmote) { this.afkInfo.embed.description += `If you have a key react with ${this.bot.storedEmojis[this.afkInfo.keyEmote].text}\n` }
-        if (this.afkInfo.vialEmote) { this.afkInfo.embed.description += `If you have a vial react with ${this.bot.storedEmojis[this.afkInfo.vialEmote].text}\n` }
-        if (this.afkInfo.earlyLocationReacts.length >= 1) {
-            this.afkInfo.embed.description += `If you have any of the following react with ${this.afkInfo.earlyLocationReacts.map(
-                emoji => this.bot.storedEmojis[emoji.emote].text
-            ).join(', ')}\n`
-        }
-        if (this.afkInfo.reacts.length >= 1) {
-            this.afkInfo.embed.description += `If you have any of the following react with it to indicate you are bringing it ${this.afkInfo.reacts.map(
-                emoji => this.bot.storedEmojis[emoji].text
-            ).join(', ')}\n`
-        }
-        if (this.perkRoles.length >= 1) {
-            this.afkInfo.embed.description += `If you have any of the following roles ${this.perkRoles.map(
-                role => role
-            ).join(', ')} react with ${this.bot.storedEmojis['NitroBooster'].text}\n`
+        if (!this.afkInfo.hasOwnProperty('embed')) this.afkInfo.embed = {}
+        if (!this.afkInfo.embed.hasOwnProperty('description')) { 
+            this.afkInfo.embed.description = ""
+            if (this.channel) { this.afkInfo.embed.description += `To join, **click here** ${this.channel}\n` }
+            if (this.afkInfo.keyEmote) { this.afkInfo.embed.description += `If you have a key react with ${this.bot.storedEmojis[this.afkInfo.keyEmote].text}\n` }
+            if (this.afkInfo.vialEmote) { this.afkInfo.embed.description += `If you have a vial react with ${this.bot.storedEmojis[this.afkInfo.vialEmote].text}\n` }
+            if (this.afkInfo.earlyLocationReacts.length >= 1) {
+                this.afkInfo.embed.description += `If you have any of the following react with ${this.afkInfo.earlyLocationReacts.map(
+                    emoji => this.bot.storedEmojis[emoji.emote].text
+                ).join(', ')}\n`
+            }
+            if (this.afkInfo.reacts.length >= 1) {
+                this.afkInfo.embed.description += `If you have any of the following react with it to indicate you are bringing it ${this.afkInfo.reacts.map(
+                    emoji => this.bot.storedEmojis[emoji].text
+                ).join(', ')}\n`
+            }
+            if (this.perkRoles.length >= 1) {
+                this.afkInfo.embed.description += `If you have any of the following roles ${this.perkRoles.map(
+                    role => role
+                ).join(', ')} react with ${this.bot.storedEmojis['NitroBooster'].text}\n`
+            }
+        } else {
+            this.afkInfo.embed.description = this.afkInfo.embed.description.match(/[^\{\}]*/g).map(match => {
+                let message = match
+                if (this.message.guild.channels.cache.has(this.settings.channels[match])) message = `<#${this.settings.channels[match]}>`
+                if (this.message.guild.roles.cache.has(this.settings.roles[match])) message = `<@&${this.settings.roles[match]}>`
+                return message
+            }).reduce((a, b) => a + b)
         }
         fs.writeFileSync('./data/afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot, this.guild) })
         this.sendMessage()
@@ -401,11 +432,12 @@ class afkCheck {
         if (this.afkInfo.keyEmote) this.leaderEmbed.addFields({ name: `${this.bot.storedEmojis[this.afkInfo.keyEmote].text} Keys`, value: 'None!', inline: true})
         if (this.afkInfo.vialReact) this.leaderEmbed.addFields({ name: '<:VialOfPureDarkness:1050494410770632794> Vials', value: 'None!', inline: true})
         this.afkInfo.earlyLocationReacts.forEach(r => this.leaderEmbed.addFields({ name: `${this.bot.storedEmojis[r.emote].text} ${r.shortName}`, value: 'None!', inline: true }))
+        if (!this.afkInfo.minRole) {
         this.leaderEmbed.addFields([
             { name: '🗺️ Early Location', value: 'None!', inline: true },
             { name: `${this.bot.storedEmojis.NitroBooster.text} Supporters`, value: 'None!', inline: true },
-        ])
-
+        ]) } else this.leaderEmbed.addFields({ name: `${this.afkInfo.minRole.charAt(0).toUpperCase() + this.afkInfo.minRole.slice(1)}`, value: 'None!', inline: true })
+        this.minRoleUnlocked = false
         let lar;
         if (this.afkInfo.twoPhase) {
             lar = new Discord.ActionRowBuilder()
@@ -424,21 +456,35 @@ class afkCheck {
                         .setCustomId('modded')
                 ])
         } else {
+            if (this.afkInfo.minRole) {
             lar = new Discord.ActionRowBuilder()
                 .addComponents([
                     new Discord.ButtonBuilder()
-                        .setLabel('✅ Start Run')
+                        .setLabel(`🔓 Unlock ${this.afkInfo.minRole.charAt(0).toUpperCase() + this.afkInfo.minRole.slice(1)}`)
                         .setStyle(3)
-                        .setCustomId('start'),
+                        .setCustomId('unlock'),
                     new Discord.ButtonBuilder()
                         .setLabel('❌ Abort')
                         .setStyle(4)
-                        .setCustomId('end'),
-                    new Discord.ButtonBuilder()
-                        .setLabel('🔑 Modded')
-                        .setStyle(1)
-                        .setCustomId('modded')
+                        .setCustomId('end')
                 ])
+            } else {
+                lar = new Discord.ActionRowBuilder()
+                    .addComponents([
+                        new Discord.ButtonBuilder()
+                            .setLabel('✅ Start Run')
+                            .setStyle(3)
+                            .setCustomId('start'),
+                        new Discord.ButtonBuilder()
+                            .setLabel('❌ Abort')
+                            .setStyle(4)
+                            .setCustomId('end'),
+                        new Discord.ButtonBuilder()
+                            .setLabel('🔑 Modded')
+                            .setStyle(1)
+                            .setCustomId('modded')
+                    ])
+                }
         }
         this.leaderEmbedMessage = await this.commandChannel.send({ embeds: [this.leaderEmbed], components: [lar] })
         this.runInfoMessage = await this.runInfoChannel.send({ embeds: [this.leaderEmbed] })
@@ -459,6 +505,7 @@ class afkCheck {
         if (this.afkInfo.reqsImageUrl) this.mainEmbed.setImage(this.afkInfo.reqsImageUrl)
         else if (this.afkInfo.isAdvanced && !this.afkInfo.isExalt && this.settings.strings.hallsAdvancedReqsImage) this.mainEmbed.setImage(this.settings.strings.hallsAdvancedReqsImage);
         else if (this.afkInfo.isAdvanced && this.afkInfo.isExalt && this.settings.strings.exaltsAdvancedReqsImage) this.mainEmbed.setImage(this.settings.strings.exaltsAdvancedReqsImage);
+        else if (this.afkInfo.minRole && this.settings.strings.hallsAccursedReqsImage) this.mainEmbed.setImage(this.settings.strings.hallsAccursedReqsImage);
         if (this.afkInfo.embed.thumbnail && !this.afkInfo.embed.removeThumbnail) this.mainEmbed.setThumbnail(this.afkInfo.embed.thumbnail)
         // Weird workaround for v14 bug (thumbnail has to be {url} instead of url string)
         if (this.mainEmbed.data.thumbnail && typeof (this.mainEmbed.data.thumbnail) == 'string') this.mainEmbed.setThumbnail(this.mainEmbed.data.thumbnail)
@@ -476,7 +523,7 @@ class afkCheck {
             this.bot.afkChecks[this.channel.id].url = this.raidStatusMessage.url
 
         //unlock channel
-        if (!this.afkInfo.twoPhase) {
+        if (!this.afkInfo.twoPhase && !this.afkInfo.minRole) {
             this.channel.permissionOverwrites.edit(this.verifiedRaiderRole.id, { Connect: true, ViewChannel: true })
             if (this.eventBoi) this.channel.permissionOverwrites.edit(this.eventBoi.id, { Connect: true, ViewChannel: true })
         }
@@ -506,6 +553,7 @@ class afkCheck {
         if (interaction.customId == this.afkInfo.keyEmote) {
             this.confirmSelection(interaction, 0, 'key', this.afkInfo.keyCount)
         }
+        else if (interaction.customId == 'minRole') return this.confirmSelection(interaction, this.leaderEmbed.data.fields.length - 1, 'minRole', this.afkInfo.vcCap)
         else if (this.afkInfo.vialReact && interaction.customId == this.afkInfo.vialEmote) this.confirmSelection(interaction, 1, 'vial', 3)
         else if (interaction.customId === 'supporter') return this.useSupporter(interaction, this.leaderEmbed.data.fields.length - 1)
         else if (interaction.customId === 'points') return this.pointsUse(interaction, this.leaderEmbed.data.fields.length - 2)
@@ -514,6 +562,34 @@ class afkCheck {
                 this.endedBy = interaction.user;
                 interaction.deferUpdate()
                 return this.postAfk()
+            } else { return interaction.reply({ ephemeral: true, content: 'You are not a staff member' }) }
+        }
+        else if (interaction.customId === 'unlock') {
+            if (this.guild.members.cache.get(interaction.user.id).roles.highest.position >= this.staffRole.position) {
+                interaction.deferUpdate()
+                this.minRoleUnlocked = true;
+                let temp_rs_components = this.raidStatusMessage.components;
+                for (let i = 0; i < temp_rs_components.length; i++) {
+                    for (let j = 0; j < temp_rs_components[i].components.length; j++) {
+                        if (temp_rs_components[i].components[j].customId === 'unlock') {
+                            temp_rs_components[i].components[j] = new Discord.ButtonBuilder({ label: '✅ Start Run', style: Discord.ButtonStyle.Success, customId: 'start' });
+                        }
+                        if (temp_rs_components[i].components[j].customId === 'minRole') {
+                            temp_rs_components[i].components[j] = Discord.ButtonBuilder.from(temp_rs_components[i].components[j]);
+                            temp_rs_components[i].components[j].setDisabled(false);
+                        }
+                    }
+                }
+                let temp_leader_components = this.leaderEmbedMessage.components;
+                for (let i = 0; i < temp_leader_components.length; i++) {
+                    for (let j = 0; j < temp_leader_components[i].components.length; j++) {
+                        if (temp_leader_components[i].components[j].customId === 'unlock') {
+                            temp_leader_components[i].components[j] = new Discord.ButtonBuilder({ label: '✅ Start Run', style: Discord.ButtonStyle.Success, customId: 'start' });
+                        }
+                    }
+                }
+                this.raidStatusMessage = await this.raidStatusMessage.edit({ components: temp_rs_components });
+                this.leaderEmbedMessage = await this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed], components: temp_leader_components })
             } else { return interaction.reply({ ephemeral: true, content: 'You are not a staff member' }) }
         }
         else if (interaction.customId === 'end') {
@@ -639,11 +715,13 @@ class afkCheck {
         if (!this.afkInfo.twoPhase) for (let i of this.afkInfo.reacts) reacts.push(i)
         //split row
         if (curRow.length > 0) { actionRows.push(curRow); curRow = [] }
-        if (this.settings.backend.supporter) addButton({ emoji: this.bot.storedEmojis['NitroBooster'].id, label: 'Supporter', style: Discord.ButtonStyle.Success, customId: 'supporter' })
-        if (this.settings.backend.points) addButton({ label: '🎟️ Use Tickets', style: Discord.ButtonStyle.Secondary, customId: 'points' })
+        if (this.afkInfo.minRole) addButton({ label: `${this.afkInfo.minRole.charAt(0).toUpperCase() + this.afkInfo.minRole.slice(1)} Role 0/${this.afkInfo.vcCap}`, style: Discord.ButtonStyle.Primary, customId: 'minRole', disabled: true })
+        if (this.settings.backend.supporter && !this.afkInfo.minRole) addButton({ emoji: this.bot.storedEmojis['NitroBooster'].id, label: 'Supporter', style: Discord.ButtonStyle.Success, customId: 'supporter' })
+        if (this.settings.backend.points && !this.afkInfo.minRole) addButton({ label: '🎟️ Use Tickets', style: Discord.ButtonStyle.Secondary, customId: 'points' })
         //split row
         if (curRow.length > 0) { actionRows.push(curRow); curRow = [] }
         if (this.afkInfo.twoPhase) addButton({ label: '✅ Open Channel', style: Discord.ButtonStyle.Success, customId: 'openvc' })
+        else if (this.afkInfo.minRole) addButton({ label: `🔓 Unlock ${this.afkInfo.minRole.charAt(0).toUpperCase() + this.afkInfo.minRole.slice(1)}`, style: Discord.ButtonStyle.Success, customId: 'unlock' })
         else addButton({ label: '✅ Start Run', style: Discord.ButtonStyle.Success, customId: 'start' })
         addButton({ label: '❌ Abort Run', style: Discord.ButtonStyle.Danger, customId: 'end' })
 
@@ -667,7 +745,8 @@ class afkCheck {
         this.openInteractions.push(interaction.user.id)
 
         // Prompt
-        let emote = this.bot.storedEmojis[interaction.customId].text
+        let emote = this.bot.storedEmojis[interaction.customId]
+        if (emote) emote = emote.text
         /**
          *
          * @param {afkCheck} afk
@@ -694,15 +773,14 @@ class afkCheck {
                         afk.reactables[type].users.push(interaction.user.id)
                         break;
                 }
+                if (afk.afkInfo.minRole && type != 'minRole' && !afk.reactables['minRole'].users.includes(interaction.user.id)) afk.reactables['minRole'].users.push(interaction.user.id)
                 afk.earlyLocation.push(interaction.user);
             }
 
             let current_limit = request ? getLength(afk) - origLimit : getLength(afk)
-
+            let minrole_current_limit = afk.afkInfo.minRole ? afk.reactables['minRole'].users.length : 0
             // Disable button if react limit is hit
-            if (current_limit >= limit) interaction.message.editButton(interaction.component.customId, `${current_limit}/${limit}`, true)
-            else interaction.message.editButton(interaction.component.customId, `${current_limit}/${limit}`)
-
+            interaction.message.editButton({[interaction.component.customId] : {label : `${current_limit}/${limit}`, disabled : (current_limit >= limit)}, 'minRole': {label: `${afk.afkInfo.minRole.charAt(0).toUpperCase() + afk.afkInfo.minRole.slice(1)} Role ${minrole_current_limit}/${afk.afkInfo.vcCap}`, disabled: (minrole_current_limit >= afk.afkInfo.vcCap || !afk.minRoleUnlocked) }})
             //allow another interaction
             afk.removeFromActiveInteractions(interaction.user.id)
 
@@ -722,8 +800,8 @@ class afkCheck {
             if (!afk.afkInfo.keyEmote) index--;
             if (afk.afkInfo.vialReact && !(type == 'key' || type == 'vial')) index++;
             if (afk.leaderEmbed.data.fields[index].value == `None!`) {
-                afk.leaderEmbed.data.fields[index].value = `${emote}: <@!${interaction.user.id}>`;
-            } else afk.leaderEmbed.data.fields[index].value += `\n${emote}: ${`<@!${interaction.user.id}>`}`
+                afk.leaderEmbed.data.fields[index].value = `${emote ? emote : afk.reactables['minRole'].users.length}: <@!${interaction.user.id}>`;
+            } else afk.leaderEmbed.data.fields[index].value += `\n${emote ? emote : afk.reactables['minRole'].users.length}: ${`<@!${interaction.user.id}>`}`
             afk.leaderEmbedMessage.edit({ embeds: [afk.leaderEmbed] }).catch(er => ErrorLogger.log(er, afk.bot, this.guild));
             afk.runInfoMessage.edit({ embeds: [afk.leaderEmbed] }).catch(er => ErrorLogger.log(er, afk.bot, this.guild));
 
@@ -733,6 +811,7 @@ class afkCheck {
         function checkType(afk) { //true = spot open
             //key, vial, other
             let lenLimit = request ? origLimit + limit : limit
+            if (afk.afkInfo.minRole && afk.reactables['minRole'].users.length >= afk.afkInfo.vcCap && !afk.reactables['minRole'].users.includes(interaction.user.id)) return false
             switch (type) {
                 case 'key':
                     if (afk.keys.length >= lenLimit || afk.keys.includes(interaction.member.id)) return false; else return true;
@@ -755,6 +834,14 @@ class afkCheck {
         }
 
         let endAfter = null
+
+        if (this.afkInfo.minRole) {
+            if (!interaction.member.roles.cache.has(this.settings.roles[this.afkInfo.minRole])) {
+                embed.setDescription(`You do not have the required role ${interaction.guild.roles.cache.get(this.settings.roles[this.afkInfo.minRole])} to react to this run.`)
+                await interaction.reply({ embeds: [embed], ephemeral: true })
+                return this.removeFromActiveInteractions(interaction.member.id)
+            }
+        }
 
         // If confirmation not needed, just send the location
         if (noConfirm) return sendLocation(this, true)
@@ -780,8 +867,8 @@ class afkCheck {
         try {
             if (!checkType(this)) {
                 let current_limit = request ? getLength(this) - origLimit : getLength(this)
-                if (current_limit >= limit) interaction.message.editButton(interaction.component.customId, `${current_limit}/${limit}`, true)
-                else interaction.message.editButton(interaction.component.customId, `${current_limit}/${limit}`)
+                let minrole_current_limit = this.afkInfo.minRole ? this.reactables['minRole'].users.length : 0
+                interaction.message.editButton({[interaction.component.customId] : {label : `${current_limit}/${limit}`, disabled : (current_limit >= limit)}, 'minRole': {label: `${this.afkInfo.minRole.charAt(0).toUpperCase() + this.afkInfo.minRole.slice(1)} Role ${minrole_current_limit}/${this.afkInfo.vcCap}`, disabled: (minrole_current_limit >= this.afkInfo.vcCap || !this.minRoleUnlocked) }})
                 embed.setDescription(`Too many people have already reacted and confirmed for that. Try another react or try again next run.`)
                 interaction.reply({ embeds: [embed], ephemeral: true })
                 return this.removeFromActiveInteractions(interaction.member.id)
@@ -795,11 +882,23 @@ class afkCheck {
             if (reactInfo && reactInfo.shortName) emoteName = reactInfo.shortName
             if (type == "key") emoteName = 'Key'
             if (type == "vial") emoteName = 'Vial'
+            
+            if (reactInfo && reactInfo.confirmationMessage) reactInfo.confirmationMessage = reactInfo.confirmationMessage.match(/[^\{\}]*/g).map(match => {
+                let message = match
+                if (this.message.guild.channels.cache.has(this.settings.channels[match])) message = `<#${this.settings.channels[match]}>`
+                if (this.message.guild.roles.cache.has(this.settings.roles[match])) message = `<@&${this.settings.roles[match]}>`
+                return message
+            }).reduce((a, b) => a + b)
 
             embed.setDescription(
-                reactInfo && reactInfo.confirmationMessage ?
+                emote ?
+                    reactInfo && reactInfo.confirmationMessage ?
                     `You reacted as ${emote} **${emoteName}**\n\n${reactInfo.confirmationMessage}\n\nPress ✅ to confirm your reaction. Otherwise press ❌` :
-                    `You reacted as ${emote} **${emoteName}**\nPress ✅ to confirm your reaction. Otherwise press ❌`
+                    `You reacted as ${emote} **${emoteName}**\n\n${emoteName == "Key" && this.afkInfo.minRole ? "If you are popping a key, you do not need to meet requirements for Accursed runs.\n\n" : ""}Press ✅ to confirm your reaction. Otherwise press ❌`
+                    :
+                    reactInfo && reactInfo.confirmationMessage ?
+                    `You reacted as **${this.afkInfo.minRole.charAt(0).toUpperCase() + this.afkInfo.minRole.slice(1)}**\n\n${reactInfo.confirmationMessage}\n\nPress ✅ to confirm your reaction. Otherwise press ❌` :
+                    `You reacted as **${this.afkInfo.minRole.charAt(0).toUpperCase() + this.afkInfo.minRole.slice(1)}**\n\nPress ✅ to confirm your reaction. Otherwise press ❌`
             )
 
             if (reactInfo && reactInfo.confirmationMedia) embed.setImage(reactInfo.confirmationMedia)
@@ -882,7 +981,7 @@ class afkCheck {
             }
         }
         if (this.supporter.length + 1 > this.settings.numerical.supporterlimit) {
-            interaction.message.editButton(interaction.component.customId, null, true)
+            interaction.message.editButton({[interaction.component.customId]: {label: null, disabled: true}})
             embed.setDescription('Too many Supporters have already received location for this run. Try again in the next run!');
             await interaction.reply({ embeds: [embed], ephemeral: true })
             this.removeFromActiveInteractions(interaction.user.id)
@@ -972,7 +1071,7 @@ class afkCheck {
         }
         let ticketLimit = this.settings.numerical.ticketlimit
         if (this.pointsUsers.length >= ticketLimit) {
-            interaction.message.editButton(interaction.component.customId, null, true)
+            interaction.message.editButton({[interaction.component.customId]: {label: null, disabled: true}})
             return
         }
         let embed = new Discord.EmbedBuilder()
@@ -1009,7 +1108,7 @@ class afkCheck {
                 }
                 else if (int.customId == 'confirm') {
                     if (this.pointsUsers.length >= ticketLimit) {
-                        interaction.message.editButton(interaction.component.customId, null, true)
+                        interaction.message.editButton({[interaction.component.customId]: {label: null, disabled: true}})
                         embed.setDescription('Unfortunately too many people have used their points for this run. No points have been deducted.')
                         if (embed.data.footer) delete embed.data.footer
                         if (embed.data.author) delete embed.data.author

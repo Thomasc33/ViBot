@@ -172,7 +172,6 @@
             ],
             "embed": {
                 "color": "#ff0000",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:LostHallsKey:hallsK>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:UTCloakofthePlanewalker>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:Ogmur>\nIf you have the role <@&585533559280762888> react with <:nitro:NitroBooster> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230332157972.png?v=1",
                 "removeThumbnail": true
             },
@@ -245,7 +244,6 @@
             ],
             "embed": {
                 "color": "#2f075c",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:hallsK> or <:Vial:VialOfPureDarkness>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:Ogmur>\nIf you have the role <@&585533559280762888> react with <:nitro:NitroBooster> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230210523247.png?v=1",
                 "removeThumbnail": true
             },
@@ -318,7 +316,6 @@
             ],
             "embed": {
                 "color": "#2f075c",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:hallsK> or <:Vial:VialOfPureDarkness>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:Ogmur>\nIf you have the role <@&585533559280762888> react with <:nitro:NitroBooster> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230210523247.png?v=1",
                 "removeThumbnail": true
             },
@@ -410,7 +407,6 @@
             ],
             "embed": {
                 "color": "#2f075c",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:hallsK> or <:Vial:VialOfPureDarkness>\nIf you are bringing an 8/8 Mystic for the skip, react with <:Mystic:Mystic>\nIf you are bringing an 8/8 trickster with a Brain for the skip, react with <:STBrainoftheGolem:STBrainoftheGolem>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:Ogmur>\nIf you have the role <@&585533559280762888> react with <:nitro:NitroBooster> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230391140453.png?v=1",
                 "removeThumbnail": true
             },
@@ -502,7 +498,6 @@
             ],
             "embed": {
                 "color": "#2f075c",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:hallsK> or <:Vial:VialOfPureDarkness>\nIf you are bringing an 8/8 Mystic for the skip, react with <:Mystic:Mystic>\nIf you are bringing an 8/8 trickster with a Brain for the skip, react with <:STBrainoftheGolem:STBrainoftheGolem>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:Ogmur>\nIf you have the role <@&585533559280762888> react with <:nitro:NitroBooster> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230391140453.png?v=1",
                 "removeThumbnail": true
             },
@@ -589,7 +584,6 @@
             ],
             "embed": {
                 "color": "#013220",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:shattersKey:shattersKey>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:UTCloakofthePlanewalker>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:Ogmur>\nIf you have the role <@&585533559280762888> react with <:nitro:NitroBooster> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/723001214865899532.png?v=1",
                 "removeThumbnail": true
             },
@@ -676,7 +670,148 @@
             ],
             "embed": {
                 "color": "#013220",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:shattersKey:shattersKey>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:UTCloakofthePlanewalker>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:Ogmur>\nIf you have the role <@&585533559280762888> react with <:nitro:NitroBooster> to get into VC",
+                "thumbnail": "https://cdn.discordapp.com/emojis/723001214865899532.png?v=1",
+                "removeThumbnail": true
+            },
+            "font-color": "#000000"
+        },
+        "accursed": {
+            "runType": "Accursed Run",
+            "runName": "Accursed Run",
+            "symbol": "curse",
+            "aliases": ["cursed", "cs", "cshatts", "cshatters"],
+            "reqsImageUrl": "",
+            "keyEmote": "shattersKey",
+            "pingRole": "accursed",
+            "keyLogName": "shattersPops",
+            "runLogName": "shattersRuns",
+            "headcountEmote": "shatters",
+            "headcountOnAfk": false,
+            "isSplit": false,
+            "newChannel": true,
+            "vialReact": false,
+            "postAfkCheck": false,
+            "twoPhase": false,
+            "startDelay": 10000,
+            "vcCap": 45,
+            "timeLimit": 360,
+            "keyCount": 2,
+            "minRole": "accursed",
+            "earlyLocationCost": 20,
+            "earlyLocationReacts": [
+                {
+                    "emote": "Warrior",
+                    "pointsGiven": 1,
+                    "limit": 3,
+                    "shortName": "Warrior",
+                    "confirmationMessage": "You are expected to bring a Tiered Helmet (Minimum Tier 6) <:T6HelmoftheGreatGeneral:720401227342676149>.\nIf you are found only using Jugg <:UTHelmoftheJuggernaut:720401227334025247> you will be kicked.\nIf you do not bring the following react, you risk a suspension and possibly losing the {accursed} role.",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emote": "Paladin",
+                    "pointsGiven": 1,
+                    "limit": 3,
+                    "shortName": "Paladin",
+                    "confirmationMessage": "You are expected to bring a Tiered Seal (Minimum Tier 6) <:T6SealoftheBlessedChampion:720401067006885939>.\nIf you are found only using Oreo <:UTSealofBlasphemousPrayer:720401067128389692> you will be kicked.\nIf you do not bring the following react, you risk a suspension and possibly losing the {accursed} role.",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emote": "Knight",
+                    "pointsGiven": 1,
+                    "limit": 2,
+                    "shortName": "Knight",
+                    "confirmationMessage": "If you do not bring the following react, you risk a suspension and possibly losing the {accursed} role.",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emote": "Curse",
+                    "pointsGiven": 1,
+                    "limit": 2,
+                    "shortName": "Curse",
+                    "confirmationMessage": "If you do not bring the following react, you risk a suspension and possibly losing the {accursed} role.",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emote": "Expose",
+                    "pointsGiven": 1,
+                    "limit": 2,
+                    "shortName": "Expose",
+                    "confirmationMessage": "If you do not bring the following react, you risk a suspension and possibly losing the {accursed} role.",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emote": "Ogmur",
+                    "pointsGiven": 1,
+                    "limit": 2,
+                    "shortName": "Armor Break",
+                    "confirmationMessage": "If you do not bring the following react, you risk a suspension and possibly losing the {accursed} role.",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emote": "tomeOfTheMushroomTribesFungal",
+                    "pointsGiven": 1,
+                    "limit": 2,
+                    "shortName": "Fungal Tome",
+                    "confirmationMessage": "If you do not bring the following react, you risk a suspension and possibly losing the {accursed} role.",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emote": "UTMarbleSeal",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Marble Seal",
+                    "confirmationMessage": "If you do not bring the following react, you risk a suspension and possibly losing the {accursed} role.",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emote": "Slow",
+                    "pointsGiven": 1,
+                    "limit": 2,
+                    "shortName": "Slow",
+                    "confirmationMessage": "If you do not bring the following react, you risk a suspension and possibly losing the {accursed} role.",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emote": "Inspire",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Inspire",
+                    "confirmationMessage": "You are expected to bring a Tiered Lute (Minimum Tier 6) <:T6SkywardLute:720261302039085206>.\nIf you are found not consistently using an Inspire Lute you will be kicked.\nIf you do not bring the following react, you risk a suspension and possibly losing the {accursed} role.",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emote": "Weaken",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Weaken",
+                    "confirmationMessage": "If you do not bring the following react, you risk a suspension and possibly losing the {accursed} role.",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emote": "UTCloakofthePlanewalker",
+                    "pointsGiven": 1,
+                    "limit": 3,
+                    "shortName": "Rusher",
+                    "confirmationMessage": "If you do not bring the following react, you risk a suspension and possibly losing the {accursed} role.",
+                    "noConfirm": false,
+                    "noLocation": false
+                }
+            ],
+            "reacts": [],
+            "embed": {
+                "color": "#9B0046",
+                "description": "This channel will never open. To join, you must have the {accursed} role and bring a minimum of x/4 from the sheet below.\nBe in {vetlounge} and react with one of the following. If you do not react, you will not be dragged in.\nIf you would like to verify for {accursed}, please check {accursedverification}.",
                 "thumbnail": "https://cdn.discordapp.com/emojis/723001214865899532.png?v=1",
                 "removeThumbnail": true
             },
@@ -767,7 +902,6 @@
             ],
             "embed": {
                 "color": "#ff0000",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:LostHallsKey:hallsK>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:UTCloakofthePlanewalker>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:Ogmur>\nIf you have the role <@&585533559280762888> react with <:nitro:NitroBooster> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230332157972.png?v=1",
                 "removeThumbnail": true
             },
@@ -856,7 +990,6 @@
             ],
             "embed": {
                 "color": "#ff0000",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:LostHallsKey:hallsK>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:UTCloakofthePlanewalker>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:Ogmur>\nIf you have the role <@&585533559280762888> react with <:nitro:NitroBooster> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230332157972.png?v=1",
                 "removeThumbnail": true
             },
@@ -929,7 +1062,6 @@
             ],
             "embed": {
                 "color": "#2f075c",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:hallsK> or <:Vial:VialOfPureDarkness>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:Ogmur>\nIf you have the role <@&585533559280762888> react with <:nitro:NitroBooster> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230210523247.png?v=1",
                 "removeThumbnail": true
             },
@@ -1002,7 +1134,6 @@
             ],
             "embed": {
                 "color": "#2f075c",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:hallsK> or <:Vial:VialOfPureDarkness>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:Ogmur>\nIf you have the role <@&585533559280762888> react with <:nitro:NitroBooster> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230210523247.png?v=1",
                 "removeThumbnail": true
             },
@@ -1094,7 +1225,6 @@
             ],
             "embed": {
                 "color": "#2f075c",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:hallsK> or <:Vial:VialOfPureDarkness>\nIf you are bringing an 8/8 Mystic for the skip, react with <:Mystic:Mystic>\nIf you are bringing an 8/8 trickster with a Brain for the skip, react with <:STBrainoftheGolem:STBrainoftheGolem>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:Ogmur>\nIf you have the role <@&585533559280762888> react with <:nitro:NitroBooster> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230391140453.png?v=1",
                 "removeThumbnail": true
             },
@@ -1186,7 +1316,6 @@
             ],
             "embed": {
                 "color": "#2f075c",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key or a vial react with <:LostHallsKey:hallsK> or <:Vial:VialOfPureDarkness>\nIf you are bringing an 8/8 Mystic for the skip, react with <:Mystic:Mystic>\nIf you are bringing an 8/8 trickster with a Brain for the skip, react with <:STBrainoftheGolem:STBrainoftheGolem>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:Ogmur>\nIf you have the role <@&585533559280762888> react with <:nitro:NitroBooster> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/701491230391140453.png?v=1",
                 "removeThumbnail": true
             },
@@ -1273,7 +1402,6 @@
             ],
             "embed": {
                 "color": "#013220",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:shattersKey:shattersKey>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:UTCloakofthePlanewalker>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:Ogmur>\nIf you have the role <@&585533559280762888> react with <:nitro:NitroBooster> to get into VC",
                 "thumbnail": "https://cdn.discordapp.com/emojis/723001214865899532.png?v=1",
                 "removeThumbnail": true
             },
@@ -1360,7 +1488,148 @@
             ],
             "embed": {
                 "color": "#013220",
-                "description": "To join, **click here** {voicechannel}\nIf you have a key react with <:shattersKey:shattersKey>\nIf you plan on rushing, react with the <:UTCloakofthePlanewalker:UTCloakofthePlanewalker>\nIf you plan on bringing an armor breaking item, react with the <:Ogmur:Ogmur>\nIf you have the role <@&585533559280762888> react with <:nitro:NitroBooster> to get into VC",
+                "thumbnail": "https://cdn.discordapp.com/emojis/723001214865899532.png?v=1",
+                "removeThumbnail": true
+            },
+            "font-color": "#000000"
+        },
+        "accursed": {
+            "runType": "Accursed Run",
+            "runName": "Accursed Run",
+            "symbol": "curse",
+            "aliases": ["cursed", "cs", "cshatts", "cshatters"],
+            "reqsImageUrl": "",
+            "keyEmote": "shattersKey",
+            "pingRole": "accursed",
+            "keyLogName": "shattersPops",
+            "runLogName": "shattersRuns",
+            "headcountEmote": "shatters",
+            "headcountOnAfk": false,
+            "isSplit": false,
+            "newChannel": true,
+            "vialReact": false,
+            "postAfkCheck": false,
+            "twoPhase": false,
+            "startDelay": 10000,
+            "vcCap": 45,
+            "timeLimit": 360,
+            "keyCount": 2,
+            "minRole": "accursed",
+            "earlyLocationCost": 20,
+            "earlyLocationReacts": [
+                {
+                    "emote": "Warrior",
+                    "pointsGiven": 1,
+                    "limit": 3,
+                    "shortName": "Warrior",
+                    "confirmationMessage": "You are expected to bring a Tiered Helmet (Minimum Tier 6) <:T6HelmoftheGreatGeneral:720401227342676149>.\nIf you are found only using Jugg <:UTHelmoftheJuggernaut:720401227334025247> you will be kicked.\nIf you do not bring the following react, you risk a suspension and possibly losing the {accursed} role.",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emote": "Paladin",
+                    "pointsGiven": 1,
+                    "limit": 3,
+                    "shortName": "Paladin",
+                    "confirmationMessage": "You are expected to bring a Tiered Seal (Minimum Tier 6) <:T6SealoftheBlessedChampion:720401067006885939>.\nIf you are found only using Oreo <:UTSealofBlasphemousPrayer:720401067128389692> you will be kicked.\nIf you do not bring the following react, you risk a suspension and possibly losing the {accursed} role.",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emote": "Knight",
+                    "pointsGiven": 1,
+                    "limit": 2,
+                    "shortName": "Knight",
+                    "confirmationMessage": "If you do not bring the following react, you risk a suspension and possibly losing the {accursed} role.",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emote": "Curse",
+                    "pointsGiven": 1,
+                    "limit": 2,
+                    "shortName": "Curse",
+                    "confirmationMessage": "If you do not bring the following react, you risk a suspension and possibly losing the {accursed} role.",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emote": "Expose",
+                    "pointsGiven": 1,
+                    "limit": 2,
+                    "shortName": "Expose",
+                    "confirmationMessage": "If you do not bring the following react, you risk a suspension and possibly losing the {accursed} role.",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emote": "Ogmur",
+                    "pointsGiven": 1,
+                    "limit": 2,
+                    "shortName": "Armor Break",
+                    "confirmationMessage": "If you do not bring the following react, you risk a suspension and possibly losing the {accursed} role.",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emote": "tomeOfTheMushroomTribesFungal",
+                    "pointsGiven": 1,
+                    "limit": 2,
+                    "shortName": "Fungal Tome",
+                    "confirmationMessage": "If you do not bring the following react, you risk a suspension and possibly losing the {accursed} role.",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emote": "UTMarbleSeal",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Marble Seal",
+                    "confirmationMessage": "If you do not bring the following react, you risk a suspension and possibly losing the {accursed} role.",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emote": "Slow",
+                    "pointsGiven": 1,
+                    "limit": 2,
+                    "shortName": "Slow",
+                    "confirmationMessage": "If you do not bring the following react, you risk a suspension and possibly losing the {accursed} role.",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emote": "Inspire",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Inspire",
+                    "confirmationMessage": "You are expected to bring a Tiered Lute (Minimum Tier 6) <:T6SkywardLute:720261302039085206>.\nIf you are found not consistently using an Inspire Lute you will be kicked.\nIf you do not bring the following react, you risk a suspension and possibly losing the {accursed} role.",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emote": "Weaken",
+                    "pointsGiven": 1,
+                    "limit": 1,
+                    "shortName": "Weaken",
+                    "confirmationMessage": "If you do not bring the following react, you risk a suspension and possibly losing the {accursed} role.",
+                    "noConfirm": false,
+                    "noLocation": false
+                },
+                {
+                    "emote": "UTCloakofthePlanewalker",
+                    "pointsGiven": 1,
+                    "limit": 3,
+                    "shortName": "Rusher",
+                    "confirmationMessage": "If you do not bring the following react, you risk a suspension and possibly losing the {accursed} role.",
+                    "noConfirm": false,
+                    "noLocation": false
+                }
+            ],
+            "reacts": [],
+            "embed": {
+                "color": "#9B0046",
+                "description": "This channel will never open. To join, you must have the {accursed} role and bring a minimum of x/4 from the sheet below.\nBe in {vetlounge} and react with one of the following. If you do not react, you will not be dragged in.\nIf you would like to verify for {accursed}, please check {accursedverification}.",
                 "thumbnail": "https://cdn.discordapp.com/emojis/723001214865899532.png?v=1",
                 "removeThumbnail": true
             },
