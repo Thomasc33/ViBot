@@ -780,7 +780,9 @@ class afkCheck {
             let current_limit = request ? getLength(afk) - origLimit : getLength(afk)
             let minrole_current_limit = afk.afkInfo.minRole ? afk.reactables['minRole'].users.length : 0
             // Disable button if react limit is hit
-            interaction.message.editButton({[interaction.component.customId] : {label : `${current_limit}/${limit}`, disabled : (current_limit >= limit)}, 'minRole': {label: `${afk.afkInfo.minRole.charAt(0).toUpperCase() + afk.afkInfo.minRole.slice(1)} Role ${minrole_current_limit}/${afk.afkInfo.vcCap}`, disabled: (minrole_current_limit >= afk.afkInfo.vcCap || !afk.minRoleUnlocked) }})
+            let newcomponents = { [interaction.component.customId]: { label: `${current_limit}/${limit}`, disabled: (current_limit >= limit)} }
+            if (afk.afkInfo.minRole) newcomponents["minRole"] = {label: `${afk.afkInfo.minRole.charAt(0).toUpperCase() + afk.afkInfo.minRole.slice(1)} Role ${minrole_current_limit}/${afk.afkInfo.vcCap}`, disabled: (minrole_current_limit >= afk.afkInfo.vcCap || !afk.minRoleUnlocked)}
+            interaction.message.editButton(newcomponents)
             //allow another interaction
             afk.removeFromActiveInteractions(interaction.user.id)
 
@@ -868,7 +870,9 @@ class afkCheck {
             if (!checkType(this)) {
                 let current_limit = request ? getLength(this) - origLimit : getLength(this)
                 let minrole_current_limit = this.afkInfo.minRole ? this.reactables['minRole'].users.length : 0
-                interaction.message.editButton({[interaction.component.customId] : {label : `${current_limit}/${limit}`, disabled : (current_limit >= limit)}, 'minRole': {label: `${this.afkInfo.minRole.charAt(0).toUpperCase() + this.afkInfo.minRole.slice(1)} Role ${minrole_current_limit}/${this.afkInfo.vcCap}`, disabled: (minrole_current_limit >= this.afkInfo.vcCap || !this.minRoleUnlocked) }})
+                let newcomponents = {[interaction.component.customId] : {label : `${current_limit}/${limit}`, disabled : (current_limit >= limit)}}
+                if (this.afkInfo.minRole) newcomponents['minRole'] = {label: `${this.afkInfo.minRole.charAt(0).toUpperCase() + this.afkInfo.minRole.slice(1)} Role ${minrole_current_limit}/${this.afkInfo.vcCap}`, disabled: (minrole_current_limit >= this.afkInfo.vcCap || !this.minRoleUnlocked) }
+                interaction.message.editButton(newcomponents)
                 embed.setDescription(`Too many people have already reacted and confirmed for that. Try another react or try again next run.`)
                 interaction.reply({ embeds: [embed], ephemeral: true })
                 return this.removeFromActiveInteractions(interaction.member.id)
