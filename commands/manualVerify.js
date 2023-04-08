@@ -26,9 +26,9 @@ module.exports = {
         const raiderRole = message.guild.roles.cache.get(settings.roles.raider)
         var member = message.mentions.members.first()
         if (!member) member = message.guild.members.cache.get(args[0]);
-        if (!member) return message.reply("User not found")
-        if (member.roles.cache.has(suspendedRole.id) || member.roles.cache.has(sbvRole.id)) return message.reply("User is suspended")
-        if (member.roles.cache.has(raiderRole.id)) return message.reply('User is already verified')
+        if (!member) return message.replyUserError("User not found")
+        if (member.roles.cache.has(suspendedRole.id) || member.roles.cache.has(sbvRole.id)) return message.replyUserError("User is suspended")
+        if (member.roles.cache.has(raiderRole.id)) return message.replyUserError('User is already verified')
         if (member.roles.cache.has(settings.roles.eventraider)) await member.roles.remove(settings.roles.eventraider)
         await member.roles.add(raiderRole)
         if (settings.backend.giveeventroleonverification) await member.roles.add(settings.roles.eventraider)

@@ -32,7 +32,7 @@ module.exports = {
             return await message.channel.send(`Could not find user by the name or id of ${id}.`);
         let embed = await this.getStatsEmbed(id, message.guild, bot, db).catch(async er => {
             console.log(er)
-            await message.reply({
+            await message.replyInternalError({
                 embeds:
                     [
                         new Discord.EmbedBuilder().setDescription(`${er}`)

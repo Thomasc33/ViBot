@@ -22,7 +22,7 @@ module.exports = {
         if (!member) member = message.mentions.members.first()
         if (!member) member = message.guild.members.cache.get(args[0])
         if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
-        if (!member) return message.reply('User not found')
+        if (!member) return message.replyUserError('User not found')
         let embed = new Discord.EmbedBuilder()
             .setColor('#fefefe')
             .setDescription(`__**Avatar of**__ <@${member.id}> ${member ? '\`' + (member.nickname || member.user.tag) + '\`' : ''}`)

@@ -115,25 +115,25 @@ module.exports = {
     async slashCommandExecute(interaction, bot, db) {
         let logTypes = getLogTypes(interaction.guild.id)
         let currentweek = getCurrentWeekTypes(interaction.guild.id) || []
-        if (!logTypes) return interaction.reply('No stored log types')
+        if (!logTypes) return interaction.replyUserError('No stored log types')
 
         //args 0
         let member = interaction.options.getMember('user')
-        if (!member) return interaction.reply('User not found');
+        if (!member) return interaction.replyUserError('User not found');
 
         //args 1
         let operator = interaction.options.getString('operator').charAt(0).toLowerCase()
-        if (operator != 'a' && operator != 'r' && operator != 's') return interaction.reply(`\`${interaction.options.getString('operator')}\` not recognized. Please try \`add, remove, or set\``)
+        if (operator != 'a' && operator != 'r' && operator != 's') return interaction.replyUserError(`\`${interaction.options.getString('operator')}\` not recognized. Please try \`add, remove, or set\``)
 
         //args 2
         let logType = interaction.options.getString('type').toLowerCase()
         let logIndex = logTypes.findIndex(e => logType == e.toLowerCase())
-        if (logIndex == -1) return interaction.reply(`\`${interaction.options.getString('type')}\` not recognized. Check out \`;commands changelog\` for a list of log types`)
+        if (logIndex == -1) return interaction.replyUserError(`\`${interaction.options.getString('type')}\` not recognized. Check out \`;commands changelog\` for a list of log types`)
 
         //args 3
         let count = interaction.options.getInteger('number')
-        if (!count) return interaction.reply(`${interaction.options.getInteger('number')} is not a valid number`)
-        if (count < 0) return interaction.reply('Cannot change logs to a negative number')
+        if (!count) return interaction.replyUserError(`${interaction.options.getInteger('number')} is not a valid number`)
+        if (count < 0) return interaction.replyUserError('Cannot change logs to a negative number')
 
         //change logs
         let query = `UPDATE users SET ${logTypes[logIndex]} = `

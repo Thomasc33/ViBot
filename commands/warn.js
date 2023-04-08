@@ -28,7 +28,7 @@ module.exports = {
         let member = message.mentions.members.first()
         if (!member) member = message.guild.members.cache.get(args[0])
         if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
-        if (!member) return await message.markFailed('Member not found. Please try again')
+        if (!member) return await message.replyUserError('Member not found. Please try again')
 
         //check if person being warned is staff
         if (bot.settings[message.guild.id].backend.onlyUpperStaffWarnStaff) {
@@ -38,18 +38,18 @@ module.exports = {
                     //the warn should only happen if message.member is like an admin or something
                     let warningRoles = settings.lists.warningRoles.length ? settings.lists.warningRoles : ['moderator', 'headrl', 'headeventrl', 'officer', 'developer']
                     let warningIds = warningRoles.map(m => settings.roles[m])
-                    if (!message.member.roles.cache.filter(role => warningIds.includes(role.id)).size) return message.reply("Could not warn that user as they are staff and your highest role isn't high enough. Ask for a promotion and then try again.");
+                    if (!message.member.roles.cache.filter(role => warningIds.includes(role.id)).size) return message.replyUserError("Could not warn that user as they are staff and your highest role isn't high enough. Ask for a promotion and then try again.");
                 }
             }
         }
         let reason = ''
         for (let i = 1; i < args.length; i++) reason = reason.concat(` ${args[i]}`)
-        if (reason == '') return message.reply('Please provide a reason')
+        if (reason == '') return message.replyUserError('Please provide a reason')
         let errored = false
         try {
             await db.promise().query('INSERT INTO warns (id, modid, reason, time, guildid, silent) VALUES (?, ?, ?, ?, ?, ?)', [member.user.id, message.author.id, reason, Date.now(), member.guild.id, silent ? 1 : 0])
         } catch (err) {
-            return await message.reply(`There was an error: ${err}`)
+            return await message.replyInternalError(`There was an error: ${err}`)
         }
         let warnEmbed = new Discord.EmbedBuilder()
             .setColor('#ff0000')

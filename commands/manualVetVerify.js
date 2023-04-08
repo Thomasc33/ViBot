@@ -23,8 +23,8 @@ module.exports = {
         var member = message.mentions.members.first()
         if (!member) member = message.guild.members.cache.get(args[0]);
         if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
-        if (!member) return message.reply("User not found")
-        if (member.roles.cache.has(vetBanRole.id)) return message.reply("User is vet banned")
+        if (!member) return message.replyUserError("User not found")
+        if (member.roles.cache.has(vetBanRole.id)) return message.replyUserError("User is vet banned")
         member.roles.add(vetRaiderRole)
         let embed = new Discord.EmbedBuilder()
             .setTitle('Manual Veteran Verify')

@@ -57,7 +57,7 @@ module.exports = {
                     this.removeExpelled(message, args, bot, db);
                     break;
                 default:
-                    return message.reply('Invalid arguments: `<add/remove/list> [names/ids]`');
+                    return message.replyUserError('Invalid arguments: `<add/remove/list> [names/ids]`');
             }
         },
         async listAll(message, args, bot, db) {
@@ -88,22 +88,22 @@ module.exports = {
         })
     },
     async addExpelled(message, args, bot, db) {
-        if (!args.length) return message.reply(`Please specify a user`)
+        if (!args.length) return message.replyUserError(`Please specify a user`)
         const id = args.shift();
         db.query(`INSERT INTO veriblacklist (id, modid, guildid, reason) VALUES (${db.escape(id)}, '${message.author.id}', '${message.guild.id}', ${db.escape(args.join(' ') || 'No reason provided.')})`, (err) => {
             if (err)
             {
                 ErrorLogger.log(err, bot, message.guild);
-                message.reply(`Error adding \`${id}\` to the blacklist: ${err.message}`);
+                message.replyInternalErrror(`Error adding \`${id}\` to the blacklist: ${err.message}`);
             } else 
                 message.react('✅');
         });
     },
     async removeExpelled(message, args, bot, db) {
-        if (!args.length) return message.reply(`Please specify a user`)
+        if (!args.length) return message.replyUserError(`Please specify a user`)
         for (let i in args) {
             db.query(`SELECT * FROM veriblacklist WHERE id = '${args[i]}'`, (err, rows) => {
-                if (rows.length == 0) message.reply(`${args[i]} is not blacklisted`)
+                if (rows.length == 0) message.replyUserError(`${args[i]} is not blacklisted`)
                 else db.query(`DELETE FROM veriblacklist WHERE id = '${args[i]}'`)
             })
         }

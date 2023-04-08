@@ -38,12 +38,12 @@ module.exports = {
         var user = message.mentions.members.first()
         if (!user) user = message.guild.members.cache.get(args[1])
         if (!user) user = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[1].toLowerCase()));
-        if (!user) return message.reply('User not found')
+        if (!user) return message.replyUserError('User not found')
 
         //Validate Command Arguments
-        if (!keypops[message.guild.id]) return message.reply('Key information missing for this guild')
+        if (!keypops[message.guild.id]) return message.replyUserError('Key information missing for this guild')
         let keyInfo = findKey(message.guild.id, args[0].toLowerCase())
-        if (!keyInfo) return message.reply(`\`${args[0]}\` not recognized`)
+        if (!keyInfo) return message.replyUserError(`\`${args[0]}\` not recognized`)
 
         //Create Discord Embed Confirmation
         let collector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id === message.author.id, time: 20000 });

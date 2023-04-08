@@ -49,10 +49,10 @@ module.exports = {
         }
         db.query(`UPDATE users SET points = points + ${points} WHERE id = '${member.id}'`, (err, rows) => {
             if (err) {
-                interaction.markFailed("Error adding points.")
+                interaction.replyInternalError("Error adding points.")
                 ErrorLogger.log(err, bot, message.guild)
             }
-            else message.markSuccessful(`Added ${points} (${type}) points to ${member.user.tag}`)
+            else message.replySuccess(`Added ${points} (${type}) points to ${member.user.tag}`)
         })
     },
 }

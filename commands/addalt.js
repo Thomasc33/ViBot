@@ -87,7 +87,7 @@ module.exports = {
         var member = interaction.options.getMember('user')
         const altName = interaction.options.getString('altname');
         let dupeName = interaction.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(altName.toLowerCase()));
-        if (dupeName) return interaction.reply(`${dupeName} already has the name ${altName}`)
+        if (dupeName) return interaction.replyUserError(`${dupeName} already has the name ${altName}`)
         let image = interaction.options.getString('image')
 
         member.setNickname(`${member.nickname} | ${altName}`, `Old Name: ${member.nickname}\nNew Name: ${member.nickname} | ${altName}\nChange by: ${interaction.member}`);
