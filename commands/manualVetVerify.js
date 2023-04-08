@@ -15,14 +15,7 @@ module.exports = {
             description: "The discord user ID or @mention you want to vet verify"
         })
     ],
-    getSlashCommandData(guild) {
-        let data = slashCommandJSON(this, guild)
-        return {
-            toJSON: function() {
-                return data
-            }
-        }
-    },
+    getSlashCommandData(guild) { return slashCommandJSON(this, guild) },
     execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         const vetBanRole = message.guild.roles.cache.get(settings.roles.vetban)

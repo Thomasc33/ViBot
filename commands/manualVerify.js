@@ -18,14 +18,7 @@ module.exports = {
             description: "The in game name you want to verify"
         })
     ],
-    getSlashCommandData(guild) {
-        let data = slashCommandJSON(this, guild)
-        return {
-            toJSON: function() {
-                return data
-            }
-        }
-    },
+    getSlashCommandData(guild) { return slashCommandJSON(this, guild) },
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         const suspendedRole = message.guild.roles.cache.get(settings.roles.permasuspended)

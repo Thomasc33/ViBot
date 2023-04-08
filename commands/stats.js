@@ -20,14 +20,7 @@ module.exports = {
             description: "The user whose stats you'd like to view"
         }),
     ],
-    getSlashCommandData(guild) {
-        let data = slashCommandJSON(this, guild)
-        return {
-            toJSON: function() {
-                return data
-            }
-        }
-    },
+    getSlashCommandData(guild) { return slashCommandJSON(this, guild) },
     async execute(message, args, bot, db) {
         if (args.length == 0) var member = message.author
         else var member = message.mentions.members.first()

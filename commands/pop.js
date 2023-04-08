@@ -26,14 +26,7 @@ module.exports = {
             description: "The number of keys to add (default 1)"
         }),
     ],
-    getSlashCommandData(guild) {
-        let data = slashCommandJSON(this, guild)
-        return {
-            toJSON: function() {
-                return data
-            }
-        }
-    },
+    getSlashCommandData(guild) { return slashCommandJSON(this, guild) },
     async execute(message, args, bot, db) {
         //Initialize
         let settings = bot.settings[message.guild.id]

@@ -1,5 +1,7 @@
 const Discord = require('discord.js')
 const db = require('../data/changelog.json')
+const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
+const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js')
 
 module.exports = {
     name: 'changelog',
@@ -17,7 +19,7 @@ module.exports = {
             .addUserOption(option => option.setName('user').setDescription('User to change logs for').setRequired(true))
             .addStringOption(option => option.setName('operator').setDescription('Operator to use').setRequired(true).addChoices({ name: 'Add', value: 'add' }, { name: 'Remove', value: 'remove' }, { name: 'Set', value: 'set' }))
             .addStringOption(option => option.setName('type').setDescription('Type of log to change').setRequired(true).addChoices(...db[guild.id] && db[guild.id].logtypes ? db[guild.id].logtypes.map(m => { return { name: m, value: m } }) : []))
-            .addIntegerOption(option => option.setName('number').setDescription('Number of logs to change').setRequired(true))
+            .addIntegerOption(option => option.setName('number').setDescription('Number of logs to change').setRequired(true)).toJSON()
     },
     async execute(message, args, bot, db) {
         if (args.length < 4) return

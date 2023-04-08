@@ -7,6 +7,7 @@ const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js')
 module.exports = {
     role: 'security',
     name: 'punishments',
+    slashCommandName: 'pu',
     alias: ['backgroundcheck', 'pu', 'ui', 'userinfo'],
     requiredArgs: 1,
     description: 'Displays all mutes, warnings or suspensions any user has',
@@ -15,14 +16,7 @@ module.exports = {
             description: "The discord user ID, @mention, or ign you want to view"
         }),
     ],
-    getSlashCommandData(guild) {
-        let data = slashCommandJSON(this, guild)
-        return {
-            toJSON: function() {
-                return data
-            }
-        }
-    },
+    getSlashCommandData(guild) { return slashCommandJSON(this, guild) },
     async execute(message, args, bot, db) {
         const settings = bot.settings[message.guild.id]
         var usersNotFound = [];

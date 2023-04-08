@@ -14,14 +14,7 @@ module.exports = {
             description: "The nickname you want to search"
         })
     ],
-    getSlashCommandData(guild) {
-        let data = slashCommandJSON(this, guild)
-        return {
-            toJSON: function() {
-                return data
-            }
-        }
-    },
+    getSlashCommandData(guild) { return slashCommandJSON(this, guild) },
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         if (args.length == 0) return;

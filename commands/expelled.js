@@ -40,14 +40,7 @@ module.exports = {
                 ]
             }),
         ],
-        getSlashCommandData(guild) {
-            let data = slashCommandJSON(this, guild)
-            return {
-                toJSON: function() {
-                    return data
-                }
-            }
-        },
+        getSlashCommandData(guild) { return slashCommandJSON(this, guild) },
         async execute(message, args, bot, db) {
             const action = args.shift()[0].toLowerCase();
             switch (action) {

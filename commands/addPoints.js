@@ -27,12 +27,7 @@ module.exports = {
     getSlashCommandData(guild) {
         let settings = guild.client.settings[guild.id]
         if (!settings || !settings.backend.points || !settings.commands.addpoints) return undefined
-        let data = slashCommandJSON(this, guild)
-        return {
-            toJSON: function() {
-                return data
-            }
-        }
+        return slashCommandJSON(this, guild)
     },
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
