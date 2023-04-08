@@ -26,7 +26,11 @@ module.exports = {
             description: "The number of keys to add (default 1)"
         }),
     ],
-    getSlashCommandData(guild) { return slashCommandJSON(this, guild) },
+    getSlashCommandData(guild) {
+        let json = slashCommandJSON(this, guild)
+        if (keypops[guild.id]) json.options[0]['choices'] = slashChoices(Object.keys(keypops[guild.id]))
+        return json
+    },
     async execute(message, args, bot, db) {
         //Initialize
         let settings = bot.settings[message.guild.id]

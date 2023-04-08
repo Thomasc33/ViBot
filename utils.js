@@ -13,7 +13,11 @@ module.exports = {
         return obj
     },
     slashChoices(opts) {
-        return Object.entries(opts).map(([k, v]) => ({'name': k, 'value': v}))
+        if (Array.isArray(opts)) {
+            return opts.map((v) => ({'name': v, 'value': v}))
+        } else if (typeof(opts) == 'object') {
+            return Object.entries(opts).map(([k, v]) => ({'name': k, 'value': v}))
+        }
     },
     slashCommandJSON(obj, guild) {
         return {
