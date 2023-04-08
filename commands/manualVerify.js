@@ -1,5 +1,8 @@
 const Discord = require('discord.js')
 const { manualVerifyLog } = require('../commands/verification.js')
+const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
+const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js')
+
 module.exports = {
     name: 'manualverify',
     description: 'Manually verifies a user',
@@ -7,7 +10,22 @@ module.exports = {
     roleOverride: { '343704644712923138': 'security' },
     alias: ['mv'],
     requiredArgs: 2,
-    args: '<id/mention> <ign>',
+    args: [
+        slashArg(SlashArgType.String, 'id', {
+            description: "The discord user ID or @mention you want to verify"
+        }),
+        slashArg(SlashArgType.String, 'ign', {
+            description: "The in game name you want to verify"
+        })
+    ],
+    getSlashCommandData(guild) {
+        let data = slashCommandJSON(this, guild)
+        return {
+            toJSON: function() {
+                return data
+            }
+        }
+    },
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         const suspendedRole = message.guild.roles.cache.get(settings.roles.permasuspended)
@@ -15,9 +33,9 @@ module.exports = {
         const raiderRole = message.guild.roles.cache.get(settings.roles.raider)
         var member = message.mentions.members.first()
         if (!member) member = message.guild.members.cache.get(args[0]);
-        if (!member) return message.channel.send("User not found")
-        if (member.roles.cache.has(suspendedRole.id) || member.roles.cache.has(sbvRole.id)) return message.channel.send("User is suspended")
-        if (member.roles.cache.has(raiderRole.id)) return message.channel.send('User is already verified')
+        if (!member) return message.reply("User not found")
+        if (member.roles.cache.has(suspendedRole.id) || member.roles.cache.has(sbvRole.id)) return message.reply("User is suspended")
+        if (member.roles.cache.has(raiderRole.id)) return message.reply('User is already verified')
         if (member.roles.cache.has(settings.roles.eventraider)) await member.roles.remove(settings.roles.eventraider)
         await member.roles.add(raiderRole)
         if (settings.backend.giveeventroleonverification) await member.roles.add(settings.roles.eventraider)
@@ -40,7 +58,7 @@ module.exports = {
             .setTimestamp(Date.now());
         await message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });
         let confirmEmbed = new Discord.EmbedBuilder().setDescription(`${member} has been given ${raiderRole}`)
-        await message.channel.send({ embeds: [confirmEmbed] })
+        await message.reply({ embeds: [confirmEmbed] })
         await member.user.send(`You have been verified on \`${message.guild.name}\`. Please head over to rules, faq, and raiding-rules channels to familiarize yourself with the server. Happy raiding`)
 
         db.query(`SELECT * FROM veriblacklist WHERE id = '${member.id}' OR id = '${nick}'`, async (err, rows) => {

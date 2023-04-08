@@ -1,12 +1,27 @@
 const Discord = require('discord.js');
 const ErrorLogger = require('../lib/logError')
+const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
+const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js')
 
 module.exports = {
     name: "find",
-    description: "Finds users from a nickname",
-    args: '[Users]',
-    requiredArgs: 1,
+    description: "Finds user from a nickname.",
+    //args: '[Users]',
+    //requiredArgs: 1,
     role: 'eventrl',
+    args: [
+        slashArg(SlashArgType.String, 'nickname', {
+            description: "The nickname you want to search"
+        })
+    ],
+    getSlashCommandData(guild) {
+        let data = slashCommandJSON(this, guild)
+        return {
+            toJSON: function() {
+                return data
+            }
+        }
+    },
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         if (args.length == 0) return;
@@ -14,6 +29,7 @@ module.exports = {
         var suspendedRole = message.guild.roles.cache.get(settings.roles.permasuspended)
         var notFoundString = ''
         let expelled = [...args];
+        let embeds = [];
         //combines users into an array
         for (let i in args) {
             let u = args[i];
@@ -46,7 +62,7 @@ module.exports = {
                 if (member.voice.channel != null) {
                     embed.data.fields[2].value = member.voice.channel.name;
                 }
-                message.channel.send({ embeds: [embed] });
+                embeds.push(embed);
             }
         }
         if (notFoundString != '') {
@@ -54,7 +70,7 @@ module.exports = {
                 .setColor('#ffff00')
                 .setTitle('Users not found:')
                 .setDescription(notFoundString);
-            message.channel.send({ embeds: [embed] })
+            embeds.push(embed)
         }
 
         expelled = await checkBlackList([...new Set(expelled.map(e => e.toLowerCase()))], db);
@@ -68,8 +84,9 @@ module.exports = {
                 .setColor(`#ff0000`)
                 .setTitle(`The following users are expelled`)
                 .setDescription(expelledString)
-            message.channel.send({ embeds: [expelledEmbed] })
+            embeds.push(expelledEmbed)
         }
+        message.reply({ embeds: embeds })
     }
 }
 
