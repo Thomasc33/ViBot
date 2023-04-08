@@ -7,19 +7,32 @@ module.exports = {
     name: 'changelog',
     role: 'headeventrl',
     description: 'Changes logs',
-    args: '<user> <add/remove/set> <log type> <#>',
+    args: [
+        slashArg(SlashArgType.User, 'user', {
+            description: 'User to change logs for',
+        }),
+        slashArg(SlashArgType.String, 'operator', {
+            description: 'Operator to use',
+            choices: slashChoices(['Add', 'Remove', 'Set'])
+        }),
+        slashArg(SlashArgType.String, 'type', {
+            description: 'Type of log to change',
+        }),
+        slashArg(SlashArgType.Number, 'number', {
+            description: 'Number of logs to change'
+        })
+    ],
     requiredArgs: 4,
     getNotes(guildid, member) {
         return getLogTypes(guildid) ? getLogTypes(guildid).toString() : `Not setup for guild ${guildid}`
     },
     getSlashCommandData(guild) {
-        return new Discord.SlashCommandBuilder()
-            .setName('changelog')
-            .setDescription('Changes logs')
-            .addUserOption(option => option.setName('user').setDescription('User to change logs for').setRequired(true))
-            .addStringOption(option => option.setName('operator').setDescription('Operator to use').setRequired(true).addChoices({ name: 'Add', value: 'add' }, { name: 'Remove', value: 'remove' }, { name: 'Set', value: 'set' }))
-            .addStringOption(option => option.setName('type').setDescription('Type of log to change').setRequired(true).addChoices(...db[guild.id] && db[guild.id].logtypes ? db[guild.id].logtypes.map(m => { return { name: m, value: m } }) : []))
-            .addIntegerOption(option => option.setName('number').setDescription('Number of logs to change').setRequired(true)).toJSON()
+        let json = slashCommandJSON(this, guild)
+        // Magic regex!
+        // Makes the log type names look pretty :3
+        if (db[guild.id]) json.options[2]['choices'] = db[guild.id].logtypes.map((k) => ({name: k.charAt(0).toUpperCase() + k.slice(1).replace(/[A-Z]|(?<=3).|o3|p(?=op)/g, (i) => ` ${i.toUpperCase()}`), value: k}))
+        console.log(json.options[2].choices)
+        return json
     },
     async execute(message, args, bot, db) {
         if (args.length < 4) return
