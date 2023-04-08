@@ -1,14 +1,22 @@
 const Discord = require('discord.js');
 const ErrorLogger = require('../lib/logError');
 const moment = require('moment');
+const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
+const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js')
 
 module.exports = {
     role: 'security',
     name: 'punishments',
-    args: '[users]',
+    slashCommandName: 'pu',
     alias: ['backgroundcheck', 'pu', 'ui', 'userinfo'],
     requiredArgs: 1,
     description: 'Displays all mutes, warnings or suspensions any user has',
+    args: [
+        slashArg(SlashArgType.String, 'user', {
+            description: "The discord user ID, @mention, or ign you want to view"
+        }),
+    ],
+    getSlashCommandData(guild) { return slashCommandJSON(this, guild) },
     async execute(message, args, bot, db) {
         const settings = bot.settings[message.guild.id]
         var usersNotFound = [];
@@ -40,7 +48,7 @@ module.exports = {
                         if (!embed.data.fields || embed.data.fields.length == 0) {
                             embed.setDescription(`No punishments have been issued for ${member}`)
                         }
-                        await message.channel.send({ embeds: [embed] })
+                        await message.reply({ embeds: [embed] })
                     })
                 })
             })
@@ -50,7 +58,7 @@ module.exports = {
                 .setTitle('Users not found')
                 .setColor('#fAA61A')
                 .setDescription(usersNotFound.join(', '))
-            await message.channel.send({ embeds: [embedNotFound] })
+            await message.reply({ embeds: [embedNotFound] })
         }
     }
 }

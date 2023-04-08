@@ -35,7 +35,7 @@ async function deployCommands(bot, guild) {
     let slashCommands = []
     bot.commands.filter(c => c.getSlashCommandData).each(c => {
         let data = c.getSlashCommandData(guild)
-        if (data) slashCommands.push(data.toJSON())
+        if (data) slashCommands.push(data)
     })
 
     // Deploy commands

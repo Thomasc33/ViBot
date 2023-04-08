@@ -1,21 +1,28 @@
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
+const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
+const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js')
 
 module.exports = {
     name: 'addalt',
     description: 'Adds the username of an alt to a user and logs it',
+    slashCommandName: 'addalt',
     alias: ['aa'],
     args: '<id/mention> <alt name> <image>',
     requiredArgs: 2,
     role: 'security',
-    getSlashCommandData(guild) {
-        return new Discord.SlashCommandBuilder()
-            .setName('addalt')
-            .setDescription('Adds the username of an alt to a user and logs it')
-            .addUserOption(option => option.setName('user').setDescription('User to add alt to').setRequired(true))
-            .addStringOption(option => option.setName('altname').setDescription('Name of the alt').setRequired(true))
-            .addStringOption(option => option.setName('image').setDescription('Image or reason of the alt').setRequired(true))
-    },
+    args: [
+        slashArg(SlashArgType.User, 'user', {
+            description: 'User to add alt to',
+        }),
+        slashArg(SlashArgType.String, 'altname', {
+            description: 'Name of the alt'
+        }),
+        slashArg(SlashArgType.String, 'image', {
+            description: 'Image or reason of the alt'
+        })
+    ],
+    getSlashCommandData(guild) { return slashCommandJSON(this, guild) },
     async execute(message, args, bot, db) {
         const settings = bot.settings[message.guild.id]
         var member = message.mentions.members.first()
@@ -80,7 +87,7 @@ module.exports = {
         var member = interaction.options.getMember('user')
         const altName = interaction.options.getString('altname');
         let dupeName = interaction.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(altName.toLowerCase()));
-        if (dupeName) return interaction.reply(`${dupeName} already has the name ${altName}`)
+        if (dupeName) return interaction.replyUserError(`${dupeName} already has the name ${altName}`)
         let image = interaction.options.getString('image')
 
         member.setNickname(`${member.nickname} | ${altName}`, `Old Name: ${member.nickname}\nNew Name: ${member.nickname} | ${altName}\nChange by: ${interaction.member}`);
