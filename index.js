@@ -14,7 +14,6 @@ const verification = require('./commands/verification')
 const roleAssignment = require('./commands/roleAssignment')
 
 // Global Variables/Data
-const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
 const CommandLogger = require('./lib/logCommand')
 const { restarting } = require('./commands/restart.js');
 const botSettings = require('./settings.json')
@@ -49,7 +48,7 @@ bot.on('interactionCreate', async interaction => {
     // Validate the server has settings
     if (!bot.settings[interaction.guild.id]) return
     // Get the command
-    const command = bot.commands.get(interaction.commandName);
+    const command = bot.commands.get(interaction.commandName) || bot.commands.find(cmd => cmd.alias && cmd.alias.includes(interaction.commandName))
     // Validate the command exists
     if (!command) return interaction.reply('Command doesnt exist, check \`commands\` and try again');
     // Validate the command is enabled
@@ -87,35 +86,8 @@ bot.on('interactionCreate', async interaction => {
         if (command.slashCommandExecute) {
             command.slashCommandExecute(interaction, bot, db)
         } else {
-            let args = interaction.options.data.map((opt) => {
-                if (opt.type == SlashArgType.Subcommand) {
-                    return [opt.name, ...opt.options.map((opt) => opt.value)]
-                }
-                return opt.value
-            }).flat();
-            const message = {
-                guild: interaction.guild,
-                content: `${prefix}${interaction.commandName} ${args.join(' ')}`,
-                mentions: {
-                    members: interaction.options.resolved.members || new Discord.Collection(),
-                    users: interaction.options.resolved.users || new Discord.Collection(),
-                },
-                channel: interaction.channel,
-                react: async function(emoji) {
-                    await interaction.reply(emoji)
-                },
-                author: interaction.user,
-                reply: async function(c) {
-                    return await interaction.reply(c)
-                },
-                markSuccessful: async function(msg) {
-                    return await interaction.reply({ content: msg, ephemeral: true })
-                },
-                markFailed: async function(msg) {
-                    return await interaction.reply({ content: msg, ephemeral: true })
-                }
-            }
-            await command.execute(message, args, bot, db)
+            let args = interaction.getArgs()
+            await command.execute(interaction, args, bot, db)
         }
         db.query(`INSERT INTO commandusage (command, userid, guildid, utime) VALUES ('${command.name}', '${interaction.member.id}', '${interaction.guild.id}', '${Date.now()}')`);
         CommandLogger.logInteractionCommand(interaction, bot)
