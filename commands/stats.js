@@ -13,6 +13,7 @@ module.exports = {
     args: '(user)',
     role: 'raider',
     noGuildChoice: true,
+    userCommand: true,
     //dms: true,
     args: [
         slashArg(SlashArgType.User, 'user', {
