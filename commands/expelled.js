@@ -96,7 +96,7 @@ module.exports = {
                 ErrorLogger.log(err, bot, message.guild);
                 message.replyInternalError(`Error adding \`${id}\` to the blacklist: ${err.message}`);
             } else 
-                message.react('✅');
+                message.replySuccess(`${id} has been blacklisted!`);
         });
     },
     async removeExpelled(message, bot, db) {
@@ -106,7 +106,7 @@ module.exports = {
                 else db.query(`DELETE FROM veriblacklist WHERE id = '${arg}'`)
             })
         })
-        message.react('✅')
+        message.replySuccess('Done!')
     }
 }
 
