@@ -56,7 +56,7 @@ class LegacyCommandOptions {
                 })
             } else {
                 const v = this.#processType(currentOpt.type, args.shift())
-                if (!v) throw new LegacyParserError("Error parsing argument " + opt.name)
+                if (!v) throw new LegacyParserError("Error parsing argument " + currentOpt.name)
                 this.args[currentOpt.name] = v
             }
         }
@@ -106,8 +106,8 @@ class LegacyCommandOptions {
         switch (type) {
             case SlashArgType.User: {
                 let member = this.#message.guild.members.cache.get(value)
-                if (!member) member = message.mentions.members.first()
-                if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
+                if (!member) member = this.#message.mentions.members.first()
+                if (!member) member = this.#message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
                 if (member) this.#users.push(member)
                 return member
             }

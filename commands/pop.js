@@ -28,7 +28,7 @@ module.exports = {
     ],
     getSlashCommandData(guild) {
         let json = slashCommandJSON(this, guild)
-        if (keypops[guild.id]) json.options[0]['choices'] = slashChoices(Object.keys(keypops[guild.id]))
+        if (keypops[guild.id]) json[0].options[0]['choices'] = slashChoices(Object.keys(keypops[guild.id]))
         return json
     },
     async execute(message, args, bot, db) {

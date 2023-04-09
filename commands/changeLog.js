@@ -30,8 +30,7 @@ module.exports = {
         let json = slashCommandJSON(this, guild)
         // Magic regex!
         // Makes the log type names look pretty :3
-        if (db[guild.id]) json.options[2]['choices'] = db[guild.id].logtypes.map((k) => ({name: k.charAt(0).toUpperCase() + k.slice(1).replace(/[A-Z]|(?<=3).|o3|p(?=op)/g, (i) => ` ${i.toUpperCase()}`), value: k}))
-        console.log(json.options[2].choices)
+        if (db[guild.id]) json[0].options[2]['choices'] = db[guild.id].logtypes.map((k) => ({name: k.charAt(0).toUpperCase() + k.slice(1).replace(/[A-Z]|(?<=3).|o3|p(?=op)/g, (i) => ` ${i.toUpperCase()}`), value: k}))
         return json
     },
     async execute(message, args, bot, db) {
