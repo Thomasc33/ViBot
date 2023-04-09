@@ -10,6 +10,7 @@ const stats = require('./commands/stats')
 const modmail = require('./commands/modmail')
 const { argString } = require('./commands/commands.js');
 const { getDB } = require('./dbSetup.js')
+const { LegacyCommandOptions, LegacyParserError } = require('./utils.js')
 
 class MessageManager {
     #bot;
@@ -129,7 +130,7 @@ class MessageManager {
 
         if (!this.commandPermitted(e.member, e.guild, command)) return e.reply('You do not have permission to use this command')
 
-        if (command.requiredArgs && command.requiredArgs > argCount) return e.reply(`Command Entered incorrecty. \`${this.#botSettings.prefix}${command.name} ${argString(command)}\``)
+        if (command.requiredArgs && command.requiredArgs > argCount) return e.reply(`Command Entered incorrecty. \`${this.#botSettings.prefix}${command.name} ${argString(command.args)}\``)
         if (command.cooldown) {
             if (this.#cooldowns.get(command.name)) {
                 if (Date.now() + command.cooldown * 1000 < Date.now()) this.#cooldowns.delete(command.name)
@@ -142,6 +143,23 @@ class MessageManager {
             if (isInteraction && command.slashCommandExecute) {
                 command.slashCommandExecute(e, this.#bot, db)
             } else {
+                // Add the shim for options
+                if (!isInteraction && typeof(command.args) == 'object') {
+                    try {
+                        const lco = new LegacyCommandOptions(command.args, e, command.varargs)
+                        Object.defineProperty(e, 'options', {
+                            get() {
+                                return lco
+                            }
+                        })
+                    } catch (err) {
+                        if (err instanceof LegacyParserError) {
+                            return e.replyUserError(err.message)
+                        } else {
+                            throw(err)
+                        }
+                    }
+                }
                 await command.execute(e, args, this.#bot, db)
             }
             db.query(`INSERT INTO commandusage (command, userid, guildid, utime) VALUES ('${command.name}', '${e.member.id}', '${e.guild.id}', '${Date.now()}')`);

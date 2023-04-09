@@ -9,13 +9,14 @@ module.exports = {
         role: 'security',
         roleOverride: { '343704644712923138': 'security' },
         description: 'Remove or list expels',
-        args: '<list/remove> [names/ids] | <add> <name/id> [reason]',
         requiredArgs: 1,
+        varargs: true,
         args: [
             slashArg(SlashArgType.Subcommand, 'list', {
                 description: "List expels",
                 options: [
                     slashArg(SlashArgType.String, 'id', {
+                        required: false,
                         description: "The id/name of the user whose expels you want to view"
                     })
                 ]
@@ -38,29 +39,29 @@ module.exports = {
                         description: "The reason for adding the expel"
                     })
                 ]
-            }),
+            })
         ],
         getSlashCommandData(guild) { return slashCommandJSON(this, guild) },
         async execute(message, args, bot, db) {
-            const action = args.shift()[0].toLowerCase();
+            const action = message.options.getSubcommand();
             switch (action) {
-                case 'l':
-                    if (!args.length)
-                        this.listAll(message, args, bot, db);
+                case 'list':
+                    if (!message.options.getString('id'))
+                        this.listAll(message, bot, db);
                     else
-                        this.listUsers(message, args, bot, db);
+                        this.listUsers(message, bot, db);
                     break;
-                case 'a':
-                    this.addExpelled(message, args, bot, db);
+                case 'add':
+                    this.addExpelled(message, bot, db);
                     break;
-                case 'r':
-                    this.removeExpelled(message, args, bot, db);
+                case 'remove':
+                    this.removeExpelled(message, bot, db);
                     break;
                 default:
                     return message.replyUserError('Invalid arguments: `<add/remove/list> [names/ids]`');
             }
         },
-        async listAll(message, args, bot, db) {
+        async listAll(message, bot, db) {
             db.query(`SELECT * FROM veriblacklist`, async(err, rows) => {
                 if (err) ErrorLogger.log(err, bot, message.guild)
                 let embed = new Discord.EmbedBuilder()
@@ -72,8 +73,8 @@ module.exports = {
                 message.reply({ embeds: [embed] })
             });
         },
-        async listUsers(message, args, bot, db) {
-            db.query(`SELECT * FROM veriblacklist WHERE id IN (${args.map(a => `'${a}'`).join(', ')})`, async(err, rows) => {
+        async listUsers(message, bot, db) {
+            db.query(`SELECT * FROM veriblacklist WHERE id IN (${[message.options.getString('id'), ...message.options.getVarargs()].map(a => `'${a}'`).join(', ')})`, async(err, rows) => {
             if (err) ErrorLogger.log(err, bot, message.guild);
             let embed = new Discord.EmbedBuilder()
                 .setTitle(`Expelled / Veriblacklisted users`)
@@ -87,26 +88,24 @@ module.exports = {
             message.reply({ embeds: [embed] });
         })
     },
-    async addExpelled(message, args, bot, db) {
-        if (!args.length) return message.replyUserError(`Please specify a user`)
-        const id = args.shift();
-        db.query(`INSERT INTO veriblacklist (id, modid, guildid, reason) VALUES (${db.escape(id)}, '${message.author.id}', '${message.guild.id}', ${db.escape(args.join(' ') || 'No reason provided.')})`, (err) => {
+    async addExpelled(message, bot, db) {
+        const id = message.options.getString('id');
+        db.query(`INSERT INTO veriblacklist (id, modid, guildid, reason) VALUES (${db.escape(id)}, '${message.author.id}', '${message.guild.id}', ${db.escape([message.options.getString('reason'), ...message.options.getVarargs()].join(' ') || 'No reason provided.')})`, (err) => {
             if (err)
             {
                 ErrorLogger.log(err, bot, message.guild);
-                message.replyInternalErrror(`Error adding \`${id}\` to the blacklist: ${err.message}`);
+                message.replyInternalError(`Error adding \`${id}\` to the blacklist: ${err.message}`);
             } else 
                 message.react('✅');
         });
     },
-    async removeExpelled(message, args, bot, db) {
-        if (!args.length) return message.replyUserError(`Please specify a user`)
-        for (let i in args) {
-            db.query(`SELECT * FROM veriblacklist WHERE id = '${args[i]}'`, (err, rows) => {
-                if (rows.length == 0) message.replyUserError(`${args[i]} is not blacklisted`)
-                else db.query(`DELETE FROM veriblacklist WHERE id = '${args[i]}'`)
+    async removeExpelled(message, bot, db) {
+        [message.options.getString('id'), ...message.options.getVarargs()].forEach((arg) => {
+            db.query(`SELECT * FROM veriblacklist WHERE id = '${arg}'`, (err, rows) => {
+                if (rows.length == 0) message.replyUserError(`${arg} is not blacklisted`)
+                else db.query(`DELETE FROM veriblacklist WHERE id = '${arg}'`)
             })
-        }
+        })
         message.react('✅')
     }
 }
