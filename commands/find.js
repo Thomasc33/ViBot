@@ -9,6 +9,7 @@ module.exports = {
     //args: '[Users]',
     //requiredArgs: 1,
     role: 'eventrl',
+    varargs: true,
     args: [
         slashArg(SlashArgType.String, 'nickname', {
             description: "The nickname you want to search"

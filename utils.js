@@ -55,7 +55,7 @@ class LegacyCommandOptions {
                     }
                 })
             } else {
-                const v = this.#processType(currentOpt.type, args.shift())
+                const v = this.#processType(currentOpt.type, currentArg)
                 if (!v) throw new LegacyParserError("Error parsing argument " + currentOpt.name)
                 this.args[currentOpt.name] = v
             }
