@@ -41,12 +41,16 @@ bot.on('messageCreate', async message => {
 });
 
 bot.on('interactionCreate', async interaction => {
-    // Validate the interaction is a command
-    if (!interaction.isChatInputCommand()) return;
     // Validate the server is whitelisted
     if (!serverWhiteList.includes(interaction.guild.id)) return
 
-    return await messageManager.handleCommand(interaction, true)
+    // Validate the interaction is a command
+    if (interaction.isChatInputCommand()) {
+        return await messageManager.handleCommand(interaction, true)
+    } else if (interaction.isUserContextMenuCommand()) {
+        return await messageManager.handleCommand(interaction, true)
+    }
+
 })
 
 bot.on("ready", async () => {

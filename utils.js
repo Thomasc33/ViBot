@@ -16,11 +16,20 @@ module.exports = {
         return Object.entries(opts).map(([k, v]) => ({'name': k, 'value': v}))
     },
     slashCommandJSON(obj, guild) {
-        return {
-            name: obj.slashCommandName || [obj.name, ...(obj.alias || [])].reduce((i, acc) => i.length < acc.length ? i : acc),
+        let name = obj.slashCommandName || [obj.name, ...(obj.alias || [])].reduce((i, acc) => i.length < acc.length ? i : acc)
+        let jsons = [{
+            name: name,
+            type: 1,
             description: obj.description,
             guild_id: guild.id, /* Not currently necessary bc we use the per-guild command creation endpoint, but just in case */
             options: obj.args
+        }]
+        if (obj.userCommand) {
+            jsons.push({
+                name: name,
+                type: 2
+            })
         }
+        return jsons
     }
 }

@@ -32,11 +32,7 @@ const dbSetup = require('./dbSetup.js');
 
 async function deployCommands(bot, guild) {
     // Organize commands
-    let slashCommands = []
-    bot.commands.filter(c => c.getSlashCommandData).each(c => {
-        let data = c.getSlashCommandData(guild)
-        if (data) slashCommands.push(data)
-    })
+    let slashCommands = bot.commands.filter(c => c.getSlashCommandData).map(c => c.getSlashCommandData(guild)).filter(c => c).flat();
 
     // Deploy commands
     const rest = new Discord.REST({ version: '10' }).setToken(require('./data/botKey.json').key)
