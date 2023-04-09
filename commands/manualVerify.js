@@ -11,7 +11,7 @@ module.exports = {
     alias: ['mv'],
     requiredArgs: 2,
     args: [
-        slashArg(SlashArgType.String, 'id', {
+        slashArg(SlashArgType.User, 'user', {
             description: "The discord user ID or @mention you want to verify"
         }),
         slashArg(SlashArgType.String, 'ign', {

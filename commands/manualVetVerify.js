@@ -11,7 +11,7 @@ module.exports = {
     roleOverride: { '343704644712923138': 'security' },
     alias: ['mvv'],
     args: [
-        slashArg(SlashArgType.String, 'id', {
+        slashArg(SlashArgType.User, 'user', {
             description: "The discord user ID or @mention you want to vet verify"
         })
     ],
