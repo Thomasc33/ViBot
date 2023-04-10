@@ -124,7 +124,7 @@ class LegacyCommandOptions {
                 return parseInt(value)
             }
             case SlashArgType.Attachment: {
-                return this.#attachments.shift().proxyURL
+                return this.#attachments.shift()
             }
         }
     }
