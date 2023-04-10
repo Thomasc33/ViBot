@@ -12,6 +12,7 @@
     "earlyLocationCooldown": 7200000,
     "vibotDirectory": "C:/Users/Carrt/OneDrive/Desktop/ViBot",
     "openSslLocation": "C:/Program Files/OpenSSL-Win64/bin/openssl.exe",
+    "botOwners": [],
     "dynamicDomainCredentials": {
         "username": null,
         "password": null
