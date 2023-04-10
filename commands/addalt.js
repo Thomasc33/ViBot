@@ -18,8 +18,8 @@ module.exports = {
         slashArg(SlashArgType.String, 'altname', {
             description: 'Name of the alt'
         }),
-        slashArg(SlashArgType.String, 'image', {
-            description: 'Image or reason of the alt'
+        slashArg(SlashArgType.Attachment, 'image', {
+            description: 'Image proof of alt',
         })
     ],
     getSlashCommandData(guild) { return slashCommandJSON(this, guild) },
@@ -28,10 +28,10 @@ module.exports = {
         var member = message.mentions.members.first()
         if (!member) member = message.guild.members.cache.get(args.shift());
         else { args.shift() }
-        if (!member) return message.channel.send('User not found in the server')
+        if (!member) return message.replyUserError('User not found in the server')
         const altName = args.shift();
         let dupeName = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(altName.toLowerCase()));
-        if (dupeName) return message.channel.send(`${dupeName} already has the name ${altName}`)
+        if (dupeName) return message.replyUserError(`${dupeName} already has the name ${altName}`)
         let image = message.attachments.first() ? message.attachments.first().proxyURL : null
         if (!image) image = args[2]
         if (!image) return message.channel.send(`Please provide an image`)
@@ -88,7 +88,7 @@ module.exports = {
         const altName = interaction.options.getString('altname');
         let dupeName = interaction.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(altName.toLowerCase()));
         if (dupeName) return interaction.replyUserError(`${dupeName} already has the name ${altName}`)
-        let image = interaction.options.getString('image')
+        let image = interaction.options.getAttachment('image').proxyURL
 
         member.setNickname(`${member.nickname} | ${altName}`, `Old Name: ${member.nickname}\nNew Name: ${member.nickname} | ${altName}\nChange by: ${interaction.member}`);
 

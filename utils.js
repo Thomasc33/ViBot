@@ -23,23 +23,19 @@ class LegacyCommandOptions {
     #message
     #opts
     #users = []
+    #attachments
 
     constructor(opts, message, varargs) {
         this.#opts = opts
         this.#message = message
+        this.#attachments = message.attachments.map((v) => v)
         let s = message.content
         const prefix = s.slice(0, 1);
         const [command, ...args] = s.slice(1).split(/ +/gi)
         let optsToParse = opts.slice();
         while (optsToParse.length != 0) {
-            if (args.length == 0) {
-                if (optsToParse.filter((opt) => opt.required).length != 0) {
-                    throw new LegacyParserError("Not enough arguments. Expected: " + argString(opts))
-                } else {
-                    return
-                }
-            }
             let currentOpt = optsToParse.shift();
+            if (currentOpt.required && (currentOpt.type == SlashArgType.Attachment ? this.#attachments.length == 0 : args.length == 0)) throw new LegacyParserError("Not enough arguments. Expected: " + argString(opts))
             let currentArg = args.shift();
             if (currentOpt.type == SlashArgType.Subcommand) {
                 // Grab all the subcommand options
@@ -99,6 +95,10 @@ class LegacyCommandOptions {
         if (this.#optTypeMatch(SlashArgType.Number, k)) return this.args[k]
     }
 
+    getAttachment(k) {
+        if (this.#optTypeMatch(SlashArgType.Attachment, k)) return this.args[k]
+    }
+
     getSubcommand() {
         return this.subcommand
     }
@@ -122,6 +122,9 @@ class LegacyCommandOptions {
             }
             case SlashArgType.Number: {
                 return parseInt(value)
+            }
+            case SlashArgType.Attachment: {
+                return this.#attachments.shift()
             }
         }
     }
