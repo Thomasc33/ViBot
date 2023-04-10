@@ -90,14 +90,19 @@ module.exports = {
     },
     async addExpelled(message, bot, db) {
         const id = message.options.getString('id');
-        db.query(`INSERT INTO veriblacklist (id, modid, guildid, reason) VALUES (${db.escape(id)}, '${message.author.id}', '${message.guild.id}', ${db.escape([message.options.getString('reason'), ...message.options.getVarargs()].join(' ') || 'No reason provided.')})`, (err) => {
-            if (err)
-            {
-                ErrorLogger.log(err, bot, message.guild);
-                message.replyInternalError(`Error adding \`${id}\` to the blacklist: ${err.message}`);
-            } else 
-                message.replySuccess(`${id} has been blacklisted!`);
-        });
+        const [rows, _] = await db.promise().query('SELECT reason, modid FROM veriblacklist WHERE id = ?', [id])
+        if (rows.length != 0) {
+            message.replyUserError(`User \`${id}\` already blacklisted by ${message.guild.members.cache.get(rows[0].modid).nickname} for ${rows[0].reason}`)
+        } else {
+            db.query(`INSERT INTO veriblacklist (id, modid, guildid, reason) VALUES (${db.escape(id)}, '${message.author.id}', '${message.guild.id}', ${db.escape([message.options.getString('reason'), ...message.options.getVarargs()].join(' ') || 'No reason provided.')})`, (err) => {
+                if (err)
+                {
+                    ErrorLogger.log(err, bot, message.guild);
+                    message.replyInternalError(`Error adding \`${id}\` to the blacklist: ${err.message}`);
+                } else 
+                    message.replySuccess(`${id} has been blacklisted!`);
+            });
+        }
     },
     async removeExpelled(message, bot, db) {
         [message.options.getString('id'), ...message.options.getVarargs()].forEach((arg) => {
