@@ -1,23 +1,37 @@
 const Discord = require('discord.js')
 const db = require('../data/changelog.json')
+const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
+const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js')
 
 module.exports = {
     name: 'changelog',
     role: 'headeventrl',
     description: 'Changes logs',
-    args: '<user> <add/remove/set> <log type> <#>',
+    args: [
+        slashArg(SlashArgType.User, 'user', {
+            description: 'User to change logs for',
+        }),
+        slashArg(SlashArgType.String, 'operator', {
+            description: 'Operator to use',
+            choices: slashChoices(['Add', 'Remove', 'Set'])
+        }),
+        slashArg(SlashArgType.String, 'type', {
+            description: 'Type of log to change',
+        }),
+        slashArg(SlashArgType.Number, 'number', {
+            description: 'Number of logs to change'
+        })
+    ],
     requiredArgs: 4,
     getNotes(guildid, member) {
         return getLogTypes(guildid) ? getLogTypes(guildid).toString() : `Not setup for guild ${guildid}`
     },
     getSlashCommandData(guild) {
-        return new Discord.SlashCommandBuilder()
-            .setName('changelog')
-            .setDescription('Changes logs')
-            .addUserOption(option => option.setName('user').setDescription('User to change logs for').setRequired(true))
-            .addStringOption(option => option.setName('operator').setDescription('Operator to use').setRequired(true).addChoices({ name: 'Add', value: 'add' }, { name: 'Remove', value: 'remove' }, { name: 'Set', value: 'set' }))
-            .addStringOption(option => option.setName('type').setDescription('Type of log to change').setRequired(true).addChoices(...db[guild.id] && db[guild.id].logtypes ? db[guild.id].logtypes.map(m => { return { name: m, value: m } }) : []))
-            .addIntegerOption(option => option.setName('number').setDescription('Number of logs to change').setRequired(true))
+        let json = slashCommandJSON(this, guild)
+        // Magic regex!
+        // Makes the log type names look pretty :3
+        if (db[guild.id]) json[0].options[2]['choices'] = db[guild.id].logtypes.map((k) => ({name: k.charAt(0).toUpperCase() + k.slice(1).replace(/[A-Z]|(?<=3).|o3|p(?=op)/g, (i) => ` ${i.toUpperCase()}`), value: k}))
+        return json
     },
     async execute(message, args, bot, db) {
         if (args.length < 4) return
@@ -113,25 +127,25 @@ module.exports = {
     async slashCommandExecute(interaction, bot, db) {
         let logTypes = getLogTypes(interaction.guild.id)
         let currentweek = getCurrentWeekTypes(interaction.guild.id) || []
-        if (!logTypes) return interaction.reply('No stored log types')
+        if (!logTypes) return interaction.replyUserError('No stored log types')
 
         //args 0
         let member = interaction.options.getMember('user')
-        if (!member) return interaction.reply('User not found');
+        if (!member) return interaction.replyUserError('User not found');
 
         //args 1
         let operator = interaction.options.getString('operator').charAt(0).toLowerCase()
-        if (operator != 'a' && operator != 'r' && operator != 's') return interaction.reply(`\`${interaction.options.getString('operator')}\` not recognized. Please try \`add, remove, or set\``)
+        if (operator != 'a' && operator != 'r' && operator != 's') return interaction.replyUserError(`\`${interaction.options.getString('operator')}\` not recognized. Please try \`add, remove, or set\``)
 
         //args 2
         let logType = interaction.options.getString('type').toLowerCase()
         let logIndex = logTypes.findIndex(e => logType == e.toLowerCase())
-        if (logIndex == -1) return interaction.reply(`\`${interaction.options.getString('type')}\` not recognized. Check out \`;commands changelog\` for a list of log types`)
+        if (logIndex == -1) return interaction.replyUserError(`\`${interaction.options.getString('type')}\` not recognized. Check out \`;commands changelog\` for a list of log types`)
 
         //args 3
         let count = interaction.options.getInteger('number')
-        if (!count) return interaction.reply(`${interaction.options.getInteger('number')} is not a valid number`)
-        if (count < 0) return interaction.reply('Cannot change logs to a negative number')
+        if (!count) return interaction.replyUserError(`${interaction.options.getInteger('number')} is not a valid number`)
+        if (count < 0) return interaction.replyUserError('Cannot change logs to a negative number')
 
         //change logs
         let query = `UPDATE users SET ${logTypes[logIndex]} = `

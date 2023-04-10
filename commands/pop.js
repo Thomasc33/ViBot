@@ -2,6 +2,8 @@ const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
 const keypops = require('../data/keypop.json')
 const keyRoles = require('./keyRoles')
+const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
+const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js')
 
 module.exports = {
     name: 'pop',
@@ -12,6 +14,23 @@ module.exports = {
     },
     requiredArgs: 2,
     role: 'eventrl',
+    args: [
+        slashArg(SlashArgType.String, 'keytype', {
+            description: "The type of key to pop"
+        }),
+        slashArg(SlashArgType.User, 'user', {
+            description: "The key popper"
+        }),
+        slashArg(SlashArgType.Number, 'count', {
+            required: false,
+            description: "The number of keys to add (default 1)"
+        }),
+    ],
+    getSlashCommandData(guild) {
+        let json = slashCommandJSON(this, guild)
+        if (keypops[guild.id]) json[0].options[0]['choices'] = slashChoices(Object.keys(keypops[guild.id]))
+        return json
+    },
     async execute(message, args, bot, db) {
         //Initialize
         let settings = bot.settings[message.guild.id]
@@ -23,20 +42,51 @@ module.exports = {
         var user = message.mentions.members.first()
         if (!user) user = message.guild.members.cache.get(args[1])
         if (!user) user = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[1].toLowerCase()));
-        if (!user) return message.channel.send('User not found')
+        if (!user) return message.replyUserError('User not found')
 
         //Validate Command Arguments
-        if (!keypops[message.guild.id]) return message.channel.send('Key information missing for this guild')
+        if (!keypops[message.guild.id]) return message.replyUserError('Key information missing for this guild')
         let keyInfo = findKey(message.guild.id, args[0].toLowerCase())
-        if (!keyInfo) return message.channel.send(`\`${args[0]}\` not recognized`)
+        if (!keyInfo) return message.replyUserError(`\`${args[0]}\` not recognized`)
 
         //Create Discord Embed Confirmation
         let collector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id === message.author.id, time: 20000 });
         let confirmEmbed = new Discord.EmbedBuilder()
             .setColor('#ff0000')
             .setDescription(`Are you sure you want to log \`\`${count}\`\` **${keyInfo.name}** pops for ${user.nickname}?\n\nPlease select which key.`)
-        await message.channel.send({ embeds: [confirmEmbed] }).then(async confirmMessage => {
-            const choice = await confirmMessage.confirmList(['Regular Key', 'Modded Key'], message.author.id) 
+        const buttons = new Discord.ActionRowBuilder()
+                                .addComponents(
+                                    new Discord.ButtonBuilder()
+                                        .setCustomId('Regular Key')
+                                        .setLabel('Regular Key')
+                                        .setStyle(Discord.ButtonStyle.Primary),
+                                    new Discord.ButtonBuilder()
+                                        .setCustomId('Modded Key')
+                                        .setLabel('Modded Key')
+                                        .setStyle(Discord.ButtonStyle.Primary),
+                                    new Discord.ButtonBuilder()
+                                            .setCustomId('Cancelled')
+                                            .setLabel('❌ Cancel')
+                                            .setStyle(Discord.ButtonStyle.Danger)
+                                );
+        await message.reply({ embeds: [confirmEmbed], components: [ buttons ], ephemeral: true }).then(async (confirmMessage) => {
+            const buttonCollector = confirmMessage.createMessageComponentCollector()
+            const choice = await new Promise((resolve, reject) => {
+                const author_id = message.author.id
+                let resolved;
+                buttonCollector.on('collect', async interaction => {
+                    if (!(author_id ? interaction.user.id == author_id : true)) return;
+                    resolved = true;
+                    buttonCollector.stop();
+                    resolve(interaction.customId);
+                });
+                buttonCollector.on('end', () => {
+                    const err = 'Timed out.';
+                    err.stackTrace = new Error().stack;
+                    if (!resolved) reject(err);
+                });
+            })
+
             if (!choice || choice == 'Cancelled')
                 return confirmMessage.delete()
             else if (choice == 'Regular Key') {
@@ -85,7 +135,6 @@ module.exports = {
             }
 
             //Delete Confirmation Message
-            await message.react('✅')
             return confirmMessage.delete()
         })
     }

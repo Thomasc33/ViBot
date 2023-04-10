@@ -9,7 +9,7 @@ module.exports = {
     description: 'In the event someone fake reacts, simply use this command and a message will be sent to raid-status/vet-status where a new raider can react and get sent location',
     args: '<number of reacts requested>',
     alias: ['rq'],
-    role: 'almostrl',
+    role: 'eventrl',
     /**
      * 
      * @param {Discord.Message} message 
@@ -57,7 +57,7 @@ module.exports = {
 
         interactionCollector.on('collect', async subInteraction => {
             subInteraction.deferUpdate()
-            m.editButton(subInteraction.component.customId, null, true)
+            m.editButton({[subInteraction.component.customId]: { label: null, disabled: true }})
             let raidStatusEmbed = new Discord.EmbedBuilder()
                 .setDescription(`A ${bot.storedEmojis[subInteraction.component.emoji.name].text} has been requested in ${afk.channel}.`)
             let button = new Discord.ButtonBuilder({ emoji: subInteraction.component.emoji, label: `0/${num}`, style: Discord.ButtonStyle.Secondary, customId: subInteraction.component.emoji.name })

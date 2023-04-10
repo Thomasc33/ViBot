@@ -53,9 +53,9 @@ module.exports = {
 
         const [[{ mute_count }], ] = await db.promise().query(`SELECT COUNT(*) as mute_count FROM mutes WHERE id = ? AND muted = true`, [member.id])
         if (mute_count !== 0) {
-            member.roles.add(bot.settings[member.guild.id].roles.muted)
-            const modlogChannel = modlogChannel(bot, member.guild)
-            if (modlogChannel) await modlogChannel.send(`${member} rejoined server after leaving while muted. Giving muted role back.`)
+            await member.roles.add(bot.settings[member.guild.id].roles.muted)
+            const logChannel = modlogChannel(bot, member.guild)
+            if (logChannel) await logChannel.send(`${member} rejoined server after leaving while muted. Giving muted role back.`)
         }
     },
     async pruneRushers(db, rusherRoleId, oldMember, newMember) {
@@ -67,7 +67,7 @@ module.exports = {
         }
     },
     async updateAffiliateRoles(bot, member) {
-        await Promise.all(bot.partneredServers.filter((server) => server.guildId === member.guildId).map(async (partneredServer) => {
+        await Promise.all(bot.partneredServers.filter((server) => server.guildId == member.guild.id).map(async (partneredServer) => {
             const partneredSettings = bot.settings[partneredServer.id]
             const otherServer = bot.guilds.cache.find(g => g.id == partneredServer.id)
             const partneredMember = otherServer.members.cache.get(member.id)
@@ -75,23 +75,25 @@ module.exports = {
             if (!partneredMember) { return }
 
             // Take `partneredSettings.roles` but convert the values from role IDs to complete role objects
-            const partneredRoles = Object.fromEntries(Object.entries(partneredSettings.roles).map((k, roleId) => [k, otherServer.roles.cache.get(roleId)]))
+            const partneredRoles = Object.fromEntries(Object.entries(partneredSettings.roles).map(([k, roleId]) => [k, otherServer.roles.cache.get(roleId)]))
 
             if (!partneredMember.roles.cache.has(partneredRoles.raider.id)) return
             if (partneredMember.roles.cache.hasAny(partneredRoles.permasuspended.id, partneredRoles.tempsuspended.id)) return
 
             const partneredModLogs = otherServer.channels.cache.get(partneredSettings.channels.modlogs)
 
-            const memberRoles = Array.from(member.roles.cache.values())
-            const isStaff     = memberRoles.any((role) => partneredServer.affiliatelist.include(role.name))
-            const vasEligable = memberRoles.any((role) => partneredServer.vaslist.include(role.name))
+            const memberRoleIds = Array.from(member.roles.cache.values()).map((role) => role.id.toString())
+            const partnerServerRoleIds = bot.settings[member.guild.id].roles
+            const isStaff     = !!partneredServer.affiliatelist.find((roletype) => memberRoleIds.includes(partnerServerRoleIds[roletype]))
+            const vasEligable = !!partneredServer.vaslist.find((roletype) => memberRoleIds.includes(partnerServerRoleIds[roletype]))
 
             // Not sure if this is too fancy/functional -- could reduce to a setRole(true / false)
             await (isStaff     ? addRole : removeRole)(partneredMember, partneredRoles.affiliatestaff,  partneredModLogs)
             await (vasEligable ? addRole : removeRole)(partneredMember, partneredRoles.vetaffiliate,    partneredModLogs)
 
             if (partneredMember.roles.highest.position == partneredRoles.vetaffiliate.position && !partneredMember.displayName.startsWith(partneredServer.prefix)) {
-                await partneredMember.setNickname(`${partneredServer.prefix}${partneredMember.displayName}`, 'Automatic Nickname Change: User just got Veteran Affiliate Staff as their highest role')
+                const baseName = partneredMember.displayName.replace(/^(\W+)/, '')
+                await partneredMember.setNickname(`${partneredServer.prefix}${baseName}`, 'Automatic Nickname Change: User just got Veteran Affiliate Staff as their highest role')
                 await modLog(partneredMember, partneredModLogs, partneredMember.roles.highest.hexColor, `Automatic Prefix Change for ${partneredMember}\nOld Nickname: \`${partneredMember.displayName}\`\nNew Nickname: \`${partneredMember.displayName}\`\nPrefix: \`${partneredServer.prefix}\``)
             }
         }))

@@ -8,7 +8,9 @@ const restarting = require('./commands/restart')
 const verification = require('./commands/verification')
 const stats = require('./commands/stats')
 const modmail = require('./commands/modmail')
+const { argString } = require('./commands/commands.js');
 const { getDB } = require('./dbSetup.js')
+const { LegacyCommandOptions, LegacyParserError } = require('./utils.js')
 
 class MessageManager {
     #bot;
@@ -46,7 +48,7 @@ class MessageManager {
                 if (message.author.bot) return;
                 if (message.content.startsWith(this.#prefix) && message.content[this.#prefix.length] !== ' ') {
                     // Handle commands (messages that start with a prefix + command)
-                    this.handleCommand(message);
+                    this.handleCommand(message, false);
                 } else {
                     // Handle non-command messages
                     this.autoMod(message)
@@ -96,39 +98,80 @@ class MessageManager {
 
     /**
      * Runs the command processing pipeline including parsing, state checks, permissions checks, etc.
-     * @param {Message} message
+     * @param {Message|Interaction} message or interaction
      * @returns
      */
-    async handleCommand(message) {
-        const [commandName, ...args] = message.content.slice(this.#prefix.length).split(/ +/gi)
+    async handleCommand(e, isInteraction) {
+        if (isInteraction) {
+            if (!this.#bot.settings[e.guild.id]) return
+        }
 
+        let commandName, args, argCount;
+        if (!isInteraction) {
+            const [commandNameTmp, ...argsTmp] = e.content.slice(this.#prefix.length).split(/ +/gi)
+            commandName = commandNameTmp
+            args = argsTmp
+            argCount = args.length
+        } else {
+            commandName = e.commandName
+            args = e.getArgs()
+            argCount = e.options.length
+        }
+
+        // Get the command
         const command = this.#bot.commands.get(commandName) || this.#bot.commands.find(cmd => cmd.alias && cmd.alias.includes(commandName))
+        if (!command) return e.reply('Command doesnt exist, check \`commands\` and try again');
+        // Validate the command is enabled
+        if (!this.#bot.settings[e.guild.id].commands[command.name]) return e.reply('This command is disabled');
+        // Validate the command is not disabled during restart if a restart is pending
+        if (restarting.restarting && !command.allowedInRestart) return e.reply('Cannot execute command as a restart is pending')
+        // Validate the user has permission to use the command
+        if (!e.guild.roles.cache.get(this.#bot.settings[e.guild.id].roles[command.role])) return e.reply('Permissions not set up for this commands role')
 
-        if (!command || !this.#bot.settings[message.guild.id].commands[command.name]) return message.channel.send(`Command doesnt exist, check \`${this.#prefix}commands\` and try again`);
+        if (!this.commandPermitted(e.member, e.guild, command)) return e.reply('You do not have permission to use this command')
 
-        if (restarting.restarting && !command.allowedInRestart) return message.channel.send('Cannot execute command as a restart is pending')
-
-        if (!message.guild.roles.cache.get(this.#bot.settings[message.guild.id].roles[command.role])) return message.channel.send('Permissions not set up for this commands role')
-
-        if (!this.commandPermitted(message.member, message.guild, command)) return message.channel.send('You do not have permission to use this command')
-
-        if (command.requiredArgs && command.requiredArgs > args.length) return message.channel.send(`Command Entered incorrecty. \`${this.#botSettings.prefix}${command.name} ${command.args}\``)
+        if (command.requiredArgs && command.requiredArgs > argCount) return e.reply(`Command Entered incorrecty. \`${this.#botSettings.prefix}${command.name} ${argString(command.args)}\``)
         if (command.cooldown) {
             if (this.#cooldowns.get(command.name)) {
-                if ((Date.now() + (command.cooldown * 1000)) < Date.now()) this.#cooldowns.delete(command.name)
+                if (Date.now() + command.cooldown * 1000 < Date.now()) this.#cooldowns.delete(command.name)
                 else return
             } else this.#cooldowns.set(command.name, Date.now())
             setTimeout(() => { this.#cooldowns.delete(command.name) }, command.cooldown * 1000)
         }
-
         try {
-            const db = getDB(message.guild.id)
-            await command.execute(message, args, this.#bot, db, this.#tokenDB)
-            await db.promise().query(`INSERT INTO commandusage (command, userid, guildid, utime) VALUES ('${command.name}', '${message.member.id}', '${message.guild.id}', '${Date.now()}')`);
-            await CommandLogger.log(message, this.#bot)
-        } catch (er) {
-            await ErrorLogger.log(er, this.#bot, message.guild)
-            await message.channel.send(`Issue executing the command, check \`${this.#prefix}commands\` and try again`);
+            const db = getDB(e.guild.id)
+            if (isInteraction && command.slashCommandExecute) {
+                command.slashCommandExecute(e, this.#bot, db)
+            } else {
+                // Add the shim for options
+                if (!isInteraction && typeof(command.args) == 'object') {
+                    try {
+                        const lco = new LegacyCommandOptions(command.args, e, command.varargs)
+                        Object.defineProperty(e, 'options', {
+                            get() {
+                                return lco
+                            }
+                        })
+                    } catch (err) {
+                        if (err instanceof LegacyParserError) {
+                            return e.replyUserError(err.message)
+                        } else {
+                            throw(err)
+                        }
+                    }
+                }
+                await command.execute(e, args, this.#bot, db)
+            }
+            db.query(`INSERT INTO commandusage (command, userid, guildid, utime) VALUES ('${command.name}', '${e.member.id}', '${e.guild.id}', '${Date.now()}')`);
+            if (isInteraction) {
+                CommandLogger.logInteractionCommand(e, this.#bot)
+            } else {
+                CommandLogger.log(e, this.#bot)
+            }
+        }
+        catch (er) {
+            ErrorLogger.log(er, this.#bot, e.guild)
+            e.reply("Issue executing the command, check \`;commands\` and try again");
         }
     }
 

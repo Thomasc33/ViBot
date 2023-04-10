@@ -4,6 +4,8 @@ const axios = require('axios')
 const keyRoles = require('../data/keyRoles.json')
 const { getDB, guildSchema } = require('../dbSetup.js')
 const { iterServers } = require('../jobs/util.js')
+const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
+const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js')
 
 module.exports = {
     name: 'stats',
@@ -11,7 +13,15 @@ module.exports = {
     args: '(user)',
     role: 'raider',
     noGuildChoice: true,
+    userCommand: true,
     //dms: true,
+    args: [
+        slashArg(SlashArgType.User, 'user', {
+            required: false,
+            description: "The user whose stats you'd like to view"
+        }),
+    ],
+    getSlashCommandData(guild) { return slashCommandJSON(this, guild) },
     async execute(message, args, bot, db) {
         if (args.length == 0) var member = message.author
         else var member = message.mentions.members.first()
@@ -23,14 +33,14 @@ module.exports = {
             return await message.channel.send(`Could not find user by the name or id of ${id}.`);
         let embed = await this.getStatsEmbed(id, message.guild, bot, db).catch(async er => {
             console.log(er)
-            await message.channel.send({
+            await message.replyInternalError({
                 embeds:
                     [
                         new Discord.EmbedBuilder().setDescription(`${er}`)
                     ]
             });
         })
-        if (embed) await message.channel.send({ embeds: [embed] })
+        if (embed) await message.reply({ embeds: [embed] })
     },
     async getStatsEmbed(id, guild, bot) {
         //User
@@ -218,7 +228,8 @@ function getFields(row, schema, bot) {
         },        
         {
             name: `<:TheForgottenCrown:719931358889115680> __**Moonlight Runs Led**__ <:TheForgottenCrown:719931358889115680>`,
-            value: `<:MoonlightBoss:1090178399252783104> ${row.moonlightLead}`
+            value: `<:MoonlightBoss:1090178399252783104> ${row.moonlightLead}`,
+            inline: true
         },
         {
             name: `<:TheForgottenCrown:719931358889115680> __**Other Runs Led**__ <:TheForgottenCrown:719931358889115680>`,

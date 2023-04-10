@@ -1,5 +1,7 @@
 const Discord = require('discord.js');
 const ErrorLogger = require('../lib/logError')
+const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
+
 
 module.exports = {
     name: 'commands',
@@ -47,7 +49,7 @@ module.exports = {
                 .setDescription(command.description || 'No description...')
                 .setFooter({ text: '<Required> (Optional) [Item1, Item2, Item3]' });
             if (command.alias) commandPanel.addFields({ name: 'Aliases', value: command.alias.map(a => a).join(', ') })
-            if (command.args) commandPanel.addFields({ name: 'Args', value: command.args })
+            if (command.args) commandPanel.addFields({ name: 'Args', value: this.argString(command.args) })
             if (command.getNotes && command.getNotes(message.guild.id, message.member)) commandPanel.addFields({ name: 'Special Notes', value: command.getNotes(message.guild.id, message.member) })
 
             var roleOverride
@@ -91,6 +93,22 @@ module.exports = {
             message.channel.send({ embeds: [commandPanel] });
         }
     },
+    argString(args) {
+        if (typeof(args) === 'string') {
+            return args
+        } else {
+            return args.map((arg) => {
+                if (arg.type == SlashArgType.Subcommand) {
+                    return `(${arg.name} ${module.exports.argString(arg.options)})`
+                } else if (arg.choices && arg.choices.length != 0) {
+                    const choices = arg.choices.map((c) => c.value).join('|')
+                    return arg.required ? `<${arg.name}:${choices}>` : `(${arg.name}:${choices})`
+                } else {
+                    return arg.required ? `<${arg.name}>` : `(${arg.name})`
+                }
+            }).join(' ')
+        }
+    }
 };
 
 function userOverride(id, bot) {

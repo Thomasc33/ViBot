@@ -1,33 +1,67 @@
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
+const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
+const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js')
 
 module.exports = {
         name: 'expelled',
         alias: ['expel'],
         role: 'security',
         roleOverride: { '343704644712923138': 'security' },
-        args: '<list/remove> [names/ids] | <add> <name/id> [reason]',
+        description: 'Remove or list expels',
         requiredArgs: 1,
+        varargs: true,
+        args: [
+            slashArg(SlashArgType.Subcommand, 'list', {
+                description: "List expels",
+                options: [
+                    slashArg(SlashArgType.String, 'id', {
+                        required: false,
+                        description: "The id/name of the user whose expels you want to view"
+                    })
+                ]
+            }),
+            slashArg(SlashArgType.Subcommand, 'remove', {
+                description: "Removes expels",
+                options: [
+                    slashArg(SlashArgType.String, 'id', {
+                        description: "The id/name of the user whose expels you want to remove"
+                    })
+                ]
+            }),
+            slashArg(SlashArgType.Subcommand, 'add', {
+                description: "Adds expels",
+                options: [
+                    slashArg(SlashArgType.String, 'id', {
+                        description: "The id/name of the user who you'd like to expel"
+                    }),
+                    slashArg(SlashArgType.String, 'reason', {
+                        description: "The reason for adding the expel"
+                    })
+                ]
+            })
+        ],
+        getSlashCommandData(guild) { return slashCommandJSON(this, guild) },
         async execute(message, args, bot, db) {
-            const action = args.shift()[0].toLowerCase();
+            const action = message.options.getSubcommand();
             switch (action) {
-                case 'l':
-                    if (!args.length)
-                        this.listAll(message, args, bot, db);
+                case 'list':
+                    if (!message.options.getString('id'))
+                        this.listAll(message, bot, db);
                     else
-                        this.listUsers(message, args, bot, db);
+                        this.listUsers(message, bot, db);
                     break;
-                case 'a':
-                    this.addExpelled(message, args, bot, db);
+                case 'add':
+                    this.addExpelled(message, bot, db);
                     break;
-                case 'r':
-                    this.removeExpelled(message, args, bot, db);
+                case 'remove':
+                    this.removeExpelled(message, bot, db);
                     break;
                 default:
-                    return message.channel.send('Invalid arguments: `<add/remove/list> [names/ids]`');
+                    return message.replyUserError('Invalid arguments: `<add/remove/list> [names/ids]`');
             }
         },
-        async listAll(message, args, bot, db) {
+        async listAll(message, bot, db) {
             db.query(`SELECT * FROM veriblacklist`, async(err, rows) => {
                 if (err) ErrorLogger.log(err, bot, message.guild)
                 let embed = new Discord.EmbedBuilder()
@@ -36,11 +70,11 @@ module.exports = {
                 for (let i in rows) {
                     fitStringIntoEmbed(embed, `${rows[i].id}`, message.channel, ', ')
                 }
-                message.channel.send({ embeds: [embed] })
+                message.reply({ embeds: [embed] })
             });
         },
-        async listUsers(message, args, bot, db) {
-            db.query(`SELECT * FROM veriblacklist WHERE id IN (${args.map(a => `'${a}'`).join(', ')})`, async(err, rows) => {
+        async listUsers(message, bot, db) {
+            db.query(`SELECT * FROM veriblacklist WHERE id IN (${[message.options.getString('id'), ...message.options.getVarargs()].map(a => `'${a}'`).join(', ')})`, async(err, rows) => {
             if (err) ErrorLogger.log(err, bot, message.guild);
             let embed = new Discord.EmbedBuilder()
                 .setTitle(`Expelled / Veriblacklisted users`)
@@ -51,30 +85,33 @@ module.exports = {
                 const guild = bot.guilds.cache.get(row.guildid);
                 fitStringIntoEmbed(embed, `\`${row.id}\` by <@!${row.modid}> in **${guild ? guild.name : row.guildid}**: ${ row.reason || 'No reason provided.' }`, message.channel, '\n');
             }
-            message.channel.send({ embeds: [embed] });
+            message.reply({ embeds: [embed] });
         })
     },
-    async addExpelled(message, args, bot, db) {
-        if (!args.length) return message.channel.send(`Please specify a user`)
-        const id = args.shift();
-        db.query(`INSERT INTO veriblacklist (id, modid, guildid, reason) VALUES (${db.escape(id)}, '${message.author.id}', '${message.guild.id}', ${db.escape(args.join(' ') || 'No reason provided.')})`, (err) => {
-            if (err)
-            {
-                ErrorLogger.log(err, bot, message.guild);
-                message.channel.send(`Error adding \`${id}\` to the blacklist: ${err.message}`);
-            } else 
-                message.react('✅');
-        });
-    },
-    async removeExpelled(message, args, bot, db) {
-        if (!args.length) return message.channel.send(`Please specify a user`)
-        for (let i in args) {
-            db.query(`SELECT * FROM veriblacklist WHERE id = '${args[i]}'`, (err, rows) => {
-                if (rows.length == 0) message.channel.send(`${args[i]} is not blacklisted`)
-                else db.query(`DELETE FROM veriblacklist WHERE id = '${args[i]}'`)
-            })
+    async addExpelled(message, bot, db) {
+        const id = message.options.getString('id');
+        const [rows, _] = await db.promise().query('SELECT reason, modid FROM veriblacklist WHERE id = ?', [id])
+        if (rows.length != 0) {
+            message.replyUserError(`User \`${id}\` already blacklisted by ${message.guild.members.cache.get(rows[0].modid).nickname} for ${rows[0].reason}`)
+        } else {
+            db.query(`INSERT INTO veriblacklist (id, modid, guildid, reason) VALUES (${db.escape(id)}, '${message.author.id}', '${message.guild.id}', ${db.escape([message.options.getString('reason'), ...message.options.getVarargs()].join(' ') || 'No reason provided.')})`, (err) => {
+                if (err)
+                {
+                    ErrorLogger.log(err, bot, message.guild);
+                    message.replyInternalError(`Error adding \`${id}\` to the blacklist: ${err.message}`);
+                } else 
+                    message.replySuccess(`${id} has been blacklisted!`);
+            });
         }
-        message.react('✅')
+    },
+    async removeExpelled(message, bot, db) {
+        [message.options.getString('id'), ...message.options.getVarargs()].forEach((arg) => {
+            db.query(`SELECT * FROM veriblacklist WHERE id = '${arg}'`, (err, rows) => {
+                if (rows.length == 0) message.replyUserError(`${arg} is not blacklisted`)
+                else db.query(`DELETE FROM veriblacklist WHERE id = '${arg}'`)
+            })
+        })
+        message.replySuccess('Done!')
     }
 }
 
