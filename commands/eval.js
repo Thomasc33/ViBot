@@ -1,3 +1,5 @@
+const { botOwners } = require('../settings.json');
+
 module.exports = {
     name: 'eval',
     role: 'moderator',
@@ -10,7 +12,7 @@ module.exports = {
      * @param {import('mysql').Connection} db 
      */
     async execute(message, args, bot, db) {
-        if (!['277636691227836419','258286481167220738'].includes(message.author.id)) return;
+        if (!botOwners.includes(message.author.id)) return;
         let command = message.content.substring(6, message.content.length)
         console.log(`evaling from ${message.member.nickname} -> \n${command}`)
         try {

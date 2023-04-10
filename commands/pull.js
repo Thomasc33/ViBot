@@ -1,4 +1,5 @@
 const { spawn } = require('child_process');
+const { botOwners } = require('../settings.json');
 
 module.exports = {
     name: 'pull',
@@ -12,7 +13,7 @@ module.exports = {
      * @param {import('mysql').Connection} db 
      */
     async execute(message, args, bot, db) {
-        if (!['277636691227836419', '258286481167220738'].includes(message.author.id)) return;
+        if (!botOwners.includes(message.author.id)) return;
 
         console.log('Pulling from github')
         try {
