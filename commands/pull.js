@@ -1,4 +1,5 @@
 const { spawn } = require('child_process');
+const Discord = require('discord.js');
 
 module.exports = {
     name: 'pull',
@@ -14,6 +15,13 @@ module.exports = {
     async execute(message, args, bot, db) {
         if (!['277636691227836419', '258286481167220738'].includes(message.author.id)) return;
 
+        let embed = new Discord.EmbedBuilder({
+            title: 'Pulling From Github',
+            color: 'GREEN'
+        })
+
+        let desc = '```shell\n'
+
         console.log('Pulling from github')
         try {
             const gitpull = spawn('git', ['pull'], {
@@ -22,22 +30,29 @@ module.exports = {
 
             gitpull.on('error', (err) => {
                 console.error(`Error running command: ${err}`);
-                message.channel.send(`Error running command: ${err}`);
+
+                desc += data + '\n'
+                embed.setDescription(desc + '```')
+                embed.setColor('RED')
+                message.channel.send(embed)
             })
 
             gitpull.on('close', (code) => {
                 console.log(`Command exited with code ${code}`);
-                message.channel.send(`Command exited with code ${code}`);
+
+                embed.setDescription(desc + '\n```' + '\nExited with code ' + code)
+                message.channel.send(embed)
             })
 
             gitpull.stdout.on('data', (data) => {
                 console.log(`Command output: ${data}`);
+
+                desc += data + '\n'
+                embed.setDescription(desc + '```')
+                message.channel.send(embed)
             })
         } catch (e) {
             console.error(e)
-        }
-        finally {
-            console.log('finally')
         }
     }
 }
