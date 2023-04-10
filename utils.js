@@ -32,8 +32,14 @@ class LegacyCommandOptions {
         const [command, ...args] = s.slice(1).split(/ +/gi)
         let optsToParse = opts.slice();
         while (optsToParse.length != 0) {
+            if (args.length == 0) {
+                if (optsToParse.filter((opt) => opt.required).length != 0) {
+                    throw new LegacyParserError("Not enough arguments. Expected: " + argString(opts))
+                } else {
+                    return
+                }
+            }
             let currentOpt = optsToParse.shift();
-            if (args.length == 0) throw new LegacyParserError("Not enough arguments. Expected: " + argString(opts))
             let currentArg = args.shift();
             if (currentOpt.type == SlashArgType.Subcommand) {
                 // Grab all the subcommand options
@@ -107,7 +113,7 @@ class LegacyCommandOptions {
             case SlashArgType.User: {
                 let member = this.#message.guild.members.cache.get(value)
                 if (!member) member = this.#message.mentions.members.first()
-                if (!member) member = this.#message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
+                if (!member) member = this.#message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(value.toLowerCase()));
                 if (member) this.#users.push(member)
                 return member
             }
