@@ -18,7 +18,7 @@ module.exports = {
 
         let embed = new Discord.EmbedBuilder({
             title: 'Pulling From Github',
-            color: 'GREEN'
+            color: 0x00FF00,
         })
 
         let m = await message.channel.send({embeds: [embed]})
@@ -36,7 +36,7 @@ module.exports = {
 
                 desc += data + '\n'
                 embed.setDescription(desc + '```')
-                embed.setColor('RED')
+                embed.setColor(0xFF0000)
                 m.edit({embeds: [embed]})
             })
 
