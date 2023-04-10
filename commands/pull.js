@@ -21,6 +21,8 @@ module.exports = {
             color: 'GREEN'
         })
 
+        let m = await message.channel.send({embeds: [embed]})
+
         let desc = '```shell\n'
 
         console.log('Pulling from github')
@@ -35,14 +37,14 @@ module.exports = {
                 desc += data + '\n'
                 embed.setDescription(desc + '```')
                 embed.setColor('RED')
-                message.channel.send(embed)
+                m.edit({embeds: [embed]})
             })
 
             gitpull.on('close', (code) => {
                 console.log(`Command exited with code ${code}`);
 
                 embed.setDescription(desc + '\n```' + '\nExited with code ' + code)
-                message.channel.send(embed)
+                m.edit({embeds: [embed]})
             })
 
             gitpull.stdout.on('data', (data) => {
@@ -50,7 +52,7 @@ module.exports = {
 
                 desc += data + '\n'
                 embed.setDescription(desc + '```')
-                message.channel.send(embed)
+                m.edit({embeds: [embed]})
             })
         } catch (e) {
             console.error(e)
