@@ -1,6 +1,8 @@
 const { spawn } = require('child_process');
 const { botOwners } = require('../settings.json');
 const Discord = require('discord.js');
+const process = require('process');
+const cwd = process.cwd();
 
 module.exports = {
     name: 'pull',
@@ -28,7 +30,7 @@ module.exports = {
         console.log('Pulling from github')
         try {
             const gitpull = spawn('git', ['pull'], {
-                cwd: 'C:\\Users\\Thomas\\Desktop\\ViBot'
+                cwd: cwd
             })
 
             gitpull.on('error', (err) => {
