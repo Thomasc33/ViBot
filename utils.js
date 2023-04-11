@@ -36,6 +36,7 @@ class LegacyCommandOptions {
         while (optsToParse.length != 0) {
             let currentOpt = optsToParse.shift();
             if (currentOpt.required && (currentOpt.type == SlashArgType.Attachment ? this.#attachments.length == 0 : args.length == 0)) throw new LegacyParserError("Not enough arguments. Expected: " + argString(opts))
+            if (args.length == 0) break;
             let currentArg = args.shift();
             if (currentOpt.type == SlashArgType.Subcommand) {
                 // Grab all the subcommand options
@@ -48,17 +49,17 @@ class LegacyCommandOptions {
                 //this.args[subcommand.name] = {}
                 this.subcommand = subcommand.name
                 subcommand.options.forEach((opt) => {
-                    if (args.length == 0 && opt.required) throw new LegacyParserError("Not enough arguments for subcommand " + subcommand.name + ". Expected: " + argString(opts))
+                    if (args.length == 0 && opt.required) throw new LegacyParserError(`Not enough arguments for subcommand \`${subcommand.name}\`. Expected: ${argString(opts)}`)
                     if (args.length != 0) {
                         const v = this.#processType(opt.type, args.shift())
-                        if (!v) throw new LegacyParserError("Error parsing argument " + opt.name)
+                        if (!v) throw new LegacyParserError(`Error parsing argument \`${opt.name}\``)
                         //this.args[subcommand.name][opt.name] = v
                         this.args[opt.name] = v
                     }
                 })
             } else {
                 const v = this.#processType(currentOpt.type, currentArg)
-                if (!v) throw new LegacyParserError("Error parsing argument " + currentOpt.name)
+                if (!v) throw new LegacyParserError(`Error parsing argument \`${currentOpt.name}\``)
                 this.args[currentOpt.name] = v
             }
         }

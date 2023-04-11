@@ -11,6 +11,7 @@ module.exports = {
     alias: ['backgroundcheck', 'pu', 'ui', 'userinfo'],
     requiredArgs: 1,
     description: 'Displays all mutes, warnings or suspensions any user has',
+    varargs: true,
     args: [
         slashArg(SlashArgType.String, 'user', {
             description: "The discord user ID, @mention, or ign you want to view"
