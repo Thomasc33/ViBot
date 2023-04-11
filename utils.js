@@ -36,6 +36,7 @@ class LegacyCommandOptions {
         while (optsToParse.length != 0) {
             let currentOpt = optsToParse.shift();
             if (currentOpt.required && (currentOpt.type == SlashArgType.Attachment ? this.#attachments.length == 0 : args.length == 0)) throw new LegacyParserError("Not enough arguments. Expected: " + argString(opts))
+            if (args.length == 0) break;
             let currentArg = args.shift();
             if (currentOpt.type == SlashArgType.Subcommand) {
                 // Grab all the subcommand options
