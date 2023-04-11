@@ -14,14 +14,15 @@ module.exports = {
         return json
     },
     async execute(message, args, bot) {
-        let quantity = args[0]
-        if (!quantity || Number.isNaN(quantity)) { 
-            message.channel.send('Please provide a number.')
+        let quantity = message.options.getNumber('count')
+
+        if (quantity <= 0){
+            message.reply('I can\'t delete nothing!')
             return
         }
 
-        if (parseInt(quantity) > 100) { 
-            message.channel.send('Max is 100 messages!')
+        if (quantity > 100) { 
+            message.reply('Max is 100 messages!')
             return
         }
 
