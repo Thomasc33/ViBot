@@ -10,24 +10,15 @@ module.exports = {
         description: "Number of messages (Max 100)"
     }),],
     getSlashCommandData(guild) {
-        let json = slashCommandJSON(this, guild)
-        return json
+        return slashCommandJSON(this, guild)
     },
     async execute(message, args, bot) {
         let quantity = message.options.getNumber('count')
-
-        if (quantity <= 0){
-            message.reply('I can\'t delete nothing!')
-            return
-        }
-
-        if (quantity > 100) { 
-            message.reply('Max is 100 messages!')
-            return
-        }
+        if (quantity <= 0) return message.reply("I can't delete nothing!")
+        if (quantity > 100) return message.reply('Max is 100 messages!')
 
         await message.reply('You\'re stinky :)')
         await message.deleteReply()
-        message.channel.bulkDelete(quantity)
+        await message.channel.bulkDelete(quantity)
     }
 }
