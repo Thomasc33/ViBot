@@ -17,7 +17,7 @@ module.exports = {
         if (quantity <= 0) return message.reply("I can't delete nothing!")
         if (quantity > 100) return message.reply('Max is 100 messages!')
 
-        await message.reply('You\'re stinky :)')
+        await message.reply("You're stinky :)")
         await message.deleteReply()
         await message.channel.bulkDelete(quantity)
     }
