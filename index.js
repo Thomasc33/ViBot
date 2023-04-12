@@ -8,6 +8,7 @@ const ErrorLogger = require(`./lib/logError`)
 const botSetup = require('./botSetup.js')
 const dbSetup = require('./dbSetup.js');
 const memberHandler = require('./memberHandler.js')
+const { logWrapper } = require('./metrics.js')
 
 // Specific Commands
 const verification = require('./commands/verification')
@@ -28,21 +29,21 @@ const MessageManager = require('./messageManager.js').MessageManager;
 const messageManager = new MessageManager(bot, botSettings);
 
 // Bot Event Handlers
-bot.on('messageCreate', async message => {
+bot.on('messageCreate', logWrapper('message', async (logger, message) => {
     // Ignore messages to non-whitelisted servers (but let DMs through)
-    if (message.guild && !serverWhiteList.includes(message.guild.id)) return;
-    if (message.author.bot) return
+    if (message.guild && !serverWhiteList.includes(message.guild.id)) return logger("serverBlacklisted")
+    if (message.author.bot) return logger("botAuthor")
 
     try {
         return await messageManager.handleMessage(message);
     } catch (er) {
         ErrorLogger.log(er, bot, message.guild)
     }
-});
+}));
 
-bot.on('interactionCreate', async interaction => {
+bot.on('interactionCreate', logWrapper('message', async (logger, interaction) => {
     // Validate the server is whitelisted
-    if (!serverWhiteList.includes(interaction.guild.id)) return
+    if (interaction.guild && !serverWhiteList.includes(interaction.guild.id)) return logger("serverBlacklisted")
 
     // Validate the interaction is a command
     if (interaction.isChatInputCommand()) {
@@ -51,7 +52,7 @@ bot.on('interactionCreate', async interaction => {
         return await messageManager.handleCommand(interaction, true)
     }
 
-})
+}))
 
 bot.on("ready", async () => {
     console.log(`Bot loaded: ${bot.user.username}`);

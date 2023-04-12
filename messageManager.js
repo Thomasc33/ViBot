@@ -3,6 +3,7 @@ const mysql = require('mysql2')
 
 const ErrorLogger = require('./lib/logError')
 const CommandLogger = require('./lib/logCommand')
+const { logMessage, genPoint, writePoint } = require('./metrics.js')
 
 const restarting = require('./commands/restart')
 const verification = require('./commands/verification')
@@ -120,24 +121,39 @@ class MessageManager {
 
         // Get the command
         const command = this.#bot.commands.get(commandName) || this.#bot.commands.find(cmd => cmd.alias && cmd.alias.includes(commandName))
-        if (!command) return e.reply('Command doesnt exist, check \`commands\` and try again');
+
+        // Handle logging and replying to command errors
+        function commandError(userMsg, logMsg) {
+            if (userMsg) await e.reply(userMsg)
+            logMessage('command', e, (p) => {
+                p.tag('command', commandName)
+                p.tag('errortype', logMsg || userMsg)
+                return p
+            })
+        }
+
+        if (!command) return commandError('Command doesnt exist, check \`commands\` and try again', 'does not exist');
         // Validate the command is enabled
-        if (!this.#bot.settings[e.guild.id].commands[command.name]) return e.reply('This command is disabled');
+        if (!this.#bot.settings[e.guild.id].commands[command.name]) return commandError('This command is disabled', 'disabled');
         // Validate the command is not disabled during restart if a restart is pending
-        if (restarting.restarting && !command.allowedInRestart) return e.reply('Cannot execute command as a restart is pending')
+        if (restarting.restarting && !command.allowedInRestart) return commandError('Cannot execute command as a restart is pending', 'pending restart')
         // Validate the user has permission to use the command
-        if (!e.guild.roles.cache.get(this.#bot.settings[e.guild.id].roles[command.role])) return e.reply('Permissions not set up for this commands role')
+        if (!e.guild.roles.cache.get(this.#bot.settings[e.guild.id].roles[command.role])) return commandError('Permissions not set up for this commands role', 'permissions not setup')
 
-        if (!this.commandPermitted(e.member, e.guild, command)) return e.reply('You do not have permission to use this command')
+        if (!this.commandPermitted(e.member, e.guild, command)) return commandError('You do not have permission to use this command', 'no permission')
 
-        if (command.requiredArgs && command.requiredArgs > argCount) return e.reply(`Command Entered incorrecty. \`${this.#botSettings.prefix}${command.name} ${argString(command.args)}\``)
+        if (command.requiredArgs && command.requiredArgs > argCount) return commandError(`Command Entered incorrecty. \`${this.#botSettings.prefix}${command.name} ${argString(command.args)}\``, 'invalid syntax')
+
         if (command.cooldown) {
             if (this.#cooldowns.get(command.name)) {
                 if (Date.now() + command.cooldown * 1000 < Date.now()) this.#cooldowns.delete(command.name)
-                else return
+                else return commandError(null, 'cooldown')
             } else this.#cooldowns.set(command.name, Date.now())
             setTimeout(() => { this.#cooldowns.delete(command.name) }, command.cooldown * 1000)
         }
+
+        const point = genPoint('commandexecution', e)
+                            .tag('command', commandName)
         try {
             const db = getDB(e.guild.id)
             if (isInteraction && command.slashCommandExecute) {
@@ -160,7 +176,9 @@ class MessageManager {
                         }
                     }
                 }
+                const start = Date.now()
                 await command.execute(e, args, this.#bot, db)
+                point.intField('duration', Date.now() - start)
             }
             db.query(`INSERT INTO commandusage (command, userid, guildid, utime) VALUES ('${command.name}', '${e.member.id}', '${e.guild.id}', '${Date.now()}')`);
             if (isInteraction) {
@@ -168,10 +186,12 @@ class MessageManager {
             } else {
                 CommandLogger.log(e, this.#bot)
             }
-        }
-        catch (er) {
+        } catch (er) {
             ErrorLogger.log(er, this.#bot, e.guild)
             e.reply("Issue executing the command, check \`;commands\` and try again");
+            point.tag('error', er.name)
+        } finally {
+            writePoint(point)
         }
     }
 
