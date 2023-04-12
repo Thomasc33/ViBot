@@ -123,7 +123,7 @@ class MessageManager {
         const command = this.#bot.commands.get(commandName) || this.#bot.commands.find(cmd => cmd.alias && cmd.alias.includes(commandName))
 
         // Handle logging and replying to command errors
-        function commandError(userMsg, logMsg) {
+        async function commandError(userMsg, logMsg) {
             if (userMsg) await e.reply(userMsg)
             logMessage('command', e, (p) => {
                 p.tag('command', commandName)
@@ -132,22 +132,22 @@ class MessageManager {
             })
         }
 
-        if (!command) return commandError('Command doesnt exist, check \`commands\` and try again', 'does not exist');
+        if (!command) return await commandError('Command doesnt exist, check \`commands\` and try again', 'does not exist');
         // Validate the command is enabled
-        if (!this.#bot.settings[e.guild.id].commands[command.name]) return commandError('This command is disabled', 'disabled');
+        if (!this.#bot.settings[e.guild.id].commands[command.name]) return await commandError('This command is disabled', 'disabled');
         // Validate the command is not disabled during restart if a restart is pending
-        if (restarting.restarting && !command.allowedInRestart) return commandError('Cannot execute command as a restart is pending', 'pending restart')
+        if (restarting.restarting && !command.allowedInRestart) return await commandError('Cannot execute command as a restart is pending', 'pending restart')
         // Validate the user has permission to use the command
-        if (!e.guild.roles.cache.get(this.#bot.settings[e.guild.id].roles[command.role])) return commandError('Permissions not set up for this commands role', 'permissions not setup')
+        if (!e.guild.roles.cache.get(this.#bot.settings[e.guild.id].roles[command.role])) return await commandError('Permissions not set up for this commands role', 'permissions not setup')
 
-        if (!this.commandPermitted(e.member, e.guild, command)) return commandError('You do not have permission to use this command', 'no permission')
+        if (!this.commandPermitted(e.member, e.guild, command)) return await commandError('You do not have permission to use this command', 'no permission')
 
-        if (command.requiredArgs && command.requiredArgs > argCount) return commandError(`Command Entered incorrecty. \`${this.#botSettings.prefix}${command.name} ${argString(command.args)}\``, 'invalid syntax')
+        if (command.requiredArgs && command.requiredArgs > argCount) return await commandError(`Command Entered incorrecty. \`${this.#botSettings.prefix}${command.name} ${argString(command.args)}\``, 'invalid syntax')
 
         if (command.cooldown) {
             if (this.#cooldowns.get(command.name)) {
                 if (Date.now() + command.cooldown * 1000 < Date.now()) this.#cooldowns.delete(command.name)
-                else return commandError(null, 'cooldown')
+                else return await commandError(null, 'cooldown')
             } else this.#cooldowns.set(command.name, Date.now())
             setTimeout(() => { this.#cooldowns.delete(command.name) }, command.cooldown * 1000)
         }
