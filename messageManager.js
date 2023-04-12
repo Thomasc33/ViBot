@@ -189,7 +189,7 @@ class MessageManager {
         } catch (er) {
             ErrorLogger.log(er, this.#bot, e.guild)
             e.reply("Issue executing the command, check \`;commands\` and try again");
-            point.tag('error', er.name)
+            point.stringField('error', er.name)
         } finally {
             writePoint(point)
         }
