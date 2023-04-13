@@ -1,4 +1,9 @@
 {
+    "influxDB": {
+        "token": "ask-huntifer-if-you-need-one",
+        "url": "https://admin.vibot.tech:8080",
+        "bucket": "vibot-dev"
+    },
     "prefix": ";",
     "prodBotId": "589996847083290629",
     "botId": "701196529519689790",
