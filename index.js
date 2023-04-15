@@ -9,6 +9,7 @@ const botSetup = require('./botSetup.js')
 const dbSetup = require('./dbSetup.js');
 const memberHandler = require('./memberHandler.js')
 const { logWrapper } = require('./metrics.js')
+const { handleReactionRow } = require('./redis.js')
 
 // Specific Commands
 const verification = require('./commands/verification')
@@ -50,6 +51,9 @@ bot.on('interactionCreate', logWrapper('message', async (logger, interaction) =>
         return await messageManager.handleCommand(interaction, true)
     } else if (interaction.isUserContextMenuCommand()) {
         return await messageManager.handleCommand(interaction, true)
+    } else if (interaction.isButton()) {
+        // let i = new Discord.InteractionResponse(interaction)
+        return await handleReactionRow(bot, interaction)
     }
 
 }))

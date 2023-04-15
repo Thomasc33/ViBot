@@ -4,6 +4,7 @@ const keypops = require('../data/keypop.json')
 const keyRoles = require('./keyRoles')
 const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
 const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js')
+const { createReactionRow } = require('../redis.js')
 
 module.exports = {
     name: 'pop',
@@ -35,7 +36,6 @@ module.exports = {
         //Initialize
         let settings = bot.settings[message.guild.id]
         var count = 1
-        let moddedKey = false
         if (args.length < 1) return;
         if (args.length > 2) count = parseInt(args[2])
         if (count == NaN || !count) count = 1
@@ -50,7 +50,6 @@ module.exports = {
         if (!keyInfo) return message.replyUserError(`\`${args[0]}\` not recognized`)
 
         //Create Discord Embed Confirmation
-        let collector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id === message.author.id, time: 20000 });
         let confirmEmbed = new Discord.EmbedBuilder()
             .setColor('#ff0000')
             .setDescription(`Are you sure you want to log \`\`${count}\`\` **${keyInfo.name}** pops for ${user.nickname}?\n\nPlease select which key.`)
@@ -69,74 +68,65 @@ module.exports = {
                                             .setLabel('❌ Cancel')
                                             .setStyle(Discord.ButtonStyle.Danger)
                                 );
-        await message.reply({ embeds: [confirmEmbed], components: [ buttons ], ephemeral: true }).then(async (confirmMessage) => {
-            const buttonCollector = confirmMessage.createMessageComponentCollector()
-            const choice = await new Promise((resolve, reject) => {
-                const author_id = message.author.id
-                let resolved;
-                buttonCollector.on('collect', async interaction => {
-                    if (!(author_id ? interaction.user.id == author_id : true)) return;
-                    resolved = true;
-                    buttonCollector.stop();
-                    resolve(interaction.customId);
-                });
-                buttonCollector.on('end', () => {
-                    const err = 'Timed out.';
-                    err.stackTrace = new Error().stack;
-                    if (!resolved) reject(err);
-                });
-            })
-
-            if (!choice || choice == 'Cancelled')
-                return confirmMessage.delete()
-            else if (choice == 'Regular Key') {
-
-            }else if (choice == 'Modded Key') {
-                moddedKey = true
-            }
-            
-            //Execute Database Query
-            db.query(`SELECT * FROM users WHERE id = '${user.id}'`, async(err, rows) => {
-                if (err) ErrorLogger.log(err, bot)
-                if (rows.length == 0) {
-                    const success = await new Promise((res) => {
-                        db.query(`INSERT INTO users (id) VALUES ('${user.id}')`, (err, rows) => {
-                            if (err || !rows || rows.length == 0) {
-                                message.channel.send({
-                                    embeds: [
-                                        new Discord.EmbedBuilder().setDescription(`Unable to add <@!${user.id}> to the database.`).addFields([{name: `Error`, value: `${err || "Unknown reason"}`}])
-                                    ]
-                                });
-                                res(false);
-                            } else res(true);
-                        });
-                    })
-                    if (!success) return;
-                }
-                db.query(`UPDATE users SET ${keyInfo.schema} = ${keyInfo.schema } + ${count} WHERE id = '${user.id}'`, (err, rows) => {
-                    keyRoles.checkUser(user, bot, db);
-                });
-                if (moddedKey) db.query(`UPDATE users SET moddedPops = moddedPops + ${count} WHERE id = '${user.id}'`, (err, rows) => {
-                    keyRoles.checkUser(user, bot, db);
-                });
-                let embed = new Discord.EmbedBuilder()
-                    .setColor('#0000ff')
-                    .setTitle(`Key logged!`)
-                    .setDescription(`${user} now has \`\`${parseInt(rows[0][keyInfo.schema]) + parseInt(count)}\`\` ${keyInfo.name} pops`)
-                message.channel.send({ embeds: [embed] })
-            })
-            
-            //Add Points to Database
-            if (settings.backend.points && keyInfo.points) {
-                let points = settings.points[keyInfo.points] * count
-                if (user.roles.cache.hasAny(...settings.lists.perkRoles.map(role => settings.roles[role]))) points = points * settings.points.nitromultiplier
-                if (moddedKey) points = points * settings.points.keymultiplier
-                db.query(`UPDATE users SET points = points + ${points} WHERE id = '${user.id}'`)
-            }
-
-            //Delete Confirmation Message
+        const reply = await message.reply({ embeds: [confirmEmbed], components: [ buttons ], ephemeral: true })
+        console.log("REPT: " + count)
+        createReactionRow(reply, module.exports.name, 'handleButtons', buttons, message.author, {userId: user.id, keyInfo: keyInfo, count: count})
+    },
+    async handleButtons(bot, confirmMessage, db, choice, state) {
+        const user = confirmMessage.interaction.guild.members.cache.get(state.userId)
+        const count = state.count
+        const settings = bot.settings[confirmMessage.interaction.guild.id]
+        const keyInfo = state.keyInfo
+        let moddedKey = false
+        if (!choice || choice == 'Cancelled')
             return confirmMessage.delete()
+        else if (choice == 'Regular Key') {
+
+        }else if (choice == 'Modded Key') {
+            moddedKey = true
+        }
+        
+        //Execute Database Query
+        db.query(`SELECT * FROM users WHERE id = '${user.id}'`, async(err, rows) => {
+            if (err) ErrorLogger.log(err, bot)
+            if (rows.length == 0) {
+                const success = await new Promise((res) => {
+                    db.query(`INSERT INTO users (id) VALUES ('${user.id}')`, (err, rows) => {
+                        if (err || !rows || rows.length == 0) {
+                            confirmMessage.interaction.channel.send({
+                                embeds: [
+                                    new Discord.EmbedBuilder().setDescription(`Unable to add <@!${user.id}> to the database.`).addFields([{name: `Error`, value: `${err || "Unknown reason"}`}])
+                                ]
+                            });
+                            res(false);
+                        } else res(true);
+                    });
+                })
+                if (!success) return;
+            }
+            db.query(`UPDATE users SET ${keyInfo.schema} = ${keyInfo.schema } + ${count} WHERE id = '${user.id}'`, (err, rows) => {
+                keyRoles.checkUser(user, bot, db);
+            });
+            if (moddedKey) db.query(`UPDATE users SET moddedPops = moddedPops + ${count} WHERE id = '${user.id}'`, (err, rows) => {
+                keyRoles.checkUser(user, bot, db);
+            });
+            let embed = new Discord.EmbedBuilder()
+                .setColor('#0000ff')
+                .setTitle(`Key logged!`)
+                .setDescription(`${user} now has \`\`${parseInt(rows[0][keyInfo.schema]) + parseInt(count)}\`\` ${keyInfo.name} pops`)
+            confirmMessage.interaction.channel.send({ embeds: [embed] })
         })
+        
+        //Add Points to Database
+        if (settings.backend.points && keyInfo.points) {
+            let points = settings.points[keyInfo.points] * count
+            if (user.roles.cache.hasAny(...settings.lists.perkRoles.map(role => settings.roles[role]))) points = points * settings.points.nitromultiplier
+            if (moddedKey) points = points * settings.points.keymultiplier
+            db.query(`UPDATE users SET points = points + ${points} WHERE id = '${user.id}'`)
+        }
+
+        //Delete Confirmation Message
+        return confirmMessage.delete()
     }
 }
 
