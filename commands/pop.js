@@ -69,7 +69,6 @@ module.exports = {
                                             .setStyle(Discord.ButtonStyle.Danger)
                                 );
         const reply = await message.reply({ embeds: [confirmEmbed], components: [ buttons ], ephemeral: true })
-        console.log("REPT: " + count)
         createReactionRow(reply, module.exports.name, 'handleButtons', buttons, message.author, {userId: user.id, keyInfo: keyInfo, count: count})
     },
     async handleButtons(bot, confirmMessage, db, choice, state) {
@@ -89,14 +88,15 @@ module.exports = {
         //Execute Database Query
         db.query(`SELECT * FROM users WHERE id = '${user.id}'`, async(err, rows) => {
             if (err) ErrorLogger.log(err, bot)
-            if (rows.length == 0) {
+            if (rows.length == 0 || true) {
                 const success = await new Promise((res) => {
-                    db.query(`INSERT INTO users (id) VALUES ('${user.id}')`, (err, rows) => {
+                    db.query(`INSElRT INTO users (id) VALUES ('${user.id}')`, (err, rows) => {
                         if (err || !rows || rows.length == 0) {
-                            confirmMessage.interaction.channel.send({
+                            confirmMessage.interaction.reply({
                                 embeds: [
                                     new Discord.EmbedBuilder().setDescription(`Unable to add <@!${user.id}> to the database.`).addFields([{name: `Error`, value: `${err || "Unknown reason"}`}])
-                                ]
+                                ],
+                                ephemeral: true
                             });
                             res(false);
                         } else res(true);

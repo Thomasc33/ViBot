@@ -52,7 +52,6 @@ bot.on('interactionCreate', logWrapper('message', async (logger, interaction) =>
     } else if (interaction.isUserContextMenuCommand()) {
         return await messageManager.handleCommand(interaction, true)
     } else if (interaction.isButton()) {
-        // let i = new Discord.InteractionResponse(interaction)
         return await handleReactionRow(bot, interaction)
     }
 
