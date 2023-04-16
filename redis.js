@@ -1,6 +1,7 @@
 const { createClient } = require('redis')
 const { getDB } = require('./dbSetup.js')
 const Discord = require('discord.js')
+const botSettings = require('./settings.json')
 
 let client
 
@@ -21,12 +22,7 @@ class MockMessage {
 
 module.exports = {
     async setup() {
-        client = createClient({
-            socket: {
-                host: 'localhost',
-                port: '8000'
-            }
-        });
+        client = createClient(botSettings.redis);
 
         client.on('error', err => console.log('Redis Client Error: ', err));
 

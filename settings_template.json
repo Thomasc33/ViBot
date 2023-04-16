@@ -4,6 +4,12 @@
         "url": "https://admin.vibot.tech:8080",
         "bucket": "vibot-dev"
     },
+    "redis": {
+        "socket": {
+            "host": "localhost",
+            "port": "6379"
+        }
+    },
     "prefix": ";",
     "prodBotId": "589996847083290629",
     "botId": "701196529519689790",
