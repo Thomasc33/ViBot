@@ -36,13 +36,13 @@ module.exports = {
         let member = message.guild.members.cache.get(memberSearch);
         if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(memberSearch.toLowerCase()));
         if (!member) member = message.guild.members.cache.get(memberSearch.replace(/\D/gi, ''))
-        if (!member) { message.channel.send('User not found. Please try again'); return; }
-        if (member.roles.highest.position >= message.member.roles.highest.position) return message.channel.send(`${member} has a role greater than or equal to you and cannot be muted`);
+        if (!member) { message.reply('User not found. Please try again'); return; }
+        if (member.roles.highest.position >= message.member.roles.highest.position) return message.reply(`${member} has a role greater than or equal to you and cannot be muted`);
         let muted = settings.roles.muted
-        if (member.roles.cache.has(muted)) return message.channel.send(`${member} is already muted`)
+        if (member.roles.cache.has(muted)) return message.reply(`${member} is already muted`)
         if (args.length == 1) {
             await member.roles.add(muted).catch(er => ErrorLogger.log(er, bot, message.guild))
-            await message.channel.send(`${member} has been muted indefinitely`)
+            await message.reply(`${member} has been muted indefinitely`)
             return;
         }
         let time = parseInt(args.shift())

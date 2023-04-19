@@ -1,6 +1,8 @@
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
 const fs = require('fs')
+const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
+const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js')
 
 module.exports = {
     name: 'unmute',
@@ -8,16 +10,24 @@ module.exports = {
     args: '<ign/mention/id>',
     requiredArgs: 1,
     role: 'security',
+    args: [
+        slashArg(SlashArgType.User, 'member', {
+            description: "Member in the Server"
+        }),
+    ],
+    getSlashCommandData(guild) {
+        return slashCommandJSON(this, guild)
+    },
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         var member = message.mentions.members.first()
         if (!member) member = message.guild.members.cache.get(args[0]);
         if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
-        if (!member) { message.channel.send('User not found. Please try again'); return; }
-        if (member.roles.highest.position >= message.member.roles.highest.position) return message.channel.send(`${member} has a role greater than or equal to you and cannot be unmuted by you`);
+        if (!member) { message.reply('User not found. Please try again'); return; }
+        if (member.roles.highest.position >= message.member.roles.highest.position) return message.reply(`${member} has a role greater than or equal to you and cannot be unmuted by you`);
         let muted = settings.roles.muted
         if (!member.roles.cache.has(muted)) {
-            message.channel.send(`${member} is not muted`)
+            message.reply(`${member} is not muted`)
             return;
         }
         db.query(`SELECT * FROM mutes WHERE id = '${member.id}' AND muted = true`, async (err, rows) => {
@@ -52,7 +62,7 @@ module.exports = {
                     confirmMessage.delete()
                     if (r.emoji.name !== '✅') return;
                     await member.roles.remove(muted).catch(er => ErrorLogger.log(er, bot, message.guild))
-                    message.channel.send(`${member} has been unmuted`)
+                    message.reply(`${member} has been unmuted`)
                     db.query(`UPDATE mutes SET muted = false WHERE id = '${member.id}'`)
                 })
             }
