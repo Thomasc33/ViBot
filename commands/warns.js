@@ -1,6 +1,8 @@
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
 const moment = require('moment')
+const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
+const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js')
 
 module.exports = {
     name: 'warns',
@@ -8,6 +10,14 @@ module.exports = {
     role: 'eventrl',
     requiredArgs: 1,
     args: '[Users]',
+    args: [
+        slashArg(SlashArgType.User, 'member', {
+            description: "Member in the Server"
+        }),
+    ],
+    getSlashCommandData(guild) {
+        return slashCommandJSON(this, guild)
+    },
     async execute(message, args, bot, db) {
         const settings = bot.settings[message.guild.id]
         const securityRole = message.guild.roles.cache.get(settings.roles.security)
@@ -51,7 +61,7 @@ module.exports = {
                 if (!embed.data.fields || embed.data.fields.length == 0) {
                     embed.setDescription(`No warnings have been issued for ${member}`)
                 }
-                await message.channel.send({ embeds: [embed] })
+                await message.reply({ embeds: [embed] })
             })
         }
         if (usersNotFound.length > 0) {
@@ -59,7 +69,7 @@ module.exports = {
                 .setTitle('Users not found')
                 .setColor('#fAA61A')
                 .setDescription(usersNotFound.join(', '))
-            await message.channel.send({ embeds: [embedNotFound] })
+            await message.reply({ embeds: [embedNotFound] })
         }
     }
 }
