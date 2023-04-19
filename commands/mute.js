@@ -1,6 +1,8 @@
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
 const fs = require('fs')
+const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
+const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js')
 
 module.exports = {
     name: 'mute',
@@ -8,6 +10,26 @@ module.exports = {
     args: '<member> <time> <time type s/m/h/d/w/y> (Reason)',
     role: 'security',
     requiredArgs: 1,
+    args: [
+        slashArg(SlashArgType.User, 'member', {
+            description: "Member in the Server"
+        }),
+        slashArg(SlashArgType.Integer, 'time', {
+            required: false,
+            description: "Quantity of Time"
+        }),
+        slashArg(SlashArgType.String, 'timetype', {
+            required: false,
+            description: "Time Type[s/m/h/d/w/y]"
+        }),
+        slashArg(SlashArgType.String, 'reason', {
+            required: false,
+            description: "Reason for mute"
+        }),
+    ],
+    getSlashCommandData(guild) {
+        return slashCommandJSON(this, guild)
+    },
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         const memberSearch = args.shift();
@@ -38,7 +60,7 @@ module.exports = {
         }
         db.query(`INSERT INTO mutes (id, guildid, muted, reason, modid, uTime) VALUES ('${member.id}', '${message.guild.id}', true, '${reason || 'None Provided'}','${message.author.id}', '${Date.now() + time}')`, err => {
             member.roles.add(muted).catch(er => ErrorLogger.log(er, bot, message.guild))
-            message.channel.send(`${member} has been muted`)
+            message.reply(`${member} has been muted`)
             member.user.send(`You have been muted on \`${message.guild.name}\` by <@!${message.author.id}> \`${message.author.tag}\`${reason ? ': ' + reason : 'No reason provided'}.`);
         })
     }
