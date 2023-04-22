@@ -113,9 +113,11 @@ class LegacyCommandOptions {
         switch (type) {
             case SlashArgType.User: {
                 let member = this.#message.guild.members.cache.get(value)
+                if (value.match(/^\d{10,}$/)) member = this.#message.guild.members.fetch(value)
                 if (!member) member = this.#message.mentions.members.first()
                 if (!member) member = this.#message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(value.toLowerCase()));
                 if (member) this.#users.push(member)
+                if (!member) throw new LegacyParserError(`User \`${value}\` not found`)
                 return member
             }
             case SlashArgType.String: {
