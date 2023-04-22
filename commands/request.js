@@ -6,7 +6,7 @@ const afkCheck = require('./afkCheck.js');
 require(`../lib/extensions`)
 module.exports = {
     name: 'request',
-    description: 'In the event someone fake reacts, simply use this command and a message will be sent to raid-status/vet-status where a new raider can react and get sent location',
+    description: 'If you need more keys or in the event someone fake reacts, simply use this command and a message will be sent to raid-status/vet-status where a new raider can react and get sent location',
     args: '<number of reacts requested>',
     alias: ['rq'],
     role: 'eventrl',
