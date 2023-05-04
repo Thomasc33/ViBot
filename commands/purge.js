@@ -13,7 +13,7 @@ module.exports = {
         return slashCommandJSON(this, guild)
     },
     async execute(message, args, bot) {
-        let quantity = message.options.getNumber('count')
+        const quantity = message.options.getNumber('count')
         if (quantity <= 0) return message.reply("I can't delete nothing!")
         if (quantity > 100) return message.reply('Max is 100 messages!')
 
