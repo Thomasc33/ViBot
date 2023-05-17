@@ -8,6 +8,6 @@ module.exports = {
     guildspecific: true,
     role: 'developer',
     async execute(message, args, bot, db) {
-        message.channel.send('Test2 command')
+        message.channel.send('holy moly')
     }
 }
