@@ -1,7 +1,7 @@
 {
     "343704644712923138": [
         {
-            "types": [ ["eventpops", "Event Keys"], ["keypops", "Lost Halls Keys"], ["nestPops", "Nest Keys"], ["shattersPops", "Shatters Keys"], ["fungalPops", "Fungal Keys"] ],
+            "types": [ ["eventpops", "Event Keys"], ["keypops", "Lost Halls Keys"], ["nestPops", "Nest Keys"], ["shattersPops", "Shatters Keys"], ["fungalPops", "Fungal Keys"], ["moonlightPops", "MoonLight Keys"], ["steamworkPops", "Steamwork Keys"] ],
             "amount": 15,
             "role": "bottomkey"
         },
