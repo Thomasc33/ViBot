@@ -38,7 +38,7 @@ module.exports = {
             .setTimestamp(Date.now());
         member.roles.remove(userRoles)
             .then(() => member.setNickname(''))
-            .then(async() => { member.send(`You have been unverified${reason ? ': ' + reason : ''}. Please contact ${message.author} \`${message.author.tag}\` to appeal.`); })
+            .then(async() => { member.send(`You have been unverified from \`${message.guild.name}\`${reason ? ' for: ' + reason : ''}. Please contact ${message.member} \`${message.author.tag}\` to appeal.`); })
             .then(() =>     message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] }))
             .then(() => message.react('✅'))
             .catch(er => {
