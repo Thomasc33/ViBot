@@ -1954,7 +1954,7 @@
             "headcountOnAfk": false,
             "pingRole": "o3Ping",
             "isSplit": false,
-            "newChannel": false,
+            "newChannel": true,
             "vialReact": false,
             "postAfkCheck": false,
             "twoPhase": true,
