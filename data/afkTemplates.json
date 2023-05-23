@@ -1941,5 +1941,131 @@
             },
             "font-color": "#fefefe"
         }
+    },
+    "708026927721480254": {
+        "OryxThree": {
+            "runType": "Oryx 3",
+            "runName": "Oryx 3",
+            "symbol": "o",
+            "aliases": ["o3", "oryx", "oryxthree", "oryxthemadgod", "oryxtheexaltedgod"],
+            "reqsImageUrl": "",
+            "runLogName": "o3runs",
+            "headcountEmote": "o3portal",
+            "headcountOnAfk": false,
+            "pingRole": "o3Ping",
+            "isSplit": false,
+            "newChannel": false,
+            "vialReact": false,
+            "postAfkCheck": false,
+            "twoPhase": true,
+            "startDelay": 5000,
+            "vcCap": 75,
+            "timeLimit": 360,
+            "keyCount": 2,
+            "earlyLocationCost": 20,
+            "earlyLocationReacts": [{
+                    "emote": "swordRune",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "Sword Rune",
+                    "noConfirm": false,
+                    "noLocation": false,
+                    "inline": true,
+                    "buttonStyle": 1
+                },
+                {
+                    "emote": "shieldRune",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "Shield Rune",
+                    "noConfirm": false,
+                    "noLocation": false,
+                    "inline": true,
+                    "buttonStyle": 1
+                },
+                {
+                    "emote": "helmetRune",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "Helmet Rune",
+                    "noConfirm": false,
+                    "noLocation": false,
+                    "inline": true,
+                    "buttonStyle": 1
+                },
+                {
+                    "emote": "inc",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "Wine Cellars Incantation",
+                    "noConfirm": false,
+                    "noLocation": false,
+                    "inline": true,
+                    "buttonStyle": 1
+                },
+                {
+                    "emote": "UTMarbleSeal",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "Marble Seal",
+                    "noConfirm": false,
+                    "noLocation": true,
+                    "inline": true
+                },
+                {
+                    "emote": "Slow",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "Slow",
+                    "noConfirm": false,
+                    "noLocation": false,
+                    "inline": true
+                },
+                {
+                    "emote": "Ogmur",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Ogmur",
+                    "noConfirm": false,
+                    "noLocation": false,
+                    "inline": true
+                },
+                {
+                    "emote": "tomeOfTheMushroomTribesFungal",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "Fungal Tome",
+                    "noConfirm": false,
+                    "noLocation": false,
+                    "inline": true
+                },
+                {
+                    "emote": "2dpsRanged",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "2/4 DPS Ranged",
+                    "noConfirm": false,
+                    "noLocation": true,
+                    "inline": true
+                },
+                {
+                    "emote": "3dpsRanged",
+                    "pointsGiven": 0,
+                    "limit": 2,
+                    "shortName": "3/4 DPS ranged",
+                    "noConfirm": false,
+                    "noLocation": true,
+                    "inline": true
+                }
+            ],
+            "reacts": [],
+            "embed": {
+                "color": "#dc143c",
+                "description": "To join, connect to the raiding channel by clicking its name\nIf you have a rune react with the corresponding rune icon\nTo indicate your class or gear choices, react with <:Mystic:Mystic> <:UTMarbleSeal:UTMarbleSeal> <:Trickster:Trickster> <:effusionOfAttack:effusionOfAttack> <:effusionOfDexterity:effusionOfDexterity> <:Slow:Slow> <:Ogmur:Ogmur> <:fungalTome:tomeOfTheMushroomTribesFungal> <:2dpsRanged:2dpsRanged> <:3dpsRanged:3dpsRanged>\n<@&585542641975033859> to get early location react with <:nitro:NitroBooster>",
+                "thumbnail": "https://cdn.discordapp.com/emojis/1050173254121291827.png?v=1",
+                "removeThumbnail": false
+            },
+            "font-color": "#fefefe"
+        }
     }
 }
