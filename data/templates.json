@@ -1,0 +1,388 @@
+
+{
+    "701483950559985705": {
+        "defaults": {
+            "normal": { 
+                "category": "raiding",
+                "templateChannel": "717947391755681902",
+                "partneredStatusChannels": {},
+                "statusChannel": "701483952233250863",
+                "commandsChannel": "701483952233250864",
+                "activeChannel": "1110595993193422941",
+                "enabled": true,
+                "minStaffRole": "almostrl",
+                "minViewRaiderRole": "raider",
+                "minJoinRaiderRole": "raider",
+                "pingRoles": ["here"],
+                "startDelay": 10,
+                "cap": 45,
+                "phases": 2,
+                "body": {
+                    "default": {
+                        "vcState": "Locked",
+                        "nextPhaseButton": "Open Channel",
+                        "timeLimit": 360,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    "1": {
+                        "vcState": "Locked",
+                        "nextPhaseButton": "Open Channel",
+                        "timeLimit": 360,
+                        "message": "Early Reacts, click the buttons",
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    "2": {
+                        "vcState": "Open",
+                        "nextPhaseButton": "Start Run",
+                        "timeLimit": 360,
+                        "message": "The channel will be open",
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    }
+                }
+            } 
+        },
+        "other": [
+        {
+            "inherits": ["normal", "veteran"],
+            "category": null,
+            "templateChannel": null,
+            "partneredStatusChannels": null,
+            "statusChannel": null,
+            "commandsChannel": null,
+            "activeChannel": null,
+            "enabled": true,
+            "minStaffRole": null,
+            "minViewRaiderRole": null,
+            "minJoinRaiderRole": null,
+            "name": "Void",
+            "pingRoles": ["voidping"],
+            "aliases": ["v", "void", "voided"],
+            "logName": "voidRuns",
+            "vcOptions": 2,
+            "startDelay": null,
+            "cap": null,
+            "phases": 2,
+            "body": {
+                "default": {
+                    "vcState": null,
+                    "nextPhaseButton": null,
+                    "timeLimit": null,
+                    "message": null,
+                    "embed": {
+                        "color": "#2f075c",
+                        "description": null,
+                        "image": null,
+                        "thumbnail":"https://cdn.discordapp.com/emojis/701491230210523247.png?v=1"
+                    }
+                },
+                "1":{
+                    "vcState": null,
+                    "nextPhaseButton": null,
+                    "timeLimit": null,
+                    "embed": {
+                        "color": null,
+                        "description": null,
+                        "image": null,
+                        "thumbnail": null
+                    }
+                },
+                "2":{
+                    "vcState": null,
+                    "nextPhaseButton": null,
+                    "timeLimit": null,
+                    "embed": {
+                        "color": null,
+                        "description": null,
+                        "image": null,
+                        "thumbnail": null
+                    }
+                }
+            },
+            "buttons": {
+                "Key" : {
+                    "type" : "Log",
+                    "parent" : null,
+                    "choice": 1,
+                    "limit": 1,
+                    "points": 15,
+                    "displayName": false,
+                    "emote": "hallsK",
+                    "confirm": true,
+                    "location": true,
+                    "minRole": null,
+                    "minStaffRole": "rl",
+                    "confirmationMessage": null,
+                    "confirmationImage": null,
+                    "logName": "keypops",
+                    "start" : 1,
+                    "lifetime": "forever"
+                },
+                "Vial" :{
+                    "type" : "Log",
+                    "parent" : null,
+                    "choice": 2,
+                    "limit": 3,
+                    "points": 5,
+                    "displayName": false,
+                    "emote": "VialOfPureDarkness",
+                    "confirm": true,
+                    "location": true,
+                    "minRole": null,
+                    "minStaffRole": null,
+                    "confirmationMessage": null,
+                    "confirmationImage": null,
+                    "logName": "vialUsed",
+                    "start" : 1,
+                    "lifetime": "forever"
+                },
+                "Mystic" :{
+                    "type" : "Normal",
+                    "parent" : null,
+                    "choice": 0,
+                    "limit": 1,
+                    "points": 1,
+                    "displayName": false,
+                    "emote": "Mystic",
+                    "confirm": true,
+                    "location": true,
+                    "minRole": null,
+                    "minStaffRole": null,
+                    "confirmationMessage": "**__REQUIRED__**\n- You must have a **Stasising** and a **Cursing** Orb <:T6PlanefetterOrb:720265039222931477> available.",
+                    "confirmationImage": null,
+                    "logName": null,
+                    "start" : 1,
+                    "lifetime": "forever"
+                },
+                "Armor Break" :{
+                    "type" : "Normal",
+                    "parent" : null,
+                    "choice": 0,
+                    "limit": 1,
+                    "points": 2,
+                    "displayName": false,
+                    "emote": "Ogmur",
+                    "confirm": true,
+                    "location": true,
+                    "minRole": null,
+                    "minStaffRole": null,
+                    "confirmationMessage": null,
+                    "confirmationImage": null,
+                    "logName": null,
+                    "start" : 1,
+                    "lifetime": "forever"
+                },
+                "Expose" :{
+                    "type" : "Normal",
+                    "parent" : null,
+                    "choice": 0,
+                    "limit": 1,
+                    "points": 1,
+                    "displayName": false,
+                    "emote": "Expose",
+                    "confirm": true,
+                    "location": true,
+                    "minRole": null,
+                    "minStaffRole": null,
+                    "confirmationMessage": null,
+                    "confirmationImage": null,
+                    "logName": null,
+                    "start" : 1,
+                    "lifetime": "forever"
+                },
+                "Stun" :{
+                    "type" : "Normal",
+                    "parent" : null,
+                    "choice": 0,
+                    "limit": 1,
+                    "points": 1,
+                    "displayName": false,
+                    "emote": "Knight",
+                    "confirm": true,
+                    "location": true,
+                    "minRole": null,
+                    "minStaffRole": null,
+                    "confirmationMessage": "**__REQUIRED__**\n- You must have a **Stunning** Shield <:T6ColossusShield:720401152906231838> available.",
+                    "confirmationImage": null,
+                    "logName": null,
+                    "start" : 1,
+                    "lifetime": "forever"
+                },
+                "Marble Seal" :{
+                    "type" : "Normal",
+                    "parent" : null,
+                    "choice": 0,
+                    "limit": 1,
+                    "points": 1,
+                    "displayName": false,
+                    "emote": "UTMarbleSeal",
+                    "confirm": true,
+                    "location": true,
+                    "minRole": null,
+                    "minStaffRole": null,
+                    "confirmationMessage": null,
+                    "confirmationImage": null,
+                    "logName": null,
+                    "start" : 1,
+                    "lifetime": "forever"
+                },
+                "Fungal Tome" :{
+                    "type" : "Normal",
+                    "parent" : null,
+                    "choice": 0,
+                    "limit": 2,
+                    "points": 1,
+                    "displayName": false,
+                    "emote": "tomeOfTheMushroomTribesFungal",
+                    "confirm": true,
+                    "location": true,
+                    "minRole": null,
+                    "minStaffRole": null,
+                    "confirmationMessage": null,
+                    "confirmationImage": null,
+                    "logName": null,
+                    "start" : 1,
+                    "lifetime": "forever"
+                },
+                    "Aether Orb" :{
+                    "type" : "Normal",
+                    "parent" : null,
+                    "choice": 0,
+                    "limit": 1,
+                    "points": 1,
+                    "displayName": false,
+                    "emote": "UTOrbofAether",
+                    "confirm": true,
+                    "location": true,
+                    "minRole": null,
+                    "minStaffRole": null,
+                    "confirmationMessage": null,
+                    "confirmationImage": null,
+                    "logName": null,
+                    "start" : 1,
+                    "lifetime": "forever"
+                },
+                "Trickster" :{
+                    "type" : "Normal",
+                    "parent" : null,
+                    "choice": 0,
+                    "limit": 1,
+                    "points": 1,
+                    "displayName": false,
+                    "emote": "Trickster",
+                    "confirm": true,
+                    "location": true,
+                    "minRole": null,
+                    "minStaffRole": null,
+                    "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism <:T6PrismofApparitions:720263764225556600> available.",
+                    "confirmationImage": null,
+                    "logName": null,
+                    "start" : 1,
+                    "lifetime": "forever"
+                },
+                "Supporter" :{
+                    "type" : "Supporter",
+                    "parent" : null,
+                    "choice": 0,
+                    "limit": null,
+                    "points": 0,
+                    "displayName": true,
+                    "emote": "NitroBooster",
+                    "confirm": false,
+                    "location": false,
+                    "minRole": null,
+                    "minStaffRole": null,
+                    "confirmationMessage": null,
+                    "confirmationImage": null,
+                    "logName": null,
+                    "start" : 1,
+                    "lifetime": "forever"
+                },
+                "Tickets" :{
+                    "type" : "Points",
+                    "parent" : null,
+                    "choice": 0,
+                    "limit": 5,
+                    "points": -30,
+                    "displayName": true,
+                    "emote": "UTGamblersFate",
+                    "confirm": false,
+                    "location": false,
+                    "minRole": null,
+                    "minStaffRole": null,
+                    "confirmationMessage": null,
+                    "confirmationImage": null,
+                    "logName": null,
+                    "start" : 1,
+                    "lifetime": "forever"
+                }
+            },
+            "reacts": {
+                "void" : {
+                    "emote": "void",
+                    "onHeadcount": true,
+                    "start" : 1,
+                    "lifetime": 2
+                },
+                "Warrior" : {
+                    "emote": "Warrior",
+                    "onHeadcount": false,
+                    "start" : 1,
+                    "lifetime": "forever"
+                },
+                "Paladin" : {
+                    "emote": "Paladin",
+                    "onHeadcount": false,
+                    "start" : 1,
+                    "lifetime": "forever"
+                },
+                "Knight" :{
+                    "emote": "Knight",
+                    "onHeadcount": false,
+                    "start" : 1,
+                    "lifetime": "forever"
+                },
+                "Trickster" :{
+                    "emote": "Trickster",
+                    "onHeadcount": false,
+                    "start" : 1,
+                    "lifetime": "forever"
+                },
+                "Mystic" :{
+                    "emote": "Mystic",
+                    "onHeadcount": false,
+                    "start" : 1,
+                    "lifetime": "forever"
+                },
+                "Priest" :{
+                    "emote": "Priest",
+                    "onHeadcount": false,
+                    "start" : 1,
+                    "lifetime": "forever"
+                },
+                "Slow" :{
+                    "emote": "Slow",
+                    "onHeadcount": false,
+                    "start" : 1,
+                    "lifetime": "forever"
+                }
+            }
+        }
+        ]
+    }
+}
