@@ -42,12 +42,7 @@ class AfkTemplate {
         let phases = Array.from({length: this.#template.phases},(_,k)=>k+1)
         if (!phases.every(k => this.#template.body.hasOwnProperty(k)) && !this.#template.body.default) return {"state": 15, "message": "This afk has no default body or not every phase is defined."};
         this.parseBody()
-        for (let i in phases) {
-            if (!this.#template.body[i]) return {"state": 15, "message": `This afk has no body for phase ${i}`};
-            if (!this.#template.body[i].vcState) return {"state": 15, "message": `This afk has no vc state for phase ${i}`};
-            if (!this.#template.body[i].timeLimit) return {"state": 15, "message": `This afk has no time limit for phase ${i}`};
-            if (!this.#template.body[i].embed) return {"state": 15, "message": `This afk has no body for phase ${i}`}
-        }
+        if (phases.some((i) => !this.#template.body[i] || ! this.#template.body[i].vcState || !this.#template.body[i].timeLimit || !this.#template.body[i].embed)) return {"state": 15, "message": `This afk has no body for phase ${i}`}
         for (let i in this.#template.buttons) {
             if (!this.#template.buttons[i]) return {"state": 16, "message": `This afk has no definition for button ${i}`};
             if (!this.#template.buttons[i].type) return {"state": 16, "message": `This afk has no type for button ${i}`};
@@ -178,9 +173,7 @@ class AfkTemplate {
     }
 
     getButtonChoice() {
-        let choices = []
-        for (let i in this.buttons) if (this.buttons[i].choice != 0) choices.push(i) 
-        return choices
+        return this.buttons.filter((btn) => btn.choice == 0)
     }
 
     getState() {

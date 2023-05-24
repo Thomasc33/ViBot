@@ -95,8 +95,7 @@ module.exports = {
             Channels.registerAFKCheck(module.exports)
             registeredWithVibotChannels = true
         }
-        let shift = args.shift()
-        let alias = shift.toLowerCase()
+        let shift = args.shift().toLowerCase()
         const afkTemplate = new newAfkTemplate(bot, bot.settings[message.guild.id], message.guild, message.channel, alias)
         const currentState = afkTemplate.getState()
         if (currentState.state != 0) return await message.channel.send(currentState.message)
@@ -109,8 +108,7 @@ module.exports = {
         runInfo.guildID = message.guild.id;
 
         //get/set location
-        let location = ''
-        for (i = 0; i < args.length; i++) location = location.concat(args[i]) + ' '
+        let location = args.join(' ')
         if (location.length >= 1024) return message.channel.send('Location must be below 1024 characters, try again')
         if (location == '') location = 'None'
         runInfo.location = location.trim()
@@ -198,11 +196,7 @@ class afkCheck {
         afkInfo.earlySlot = []
         afkInfo.reactables = {}
         afkInfo.phase = 1
-        for (let i in newAfkTemplate.buttons) {
-            afkInfo.reactables[i] = {}
-            afkInfo.reactables[i].position = null
-            afkInfo.reactables[i].users = []
-        }
+        afkInfo.reactables = newAfkTemplate.buttons.map(() => ({users: [], position: null}))
         afkInfo.active = true
         this.#afkInfo = afkInfo
         bot.afkChecks[afkInfo.leaderID] = {
@@ -380,7 +374,7 @@ class afkCheck {
         return
     }
 
-    async moveIn() {
+    async moveInEarlys() {
         for (let i of this.#afkInfo.earlySlot) {
             let member = this.#message.guild.members.cache.get(i)
             if (!member.voice.channel) continue
@@ -412,9 +406,7 @@ class afkCheck {
     async sendInitialStatusMessage() {
         this.#newAfkTemplate.populateBody(this.#channel)
         this.#newAfkTemplate.populateButtons(this.#channel)
-        let flag = null
-        if (this.#afkInfo.location.substring(0, 2) == 'us') flag = ':flag_us:'
-        else if (this.#afkInfo.location.substring(0, 2) == 'eu') flag = ':flag_eu:'
+        let flag = {'us': ':flag_us:', 'eu': ':flag_eu:'}[this.#afkInfo.location.substring(0, 2)]
         let pingText = this.#newAfkTemplate.pingRoles.map(r =>`${r}`).join(' ')
         this.#afkInfo.raidStatusEmbed = new Discord.EmbedBuilder()
             .setColor(this.#newAfkTemplate.body[this.#afkInfo.phase].embed.color ? this.#newAfkTemplate.body[this.#afkInfo.phase].embed.color : '#ffffff')
@@ -570,8 +562,7 @@ class afkCheck {
             const emote = buttonInfo.emote ? `${this.#bot.storedEmojis[buttonInfo.emote].text} ` : ``
             const embed = new Discord.EmbedBuilder()
 
-            if (buttonInfo.minRole) {
-                if (!interaction.member.roles.cache.has(this.#botSettings.roles[buttonInfo.minRole])) {
+            if (buttonInfo.minRole && !interaction.member.roles.cache.has(this.#botSettings.roles[buttonInfo.minRole])) {
                     embed.setDescription(`You do not have the required role ${interaction.guild.roles.cache.get(this.#botSettings.roles[buttonInfo.minRole])} to react to this run.`)
                     await interaction.reply({ embeds: [embed], ephemeral: true })
                     return this.removeFromActiveInteractions(interaction.member.id)
@@ -587,8 +578,6 @@ class afkCheck {
 
             switch (buttonType) {
                 case "Log":
-                    buttonStatus = await this.processReactableNormal(interaction)
-                    break
                 case "Normal":
                     buttonStatus = await this.processReactableNormal(interaction)
                     break
@@ -601,8 +590,6 @@ class afkCheck {
                 case "Points":
                     buttonStatus = await this.processReactablePoints(interaction)
                     break
-                default:
-                break
             }
 
             if (!buttonStatus) return
@@ -641,7 +628,7 @@ class afkCheck {
 
     async processPhaseAbort(interaction) {
         let confirmEmbed = new Discord.EmbedBuilder()
-        confirmEmbed.setDescription(`Are you sure you want to abort this run?\nThis window will close in 10 seconds and cancel.`)
+                                      .setDescription(`Are you sure you want to abort this run?\nThis window will close in 10 seconds and cancel.`)
         const confirmActionRow = new Discord.ActionRowBuilder().addComponents([
             new Discord.ButtonBuilder()
                 .setLabel('Abort')
@@ -728,9 +715,7 @@ class afkCheck {
         setTimeout(async () => {
             if (this.#newAfkTemplate.body[`${this.#afkInfo.phase}`].vcState == 'Open' && this.#channel) this.#channel.permissionOverwrites.edit(this.#newAfkTemplate.minimumJoinRaiderRole.id, { Connect: true, ViewChannel: true }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
             else if (this.#newAfkTemplate.body[`${this.#afkInfo.phase}`].vcState == 'Locked' && this.#channel) this.#channel.permissionOverwrites.edit(this.#newAfkTemplate.minimumJoinRaiderRole.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
-            await this.sendStatusMessage()
-            await this.sendCommandsMessage()
-            await this.sendChannelsMessage()
+            await Promise.all(this.sendStatusMessage(), this.sendCommandsMessage(), this.sendChannelsMessage()])
         }, 5000)
         setTimeout(async () => { if (tempRaidStatusMessage) tempRaidStatusMessage.delete() }, 20000)
         return
