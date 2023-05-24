@@ -1828,7 +1828,7 @@
             "headcountOnAfk": false,
             "pingRole": "o3Ping",
             "isSplit": false,
-            "newChannel": false,
+            "newChannel": true,
             "vialReact": false,
             "postAfkCheck": false,
             "twoPhase": true,
@@ -1904,6 +1904,15 @@
                     "noLocation": false,
                     "inline": true
                 },
+                {   
+                    "emote": "Trickster",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Trickster",
+                    "noConfirm": false,
+                    "noLocation": false,
+                    "inline": true
+                },
                 {
                     "emote": "tomeOfTheMushroomTribesFungal",
                     "pointsGiven": 0,
@@ -1935,7 +1944,7 @@
             "reacts": [],
             "embed": {
                 "color": "#dc143c",
-                "description": "To join, connect to the raiding channel by clicking its name\nIf you have a rune react with the corresponding rune icon\nTo indicate your class or gear choices, react with <:Mystic:Mystic> <:UTMarbleSeal:UTMarbleSeal> <:Trickster:Trickster> <:effusionOfAttack:effusionOfAttack> <:effusionOfDexterity:effusionOfDexterity> <:Slow:Slow> <:Ogmur:Ogmur> <:fungalTome:tomeOfTheMushroomTribesFungal> <:2dpsRanged:2dpsRanged> <:3dpsRanged:3dpsRanged>\n<@&585542641975033859> to get early location react with <:nitro:NitroBooster>",
+                "description": "To join, connect to the raiding channel by clicking its name\nIf you have a rune, react with [swordRune] [shieldRune] [helmetRune]\nTo indicate your class or gear choices, react with [UTMarbleSeal] [Slow] [Ogmur] [Trickster] [tomeOfTheMushroomTribesFungal] [2dpsRanged] [3dpsRanged]",
                 "thumbnail": "https://cdn.discordapp.com/emojis/1050173254121291827.png?v=1",
                 "removeThumbnail": false
             },
@@ -2030,6 +2039,15 @@
                     "noLocation": false,
                     "inline": true
                 },
+                {   
+                    "emote": "Trickster",
+                    "pointsGiven": 0,
+                    "limit": 1,
+                    "shortName": "Trickster",
+                    "noConfirm": false,
+                    "noLocation": false,
+                    "inline": true
+                },
                 {
                     "emote": "tomeOfTheMushroomTribesFungal",
                     "pointsGiven": 0,
@@ -2061,7 +2079,7 @@
             "reacts": [],
             "embed": {
                 "color": "#dc143c",
-                "description": "To join, connect to the raiding channel by clicking its name\nIf you have a rune react with the corresponding rune icon\nTo indicate your class or gear choices, react with <:Mystic:Mystic> <:UTMarbleSeal:UTMarbleSeal> <:Trickster:Trickster> <:effusionOfAttack:effusionOfAttack> <:effusionOfDexterity:effusionOfDexterity> <:Slow:Slow> <:Ogmur:Ogmur> <:fungalTome:tomeOfTheMushroomTribesFungal> <:2dpsRanged:2dpsRanged> <:3dpsRanged:3dpsRanged>\n<@&585542641975033859> to get early location react with <:nitro:NitroBooster>",
+                "description": "To join, connect to the raiding channel by clicking its name\nIf you have a rune, react with [swordRune] [shieldRune] [helmetRune]\nTo indicate your class or gear choices, react with [UTMarbleSeal] [Slow] [Ogmur] [Trickster] [tomeOfTheMushroomTribesFungal] [2dpsRanged] [3dpsRanged]",
                 "thumbnail": "https://cdn.discordapp.com/emojis/1050173254121291827.png?v=1",
                 "removeThumbnail": false
             },

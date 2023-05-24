@@ -365,6 +365,11 @@ class afkCheck {
                 if (this.message.guild.roles.cache.has(this.settings.roles[match])) message = `<@&${this.settings.roles[match]}>`
                 return message
             }).reduce((a, b) => a + b)
+            this.afkInfo.embed.description = this.afkInfo.embed.description.match(/[^\[\]]*/g).map(match => {
+                let message = match
+                if (this.bot.storedEmojis[match]) message = this.bot.storedEmojis[match].text
+                return message
+            }).reduce((a, b) => a + b)
         }
         fs.writeFileSync('./data/afkChecks.json', JSON.stringify(this.bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.bot, this.guild) })
         this.sendMessage()
