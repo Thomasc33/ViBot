@@ -1971,7 +1971,7 @@
             "vcCap": 75,
             "timeLimit": 360,
             "keyCount": 2,
-            "earlyLocationCost": 20,
+            "earlyLocationCost": 45,
             "earlyLocationReacts": [{
                     "emote": "swordRune",
                     "pointsGiven": 0,
