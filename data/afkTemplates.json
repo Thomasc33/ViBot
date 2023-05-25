@@ -1907,7 +1907,7 @@
                 {   
                     "emote": "Trickster",
                     "pointsGiven": 0,
-                    "limit": 1,
+                    "limit": 2,
                     "shortName": "Trickster",
                     "noConfirm": false,
                     "noLocation": false,
@@ -2042,7 +2042,7 @@
                 {   
                     "emote": "Trickster",
                     "pointsGiven": 0,
-                    "limit": 1,
+                    "limit": 2,
                     "shortName": "Trickster",
                     "noConfirm": false,
                     "noLocation": false,
