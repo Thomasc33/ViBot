@@ -1836,7 +1836,7 @@
             "vcCap": 75,
             "timeLimit": 360,
             "keyCount": 2,
-            "earlyLocationCost": 20,
+            "earlyLocationCost": 45,
             "earlyLocationReacts": [{
                     "emote": "swordRune",
                     "pointsGiven": 0,
@@ -1892,7 +1892,7 @@
                     "limit": 2,
                     "shortName": "Slow",
                     "noConfirm": false,
-                    "noLocation": false,
+                    "noLocation": true,
                     "inline": true
                 },
                 {
@@ -1901,7 +1901,7 @@
                     "limit": 1,
                     "shortName": "Ogmur",
                     "noConfirm": false,
-                    "noLocation": false,
+                    "noLocation": true,
                     "inline": true
                 },
                 {   
@@ -1910,7 +1910,7 @@
                     "limit": 2,
                     "shortName": "Trickster",
                     "noConfirm": false,
-                    "noLocation": false,
+                    "noLocation": true,
                     "inline": true
                 },
                 {
@@ -1919,7 +1919,7 @@
                     "limit": 2,
                     "shortName": "Fungal Tome",
                     "noConfirm": false,
-                    "noLocation": false,
+                    "noLocation": true,
                     "inline": true
                 },
                 {
@@ -2027,7 +2027,7 @@
                     "limit": 2,
                     "shortName": "Slow",
                     "noConfirm": false,
-                    "noLocation": false,
+                    "noLocation": true,
                     "inline": true
                 },
                 {
@@ -2036,7 +2036,7 @@
                     "limit": 1,
                     "shortName": "Ogmur",
                     "noConfirm": false,
-                    "noLocation": false,
+                    "noLocation": true,
                     "inline": true
                 },
                 {   
@@ -2045,7 +2045,7 @@
                     "limit": 2,
                     "shortName": "Trickster",
                     "noConfirm": false,
-                    "noLocation": false,
+                    "noLocation": true,
                     "inline": true
                 },
                 {
@@ -2054,7 +2054,7 @@
                     "limit": 2,
                     "shortName": "Fungal Tome",
                     "noConfirm": false,
-                    "noLocation": false,
+                    "noLocation": true,
                     "inline": true
                 },
                 {
