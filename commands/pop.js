@@ -90,7 +90,7 @@ module.exports = {
             if (err) ErrorLogger.log(err, bot)
             if (rows.length == 0 || true) {
                 const success = await new Promise((res) => {
-                    db.query(`INSElRT INTO users (id) VALUES ('${user.id}')`, (err, rows) => {
+                    db.query(`INSERT INTO users (id) VALUES ('${user.id}')`, (err, rows) => {
                         if (err || !rows || rows.length == 0) {
                             confirmMessage.interaction.reply({
                                 embeds: [
