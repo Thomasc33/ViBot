@@ -35,16 +35,52 @@ module.exports = {
                     db.query(`SELECT * FROM mutes WHERE id = '${member.user.id}' AND guildid = '${message.guild.id}'`, async function (err, mutes) {
                         if (err) ErrorLogger.log(err, bot, message.guild)
                         if (warnings.length > 0) {
-                            for (let i in warnings) { let index = parseInt(i); warnings[i].index = index}
-                            embed.addFields({ name: `Warnings`, value: warnings.map(warning => `${warning.index+1}. ${warning.silent ? 'Silently ' : ''}By <@!${warning.modid}> <t:${(parseInt(warning.time)/1000).toFixed(0)}:R> at <t:${(parseInt(warning.time)/1000).toFixed(0)}:f>\`\`\`${warning.reason}\`\`\``).join('\n'), inline: false })
+                            let warningValue = ``
+                            let warningName = `Warnings`
+                            for (let i in warnings) {
+                                let index = parseInt(i)
+                                let warning = warnings[i]
+                                let currentWarning = `${index+1}. ${warning.silent ? 'Silently ' : ''}By <@!${warning.modid}> <t:${(parseInt(warning.time)/1000).toFixed(0)}:R> at <t:${(parseInt(warning.time)/1000).toFixed(0)}:f>\`\`\`${warning.reason}\`\`\`\n`
+                                if (warningValue.length + currentWarning.length > 1024) {
+                                    embed.addFields({ name: warningName, value: warningValue, inline: false })
+                                    warningValue = ``
+                                    warningName = `Warnings Continued`
+                                }
+                                warningValue += currentWarning
+                            }
+                            embed.addFields({ name: warningName, value: warningValue, inline: false })
                         }
                         if (suspensions.length > 0) {
-                            for (let i in suspensions) { let index = parseInt(i); suspensions[i].index = index}
-                            embed.addFields({ name: `Suspensions`, value: suspensions.map(suspension => `${suspension.index+1}. By <@!${suspension.modid}> ${suspension.suspended ? 'Ends' : 'Ended'} <t:${(parseInt(suspension.uTime)/1000).toFixed(0)}:R> at <t:${(parseInt(suspension.uTime)/1000).toFixed(0)}:f>\`\`\`${suspension.reason}\`\`\``).join('\n'), inline: false })
+                            let suspensionValue = ``
+                            let suspensionName = `Suspensions`
+                            for (let i in suspensions) {
+                                let index = parseInt(i)
+                                let suspension = suspensions[i]
+                                let currentSuspension = `${index+1}. By <@!${suspension.modid}> ${suspension.suspended ? 'Ends' : 'Ended'} <t:${(parseInt(suspension.uTime)/1000).toFixed(0)}:R> at <t:${(parseInt(suspension.uTime)/1000).toFixed(0)}:f>\`\`\`${suspension.reason}\`\`\`\n`
+                                if (suspensionValue.length + currentSuspension.length > 1024) {
+                                    embed.addFields({ name: suspensionName, value: suspensionValue, inline: false })
+                                    suspensionValue = ``
+                                    suspensionName = `Suspensions Continued`
+                                }
+                                suspensionValue += currentSuspension
+                            }
+                            embed.addFields({ name: suspensionName, value: suspensionValue, inline: false })
                         }
                         if (mutes.length > 0) {
-                            for (let i in mutes) { let index = parseInt(i); mutes[i].index = index}
-                            embed.addFields({ name: `Mutes`, value: mutes.map(mute => `${mute.index+1}. By <@!${mute.modid}> ${mute.muted ? 'Ends' : 'Ended'} <t:${(parseInt(mute.uTime)/1000).toFixed(0)}:R> at <t:${(parseInt(mute.uTime)/1000).toFixed(0)}:f>\`\`\`${mute.reason}\`\`\``).join('\n'), inline: false })
+                            let muteValue = ``
+                            let muteName = `Mutes`
+                            for (let i in mutes) {
+                                let index = parseInt(i)
+                                let mute = mutes[i]
+                                let currentMute = `${index+1}. By <@!${mute.modid}> ${mute.muted ? 'Ends' : 'Ended'} <t:${(parseInt(mute.uTime)/1000).toFixed(0)}:R> at <t:${(parseInt(mute.uTime)/1000).toFixed(0)}:f>\`\`\`${mute.reason}\`\`\`\n`
+                                if (muteValue.length + currentMute.length > 1024) {
+                                    embed.addFields({ name: muteName, value: muteValue, inline: false })
+                                    muteValue = ``
+                                    muteName = `Mutes Continued`
+                                }
+                                muteValue += currentMute
+                            }
+                            embed.addFields({ name: muteName, value: muteValue, inline: false })
                         }
                         if (!embed.data.fields || embed.data.fields.length == 0) {
                             embed.setDescription(`No punishments have been issued for ${member}`)
