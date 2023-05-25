@@ -88,7 +88,7 @@ module.exports = {
         //Execute Database Query
         db.query(`SELECT * FROM users WHERE id = '${user.id}'`, async(err, rows) => {
             if (err) ErrorLogger.log(err, bot)
-            if (rows.length == 0 || true) {
+            if (rows.length == 0) {
                 const success = await new Promise((res) => {
                     db.query(`INSERT INTO users (id) VALUES ('${user.id}')`, (err, rows) => {
                         if (err || !rows || rows.length == 0) {
