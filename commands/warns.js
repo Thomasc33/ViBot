@@ -45,17 +45,53 @@ module.exports = {
                     else if (row.guildid == null) warningsNull.push(row)
                 }
                 if (warningsServer.length > 0) {
-                    for (let i in warningsServer) { let index = parseInt(i); warningsServer[i].index = index}
-                    embed.addFields({ name: `${message.guild.name}'s Section`, value: warningsServer.map(warning => `${warning.index+1}. ${warning.silent ? 'Silently ' : ''}By <@!${warning.modid}> <t:${(parseInt(warning.time)/1000).toFixed(0)}:R> at <t:${(parseInt(warning.time)/1000).toFixed(0)}:f>\`\`\`${warning.reason}\`\`\``).join('\n'), inline: false })
+                    let warningValue = ``
+                    let warningName = `${message.guild.name}'s Section`
+                    for (let i in warningsServer) { 
+                        let index = parseInt(i)
+                        let warning = warningsServer[i]
+                        let currentWarning = `${index+1}. ${warning.silent ? 'Silently ' : ''}By <@!${warning.modid}> <t:${(parseInt(warning.time)/1000).toFixed(0)}:R> at <t:${(parseInt(warning.time)/1000).toFixed(0)}:f>\`\`\`${warning.reason}\`\`\`\n`
+                        if (warningValue.length + currentWarning.length > 1024) {
+                            embed.addFields({ name: warningName, value: warningValue, inline: false })
+                            warningValue = ``
+                            warningName = `${message.guild.name}'s Section Continued`
+                        }
+                        warningValue += currentWarning
+                    }
+                    embed.addFields({ name: warningName, value: warningValue, inline: false })
                 }
                 if (message.member.roles.highest.position >= securityRole.position || bot.adminUsers.includes(message.member.id)) {
                     if (warningsPartnered.length > 0) {
-                        for (let i in warningsPartnered) { let index = parseInt(i); warningsPartnered[i].index = index}
-                        embed.addFields({ name: `${partneredServer.name}'s Section`, value: warningsPartnered.map(warning => `${warning.index+1}. ${warning.silent ? 'Silently ' : ''}By <@!${warning.modid}> <t:${(parseInt(warning.time)/1000).toFixed(0)}:R> at <t:${(parseInt(warning.time)/1000).toFixed(0)}:f>\`\`\`${warning.reason}\`\`\``).join('\n'), inline: false })
+                        let warningValue = ``
+                        let warningName = `${partneredServer.name}'s Section`
+                        for (let i in warningsPartnered) { 
+                            let index = parseInt(i)
+                            let warning = warningsPartnered[i]
+                            let currentWarning = `${index+1}. ${warning.silent ? 'Silently ' : ''}By <@!${warning.modid}> <t:${(parseInt(warning.time)/1000).toFixed(0)}:R> at <t:${(parseInt(warning.time)/1000).toFixed(0)}:f>\`\`\`${warning.reason}\`\`\`\n`
+                            if (warningValue.length + currentWarning.length > 1024) {
+                                embed.addFields({ name: warningName, value: warningValue, inline: false })
+                                warningValue = ``
+                                warningName = `${partneredServer.name}'s Section Continued`
+                            }
+                            warningValue += currentWarning
+                        }
+                        embed.addFields({ name: warningName, value: warningValue, inline: false })
                     }
                     if (warningsNull.length > 0) {
-                        for (let i in warningsNull) { let index = parseInt(i); warningsNull[i].index = index}
-                        embed.addFields({ name: 'Unknown Server', value: warningsNull.map(warning => `${warning.index+1}. ${warning.silent ? 'Silently ' : ''}By <@!${warning.modid}> <t:${(parseInt(warning.time)/1000).toFixed(0)}:R> at <t:${(parseInt(warning.time)/1000).toFixed(0)}:f>\`\`\`${warning.reason}\`\`\``).join('\n'), inline: false })
+                        let warningValue = ``
+                        let warningName = `Unknown Server`
+                        for (let i in warningsNull) { 
+                            let index = parseInt(i)
+                            let warning = warningsNull[i]
+                            let currentWarning = `${index+1}. ${warning.silent ? 'Silently ' : ''}By <@!${warning.modid}> <t:${(parseInt(warning.time)/1000).toFixed(0)}:R> at <t:${(parseInt(warning.time)/1000).toFixed(0)}:f>\`\`\`${warning.reason}\`\`\`\n`
+                            if (warningValue.length + currentWarning.length > 1024) {
+                                embed.addFields({ name: `Unknown Server`, value: warningValue, inline: false })
+                                warningValue = ``
+                                warningName = `Unknown Server Continued`
+                            }
+                            warningValue += currentWarning
+                        }
+                        embed.addFields({ name: warningName, value: warningValue, inline: false })
                     }
                 }
                 if (!embed.data.fields || embed.data.fields.length == 0) {
