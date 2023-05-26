@@ -61,7 +61,7 @@ module.exports = {
         db.query(`INSERT INTO mutes (id, guildid, muted, reason, modid, uTime) VALUES ('${member.id}', '${message.guild.id}', true, '${reason || 'None Provided'}','${message.author.id}', '${Date.now() + time}')`, err => {
             member.roles.add(muted).catch(er => ErrorLogger.log(er, bot, message.guild))
             message.reply(`${member} has been muted`)
-            member.user.send(`You have been muted on \`${message.guild.name}\` by <@!${message.author.id}> \`${message.author.tag}\`${reason ? ': ' + reason : 'No reason provided'}.`);
+            member.user.send(`You have been muted on \`${message.guild.name}\` by <@!${message.author.id}> \`${message.author.tag}\`${reason ? ': ' + reason : 'No reason provided'}.`).catch(() => {});
         })
     }
 }
