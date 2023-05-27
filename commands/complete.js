@@ -1,18 +1,12 @@
 const Discord = require('discord.js');
-const ErrorLogger = require('../lib/logError')
 const vision = require('@google-cloud/vision');
-const realmEyeScrape = require('../lib/realmEyeScrape');
-const charStats = require('../data/charStats.json')
 const botSettings = require('../settings.json')
-const ParseCurrentWeek = require('../data/currentweekInfo.json').parsecurrentweek
-const quota = require('./quota')
-const quotas = require('../data/quotas.json')
 const client = new vision.ImageAnnotatorClient(botSettings.gcloudOptions);
-
 
 module.exports = {
     name: 'complete',
     description: 'Completion Parser',
+    guildSpecific: true,
     // alias: ['pm'],
     args: '<image>',
     getNotes(guildid, member) {
@@ -63,7 +57,7 @@ module.exports = {
             return;
         }
         let query = `UPDATE users SET o3runs = o3runs + 1 WHERE ${members.map(m => `id = '${m.id}'`).join(' OR ')}`
-        await db.query(query)
+        await db.promise().query(query)
         parseStatusEmbed.data.fields[1].value = 'Completed'
         parseStatusEmbed.data.fields.push({ name: 'Members', value: members.map(m => m.toString()).join('\n') })
         await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
