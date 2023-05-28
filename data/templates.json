@@ -19,7 +19,7 @@
                 "phases": 2,
                 "body": {
                     "default": {
-                        "vcState": "Locked",
+                        "vcState": 0,
                         "nextPhaseButton": "Open Channel",
                         "timeLimit": 360,
                         "message": null,
@@ -31,7 +31,7 @@
                         }
                     },
                     "1": {
-                        "vcState": "Locked",
+                        "vcState": 0,
                         "nextPhaseButton": "Open Channel",
                         "timeLimit": 360,
                         "message": "Early Reacts, click the buttons",
@@ -43,7 +43,7 @@
                         }
                     },
                     "2": {
-                        "vcState": "Open",
+                        "vcState": 1,
                         "nextPhaseButton": "Start Run",
                         "timeLimit": 360,
                         "message": "The channel will be open",
@@ -116,7 +116,7 @@
             },
             "buttons": {
                 "Key" : {
-                    "type" : "Log",
+                    "type" : 1,
                     "parent" : null,
                     "choice": 1,
                     "limit": 1,
@@ -130,11 +130,12 @@
                     "confirmationMessage": null,
                     "confirmationImage": null,
                     "logName": "keypops",
+                    "disableStart": null,
                     "start" : 1,
-                    "lifetime": "forever"
+                    "lifetime": 100
                 },
                 "Vial" :{
-                    "type" : "Log",
+                    "type" : 1,
                     "parent" : null,
                     "choice": 2,
                     "limit": 3,
@@ -148,11 +149,12 @@
                     "confirmationMessage": null,
                     "confirmationImage": null,
                     "logName": "vialUsed",
+                    "disableStart": null,
                     "start" : 1,
-                    "lifetime": "forever"
+                    "lifetime": 100
                 },
                 "Mystic" :{
-                    "type" : "Normal",
+                    "type" : 0,
                     "parent" : null,
                     "choice": 0,
                     "limit": 1,
@@ -166,11 +168,12 @@
                     "confirmationMessage": "**__REQUIRED__**\n- You must have a **Stasising** and a **Cursing** Orb <:T6PlanefetterOrb:720265039222931477> available.",
                     "confirmationImage": null,
                     "logName": null,
+                    "disableStart": null,
                     "start" : 1,
-                    "lifetime": "forever"
+                    "lifetime": 100
                 },
                 "Armor Break" :{
-                    "type" : "Normal",
+                    "type" : 0,
                     "parent" : null,
                     "choice": 0,
                     "limit": 1,
@@ -184,11 +187,12 @@
                     "confirmationMessage": null,
                     "confirmationImage": null,
                     "logName": null,
+                    "disableStart": null,
                     "start" : 1,
-                    "lifetime": "forever"
+                    "lifetime": 100
                 },
                 "Expose" :{
-                    "type" : "Normal",
+                    "type" : 0,
                     "parent" : null,
                     "choice": 0,
                     "limit": 1,
@@ -202,11 +206,12 @@
                     "confirmationMessage": null,
                     "confirmationImage": null,
                     "logName": null,
+                    "disableStart": null,
                     "start" : 1,
-                    "lifetime": "forever"
+                    "lifetime": 100
                 },
                 "Stun" :{
-                    "type" : "Normal",
+                    "type" : 0,
                     "parent" : null,
                     "choice": 0,
                     "limit": 1,
@@ -220,11 +225,12 @@
                     "confirmationMessage": "**__REQUIRED__**\n- You must have a **Stunning** Shield <:T6ColossusShield:720401152906231838> available.",
                     "confirmationImage": null,
                     "logName": null,
+                    "disableStart": null,
                     "start" : 1,
-                    "lifetime": "forever"
+                    "lifetime": 100
                 },
                 "Marble Seal" :{
-                    "type" : "Normal",
+                    "type" : 0,
                     "parent" : null,
                     "choice": 0,
                     "limit": 1,
@@ -238,11 +244,12 @@
                     "confirmationMessage": null,
                     "confirmationImage": null,
                     "logName": null,
+                    "disableStart": null,
                     "start" : 1,
-                    "lifetime": "forever"
+                    "lifetime": 100
                 },
                 "Fungal Tome" :{
-                    "type" : "Normal",
+                    "type" : 0,
                     "parent" : null,
                     "choice": 0,
                     "limit": 2,
@@ -256,11 +263,12 @@
                     "confirmationMessage": null,
                     "confirmationImage": null,
                     "logName": null,
+                    "disableStart": null,
                     "start" : 1,
-                    "lifetime": "forever"
+                    "lifetime": 100
                 },
                     "Aether Orb" :{
-                    "type" : "Normal",
+                    "type" : 0,
                     "parent" : null,
                     "choice": 0,
                     "limit": 1,
@@ -274,11 +282,12 @@
                     "confirmationMessage": null,
                     "confirmationImage": null,
                     "logName": null,
+                    "disableStart": null,
                     "start" : 1,
-                    "lifetime": "forever"
+                    "lifetime": 100
                 },
                 "Trickster" :{
-                    "type" : "Normal",
+                    "type" : 0,
                     "parent" : null,
                     "choice": 0,
                     "limit": 1,
@@ -292,11 +301,12 @@
                     "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism <:T6PrismofApparitions:720263764225556600> available.",
                     "confirmationImage": null,
                     "logName": null,
+                    "disableStart": null,
                     "start" : 1,
-                    "lifetime": "forever"
+                    "lifetime": 100
                 },
                 "Supporter" :{
-                    "type" : "Supporter",
+                    "type" : 2,
                     "parent" : null,
                     "choice": 0,
                     "limit": null,
@@ -310,11 +320,12 @@
                     "confirmationMessage": null,
                     "confirmationImage": null,
                     "logName": null,
+                    "disableStart": null,
                     "start" : 1,
-                    "lifetime": "forever"
+                    "lifetime": 100
                 },
                 "Tickets" :{
-                    "type" : "Points",
+                    "type" : 3,
                     "parent" : null,
                     "choice": 0,
                     "limit": 5,
@@ -328,8 +339,9 @@
                     "confirmationMessage": null,
                     "confirmationImage": null,
                     "logName": null,
+                    "disableStart": null,
                     "start" : 1,
-                    "lifetime": "forever"
+                    "lifetime": 100
                 }
             },
             "reacts": {
@@ -337,49 +349,49 @@
                     "emote": "void",
                     "onHeadcount": true,
                     "start" : 1,
-                    "lifetime": 2
+                    "lifetime": 1
                 },
                 "Warrior" : {
                     "emote": "Warrior",
                     "onHeadcount": false,
                     "start" : 1,
-                    "lifetime": "forever"
+                    "lifetime": 1
                 },
                 "Paladin" : {
                     "emote": "Paladin",
                     "onHeadcount": false,
                     "start" : 1,
-                    "lifetime": "forever"
+                    "lifetime": 1
                 },
                 "Knight" :{
                     "emote": "Knight",
                     "onHeadcount": false,
                     "start" : 1,
-                    "lifetime": "forever"
+                    "lifetime": 1
                 },
                 "Trickster" :{
                     "emote": "Trickster",
                     "onHeadcount": false,
                     "start" : 1,
-                    "lifetime": "forever"
+                    "lifetime": 1
                 },
                 "Mystic" :{
                     "emote": "Mystic",
                     "onHeadcount": false,
                     "start" : 1,
-                    "lifetime": "forever"
+                    "lifetime": 1
                 },
                 "Priest" :{
                     "emote": "Priest",
                     "onHeadcount": false,
                     "start" : 1,
-                    "lifetime": "forever"
+                    "lifetime": 1
                 },
                 "Slow" :{
                     "emote": "Slow",
                     "onHeadcount": false,
                     "start" : 1,
-                    "lifetime": "forever"
+                    "lifetime": 1
                 }
             }
         }
