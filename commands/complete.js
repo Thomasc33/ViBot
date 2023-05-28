@@ -12,7 +12,7 @@ module.exports = {
     getNotes(guildid, member) {
         return 'Image can either be a link, or an embeded image'
     },
-    role: 'eventrl',
+    role: 'almostrl',
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
 
@@ -56,6 +56,7 @@ module.exports = {
             await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
             return;
         }
+        members.append(message.member) // doing it here in case the image was bad
         let query = `UPDATE users SET o3runs = o3runs + 1 WHERE ${members.map(m => `id = '${m.id}'`).join(' OR ')}`
         await db.promise().query(query)
         parseStatusEmbed.data.fields[1].value = 'Completed'
