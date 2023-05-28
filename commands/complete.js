@@ -56,13 +56,13 @@ module.exports = {
             await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
             return;
         }
-        members.append(message.member) // doing it here in case the image was bad
+        members.push(message.member) // doing it here in case the image was bad
         let query = `UPDATE users SET o3runs = o3runs + 1 WHERE ${members.map(m => `id = '${m.id}'`).join(' OR ')}`
         await db.promise().query(query)
         parseStatusEmbed.data.fields[1].value = 'Completed'
 
         const maxMembersPerField = 40
-        for (let i = 0; i < Math.ceil(members.length / maxMembersPerField); i++) parseStatusEmbed.data.fields.push({ name: `Members`, value: members.slice(i * maxMembersPerField, Math.min(startIndex + maxMembersPerField, members.length)).map(m => m.toString()).join(', ') })
+        for (let i = 0; i < Math.ceil(members.length / maxMembersPerField); i++) parseStatusEmbed.data.fields.push({ name: `Members`, value: members.slice(i * maxMembersPerField, Math.min(i * maxMembersPerField + maxMembersPerField, members.length)).map(m => m.toString()).join(', ') })
 
         await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
     }
