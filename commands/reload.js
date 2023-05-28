@@ -1,5 +1,7 @@
 const Discord = require('discord.js');
 const ErrorLogger = require('../lib/logError');
+const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
+const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js')
 
 module.exports = {
     name: 'reload',
