@@ -5,7 +5,11 @@
             "normal": { 
                 "category": "raiding",
                 "templateChannel": "717947391755681902",
-                "partneredStatusChannels": {},
+                "partneredStatusChannels": {
+                    "701483950559985705": {
+                        "channels": ["701483951687991339", "1055537664138424360"]
+                    }
+                },
                 "statusChannel": "701483952233250863",
                 "commandsChannel": "701483952233250864",
                 "activeChannel": "1110595993193422941",
@@ -88,7 +92,7 @@
                         "color": "#2f075c",
                         "description": null,
                         "image": null,
-                        "thumbnail":"https://cdn.discordapp.com/emojis/701491230210523247.png?v=1"
+                        "thumbnail":["https://cdn.discordapp.com/emojis/701491230210523247.png?v=1"]
                     }
                 },
                 "1":{
@@ -338,6 +342,25 @@
                     "minStaffRole": null,
                     "confirmationMessage": null,
                     "confirmationImage": null,
+                    "logName": null,
+                    "disableStart": null,
+                    "start" : 1,
+                    "lifetime": 100
+                },
+                "DragVet" :{
+                    "type" : 4,
+                    "parent" : null,
+                    "choice": 0,
+                    "limit": 5,
+                    "points": 10,
+                    "displayName": true,
+                    "emote": "UTDivinity",
+                    "confirm": false,
+                    "location": false,
+                    "minRole": null,
+                    "minStaffRole": null,
+                    "confirmationMessage": null,
+                    "confirmationImage": "https://media.discordapp.net/attachments/556931967497666570/938811630614093894/Adriz_Vet_Voids.png?width=1053&height=702",
                     "logName": null,
                     "disableStart": null,
                     "start" : 1,

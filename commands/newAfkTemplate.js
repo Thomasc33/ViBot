@@ -6,14 +6,15 @@ const TemplateState = {
     'NOT_EXIST': 1,
     'MISSING_PARAMETERS' : 2,
     'DISABLED' : 3,
-    'INVALID_CATEGORY': 4,
-    'INVALID_CHANNEL': 5,
-    'INVALID_ROLE': 6,
-    'INVALID_STRING': 7,
-    'INVALID_NUMBER': 8,
-    'INVALID_OBJECT': 9,
-    'INVALID_EMOTE': 10,
-    'INVALID_BOOLEAN': 11
+    'INVALID_GUILD' : 4,
+    'INVALID_CATEGORY': 5,
+    'INVALID_CHANNEL': 6,
+    'INVALID_ROLE': 7,
+    'INVALID_STRING': 8,
+    'INVALID_NUMBER': 9,
+    'INVALID_OBJECT': 10,
+    'INVALID_EMOTE': 11,
+    'INVALID_BOOLEAN': 12
 }
 
 const TemplateVCOptions = {
@@ -122,7 +123,11 @@ class AfkTemplate {
         if (!Object.hasOwn(this.#template, 'category')) properties.push('category')
         if (!Object.hasOwn(this.#template, 'templateChannel')) properties.push('templateChannel')
         if (!Object.hasOwn(this.#template, 'partneredStatusChannels')) properties.push('partneredStatusChannels')
-        if (this.#template.partneredStatusChannels != null) // TODO: Implement this
+        if (this.#template.partneredStatusChannels != null && typeof this.#template.partneredStatusChannels === 'object') {
+            for (let i in this.#template.partneredStatusChannels) {
+                if (!Object.hasOwn(this.#template.partneredStatusChannels[i], 'channels')) properties.push(`partneredStatusChannels.${i}channel`)
+            }
+        }
         if (!Object.hasOwn(this.#template, 'statusChannel')) properties.push('statusChannel')
         if (!Object.hasOwn(this.#template, 'commandsChannel')) properties.push('commandsChannel')
         if (!Object.hasOwn(this.#template, 'activeChannel')) properties.push('activeChannel')
@@ -198,6 +203,10 @@ class AfkTemplate {
         if (status.state != TemplateState.SUCCESS) return status
         if (!this.validateTemplateCategory(this.#template.category)) return status = {state: TemplateState.INVALID_CATEGORY, message: 'This afk template has an Invalid Category.'}
         if (!this.validateTemplateChannel(this.#template.templateChannel)) return status = {state: TemplateState.INVALID_CHANNEL, message: 'This afk template has an Invalid Template Channel.'}
+        if (this.#template.partneredStatusChannels && !this.validateTemplateObject(this.#template.partneredStatusChannels)) return status = {state: TemplateState.INVALID_OBJECT, message: 'This afk template has an Invalid Partnered Status Channels.'}
+        for (let i in this.#template.partneredStatusChannels) {
+            if (!this.validateTemplateGuild(i, this.#template.partneredStatusChannels[i].channels)) return status = {state: TemplateState.INVALID_GUILD, message: `This afk template at Partnered Status Channels ${i} has an Invalid Channel/Guild.`}
+        }
         if (!this.validateTemplateChannel(this.#template.statusChannel)) return status = {state: TemplateState.INVALID_CHANNEL, message: 'This afk template has an Invalid Status Channel.'}
         if (!this.validateTemplateChannel(this.#template.commandsChannel)) return status = {state: TemplateState.INVALID_CHANNEL, message: 'This afk template has an Invalid Commands Channel.'}
         if (!this.validateTemplateChannel(this.#template.activeChannel)) return status = {state: TemplateState.INVALID_CHANNEL, message: 'This afk template has an Invalid Active Channel.'}
@@ -205,15 +214,21 @@ class AfkTemplate {
         if (!this.validateTemplateRole(this.#template.minViewRaiderRole)) return status = {state: TemplateState.INVALID_ROLE, message: 'This afk template has an Invalid Minimum View Raider Role.'}
         if (!this.validateTemplateRole(this.#template.minJoinRaiderRole)) return status = {state: TemplateState.INVALID_ROLE, message: 'This afk template has an Invalid Minimum Join Raider Role.'}
         if (!this.validateTemplateString(this.#template.name)) return status = {state: TemplateState.INVALID_STRING, message: 'This afk template has an Invalid Name.'}
-        if (this.#template.pingRoles.some(role => role != 'here' && !this.validateTemplateRole(role))) return status = {state: TemplateState.INVALID_ROLE, message: 'This afk template has an Invalid Ping Role.'}
+        if (this.#template.pingRoles && this.#template.pingRoles.some(role => role != 'here' && !this.validateTemplateRole(role))) return status = {state: TemplateState.INVALID_ROLE, message: 'This afk template has an Invalid Ping Role.'}
+        if (this.#template.aliases.some(alias => !this.validateTemplateString(alias))) return status = {state: TemplateState.INVALID_STRING, message: 'This afk template has an Invalid Aliases.'}
         if (!this.validateTemplateNumber(this.#template.vcOptions, TemplateVCOptions)) return status = {state: TemplateState.INVALID_NUMBER, message: 'This afk template has an Invalid VC Option.'}
-        if (!this.validateTemplateNumber(this.#template.startDelay)) return status = {state: TemplateState.INVALID_NUMBER, message: 'This afk template has an Invalid Start Delay.'}
+        if (this.#template.startDelay && !this.validateTemplateNumber(this.#template.startDelay)) return status = {state: TemplateState.INVALID_NUMBER, message: 'This afk template has an Invalid Start Delay.'}
         if (!this.validateTemplateNumber(this.#template.cap)) return status = {state: TemplateState.INVALID_NUMBER, message: 'This afk template has an Invalid Cap.'}
         if (!this.validateTemplateNumber(this.#template.phases)) return status = {state: TemplateState.INVALID_NUMBER, message: 'This afk template has an Invalid Phases.'}
         if (!this.validateTemplateObject(this.#template.body)) return status = {state: TemplateState.INVALID_OBJECT, message: 'This afk template has an Invalid Body.'}
         for (let i in this.#template.body) {
             if (!this.validateTemplateNumber(this.#template.body[i].vcState, TemplateVCState)) return status = {state: TemplateState.INVALID_NUMBER, message: `This afk template at Body ${i} has an Invalid VC State.`}
+            if (this.#template.body[i].nextPhaseButton && !this.validateTemplateString(this.#template.body[i].nextPhaseButton)) return status = {state: TemplateState.INVALID_STRING, message: `This afk template at Body ${i} has an Invalid Next Phase Button.`}
             if (!this.validateTemplateNumber(this.#template.body[i].timeLimit)) return status = {state: TemplateState.INVALID_NUMBER, message: `This afk template at Body ${i} has an Invalid Time Limit.`}
+            if (this.#template.body[i].message && !this.validateTemplateString(this.#template.body[i].message)) return status = {state: TemplateState.INVALID_STRING, message: `This afk template at Body ${i} has an Invalid Message.`}
+            if (this.#template.body[i].embed.description && !this.validateTemplateString(this.#template.body[i].embed.description)) return status = {state: TemplateState.INVALID_STRING, message: `This afk template at Body ${i} has an Invalid Embed Description.`}
+            if (this.#template.body[i].embed.image && !this.validateTemplateString(this.#template.body[i].embed.image)) return status = {state: TemplateState.INVALID_STRING, message: `This afk template at Body ${i} has an Invalid Embed Image.`}
+            if (this.#template.body[i].embed.thumbnail && this.#template.body[i].embed.thumbnail.some(thumbnail => !this.validateTemplateString(thumbnail))) return status = {state: TemplateState.INVALID_STRING, message: `This afk template at Body ${i} has an Invalid Embed Thumbnail.`}
         }
         if (!this.validateTemplateObject(this.#template.buttons)) return status = {state: TemplateState.INVALID_OBJECT, message: 'This afk template has an Invalid Buttons.'}
         for (let i in this.#template.buttons) {
@@ -222,11 +237,14 @@ class AfkTemplate {
             if (!this.validateTemplateNumber(this.#template.buttons[i].choice, TemplateButtonChoice)) return status = {state: TemplateState.INVALID_NUMBER, message: `This afk template at Button ${i} has an Invalid Choice.`}
             if (this.#template.buttons[i].limit && !this.validateTemplateNumber(this.#template.buttons[i].limit)) return status = {state: TemplateState.INVALID_NUMBER, message: `This afk template at Button ${i} has an Invalid Limit.`}
             if (this.#template.buttons[i].points && !this.validateTemplateNumber(this.#template.buttons[i].points)) return status = {state: TemplateState.INVALID_NUMBER, message: `This afk template at Button ${i} has an Invalid Points.`}
+            if (!this.validateTemplateBoolean(this.#template.buttons[i].displayName)) return status = {state: TemplateState.INVALID_BOOLEAN, message: `This afk template at Button ${i} has an Invalid Display Name.`}
             if (this.#template.buttons[i].emote && !this.validateTemplateEmote(this.#template.buttons[i].emote)) return status = {state: TemplateState.INVALID_EMOTE, message: `This afk template at Button ${i} has an Invalid Emote.`}
             if (!this.validateTemplateBoolean(this.#template.buttons[i].confirm)) return status = {state: TemplateState.INVALID_BOOLEAN, message: `This afk template at Button ${i} has an Invalid Confirm.`}
             if (!this.validateTemplateBoolean(this.#template.buttons[i].location)) return status = {state: TemplateState.INVALID_BOOLEAN, message: `This afk template at Button ${i} has an Invalid Location.`}
             if (this.#template.buttons[i].minRole && !this.validateTemplateRole(this.#template.buttons[i].minRole)) return status = {state: TemplateState.INVALID_ROLE, message: `This afk template at Button ${i} has an Invalid Minimum Role.`}
             if (this.#template.buttons[i].minStaffRole && !this.validateTemplateRole(this.#template.buttons[i].minStaffRole)) return status = {state: TemplateState.INVALID_ROLE, message: `This afk template at Button ${i} has an Invalid Minimum Staff Role.`}
+            if (this.#template.buttons[i].confirmationMessage && !this.validateTemplateString(this.#template.buttons[i].confirmationMessage)) return status = {state: TemplateState.INVALID_STRING, message: `This afk template at Button ${i} has an Invalid Confirmation Message.`}
+            if (this.#template.buttons[i].confirmationImage && !this.validateTemplateString(this.#template.buttons[i].confirmationImage)) return status = {state: TemplateState.INVALID_STRING, message: `This afk template at Button ${i} has an Invalid Confirmation Image.`}
             if (this.#template.buttons[i].disableStart && !this.validateTemplateNumber(this.#template.buttons[i].disableStart)) return status = {state: TemplateState.INVALID_NUMBER, message: `This afk template at Button ${i} has an Invalid Disable Start.`}
             if (!this.validateTemplateNumber(this.#template.buttons[i].start)) return status = {state: TemplateState.INVALID_NUMBER, message: `This afk template at Button ${i} has an Invalid Start.`}
             if (!this.validateTemplateNumber(this.#template.buttons[i].lifetime)) return status = {state: TemplateState.INVALID_NUMBER, message: `This afk template at Button ${i} has an Invalid Lifetime.`}
@@ -241,12 +259,19 @@ class AfkTemplate {
         return status
     }
 
+    validateTemplateGuild(guild, channels = null) {
+        const otherGuild = this.#bot.guilds.cache.get(guild)
+        if (!otherGuild) return false
+        if (channels && channels.some(channel => !this.validateTemplateChannel(channel, otherGuild))) return false
+        return true
+    }
+
     validateTemplateCategory(category) {
         return this.#guild.channels.cache.filter(c => c.type == Discord.ChannelType.GuildCategory).find(c => c.name.toLowerCase() === category)
     }
 
-    validateTemplateChannel(channel) {
-        return this.#guild.channels.cache.get(channel)
+    validateTemplateChannel(channel, guild = this.#guild) {
+        return guild.channels.cache.get(channel)
     }
 
     validateTemplateRole(role) {
@@ -283,11 +308,17 @@ class AfkTemplate {
         this.minimumStaffRole = this.#guild.roles.cache.get(this.#botSettings.roles[this.#template.minStaffRole])
         this.raidInfoChannel = this.#guild.channels.cache.get(this.#botSettings.channels.runlogs)
         this.raidCategory = this.#guild.channels.cache.filter(c => c.type == Discord.ChannelType.GuildCategory).find(c => c.name.toLowerCase() === this.#template.category)
-        this.raidPartnerStatusChannels = this.#template.partneredStatusChannels // TODO: Implement this
+        this.raidPartneredStatusChannels = {}
+        Object.keys(this.#template.partneredStatusChannels).forEach((guild) => this.raidPartneredStatusChannels[guild] = { channels: null }) 
+        for (let i in this.#template.partneredStatusChannels) {
+            let guild = this.#bot.guilds.cache.get(i)
+            this.raidPartneredStatusChannels[i] = this.#template.partneredStatusChannels[i].channels.map(channel => guild.channels.cache.get(channel))
+        }
         this.raidTemplateChannel = this.#guild.channels.cache.get(this.#template.templateChannel)
         this.raidStatusChannel = this.#guild.channels.cache.get(this.#template.statusChannel)
         this.raidCommandChannel = this.#guild.channels.cache.get(this.#template.commandsChannel)
         this.raidActiveChannel = this.#guild.channels.cache.get(this.#template.activeChannel)
+        this.logName = this.#template.logName
         this.name = this.#template.name
         this.vcOptions = this.#template.vcOptions
         this.startDelay = this.#template.startDelay
