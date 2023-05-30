@@ -107,7 +107,7 @@ module.exports = {
                     if (overwrite) {
                         db.query(`UPDATE suspensions SET uTime = '${Date.now() + time}' WHERE id = '${member.id}' AND suspended = true`)
                         embed.data.fields[3].value = `Overwritten suspensions. Roles the same as prior suspension`
-                        suspensionLog.send({ embeds: [embed] }).then(member.user.send({ embeds: [embed] }))
+                        suspensionLog.send({ embeds: [embed] }).then(member.user.send({ embeds: [embed] }).catch(() => {}))
                     } else {
                         let userRolesString = '', userRoles = []
                         const roles = [...member.roles.cache.filter(r => !r.managed && (!settings.lists.discordRoles.map(role => settings.roles[role]).includes(r.id))).values()];
@@ -121,7 +121,7 @@ module.exports = {
                         messageId = await suspensionLog.send({ embeds: [embed] });
                         await member.roles.remove(userRoles)
                         setTimeout(() => { member.roles.add(suspendedRole.id); }, 1000)
-                        await member.user.send({ embeds: [embed] })
+                        await member.user.send({ embeds: [embed] }).catch(() => {})
                         db.query(`INSERT INTO suspensions (id, guildid, suspended, uTime, reason, modid, roles, logmessage) VALUES ('${member.id}', '${message.guild.id}', true, '${Date.now() + time}', ${db.escape(reason)}, '${message.author.id}', '${userRolesString}', '${messageId.id}');`)
                     }
                     message.channel.send(`${member} has been suspended`)

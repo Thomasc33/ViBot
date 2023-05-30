@@ -56,7 +56,7 @@ module.exports = {
             .setTitle(`Warning Issued on the Server: ${message.guild.name}`)
             .setDescription(`__Moderator:__ <@!${message.author.id}> (${message.member.nickname})\n__Reason:__ ${reason}`)
         if (!silent)
-            await member.send({ embeds: [warnEmbed] })
+            await member.send({ embeds: [warnEmbed] }).catch(() => {})
         setTimeout(async () => {
             const [[{ total_warn_count }], ] = await db.promise().query(`SELECT COUNT(*) as total_warn_count FROM warns WHERE id = '${member.user.id}'`);
             const [[{ server_warn_count }], ] = await db.promise().query(`SELECT COUNT(*) as server_warn_count FROM warns WHERE id = '${member.user.id}' and (guildid = '${message.guild.id}' OR guildid is null)`);

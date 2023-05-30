@@ -4,6 +4,14 @@
         "url": "https://admin.vibot.tech:8080",
         "bucket": "vibot-dev"
     },
+    "redis": {
+        "socket": {
+            "host": "admin.vibot.tech",
+            "port": "6379"
+        },
+        "username": "vibot-dev",
+        "password": "402ccebcaad7a81f32b96ae6bee497def3cfde072e709f02574de79f0ce85f24"
+    },
     "prefix": ";",
     "prodBotId": "589996847083290629",
     "botId": "701196529519689790",

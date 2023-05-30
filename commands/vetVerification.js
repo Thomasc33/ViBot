@@ -265,6 +265,7 @@ module.exports = {
         })
     },
     async pendingModule(message, db) {
+        let manualVetVerifyLog = this.manualVetVerifyLog
         let settings = bot.settings[message.guild.id]
         if (watching.includes(message.embeds[0].footer.text)) return
         else watching.push(message.embeds[0].footer.text)
@@ -307,7 +308,7 @@ module.exports = {
                             //user has DMs off
                         }
                         //db.query(`UPDATE users SET isVet = true WHERE id = '${u.id}'`)
-                        this.manualVetVerifyLog(message, u.id, bot, db)
+                        manualVetVerifyLog(message, u.id, bot, db)
                         ManualVerificationCollector.stop()
                         keyCollector.stop()
                         removeFromArray(member.id)

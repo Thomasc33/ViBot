@@ -6,8 +6,8 @@ const app = express()
 const cors = require('cors')
 const https = require('https')
 const http = require('http')
-const mysql = require('mysql2')
 const Discord = require('discord.js')
+const redisConnect = require('./redis.js').setup
 
 const botSettings = require('./settings.json')
 const ErrorLogger = require(`./lib/logError`)
@@ -104,6 +104,8 @@ async function setup(bot) {
 
     //connect databases
     await dbSetup.init(bot)
+
+    await redisConnect()
 
     //to hide dev server
     if (bot.user.id == botSettings.prodBotId) bot.devServers.push('701483950559985705');
