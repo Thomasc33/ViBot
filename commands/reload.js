@@ -18,12 +18,11 @@ module.exports = {
     // },
     async execute(message, args, bot, db) {
         const commandName = args[0].toLowerCase();
-		const command = bot.commands.get(commandName);
+        const command = bot.commands.get(commandName);
 
         // Check if command is valid
-		if (!command) {
-			return message.reply(`There is no command with name \`${commandName}\`!`);
-		}
+        if (!command) return message.reply(`There is no command with name \`${commandName}\`!`);
+
 
         // Delete File from Cache
         delete require.cache[require.resolve(`./${command.name}.js`)];
