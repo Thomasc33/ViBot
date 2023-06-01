@@ -18,7 +18,7 @@ module.exports = {
     // },
     async execute(message, args, bot, db) {
         const commandName = args[0].toLowerCase();
-		const command = message.client.commands.get(commandName);
+		const command = bot.commands.get(commandName);
 
         // Check if command is valid
 		if (!command) {
