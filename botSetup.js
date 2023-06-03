@@ -22,6 +22,7 @@ const unbanJobs = require('./jobs/unban.js')
 const UnbanVet = unbanJobs.UnbanVet;
 const Unsuspend = unbanJobs.Unsuspend;
 const KeyAlert = require('./jobs/keyAlert.js').KeyAlert
+const Mute = require('./jobs/mute.js').Mute
 const quotaJobs = require('./jobs/quota.js')
 const BiWeeklyQuota = quotaJobs.BiWeeklyQuota;
 const MonthlyQuota = quotaJobs.MonthlyQuota;
@@ -123,6 +124,7 @@ async function setup(bot) {
     const unbanVetJob = new UnbanVet(bot)
     const unsuspendJob = new Unsuspend(bot)
     const keyAlertJob = new KeyAlert(bot)
+    const muteJob = new Mute(bot)
     const biWeeklyQuotaJob = new BiWeeklyQuota(bot)
     const monthlyQuotaJob = new MonthlyQuota(bot)
     const botStatusUpdateJob = new BotStatusUpdate(bot)
@@ -130,6 +132,7 @@ async function setup(bot) {
     unbanVetJob.runAtInterval(120000)
     unsuspendJob.runAtInterval(60000)
     keyAlertJob.runAtInterval(300000)
+    muteJob.runAtInterval(90000)
     biWeeklyQuotaJob.schedule('0 0 * * SUN')
     monthlyQuotaJob.schedule('0 0 1 * *')
     await botStatusUpdateJob.runOnce()
