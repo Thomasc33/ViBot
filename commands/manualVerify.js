@@ -33,10 +33,10 @@ module.exports = {
 
         // Member Logic Check
         var member = message.mentions.members.first()
+        if (!member) member = message.guild.members.cache.get(args[0]);
         if (!member) return message.replyUserError("User not found")
         if (member.roles.cache.has(suspendedRole.id) || member.roles.cache.has(sbvRole.id)) return message.replyUserError("User is suspended")
         if (member.roles.cache.has(raiderRole.id)) return message.replyUserError('User is already verified')
-        if (!member) member = message.guild.members.cache.get(args[0]);
 
         // Reason Logic
         let reason = args[2]
