@@ -39,7 +39,7 @@ module.exports = {
         if (member.roles.cache.has(raiderRole.id)) return message.replyUserError('User is already verified')
 
         // Reason Logic
-        let reason = args[2]
+        let reason = args.slice(2).join(' ')
         if (!reason) return message.replyUserError("Please enter a valid reason.")
 
         // Add roles
