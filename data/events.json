@@ -1457,7 +1457,7 @@
         "headcountOnAfk": true,
         "isSplit": false,
         "vialReact": false,
-        "twoPhase": false,
+        "twoPhase": true,
         "startDelay": 5000,
         "vcCap": 45,
         "timeLimit": 300,
