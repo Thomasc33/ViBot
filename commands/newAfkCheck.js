@@ -44,6 +44,7 @@ module.exports = {
         // NEEDS TO BE RETOOLED
         let alias = args.shift().toLowerCase()
         const afkTemplate = new AfkTemplate.AfkTemplate(bot, bot.settings[message.guild.id], message, alias)
+        await afkTemplate.init()
         const currentStatus = afkTemplate.getStatus()
         if (currentStatus.state != AfkTemplate.TemplateState.SUCCESS) return await message.channel.send(currentStatus.message)
         if (message.guild.members.cache.get(message.member.id).roles.highest.position < afkTemplate.minimumStaffRole.position) return await message.channel.send(`You do not have a suitable role above ${afkTemplate.minimumStaffRole.position} to run ${afkTemplate.name}.`)
@@ -251,7 +252,7 @@ class afkCheck {
             let descriptionMiddle = ``
             if (this.#newAfkTemplate.buttons[i].confirmationMessage) descriptionMiddle = this.#newAfkTemplate.buttons[i].confirmationMessage
             embed.setDescription(`${descriptionBeginning}${descriptionMiddle}${descriptionEnd}`)
-            if (this.#newAfkTemplate.buttons[i].confirmationImage) embed.setImage(this.#newAfkTemplate.buttons[i].confirmationImage)
+            if (this.#newAfkTemplate.buttons[i].confirmationMedia) embed.setImage(this.#newAfkTemplate.buttons[i].confirmationMedia)
             await this.raidDragThreads[i].thread.send({ embeds: [embed] })
         }
     }
@@ -698,7 +699,7 @@ class afkCheck {
             let descriptionMiddle = ``
             if (buttonInfo.confirmationMessage) descriptionMiddle = buttonInfo.confirmationMessage
             embed.setDescription(`${descriptionBeginning}${descriptionMiddle}${descriptionEnd}`)
-            if (buttonInfo.confirmationImage) embed.setImage(buttonInfo.confirmationImage)
+            if (buttonInfo.confirmationMedia) embed.setImage(buttonInfo.confirmationMedia)
             const confirmButton = new Discord.ButtonBuilder()
                 .setCustomId('Confirmed')
                 .setLabel('✅ Confirm')
@@ -833,7 +834,7 @@ class afkCheck {
             if (buttonInfo.confirmationMessage) descriptionMiddle = buttonInfo.confirmationMessage
             else descriptionMiddle = `You currently have ${emote} \`${rows[0].points}\` points\nEarly location costs ${emote} \`${earlyLocationCost}\``
             embed.setDescription(`${descriptionBeginning}${descriptionMiddle}${descriptionEnd}`)
-            if (buttonInfo.confirmationImage) embed.setImage(buttonInfo.confirmationImage)
+            if (buttonInfo.confirmationMedia) embed.setImage(buttonInfo.confirmationMedia)
             embed.setAuthor({ name: 'Please Confirm Point Usage', iconURL: interaction.member.avatarURL() ? interaction.member.avatarURL() : null})
             const confirmButton = new Discord.ButtonBuilder()
                 .setCustomId('Confirmed')
@@ -891,7 +892,7 @@ class afkCheck {
         let descriptionMiddle = ``
         if (buttonInfo.confirmationMessage) descriptionMiddle = buttonInfo.confirmationMessage
         embed.setDescription(`${descriptionBeginning}${descriptionMiddle}${descriptionEnd}`)
-        if (buttonInfo.confirmationImage) embed.setImage(buttonInfo.confirmationImage)
+        if (buttonInfo.confirmationMedia) embed.setImage(buttonInfo.confirmationMedia)
         const confirmButton = new Discord.ButtonBuilder()
             .setCustomId('Confirmed')
             .setLabel('⬆️ Upload')

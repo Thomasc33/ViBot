@@ -48,6 +48,8 @@ class AfkTemplate {
     #botSettings;
     #guild;
     #channel;
+    #message;
+    #alias
     #status;
 
     constructor(bot, botSettings, message, alias) {
@@ -56,14 +58,19 @@ class AfkTemplate {
         this.#guild = message.guild
         this.#channel = message.channel
         this.#template = null
-        alias = alias.toLowerCase()
-        this.getTemplate(message, alias)
-        this.#status = this.validateTemplate()
-        if (this.#status.state == TemplateState.SUCCESS) this.processParameters()
+        this.#message = message
+        this.#alias = alias.toLowerCase()
     }
 
-    async getTemplate(message, alias) {
-        let selectedTemplates = templates[this.#guild.id].other.filter(t => t.aliases.includes(alias))
+    async init() {
+        await this.getTemplate()
+        this.#status = this.validateTemplate()
+        if (this.#status.state == TemplateState.SUCCESS) this.processParameters()
+        return
+    }
+
+    async getTemplate() {
+        let selectedTemplates = templates[this.#guild.id].children.filter(t => t.aliases.includes(this.#alias))
         if (selectedTemplates.length == 0) return this.#template = null
         else if (selectedTemplates.length == 1) return this.#template = JSON.parse(JSON.stringify(selectedTemplates[0]))
         const templateMenu = new Discord.StringSelectMenuBuilder()
@@ -72,8 +79,8 @@ class AfkTemplate {
             .setMinValues(1)
             .setMaxValues(1)
         for (let i in selectedTemplates) templateMenu.addOptions({ label: selectedTemplates[i].name, value: i })
-        const templateMessage = await message.channel.send({ content: message.member, components: [] })
-        const templateValue = await templateMessage.selectPanel(templateMenu, this.message.member.id, 10000)
+        const templateMessage = await this.#message.channel.send({ content: `${this.#message.member}`, components: [] })
+        const templateValue = await templateMessage.selectPanel(templateMenu, this.#message.member.id, 10000)
         await templateMessage.delete()
         return this.#template = JSON.parse(JSON.stringify(templateValue ? selectedTemplates[templateValue] : selectedTemplates[0]))
     }
@@ -103,7 +110,7 @@ class AfkTemplate {
     populateTemplateInherit() {
         let parentTemplate = null
         this.#template.inherits.forEach((parent) => {
-            let currentParentTemplate = templates[this.#guild.id].defaults[parent]
+            let currentParentTemplate = templates[this.#guild.id].parents[parent]
             if (currentParentTemplate && currentParentTemplate.commandsChannel == this.#channel.id) parentTemplate = currentParentTemplate
         })
         this.populateObjectInherit(this.#template, parentTemplate)
@@ -111,7 +118,7 @@ class AfkTemplate {
 
     populateBodyInherit() {
         let phases = Array.from({length: this.#template.phases},(_,k)=>k+1)
-        for (let i in phases) {
+        for (let i of phases) {
             if (this.#template.body[i] == undefined) this.#template.body[i] = this.#template.body.default
             else this.populateObjectInherit(this.#template.body[i], this.#template.body.default)
         }
@@ -176,7 +183,7 @@ class AfkTemplate {
                 if (!Object.hasOwn(this.#template.buttons[i], 'minRole')) properties.push(`buttons.${i}.minRole`)
                 if (!Object.hasOwn(this.#template.buttons[i], 'minStaffRole')) properties.push(`buttons.${i}.minStaffRole`)
                 if (!Object.hasOwn(this.#template.buttons[i], 'confirmationMessage')) properties.push(`buttons.${i}.confirmationMessage`)
-                if (!Object.hasOwn(this.#template.buttons[i], 'confirmationImage')) properties.push(`buttons.${i}.confirmationImage`)
+                if (!Object.hasOwn(this.#template.buttons[i], 'confirmationMedia')) properties.push(`buttons.${i}.confirmationMedia`)
                 if (!Object.hasOwn(this.#template.buttons[i], 'logName')) properties.push(`buttons.${i}.logName`)
                 if (!Object.hasOwn(this.#template.buttons[i], 'disableStart')) properties.push(`buttons.${i}.disableStart`)
                 if (!Object.hasOwn(this.#template.buttons[i], 'start')) properties.push(`buttons.${i}.start`)
@@ -244,7 +251,7 @@ class AfkTemplate {
             if (this.#template.buttons[i].minRole && !this.validateTemplateRole(this.#template.buttons[i].minRole)) return status = {state: TemplateState.INVALID_ROLE, message: `This afk template at Button ${i} has an Invalid Minimum Role.`}
             if (this.#template.buttons[i].minStaffRole && !this.validateTemplateRole(this.#template.buttons[i].minStaffRole)) return status = {state: TemplateState.INVALID_ROLE, message: `This afk template at Button ${i} has an Invalid Minimum Staff Role.`}
             if (this.#template.buttons[i].confirmationMessage && !this.validateTemplateString(this.#template.buttons[i].confirmationMessage)) return status = {state: TemplateState.INVALID_STRING, message: `This afk template at Button ${i} has an Invalid Confirmation Message.`}
-            if (this.#template.buttons[i].confirmationImage && !this.validateTemplateString(this.#template.buttons[i].confirmationImage)) return status = {state: TemplateState.INVALID_STRING, message: `This afk template at Button ${i} has an Invalid Confirmation Image.`}
+            if (this.#template.buttons[i].confirmationMedia && !this.validateTemplateString(this.#template.buttons[i].confirmationMedia)) return status = {state: TemplateState.INVALID_STRING, message: `This afk template at Button ${i} has an Invalid Confirmation Media.`}
             if (this.#template.buttons[i].disableStart && !this.validateTemplateNumber(this.#template.buttons[i].disableStart)) return status = {state: TemplateState.INVALID_NUMBER, message: `This afk template at Button ${i} has an Invalid Disable Start.`}
             if (!this.validateTemplateNumber(this.#template.buttons[i].start)) return status = {state: TemplateState.INVALID_NUMBER, message: `This afk template at Button ${i} has an Invalid Start.`}
             if (!this.validateTemplateNumber(this.#template.buttons[i].lifetime)) return status = {state: TemplateState.INVALID_NUMBER, message: `This afk template at Button ${i} has an Invalid Lifetime.`}
@@ -332,8 +339,7 @@ class AfkTemplate {
     processBody(channel) {
         let phases = Array.from({length: this.#template.phases},(_,k)=>k+1)
         let lastDescription = ""
-        for (let i in phases) {
-            if (i == "default") continue
+        for (let i of phases) {
             if (!this.body[i].embed.description) {
                 this.body[i].embed.description = ""
                 if (this.vcOptions == TemplateVCOptions.STATIC_VC || this.vcOptions == TemplateVCOptions.CREATE_VC) this.body[i].embed.description += `To join **click here** ${channel}\n`
