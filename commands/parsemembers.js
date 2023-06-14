@@ -297,7 +297,8 @@ module.exports = {
 
         await Promise.all(parsePromises)
 
-        parseStatusEmbed.data.fields[1].value = `Parse Completed\nParse took ${(Date.now() - started) / 1000} seconds`
+        parseStatusEmbed.data.fields[1].value = `Parse Completed`
+        parseStatusEmbed.setFooter(`Parse took ${(Date.now() - started) / 1000} seconds`)
         await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
         
         let currentweekparsename, parsetotalname
