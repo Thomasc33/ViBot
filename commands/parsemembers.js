@@ -31,8 +31,8 @@ module.exports = {
         let parseStatusEmbed = new Discord.EmbedBuilder()
             .setColor(`#00ff00`)
             .setTitle('Parse Status')
-            .addFields([{name: 'Parse By', value: `${message.member}`}])
-            .addFields([{name: 'Status', value: 'Gathering image'}])
+            .addFields([{ name: 'Parse By', value: `${message.member}` }])
+            .addFields([{ name: 'Status', value: 'Gathering image' }])
         let parseStatusMessage = await message.channel.send({ embeds: [parseStatusEmbed] })
         let started = Date.now()
         let image;
@@ -125,7 +125,7 @@ module.exports = {
                 .setColor('#00ff00')
                 .setDescription(`There are ${crashers.length} crashers, ${alts.length} potential alts, and ${otherChannel.length} people in other channels`)
                 .addFields({ name: 'Potential Alts', value: altsS }, { name: 'Other Channels', value: movedS }, { name: 'Crashers', value: crashersS }, { name: 'Find Command', value: `\`\`\`${find}\`\`\`` }, { name: 'Kick List', value: `\`\`\`${kickList}\`\`\`` })
-            if (bot.afkChecks[channel.id]) embed.addFields([{name: `Were in VC`, value: `The following can do \`;join\`:\n${allowedCrashers.map(u => `${u} `)}`}])
+            if (bot.afkChecks[channel.id]) embed.addFields([{ name: `Were in VC`, value: `The following can do \`;join\`:\n${allowedCrashers.map(u => `${u} `)}` }])
             await message.channel.send({ embeds: [embed] });
             parseStatusEmbed.data.fields[1].value = `Crasher Parse Completed. See Below. Beginning Character Parse`
             await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
@@ -258,11 +258,11 @@ module.exports = {
                                 else armorEmoji = bot.emojis.cache.find(e => e.name.toLowerCase().replace(/[^a-z0-9]/g, '').includes(character.armor.split(' ').slice(0, -1).join('').toLowerCase().replace(/[^a-z0-9]/g, '')))
                                 if (!character.ring) ringEmoji = 'None'
                                 else ringEmoji = bot.emojis.cache.find(e => e.name.toLowerCase().replace(/[^a-z0-9]/g, '').includes(character.ring.split(' ').slice(0, -1).join('').toLowerCase().replace(/[^a-z0-9]/g, '')))
-                                if (characterParseEmbed.data.fields.length >= 24 || JSON.stringify(characterParseEmbed.toJSON()).length + issueString.length + 50 > 6000) { 
+                                if (characterParseEmbed.data.fields.length >= 24 || JSON.stringify(characterParseEmbed.toJSON()).length + issueString.length + 50 > 6000) {
                                     message.channel.send({ embeds: [characterParseEmbed] })
                                     characterParseEmbed.data.fields = []
                                 }
-                                characterParseEmbed.addFields([{name: players[i], value: `[Link](https://www.realmeye.com/player/${players[i]}) | ${characterEmote} | LVL: \`${character.level}\` | Fame: \`${character.fame}\` | Stats: \`${character.stats}\` | ${weaponEmoji} ${abilityEmoji} ${armorEmoji} ${ringEmoji}${issueString}`}])
+                                characterParseEmbed.addFields([{ name: players[i], value: `[Link](https://www.realmeye.com/player/${players[i]}) | ${characterEmote} | LVL: \`${character.level}\` | Fame: \`${character.fame}\` | Stats: \`${character.stats}\` | ${weaponEmoji} ${abilityEmoji} ${armorEmoji} ${ringEmoji}${issueString}` }])
                                 if (i % 5 == 0) {
                                     parseStatusEmbed.data.fields[1].value = `Parsing Characters (${i}/${players.length})`
                                     parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
@@ -298,16 +298,15 @@ module.exports = {
         await Promise.all(parsePromises)
 
         parseStatusEmbed.data.fields[1].value = `Parse Completed`
-        parseStatusEmbed.setFooter(`Parse took ${(Date.now() - started) / 1000} seconds`)
+        parseStatusEmbed.setFooter({ text: `Parse took ${(Date.now() - started) / 1000} seconds` })
         await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
-        
+
         let currentweekparsename, parsetotalname
-        for (let i in ParseCurrentWeek) 
-        {
+        for (let i in ParseCurrentWeek) {
             i = ParseCurrentWeek[i];
-            if (message.guild.id == i.id && !i.disabled) { 
-                currentweekparsename = i.parsecurrentweek; 
-                parsetotalname = i.parsetotal 
+            if (message.guild.id == i.id && !i.disabled) {
+                currentweekparsename = i.parsecurrentweek;
+                parsetotalname = i.parsetotal
             }
         }
         if (!currentweekparsename || !parsetotalname) return
@@ -321,7 +320,7 @@ module.exports = {
 }
 
 async function postInCrasherList(embed, channel, parser, key) {
-    
+
     let m
     if (key) {
         m = await channel.send(`<@!${key}> please double check with ${parser} \`${parser.nickname}\` before kicking anyone`, embed)
