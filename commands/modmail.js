@@ -10,13 +10,15 @@ module.exports = {
     args: '<update>',
     interactionHandler,
     async execute(message, args, bot, db) {
-        switch (args[0].toLowerCase()) {
-            case 'update':
-                this.update(message.guild, bot, db)
-                break;
-            case 'sendinfo':
-                this.sendInfo(message)
-                break;
+        if (args.length > 0) {
+            switch (args[0].toLowerCase()) {
+                case 'update':
+                    this.update(message.guild, bot, db)
+                    break;
+                case 'sendinfo':
+                    this.sendInfo(message)
+                    break;
+            }
         }
     },
     async sendModMail(message, guild, bot, db) {
