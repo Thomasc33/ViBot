@@ -300,7 +300,7 @@ async function watchConfirmButtonsHandler(interaction, prev_interaction, bot, th
 
 async function reconnectButtonHandler(interaction, vc_channel_id, bot) {
     if (!interaction.isButton()) return;
-    if (!bot.afkChecks[vc_channel_id]) interaction.reply({ content: 'Something went wrong. Bug the RL for drags.' });
+    if (!bot.afkChecks[vc_channel_id]) interaction.reply({ content: 'Something went wrong. Bug the RL for drags.', ephemeral: true });
     if ((bot.afkChecks[vc_channel_id].raiders && bot.afkChecks[vc_channel_id].raiders.includes(interaction.member.id)) || (bot.afkChecks[vc_channel_id].earlyLocation && bot.afkChecks[vc_channel_id].earlyLocation.includes(interaction.member.id))) {
         if (interaction.member.voice.channel) {
             if (interaction.member.voice.channel.id == vc_channel_id) interaction.reply({ content: 'It looks like you are already in the channel. ඞ', ephemeral: true });

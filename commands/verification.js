@@ -374,7 +374,7 @@ module.exports = {
         //autoverify
         async function autoVerify() {
             if (!member) member = guild.members.cache.get(u.id)
-            let tag = member.user.tag.substring(0, member.user.tag.length - 5)
+            let tag = member.user.username
             let nick = ''
             if (tag == ign) {
                 nick = ign.toLowerCase()
@@ -473,7 +473,7 @@ module.exports = {
                         .setDescription(`${member} was manually verified by ${reactor}`)
                     message.guild.channels.cache.get(settings.channels.verificationlog).send({ embeds: [veriEmbed] })
                     //set nickname
-                    let tag = member.user.tag.substring(0, member.user.tag.length - 5)
+                    let tag = member.user.username
                     let nick = ''
                     if (tag == ign) {
                         nick = ign.toLowerCase()
@@ -530,7 +530,7 @@ module.exports = {
                             db.query(`INSERT INTO veriblacklist (id, modid, guildid, reason) VALUES ('${member.id}', '${reactor.id}', '${message.guild.id}', 'Reacted with 2️⃣ to verification.'),('${ign.toLowerCase()}', '${reactor.id}', '${message.guild.id}', 'Reacted with 2️⃣ to verification.')`)
 
                             //set nickname
-                            let tag = member.user.tag.substring(0, member.user.tag.length - 5)
+                            let tag = member.user.username
                             let nick = ''
                             if (tag == ign) {
                                 nick = ign.toLowerCase()

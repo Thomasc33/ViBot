@@ -46,7 +46,7 @@ module.exports = {
         if (member.roles.cache.has(settings.roles.eventraider)) await member.roles.remove(settings.roles.eventraider)
         await member.roles.add(raiderRole)
         if (settings.backend.giveeventroleonverification) await member.roles.add(settings.roles.eventraider)
-        let tag = member.user.tag.substring(0, member.user.tag.length - 5)
+        let tag = member.user.username
         let nick = ''
         if (tag == args[1]) {
             nick = args[1].toLowerCase()

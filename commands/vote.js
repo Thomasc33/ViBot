@@ -95,6 +95,13 @@ async function postVote2(message, member, bot, db) {
         if (message.guild.id !== '708026927721480254') await msg.react('😐');
         await msg.react('❌');
         if (rolekey == 'almostrl' && message.guild.id !== '708026927721480254') await msg.react('👀');
+        try
+        { 
+            if (rolekey == 'rl' && message.guild.id == '708026927721480254') await msg.react('🇷'); await msg.react('🇫');
+        }
+        catch (e) {
+            ErrorLogger.log(e, bot, message.guild.id)
+        }
         return;
     }
 

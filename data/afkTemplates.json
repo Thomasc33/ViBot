@@ -1899,7 +1899,7 @@
                     "emote": "Ogmur",
                     "pointsGiven": 0,
                     "limit": 1,
-                    "shortName": "Ogmur",
+                    "shortName": "Armor Break",
                     "noConfirm": false,
                     "noLocation": true,
                     "inline": true
@@ -2034,7 +2034,7 @@
                     "emote": "Ogmur",
                     "pointsGiven": 0,
                     "limit": 1,
-                    "shortName": "Ogmur",
+                    "shortName": "Armor Break",
                     "noConfirm": false,
                     "noLocation": true,
                     "inline": true
