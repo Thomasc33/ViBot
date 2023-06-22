@@ -1,6 +1,7 @@
 const Discord = require('discord.js')
-const templates = require('../data/templates.json')
+const templates = require('../data/afkTemplates.json')
 
+// Enum for the Error States in a Template
 const TemplateState = { 
     'SUCCESS': 0,
     'NOT_EXIST': 1,
@@ -17,17 +18,20 @@ const TemplateState = {
     'INVALID_BOOLEAN': 12
 }
 
+// Enum for the VC Options in an AFK
 const TemplateVCOptions = {
     'NO_VC': 0,
     'STATIC_VC': 1,
     'CREATE_VC' : 2
 }
 
+// Enum for the VC States in an AFK
 const TemplateVCState = {
     'LOCKED': 0,
     'OPEN': 1
 }
 
+// Enum for the Button Types in an AFK
 const TemplateButtonType = {
     'NORMAL': 0,
     'LOG': 1,
@@ -36,6 +40,7 @@ const TemplateButtonType = {
     'DRAG': 4
 }
 
+// Enum for the Choice on Buttons in an AFK
 const TemplateButtonChoice = {
     'NO_CHOICE': 0,
     'YES_NO_CHOICE': 1,
@@ -70,7 +75,7 @@ class AfkTemplate {
     }
 
     async getTemplate() {
-        let selectedTemplates = templates[this.#guild.id].children.filter(t => t.aliases.includes(this.#alias))
+        let selectedTemplates = templates[this.#guild.id].children.filter(t => { for (alias of t.aliases) if (alias.includes(this.#alias)) return true })
         if (selectedTemplates.length == 0) return this.#template = null
         else if (selectedTemplates.length == 1) return this.#template = JSON.parse(JSON.stringify(selectedTemplates[0]))
         const templateMenu = new Discord.StringSelectMenuBuilder()
@@ -148,6 +153,7 @@ class AfkTemplate {
         if (!Object.hasOwn(this.#template, 'logName')) properties.push('logName')
         if (!Object.hasOwn(this.#template, 'vcOptions')) properties.push('vcOptions')
         if (!Object.hasOwn(this.#template, 'cap')) properties.push('cap')
+        if (!Object.hasOwn(this.#template, 'capButton')) properties.push('capButton')
         if (!Object.hasOwn(this.#template, 'phases')) properties.push('phases')
         if (!Object.hasOwn(this.#template, 'body')) properties.push('body')
         if (this.#template.body != null && typeof this.#template.body === 'object') {
@@ -226,6 +232,7 @@ class AfkTemplate {
         if (!this.validateTemplateNumber(this.#template.vcOptions, TemplateVCOptions)) return status = {state: TemplateState.INVALID_NUMBER, message: 'This afk template has an Invalid VC Option.'}
         if (this.#template.startDelay && !this.validateTemplateNumber(this.#template.startDelay)) return status = {state: TemplateState.INVALID_NUMBER, message: 'This afk template has an Invalid Start Delay.'}
         if (!this.validateTemplateNumber(this.#template.cap)) return status = {state: TemplateState.INVALID_NUMBER, message: 'This afk template has an Invalid Cap.'}
+        if (!this.validateTemplateNumber(this.#template.capButton)) return status = {state: TemplateState.INVALID_BOOLEAN, message: 'This afk template has an Invalid Cap Button.'}
         if (!this.validateTemplateNumber(this.#template.phases)) return status = {state: TemplateState.INVALID_NUMBER, message: 'This afk template has an Invalid Phases.'}
         if (!this.validateTemplateObject(this.#template.body)) return status = {state: TemplateState.INVALID_OBJECT, message: 'This afk template has an Invalid Body.'}
         for (let i in this.#template.body) {
@@ -233,14 +240,14 @@ class AfkTemplate {
             if (this.#template.body[i].nextPhaseButton && !this.validateTemplateString(this.#template.body[i].nextPhaseButton)) return status = {state: TemplateState.INVALID_STRING, message: `This afk template at Body ${i} has an Invalid Next Phase Button.`}
             if (!this.validateTemplateNumber(this.#template.body[i].timeLimit)) return status = {state: TemplateState.INVALID_NUMBER, message: `This afk template at Body ${i} has an Invalid Time Limit.`}
             if (this.#template.body[i].message && !this.validateTemplateString(this.#template.body[i].message)) return status = {state: TemplateState.INVALID_STRING, message: `This afk template at Body ${i} has an Invalid Message.`}
-            if (this.#template.body[i].embed.description && !this.validateTemplateString(this.#template.body[i].embed.description)) return status = {state: TemplateState.INVALID_STRING, message: `This afk template at Body ${i} has an Invalid Embed Description.`}
+            if (this.#template.body[i].embed.description && this.#template.body[i].embed.description.some(description => description && !this.validateTemplateString(this.#template.body[i].embed.description))) return status = {state: TemplateState.INVALID_STRING, message: `This afk template at Body ${i} has an Invalid Embed Description.`}
             if (this.#template.body[i].embed.image && !this.validateTemplateString(this.#template.body[i].embed.image)) return status = {state: TemplateState.INVALID_STRING, message: `This afk template at Body ${i} has an Invalid Embed Image.`}
             if (this.#template.body[i].embed.thumbnail && this.#template.body[i].embed.thumbnail.some(thumbnail => !this.validateTemplateString(thumbnail))) return status = {state: TemplateState.INVALID_STRING, message: `This afk template at Body ${i} has an Invalid Embed Thumbnail.`}
         }
         if (!this.validateTemplateObject(this.#template.buttons)) return status = {state: TemplateState.INVALID_OBJECT, message: 'This afk template has an Invalid Buttons.'}
         for (let i in this.#template.buttons) {
             if (!this.validateTemplateNumber(this.#template.buttons[i].type, TemplateButtonType)) return status = {state: TemplateState.INVALID_NUMBER, message: `This afk template at Button ${i} has an Invalid Type.`}
-            if (this.#template.buttons[i].parent && this.#template.buttons[i].parent.some(name => !this.#template.buttons.includes(name))) return status = {state: TemplateState.INVALID_NUMBER, message: `This afk template at Button ${i} has an Invalid Parent.`}
+            if (this.#template.buttons[i].parent && this.#template.buttons[i].parent.some(name => !this.#template.buttons[name])) return status = {state: TemplateState.INVALID_NUMBER, message: `This afk template at Button ${i} has an Invalid Parent.`}
             if (!this.validateTemplateNumber(this.#template.buttons[i].choice, TemplateButtonChoice)) return status = {state: TemplateState.INVALID_NUMBER, message: `This afk template at Button ${i} has an Invalid Choice.`}
             if (this.#template.buttons[i].limit && !this.validateTemplateNumber(this.#template.buttons[i].limit)) return status = {state: TemplateState.INVALID_NUMBER, message: `This afk template at Button ${i} has an Invalid Limit.`}
             if (this.#template.buttons[i].points && !this.validateTemplateNumber(this.#template.buttons[i].points)) return status = {state: TemplateState.INVALID_NUMBER, message: `This afk template at Button ${i} has an Invalid Points.`}
@@ -338,40 +345,37 @@ class AfkTemplate {
 
     processBody(channel) {
         let phases = Array.from({length: this.#template.phases},(_,k)=>k+1)
-        let lastDescription = ""
         for (let i of phases) {
-            if (!this.body[i].embed.description) {
-                this.body[i].embed.description = ""
-                if (this.vcOptions == TemplateVCOptions.STATIC_VC || this.vcOptions == TemplateVCOptions.CREATE_VC) this.body[i].embed.description += `To join **click here** ${channel}\n`
-                else if (this.vcOptions == TemplateVCOptions.NO_VC) this.#template.body[i].embed.description += `To join, react for location\n`
-                let emotes = []
-                let supporter = null
-                for (let j in this.buttons) {
-                    let start = this.buttons[j].start
-                    let end = start + this.buttons[j].lifetime
-                    if (i < this.buttons[j].start && i >= end ) continue
-                    if (this.buttons[j].type == TemplateButtonType.NORMAL && this.buttons[j].emote) emotes.push(this.buttons[j].emote.text)
-                    if (this.buttons[j].type == TemplateButtonType.LOG) this.body[i].embed.description += `If you have a **${j}**, react with ${this.buttons[j].emote ? this.buttons[j].emote.text : "the button"}\n`
-                    if (this.buttons[j].type == TemplateButtonType.SUPPORTER) supporter = this.buttons[j].emote.text
-                }
-                if (emotes.length > 0) this.body[i].embed.description += `If you have an early react, react with ${emotes.join(" ")}\n`
-                if (supporter) this.body[i].embed.description += `If you are a ${this.perkRoles.join("")}, react with ${supporter}\n`
-            } else if (this.#template.body[i].embed.description == "") this.#template.body[i].embed.description = lastDescription
+            if (this.body[i].message) this.body[i].message = this.processMessages(channel, this.body[i].message)
+            if (!this.body[i].embed.description) this.body[i].embed.description = this.processBodyDescription(channel, i)
             else {
-                this.body[i].embed.description = this.body[i].embed.description.match(/[^\[\]]*/g).map(match => {
-                    let message = match
-                    if (this.#guild.channels.cache.has(this.#botSettings.channels[match])) message = `<#${this.#botSettings.channels[match]}>`
-                    if (this.#guild.roles.cache.has(this.#botSettings.roles[match])) message = `<@&${this.#botSettings.roles[match]}>`
-                    if (match == '[voicechannel]') message = channel
-                    return message
-                }).reduce((a, b) => a + b)
-                this.body[i].embed.description = this.body[i].embed.description.match(/[^\{\}]*/g).map(match => {
-                    let message = match
-                    if (this.#bot.storedEmojis[match]) message = `${this.#bot.storedEmojis[match].text}`
-                    return message
-                }).reduce((a, b) => a + b)
+                for (let j in this.body[i].embed.description) {
+                    if (!this.body[i].embed.description[j]) this.body[i].embed.description[j] = this.processBodyDescription(channel, i)
+                    else if (i != 0 && this.body[i].embed.description[j] == "") this.body[i].embed.description[j] = this.body[i-1].embed.description[j]
+                    else this.body[i].embed.description[j] = this.processMessages(channel, this.body[i].embed.description[j])
+                }
+                this.body[i].embed.description = this.body[i].embed.description.reduce((a, b) => a + b)
             }
         }
+    }
+
+    processBodyDescription(channel, i) {
+        description = ""
+        if (this.vcOptions == TemplateVCOptions.STATIC_VC || this.vcOptions == TemplateVCOptions.CREATE_VC) description += `To join **click here** ${channel}\n`
+        else if (this.vcOptions == TemplateVCOptions.NO_VC) description += `To join, react for location\n`
+        let emotes = []
+        let supporter = null
+        for (let j in this.buttons) {
+            let start = this.buttons[j].start
+            let end = start + this.buttons[j].lifetime
+            if (i < this.buttons[j].start && i >= end ) continue
+            if (this.buttons[j].type == TemplateButtonType.NORMAL && this.buttons[j].emote) emotes.push(this.buttons[j].emote.text)
+            if (this.buttons[j].type == TemplateButtonType.LOG) description += `If you have a **${j}**, react with ${this.buttons[j].emote ? this.buttons[j].emote.text : "the button"}\n`
+            if (this.buttons[j].type == TemplateButtonType.SUPPORTER) supporter = this.buttons[j].emote.text
+        }
+        if (emotes.length > 0) description += `If you have an early react, react with ${emotes.join(" ")}\n`
+        if (supporter) description += `If you are a ${this.perkRoles.join("")}, react with ${supporter}\n`
+        return description
     }
 
     processButtons(channel) {
@@ -380,20 +384,24 @@ class AfkTemplate {
             if (this.buttons[i].emote) this.buttons[i].emote = this.#bot.storedEmojis[this.buttons[i].emote]
             if (this.buttons[i].minRole) this.buttons[i].minRole = this.#guild.roles.cache.get(this.#botSettings.roles[this.buttons[i].minRole])
             if (this.buttons[i].minStaffRole) this.buttons[i].minStaffRole = this.#guild.roles.cache.get(this.#botSettings.roles[this.buttons[i].minStaffRole])
-            if (!this.buttons[i].confirmationMessage) continue
-            this.buttons[i].confirmationMessage = this.buttons[i].confirmationMessage.match(/[^\[\]]*/g).map(match => {
-                let message = match
-                if (this.#guild.channels.cache.has(this.#botSettings.channels[match])) message = `<#${this.#botSettings.channels[match]}>`
-                if (this.#guild.roles.cache.has(this.#botSettings.roles[match])) message = `<@&${this.#botSettings.roles[match]}>`
-                if (match == '[voicechannel]') message = channel
-                return message
-            }).reduce((a, b) => a + b)
-            this.buttons[i].confirmationMessage = this.buttons[i].confirmationMessage.match(/[^\{\}]*/g).map(match => {
-                let message = match
-                if (this.#bot.storedEmojis[match]) message = `${this.#bot.storedEmojis[match].text}`
-                return message
-            }).reduce((a, b) => a + b)
+            if (this.buttons[i].confirmationMessage) this.buttons[i].confirmationMessage = this.processMessages(channel, this.buttons[i].confirmationMessage)
         }
+    }
+
+    processMessages(channel, currentMessage) {
+        newMessage = ""
+        newMessage = currentMessage.match(/[^\[\]]*/g).map(match => {
+            let message = match
+            if (this.#guild.channels.cache.has(this.#botSettings.channels[match])) message = `<#${this.#botSettings.channels[match]}>`
+            if (this.#guild.roles.cache.has(this.#botSettings.roles[match])) message = `<@&${this.#botSettings.roles[match]}>`
+            if (match == '[voicechannel]') message = channel
+            return message
+        }).reduce((a, b) => a + b)
+        newMessage = currentMessage.match(/[^\{\}]*/g).map(match => {
+            let message = match
+            if (this.#bot.storedEmojis[match]) message = `${this.#bot.storedEmojis[match].text}`
+            return message
+        }).reduce((a, b) => a + b)
     }
 
     processReacts() {
