@@ -76,10 +76,6 @@ module.exports = {
                 oryx3.participation = { ...oryx3.participation, ...data.profile.oryx3.participation };
                 oryx3.leading = { ...oryx3.leading, ...data.profile.oryx3.leading };
                 oryx3.pops = { ...oryx3.pops, ...data.profile.pops };
-                const hallsdb = getDB('343704644712923138')
-                if (hallsdb) hallsdb.query(`UPDATE users SET o3runs = ${data.profile.oryx3.participation.completions} WHERE id = '${id}'`);
-                if (hallsdb) hallsdb.query(`UPDATE users SET runesused = ${oryx3.pops.shield + oryx3.pops.sword + oryx3.pops.helmet} WHERE id = '${id}'`);
-                if (hallsdb) hallsdb.query(`UPDATE users SET incPops = ${oryx3.pops.inc} WHERE id = '${id}'`);
             }
         }
 
