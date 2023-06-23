@@ -1,6 +1,6 @@
 const Discord = require('discord.js')
 const botSettings = require('../settings.json')
-const axios = require('axios')
+const ErrorLogger = require('../lib/logError')
 const keyRoles = require('../data/keyRoles.json')
 const { getDB, guildSchema } = require('../dbSetup.js')
 const { iterServers } = require('../jobs/util.js')
