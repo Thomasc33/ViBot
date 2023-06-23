@@ -62,24 +62,24 @@
     ],
     "708026927721480254": [
         {
-            "types": [ ["shieldRunePops", "Shield Runes Used"], ["swordRunePops", "Sword Runes Used"], ["helmetRunePops", "Helmet Runes Used"] ],
+            "types": [ ["shieldRunePops", "Shield Runes"], ["swordRunePops", "Sword Runes"], ["helmetRunePops", "Helmet Runes"] ],
             "amount": 15,
             "role": "bottomrune"
         },
         {
-            "types": [ ["shieldRunePops", "Shield Runes Used"], ["swordRunePops", "Sword Runes Used"], ["helmetRunePops", "Helmet Runes Used"] ],
+            "types": [ ["shieldRunePops", "Shield Runes"], ["swordRunePops", "Sword Runes"], ["helmetRunePops", "Helmet Runes"] ],
             "amount": 45,
             "role": "toprune"
         }
     ],
     "934611202787643412": [
         {
-            "types": [ ["shieldRunePops", "Shield Runes Used"], ["swordRunePops", "Sword Runes Used"], ["helmetRunePops", "Helmet Runes Used"] ],
+            "types": [ ["shieldRunePops", "Shield Runes"], ["swordRunePops", "Sword Runes"], ["helmetRunePops", "Helmet Runes"] ],
             "amount": 15,
             "role": "bottomrune"
         },
         {
-            "types": [ ["shieldRunePops", "Shield Runes Used"], ["swordRunePops", "Sword Runes Used"], ["helmetRunePops", "Helmet Runes Used"] ],
+            "types": [ ["shieldRunePops", "Shield Runes"], ["swordRunePops", "Sword Runes"], ["helmetRunePops", "Helmet Runes"] ],
             "amount": 45,
             "role": "toprune"
         }
