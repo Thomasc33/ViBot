@@ -206,7 +206,7 @@ function getFields(row, schema, bot) {
             inline: true
         },        
         {
-            name: `<:TheForgottenCrown:719931358889115680> __**Moonlight Runs Led**__ <:TheForgottenCrown:719931358889115680>`,
+            name: `<:TheForgottenCrown:719931358889115680> __**Moonlights Led**__ <:TheForgottenCrown:719931358889115680>`,
             value: `<:MoonlightBoss:1090178399252783104> ${row.moonlightLead}`,
             inline: true
         },
