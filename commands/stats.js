@@ -120,7 +120,7 @@ function getFields(row, schema, bot) {
                 inline: true
             },
             {
-                name: `<:oryxThree:831047591096745984> __**Runs Lead**__ <:oryxThree:831047591096745984>`,
+                name: `<:oryxThree:831047591096745984> __**Runs Led**__ <:oryxThree:831047591096745984>`,
                 value: `${bot.storedEmojis.oryxThree.text} ${row.o3leads} Normal Runs\n` +
                     `${bot.storedEmojis.oryxThree.text} ${row.o3vetleads} Veteran Runs\n` +
                     `${bot.storedEmojis.feedback.text} ${row.o3feedback} Feedbacks\n` +
@@ -198,7 +198,7 @@ function getFields(row, schema, bot) {
             inline: true
         },
         {
-            name: `<:TheForgottenCrown:719931358889115680> __**Shatters Runs Led**__ <:TheForgottenCrown:719931358889115680>`,
+            name: `<:TheForgottenCrown:719931358889115680> __**Shatters Led**__ <:TheForgottenCrown:719931358889115680>`,
             value: `<:forgottenKing:849406533435523093> ${row.successruns} Normal\n` +
                 `<:forgottenKing:849406533435523093> ${row.veteranShattersLead} Veteran\n` +
                 `<:forgottenKing:849406533435523093> ${row.hardmodeLead} Hardmode\n` +
