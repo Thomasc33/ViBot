@@ -70,7 +70,7 @@ module.exports = {
         //Add o3 and misc(points)
         let otherFields = []
         if (botSettings.osancStats) {
-            let oryx3 = rows[guildSchema(guild.id)][0]
+            let oryx3 = rows[guildSchema('343704644712923138')][0] // hard coded, but i do not care
             otherFields = getFields(oryx3, 'oryx3', bot)
         }
         if (rows['halls'] && rows['halls'][0]) otherFields.push({ name: `✨ Miscellaneous Stats ✨`, value: `🎟️ ${rows['halls'][0].points || 0} Points` })
