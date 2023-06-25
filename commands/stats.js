@@ -1,6 +1,6 @@
 const Discord = require('discord.js')
 const botSettings = require('../settings.json')
-const axios = require('axios')
+const ErrorLogger = require('../lib/logError')
 const keyRoles = require('../data/keyRoles.json')
 const { getDB, guildSchema } = require('../dbSetup.js')
 const { iterServers } = require('../jobs/util.js')
@@ -58,31 +58,7 @@ module.exports = {
                 rows[schema] = userRows
             }
         })
-
-        //OSanc Logic
-        let data, hasO3 = false;
-        const oryx3 = {
-            participation: { reg: 0, vet: 0, completions: 0 },
-            leading: { reg: 0, vet: 0 },
-            pops: { inc: 0, shield: 0, sword: 0, helmet: 0 },
-            rows: rows[guildSchema(guild.id)][0]
-        };
         
-        if (botSettings.osancStats) {
-            if (ign) data = await axios.post(`https://api.osanc.net/getProfile`, { ign });
-            if (data) data = data.data;
-            if (data && data.profile && data.profile.oryx3) {
-                hasO3 = true
-                oryx3.participation = { ...oryx3.participation, ...data.profile.oryx3.participation };
-                oryx3.leading = { ...oryx3.leading, ...data.profile.oryx3.leading };
-                oryx3.pops = { ...oryx3.pops, ...data.profile.pops };
-                const hallsdb = getDB('343704644712923138')
-                if (hallsdb) hallsdb.query(`UPDATE users SET o3runs = ${data.profile.oryx3.participation.completions} WHERE id = '${id}'`);
-                if (hallsdb) hallsdb.query(`UPDATE users SET runesused = ${oryx3.pops.shield + oryx3.pops.sword + oryx3.pops.helmet} WHERE id = '${id}'`);
-                if (hallsdb) hallsdb.query(`UPDATE users SET incPops = ${oryx3.pops.inc} WHERE id = '${id}'`);
-            }
-        }
-
         //setup embed
         const embed = new Discord.EmbedBuilder()
             .setColor('#015c21')
@@ -93,7 +69,10 @@ module.exports = {
 
         //Add o3 and misc(points)
         let otherFields = []
-        if (hasO3) otherFields = getFields(oryx3, 'oryx3', bot)
+        if (botSettings.osancStats) {
+            let oryx3 = rows[guildSchema('343704644712923138')][0] // hard coded, but i do not care
+            otherFields = getFields(oryx3, 'oryx3', bot)
+        }
         if (rows['halls'] && rows['halls'][0]) otherFields.push({ name: `✨ Miscellaneous Stats ✨`, value: `🎟️ ${rows['halls'][0].points || 0} Points` })
         if (rows['testinghalls']) otherFields.push({ name: `✨ (Testing) Miscellaneous Stats ✨`, value: `🎟️ ${rows['testinghalls'][0].points || 0} Points` })
         if (otherFields.length > 0) embed.addFields(otherFields);
@@ -127,25 +106,25 @@ function getFields(row, schema, bot) {
             },
             {
                 name: `<:o3portal:831046404252237855> __**Runes Popped**__ <:o3portal:831046404252237855>`,
-                value: `<:inc:831046532156620851> ${row.pops.inc}\n` +
-                    `<:shieldRune:831046532232118292> ${row.pops.shield}\n` +
-                    `<:swordRune:831046532370530324> ${row.pops.sword}\n` +
-                    `<:helmetRune:831046532115202078> ${row.pops.helmet} `,
+                value: `<:inc:831046532156620851> ${row.incPops}\n` +
+                    `<:shieldRune:831046532232118292> ${row.shieldRunePops}\n` +
+                    `<:swordRune:831046532370530324> ${row.swordRunePops}\n` +
+                    `<:helmetRune:831046532115202078> ${row.helmetRunePops} `,
                 inline: true
             },
             {
                 name: `<:oryxThree:831047591096745984> __**Runs Done**__ <:oryxThree:831047591096745984>`,
-                value: `${bot.storedEmojis.oryxThree.text} ${row.participation.reg} Normal Runs\n` +
-                    `${bot.storedEmojis.oryxThree.text} ${row.participation.vet} Veteran Runs\n` +
-                    `${bot.storedEmojis.oryxThree.text} ${row.participation.completions} Completes`,
+                value: `${bot.storedEmojis.oryxThree.text} ${row.o3runs} Normal Runs\n` +
+                    `${bot.storedEmojis.oryxThree.text} ${row.o3vetruns} Veteran Runs\n` +
+                    `${bot.storedEmojis.oryxThree.text} ${row.o3completes} Completes`,
                 inline: true
             },
             {
-                name: `<:oryxThree:831047591096745984> __**Runs Lead**__ <:oryxThree:831047591096745984>`,
-                value: `${bot.storedEmojis.oryxThree.text} ${row.rows.o3leads} Normal Runs\n` +
-                    `${bot.storedEmojis.oryxThree.text} ${row.leading.vet} Veteran Runs\n` +
-                    `${bot.storedEmojis.feedback.text} ${row.rows.o3feedback} Feedbacks\n` +
-                    `:mag: ${row.rows.o3parses} Parses`,
+                name: `<:oryxThree:831047591096745984> __**Runs Led**__ <:oryxThree:831047591096745984>`,
+                value: `${bot.storedEmojis.oryxThree.text} ${row.o3leads} Normal Runs\n` +
+                    `${bot.storedEmojis.oryxThree.text} ${row.o3vetleads} Veteran Runs\n` +
+                    `${bot.storedEmojis.feedback.text} ${row.o3feedback} Feedbacks\n` +
+                    `:mag: ${row.o3parses} Parses`,
                 inline: true
             }
         ]
@@ -219,7 +198,7 @@ function getFields(row, schema, bot) {
             inline: true
         },
         {
-            name: `<:TheForgottenCrown:719931358889115680> __**Shatters Runs Led**__ <:TheForgottenCrown:719931358889115680>`,
+            name: `<:TheForgottenCrown:719931358889115680> __**Shatters Led**__ <:TheForgottenCrown:719931358889115680>`,
             value: `<:forgottenKing:849406533435523093> ${row.successruns} Normal\n` +
                 `<:forgottenKing:849406533435523093> ${row.veteranShattersLead} Veteran\n` +
                 `<:forgottenKing:849406533435523093> ${row.hardmodeLead} Hardmode\n` +
@@ -227,7 +206,7 @@ function getFields(row, schema, bot) {
             inline: true
         },        
         {
-            name: `<:TheForgottenCrown:719931358889115680> __**Moonlight Runs Led**__ <:TheForgottenCrown:719931358889115680>`,
+            name: `<:TheForgottenCrown:719931358889115680> __**Moonlights Led**__ <:TheForgottenCrown:719931358889115680>`,
             value: `<:MoonlightBoss:1090178399252783104> ${row.moonlightLead}`,
             inline: true
         },
