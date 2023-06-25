@@ -1,6 +1,5 @@
-const afkCheck = require('./afkCheck.js');
-const EventAFK = require('./eventAfk')
 const Discord = require('discord.js')
+const afkCheck = require('./afkCheck.js');
 
 module.exports = {
     name: 'location',
@@ -9,19 +8,28 @@ module.exports = {
     requiredArgs: 1,
     args: '<location>',
     role: 'eventrl',
-    allowedInRestart: true,
-    execute(message, args, bot) {
-        let channel = message.member.voice.channelId
-        if (!channel) return message.channel.send('Please join a voice channel to change location')
-        let location = "";
-        for (i = 0; i < args.length; i++) location = location.concat(args[i]) + ' ';
-        location = location.trim();
-        if (location.length >= 1024) return message.channel.send('Location must be below 1024 characters, try again');
-        if (location == '') return;
-        //if (message.channel.parent.name.toLowerCase() === 'events') return afkCheck.changeLocation(location, channel)
-        let res = afkCheck.changeLocation(location, channel)
-        if (res) message.channel.send(res)
-        else message.react('✅');
-
+    async execute(message, args, bot) {
+        let location = args.join(' ')
+        if (location.length >= 1024) return await message.channel.send('Location must be below 1024 characters, try again')
+        if (location == '') location = 'None'
+        let raidID = undefined
+        const raidIDs = afkCheck.returnRaidIDsbyMemberID(bot, message.member.id)
+        if (raidIDs.length == 0) return message.channel.send('There is no active run to change the location of')
+        else if (raidIDs.length == 1) raidID = raidIDs[0]
+        else {
+            const locationMenu = new Discord.StringSelectMenuBuilder()
+                .setCustomId(`location`)
+                .setPlaceholder(`Active Runs`)
+                .setMinValues(1)
+                .setMaxValues(1)
+            for (let raidID of raidIDs) locationMenu.addOptions({ label: `${bot.afkCheck[raidID].afkTemplate.name} ${bot.afkCheck[raidID].time}`, value: raidID })
+            const locationMessage = await message.channel.send({ content: `${message.member}`, components: [] })
+            const locationValue = await locationMessage.selectPanel(locationMenu, this.#message.member.id, 10000)
+            await locationMessage.delete()
+            raidID = locationValue
+        }
+        bot.afkCheck[raidID].location = location
+        bot.afkCheck[raidID].afk.updateLocation()
+        message.react('✅')
     }
 }
