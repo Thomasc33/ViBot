@@ -446,7 +446,7 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "vialpops"
+                                    "vialUsed"
                                 ],
                                 "points": "vialpop",
                                 "multiplier": null
@@ -848,7 +848,7 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "vialpops"
+                                    "vialUsed"
                                 ],
                                 "points": "vialpop",
                                 "multiplier": null
@@ -1218,7 +1218,7 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "vialpops"
+                                    "vialUsed"
                                 ],
                                 "points": "vialpop",
                                 "multiplier": null
@@ -1598,7 +1598,7 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "vialpops"
+                                    "vialUsed"
                                 ],
                                 "points": "vialpop",
                                 "multiplier": null
@@ -17865,7 +17865,7 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "vialpops"
+                                    "vialUsed"
                                 ],
                                 "points": "vialpop",
                                 "multiplier": null
@@ -19016,7 +19016,7 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "vialpops"
+                                    "vialUsed"
                                 ],
                                 "points": 0,
                                 "multiplier": null
@@ -20802,7 +20802,7 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "vialpops"
+                                    "vialUsed"
                                 ],
                                 "points": "vialpop",
                                 "multiplier": null
@@ -21204,7 +21204,7 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "vialpops"
+                                    "vialUsed"
                                 ],
                                 "points": "vialpop",
                                 "multiplier": null
@@ -21574,7 +21574,7 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "vialpops"
+                                    "vialUsed"
                                 ],
                                 "points": "vialpop",
                                 "multiplier": null
@@ -21954,7 +21954,7 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "vialpops"
+                                    "vialUsed"
                                 ],
                                 "points": "vialpop",
                                 "multiplier": null
@@ -38992,7 +38992,7 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "vialpops"
+                                    "vialUsed"
                                 ],
                                 "points": "vialpop",
                                 "multiplier": null
@@ -40147,7 +40147,7 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "vialpops"
+                                    "vialUsed"
                                 ],
                                 "points": 0,
                                 "multiplier": null

@@ -623,14 +623,13 @@ class afkCheck {
             confirmEmbed.setDescription(`Successfully moved to the next phase. You can dismiss this message.`)
             await interaction.editReply({ embeds: [confirmEmbed], components: [] })
         }
-        let tempRaidStatusMessage = null
-        if (this.#afkTemplate.body[this.phase].message) tempRaidStatusMessage = await this.#afkTemplate.raidStatusChannel.send({ content: `${this.#afkTemplate.body[this.phase].message}` })
         this.phase++
         if (this.phase > this.#afkTemplate.phases) {
             if (interaction) this.removeFromActiveInteractions(interaction.member.id)
             return this.postAfk(interaction)
         }
-
+        let tempRaidStatusMessage = null
+        if (this.#afkTemplate.body[this.phase].message) tempRaidStatusMessage = await this.#afkTemplate.raidStatusChannel.send({ content: `${this.#afkTemplate.body[this.phase].message}` })
         setTimeout(async () => {
             if (this.#afkTemplate.body[this.phase].vcState == AfkTemplate.TemplateVCState.OPEN && this.#channel) await this.#channel.permissionOverwrites.edit(this.#afkTemplate.minimumJoinRaiderRole.id, { Connect: true, ViewChannel: true }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
             else if (this.#afkTemplate.body[this.phase].vcState == AfkTemplate.TemplateVCState.LOCKED && this.#channel) await this.#channel.permissionOverwrites.edit(this.#afkTemplate.minimumJoinRaiderRole.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
@@ -715,7 +714,7 @@ class afkCheck {
                 .setMinValues(1)
                 .setMaxValues(1)
             for (let i in buttonInfo.logOptions) confirmOptionMenu.addOptions({ label: i, value: i })
-            const confirmOptionValue = await interaction.selectPanel(confirmOptionValue, confirmEmbed, false, 10000)
+            const confirmOptionValue = await interaction.selectPanel(confirmOptionMenu, confirmEmbed, false, 10000)
             logOption = buttonInfo.logOptions[confirmOptionValue]
             if (!logOption) {
                 confirmEmbed.setDescription(`Invalid option, try again. You can dismiss this message.`)
@@ -737,7 +736,7 @@ class afkCheck {
             })
         }
         let points = logOption.points * number * logOption.multiplier
-        this.#db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u}'`, (err, rows) => {
+        this.#db.query(`UPDATE users SET points = points + ${points} WHERE id = '${member.id}'`, (err, rows) => {
             if (err) return console.log(`error logging ${i} points in `, this.#guild.id)
         })
         confirmEmbed.setDescription('Sucessfully logged. You can dismiss this message.')
