@@ -43,7 +43,7 @@ module.exports = {
 
         //send query
         promises.push(new Promise(res => {
-            db.query(`INSERT INTO loggedusage (logged, userid, guildid, utime) VALUES ('${run.name}', '${message.member.id}', '${message.guild.id}', '${Date.now()}')`);
+            db.query(`INSERT INTO loggedusage (logged, userid, guildid, utime, amount) VALUES ('${run.name}', '${message.member.id}', '${message.guild.id}', '${Date.now()}', '${count}')`);
             db.query(`UPDATE users SET ${run.main} = ${run.main} + ${count}, ${run.currentweek} = ${run.currentweek} + ${count} WHERE id = '${message.author.id}'`, (err, rows) => {
                 //return if any errors
                 if (err) { res(null); return message.channel.send(`Error: ${err}`) }
