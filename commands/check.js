@@ -1,7 +1,5 @@
 const Discord = require('discord.js')
 const FalseSuspends = require('./falseSuspensions')
-const EventDupes = require('./eventDupes')
-const eventDupes = require('./eventDupes')
 const ignores = require('../data/checkIgnores.json');
 module.exports = {
     name: 'check',
@@ -281,7 +279,6 @@ module.exports = {
             }
             checkMessage.edit({ content: null, embeds: [checkEmbed] })
             FalseSuspends.execute(message, args, bot, db)
-            if (!settings.backend.giveeventroleonverification) eventDupes.execute(message, args, bot, db)
         }
     }
 }
