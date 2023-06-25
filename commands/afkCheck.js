@@ -7,14 +7,9 @@ const realmEyeScrape = require('../lib/realmEyeScrape')
 const points = require('./points')
 const keyRoles = require('./keyRoles')
 const restart = require('./restart')
-const EventEmitter = require('events').EventEmitter
 const pointLogger = require('../lib/pointLogger')
-const afkTemplates = require('../data/afkTemplates.json')
-const bannedNames = require('../data/bannedNames.json')
-var emitter = new EventEmitter()
 require(`../lib/extensions`)
 
-var runs = [] //{channel: id, afk: afk instance}
 var registeredWithRestart = false
 var registeredWithVibotChannels = false
 
@@ -24,6 +19,9 @@ module.exports = {
     requiredArgs: 1,
     args: '<run symbol> <location>',
     role: 'eventrl',
+    getNotes(guildid, member) {
+        return `**Run Types:**\n*Regular Afk Checks:*\n${afkCheck.getNotes(guildid, member)}\n*Events:*\nSee \`;events\``
+    },
     /**
      * Main Execution Function
      * @param {Discord.Message} message
@@ -51,6 +49,7 @@ module.exports = {
         let location = args.join(' ')
         if (location.length >= 1024) return await message.channel.send('Location must be below 1024 characters, try again')
         if (location == '') location = 'None'
+        message.react('✅')
 
         const afkModule = new afkCheck(afkTemplate, bot, db, message, location)
         await afkModule.createChannel()
@@ -65,29 +64,13 @@ module.exports = {
             start(afkModule)
         }
     },
-    // NEEDS TO BE RETOOLED
-    changeLocation(location, channelID) {
-        for (const run of runs) {
-            if (run.channel == channelID) {
-                run.afk.changeLocation(location);
-                return;
-            }
+    returnRaidIDsbyMemberID(bot, memberID) {
+        const afkChecks = []
+        for (let raidID in bot.afkChecks) {
+            if (bot.afkChecks[raidID].active && bot.afkChecks[raidID].leader == memberID) afkChecks.push(raidID)
         }
-        return 'Run not found';
-    },
-    async checkRuns() {
-        let activeRuns = []
-        for (let i of runs)
-            if (i.afk.active) activeRuns.push(i.channel)
-        return activeRuns
-    },
-    async returnRunByID(channel_id) {
-        for (let i of runs) {
-            if (i.afk.active && i.channel == channel_id) { return i.afk; }
-        }
-        return undefined;
+        return afkChecks;
     }
-    // NEEDS TO BE RETOOLED
 }
 
 async function start(afkModule) {
@@ -97,7 +80,7 @@ async function start(afkModule) {
 
 class afkCheck {
     /**
-     * @param {afkTemplate} afkTemplate
+     * @param {AfkTemplate.AfkTemplate} afkTemplate
      * @param {Discord.Client} bot
      * @param {import('mysql').Connection} db
      * @param {Discord.Message} message
@@ -125,7 +108,8 @@ class afkCheck {
         this.#raidID = null // ID of the afk
 
         this.members = [] // All members in the afk
-        this.earlyMembers = [] // All members with early slots in the afk
+        this.earlyLocationMembers = [] // All members with early location in the afk
+        this.earlySlotMembers = [] // All members with early slots in the afk
         this.dragMembers = [] // All members currently in drag system in the afk
         this.openInteractions = [] // All members currently in the middle of a button interaction
         this.reactables = {} // All members of each reactable and position on embed
@@ -152,8 +136,10 @@ class afkCheck {
         Object.keys(afkTemplate.buttons).forEach((key) => { if (afkTemplate.buttons[key].type == AfkTemplate.TemplateButtonType.DRAG) this.raidDragThreads[key] = { thread: null, collector: null } }) 
     }
     
-    updateBotAfkCheck() {
-        this.#bot.afkChecks[this.#raidID] = {
+    updateBotAfkCheck(deleteCheck = false) {
+        if (deleteCheck) delete this.#bot.afkChecks[this.#raidID]
+        else this.#bot.afkChecks[this.#raidID] = {
+            afk: this,
             guild: this.#guild.id,
             channel: this.#channel ? this.#channel.id : null,
             leader: this.#leader.id,
@@ -162,7 +148,8 @@ class afkCheck {
             active: this.active,
             afkTemplate: this.#afkTemplate,
             members: this.members,
-            earlyMembers: this.earlyMembers,
+            earlyLocationMembers: this.earlyLocationMembers,
+            earlySlotMembers: this.earlySlotMembers,
             reactables: this.reactables,
             location: this.location,
             phase: this.phase
@@ -253,7 +240,7 @@ class afkCheck {
             let descriptionBeginning = `This thread is for the ${emote}${i}.\n`
             let descriptionEnd = `Press ✅ on images to allow. Otherwise press ❌ to deny.`
             let descriptionMiddle = ``
-            if (this.#afkTemplate.buttons[i].confirmationMessage) descriptionMiddle = this.#afkTemplate.buttons[i].confirmationMessage
+            if (this.#afkTemplate.buttons[i].confirmationMessage) descriptionMiddle = `${this.#afkTemplate.buttons[i].confirmationMessage}\n`
             embed.setDescription(`${descriptionBeginning}${descriptionMiddle}${descriptionEnd}`)
             if (this.#afkTemplate.buttons[i].confirmationMedia) embed.setImage(this.#afkTemplate.buttons[i].confirmationMedia)
             await this.raidDragThreads[i].thread.send({ embeds: [embed] })
@@ -266,7 +253,7 @@ class afkCheck {
     }
 
     async moveInEarlys() {
-        for (let i of this.earlyMembers) {
+        for (let i of this.earlySlotMembers) {
             let member = this.#guild.members.cache.get(i)
             if (!member.voice.channel) continue
             if (member.voice.channel.name.includes('lounge') || member.voice.channel.name.includes('Lounge') || member.voice.channel.name.includes('drag')) await member.voice.setChannel(this.channel.id).catch(er => { })
@@ -292,13 +279,13 @@ class afkCheck {
     async sendInitialStatusMessage() {
         this.#afkTemplate.processBody(this.#channel)
         let flag = {'us': ':flag_us:', 'eu': ':flag_eu:'}[this.location.substring(0, 2)]
-        let pingText = this.#afkTemplate.pingRoles.join(' ')
+        let pingText = this.#afkTemplate.pingRoles ? `${this.#afkTemplate.pingRoles.join(' ')}, ` : ``
         this.raidStatusEmbed = new Discord.EmbedBuilder()
             .setColor(this.#afkTemplate.body[this.phase].embed.color ? this.#afkTemplate.body[this.phase].embed.color : '#ffffff')
             .setDescription(`\`${this.#afkTemplate.name}\`${flag ? ` in (${flag})` : ''} will begin in ${Math.round(this.#afkTemplate.startDelay)} seconds. Be prepared to join the raid.`)
         if (this.#afkTemplate.body[this.phase].embed.thumbnail) this.raidStatusEmbed.setThumbnail(this.#afkTemplate.body[this.phase].embed.thumbnail[Math.floor(Math.random()*this.#afkTemplate.body[this.phase].embed.thumbnail.length)])
         this.raidStatusMessage = await this.#afkTemplate.raidStatusChannel.send({
-            content: `${pingText}, ${this.#afkTemplate.name}${flag ? ` (${flag})` : ''}. Reactables will be prioritised. After everything is confirmed, the channel will open up.`,
+            content: `${pingText}${this.#afkTemplate.name}${flag ? ` (${flag})` : ''}. Reactables will be prioritised. After everything is confirmed, the channel will open up.`,
             embeds: [this.#afkTemplate.startDelay > 0 ? this.raidStatusEmbed : null]
         })
         for (let i in this.#afkTemplate.raidPartneredStatusChannels) {
@@ -506,8 +493,19 @@ class afkCheck {
             }
             if (!buttonStatus) return this.removeFromActiveInteractions(interaction.member.id)
             this.reactables[interaction.customId].members.push(interaction.member.id)
-            if (!this.earlyMembers.includes(interaction.member.id)) this.earlyMembers.push(interaction.member.id)
-            this.raidCommandsEmbed.data.fields[position].value = this.reactables[interaction.customId].members.reduce((string, id, ind) => string + `${emote ? emote : ind}: <@!${id}>\n`, '')
+            if (buttonInfo.parent) {
+                for (let i of buttonInfo.parent) {
+                    const parentButtonInfo = this.#afkTemplate.buttons[i]
+                    const parentPosition = this.reactables[i].position
+                    const parentEmote = parentButtonInfo.emote ? `${parentButtonInfo.emote.text} ` : ``
+                    if (!this.reactables[i].members.includes(interaction.member.id)) this.reactables[i].members.push(interaction.member.id)
+                    if (parentButtonInfo.location && !this.earlyLocationMembers.includes(interaction.member.id)) this.earlyLocationMembers.push(interaction.member.id)
+                    this.raidCommandsEmbed.data.fields[parentPosition].value = this.reactables[i].members.reduce((string, id, ind) => string + `${parentEmote ? parentEmote : ind+1}: <@!${id}>\n`, '')
+                }
+            }
+            if (!this.earlySlotMembers.includes(interaction.member.id)) this.earlySlotMembers.push(interaction.member.id)
+            if (buttonInfo.location && !this.earlyLocationMembers.includes(interaction.member.id)) this.earlyLocationMembers.push(interaction.member.id)
+            this.raidCommandsEmbed.data.fields[position].value = this.reactables[interaction.customId].members.reduce((string, id, ind) => string + `${emote ? emote : ind+1}: <@!${id}>\n`, '')
             await this.raidCommandsMessage.edit({ embeds: [this.raidCommandsEmbed] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
             await this.raidInfoMessage.edit({ embeds: [this.raidCommandsEmbed] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
             return this.removeFromActiveInteractions(interaction.member.id)
@@ -591,11 +589,11 @@ class afkCheck {
         await this.raidInfoMessage.edit({ embeds: [this.raidCommandsEmbed] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
         await this.raidChannelsMessage.delete()
         this.active = false
-        this.updateBotAfkCheck()
+        this.updateBotAfkCheck(true)
     }
 
     async processPhaseNext(interaction) {
-        if (interaction.member != this.#leader) {
+        if (interaction && interaction.member != this.#leader) {
             const confirmEmbed = new Discord.EmbedBuilder()
             .setDescription(`Are you sure you want to move to the next phase?\nThis window will close in 10 seconds and cancel.`)
             const confirmButton = new Discord.ButtonBuilder()
@@ -615,39 +613,18 @@ class afkCheck {
             confirmEmbed.setDescription(`Successfully moved to the next phase. You can dismiss this message.`)
             await interaction.editReply({ embeds: [confirmEmbed], components: [] })
         }
-        const confirmEmbed = new Discord.EmbedBuilder()
-            .setDescription(`Are you sure you want to move to the next phase?\nThis window will close in 10 seconds and cancel.`)
-        const confirmButton = new Discord.ButtonBuilder()
-            .setCustomId('Confirmed')
-            .setLabel('✅ Yes')
-            .setStyle(Discord.ButtonStyle.Success)
-        const cancelButton = new Discord.ButtonBuilder()
-            .setCustomId('Cancelled')
-            .setLabel('❌ Cancel')
-            .setStyle(Discord.ButtonStyle.Secondary)
-        const confirmValue = await interaction.confirmPanel(confirmButton, cancelButton, confirmEmbed, true, 10000)
-        if (!confirmValue) {
-            confirmEmbed.setDescription(`Cancelled. You can dismiss this message.`)
-            await interaction.editReply({ embeds: [confirmEmbed], components: [] })
-            return
-        } else {
-            confirmEmbed.setDescription(`Channel successfully moved to the next phase. You can dismiss this message.`)
-            await interaction.editReply({ embeds: [confirmEmbed], components: [] })
-        }
-
         let tempRaidStatusMessage = null
         if (this.#afkTemplate.body[this.phase].message) tempRaidStatusMessage = await this.#afkTemplate.raidStatusChannel.send({ content: `${this.#afkTemplate.body[this.phase].message}` })
-
         this.phase++
         if (this.phase > this.#afkTemplate.phases) {
             if (interaction) this.removeFromActiveInteractions(interaction.member.id)
             return this.postAfk(interaction)
         }
-        if (interaction) await interaction.deferUpdate()
+
         setTimeout(async () => {
             if (this.#afkTemplate.body[this.phase].vcState == AfkTemplate.TemplateVCState.OPEN && this.#channel) await this.#channel.permissionOverwrites.edit(this.#afkTemplate.minimumJoinRaiderRole.id, { Connect: true, ViewChannel: true }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
             else if (this.#afkTemplate.body[this.phase].vcState == AfkTemplate.TemplateVCState.LOCKED && this.#channel) await this.#channel.permissionOverwrites.edit(this.#afkTemplate.minimumJoinRaiderRole.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
-            await Promise.all([this.sendStatusMessage(),this.sendCommandsMessage(), this.sendChannelsMessage()])
+            await Promise.all([this.sendStatusMessage(), this.sendCommandsMessage(), this.sendChannelsMessage()])
         }, 5000)
         setTimeout(async () => { if (tempRaidStatusMessage) await tempRaidStatusMessage.delete() }, 10000)
     }
@@ -768,7 +745,7 @@ class afkCheck {
         await this.raidInfoMessage.edit({ embeds: [this.raidCommandsEmbed] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
         await this.raidChannelsMessage.delete()
         this.active = false
-        this.updateBotAfkCheck()
+        this.updateBotAfkCheck(true)
     } 
 
     async processReactableNormal(interaction) {
@@ -780,7 +757,7 @@ class afkCheck {
             let descriptionBeginning = `You reacted with ${emote}${interaction.customId}.\n`
             let descriptionEnd = `Press ✅ to confirm your reaction. Otherwise press ❌`
             let descriptionMiddle = ``
-            if (buttonInfo.confirmationMessage) descriptionMiddle = buttonInfo.confirmationMessage
+            if (buttonInfo.confirmationMessage) descriptionMiddle = `${buttonInfo.confirmationMessage}\n`
             embed.setDescription(`${descriptionBeginning}${descriptionMiddle}${descriptionEnd}`)
             if (buttonInfo.confirmationMedia) embed.setImage(buttonInfo.confirmationMedia)
             const confirmButton = new Discord.ButtonBuilder()
@@ -822,7 +799,7 @@ class afkCheck {
     async processReactableSupporter(interaction) {
         const embed = new Discord.EmbedBuilder()
 
-        if (this.earlyMembers.includes(interaction.member.id)) {
+        if (this.earlySlotMembers.includes(interaction.member.id)) {
             embed.setDescription(`Supporter Perks in \`${interaction.guild.name}\` only gives a guaranteed slot in the raid and you already have this from another react.\nYour Supporter Perks have not been used.${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`)
             await interaction.reply({ embeds: [embed], ephemeral: true })
             return false
@@ -914,7 +891,7 @@ class afkCheck {
         if (buttonInfo.confirm) {
             let descriptionBeginning = `You reacted with ${emote}${interaction.customId}.\n`
             let descriptionEnd = `Press ✅ to confirm your reaction. Otherwise press ❌`
-            if (buttonInfo.confirmationMessage) descriptionMiddle = buttonInfo.confirmationMessage
+            if (buttonInfo.confirmationMessage) descriptionMiddle = `${buttonInfo.confirmationMessage}\n`
             else descriptionMiddle = `You currently have ${emote} \`${rows[0].points}\` points\nEarly location costs ${emote} \`${earlyLocationCost}\``
             embed.setDescription(`${descriptionBeginning}${descriptionMiddle}${descriptionEnd}`)
             if (buttonInfo.confirmationMedia) embed.setImage(buttonInfo.confirmationMedia)
@@ -973,7 +950,7 @@ class afkCheck {
         let descriptionBeginning = `You reacted with ${emote}${interaction.customId}.\n`
         let descriptionEnd = `Press ✅ and upload an image (have a link on hand) to confirm your reaction. Otherwise press ❌`
         let descriptionMiddle = ``
-        if (buttonInfo.confirmationMessage) descriptionMiddle = buttonInfo.confirmationMessage
+        if (buttonInfo.confirmationMessage) descriptionMiddle = `${buttonInfo.confirmationMessage}\n`
         embed.setDescription(`${descriptionBeginning}${descriptionMiddle}${descriptionEnd}`)
         if (buttonInfo.confirmationMedia) embed.setImage(buttonInfo.confirmationMedia)
         const confirmButton = new Discord.ButtonBuilder()
@@ -1045,15 +1022,27 @@ class afkCheck {
             let customID = null
             for (let i in this.raidDragThreads) if (interaction.channel.id == this.raidDragThreads[i].thread.id) customID = i
             if (!customID) return
+            const buttonInfo = this.#afkTemplate.buttons[customID]
             const position = this.reactables[customID].position
-            const emote = this.#afkTemplate.buttons[customID].emote ? `${this.#afkTemplate.buttons[customID].emote.text} ` : ``
+            const emote = buttonInfo.emote ? `${buttonInfo.emote.text} ` : ``
             if (this.#afkTemplate.buttons[customID].location) DMEmbed.setDescription(`You have been accepted by ${interaction.member}.\nThe location for this run has been set to \`${this.location}\`, get there ASAP!${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`)
             else DMEmbed.setDescription(`You have been accepted by ${interaction.member}.\nYou do not get location for this reaction.${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`)
             await member.send({ embeds: [DMEmbed], components: [] }).catch(er => {})
-            
+
             this.reactables[customID].members.push(memberID)
-            if (!this.earlyMembers.includes(memberID)) this.earlyMembers.push(memberID)
-            this.raidCommandsEmbed.data.fields[position].value = this.reactables[customID].members.reduce((string, id, ind) => string + `${emote ? emote : ind}: <@!${id}>\n`, '')
+            if (buttonInfo.parent) {
+                for (let i of buttonInfo.parent) {
+                    const parentButtonInfo = this.#afkTemplate.buttons[i]
+                    const parentPosition = this.reactables[i].position
+                    const parentEmote = parentButtonInfo.emote ? `${parentButtonInfo.emote.text} ` : ``
+                    if (!this.reactables[i].members.includes(memberID)) this.reactables[i].members.push(memberID)
+                    if (parentButtonInfo.location && !this.earlyLocationMembers.includes(memberID)) this.earlyLocationMembers.push(memberID)
+                    this.raidCommandsEmbed.data.fields[parentPosition].value = this.reactables[i].members.reduce((string, id, ind) => string + `${parentEmote ? parentEmote : ind+1}: <@!${id}>\n`, '')
+                }
+            }
+            if (!this.earlySlotMembers.includes(memberID)) this.earlySlotMembers.push(memberID)
+            if (buttonInfo.location && !this.earlyLocationMembers.includes(memberID)) this.earlyLocationMembers.push(memberID)
+            this.raidCommandsEmbed.data.fields[position].value = this.reactables[customID].members.reduce((string, id, ind) => string + `${emote ? emote : ind+1}: <@!${id}>\n`, '')
             await this.raidCommandsMessage.edit({ embeds: [this.raidCommandsEmbed] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
             await this.raidInfoMessage.edit({ embeds: [this.raidCommandsEmbed] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
         }
@@ -1112,7 +1101,7 @@ class afkCheck {
         await this.raidChannelsMessage.edit({ embeds: [this.raidChannelsEmbed], components: phaseComponents }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
 
         if (this.#channel) this.#channel.members.forEach(m => this.members.push(m.id))
-        else this.earlyMembers.forEach(id => this.members.push(id))
+        else this.earlySlotMembers.forEach(id => this.members.push(id))
 
         for (let u of this.members) {
             this.#db.query(`SELECT id FROM users WHERE id = '${u}'`, (err, rows) => {
@@ -1159,6 +1148,7 @@ class afkCheck {
 
         if (restart.restarting) this.loggingAfk()
         else setTimeout(this.loggingAfk.bind(this), 10000)
+        this.active = false
         this.updateBotAfkCheck()
     }
 
@@ -1181,23 +1171,15 @@ class afkCheck {
         }
     }
     
-    // NEEDS TO BE RETOOLED
-    async changeLocation(location) {
-        this.afkInfo.location = location;
-
-        if (!this.leaderEmbed) return
-        this.leaderEmbed.setDescription(`**Raid Leader: ${this.message.member} \`\`${this.message.member.nickname}\`\`\nVC: ${this.channel}\nLocation:** \`\`${this.afkInfo.location}\`\``)
-        this.leaderEmbedMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot, this.guild));
-        this.runInfoMessage.edit({ embeds: [this.leaderEmbed] }).catch(er => ErrorLogger.log(er, this.bot, this.guild));
-        if (this.partneredMessageSent && this.partneredMessage) {
-            this.partneredMessage.edit(`${this.partneredPings},  **${this.afkInfo.runName}** is starting inside of **${this.message.guild.name}** in ${this.channel} at \`\`${this.afkInfo.location}\`\``)
-        }
-
-        for (let i of this.earlyLocation) {
-            await i.send(`The location for this run has changed to \`${this.afkInfo.location}\``)
+    async updateLocation() {
+        this.location = this.#bot.afkChecks[this.#raidID].location
+        this.updateBotAfkCheck()
+        await Promise.all([this.sendCommandsMessage(), this.sendChannelsMessage()])
+        for (let i of this.earlyLocationMembers) {
+            let member = this.#guild.members.cache.get(i)
+            await member.send(`The location for this run has been changed to \`${this.afkInfo.location}\`, get there ASAP!`)
         }
     }
-    // NEEDS TO BE RETOOLED
 }
 // NEEDS TO BE RETOOLED
 function getBannedName(name, guildid) {
@@ -1208,18 +1190,18 @@ function getBannedName(name, guildid) {
 // NEEDS TO BE RETOOLED
 // NEEDS TO BE RETOOLED
 function getRunType(char, guildid) {
-    for (let i in afkTemplates[guildid]) {
-        if (char.toLowerCase() == afkTemplates[guildid][i].symbol) return afkTemplates[guildid][i];
-        if (afkTemplates[guildid][i].aliases) {
-            if (afkTemplates[guildid][i].aliases.includes(char.toLowerCase())) return afkTemplates[guildid][i];
+    for (let i in AfkTemplates[guildid]) {
+        if (char.toLowerCase() == AfkTemplates[guildid][i].symbol) return AfkTemplates[guildid][i];
+        if (AfkTemplates[guildid][i].aliases) {
+            if (AfkTemplates[guildid][i].aliases.includes(char.toLowerCase())) return AfkTemplates[guildid][i];
         }
     }
     return null
 }
 // NEEDS TO BE RETOOLED
 // NEEDS TO BE RETOOLED
-async function getTemplate(message, afkTemplates, runType) {
-    if (afkTemplates[message.author.id] && afkTemplates[message.author.id][runType.toLowerCase()]) return afkTemplates[message.author.id][runType.toLowerCase()]
+async function getTemplate(message, AfkTemplates, runType) {
+    if (AfkTemplates[message.author.id] && AfkTemplates[message.author.id][runType.toLowerCase()]) return AfkTemplates[message.author.id][runType.toLowerCase()]
     else return null
 }
 // NEEDS TO BE RETOOLED
