@@ -57,19 +57,29 @@ module.exports = {
         await afkModule.sendInitialStatusMessage()
         await afkModule.createThreads()
         afkModule.updateBotAfkCheck()
-        if (afkTemplate.startDelay > 0) {
-            setTimeout(start, afkTemplate.startDelay*1000, afkModule)
-        }
-        else {
-            start(afkModule)
-        }
+        if (afkTemplate.startDelay > 0) setTimeout(start, afkTemplate.startDelay*1000, afkModule)
+        else start(afkModule)
     },
     returnRaidIDsbyMemberID(bot, memberID) {
         const afkChecks = []
         for (let raidID in bot.afkChecks) {
             if (bot.afkChecks[raidID].active && bot.afkChecks[raidID].leader == memberID) afkChecks.push(raidID)
         }
-        return afkChecks;
+        return afkChecks
+    },
+    returnRaidIDsbyMemberVoice(bot, voiceID) {
+        const afkChecks = []
+        for (let raidID in bot.afkChecks) {
+            if (bot.afkChecks[raidID].active && bot.afkChecks[raidID].channel == voiceID) afkChecks.push(raidID)
+        }
+        return afkChecks
+    },
+    returnRaidIDsbyRaidID(bot, RSAID) {
+        const afkChecks = []
+        for (let raidID in bot.afkChecks) {
+            if (bot.afkChecks[raidID].active && bot.afkChecks[raidID].afk.raidStatusMessage.id == RSAID) afkChecks.push(raidID)
+        }
+        return afkChecks
     }
 }
 
@@ -660,6 +670,7 @@ class afkCheck {
 
         let member = null
         let number = null
+        let logOption = null
         let choiceText = buttonInfo.emote ? `${buttonInfo.emote.text} **${button}**` : `**${button}**`
         const confirmEmbed = new Discord.EmbedBuilder()
         confirmEmbed.setDescription(`Which member you want to log ${choiceText} reacts for in this run?\nChoose or input a username or id.\nThis window will cancel and close in 10 seconds.`)
@@ -676,6 +687,7 @@ class afkCheck {
             confirmEmbed.setDescription(`Invalid member, try again. You can dismiss this message.`)
             return await interaction.editReply({ embeds: [confirmEmbed], components: [] })
         }
+
         confirmEmbed.setDescription(`How many ${choiceText} reacts do you want to log for this member?\nChoose or input a number.\nThis window will cancel and close in 10 seconds.`)
         const confirmNumberMenu = new Discord.StringSelectMenuBuilder()
             .setCustomId(`number`)
@@ -694,16 +706,39 @@ class afkCheck {
             confirmEmbed.setDescription(`Invalid number, try again. You can dismiss this message.`)
             return await interaction.editReply({ embeds: [confirmEmbed], components: [] })
         }
-        this.#db.query(`UPDATE users SET ${buttonInfo.logName} = ${buttonInfo.logName} + ${number} WHERE id = '${member.id}'`, (err, rows) => {
-            if (err) return console.log(`${buttonInfo.logName} missing from ${this.#guild.name} ${this.#guild.id}`)
-        })
-        this.#db.query(`SELECT ${buttonInfo.logName} FROM users WHERE id = '${member.id}'`, async (err, rows) => {
-            if (err) return console.log(`${buttonInfo.logName} missing from ${this.#guild.name} ${this.#guild.id}`)
-            let embed = new Discord.EmbedBuilder()
-                .setColor('#0000ff')
-                .setTitle(`${button} logged!`)
-                .setDescription(`${member} now has \`\`${parseInt(rows[0][buttonInfo.logName]) + parseInt(number)}\`\` ${choiceText} pops`)
-            await this.#afkTemplate.raidCommandChannel.send({ embeds: [embed] })
+
+        if (Object.keys(buttonInfo.logOptions).length > 1) {
+            confirmEmbed.setDescription(`How do you want ${choiceText} reacts for this member?\nChoose or input an option.\nThis window will cancel and close in 10 seconds.`)
+            const confirmOptionMenu = new Discord.StringSelectMenuBuilder()
+                .setCustomId(`option`)
+                .setPlaceholder(`Option for ${button}s`)
+                .setMinValues(1)
+                .setMaxValues(1)
+            for (let i in buttonInfo.logOptions) confirmOptionMenu.addOptions({ label: i, value: i })
+            const confirmOptionValue = await interaction.selectPanel(confirmOptionValue, confirmEmbed, false, 10000)
+            logOption = buttonInfo.logOptions[confirmOptionValue]
+            if (!logOption) {
+                confirmEmbed.setDescription(`Invalid option, try again. You can dismiss this message.`)
+                return await interaction.editReply({ embeds: [confirmEmbed], components: [] })
+            }
+        } else logOption = buttonInfo.logOptions[Object.keys(buttonInfo.logOptions)[0]]
+        
+        for (let option of logOption.logName) {
+            this.#db.query(`UPDATE users SET ${option} = ${option} + ${number} WHERE id = '${member.id}'`, (err, rows) => {
+                if (err) return console.log(`${option} missing from ${this.#guild.name} ${this.#guild.id}`)
+            })
+            this.#db.query(`SELECT ${option} FROM users WHERE id = '${member.id}'`, async (err, rows) => {
+                if (err) return console.log(`${option} missing from ${this.#guild.name} ${this.#guild.id}`)
+                let embed = new Discord.EmbedBuilder()
+                    .setColor('#0000ff')
+                    .setTitle(`${button} logged!`)
+                    .setDescription(`${member} now has \`\`${parseInt(rows[0][option]) + parseInt(number)}\`\` ${choiceText} pops`)
+                await this.#afkTemplate.raidCommandChannel.send({ embeds: [embed] })
+            })
+        }
+        let points = logOption.points * number * logOption.multiplier
+        this.#db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u}'`, (err, rows) => {
+            if (err) return console.log(`error logging ${i} points in `, this.#guild.id)
         })
         confirmEmbed.setDescription('Sucessfully logged. You can dismiss this message.')
         await interaction.editReply({ embeds: [confirmEmbed], components: [] })
@@ -1124,14 +1159,10 @@ class afkCheck {
             let pointsLog = []
             for (let i in this.reactables) for (let u of this.reactables[i].members) {
                 switch (this.#afkTemplate.buttons[i].type) {
-                    case AfkTemplate.TemplateButtonType.LOG:
-                        break
                     case AfkTemplate.TemplateButtonType.SUPPORTER:
                         this.#db.query(`INSERT INTO supporterusage (guildid, userid, utime) VALUES ('${this.#guild.id}', '${u}', '${Date.now()}')`)
                     default:
-                        let points = 0
-                        if (Number.isInteger(this.#afkTemplate.buttons[i].points)) points = this.#afkTemplate.buttons[i].points
-                        else if (this.#botSettings.points[this.#afkTemplate.buttons[i].points]) points = this.#botSettings.points[this.#afkTemplate.buttons[i].points]
+                        let points = this.#afkTemplate.buttons[i].points
                         if (this.#afkTemplate.buttons[i].type != AfkTemplate.TemplateButtonType.POINTS && this.#guild.members.cache.get(u).roles.cache.hasAny(...this.#afkTemplate.perkRoles.map(role => role.id))) points = points * this.#botSettings.points.supportermultiplier
                         this.#db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u}'`, (err, rows) => {
                             if (err) return console.log(`error logging ${i} points in `, this.#guild.id)

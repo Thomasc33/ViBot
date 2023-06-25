@@ -11,11 +11,12 @@ const TemplateState = {
     'INVALID_CATEGORY': 5,
     'INVALID_CHANNEL': 6,
     'INVALID_ROLE': 7,
-    'INVALID_STRING': 8,
-    'INVALID_NUMBER': 9,
-    'INVALID_OBJECT': 10,
-    'INVALID_EMOTE': 11,
-    'INVALID_BOOLEAN': 12
+    'INVALID_POINTS': 8,
+    'INVALID_STRING': 9,
+    'INVALID_NUMBER': 10,
+    'INVALID_OBJECT': 11,
+    'INVALID_EMOTE': 12,
+    'INVALID_BOOLEAN': 13
 }
 
 // Enum for the VC Options in an AFK
@@ -71,7 +72,6 @@ class AfkTemplate {
         await this.getTemplate()
         this.#status = this.validateTemplate()
         if (this.#status.state == TemplateState.SUCCESS) this.processParameters()
-        return
     }
 
     async getTemplate() {
@@ -191,10 +191,15 @@ class AfkTemplate {
                 if (!Object.hasOwn(this.#template.buttons[i], 'minStaffRole')) properties.push(`buttons.${i}.minStaffRole`)
                 if (!Object.hasOwn(this.#template.buttons[i], 'confirmationMessage')) properties.push(`buttons.${i}.confirmationMessage`)
                 if (!Object.hasOwn(this.#template.buttons[i], 'confirmationMedia')) properties.push(`buttons.${i}.confirmationMedia`)
-                if (!Object.hasOwn(this.#template.buttons[i], 'logName')) properties.push(`buttons.${i}.logName`)
                 if (!Object.hasOwn(this.#template.buttons[i], 'disableStart')) properties.push(`buttons.${i}.disableStart`)
                 if (!Object.hasOwn(this.#template.buttons[i], 'start')) properties.push(`buttons.${i}.start`)
                 if (!Object.hasOwn(this.#template.buttons[i], 'lifetime')) properties.push(`buttons.${i}.lifetime`)
+                if (!Object.hasOwn(this.#template.buttons[i], 'logOptions')) properties.push(`buttons.${i}.logOptions`)
+                if (this.#template.buttons[i].logOptions != null) for (let j in this.#template.buttons[i].logOptions) {
+                    if (!Object.hasOwn(this.#template.buttons[i].logOptions[j], 'logName')) properties.push(`buttons.${i}.logOptions.${j}.logName`)
+                    if (!Object.hasOwn(this.#template.buttons[i].logOptions[j], 'points')) properties.push(`buttons.${i}.logOptions.${j}.points`)
+                    if (!Object.hasOwn(this.#template.buttons[i].logOptions[j], 'multiplier')) properties.push(`buttons.${i}.logOptions.${j}.multiplier`)
+                }
             }
         }
         if (!Object.hasOwn(this.#template, 'reacts')) properties.push('reacts')
@@ -251,7 +256,7 @@ class AfkTemplate {
             if (this.#template.buttons[i].parent && this.#template.buttons[i].parent.some(name => !this.#template.buttons[name])) return status = {state: TemplateState.INVALID_NUMBER, message: `This afk template at Button ${i} has an Invalid Parent.`}
             if (!this.validateTemplateNumber(this.#template.buttons[i].choice, TemplateButtonChoice)) return status = {state: TemplateState.INVALID_NUMBER, message: `This afk template at Button ${i} has an Invalid Choice.`}
             if (this.#template.buttons[i].limit && !this.validateTemplateNumber(this.#template.buttons[i].limit)) return status = {state: TemplateState.INVALID_NUMBER, message: `This afk template at Button ${i} has an Invalid Limit.`}
-            if (this.#template.buttons[i].points && !this.validateTemplateNumber(this.#template.buttons[i].points)) return status = {state: TemplateState.INVALID_NUMBER, message: `This afk template at Button ${i} has an Invalid Points.`}
+            if (this.#template.buttons[i].points && !(this.validateTemplateNumber(this.#template.buttons[i].points) || this.validateTemplatePoints(this.#template.buttons[i].points))) return status = {state: TemplateState.INVALID_NUMBER, message: `This afk template at Button ${i} has an Invalid Points.`}
             if (!this.validateTemplateBoolean(this.#template.buttons[i].displayName)) return status = {state: TemplateState.INVALID_BOOLEAN, message: `This afk template at Button ${i} has an Invalid Display Name.`}
             if (this.#template.buttons[i].emote && !this.validateTemplateEmote(this.#template.buttons[i].emote)) return status = {state: TemplateState.INVALID_EMOTE, message: `This afk template at Button ${i} has an Invalid Emote.`}
             if (!this.validateTemplateBoolean(this.#template.buttons[i].confirm)) return status = {state: TemplateState.INVALID_BOOLEAN, message: `This afk template at Button ${i} has an Invalid Confirm.`}
@@ -263,6 +268,10 @@ class AfkTemplate {
             if (this.#template.buttons[i].disableStart && !this.validateTemplateNumber(this.#template.buttons[i].disableStart)) return status = {state: TemplateState.INVALID_NUMBER, message: `This afk template at Button ${i} has an Invalid Disable Start.`}
             if (!this.validateTemplateNumber(this.#template.buttons[i].start)) return status = {state: TemplateState.INVALID_NUMBER, message: `This afk template at Button ${i} has an Invalid Start.`}
             if (!this.validateTemplateNumber(this.#template.buttons[i].lifetime)) return status = {state: TemplateState.INVALID_NUMBER, message: `This afk template at Button ${i} has an Invalid Lifetime.`}
+            if (this.#template.buttons[i].logOptions != null) for (let j in this.#template.buttons[i].logOptions) {
+                if (this.#template.buttons[i].logOptions[j].points && !(this.validateTemplateNumber(this.#template.buttons[i].logOptions[j].points) || this.validateTemplatePoints(this.#template.buttons[i].logOptions[j].points))) return status = {state: TemplateState.INVALID_NUMBER, message: `This afk template at Button ${i} at Log Option ${j} has an Invalid Points.`}
+                if (this.#template.buttons[i].logOptions[j].multiplier && !(this.validateTemplateNumber(this.#template.buttons[i].logOptions[j].multiplier) || this.validateTemplatePoints(this.#template.buttons[i].logOptions[j].multiplier))) return status = {state: TemplateState.INVALID_NUMBER, message: `This afk template at Button ${i} at Log Option ${j} has an Invalid Multiplier.`}
+            }
         }
         if (!this.validateTemplateObject(this.#template.reacts)) return status = {state: TemplateState.INVALID_OBJECT, message: 'This afk template has an Invalid Reacts.'}
         for (let i in this.#template.reacts) {
@@ -292,6 +301,11 @@ class AfkTemplate {
     validateTemplateRole(role) {
         if (!this.#botSettings.roles[role]) return false
         return this.#guild.roles.cache.get(this.#botSettings.roles[role])
+    }
+
+    validateTemplatePoints(points) {
+        if (!this.#botSettings.points[points]) return false
+        return this.#botSettings.points[points]
     }
 
     validateTemplateString(string) {
@@ -395,15 +409,21 @@ class AfkTemplate {
         return description
     }
 
-    
-
     processButtons(channel) {
         for (let i in this.buttons) {
+            if (!this.buttons[i].points) this.buttons[i].points = 0
+            if (!Number.isInteger(this.buttons[i].points)) this.buttons[i].points = this.#botSettings.points[this.buttons[i].points]
             if (!this.buttons[i].disableStart) this.buttons[i].disableStart = this.buttons[i].start
             if (this.buttons[i].emote) this.buttons[i].emote = this.#bot.storedEmojis[this.buttons[i].emote]
             if (this.buttons[i].minRole) this.buttons[i].minRole = this.#guild.roles.cache.get(this.#botSettings.roles[this.buttons[i].minRole])
             if (this.buttons[i].minStaffRole) this.buttons[i].minStaffRole = this.#guild.roles.cache.get(this.#botSettings.roles[this.buttons[i].minStaffRole])
             if (this.buttons[i].confirmationMessage) this.buttons[i].confirmationMessage = this.processMessages(channel, this.buttons[i].confirmationMessage)
+            for (let j in this.buttons[i].logOptions) {
+                if (!this.buttons[i].logOptions[j].points) this.buttons[i].logOptions[j].points = 0
+                if (!Number.isInteger(this.buttons[i].logOptions[j].points)) this.buttons[i].logOptions[j].points = this.#botSettings.points[this.buttons[i].logOptions[j].points]
+                if (!this.buttons[i].logOptions[j].multiplier) this.buttons[i].logOptions[j].multiplier = 1
+                if (!Number.isInteger(this.buttons[i].logOptions[j].multiplier)) this.buttons[i].logOptions[j].multiplier = this.#botSettings.points[this.buttons[i].logOptions[j].multiplier]
+            }
         }
     }
 
