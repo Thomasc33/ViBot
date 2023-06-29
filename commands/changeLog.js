@@ -18,7 +18,7 @@ module.exports = {
         slashArg(SlashArgType.String, 'type', {
             description: 'Type of log to change',
         }),
-        slashArg(SlashArgType.Number, 'number', {
+        slashArg(SlashArgType.Integer, 'number', {
             description: 'Number of logs to change'
         })
     ],
