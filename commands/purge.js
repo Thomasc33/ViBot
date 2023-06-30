@@ -5,7 +5,7 @@ module.exports = {
     name: 'purge',
     description: 'Removes x messages from channel',
     role: 'headeventrl',
-    args: [slashArg(SlashArgType.Number, 'count', {
+    args: [slashArg(SlashArgType.Integer, 'count', {
         required: true,
         description: "Number of messages (Max 100)"
     }),],
