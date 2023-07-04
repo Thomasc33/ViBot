@@ -57,7 +57,7 @@ module.exports = {
             return;
         }
         members.push(message.member) // doing it here in case the image was bad
-        let query = `UPDATE users SET o3runs = o3runs + 1 WHERE ${members.map(m => `id = '${m.id}'`).join(' OR ')}`
+        let query = `UPDATE users SET o3completes  = o3completes  + 1 WHERE ${members.map(m => `id = '${m.id}'`).join(' OR ')}`
         await db.promise().query(query)
         parseStatusEmbed.data.fields[1].value = 'Completed'
 

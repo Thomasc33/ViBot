@@ -22,7 +22,7 @@ module.exports = {
         slashArg(SlashArgType.User, 'user', {
             description: "The key popper"
         }),
-        slashArg(SlashArgType.Number, 'count', {
+        slashArg(SlashArgType.Integer, 'count', {
             required: false,
             description: "The number of keys to add (default 1)"
         }),
