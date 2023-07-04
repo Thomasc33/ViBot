@@ -12,27 +12,28 @@ const TemplateState = {
     'INVALID_CHANNEL': 6,
     'INVALID_ROLE': 7,
     'INVALID_POINTS': 8,
-    'INVALID_STRING': 9,
-    'INVALID_NUMBER': 10,
-    'INVALID_OBJECT': 11,
-    'INVALID_EMOTE': 12,
-    'INVALID_BOOLEAN': 13
+    'INVALID_IMAGE': 9,
+    'INVALID_STRING': 10,
+    'INVALID_NUMBER': 11,
+    'INVALID_OBJECT': 12,
+    'INVALID_EMOTE': 13,
+    'INVALID_BOOLEAN': 14
 }
 
-// Enum for the VC Options in an AFK
+// Enum for the VC Options in an AFK Template
 const TemplateVCOptions = {
     'NO_VC': 0,
     'STATIC_VC': 1,
     'CREATE_VC' : 2
 }
 
-// Enum for the VC States in an AFK
+// Enum for the VC States in an AFK Template
 const TemplateVCState = {
     'LOCKED': 0,
     'OPEN': 1
 }
 
-// Enum for the Button Types in an AFK
+// Enum for the Button Types in an AFK Template
 const TemplateButtonType = {
     'NORMAL': 0,
     'LOG': 1,
@@ -41,13 +42,15 @@ const TemplateButtonType = {
     'DRAG': 4
 }
 
-// Enum for the Choice on Buttons in an AFK
+// Enum for the Choice on Buttons in an AFK Template
 const TemplateButtonChoice = {
     'NO_CHOICE': 0,
     'YES_NO_CHOICE': 1,
-    'NUMBER_CHOICE' : 2
+    'NUMBER_CHOICE_PRESET' : 2,
+    'NUMBER_CHOICE_CUSTOM' : 3
 }
 
+// Class for Finding, Checking, Loading and Processing Information in an AFK Template
 class AfkTemplate {
     #template;
     #bot;
@@ -58,6 +61,12 @@ class AfkTemplate {
     #alias
     #status;
 
+    /** Constructor for the AFK Template Class
+     * @param {Discord.Client} bot The client which is running the bot
+     * @param {Object} botSettings The object holding the settings of the bot
+     * @param {Discord.Message} message The discord message in which the command was executed
+     * @param {String} alias The string used to identify the AFK Template
+     */
     constructor(bot, botSettings, message, alias) {
         this.#bot = bot
         this.#botSettings = botSettings
@@ -68,17 +77,23 @@ class AfkTemplate {
         this.#alias = alias.toLowerCase()
     }
 
+    // Function for initialising the AFK Template Class
     async init() {
         await this.getTemplate()
         this.#status = this.validateTemplate()
         if (this.#status.state == TemplateState.SUCCESS) this.processParameters()
     }
-
+    
+    // Function for finding the AFK Template from the alias
     async getTemplate() {
+        // Search for all matches of the alias across all guild-specific AFK Templates
         let selectedTemplates = templates[this.#guild.id].children.filter(t => t.aliases.includes(this.#alias))
+        // Search for all substring matches of the alias if direct matches were not found
         if (selectedTemplates.length == 0) selectedTemplates = templates[this.#guild.id].children.filter(t => { for (let alias of t.aliases) if (alias.includes(this.#alias)) return true })
         if (selectedTemplates.length == 0) return this.#template = null
+        // If only 1 found, select AFK Template (JSON parse/stringify for deep copy)
         else if (selectedTemplates.length == 1) return this.#template = JSON.parse(JSON.stringify(selectedTemplates[0]))
+        // If multiple found, give option to choose AFK Template
         const templateMenu = new Discord.StringSelectMenuBuilder()
             .setCustomId(`template`)
             .setPlaceholder(`Name of Afk`)
@@ -86,22 +101,29 @@ class AfkTemplate {
             .setMaxValues(1)
         for (let i in selectedTemplates) templateMenu.addOptions({ label: selectedTemplates[i].templateName, value: i })
         const templateMessage = await this.#message.channel.send({ content: `${this.#message.member}`, components: [] })
-        const templateValue = await templateMessage.selectPanel(templateMenu, this.#message.member.id, 10000)
+        const templateValue = await templateMessage.selectPanel(templateMenu, this.#message.member.id, 30000)
         await templateMessage.delete()
+        // If one selected, select AFK Template, otherwise select first AFK TEmplate (JSON parse/stringify for deep copy)
         return this.#template = JSON.parse(JSON.stringify(templateValue ? selectedTemplates[templateValue] : selectedTemplates[0]))
     }
 
+    // Function for checking the AFK Template has valid parameters
     validateTemplate() {
         let status = {state: TemplateState.SUCCESS, message: ''}
         if (!this.#template) return status = {state: TemplateState.NOT_EXIST, message: 'This afk template does not exist.'}
+        // Populate child AFK Template parameters from Parent AFK Template
         this.populateTemplateInherit()
+        // Populate Body Phase parameters from Body Default parameters
         this.populateBodyInherit()
+        // Validate existence of AFK Template parameters
         status = this.validateTemplateParameters(status)
         if (!this.#template.enabled) return status = {state: TemplateState.DISABLED, message: 'This afk template is disabled.'}
+        // Validate values of AFK Template parameters
         status = this.validateTemplateValues(status)
         return status
     }
 
+    // Function for populating child AFK Template parameters in an object from Parent AFK Template object
     populateObjectInherit(template, parentTemplate) {
         for (let i in parentTemplate) {
             if (template[i] == undefined || template[i] == null) template[i] = parentTemplate[i]
@@ -113,6 +135,7 @@ class AfkTemplate {
         }
     }
 
+    // Function for populating child AFK Template from Parent AFK Template
     populateTemplateInherit() {
         let parentTemplate = null
         this.#template.inherits.forEach((parent) => {
@@ -122,6 +145,7 @@ class AfkTemplate {
         this.populateObjectInherit(this.#template, parentTemplate)
     }
 
+    // Function for populating child Body Phase parameters from Body Default parameters
     populateBodyInherit() {
         let phases = Array.from({length: this.#template.phases},(_,k)=>k+1)
         for (let i of phases) {
@@ -130,6 +154,7 @@ class AfkTemplate {
         }
     }
 
+    // Function for validating the existence of AFK Template parameters
     validateTemplateParameters(status) {
         let properties = []
         if (!Object.hasOwn(this.#template, 'inherits')) properties.push('inherits')
@@ -218,6 +243,7 @@ class AfkTemplate {
         return status
     }
 
+    // Function for validating values of the AFK Template parameters
     validateTemplateValues(status) {
         if (status.state != TemplateState.SUCCESS) return status
         if (!this.validateTemplateCategory(this.#template.category)) return status = {state: TemplateState.INVALID_CATEGORY, message: 'This afk template has an Invalid Category.'}
@@ -247,7 +273,7 @@ class AfkTemplate {
             if (!this.validateTemplateNumber(this.#template.body[i].timeLimit)) return status = {state: TemplateState.INVALID_NUMBER, message: `This afk template at Body ${i} has an Invalid Time Limit.`}
             if (this.#template.body[i].message && !this.validateTemplateString(this.#template.body[i].message)) return status = {state: TemplateState.INVALID_STRING, message: `This afk template at Body ${i} has an Invalid Message.`}
             if (this.#template.body[i].embed.description && this.#template.body[i].embed.description.some(description => description && !this.validateTemplateString(description))) return status = {state: TemplateState.INVALID_STRING, message: `This afk template at Body ${i} has an Invalid Embed Description.`}
-            if (this.#template.body[i].embed.image && !this.validateTemplateString(this.#template.body[i].embed.image)) return status = {state: TemplateState.INVALID_STRING, message: `This afk template at Body ${i} has an Invalid Embed Image.`}
+            if (this.#template.body[i].embed.image && !(this.validateTemplateString(this.#template.body[i].embed.image) || this.validateTemplateImage(this.#template.body[i].embed.image))) return status = {state: TemplateState.INVALID_STRING, message: `This afk template at Body ${i} has an Invalid Embed Image.`}
             if (this.#template.body[i].embed.thumbnail && this.#template.body[i].embed.thumbnail.some(thumbnail => !this.validateTemplateString(thumbnail))) return status = {state: TemplateState.INVALID_STRING, message: `This afk template at Body ${i} has an Invalid Embed Thumbnail.`}
         }
         if (!this.validateTemplateObject(this.#template.buttons)) return status = {state: TemplateState.INVALID_OBJECT, message: 'This afk template has an Invalid Buttons.'}
@@ -306,6 +332,11 @@ class AfkTemplate {
     validateTemplatePoints(points) {
         if (!this.#botSettings.points[points]) return false
         return this.#botSettings.points[points]
+    }
+
+    validateTemplateImage(image) {
+        if (!this.#botSettings.image[image]) return false
+        return this.#botSettings.image[image]
     }
 
     validateTemplateString(string) {
