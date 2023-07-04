@@ -37,7 +37,7 @@ module.exports = {
             .setTitle('Verification Steps')
             .setDescription(`**1.** Unprivate your discord PM's to ensure bot can reach you
             
-            **2** Log in to your realmeye page and unprivate everything except for \`last known location\`. If you do not have a password for realmeye, ingame type \`/tell MrEyeBall password\` to get one
+            **2** Log in to your realmeye page and unprivate everything except for \`last known location\`. If you do not have a password for realmeye, ingame type \`/tell MrEyeball password\` to get one
 
             **3.** React with the :white_check_mark: below
 
