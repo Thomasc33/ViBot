@@ -2,7 +2,7 @@ const vr_gamers = ['277636691227836419', '130850662522159104', '2582864811672207
 
 module.exports = {
     name: 'memes',
-    alias: ['phd', 'xbox', 'cwinner', 'eury', 'nefiah', 'abysm', 'drunkdevil', 'shiba', 'rj', 'vr', 'pusbal'],
+    alias: ['phd', 'xbox', 'cwinner', 'eury', 'nefiah', 'abysm', 'drunkdevil', 'shiba', 'rj', 'vr', 'pusbal', 'bantering'],
     role: 'eventrl',
     async execute(message, args, bot) {
         const settings = bot.settings[message.guild.id]
@@ -41,6 +41,9 @@ module.exports = {
                 break;
             case 'pusbal':
                 message.channel.send({ files: ['https://media.discordapp.net/attachments/488881485366165515/1033372031384817714/52ca3466-744e-4372-8211-175184521ecd.png'] })
+                break;
+            case 'bantering':
+                message.channel.send('Command is too big. Failed to process');
         }
     }
 }
