@@ -100,9 +100,8 @@ class AfkTemplate {
             .setMinValues(1)
             .setMaxValues(1)
         for (let i in selectedTemplates) templateMenu.addOptions({ label: selectedTemplates[i].templateName, value: i })
-        const templateMessage = await this.#message.channel.send({ content: `${this.#message.member}`, components: [] })
-        const templateValue = await templateMessage.selectPanel(templateMenu, this.#message.member.id, 30000)
-        await templateMessage.delete()
+        const text = `Which template would you like to use for this run?.\n If no response is received, this run will use the default ${selectedTemplates[0].templateName}.`
+        const {value: templateValue, interaction: subInteraction} = await this.#message.selectPanel(text, null, templateMenu, 30000, false, true)
         // If one selected, select AFK Template, otherwise select first AFK TEmplate (JSON parse/stringify for deep copy)
         return this.#template = JSON.parse(JSON.stringify(templateValue ? selectedTemplates[templateValue] : selectedTemplates[0]))
     }

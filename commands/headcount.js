@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 const AfkTemplate = require('./afkTemplate.js');
 const afkCheck = require('./afkCheck');
+const { createEmbed } = require('../lib/extensions.js');
 
 module.exports = {
     name: 'headcount',
@@ -23,14 +24,10 @@ module.exports = {
         afkTemplate.processReacts()
         afkTemplate.processButtons(null)
 
-        const raidStatusEmbed = new Discord.EmbedBuilder()
-            .setAuthor({name: `Headcount for ${afkTemplate.name} by ${message.member.nickname}`})
-            .setTimestamp(Date.now())
-            .setColor(afkTemplate.body[1].embed.color ? afkTemplate.body[1].embed.color : '#ffffff')
-            .setDescription(afkTemplate.processBodyDescriptionHeadcount())
+        const raidStatusEmbed = createEmbed(message, afkTemplate.processBodyDescriptionHeadcount(), afkTemplate.body[1].embed.image)
+        raidStatusEmbed.setColor(afkTemplate.body[1].embed.color ? afkTemplate.body[1].embed.color : '#ffffff')
+        raidStatusEmbed.setAuthor({ name: `Headcount for ${afkTemplate.name} by ${message.member.nickname}`, iconURL: message.member.user.avatarURL() })
         if (afkTemplate.body[1].embed.thumbnail) raidStatusEmbed.setThumbnail(afkTemplate.body[1].embed.thumbnail[Math.floor(Math.random()*afkTemplate.body[1].embed.thumbnail.length)])
-        if (afkTemplate.body[1].embed.image) raidStatusEmbed.setImage(afkTemplate.body[1].embed.image)
-        if (message.member.avatarURL()) raidStatusEmbed.setAuthor({ name: `Headcount for ${run.runName} by ${message.member.nickname}`, iconURL: message.member.avatarURL() })
         const raidStatusMessage = await afkTemplate.raidStatusChannel.send({ content: `${afkTemplate.pingRoles ? afkTemplate.pingRoles.join(' ') : ''}`, embeds: [raidStatusEmbed] })
         for (let i in afkTemplate.reacts) {
             if (afkTemplate.reacts[i].onHeadcount && afkTemplate.reacts[i].emote) await raidStatusMessage.react(afkTemplate.reacts[i].emote.id)

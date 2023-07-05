@@ -38369,13 +38369,32 @@
                         "lifetime": 69,
                         "logOptions": null
                     },
+                    "Veteran Affiliate": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 5,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "vasBadge",
+                        "confirm": false,
+                        "location": true,
+                        "minRole": "vetaffiliate",
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
                     "2/4+ Ranged DPS": {
                         "type": 0,
                         "parent": null,
                         "choice": 0,
                         "limit": 3,
                         "points": 0,
-                        "displayName": false,
+                        "displayName": true,
                         "emote": "2dpsRanged",
                         "confirm": true,
                         "location": false,
@@ -38394,30 +38413,11 @@
                         "choice": 0,
                         "limit": 5,
                         "points": 0,
-                        "displayName": false,
+                        "displayName": true,
                         "emote": "3dpsRanged",
                         "confirm": true,
                         "location": false,
                         "minRole": null,
-                        "minStaffRole": null,
-                        "confirmationMessage": null,
-                        "confirmationMedia": null,
-                        "disableStart": null,
-                        "start": 1,
-                        "lifetime": 69,
-                        "logOptions": null
-                    },
-                    "Veteran Affiliate": {
-                        "type": 0,
-                        "parent": null,
-                        "choice": 0,
-                        "limit": 5,
-                        "points": 0,
-                        "displayName": true,
-                        "emote": "vasBadge",
-                        "confirm": false,
-                        "location": true,
-                        "minRole": "vetaffiliate",
                         "minStaffRole": null,
                         "confirmationMessage": null,
                         "confirmationMedia": null,
@@ -38457,8 +38457,7 @@
             },
             {
                 "inherits": [
-                    "normal",
-                    "veteran"
+                   "normal", "veteran"
                 ],
                 "category": null,
                 "templateChannel": null,
@@ -38471,7 +38470,7 @@
                 "minViewRaiderRole": null,
                 "minJoinRaiderRole": null,
                 "name": "Vc-less Oryx 3",
-                "templateName": "Vc-less Oryx 3",
+                "templateName": "RSA React Vc-less O3",
                 "pingRoles": [
                     "o3Ping"
                 ],
@@ -38750,15 +38749,32 @@
                         "lifetime": 69,
                         "logOptions": null
                     },
+                    "Veteran Affiliate": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 5,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "vasBadge",
+                        "confirm": false,
+                        "location": true,
+                        "minRole": "vetaffiliate",
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
                     "2/4+ Ranged DPS": {
                         "type": 0,
-                        "parent": [
-                            "Join"
-                        ],
+                        "parent": null,
                         "choice": 0,
                         "limit": 3,
                         "points": 0,
-                        "displayName": false,
+                        "displayName": true,
                         "emote": "2dpsRanged",
                         "confirm": true,
                         "location": false,
@@ -38773,38 +38789,15 @@
                     },
                     "3/4+ Ranged DPS": {
                         "type": 0,
-                        "parent": [
-                            "Join"
-                        ],
-                        "choice": 0,
-                        "limit": 5,
-                        "points": 0,
-                        "displayName": false,
-                        "emote": "3dpsRanged",
-                        "confirm": true,
-                        "location": false,
-                        "minRole": null,
-                        "minStaffRole": null,
-                        "confirmationMessage": null,
-                        "confirmationMedia": null,
-                        "disableStart": null,
-                        "start": 1,
-                        "lifetime": 69,
-                        "logOptions": null
-                    },
-                    "Veteran Affiliate": {
-                        "type": 0,
-                        "parent": [
-                            "Join"
-                        ],
+                        "parent": null,
                         "choice": 0,
                         "limit": 5,
                         "points": 0,
                         "displayName": true,
-                        "emote": "vasBadge",
-                        "confirm": false,
-                        "location": true,
-                        "minRole": "vetaffiliate",
+                        "emote": "3dpsRanged",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
                         "minStaffRole": null,
                         "confirmationMessage": null,
                         "confirmationMedia": null,
@@ -41759,13 +41752,32 @@
                         "lifetime": 69,
                         "logOptions": null
                     },
+                    "Veteran Affiliate": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 5,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "vasBadge",
+                        "confirm": false,
+                        "location": true,
+                        "minRole": "vetaffiliate",
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
                     "2/4+ Ranged DPS": {
                         "type": 0,
                         "parent": null,
                         "choice": 0,
                         "limit": 3,
                         "points": 0,
-                        "displayName": false,
+                        "displayName": true,
                         "emote": "2dpsRanged",
                         "confirm": true,
                         "location": false,
@@ -41784,30 +41796,11 @@
                         "choice": 0,
                         "limit": 5,
                         "points": 0,
-                        "displayName": false,
+                        "displayName": true,
                         "emote": "3dpsRanged",
                         "confirm": true,
                         "location": false,
                         "minRole": null,
-                        "minStaffRole": null,
-                        "confirmationMessage": null,
-                        "confirmationMedia": null,
-                        "disableStart": null,
-                        "start": 1,
-                        "lifetime": 69,
-                        "logOptions": null
-                    },
-                    "Veteran Affiliate": {
-                        "type": 0,
-                        "parent": null,
-                        "choice": 0,
-                        "limit": 5,
-                        "points": 0,
-                        "displayName": true,
-                        "emote": "vasBadge",
-                        "confirm": false,
-                        "location": true,
-                        "minRole": "vetaffiliate",
                         "minStaffRole": null,
                         "confirmationMessage": null,
                         "confirmationMedia": null,
@@ -41859,8 +41852,8 @@
                 "minStaffRole": null,
                 "minViewRaiderRole": null,
                 "minJoinRaiderRole": null,
-                "name": "ExampleVc-less O3",
-                "templateName": "Example Vc-less O3",
+                "name": "Example Silent O3",
+                "templateName": "Example Silent O3",
                 "pingRoles": null,
                 "aliases": [
                     "exampleso",
@@ -42138,15 +42131,32 @@
                         "lifetime": 69,
                         "logOptions": null
                     },
+                    "Veteran Affiliate": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 5,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "vasBadge",
+                        "confirm": false,
+                        "location": true,
+                        "minRole": "vetaffiliate",
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
                     "2/4+ Ranged DPS": {
                         "type": 0,
-                        "parent": [
-                            "Join"
-                        ],
+                        "parent": null,
                         "choice": 0,
                         "limit": 3,
                         "points": 0,
-                        "displayName": false,
+                        "displayName": true,
                         "emote": "2dpsRanged",
                         "confirm": true,
                         "location": false,
@@ -42161,38 +42171,15 @@
                     },
                     "3/4+ Ranged DPS": {
                         "type": 0,
-                        "parent": [
-                            "Join"
-                        ],
-                        "choice": 0,
-                        "limit": 5,
-                        "points": 0,
-                        "displayName": false,
-                        "emote": "3dpsRanged",
-                        "confirm": true,
-                        "location": false,
-                        "minRole": null,
-                        "minStaffRole": null,
-                        "confirmationMessage": null,
-                        "confirmationMedia": null,
-                        "disableStart": null,
-                        "start": 1,
-                        "lifetime": 69,
-                        "logOptions": null
-                    },
-                    "Veteran Affiliate": {
-                        "type": 0,
-                        "parent": [
-                            "Join"
-                        ],
+                        "parent": null,
                         "choice": 0,
                         "limit": 5,
                         "points": 0,
                         "displayName": true,
-                        "emote": "vasBadge",
-                        "confirm": false,
-                        "location": true,
-                        "minRole": "vetaffiliate",
+                        "emote": "3dpsRanged",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
                         "minStaffRole": null,
                         "confirmationMessage": null,
                         "confirmationMedia": null,
@@ -42238,6 +42225,1387 @@
                         "confirmationMedia": null,
                         "disableStart": 1,
                         "start": 2,
+                        "lifetime": 69,
+                        "logOptions": null
+                    }
+                },
+                "reacts": {
+                    "Oryx3": {
+                        "emote": "oryxThree",
+                        "onHeadcount": true,
+                        "start": 1,
+                        "lifetime": 2
+                    }
+                }
+            },
+            {
+                "inherits": [
+                    "normal", "veteran"
+                ],
+                "category": null,
+                "templateChannel": null,
+                "partneredStatusChannels": null,
+                "statusChannel": null,
+                "commandsChannel": null,
+                "activeChannel": null,
+                "enabled": true,
+                "minStaffRole": null,
+                "minViewRaiderRole": null,
+                "minJoinRaiderRole": null,
+                "name": "Adv. Oryx 3",
+                "templateName": "Advanced Oryx 3",
+                "pingRoles": "o3Ping",
+                "aliases": [
+                    "ao",
+                    "ao3",
+                    "aoryx",
+                    "advo",
+                    "advo3",
+                    "advoryx",
+                    "advancedorxy3"
+                ],
+                "logName": "o3runs",
+                "vcOptions": 2,
+                "startDelay": null,
+                "cap": null,
+                "capButton": null,
+                "phases": 2,
+                "body": {
+                    "1": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    "2": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    "default": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#000000",
+                            "description": [
+                                "__This is an example afk check, feel free to try out buttons!__\n",
+                                null
+                            ],
+                            "image": "https://cdn.discordapp.com/attachments/1114574154021208186/1123393339648114859/1234.png",
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/1114574154021208186/1120045796314849319/DSVqdZo.png"
+                            ]
+                        }
+                    }
+                },
+                "buttons": {
+                    "Winecellar Incantation": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "inc",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": "Make sure you log 0 **incpops** so it does not mess up the database!",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "incPops"
+                                ],
+                                "points": 0,
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Shield Rune": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "shieldRune",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": "Make sure you log 0 **runepops** so it does not mess up the database!",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "shieldRunePops"
+                                ],
+                                "points": 0,
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Sword Rune": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "swordRune",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": "Make sure you log 0 **runepops** so it does not mess up the database!",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "swordRunePops"
+                                ],
+                                "points": 0,
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Helmet Rune": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "helmetRune",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": "Make sure you log 0 **runepops** so it does not mess up the database!",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "helmetRunePops"
+                                ],
+                                "points": 0,
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Trickster": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 3,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Trickster",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} (T6) or {T7PrismofReveries} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Armor Break": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Ogmur",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Fungal Tome": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "tomeOfTheMushroomTribesFungal",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Veteran Affiliate": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 5,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "vasBadge",
+                        "confirm": false,
+                        "location": true,
+                        "minRole": "vetaffiliate",
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "3/4+ Ranged DPS": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 8,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "3dpsRanged",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Tickets": {
+                        "type": 3,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 5,
+                        "points": -60,
+                        "displayName": true,
+                        "emote": "tickets",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    }
+                },
+                "reacts": {
+                    "Oryx3": {
+                        "emote": "oryxThree",
+                        "onHeadcount": true,
+                        "start": 1,
+                        "lifetime": 2
+                    }
+                }
+            },
+            {
+                "inherits": [
+                    "normal", "veteran"
+                ],
+                "category": null,
+                "templateChannel": null,
+                "partneredStatusChannels": null,
+                "statusChannel": null,
+                "commandsChannel": null,
+                "activeChannel": null,
+                "enabled": true,
+                "minStaffRole": null,
+                "minViewRaiderRole": null,
+                "minJoinRaiderRole": null,
+                "name": "Silent Adv. Oryx 3",
+                "templateName": "Silent Advanced Oryx 3",
+                "pingRoles": "o3Ping",
+                "aliases": [
+                    "sao",
+                    "sao3",
+                    "saoryx",
+                    "sadvo",
+                    "sadvo3",
+                    "sadvoryx",
+                    "sadvancedorxy3"
+                ],
+                "logName": "o3runs",
+                "vcOptions": 0,
+                "startDelay": null,
+                "cap": null,
+                "capButton": null,
+                "phases": 2,
+                "body": {
+                    "1": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    "2": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    "default": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#000000",
+                            "description": [
+                                "__This is an example afk check, feel free to try out buttons!__\n",
+                                null
+                            ],
+                            "image": "https://cdn.discordapp.com/attachments/1114574154021208186/1123393339648114859/1234.png",
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/1114574154021208186/1120045796314849319/DSVqdZo.png"
+                            ]
+                        }
+                    }
+                },
+                "buttons": {
+                    "Winecellar Incantation": {
+                        "type": 1,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "inc",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": "Make sure you log 0 **incpops** so it does not mess up the database!",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "incPops"
+                                ],
+                                "points": 0,
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Shield Rune": {
+                        "type": 1,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "shieldRune",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": "Make sure you log 0 **runepops** so it does not mess up the database!",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "shieldRunePops"
+                                ],
+                                "points": 0,
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Sword Rune": {
+                        "type": 1,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "swordRune",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": "Make sure you log 0 **runepops** so it does not mess up the database!",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "swordRunePops"
+                                ],
+                                "points": 0,
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Helmet Rune": {
+                        "type": 1,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "helmetRune",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": "Make sure you log 0 **runepops** so it does not mess up the database!",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "helmetRunePops"
+                                ],
+                                "points": 0,
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Trickster": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 3,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Trickster",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} (T6) or {T7PrismofReveries} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Armor Break": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Ogmur",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Fungal Tome": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "tomeOfTheMushroomTribesFungal",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Veteran Affiliate": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 5,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "vasBadge",
+                        "confirm": false,
+                        "location": true,
+                        "minRole": "vetaffiliate",
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "3/4+ Ranged DPS": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 8,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "3dpsRanged",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Tickets": {
+                        "type": 3,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 5,
+                        "points": -60,
+                        "displayName": true,
+                        "emote": "tickets",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Join": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 0,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": null,
+                        "confirm": false,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": 1,
+                        "start": 2,
+                        "lifetime": 69,
+                        "logOptions": null
+                    }
+                },
+                "reacts": {
+                    "Oryx3": {
+                        "emote": "oryxThree",
+                        "onHeadcount": true,
+                        "start": 1,
+                        "lifetime": 2
+                    }
+                }
+            },
+            {
+                "inherits": [
+                   "normal", "veteran"
+                ],
+                "category": null,
+                "templateChannel": null,
+                "partneredStatusChannels": null,
+                "statusChannel": null,
+                "commandsChannel": null,
+                "activeChannel": null,
+                "enabled": true,
+                "minStaffRole": null,
+                "minViewRaiderRole": null,
+                "minJoinRaiderRole": null,
+                "name": "Silent Oryx 3",
+                "templateName": "Silent O3",
+                "pingRoles": [
+                    "o3Ping"
+                ],
+                "aliases": [
+                    "so",
+                    "so3",
+                    "soryx3",
+                    "soryxthird",
+                    "soryxthetird"
+                ],
+                "logName": "o3runs",
+                "vcOptions": 0,
+                "startDelay": null,
+                "cap": null,
+                "capButton": null,
+                "phases": 2,
+                "body": {
+                    "1": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    "2": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    "default": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#000000",
+                            "description": null,
+                            "image": null,
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/1114574154021208186/1120045796314849319/DSVqdZo.png"
+                            ]
+                        }
+                    }
+                },
+                "buttons": {
+                    "Winecellar Incantation": {
+                        "type": 1,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "inc",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "incPops"
+                                ],
+                                "points": "incpop",
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Shield Rune": {
+                        "type": 1,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "shieldRune",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "shieldRunePops"
+                                ],
+                                "points": "runepop",
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Sword Rune": {
+                        "type": 1,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "swordRune",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "swordRunePops"
+                                ],
+                                "points": "runepop",
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Helmet Rune": {
+                        "type": 1,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "helmetRune",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "helmetRunePops"
+                                ],
+                                "points": "runepop",
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Trickster": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 3,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Trickster",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} (T6) or {T7PrismofReveries} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Armor Break": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Ogmur",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Mystic": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Mystic",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Stasising** and a **Cursing** Orb {T6PlanefetterOrb} (T6) or {T7DimensiongateOrb} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Veteran Affiliate": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 5,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "vasBadge",
+                        "confirm": false,
+                        "location": true,
+                        "minRole": "vetaffiliate",
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "2/4+ Ranged DPS": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 3,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "2dpsRanged",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "3/4+ Ranged DPS": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 5,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "3dpsRanged",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Tickets": {
+                        "type": 3,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 5,
+                        "points": -60,
+                        "displayName": true,
+                        "emote": "tickets",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Join": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 0,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": null,
+                        "confirm": false,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": 1,
+                        "start": 2,
+                        "lifetime": 69,
+                        "logOptions": null
+                    }
+                },
+                "reacts": {
+                    "Oryx3": {
+                        "emote": "oryxThree",
+                        "onHeadcount": true,
+                        "start": 1,
+                        "lifetime": 2
+                    }
+                }
+            },{
+                "inherits": [
+                    "veteran",
+                    "normal"
+                ],
+                "category": null,
+                "templateChannel": null,
+                "partneredStatusChannels": null,
+                "statusChannel": null,
+                "commandsChannel": null,
+                "activeChannel": null,
+                "enabled": true,
+                "minStaffRole": "rl",
+                "minViewRaiderRole": null,
+                "minJoinRaiderRole": null,
+                "name": "Oryx 3",
+                "templateName": "Ray's Oryx 3 Template",
+                "pingRoles": [
+                    "o3Ping"
+                ],
+                "aliases": [
+                    "o",
+                    "o3",
+                    "oryx3",
+                    "oryxthird",
+                    "oryxthetird"
+                ],
+                "logName": "o3runs",
+                "vcOptions": 2,
+                "startDelay": null,
+                "cap": null,
+                "capButton": null,
+                "phases": 2,
+                "body": {
+                    "1": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    "2": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },"default": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#000000",
+                            "description": null,
+                            "image": null,
+                            "thumbnail": [
+                                "https://media.discordapp.net/attachments/1114574154021208186/1123402968650227812/685143559795376136.gif"
+                            ]
+                        }
+                    }
+                },
+                "buttons": {
+                    "Winecellar Incantation": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "inc",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "incPops"
+                                ],
+                                "points": "incpop",
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Shield Rune": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "shieldRune",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "shieldRunePops"
+                                ],
+                                "points": "runepop",
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Sword Rune": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "swordRune",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "swordRunePops"
+                                ],
+                                "points": "runepop",
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Helmet Rune": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "helmetRune",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "helmetRunePops"
+                                ],
+                                "points": "runepop",
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Trickster": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 4,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Trickster",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} (T6) or {T7PrismofReveries} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Fungal Tome": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 3,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "tomeOfTheMushroomTribesFungal",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Mystic": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Mystic",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Stasising** and a **Cursing** Orb {T6PlanefetterOrb} (T6) or {T7DimensiongateOrb} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Expose": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Expose",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Weaken": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Weaken",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Veteran Affiliate": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 5,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "vasBadge",
+                        "confirm": false,
+                        "location": true,
+                        "minRole": "vetaffiliate",
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "3/4 Wiz/Summoner": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 5,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "34SummonerWizard",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "3/4 Sorcerer": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "Sorcerer",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Tickets": {
+                        "type": 3,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 5,
+                        "points": -60,
+                        "displayName": true,
+                        "emote": "tickets",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
                         "lifetime": 69,
                         "logOptions": null
                     }
@@ -42703,13 +44071,32 @@
                         "lifetime": 69,
                         "logOptions": null
                     },
+                    "Veteran Affiliate": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 5,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "vasBadge",
+                        "confirm": false,
+                        "location": true,
+                        "minRole": "vetaffiliate",
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
                     "2/4+ Ranged DPS": {
                         "type": 0,
                         "parent": null,
                         "choice": 0,
                         "limit": 3,
                         "points": 0,
-                        "displayName": false,
+                        "displayName": true,
                         "emote": "2dpsRanged",
                         "confirm": true,
                         "location": false,
@@ -42728,30 +44115,11 @@
                         "choice": 0,
                         "limit": 5,
                         "points": 0,
-                        "displayName": false,
+                        "displayName": true,
                         "emote": "3dpsRanged",
                         "confirm": true,
                         "location": false,
                         "minRole": null,
-                        "minStaffRole": null,
-                        "confirmationMessage": null,
-                        "confirmationMedia": null,
-                        "disableStart": null,
-                        "start": 1,
-                        "lifetime": 69,
-                        "logOptions": null
-                    },
-                    "Veteran Affiliate": {
-                        "type": 0,
-                        "parent": null,
-                        "choice": 0,
-                        "limit": 5,
-                        "points": 0,
-                        "displayName": true,
-                        "emote": "vasBadge",
-                        "confirm": false,
-                        "location": true,
-                        "minRole": "vetaffiliate",
                         "minStaffRole": null,
                         "confirmationMessage": null,
                         "confirmationMedia": null,
@@ -42804,8 +44172,8 @@
                 "minStaffRole": null,
                 "minViewRaiderRole": null,
                 "minJoinRaiderRole": null,
-                "name": "Vc-less Oryx 3",
-                "templateName": "Vc-less Oryx 3",
+                "name": "Silent Oryx 3",
+                "templateName": "Silent RSA Oryx 3",
                 "pingRoles": [
                     "o3Ping"
                 ],
@@ -43084,15 +44452,32 @@
                         "lifetime": 69,
                         "logOptions": null
                     },
+                    "Veteran Affiliate": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 5,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "vasBadge",
+                        "confirm": false,
+                        "location": true,
+                        "minRole": "vetaffiliate",
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
                     "2/4+ Ranged DPS": {
                         "type": 0,
-                        "parent": [
-                            "Join"
-                        ],
+                        "parent": null,
                         "choice": 0,
                         "limit": 3,
                         "points": 0,
-                        "displayName": false,
+                        "displayName": true,
                         "emote": "2dpsRanged",
                         "confirm": true,
                         "location": false,
@@ -43107,38 +44492,15 @@
                     },
                     "3/4+ Ranged DPS": {
                         "type": 0,
-                        "parent": [
-                            "Join"
-                        ],
-                        "choice": 0,
-                        "limit": 5,
-                        "points": 0,
-                        "displayName": false,
-                        "emote": "3dpsRanged",
-                        "confirm": true,
-                        "location": false,
-                        "minRole": null,
-                        "minStaffRole": null,
-                        "confirmationMessage": null,
-                        "confirmationMedia": null,
-                        "disableStart": null,
-                        "start": 1,
-                        "lifetime": 69,
-                        "logOptions": null
-                    },
-                    "Veteran Affiliate": {
-                        "type": 0,
-                        "parent": [
-                            "Join"
-                        ],
+                        "parent": null,
                         "choice": 0,
                         "limit": 5,
                         "points": 0,
                         "displayName": true,
-                        "emote": "vasBadge",
-                        "confirm": false,
-                        "location": true,
-                        "minRole": "vetaffiliate",
+                        "emote": "3dpsRanged",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
                         "minStaffRole": null,
                         "confirmationMessage": null,
                         "confirmationMedia": null,
@@ -43472,13 +44834,32 @@
                         "lifetime": 69,
                         "logOptions": null
                     },
+                    "Veteran Affiliate": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 5,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "vasBadge",
+                        "confirm": false,
+                        "location": true,
+                        "minRole": "vetaffiliate",
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
                     "2/4+ Ranged DPS": {
                         "type": 0,
                         "parent": null,
                         "choice": 0,
                         "limit": 3,
                         "points": 0,
-                        "displayName": false,
+                        "displayName": true,
                         "emote": "2dpsRanged",
                         "confirm": true,
                         "location": false,
@@ -43497,30 +44878,11 @@
                         "choice": 0,
                         "limit": 5,
                         "points": 0,
-                        "displayName": false,
+                        "displayName": true,
                         "emote": "3dpsRanged",
                         "confirm": true,
                         "location": false,
                         "minRole": null,
-                        "minStaffRole": null,
-                        "confirmationMessage": null,
-                        "confirmationMedia": null,
-                        "disableStart": null,
-                        "start": 1,
-                        "lifetime": 69,
-                        "logOptions": null
-                    },
-                    "Veteran Affiliate": {
-                        "type": 0,
-                        "parent": null,
-                        "choice": 0,
-                        "limit": 5,
-                        "points": 0,
-                        "displayName": true,
-                        "emote": "vasBadge",
-                        "confirm": false,
-                        "location": true,
-                        "minRole": "vetaffiliate",
                         "minStaffRole": null,
                         "confirmationMessage": null,
                         "confirmationMedia": null,
@@ -43572,8 +44934,8 @@
                 "minStaffRole": null,
                 "minViewRaiderRole": null,
                 "minJoinRaiderRole": null,
-                "name": "ExampleVc-less O3",
-                "templateName": "Example Vc-less O3",
+                "name": "Example Silent O3",
+                "templateName": "Example Silent O3",
                 "pingRoles": null,
                 "aliases": [
                     "exampleso",
@@ -43851,15 +45213,32 @@
                         "lifetime": 69,
                         "logOptions": null
                     },
+                    "Veteran Affiliate": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 5,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "vasBadge",
+                        "confirm": false,
+                        "location": true,
+                        "minRole": "vetaffiliate",
+                        "minStaffRole": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
                     "2/4+ Ranged DPS": {
                         "type": 0,
-                        "parent": [
-                            "Join"
-                        ],
+                        "parent": null,
                         "choice": 0,
                         "limit": 3,
                         "points": 0,
-                        "displayName": false,
+                        "displayName": true,
                         "emote": "2dpsRanged",
                         "confirm": true,
                         "location": false,
@@ -43874,38 +45253,15 @@
                     },
                     "3/4+ Ranged DPS": {
                         "type": 0,
-                        "parent": [
-                            "Join"
-                        ],
-                        "choice": 0,
-                        "limit": 5,
-                        "points": 0,
-                        "displayName": false,
-                        "emote": "3dpsRanged",
-                        "confirm": true,
-                        "location": false,
-                        "minRole": null,
-                        "minStaffRole": null,
-                        "confirmationMessage": null,
-                        "confirmationMedia": null,
-                        "disableStart": null,
-                        "start": 1,
-                        "lifetime": 69,
-                        "logOptions": null
-                    },
-                    "Veteran Affiliate": {
-                        "type": 0,
-                        "parent": [
-                            "Join"
-                        ],
+                        "parent": null,
                         "choice": 0,
                         "limit": 5,
                         "points": 0,
                         "displayName": true,
-                        "emote": "vasBadge",
-                        "confirm": false,
-                        "location": true,
-                        "minRole": "vetaffiliate",
+                        "emote": "3dpsRanged",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
                         "minStaffRole": null,
                         "confirmationMessage": null,
                         "confirmationMedia": null,
