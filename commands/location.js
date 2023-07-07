@@ -1,5 +1,5 @@
 const Discord = require('discord.js')
-const afkCheck = require('./afkCheck.js');
+const afkCheck = require('./afkCheck.js')
 
 module.exports = {
     name: 'location',
@@ -9,27 +9,31 @@ module.exports = {
     args: '<location>',
     role: 'eventrl',
     async execute(message, args, bot) {
+        let voiceChannel = message.member.voice.channel
         let location = args.join(' ')
         if (location.length >= 1024) return await message.channel.send('Location must be below 1024 characters, try again')
         if (location == '') location = 'None'
         let raidID = undefined
-        const raidIDs = afkCheck.returnRaidIDsbyMemberID(bot, message.member.id)
-        if (raidIDs.length == 0) return message.channel.send('There is no active run to change the location of')
+        const raidIDs = afkCheck.returnRaidIDsbyAll(bot, message.member.id, voiceChannel ? voiceChannel.id : null, null)
+        if (raidIDs.length == 0) return message.channel.send('Could not find an active run. Please try again.')
         else if (raidIDs.length == 1) raidID = raidIDs[0]
         else {
             const locationMenu = new Discord.StringSelectMenuBuilder()
-                .setCustomId(`location`)
                 .setPlaceholder(`Active Runs`)
                 .setMinValues(1)
                 .setMaxValues(1)
-            for (let raidID of raidIDs) locationMenu.addOptions({ label: `${bot.afkCheck[raidID].afkTemplate.name} ${bot.afkCheck[raidID].time}`, value: raidID })
-            const locationMessage = await message.channel.send({ content: `${message.member}`, components: [] })
-            const locationValue = await locationMessage.selectPanel(locationMenu, this.#message.member.id, 10000)
-            await locationMessage.delete()
+            let text = `Which active run would you like to change location for?.\n If no response is received, the command will use the default run at \`\`${1}.\`\`.`
+            let index = 0
+            for (let raidID of raidIDs) {
+                text += `\n\`\`${index+1}.\`\` ${bot.afkChecks[raidID].afkTemplate.name} by ${bot.afkChecks[raidID].leader} at <t:${bot.afkChecks[raidID].time}:f>`
+                locationMenu.addOptions({ label: `${index+1}. ${bot.afkChecks[raidID].afkTemplate.name} by ${bot.afkChecks[raidID].leader}`, value: index })
+                index++
+            }
+            const {value: locationValue, interaction: subInteraction} = await message.selectPanel(text, null, locationMenu, 30000, false, true)
             raidID = locationValue
         }
-        bot.afkCheck[raidID].location = location
-        bot.afkCheck[raidID].afk.updateLocation()
+        bot.afkChecks[raidID].location = location
+        bot.afkChecks[raidID].afk.updateLocation()
         message.react('✅')
     }
 }

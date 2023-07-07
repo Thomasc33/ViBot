@@ -1,8 +1,6 @@
 const fs = require('fs')
-//const afkChecks = require('./afkCheck')
-//afkCheck includes restart so we will just have afkCheck register at startup
-let afkChecks = undefined;
 const botStatus = require('./botstatus')
+const afkCheck = require('./afkCheck.js')
 
 module.exports = {
     name: 'restart',
@@ -26,17 +24,17 @@ module.exports = {
         let Promises = []
 
         //afk checks
-        if (afkChecks) {
-            let activeRuns = await afkChecks.checkRuns()
-            let afkChecksEmitter = afkChecks.emitter;
-            for (let i of activeRuns) {
-                Promises.push(new Promise((res, rej) => {
-                    afkChecksEmitter.on('Ended', channelID => {
-                        if (channelID == i) res()
-                    })
-                }))
-            }
+        
+        const raidIDs = afkCheck.returnActiveRaidIDs()
+        for (let i of raidIDs) {
+            Promises.push(new Promise((res, rej) => {
+                setInterval(checkActive, 5000)
+                function checkActive() {
+                    if (!bot.afkChecks[i].active) res()
+                }
+            }))
         }
+
         if (Promises.length == 0) process.exit()
 
         module.exports.restarting = true;
@@ -44,8 +42,5 @@ module.exports = {
         await botStatus.updateStatus(bot, 'Restart Pending', '#ff0000')
         
         await Promise.all(Promises).then(() => { process.exit() })
-    },
-    async registerAFKCheck(afkChecksModule) {
-        afkChecks = afkChecksModule;
     }
 }

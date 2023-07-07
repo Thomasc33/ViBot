@@ -1,5 +1,6 @@
 const Discord = require('discord.js');
 const ErrorLogger = require('../lib/logError')
+const afkCheck = require('./afkCheck.js')
 const vision = require('@google-cloud/vision');
 const realmEyeScrape = require('../lib/realmEyeScrape');
 const charStats = require('../data/charStats.json')
@@ -73,15 +74,10 @@ module.exports = {
             var findA = []
             let allowedCrashers = []
             var kickList = '/kick'
+            const raidIDs = afkCheck.returnRaidIDsbyMemberVoice(channel.id)
+            if (raidIDs.length == 0) return message.channel.send('No raid found in this channel')
+            const raid = bot.afkChecks[raidIDs[0]]
             voiceUsers = channel.members.map(m => m);
-            //check split channel
-            if (bot.afkChecks[channel.id] && bot.afkChecks[channel.id].split && bot.afkChecks[channel.id].splitChannel) {
-                let splitChannel = message.guild.channels.cache.get(bot.afkChecks[channel.id].splitChannel)
-                if (splitChannel) {
-                    let splitUsers = splitChannel.members.map(m => m)
-                    for (let i in splitUsers) voiceUsers.push(splitUsers[i])
-                }
-            }
             for (let i in raiders) {
                 let player = raiders[i];
                 if (player == '') continue;
@@ -91,10 +87,7 @@ module.exports = {
                     kickList = kickList.concat(` ${player}`)
                 } else if (!voiceUsers.includes(member)) {
                     if (member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.almostrl).position) continue;
-                    if (bot.afkChecks[channel.id] && bot.afkChecks[channel.id].raiders) {
-                        if (bot.afkChecks[channel.id].raiders.includes(member.id)) allowedCrashers.push(member)
-
-                    }
+                    if (bot.afkChecks[raid].members.includes(member.id)) allowedCrashers.push(member)
                     if (member.voice.channel) otherChannel.push(`${member}: ${member.voice.channel}`);
                     else crashers.unshift(`<@!${member.id}>`);
                     kickList = kickList.concat(` ${player}`)
@@ -125,13 +118,13 @@ module.exports = {
                 .setColor('#00ff00')
                 .setDescription(`There are ${crashers.length} crashers, ${alts.length} potential alts, and ${otherChannel.length} people in other channels`)
                 .addFields({ name: 'Potential Alts', value: altsS }, { name: 'Other Channels', value: movedS }, { name: 'Crashers', value: crashersS }, { name: 'Find Command', value: `\`\`\`${find}\`\`\`` }, { name: 'Kick List', value: `\`\`\`${kickList}\`\`\`` })
-            if (bot.afkChecks[channel.id]) embed.addFields([{name: `Were in VC`, value: `The following can do \`;join\`:\n${allowedCrashers.map(u => `${u} `)}`}])
+            if (bot.afkChecks[raid]) embed.addFields([{name: `Were in VC`, value: `The following can use the \`reconnect\` button:\n${allowedCrashers.map(u => `${u} `)}`}])
             await message.channel.send({ embeds: [embed] });
             parseStatusEmbed.data.fields[1].value = `Crasher Parse Completed. See Below. Beginning Character Parse`
             await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
 
-            if (bot.afkChecks[channel.id]) {
-                let id = bot.afkChecks[channel.id].key
+            if (bot.afkChecks[raid]) {
+                let id = bot.afkChecks[raid].reactables.Key.members[0]
                 if (id) {
                     let member = message.guild.members.cache.get(id)
                     if (member) {
@@ -141,7 +134,7 @@ module.exports = {
             }
             //post in crasher-list
             let key = null
-            if (message.member.voice.channel && bot.afkChecks[message.member.voice.channel.id] && bot.afkChecks[message.member.voice.channel.id].key) key = bot.afkChecks[message.member.voice.channel.id].key
+            if (bot.afkChecks[raid].reactables.Key && bot.afkChecks[raid].reactables.Key.members[0]) key = bot.afkChecks[raid].reactables.Key.members[0]
             if (settings.commands.crasherlist)
                 postInCrasherList(embed, message.guild.channels.cache.get(settings.channels.parsechannel), message.member, key)
         }

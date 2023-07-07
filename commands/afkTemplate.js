@@ -86,15 +86,11 @@ class AfkTemplate {
     
     // Function for finding the AFK Template from the alias
     async getTemplate() {
-        // Search for all matches of the alias across all guild-specific AFK Templates
-        let selectedTemplates = templates[this.#guild.id].children.filter(t => t.aliases.includes(this.#alias))
-        // Search for all substring matches of the alias if direct matches were not found
-        if (selectedTemplates.length == 0) selectedTemplates = templates[this.#guild.id].children.filter(t => { for (let alias of t.aliases) if (alias.includes(this.#alias)) return true })
+        let selectedTemplates = templates[this.#guild.id].children.filter(t => t.aliases.includes(this.#alias)) // Search for all matches of the alias across all guild-specific AFK Templates
+        if (selectedTemplates.length == 0) selectedTemplates = templates[this.#guild.id].children.filter(t => { for (let alias of t.aliases) if (alias.includes(this.#alias)) return true }) // Search for all substring matches of the alias if direct matches were not found
         if (selectedTemplates.length == 0) return this.#template = null
-        // If only 1 found, select AFK Template (JSON parse/stringify for deep copy)
-        else if (selectedTemplates.length == 1) return this.#template = JSON.parse(JSON.stringify(selectedTemplates[0]))
-        // If multiple found, give option to choose AFK Template
-        const templateMenu = new Discord.StringSelectMenuBuilder()
+        else if (selectedTemplates.length == 1) return this.#template = JSON.parse(JSON.stringify(selectedTemplates[0])) // If only 1 found, select AFK Template (JSON parse/stringify for deep copy)
+        const templateMenu = new Discord.StringSelectMenuBuilder() // If multiple found, give option to choose AFK Template
             .setCustomId(`template`)
             .setPlaceholder(`Name of Afk`)
             .setMinValues(1)
@@ -102,23 +98,18 @@ class AfkTemplate {
         for (let i in selectedTemplates) templateMenu.addOptions({ label: selectedTemplates[i].templateName, value: i })
         const text = `Which template would you like to use for this run?.\n If no response is received, this run will use the default ${selectedTemplates[0].templateName}.`
         const {value: templateValue, interaction: subInteraction} = await this.#message.selectPanel(text, null, templateMenu, 30000, false, true)
-        // If one selected, select AFK Template, otherwise select first AFK TEmplate (JSON parse/stringify for deep copy)
-        return this.#template = JSON.parse(JSON.stringify(templateValue ? selectedTemplates[templateValue] : selectedTemplates[0]))
+        return this.#template = JSON.parse(JSON.stringify(templateValue ? selectedTemplates[templateValue] : selectedTemplates[0])) // If one selected, select AFK Template, otherwise select first AFK TEmplate (JSON parse/stringify for deep copy)
     }
 
     // Function for checking the AFK Template has valid parameters
     validateTemplate() {
         let status = {state: TemplateState.SUCCESS, message: ''}
         if (!this.#template) return status = {state: TemplateState.NOT_EXIST, message: 'This afk template does not exist.'}
-        // Populate child AFK Template parameters from Parent AFK Template
-        this.populateTemplateInherit()
-        // Populate Body Phase parameters from Body Default parameters
-        this.populateBodyInherit()
-        // Validate existence of AFK Template parameters
-        status = this.validateTemplateParameters(status)
+        this.populateTemplateInherit() // Populate child AFK Template parameters from Parent AFK Template
+        this.populateBodyInherit() // Populate Body Phase parameters from Body Default parameters
+        status = this.validateTemplateParameters(status) // Validate existence of AFK Template parameters
         if (!this.#template.enabled) return status = {state: TemplateState.DISABLED, message: 'This afk template is disabled.'}
-        // Validate values of AFK Template parameters
-        status = this.validateTemplateValues(status)
+        status = this.validateTemplateValues(status) // Validate values of AFK Template parameters
         return status
     }
 
@@ -482,7 +473,7 @@ class AfkTemplate {
         for (let i in this.buttons) if (choices.includes(i)) delete this.buttons[i]
     }
 
-    getButtonChoice() {
+    getButtonChoices() {
         let choices = []
         for (let i in this.buttons) if (this.buttons[i].choice != TemplateButtonChoice.NO_CHOICE) choices.push(i) 
         return choices
