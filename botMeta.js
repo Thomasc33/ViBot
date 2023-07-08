@@ -30,6 +30,7 @@ const bot = new Discord.Client({
 })
 bot.commands = new Discord.Collection()
 bot.afkChecks = {}
+bot.afkModules = {}
 bot.settings = moduleIsAvailable('./guildSettings.json') ? require('./guildSettings.json') : {}
 bot.partneredServers = moduleIsAvailable('./data/partneredServers.json') ? require('./data/partneredServers.json') : []
 bot.fetchPartneredServer = function (guildId) {

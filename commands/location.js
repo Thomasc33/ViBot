@@ -33,7 +33,7 @@ module.exports = {
             raidID = locationValue
         }
         bot.afkChecks[raidID].location = location
-        bot.afkChecks[raidID].afk.updateLocation()
+        bot.afkModules[raidID].updateLocation()
         message.react('✅')
     }
 }

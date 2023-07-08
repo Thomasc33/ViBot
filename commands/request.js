@@ -50,6 +50,6 @@ module.exports = {
         Object.keys(raid.afkTemplate.buttons).forEach((key) => { if (raid.afkTemplate.buttons[key].type == AfkTemplate.TemplateButtonType.NORMAL || raid.afkTemplate.buttons[key].type == AfkTemplate.TemplateButtonType.LOG) reactsMenu.addOptions({ label: `${key}`, value: `${key}` }) })
         const {value: reactsValue, interaction: subInteraction} = await message.selectPanel(text, null, reactsMenu, 30000, false, true)
         if (!reactsValue) return
-        raid.afk.updateReactsRequest(reactsValue)
+        bot.afkModules[raidID].updateReactsRequest(reactsValue)
     }
 }

@@ -449,20 +449,21 @@ class AfkTemplate {
     }
 
     processMessages(channel, currentMessage) {
-        let newMessage = ""
-        newMessage = currentMessage.match(/[^\[\]]*/g).map(match => {
+        let newMessage1 = ""
+        let newMessage2 = ""
+        newMessage1 = currentMessage.match(/[^\[\]]*/g).map(match => {
             let message = match
             if (this.#guild.channels.cache.has(this.#botSettings.channels[match])) message = `<#${this.#botSettings.channels[match]}>`
-            if (this.#guild.roles.cache.has(this.#botSettings.roles[match])) message = `<@&${this.#botSettings.roles[match]}>`
-            if (match == '[voicechannel]') message = channel
+            else if (this.#guild.roles.cache.has(this.#botSettings.roles[match])) message = `<@&${this.#botSettings.roles[match]}>`
+            else if (match == 'voicechannel') message = channel
             return message
         }).reduce((a, b) => a + b)
-        newMessage = currentMessage.match(/[^\{\}]*/g).map(match => {
+        newMessage2 = newMessage1.match(/[^\{\}]*/g).map(match => {
             let message = match
             if (this.#bot.storedEmojis[match]) message = `${this.#bot.storedEmojis[match].text}`
             return message
         }).reduce((a, b) => a + b)
-        return newMessage
+        return newMessage2
     }
 
     processReacts() {

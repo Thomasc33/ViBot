@@ -60,7 +60,7 @@ module.exports = {
     returnRaidIDsbyRaidID(bot, RSAID) {
         const afkChecks = []
         for (let raidID in bot.afkChecks) {
-            if (bot.afkChecks[raidID].active && bot.afkChecks[raidID].afk.raidStatusMessage.id == RSAID) afkChecks.push(raidID)
+            if (bot.afkChecks[raidID].active && bot.afkChecks[raidID].raidStatusMessage && bot.afkChecks[raidID].raidStatusMessage.id == RSAID) afkChecks.push(raidID)
         }
         return afkChecks
     },
@@ -163,33 +163,36 @@ class afkCheck {
     
     saveBotAfkCheck(deleteCheck = false) {
         if (deleteCheck) delete this.#bot.afkChecks[this.#raidID]
-        else this.#bot.afkChecks[this.#raidID] = {
-            afkTemplate: this.#afkTemplate,
-            message: this.#message,
-            guild: this.#guild,
-            channel: this.#channel,
-            leader: this.#leader,
-            raidID: this.#raidID,
-            members: this.members,
-            earlyLocationMembers: this.earlyLocationMembers,
-            earlySlotMembers: this.earlySlotMembers,
-            reactables: this.reactables,
-            capButtons: this.capButtons,
-            
-            time: Date.now(),
-            location: this.location,
-            phase: this.phase,
-            timer: this.timer,
-            active: this.active,
+        else {
+            this.#bot.afkChecks[this.#raidID] = {
+                afkTemplate: this.#afkTemplate,
+                message: this.#message,
+                guild: this.#guild,
+                channel: this.#channel,
+                leader: this.#leader,
+                raidID: this.#raidID,
+                members: this.members,
+                earlyLocationMembers: this.earlyLocationMembers,
+                earlySlotMembers: this.earlySlotMembers,
+                reactables: this.reactables,
+                capButtons: this.capButtons,
+                
+                time: Date.now(),
+                location: this.location,
+                phase: this.phase,
+                timer: this.timer,
+                active: this.active,
 
-            raidStatusEmbed: this.raidStatusEmbed,
-            raidStatusMessage: this.raidStatusMessage,
-            raidCommandsEmbed: this.raidCommandsEmbed,
-            raidCommandsMessage: this.raidCommandsMessage,
-            raidInfoMessage: this.raidInfoMessage,
-            raidChannelsEmbed: this.raidChannelsEmbed,
-            raidChannelsMessage: this.raidChannelsMessage,
-            raidDragThreads: this.raidDragThreads
+                raidStatusEmbed: this.raidStatusEmbed,
+                raidStatusMessage: this.raidStatusMessage,
+                raidCommandsEmbed: this.raidCommandsEmbed,
+                raidCommandsMessage: this.raidCommandsMessage,
+                raidInfoMessage: this.raidInfoMessage,
+                raidChannelsEmbed: this.raidChannelsEmbed,
+                raidChannelsMessage: this.raidChannelsMessage,
+                raidDragThreads: this.raidDragThreads
+            }
+            this.#bot.afkModules[this.#raidID] = this
         }
         fs.writeFileSync('./data/afkChecks.json', JSON.stringify(this.#bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.#bot, this.#guild) })
     }
@@ -539,15 +542,15 @@ class afkCheck {
             const position = this.reactables[interaction.customId].position
             const emote = buttonInfo.emote ? `${buttonInfo.emote.text} ` : ``
 
-            if (buttonInfo.minRole && !interaction.member.roles.cache.has(buttonInfo.minRole)) {
-                await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You do not have the required role ${this.#guild.roles.cache.get(buttonInfo.minRole)} to react to this run.`, null)], ephemeral: true })
+            if (buttonInfo.minRole && !interaction.member.roles.cache.has(buttonInfo.minRole.id)) {
+                await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You do not have the required role ${buttonInfo.minRole} to react to this run.`, null)], ephemeral: true })
                 return this.removeFromActiveInteractions(interaction.member.id)
             }
             if (this.reactables[interaction.customId].members.includes(interaction.member.id)) {
                 await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have already reacted as ${emote}${interaction.customId}. Try another react or try again next run.`, null)], ephemeral: true })
                 return this.removeFromActiveInteractions(interaction.member.id)
             }
-            if (interaction.customId.includes('request') && this.reactables[interaction.customId.substring(0, interaction.customId - 8)].members.includes(interaction.member.id)) {
+            if (interaction.customId.includes('request') && this.reactables[interaction.customId.substring(0, interaction.customId.length - 8)].members.includes(interaction.member.id)) {
                 await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have already reacted as ${emote}${interaction.customId.substring(0, interaction.customId - 7)}. Try another react or try again next run.`, null)], ephemeral: true })
                 return this.removeFromActiveInteractions(interaction.member.id)
             }
@@ -683,7 +686,7 @@ class afkCheck {
             if (!subInteraction) return await interaction.editReply({ embeds: [extensions.createEmbed(interaction, `Timed out. You can dismiss this message.`, null)], components: [] })
             else if (!confirmValue) return await subInteraction.update({ embeds: [extensions.createEmbed(interaction, `Cancelled. You can dismiss this message.`, null)], components: [] })
             else subInteraction.update({ embeds: [extensions.createEmbed(interaction, `Successfully moved to the next phase of the run. You can dismiss this message.`, null)], components: [] })
-        } else interaction.reply({ embeds: [extensions.createEmbed(interaction, `Successfully moved to the next phase of the run. You can dismiss this message.`, null)], ephemeral: true })
+        } else if (interaction) interaction.reply({ embeds: [extensions.createEmbed(interaction, `Successfully moved to the next phase of the run. You can dismiss this message.`, null)], ephemeral: true })
         
         this.phase++
         let phase = this.phase
@@ -1143,7 +1146,7 @@ class afkCheck {
         await this.#guild.channels.cache.get(this.#botSettings.channels.history).send({ embeds: [this.raidCommandsEmbed] })
 
         if (restart.restarting) this.loggingAfk()
-        else setTimeout(this.loggingAfk.bind(this), 100)
+        else setTimeout(this.loggingAfk.bind(this), 60000)
         this.active = false
         this.saveBotAfkCheck()
     }
