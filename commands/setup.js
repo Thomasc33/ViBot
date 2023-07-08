@@ -142,7 +142,7 @@ module.exports = {
                                 if (mes.content.toLowerCase() == 'cancel') {
                                     setupMessage.delete()
                                     message.react('✅')
-                                    menuCollector.stop()
+                                    menuMessageCollector.stop()
                                 } else {
                                     let change = `\`\`\`coffeescript\n${array[parseInt(num) - 1]}: ${bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]]} -> ${mes.content}\`\`\``
                                     switch (type) {
@@ -205,7 +205,7 @@ module.exports = {
                                         if (mes.content.toLowerCase() == 'cancel') {
                                             setupMessage.delete()
                                             message.react('✅')
-                                            collector.stop()
+                                            newCollector.stop()
                                         } else {
                                             change = `\`\`\`coffeescript\n${mes.content} added to ${arrayName}\`\`\``
                                             bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]].push(mes.content)
