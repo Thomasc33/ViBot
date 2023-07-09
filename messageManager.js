@@ -266,12 +266,14 @@ class MessageManager {
     }
 
     async #sendModMail(message) {
+        let cancelled = false
         const confirmModMailEmbed = new Discord.EmbedBuilder()
             .setColor('#ff0000')
             .setTitle('Are you sure you want to message modmail?')
             .setFooter({ text: 'Spamming modmail with junk will result in being modmail blacklisted' })
             .setDescription(`\`\`\`${message.content}\`\`\``)
-        const guild = await this.getGuild(message).catch(er => { cancelled = true })
+        const guild = await this.getGuild(message).catch(er => cancelled = true )
+        if (cancelled) return
         await message.channel.send({ embeds: [confirmModMailEmbed] }).then(async confirmMessage => {
             if (await confirmMessage.confirmButton(message.author.id)) {
                 modmail.sendModMail(message, guild, this.#bot, getDB(guild.id))
@@ -327,9 +329,11 @@ class MessageManager {
             const guilds = []
             const guildNames = []
             this.#bot.guilds.cache.each(g => {
+                let settings = this.#bot.settings[g.id]
                 if (this.#bot.emojiServers.includes(g.id)) return
                 if (this.#bot.devServers.includes(g.id)) return
                 if (!g.members.cache.get(message.author.id)) return
+                if (!settings.backend.modmail) return
                 guilds.push(g)
                 guildNames.push(g.name)
             })
