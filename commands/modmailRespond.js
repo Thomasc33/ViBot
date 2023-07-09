@@ -1,4 +1,5 @@
 const Discord = require('discord.js')
+const moment = require('moment')
 
 module.exports = {
     name: 'modmailrespond',
@@ -7,6 +8,10 @@ module.exports = {
     args: '<id>',
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
+        if (!settings.backend.modmail) {
+            messsage.reply(`Modmail is disabled in this server.`)
+            return
+        }
         if (message.channel.id !== settings.channels.modmail) return
         if (!args[0]) return
         let m = await message.channel.messages.fetch(args[0])
@@ -32,7 +37,7 @@ module.exports = {
         }
 
         let originalMessage = embed.data.description;
-        originalMessage = originalMessage.substring(originalMessage.indexOf(':') + 3, originalMessage.length - 1)
+        // originalMessage = originalMessage.substring(originalMessage.indexOf(':') + 3, originalMessage.length - 1)
         let responseEmbed = new Discord.EmbedBuilder()
             .setDescription(`__How would you like to respond to ${raider}'s [message](${m.url})__\n${originalMessage}`)
         let responseEmbedMessage = await message.channel.send({ embeds: [responseEmbed] })
@@ -51,7 +56,7 @@ module.exports = {
                         return responseEmbedMessage.delete();
                     await dms.send(response)
                     responseEmbedMessage.delete()
-                    embed.addFields([{ name: `Response by ${message.member.displayName}:`, value: response }])
+                    embed.addFields([{ name: `Response by ${message.member.displayName} <t:${moment().unix()}:R>:`, value: response }])
                     m.edit({ embeds: [embed] })
                 } else {
                     await responseEmbedMessage.delete()
