@@ -1,5 +1,6 @@
-const Discord = require('discord.js')
-const logs = require('../data/logInfo.json')
+const Discord = require('discord.js');
+const logs = require('../data/logInfo.json');
+const quotas = require('../data/quotas.json');
 
 module.exports = {
     name: 'currentweek',
@@ -11,44 +12,44 @@ module.exports = {
     },
     async execute(message, args, bot, db) {
         //get member
-        if (!args.length) return message.channel.send('Please specify a user.');
-        let members = args.map(m => {
-            m = m.replace(/[<@!>]/, '')
-            return message.guild.members.cache.get(m) || message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(m.toLowerCase())) || undefined
-        })
-
-        //get log info
-        let guildInfo = logs[message.guild.id];
-        if (!guildInfo) return message.channel.send('Logging isn\'t setup on this server yet');
-        let raids = getRunInfo(guildInfo, 'v');
-        if (message.guild.id == '708026927721480254') raids = getRunInfo(guildInfo, 'o')
-        if (!raids) return message.channel.send('Run Type not recognized\n' + this.getNotes(message.guild.id));
-
-        for (let member of members) {
+        let members = []
+        if (args.length == 0) members.push(message.member)
+        for (let i in args) {
+            let member = message.guild.findMember(args[i])
             if (!member) continue
-            db.query(`SELECT * FROM users WHERE id = ${member.id}`, (err, rows) => {
-                if (err) { res(null); return message.channel.send(`Error: ${err}`); }
-                if (!rows || rows.length == 0) return message.channel.send(`User not found: \`${member.id}\``);
-                const quotaEmbed = new Discord.EmbedBuilder()
-                    .setColor(raids.color)
-                    .setDescription(`**Current Week Quota for ${member}**`)
-                    .setFooter({ text: `Quota for ${member.displayName} as of` })
-                    .setTimestamp()
-                    .addFields(
-                        { name: 'Raiding', value: raids.toDisplay.map(c => ` \`${rows[0][c]}\` ${c.replace('currentweek', '').replace('rollingQuota', 'Rollover')}`).join('\n'), inline: true }
-                    );
-                if (message.guild.id == '343704644712923138' || message.guild.id == '701483950559985705') quotaEmbed.addFields({ name: 'Security', value: `\`${rows[0].currentweekparses}\` Parses`, inline: true })
-                if (message.guild.id == '708026927721480254' || message.guild.id == '701483950559985705') quotaEmbed.addFields({ name: 'Parsing', value: `\`${rows[0].o3currentweekparses + rows[0].rollingsecurityquotao3}\` Total\n\`${rows[0].o3currentweekparses}\` Parses\n\`${rows[0].rollingsecurityquotao3}\` Rollover`, inline: true })
-                message.channel.send({ embeds: [quotaEmbed] });
-            })
+            members.push(member)
         }
-    }
-};
+        if (members.length == 0) return message.reply('Could not find any user')
 
-function getRunInfo(guildInfo, key) {
-    for (let i of guildInfo.main) {
-        if (key.toLowerCase() == i.key.toLowerCase()) return i;
-        if (i.alias.includes(key.toLowerCase())) return i;
+        if (!quotas.hasOwnProperty(message.guild.id)) return message.reply('Current week is not set up for this server')
+        members.map(async member => {
+            let rows = await returnRows(member, db)
+            if (!rows) return
+            let embed = new Discord.EmbedBuilder()
+                .setTitle('Current Week')
+                .setDescription(`${member} \`\`${member.displayName}\`\``)
+                .setColor('#FF0000')
+             await quotas[message.guild.id].quotas.map(quota => {
+                embed.addFields({
+                    name: `${quota.name}`,
+                    value: `(${quota.values.map(value => `${value.emoji ? `${value.emoji}` : `${value.name}`}: \`${rows[value.column]}\``).join(', ')})`,
+                    inline: false
+                })
+            })
+            await message.channel.send({ embeds: [embed] })
+        })
     }
-    return null;
+}
+
+async function returnRows(member, db) {
+    return new Promise(async (res, rej) => {
+        db.query(`SELECT * FROM users WHERE id = '${member.id}'`, (err, rows) => {
+            if (err) return rej(err)
+            if (rows.length == 0) {
+                res(undefined)
+            } else {
+                res(rows[0])
+            }
+        })
+    })
 }
