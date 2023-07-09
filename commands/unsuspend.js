@@ -56,9 +56,13 @@ module.exports = {
                         role = settings.roles[settings.lists.discordRoles[i]]
                         if (member.roles.cache.get(role)) roles.push(role)
                     }
-                    await member.edit({
-                        roles: roles
-                    })
+                    await member.roles.add(roles);
+                    setTimeout(async () => {
+                        if (member.roles.cache.has(settings.roles.tempsuspended)) await 
+                    member.roles.remove(settings.roles.tempsuspended);
+                        if (member.roles.cache.has(settings.roles.permasuspended)) await 
+                    member.roles.remove(settings.roles.permasuspended);
+                    }, 5000);
                     try {
                         let embed = bot.guilds.cache.get(guildId).channels.cache.get(settings.channels.suspendlog).messages.cache.get(proofLogID).embeds.shift();
                         embed.setColor('#00ff00')
