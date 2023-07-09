@@ -285,10 +285,10 @@ class afkCheck {
                     const confirmSelectMenu2 = new Discord.StringSelectMenuBuilder()
                         .setPlaceholder(`Number of ${i}s`)
                         .setOptions(
-                            { label: '0', value: '0' },
                             { label: '1', value: '1' },
                             { label: '2', value: '2' },
-                            { label: '3', value: '3' }
+                            { label: '3', value: '3' },
+                            { label: 'None', value: '0' },
                         )
                     const {value: confirmValue2, interaction: subInteraction2} = await this.#message.selectPanel(text2, null, confirmSelectMenu2, 30000, false, true)
                     this.#afkTemplate.buttons[i].limit = Number.isInteger(parseInt(confirmValue2)) ? parseInt(confirmValue2) : this.#afkTemplate.buttons[i].limit
@@ -298,10 +298,10 @@ class afkCheck {
                     const confirmSelectMenu3 = new Discord.StringSelectMenuBuilder()
                         .setPlaceholder(`Number of ${i}s`)
                         .setOptions(
-                            { label: '0', value: '0' },
                             { label: '1', value: '1' },
                             { label: '2', value: '2' },
-                            { label: '3', value: '3' }
+                            { label: '3', value: '3' },
+                            { label: 'None', value: '0' },
                         )
                     const {value: confirmValue3, interaction: subInteraction3} = await this.#message.selectPanel(text3, null, confirmSelectMenu3, 30000, true, true)
                     this.#afkTemplate.buttons[i].limit = Number.isInteger(parseInt(confirmValue3)) ? parseInt(confirmValue3) : this.#afkTemplate.buttons[i].limit
@@ -341,7 +341,7 @@ class afkCheck {
         for (let i of this.earlySlotMembers) {
             let member = this.#guild.members.cache.get(i)
             if (!member.voice.channel) continue
-            if (member.voice.channel.name.includes('lounge') || member.voice.channel.name.includes('Lounge') || member.voice.channel.name.includes('drag')) await member.voice.setChannel(this.channel.id).catch(er => { })
+            if (member.voice.channel.name.includes('lounge') || member.voice.channel.name.includes('Lounge') || member.voice.channel.name.includes('drag')) await member.voice.setChannel(this.#channel.id).catch(er => { })
         }
     }
 
@@ -359,6 +359,7 @@ class afkCheck {
         if (this.raidCommandsMessage) await this.raidCommandsMessage.edit({ embeds: [this.raidCommandsEmbed] })
         if (this.raidInfoMessage) await this.raidInfoMessage.edit({embeds: [this.raidCommandsEmbed]})
         if (this.raidChannelsMessage) await this.raidChannelsMessage.edit({ embeds: [this.raidChannelsEmbed] })
+        this.openInteractions = []
     }
 
     removeFromActiveInteractions(id) {
@@ -711,10 +712,10 @@ class afkCheck {
         const confirmNumberMenu = new Discord.StringSelectMenuBuilder()
             .setPlaceholder(`Number of Members`)
             .setOptions(
-                { label: '0', value: '0' },
                 { label: '1', value: '1' },
                 { label: '2', value: '2' },
-                { label: '3', value: '3' }
+                { label: '3', value: '3' },
+                { label: 'None', value: '0' },
             )
         const {value: confirmNumberValue, interaction: subInteraction} = await interaction.selectPanel(text, null, confirmNumberMenu, 30000, true, true)
         number = Number.isInteger(parseInt(confirmNumberValue)) ? parseInt(confirmNumberValue) : null
@@ -729,9 +730,9 @@ class afkCheck {
     async processReconnect(interaction) {
         if (this.members.includes(interaction.member.id) || this.earlySlotMembers.includes(interaction.member.id) || this.earlyLocationMembers.includes(interaction.member.id)) {
             if (!interaction.member.voice.channel) return interaction.reply({ embeds: [extensions.createEmbed(interaction, `Join lounge to be moved into the channel. You can dismiss this message.`, null)], ephemeral: true })
-            else if (interaction.member.voice.channel.id == this.channel.id) return interaction.reply({ content: 'It looks like you are already in the channel ඞ. You can dismiss this message.', ephemeral: true })
+            else if (interaction.member.voice.channel.id == this.#channel.id) return interaction.reply({ content: 'It looks like you are already in the channel ඞ. You can dismiss this message.', ephemeral: true })
             else if (interaction.member.voice.channel.name.includes('lounge') || interaction.member.voice.channel.name.includes('Lounge') || interaction.member.voice.channel.name.includes('drag')) {
-                await interaction.member.voice.setChannel(this.channel.id).catch(er => { })
+                await interaction.member.voice.setChannel(this.#channel.id).catch(er => { })
                 return interaction.reply({ embeds: [extensions.createEmbed(interaction, `Successfully moved you into the channel. You can dismiss this message.`, null)], ephemeral: true })
             }
         } else return interaction.reply({ embeds: [extensions.createEmbed(interaction, `You were not part of this run when the afk check ended. Another run will be posted soon. Join that one!`, null)], ephemeral: true });
@@ -762,10 +763,10 @@ class afkCheck {
         const confirmNumberMenu = new Discord.StringSelectMenuBuilder()
             .setPlaceholder(`Number of ${button}s`)
             .setOptions(
-                { label: '0', value: '0' },
                 { label: '1', value: '1' },
                 { label: '2', value: '2' },
-                { label: '3', value: '3' }
+                { label: '3', value: '3' },
+                { label: 'None', value: '0' },
             )
         const {value: confirmNumberValue, interaction: subInteractionNumber} = await interaction.selectPanel(text2, null, confirmNumberMenu, 10000, true, true)
         number = Number.isInteger(parseInt(confirmNumberValue)) ? parseInt(confirmNumberValue) : null
@@ -802,6 +803,8 @@ class afkCheck {
         this.#db.query(`UPDATE users SET points = points + ${points} WHERE id = '${member.id}'`, (err, rows) => {
             if (err) return console.log(`error logging ${i} points in `, this.#guild.id)
         })
+        let pointsLog = [{ uid: member.id, points: points, reason: `${button}`}]
+        await pointLogger.pointLogging(pointsLog, this.#guild, this.#bot, this.raidCommandsEmbed)
         await interaction.followUp({ embeds: [extensions.createEmbed(interaction, `Successfully logged ${number} ${choiceText} for ${member}. You can dismiss this message.`, null)], ephemeral: true })
     }
 
@@ -849,8 +852,10 @@ class afkCheck {
                 .setStyle(Discord.ButtonStyle.Success)
             const cancelButton = new Discord.ButtonBuilder()
             const {value: confirmValue, interaction: subInteraction} = await interaction.confirmPanel(text, buttonInfo.confirmationMedia, confirmButton, cancelButton, 10000, true)
-            if (!subInteraction) return await interaction.editReply({ embeds: [extensions.createEmbed(interaction, `Timed out. You can dismiss this message.`, null)], components: [] })   
-            else if (!confirmValue) {
+            if (!subInteraction) {
+                await interaction.editReply({ embeds: [extensions.createEmbed(interaction, `Timed out. You can dismiss this message.`, null)], components: [] })   
+                return false
+            } else if (!confirmValue) {
                 await subInteraction.update({ embeds: [extensions.createEmbed(interaction, `Cancelled. You can dismiss this message.`, null)], components: [] })
                 return false
             } else if (this.reactables[interaction.customId].members.length >= buttonInfo.limit) {
@@ -866,7 +871,8 @@ class afkCheck {
         let locationText = ''
         if (buttonInfo.location) locationText = `The location for this run has been set to \`${this.location}\`, get there ASAP!${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`
         else locationText = `The location for this run is not given for this reaction.${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`
-        await interaction.followUp({ embeds: [extensions.createEmbed(interaction, locationText, null)], ephemeral: true })
+        if (interaction.replied || interaction.deferred) await interaction.followUp({ embeds: [extensions.createEmbed(interaction, locationText, null)], ephemeral: true })
+        else await interaction.reply({ embeds: [extensions.createEmbed(interaction, locationText, null)], ephemeral: true })
         return true
     }
 
@@ -958,8 +964,10 @@ class afkCheck {
                 .setStyle(Discord.ButtonStyle.Success)
             const cancelButton = new Discord.ButtonBuilder()
             const {value: confirmValue, interaction: subInteraction} = await interaction.confirmPanel(text, buttonInfo.confirmationMedia, confirmButton, cancelButton, 10000, true)
-            if (!subInteraction) return await interaction.editReply({ embeds: [extensions.createEmbed(interaction, `Timed out. You can dismiss this message.`, null)], components: [] })  
-            else if (!confirmValue) {
+            if (!subInteraction) {
+                await interaction.editReply({ embeds: [extensions.createEmbed(interaction, `Timed out. You can dismiss this message.`, null)], components: [] }) 
+                return false
+            } else if (!confirmValue) {
                 await subInteraction.update({ embeds: [extensions.createEmbed(interaction, `Cancelled. You can dismiss this message.`, null)], components: [] })
                 return false
             } else if (this.reactables[interaction.customId].members.length >= buttonInfo.limit) {
@@ -976,7 +984,8 @@ class afkCheck {
         let locationText = ''
         if (buttonInfo.location) locationText = `The location for this run has been set to \`${this.location}\`, get there ASAP!${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`
         else locationText = `The location for this run is not given for this reaction.${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`
-        await interaction.followUp({ embeds: [extensions.createEmbed(interaction, locationText, null)], ephemeral: true })
+        if (interaction.replied || interaction.deferred) await interaction.followUp({ embeds: [extensions.createEmbed(interaction, locationText, null)], ephemeral: true })
+        else await interaction.reply({ embeds: [extensions.createEmbed(interaction, locationText, null)], ephemeral: true })
         return true
     }
 
@@ -1217,7 +1226,7 @@ class afkCheck {
         await Promise.all([this.sendStatusMessage(this.phase), this.sendCommandsMessage(this.phase), this.sendChannelsMessage(this.phase)])
         for (let i of this.earlyLocationMembers) {
             let member = this.#guild.members.cache.get(i)
-            await member.send(`The location for this run has been changed to \`${this.afkInfo.location}\`, get there ASAP!`)
+            await member.send(`The location for this run has been changed to \`${this.location}\`, get there ASAP!`)
         }
     }
 

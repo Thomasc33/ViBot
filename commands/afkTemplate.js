@@ -104,11 +104,12 @@ class AfkTemplate {
     // Function for checking the AFK Template has valid parameters
     validateTemplate() {
         let status = {state: TemplateState.SUCCESS, message: ''}
-        if (!this.#template) return status = {state: TemplateState.NOT_EXIST, message: 'This afk template does not exist.'}
+        if (!this.#template) return status = {state: TemplateState.NOT_EXIST, message: `This afk template does not exist.`}
         this.populateTemplateInherit() // Populate child AFK Template parameters from Parent AFK Template
         this.populateBodyInherit() // Populate Body Phase parameters from Body Default parameters
         status = this.validateTemplateParameters(status) // Validate existence of AFK Template parameters
-        if (!this.#template.enabled) return status = {state: TemplateState.DISABLED, message: 'This afk template is disabled.'}
+        if (!this.#template.enabled) return status = {state: TemplateState.DISABLED, message: `This afk template is disabled.`}
+        if (!this.#template.commandsChannel) return status = {state: TemplateState.INVALID_CHANNEL, message: `This afk template only runs in ${this.#template.inherits.map(parent => this.#guild.channels.cache.get(templates[this.#guild.id].parents[parent].commandsChannel)).join(', ')}.`}
         status = this.validateTemplateValues(status) // Validate values of AFK Template parameters
         return status
     }
