@@ -21,11 +21,11 @@ module.exports = {
 
         //get role list, ignoring Discord managed roles
         let userRoles = []
-        member.roles.cache.each(r => {
+        Promise.all(member.roles.cache.each(async r => {
             if (r.managed) return
             if (settings.lists.discordRoles.map(role => settings.roles[role]).includes(r.id)) return
             userRoles.push(r.id)
-        })
+        }))
 
         const reason = args.join(' ');
         //unverify
@@ -37,6 +37,7 @@ module.exports = {
             .addFields([{name: 'Reason', value: reason || 'None!'}])
             .setTimestamp(Date.now());
         member.roles.remove(userRoles)
+            .then(() => { if (settings.backend.useUnverifiedRole && !member.roles.cache.has(settings.roles.unverified)) { member.roles.add(settings.roles.unverified) } })
             .then(() => member.setNickname(''))
             .then(async() => { member.send(`You have been unverified from \`${message.guild.name}\`${reason ? ' for: ' + reason : ''}. Please contact ${message.member} \`${message.author.tag}\` to appeal.`); })
             .then(() =>     message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] }))

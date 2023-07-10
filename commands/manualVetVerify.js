@@ -26,6 +26,7 @@ module.exports = {
         if (!member) return message.replyUserError("User not found")
         if (member.roles.cache.has(vetBanRole.id)) return message.replyUserError("User is vet banned")
         member.roles.add(vetRaiderRole)
+        if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) member.roles.remove(settings.roles.unverified)
         let embed = new Discord.EmbedBuilder()
             .setTitle('Manual Veteran Verify')
             .setDescription(member.toString())

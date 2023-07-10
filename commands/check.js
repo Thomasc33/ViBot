@@ -21,6 +21,8 @@ module.exports = {
             const unansweredModmails = [];
             const unansweredVerifications = [];
             const unansweredVeteranVerifications = [];
+            const userWithNoRole = [];
+            const userWithUnverifiedAndRaider = [];
 
             const suspends = await getSuspends(guild, db);
 
@@ -73,7 +75,7 @@ module.exports = {
                 debounceEdit();
             }
 
-            //duplicate nickname, temporary key popper, event raider + verified raider, unverified with nickname, false suspensions
+            //duplicate nickname, temporary key popper, event raider + verified raider, unverified with nickname, false suspensions, some unverified role stuff
             await new Promise(res => {
                 guild.members.cache.forEach(member => {
                     if (ignores[guild.id] && ignores[guild.id].includes(member.id))
@@ -102,12 +104,22 @@ module.exports = {
                             verifiedWithoutNickname.push(`<@!${member.id}>`);
 
                         //unverified with nickname
-                        if (member.roles.cache.size < 2 && member.nickname !== null && member.nickname !== '')
+                        if ((member.roles.cache.size < 2 || (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified))) && member.nickname !== null && member.nickname !== '')
                             unverifiedWithNickname.push(`<@!${member.id}>`)
 
                         //false suspensions
                         if (settings.roles.tempsuspended && member.roles.cache.has(settings.roles.tempsuspended) && !suspends.includes(member.id))
                             falseSuspensions.push(`<@!${member.id}>`)
+                        
+                        // User with no roles
+                        if (settings.backend.useUnverifiedRole && member.roles.cache.size == 1) {
+                            userWithNoRole.push(`<@!${member.id}>`)
+                        }
+
+                        // User with both Unverified AND raider
+                        if (settings.backend.useUnverifiedRole && (member.roles.cache.has(settings.roles.raider) || member.roles.highest.position > message.guild.roles.cache.get(settings.roles.raider).position) && member.roles.cache.has(settings.roles.unverified)) {
+                            userWithUnverifiedAndRaider.push(`<@!${member.id}>`)
+                        }
                     }
                 });
                 res();
@@ -119,6 +131,10 @@ module.exports = {
             updateEmbed(`Duplicate Names`, dupeNameStrings, '\n');
             updateEmbed(`No Nickname`, verifiedWithoutNickname, ', ');
             updateEmbed(`Unverified With Nickname`, unverifiedWithNickname, ', ');
+            if (settings.backend.useUnverifiedRole) {
+                updateEmbed(`Users with no Roles`, userWithNoRole, ', ');
+                updateEmbed(`Users with BOTH Raider and Unverified`, userWithUnverifiedAndRaider, ', ');
+            }
 
             //unanswered modmails
             await new Promise(async res => {

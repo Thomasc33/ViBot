@@ -45,6 +45,7 @@ module.exports = {
         // Add roles
         if (member.roles.cache.has(settings.roles.eventraider)) await member.roles.remove(settings.roles.eventraider)
         await member.roles.add(raiderRole)
+        if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) await member.roles.remove(settings.roles.unverified)
         if (settings.backend.giveeventroleonverification) await member.roles.add(settings.roles.eventraider)
         let tag = member.user.username
         let nick = ''

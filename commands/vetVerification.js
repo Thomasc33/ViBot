@@ -138,6 +138,7 @@ module.exports = {
             //vet verify
             veriLog.send(`${member} (${member} has been given the Veteran Raider role automatically)`)
             await member.roles.add(vetRaider)
+            if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) await member.roles.remove(settings.roles.unverified)
             // db.query(`UPDATE users SET ${dungeon.dbisvet} = true WHERE id = '${u.id}'`)
         } else {
             //manual verify
@@ -301,6 +302,7 @@ module.exports = {
                         embed.setFooter({ text: `Accepted by ${reactor.nickname}` })
                         await message.edit({ embeds: [embed] })
                         await member.roles.add(vetRaider.id)
+                        if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) await member.roles.remove(settings.roles.unverified)
                         //member.user.send(ext.parse(settings.messages.verifications.acceptvetveri, info))
                         try {
                             member.user.send(`You have been verified for the ${info.role.name} role in \`${info.guild.name}\`.`)

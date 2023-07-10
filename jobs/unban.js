@@ -23,6 +23,7 @@ async function tryUnsuspend(bot, g, row, isVetBan) {
             setTimeout(() => { member.roles.add(settings.roles.vetraider); }, 1000)
             setTimeout(() => {
                 if (!member.roles.cache.has(settings.roles.vetraider)) {member.roles.add(settings.roles.vetraider).catch(er => ErrorLogger.log(er, bot, g))}
+                if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) member.roles.remove(settings.roles.unverified)
             }, 5000)
         } else {
             const roles = []

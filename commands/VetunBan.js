@@ -24,6 +24,7 @@ module.exports = {
                 const proofLogID = rows[0].logmessage;
                 member.roles.remove(settings.roles.vetban)
                     .then(member.roles.add(settings.roles.vetraider));
+                if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) await member.roles.remove(settings.roles.unverified)
                 db.query(`UPDATE vetbans SET suspended = false WHERE id = '${member.id}'`)
                 let logMessage = await message.guild.channels.cache.get(settings.channels.suspendlog).messages.fetch(proofLogID)
                 if (logMessage) {
@@ -46,6 +47,7 @@ module.exports = {
                         if (m.content.toLowerCase().charAt(0) == 'y') {
                             member.roles.remove(settings.roles.vetban)
                                 .then(member.roles.add(settings.roles.vetraider));
+                            if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) member.roles.remove(settings.roles.unverified)
                             message.channel.send("User unbanned successfully");
                         }
                     } catch (er) {
