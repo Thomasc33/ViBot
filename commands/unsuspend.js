@@ -37,6 +37,7 @@ module.exports = {
                             const raiderRole = message.guild.roles.cache.get(settings.roles.raider);
                             member.roles.remove(suspendedRole)
                                 .then(member.roles.add(raiderRole));
+                            if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) member.roles.remove(settings.roles.unverified)
                             message.channel.send("User unsuspended successfully");
                         }
                     } catch (er) {
@@ -58,10 +59,9 @@ module.exports = {
                     }
                     await member.roles.add(roles);
                     setTimeout(async () => {
-                        if (member.roles.cache.has(settings.roles.tempsuspended)) await 
-                    member.roles.remove(settings.roles.tempsuspended);
-                        if (member.roles.cache.has(settings.roles.permasuspended)) await 
-                    member.roles.remove(settings.roles.permasuspended);
+                        if (member.roles.cache.has(settings.roles.tempsuspended)) await member.roles.remove(settings.roles.tempsuspended);
+                        if (member.roles.cache.has(settings.roles.permasuspended)) await member.roles.remove(settings.roles.permasuspended);
+                        if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) await member.roles.remove(settings.roles.unverified)
                     }, 5000);
                     try {
                         let embed = bot.guilds.cache.get(guildId).channels.cache.get(settings.channels.suspendlog).messages.cache.get(proofLogID).embeds.shift();
@@ -98,6 +98,8 @@ module.exports = {
                             const raiderRole = message.guild.roles.cache.get(settings.roles.raider);
                             member.roles.remove(suspendedRole)
                                 .then(member.roles.add(raiderRole));
+                            if (member.roles.cache.has(settings.roles.unverified)) member.roles.remove(settings.roles.unverified)
+                            if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) member.roles.remove(settings.roles.unverified)
                             message.channel.send(`${member} has been unsuspended`)
                                 .then(message.guild.channels.cache.get(settings.channels.suspendlog).send(`${member} unsuspended`))
                         }
