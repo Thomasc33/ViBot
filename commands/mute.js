@@ -9,6 +9,7 @@ module.exports = {
     description: 'Gives user the muted role',
     args: '<member> <time> <time type s/m/h/d/w/y> (Reason)',
     role: 'security',
+    varargs: true,
     requiredArgs: 1,
     args: [
         slashArg(SlashArgType.User, 'member', {
