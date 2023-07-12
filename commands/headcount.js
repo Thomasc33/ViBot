@@ -23,7 +23,7 @@ module.exports = {
 
         let symbol = args[0].toLowerCase();
         let isAvanced = false;
-        if (symbol.charAt(0) == 'a' && args[0].length > 1){
+        if (symbol.charAt(0) == 'e' && args[0].length > 1){
             isAvanced = true;
             // symbol += args[0].charAt(1).toLowerCase();
             }
@@ -82,8 +82,8 @@ module.exports = {
                     .setTimestamp()
 
                 if (isAvanced){
-                    embed.data.description += `\n\n**__Advanced Runs__**\nThis is an **advanced run**, meaning there are extended requirements you **MUST** meet. You must be both **__8/8__** and follow the requirements sheet listed below.\n\nIf you are caught not meeting these requirements, you will be removed from the run and suspended.`;
-                    embed.setImage(settings.strings.hallsAdvancedReqsImage);
+                    embed.data.description += `\n\n**__Exalted Runs__**\nThis is an **exalted run**, meaning there are extended requirements you **MUST** meet. You must be both **__8/8__** and follow the requirements sheet listed below.\n\nIf you are caught not meeting these requirements, you will be removed from the run and suspended.`;
+                    embed.setImage(settings.strings.hallsExaltedReqsImage);
                 }
                 if (message.author.avatarURL()) embed.setAuthor({ name: `Headcount for ${run.runName} by ${message.member.nickname}`, iconURL: message.author.avatarURL() })
                 const pingRole = run.pingRole || run.rolePing;

@@ -89,11 +89,11 @@
             },
             "font-color": "#000000"
         },
-        "advancedCult": {
-            "runType": "Adv. Cult",
-            "runName": "Adv. Cult",
+        "ExaltedCult": {
+            "runType": "Exalted Cult",
+            "runName": "Exalted Cult",
             "symbol": "ac",
-            "aliases": ["advcult", "acult"],
+            "aliases": ["exaltedcult", "ecult"],
             "reqsImageUrl": "",
             "keyEmote": "hallsK",
             "pingRole": "cultping",
@@ -249,11 +249,11 @@
             },
             "font-color": "#eeeeee"
         },
-        "advancedVoid": {
-            "runType": "Adv. Void",
-            "runName": "Adv. Void",
+        "ExaltedVoid": {
+            "runType": "Exalted Void",
+            "runName": "Exalted Void",
             "symbol": "av",
-            "aliases": ["advvoid", "avoid", "avoided", "advvoided"],
+            "aliases": ["exaltedvoid", "evoid", "evoided", "exaltedvoided"],
             "reqsImageUrl": "",
             "keyEmote": "hallsK",
             "vialEmote": "VialOfPureDarkness",
@@ -412,11 +412,11 @@
             },
             "font-color": "#eeeeee"
         },
-        "advancedFullSkipVoid": {
-            "runType": "Adv. Full-Skip Void",
-            "runName": "Adv. Full-Skip Void",
+        "ExaltedFullSkipVoid": {
+            "runType": "Exalted Full-Skip Void",
+            "runName": "Exalted Full-Skip Void",
             "symbol": "af",
-            "aliases": ["afsv", "afullskipvoid", "afullskip", "advfsv", "advfullskip", "advfullskipvoid"],
+            "aliases": ["efsv", "efullskipvoid", "efullskip", "exaltedfsv", "exaltedfullskip", "exaltedfullskipvoid"],
             "reqsImageUrl": "",
             "keyEmote": "hallsK",
             "vialEmote": "VialOfPureDarkness",
@@ -589,11 +589,11 @@
             },
             "font-color": "#000000"
         },
-        "advancedShatters": {
-            "runType": "Advanced Shatters",
-            "runName": "Advanced Shatters",
+        "ExaltedShatters": {
+            "runType": "Exalted Shatters",
+            "runName": "Exalted Shatters",
             "symbol": "as",
-            "aliases": ["advshatters", "ashatters", "advshatter", "ashatters"],
+            "aliases": ["exaltedshatters", "eshatters", "exaltedshatter", "exshatters"],
             "reqsImageUrl": "",
             "keyEmote": "shattersKey",
             "pingRole": "shattsReact",
@@ -907,11 +907,11 @@
             },
             "font-color": "#000000"
         },
-        "advancedCult": {
-            "runType": "Adv. Cult",
-            "runName": "Adv. Cult",
+        "ExaltedCult": {
+            "runType": "Exalted Cult",
+            "runName": "Exalted Cult",
             "symbol": "ac",
-            "aliases": ["advcult", "acult"],
+            "aliases": ["exaltedcult", "ecult"],
             "reqsImageUrl": "",
             "keyEmote": "hallsK",
             "pingRole": "cultping",
@@ -1067,11 +1067,11 @@
             },
             "font-color": "#eeeeee"
         },
-        "advancedVoid": {
-            "runType": "Adv. Void",
-            "runName": "Adv. Void",
+        "ExaltedVoid": {
+            "runType": "Exalted Void",
+            "runName": "Exalted Void",
             "symbol": "av",
-            "aliases": ["advvoid", "avoid", "avoided", "advvoided"],
+            "aliases": ["exaltedvoid", "evoid", "evoided", "exaltedvoided"],
             "reqsImageUrl": "",
             "keyEmote": "hallsK",
             "vialEmote": "VialOfPureDarkness",
@@ -1230,11 +1230,11 @@
             },
             "font-color": "#eeeeee"
         },
-        "advancedFullSkipVoid": {
-            "runType": "Adv. Full-Skip Void",
-            "runName": "Adv. Full-Skip Void",
+        "ExaltedFullSkipVoid": {
+            "runType": "Exalted Full-Skip Void",
+            "runName": "Exalted Full-Skip Void",
             "symbol": "af",
-            "aliases": ["afsv", "afullskipvoid", "afullskip", "advfsv", "advfullskip", "advfullskipvoid"],
+            "aliases": ["efsv", "efullskipvoid", "efullskip", "exaltedfsv", "exaltedfullskip", "exaltedfullskipvoid"],
             "reqsImageUrl": "",
             "keyEmote": "hallsK",
             "vialEmote": "VialOfPureDarkness",
@@ -1407,11 +1407,11 @@
             },
             "font-color": "#000000"
         },
-        "advancedShatters": {
-            "runType": "Advanced Shatters",
-            "runName": "Advanced Shatters",
+        "ExaltedShatters": {
+            "runType": "Exalted Shatters",
+            "runName": "Exalted Shatters",
             "symbol": "as",
-            "aliases": ["advshatters", "ashatters", "advshatter", "ashatters"],
+            "aliases": ["exaltedshatters", "eshatters", "exaltedshatter", "exshatters"],
             "reqsImageUrl": "",
             "keyEmote": "shattersKey",
             "pingRole": "shattsReact",
