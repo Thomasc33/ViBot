@@ -51,18 +51,46 @@ module.exports = {
         if (!timeType) return message.channel.send("Please enter a valid time type __**d**__ay, __**m**__inute, __**h**__our, __**s**__econd, __**w**__eek, __**y**__ear");
         let reason = args.join(' ');
         switch (timeType.charAt(0).toLowerCase()) {
-            case 's': time *= 1000; break;
-            case 'm': time *= 60000; break;
-            case 'h': time *= 3600000; break;
-            case 'd': time *= 86400000; break;
-            case 'w': time *= 604800000; break;
-            case 'y': time *= 31536000000; break;
+            case 's': millisecondTime = time * 1000; timeDuration = 'second(s)'; break;
+            case 'm': millisecondTime = time * 60000; timeDuration = 'minute(s)'; break;
+            case 'h': millisecondTime = time * 3600000; timeDuration = 'hour(s)'; break;
+            case 'd': millisecondTime = time * 86400000; timeDuration = 'day(s)'; break;
+            case 'w': millisecondTime = time * 604800000; timeDuration = 'week(s)'; break;
+            case 'y': millisecondTime = time * 31536000000; timeDuration = 'year(s)'; break;
             default: return message.channel.send("Please enter a valid time type __**s**__econd, __**m**__inute, __**h**__our, __**d**__ay, __**w**__eek, __**y**__ear");
         }
+        async function muteProcess(overwrite) {
+            const modlogs = message.guild.channels.cache.get(settings.channels.modlogs);
+            let embed = new Discord.EmbedBuilder()
+                .setColor('#ff0000')
+                .setTitle('Mute Information')
+                .setDescription(`You have been muted in the ${message.guild.name} discord. The mute is for ${time} ${timeDuration} until <t:${(((Date.now() + millisecondTime) / 1000)).toFixed(0)}:f>`)
+                .addFields([{name: `User Information \`${member.nickname}\``, value: `<@!${member.id}> `, inline: true}])
+                .addFields([{name: `Mod Information \`${message.guild.members.cache.get(message.author.id).nickname}\``, value: `<@!${message.author.id}> `, inline: true}])
+                .addFields([{name: `Reason:`, value: reason}])
+                .setFooter({ text: `Unmuting at ` })
+                .setTimestamp(Date.now() + millisecondTime);
+                (member.user.send({ embeds: [embed] }).catch(() => {}));
+            } 
+        async function muteProcesslog(overwrite) {
+            const modlogs = message.guild.channels.cache.get(settings.channels.modlogs);
+            let embed = new Discord.EmbedBuilder()
+                .setColor('#ff0000')
+                .setTitle('Mute Information')
+                .setDescription(`The mute is for ${time} ${timeDuration} until <t:${(((Date.now() + millisecondTime) / 1000)).toFixed(0)}:f>`)
+                .addFields([{name: `User Information \`${member.nickname}\``, value: `<@!${member.id}> `, inline: true}])
+                .addFields([{name: `Mod Information \`${message.guild.members.cache.get(message.author.id).nickname}\``, value: `<@!${message.author.id}> `, inline: true}])
+                .addFields([{name: `Reason:`, value: reason}])
+                .setFooter({ text: `Unmuting at ` })
+                .setTimestamp(Date.now() + millisecondTime);
+            modlogs.send({ embeds: [embed] });
+            }           
         db.query(`INSERT INTO mutes (id, guildid, muted, reason, modid, uTime) VALUES ('${member.id}', '${message.guild.id}', true, '${reason || 'None Provided'}','${message.author.id}', '${Date.now() + time}')`, err => {
             member.roles.add(muted).catch(er => ErrorLogger.log(er, bot, message.guild))
-            message.reply(`${member} has been muted`)
-            member.user.send(`You have been muted on \`${message.guild.name}\` by <@!${message.author.id}> \`${message.author.tag}\`${reason ? ': ' + reason : 'No reason provided'}.`).catch(() => {});
+            message.reply(`${member} has been muted`);
+            muteProcess();
+            muteProcesslog();
+            
         })
     }
 }

@@ -80,9 +80,10 @@ module.exports = {
                     else if (c.role == roleName && bot.settings[message.guild.id].commands[c.name])
                         fields[role.name].commands.push(';' + c.name);*/
                     if (!settings.commands[command.name]) { return }
-                    if (settings.commandsRolePermissions[command.name] && settings.commandsRolePermissions[command.name] == roleName) {
+                    let minimumRole = settings.commandsRolePermissions[command.name]
+                    if (minimumRole && minimumRole == roleName) {
                         fields[role.name].commands.push(';' + command.name)
-                    } else if (command.role == roleName) {
+                    } else if (!minimumRole && command.role == roleName) {
                         fields[role.name].commands.push(';' + command.name)
                     }
                 })
