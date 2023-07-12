@@ -14,7 +14,7 @@ module.exports = {
             .setColor('#ff0000')
             .setTitle('Current event run types')
         for (let x in Events) if (Events[x].enabled) {
-            if (Events[x].isAdvanced && !bot.settings[channel.guild.id].backend.allowAdvancedRuns) continue
+            if (Events[x].isExalted && !bot.settings[channel.guild.id].backend.allowExaltedRuns) continue
             if (onlyExalts && !Events[x].isExalt) continue;
             fitStringIntoEmbed(embed, `${Events[x].keyEmote ? bot.storedEmojis[Events[x].keyEmote].text : ""}${Events[x].headcountEmote ? bot.storedEmojis[Events[x].headcountEmote].text : ""} **${x}**${Events[x].aliases.length > 0 ? `\n*Aliases:${Events[x].aliases.map(a => `${` ${a}`}`)}*` : ''}`)
         }

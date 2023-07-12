@@ -57,15 +57,15 @@ module.exports = {
         destroyInactiveRuns();
         let shift = args.shift();
         let symbol = shift.toLowerCase();
-        let isAdvanced = false;
-        if (symbol[0] == 'a') {
-            isAdvanced = true;
+        let isExalted = false;
+        if (symbol[0] == 'e') {
+            isExalted = true;
         }
         let raidingVC;
         if (settings.backend.useStaticVCForRaiding) { raidingVC = args[0]; args.shift(); }
         //Check Run Type
         let runType = getRunType(symbol, message.guild.id);
-        if (isAdvanced && !bot.settings[message.guild.id].backend.allowAdvancedRuns) return
+        if (isExalted && !bot.settings[message.guild.id].backend.allowExaltedRuns) return
         if (!runType && message.member.roles.highest.position < message.guild.roles.cache.get(bot.settings[message.guild.id].roles.vetrl).position) return message.channel.send('Run Type Not Recognized')
         if (!runType) runType = await getTemplate(message, afkTemplates, shift)
         if (!runType) return await message.channel.send(`Could not find run type ${symbol}`)
@@ -81,8 +81,8 @@ module.exports = {
         let runInfo = { ...runType }
         if (keyCount) runInfo.keyCount = keyCount
 
-        //is advanced run
-        runInfo.isAdvanced = isAdvanced;
+        //is exalted run
+        runInfo.isExalted = isExalted;
 
         //isVet
         runInfo.isVet = message.channel.parent.name.toLowerCase() == bot.settings[message.guild.id].categories.veteran ? true : false;
@@ -234,7 +234,7 @@ class afkCheck {
      * @param {Boolean} afkInfo.isVet
      * @param {Boolean} afkInfo.twoPhase
      * @param {Boolean} afkInfo.isEvent
-     * @param {Boolean} afkInfo.isAdvanced
+     * @param {Boolean} afkInfo.isExalted
      * @param {Boolean} afkInfo.isSplit
      * @param {Boolean} afkInfo.newChannel
      * @param {Boolean} afkInfo.vialReact
@@ -257,8 +257,8 @@ class afkCheck {
     constructor(afkInfo, bot, db, guild, channel, message, tokenDB) {
         this.settings = bot.settings[guild.id]
         this.afkInfo = afkInfo;
-        if (!this.settings.backend.allowAdvancedRuns)
-            this.afkInfo.isAdvanced = false;
+        if (!this.settings.backend.allowExaltedRuns)
+            this.afkInfo.isExalted = false;
 
         this.bot = bot;
         this.db = db;
@@ -508,8 +508,8 @@ class afkCheck {
             .setTimestamp(Date.now())
         if (this.message.author.avatarURL()) this.mainEmbed.data.author.iconURL = this.message.author.avatarURL()
         if (this.afkInfo.reqsImageUrl) this.mainEmbed.setImage(this.afkInfo.reqsImageUrl)
-        else if (this.afkInfo.isAdvanced && !this.afkInfo.isExalt && this.settings.strings.hallsAdvancedReqsImage) this.mainEmbed.setImage(this.settings.strings.hallsAdvancedReqsImage);
-        else if (this.afkInfo.isAdvanced && this.afkInfo.isExalt && this.settings.strings.exaltsAdvancedReqsImage) this.mainEmbed.setImage(this.settings.strings.exaltsAdvancedReqsImage);
+        else if (this.afkInfo.isExalted && !this.afkInfo.isExalt && this.settings.strings.hallsExaltedReqsImage) this.mainEmbed.setImage(this.settings.strings.hallsExaltedReqsImage);
+        else if (this.afkInfo.isExalted && this.afkInfo.isExalt && this.settings.strings.exaltsExaltedReqsImage) this.mainEmbed.setImage(this.settings.strings.exaltsExaltedReqsImage);
         else if (this.afkInfo.minRole && this.settings.strings.hallsAccursedReqsImage) this.mainEmbed.setImage(this.settings.strings.hallsAccursedReqsImage);
         if (this.afkInfo.embed.thumbnail && !this.afkInfo.embed.removeThumbnail) this.mainEmbed.setThumbnail(this.afkInfo.embed.thumbnail)
         // Weird workaround for v14 bug (thumbnail has to be {url} instead of url string)
@@ -520,8 +520,8 @@ class afkCheck {
             this.mainEmbed.data.description = this.mainEmbed.data.description.replace('{voicechannel}', `${this.channel}`);
         const rules = `<#${this.settings.channels.raidingrules}>` || '#raiding-rules';
 
-        if (this.afkInfo.isAdvanced)
-            this.mainEmbed.data.description += `\n\n**__Advanced Runs__**\nThis is an **advanced run**, meaning there are extended requirements you **MUST** meet. You must be both **__8/8__** and follow the requirements sheet listed below.\n\nBasic raiding rules from ${rules} will still apply.\n\nIf you are caught not meeting these requirements, you will be removed from the run and suspended.`
+        if (this.afkInfo.isExalted)
+            this.mainEmbed.data.description += `\n\n**__Exalted Runs__**\nThis is an **exalted run**, meaning there are extended requirements you **MUST** meet. You must be both **__8/8__** and follow the requirements sheet listed below.\n\nBasic raiding rules from ${rules} will still apply.\n\nIf you are caught not meeting these requirements, you will be removed from the run and suspended.`
 
         this.raidStatusMessage.edit({ embeds: [this.mainEmbed] })
         if (this.bot.afkChecks[this.channel.id])
@@ -1287,8 +1287,8 @@ class afkCheck {
         this.mainEmbed.setDescription(`This afk check has been ended.\n${this.keys.length > 0 && this.afkInfo.keyEmote ? `Thank you to ${this.keys.map(k => `<@!${k}> `)} for popping a ${this.bot.storedEmojis[this.afkInfo.keyEmote].text} for us!\n` : ''}${this.simp ? `Thank you to <@!${this.simp.id}> for being a ViBot SIMP` : ''}If you get disconnected during the run, **JOIN LOUNGE** *then* press the huge **RECONNECT** button`)
             .setFooter({ text: `The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname}` })
 
-        if (this.afkInfo.isAdvanced)
-            this.mainEmbed.data.description += `\n\n**__Advanced Runs__**\nThis is an **advanced run**, meaning there are extended requirements you **MUST** meet. You must be both **__8/8__** and follow the requirements sheet listed below.\n\nBasic raiding rules from ${rules} will still apply.\n\nIf you are caught not meeting these requirements, you will be removed from the run and suspended.`
+        if (this.afkInfo.isExalted)
+            this.mainEmbed.data.description += `\n\n**__Exalted Runs__**\nThis is an **exalted run**, meaning there are extended requirements you **MUST** meet. You must be both **__8/8__** and follow the requirements sheet listed below.\n\nBasic raiding rules from ${rules} will still apply.\n\nIf you are caught not meeting these requirements, you will be removed from the run and suspended.`
 
         this.leaderEmbed.setFooter({ text: `The afk check has been ended by ${this.message.guild.members.cache.get(this.endedBy.id).nickname} at` })
             .setTimestamp();

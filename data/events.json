@@ -914,15 +914,15 @@
         "earlyLocationCost": 15,
         "earlyLocationReacts": []
     },
-    "advancedfungal": {
-        "runType": "Advanced Fungal Cavern",
-        "runName": "Advanced Fungal Cavern",
+    "Exaltedfungal": {
+        "runType": "Exalted Fungal Cavern",
+        "runName": "Exalted Fungal Cavern",
         "aliases": [
-            "afc",
-            "afun",
-            "afungal",
-            "advf",
-            "advfungal"
+            "efc",
+            "efun",
+            "efungal",
+            "exaltedf",
+            "exaltedfungal"
         ],
         "enabled": true,
         "keyEmote": "fungalK",
@@ -961,7 +961,7 @@
     "nest": {
         "runType": "Nest",
         "runName": "Nest",
-        "aliases": [],
+        "aliases": ["n"],
         "enabled": true,
         "keyEmote": "nestK",
         "pingRole": null,
@@ -993,13 +993,13 @@
         "earlyLocationCost": 15,
         "earlyLocationReacts": []
     },
-    "advancednest": {
-        "runType": "Advanced Nest",
-        "runName": "Advanced Nest",
+    "Exaltednest": {
+        "runType": "Exalted Nest",
+        "runName": "Exalted Nest",
         "aliases": [
-            "an",
-            "anest",
-            "advnest"
+            "en",
+            "enest",
+            "exaltednest"
         ],
         "enabled": true,
         "keyEmote": "nestK",
@@ -1072,13 +1072,13 @@
         "earlyLocationCost": 15,
         "earlyLocationReacts": []
     },
-    "advancedfullskipnest": {
-        "runType": "Advanced Full-skip Nest",
-        "runName": "Advanced Full-skip Nest",
+    "Exaltedfullskipnest": {
+        "runType": "Exalted Full-skip Nest",
+        "runName": "Exalted Full-skip Nest",
         "aliases": [
-            "afn",
-            "afsn",
-            "afsnest"
+            "efn",
+            "efsn",
+            "efsnest"
         ],
         "enabled": true,
         "keyEmote": "nestK",
@@ -1163,13 +1163,13 @@
         "earlyLocationCost": 15,
         "earlyLocationReacts": []
     },
-    "advancedshatters": {
-        "runType": "Advanced Shatters",
-        "runName": "Advanced Shatters",
+    "Exaltedshatters": {
+        "runType": "Exalted Shatters",
+        "runName": "Exalted Shatters",
         "aliases": [
-            "as",
-            "ashatts",
-            "advshatts"
+            "es",
+            "eshatts",
+            "exaltedshatts"
         ],
         "enabled": true,
         "keyEmote": "shattersKey",
@@ -1799,20 +1799,20 @@
         ],
         "earlyLocationCost": 15
     },
-    "advancedsteamworks": {
-        "runType": "Advanced Kogbold Steamworks",
-        "runName": "Advanced Kogbold Steamworks",
+    "Exaltedsteamworks": {
+        "runType": "Exalted Kogbold Steamworks",
+        "runName": "Exalted Kogbold Steamworks",
         "aliases": [
-            "ak",
-            "asteamworks",
-            "asw",
-            "aksw",
-            "advk",
-            "advancedkogbold",
-            "advancedsteamwork",
-            "advancedsteamworks",
-            "advancedkogboldsteamwork",
-            "advancedkogboldsteamworks"
+            "ek",
+            "esteamworks",
+            "esw",
+            "eksw",
+            "exaltedk",
+            "exaltedkogbold",
+            "exaltedsteamwork",
+            "exaltedsteamworks",
+            "exaltedkogboldsteamwork",
+            "exaltedkogboldsteamworks"
         ],
         "enabled": true,
         "keyEmote": "steamworksKey",
@@ -1959,19 +1959,19 @@
         ],
         "earlyLocationCost": 15
     },
-    "advancedmoonlight": {
-        "runType": "Advanced Moonlight Village",
-        "runName": "Advanced Moonlight Village",
+    "Exaltedmoonlight": {
+        "runType": "Exalted Moonlight Village",
+        "runName": "Exalted Moonlight Village",
         "aliases": [
-            "amv",
-            "amoonv",
-            "amoonlight",
-            "amoonlightv",
-            "amoonlightvillage",
-            "advancedmv",
-            "advancedmoonv",
-            "advancedmoonlightv",
-            "advancedmoonlightvillage"
+            "emv",
+            "emoonv",
+            "emoonlight",
+            "emoonlightv",
+            "emoonlightvillage",
+            "exaltedmv",
+            "exaltedmoonv",
+            "exaltedmoonlightv",
+            "exaltedmoonlightvillage"
         ],
         "enabled": true,
         "keyEmote": "mvK",
@@ -2101,16 +2101,16 @@
                 }
             ]
         },
-        "advancedfungal": {
-            "name": "Advanced Fungal Cavern",
-            "runType": "Advanced Fungal Cavern",
-            "runName": "Advanced Fungal Cavern",
+        "Exaltedfungal": {
+            "name": "Exalted Fungal Cavern",
+            "runType": "Exalted Fungal Cavern",
+            "runName": "Exalted Fungal Cavern",
             "aliases": [
-                "afc",
-                "afun",
-                "afungal",
-                "advf",
-                "advfungal"
+                "efc",
+                "efun",
+                "efungal",
+                "exaltedf",
+                "exaltedfungal"
             ],
             "enabled": true,
             "keyEmote": "fungalK",
@@ -2126,7 +2126,7 @@
             "vcCap": 45,
             "pingRole": "fungalReact",
             "isExalt": true,
-            "isAdvanced": true,
+            "isExalted": true,
             "reacts": [
                 "daze",
                 "Curse",
@@ -2261,14 +2261,14 @@
                 }
             ]
         },
-        "advancednest": {
-            "name": "Advanced Nest",
-            "runType": "Advanced Nest",
-            "runName": "Advanced Nest",
+        "Exaltednest": {
+            "name": "Exalted Nest",
+            "runType": "Exalted Nest",
+            "runName": "Exalted Nest",
             "aliases": [
-                "an",
-                "anest",
-                "advnest"
+                "en",
+                "enest",
+                "exaltednest"
             ],
             "enabled": true,
             "runLogName": "nestRuns",
@@ -2284,7 +2284,7 @@
             "vcCap": 45,
             "pingRole": "nestReact",
             "isExalt": true,
-            "isAdvanced": true,
+            "isExalted": true,
             "reacts": [
                 "Curse",
                 "Expose",
@@ -2414,14 +2414,14 @@
                 }
             ]
         },
-        "advancedfullskipnest": {
-            "name": "Advanced Full-skip Nest",
-            "runType": "Advanced Full-skip Nest",
-            "runName": "Advanced Full-skip Nest",
+        "Exaltedfullskipnest": {
+            "name": "Exalted Full-skip Nest",
+            "runType": "Exalted Full-skip Nest",
+            "runName": "Exalted Full-skip Nest",
             "aliases": [
-                "afn",
-                "afsn",
-                "afsnest"
+                "efn",
+                "efsn",
+                "efsnest"
             ],
             "enabled": true,
             "keyEmote": "nestK",
@@ -2447,7 +2447,7 @@
             "vcCap": 45,
             "pingRole": "nestReact",
             "isExalt": true,
-            "isAdvanced": true,
+            "isExalted": true,
             "earlyLocationReacts": [
                 {
                     "emote": "UTMarbleSeal",
@@ -2647,16 +2647,16 @@
                 }
             ]
         },
-        "advancedfungal": {
-            "name": "Advanced Fungal Cavern",
-            "runType": "Advanced Fungal Cavern",
-            "runName": "Advanced Fungal Cavern",
+        "Exaltedfungal": {
+            "name": "Exalted Fungal Cavern",
+            "runType": "Exalted Fungal Cavern",
+            "runName": "Exalted Fungal Cavern",
             "aliases": [
-                "afc",
-                "afun",
-                "afungal",
-                "advf",
-                "advfungal"
+                "efc",
+                "efun",
+                "efungal",
+                "exaltedf",
+                "exaltedfungal"
             ],
             "enabled": true,
             "keyEmote": "fungalK",
@@ -2672,7 +2672,7 @@
             "vcCap": 45,
             "pingRole": "fungalReact",
             "isExalt": true,
-            "isAdvanced": true,
+            "isExalted": true,
             "reacts": [
                 "daze",
                 "Curse",
@@ -2807,14 +2807,14 @@
                 }
             ]
         },
-        "advancednest": {
-            "name": "Advanced Nest",
-            "runType": "Advanced Nest",
-            "runName": "Advanced Nest",
+        "Exaltednest": {
+            "name": "Exalted Nest",
+            "runType": "Exalted Nest",
+            "runName": "Exalted Nest",
             "aliases": [
-                "an",
-                "anest",
-                "advnest"
+                "en",
+                "enest",
+                "exaltednest"
             ],
             "enabled": true,
             "runLogName": "nestRuns",
@@ -2830,7 +2830,7 @@
             "vcCap": 45,
             "pingRole": "nestReact",
             "isExalt": true,
-            "isAdvanced": true,
+            "isExalted": true,
             "reacts": [
                 "Knight",
                 "Curse",
@@ -2960,14 +2960,14 @@
                 }
             ]
         },
-        "advancedfullskipnest": {
-            "name": "Advanced Full-skip Nest",
-            "runType": "Advanced Full-skip Nest",
-            "runName": "Advanced Full-skip Nest",
+        "Exaltedfullskipnest": {
+            "name": "Exalted Full-skip Nest",
+            "runType": "Exalted Full-skip Nest",
+            "runName": "Exalted Full-skip Nest",
             "aliases": [
-                "afn",
-                "afsn",
-                "afsnest"
+                "efn",
+                "efsn",
+                "efsnest"
             ],
             "enabled": true,
             "keyEmote": "nestK",
@@ -2993,7 +2993,7 @@
             "vcCap": 45,
             "pingRole": "nestReact",
             "isExalt": true,
-            "isAdvanced": true,
+            "isExalted": true,
             "earlyLocationReacts": [
                 {
                     "emote": "UTMarbleSeal",

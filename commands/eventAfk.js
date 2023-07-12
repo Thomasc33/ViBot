@@ -32,7 +32,7 @@ module.exports = {
             color: event.color,
             twoPhase: !!event.twoPhase,
             earlyLocationCost: event.earlyLocationCost ? event.earlyLocationCost : 15,
-            isAdvanced: settings.backend.allowAdvancedRuns && event.isAdvanced,
+            isExalted: settings.backend.allowExaltedRuns && event.isExalted,
             twoPhase: !!event.twoPhase,
             keyPopPointsOverride: event.keyPopPoints,
             embed: {
@@ -49,7 +49,7 @@ module.exports = {
         if (!event.pingRole) 'eventBoi'
 
         let isVet = message.channel.id == settings.channels.vetcommands;
-        if (event.isAdvanced && !settings.backend.allowAdvancedRuns) return message.channel.send(`Advanced runs are not enabled for this server.`);
+        if (event.isExalted && !settings.backend.allowExaltedRuns) return message.channel.send(`Exalted runs are not enabled for this server.`);
         if (!event.enabled) return message.channel.send(`${event.name} is currently disabled.`);
 
         //start afkcheck
