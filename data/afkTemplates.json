@@ -1834,7 +1834,7 @@
             "twoPhase": true,
             "startDelay": 5000,
             "vcCap": 75,
-            "timeLimit": 360,
+            "timeLimit": 600,
             "keyCount": 2,
             "earlyLocationCost": 45,
             "earlyLocationReacts": [{
@@ -1969,7 +1969,7 @@
             "twoPhase": true,
             "startDelay": 5000,
             "vcCap": 75,
-            "timeLimit": 360,
+            "timeLimit": 600,
             "keyCount": 2,
             "earlyLocationCost": 45,
             "earlyLocationReacts": [{
