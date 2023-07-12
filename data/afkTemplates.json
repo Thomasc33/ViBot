@@ -92,7 +92,7 @@
         "ExaltedCult": {
             "runType": "Exalted Cult",
             "runName": "Exalted Cult",
-            "symbol": "ac",
+            "symbol": "ec",
             "aliases": ["exaltedcult", "ecult"],
             "reqsImageUrl": "",
             "keyEmote": "hallsK",
@@ -252,7 +252,7 @@
         "ExaltedVoid": {
             "runType": "Exalted Void",
             "runName": "Exalted Void",
-            "symbol": "av",
+            "symbol": "ev",
             "aliases": ["exaltedvoid", "evoid", "evoided", "exaltedvoided"],
             "reqsImageUrl": "",
             "keyEmote": "hallsK",
@@ -415,7 +415,7 @@
         "ExaltedFullSkipVoid": {
             "runType": "Exalted Full-Skip Void",
             "runName": "Exalted Full-Skip Void",
-            "symbol": "af",
+            "symbol": "ef",
             "aliases": ["efsv", "efullskipvoid", "efullskip", "exaltedfsv", "exaltedfullskip", "exaltedfullskipvoid"],
             "reqsImageUrl": "",
             "keyEmote": "hallsK",
@@ -592,7 +592,7 @@
         "ExaltedShatters": {
             "runType": "Exalted Shatters",
             "runName": "Exalted Shatters",
-            "symbol": "as",
+            "symbol": "es",
             "aliases": ["exaltedshatters", "eshatters", "exaltedshatter", "exshatters"],
             "reqsImageUrl": "",
             "keyEmote": "shattersKey",
@@ -910,7 +910,7 @@
         "ExaltedCult": {
             "runType": "Exalted Cult",
             "runName": "Exalted Cult",
-            "symbol": "ac",
+            "symbol": "ec",
             "aliases": ["exaltedcult", "ecult"],
             "reqsImageUrl": "",
             "keyEmote": "hallsK",
@@ -1070,7 +1070,7 @@
         "ExaltedVoid": {
             "runType": "Exalted Void",
             "runName": "Exalted Void",
-            "symbol": "av",
+            "symbol": "ev",
             "aliases": ["exaltedvoid", "evoid", "evoided", "exaltedvoided"],
             "reqsImageUrl": "",
             "keyEmote": "hallsK",
@@ -1233,7 +1233,7 @@
         "ExaltedFullSkipVoid": {
             "runType": "Exalted Full-Skip Void",
             "runName": "Exalted Full-Skip Void",
-            "symbol": "af",
+            "symbol": "ef",
             "aliases": ["efsv", "efullskipvoid", "efullskip", "exaltedfsv", "exaltedfullskip", "exaltedfullskipvoid"],
             "reqsImageUrl": "",
             "keyEmote": "hallsK",
@@ -1410,7 +1410,7 @@
         "ExaltedShatters": {
             "runType": "Exalted Shatters",
             "runName": "Exalted Shatters",
-            "symbol": "as",
+            "symbol": "es",
             "aliases": ["exaltedshatters", "eshatters", "exaltedshatter", "exshatters"],
             "reqsImageUrl": "",
             "keyEmote": "shattersKey",
