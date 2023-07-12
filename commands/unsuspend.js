@@ -64,12 +64,12 @@ module.exports = {
                         if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) await member.roles.remove(settings.roles.unverified)
                     }, 5000);
                     try {
-                        let embed = bot.guilds.cache.get(guildId).channels.cache.get(settings.channels.suspendlog).messages.cache.get(proofLogID).embeds.shift();
+                        let embed = Discord.EmbedBuilder.from(bot.guilds.cache.get(guildId).channels.cache.get(settings.channels.suspendlog).messages.cache.get(proofLogID).embeds.shift());
                         embed.setColor('#00ff00')
                             .setDescription(embed.data.description.concat(`\nUnsuspended manually by <@!${message.author.id}>`))
                             .setFooter({ text: 'Unsuspended at' })
                             .setTimestamp(Date.now())
-                            .addFields([{name: 'Reason for unsuspension', value: reason}])
+                            .addFields([{name: 'Reason for unsuspension:', value: reason}])
                         let messages = await bot.guilds.cache.get(guildId).channels.cache.get(settings.channels.suspendlog).messages.fetch({ limit: 100 })
                         messages.filter(m => m.id == proofLogID && m.author.id == bot.user.id).first().edit({ embeds: [embed] })
                     } catch (er) { bot.guilds.cache.get(guildId).channels.cache.get(settings.channels.suspendlog).send(`${member} has been unsuspended by ${message.member}`) }
