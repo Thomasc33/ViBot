@@ -734,17 +734,17 @@
                 "minStaffRole": "rl",
                 "minViewRaiderRole": null,
                 "minJoinRaiderRole": null,
-                "name": "Adv. Void",
-                "templateName": "Advanced Void",
+                "name": "Exa. Void",
+                "templateName": "Exalted Void",
                 "pingRoles": [
                     "voidping"
                 ],
                 "aliases": [
-                    "av",
-                    "advvoid",
-                    "avoid",
-                    "avoided",
-                    "advvoided"
+                    "ev",
+                    "exavoid",
+                    "evoid",
+                    "evoided",
+                    "exavoided"
                 ],
                 "logName": "voidRuns",
                 "vcOptions": 2,
@@ -1482,19 +1482,19 @@
                 "minStaffRole": "rl",
                 "minViewRaiderRole": null,
                 "minJoinRaiderRole": null,
-                "name": "Adv. Full-Skip Void",
-                "templateName": "Advanced Full-Skip Void",
+                "name": "Exa. Full-Skip Void",
+                "templateName": "Exalted Full-Skip Void",
                 "pingRoles": [
                     "fskipReact"
                 ],
                 "aliases": [
-                    "af",
-                    "afsv",
-                    "afullskipvoid",
-                    "afullskip",
-                    "advfsv",
-                    "advfullskip",
-                    "advfullskipvoid"
+                    "ef",
+                    "efsv",
+                    "efullskipvoid",
+                    "efullskip",
+                    "exafsv",
+                    "exafullskip",
+                    "exafullskipvoid"
                 ],
                 "logName": "voidRuns",
                 "vcOptions": 2,
@@ -2235,14 +2235,14 @@
                 "minStaffRole": "rl",
                 "minViewRaiderRole": null,
                 "minJoinRaiderRole": null,
-                "name": "Adv. Cult",
-                "templateName": "Advanced Cult",
+                "name": "Exa. Cult",
+                "templateName": "Exalted Cult",
                 "pingRoles": [
                     "cultping"
                 ],
                 "aliases": [
-                    "ac",
-                    "acult"
+                    "ec",
+                    "ecult"
                 ],
                 "logName": "cultRuns",
                 "vcOptions": 2,
@@ -3832,17 +3832,17 @@
                 "minStaffRole": "rl",
                 "minViewRaiderRole": null,
                 "minJoinRaiderRole": null,
-                "name": "Adv. Shatters",
-                "templateName": "Advanced Shatters",
+                "name": "Exa. Shatters",
+                "templateName": "Exalted Shatters",
                 "pingRoles": [
                     "shattsReact"
                 ],
                 "aliases": [
-                    "as",
-                    "advshatters",
-                    "ashatters",
-                    "advshatter",
-                    "ashatters"
+                    "es",
+                    "exashatters",
+                    "eshatters",
+                    "exashatter",
+                    "eshatters"
                 ],
                 "logName": "shattersRuns",
                 "vcOptions": 2,
@@ -4554,15 +4554,15 @@
                 "minStaffRole": null,
                 "minViewRaiderRole": null,
                 "minJoinRaiderRole": null,
-                "name": "Adv. Nest",
-                "templateName": "Advanced Nest",
+                "name": "Exa. Nest",
+                "templateName": "Exalted Nest",
                 "pingRoles": [
                     "nestReact"
                 ],
                 "aliases": [
-                    "an",
-                    "anest",
-                    "advnest"
+                    "en",
+                    "enest",
+                    "exanest"
                 ],
                 "logName": "nestRuns",
                 "vcOptions": 2,
@@ -5270,22 +5270,22 @@
                 "minStaffRole": null,
                 "minViewRaiderRole": null,
                 "minJoinRaiderRole": null,
-                "name": "Adv Kogbold Steamworks",
-                "templateName": "Advanced Kogbold Steamworks",
+                "name": "Exa. Kogbold Steamworks",
+                "templateName": "Exalted Kogbold Steamworks",
                 "pingRoles": [
                     "steamworksping"
                 ],
                 "aliases": [
-                    "ak",
-                    "asteamworks",
-                    "asw",
-                    "aksw",
-                    "advk",
-                    "advancedkogbold",
-                    "advancedsteamwork",
-                    "advancedsteamworks",
-                    "advancedkogboldsteamwork",
-                    "advancedkogboldsteamworks",
+                    "ek",
+                    "esteamworks",
+                    "esw",
+                    "eksw",
+                    "exak",
+                    "exaltedkogbold",
+                    "exaltedsteamwork",
+                    "exaltedsteamworks",
+                    "exaltedkogboldsteamwork",
+                    "exaltedkogboldsteamworks",
                     "ak47"
                 ],
                 "logName": "steamworksRuns",
@@ -5935,21 +5935,21 @@
                 "minStaffRole": null,
                 "minViewRaiderRole": null,
                 "minJoinRaiderRole": null,
-                "name": "Adv. Moonlight Village",
-                "templateName": "Advanced Moonlight Village",
+                "name": "Exa. Moonlight Village",
+                "templateName": "Exalted Moonlight Village",
                 "pingRoles": [
                     "moonlightping"
                 ],
                 "aliases": [
-                    "amv",
-                    "amoonv",
-                    "amoonlight",
-                    "amoonlightv",
-                    "amoonlightvillage",
-                    "advancedmv",
-                    "advancedmoonv",
-                    "advancedmoonlightv",
-                    "advancedmoonlightvillage"
+                    "emv",
+                    "emoonv",
+                    "emoonlight",
+                    "emoonlightv",
+                    "emoonlightvillage",
+                    "exaltedmv",
+                    "exaltedmoonv",
+                    "exaltedmoonlightv",
+                    "exaltedmoonlightvillage"
                 ],
                 "logName": "moonlightRuns",
                 "vcOptions": 2,
@@ -6594,17 +6594,17 @@
                 "minStaffRole": null,
                 "minViewRaiderRole": null,
                 "minJoinRaiderRole": null,
-                "name": "Adv. Fungal Cavern",
-                "templateName": "Advanced Fungal Cavern",
+                "name": "Exa. Fungal Cavern",
+                "templateName": "Exalted Fungal Cavern",
                 "pingRoles": [
                     "fungalReact"
                 ],
                 "aliases": [
-                    "afc",
-                    "afun",
-                    "afungal",
-                    "advf",
-                    "advfungal"
+                    "efc",
+                    "efun",
+                    "efungal",
+                    "exaf",
+                    "exafungal"
                 ],
                 "logName": "fungalRuns",
                 "vcOptions": 2,
@@ -19303,8 +19303,8 @@
                 "minStaffRole": null,
                 "minViewRaiderRole": null,
                 "minJoinRaiderRole": null,
-                "name": "Example Adv Nest",
-                "templateName": "Example Adv Nest",
+                "name": "Example Exa. Nest",
+                "templateName": "Example Exalted Nest",
                 "pingRoles": [
                     "nestReact"
                 ],
@@ -21090,17 +21090,17 @@
                 "minStaffRole": "rl",
                 "minViewRaiderRole": null,
                 "minJoinRaiderRole": null,
-                "name": "Adv. Void",
-                "templateName": "Advanced Void",
+                "name": "Exa. Void",
+                "templateName": "Exalted Void",
                 "pingRoles": [
                     "voidping"
                 ],
                 "aliases": [
                     "av",
-                    "advvoid",
-                    "avoid",
-                    "avoided",
-                    "advvoided"
+                    "exavoid",
+                    "evoid",
+                    "evoided",
+                    "exavoided"
                 ],
                 "logName": "voidRuns",
                 "vcOptions": 2,
@@ -21838,19 +21838,19 @@
                 "minStaffRole": "rl",
                 "minViewRaiderRole": null,
                 "minJoinRaiderRole": null,
-                "name": "Adv. Full-Skip Void",
-                "templateName": "Advanced Full-Skip Void",
+                "name": "Exa. Full-Skip Void",
+                "templateName": "Exalted Full-Skip Void",
                 "pingRoles": [
                     "fskipReact"
                 ],
                 "aliases": [
-                    "af",
-                    "afsv",
-                    "afullskipvoid",
-                    "afullskip",
-                    "advfsv",
-                    "advfullskip",
-                    "advfullskipvoid"
+                    "ef",
+                    "efsv",
+                    "efullskipvoid",
+                    "efullskip",
+                    "exafsv",
+                    "exafullskip",
+                    "exafullskipvoid"
                 ],
                 "logName": "voidRuns",
                 "vcOptions": 2,
@@ -22591,14 +22591,14 @@
                 "minStaffRole": "rl",
                 "minViewRaiderRole": null,
                 "minJoinRaiderRole": null,
-                "name": "Adv. Cult",
-                "templateName": "Advanced Cult",
+                "name": "Exa. Cult",
+                "templateName": "Exalted Cult",
                 "pingRoles": [
                     "cultping"
                 ],
                 "aliases": [
-                    "ac",
-                    "acult"
+                    "ec",
+                    "ecult"
                 ],
                 "logName": "cultRuns",
                 "vcOptions": 2,
@@ -24188,17 +24188,17 @@
                 "minStaffRole": "rl",
                 "minViewRaiderRole": null,
                 "minJoinRaiderRole": null,
-                "name": "Adv. Shatters",
-                "templateName": "Advanced Shatters",
+                "name": "Exa. Shatters",
+                "templateName": "Exalted Shatters",
                 "pingRoles": [
                     "shattsReact"
                 ],
                 "aliases": [
-                    "as",
-                    "advshatters",
-                    "ashatters",
-                    "advshatter",
-                    "ashatters"
+                    "es",
+                    "exashatters",
+                    "eshatters",
+                    "exashatter",
+                    "eshatters"
                 ],
                 "logName": "shattersRuns",
                 "vcOptions": 2,
@@ -24910,15 +24910,15 @@
                 "minStaffRole": null,
                 "minViewRaiderRole": null,
                 "minJoinRaiderRole": null,
-                "name": "Adv. Nest",
-                "templateName": "Advanced Nest",
+                "name": "Exa. Nest",
+                "templateName": "Exalted Nest",
                 "pingRoles": [
                     "nestReact"
                 ],
                 "aliases": [
-                    "an",
-                    "anest",
-                    "advnest"
+                    "en",
+                    "enest",
+                    "exanest"
                 ],
                 "logName": "nestRuns",
                 "vcOptions": 2,
@@ -25626,22 +25626,22 @@
                 "minStaffRole": null,
                 "minViewRaiderRole": null,
                 "minJoinRaiderRole": null,
-                "name": "Adv Kogbold Steamworks",
-                "templateName": "Advanced Kogbold Steamworks",
+                "name": "Exa. Kogbold Steamworks",
+                "templateName": "Exalted Kogbold Steamworks",
                 "pingRoles": [
                     "steamworksping"
                 ],
                 "aliases": [
-                    "ak",
-                    "asteamworks",
-                    "asw",
-                    "aksw",
-                    "advk",
-                    "advancedkogbold",
-                    "advancedsteamwork",
-                    "advancedsteamworks",
-                    "advancedkogboldsteamwork",
-                    "advancedkogboldsteamworks",
+                    "ek",
+                    "esteamworks",
+                    "esw",
+                    "eksw",
+                    "exak",
+                    "exaltedkogbold",
+                    "exaltedsteamwork",
+                    "exaltedsteamworks",
+                    "exaltedkogboldsteamwork",
+                    "exaltedkogboldsteamworks",
                     "ak47"
                 ],
                 "logName": "steamworksRuns",
@@ -26291,21 +26291,21 @@
                 "minStaffRole": null,
                 "minViewRaiderRole": null,
                 "minJoinRaiderRole": null,
-                "name": "Adv. Moonlight Village",
-                "templateName": "Advanced Moonlight Village",
+                "name": "Exa. Moonlight Village",
+                "templateName": "Exalted Moonlight Village",
                 "pingRoles": [
                     "moonlightping"
                 ],
                 "aliases": [
-                    "amv",
-                    "amoonv",
-                    "amoonlight",
-                    "amoonlightv",
-                    "amoonlightvillage",
-                    "advancedmv",
-                    "advancedmoonv",
-                    "advancedmoonlightv",
-                    "advancedmoonlightvillage"
+                    "emv",
+                    "emoonv",
+                    "emoonlight",
+                    "emoonlightv",
+                    "emoonlightvillage",
+                    "exaltedmv",
+                    "exaltedmoonv",
+                    "exaltedmoonlightv",
+                    "exaltedmoonlightvillage"
                 ],
                 "logName": "moonlightRuns",
                 "vcOptions": 2,
@@ -26950,17 +26950,17 @@
                 "minStaffRole": null,
                 "minViewRaiderRole": null,
                 "minJoinRaiderRole": null,
-                "name": "Adv. Fungal Cavern",
-                "templateName": "Advanced Fungal Cavern",
+                "name": "Exa. Fungal Cavern",
+                "templateName": "Exalted Fungal Cavern",
                 "pingRoles": [
                     "fungalReact"
                 ],
                 "aliases": [
-                    "afc",
-                    "afun",
-                    "afungal",
-                    "advf",
-                    "advfungal"
+                    "efc",
+                    "efun",
+                    "efungal",
+                    "exaf",
+                    "exafungal"
                 ],
                 "logName": "fungalRuns",
                 "vcOptions": 2,
@@ -40427,8 +40427,8 @@
                 "minStaffRole": null,
                 "minViewRaiderRole": null,
                 "minJoinRaiderRole": null,
-                "name": "Example Adv Nest",
-                "templateName": "Example Adv Nest",
+                "name": "Example Exa. Nest",
+                "templateName": "Example Exalted Nest",
                 "pingRoles": [
                     "nestReact"
                 ],
@@ -42252,17 +42252,17 @@
                 "minStaffRole": null,
                 "minViewRaiderRole": null,
                 "minJoinRaiderRole": null,
-                "name": "Adv. Oryx 3",
-                "templateName": "Advanced Oryx 3",
+                "name": "Exa. Oryx 3",
+                "templateName": "Exalted Oryx 3",
                 "pingRoles": "o3Ping",
                 "aliases": [
                     "ao",
                     "ao3",
                     "aoryx",
-                    "advo",
-                    "advo3",
-                    "advoryx",
-                    "advancedorxy3"
+                    "exao",
+                    "exao3",
+                    "exaoryx",
+                    "exaltedorxy3"
                 ],
                 "logName": "o3runs",
                 "vcOptions": 2,
@@ -42560,17 +42560,17 @@
                 "minStaffRole": null,
                 "minViewRaiderRole": null,
                 "minJoinRaiderRole": null,
-                "name": "Silent Adv. Oryx 3",
-                "templateName": "Silent Advanced Oryx 3",
+                "name": "Silent Exa. Oryx 3",
+                "templateName": "Silent Exalted Oryx 3",
                 "pingRoles": "o3Ping",
                 "aliases": [
                     "sao",
                     "sao3",
                     "saoryx",
-                    "sadvo",
-                    "sadvo3",
-                    "sadvoryx",
-                    "sadvancedorxy3"
+                    "sexao",
+                    "sexao3",
+                    "sexaoryx",
+                    "sexaltedorxy3"
                 ],
                 "logName": "o3runs",
                 "vcOptions": 0,
