@@ -287,6 +287,7 @@ class afkCheck {
             else this.verifiedRaiderRole = this.guild.roles.cache.get(this.settings.roles.raider)
             this.staffRole = guild.roles.cache.get(this.afkInfo.isEvent ? this.settings.roles.eventrl : this.settings.roles.almostrl)
         }
+        if (guild.id == "708026927721480254") this.staffRole = guild.roles.cache.get(this.settings.roles.vetaffiliate)
         this.afkChannel = guild.channels.cache.find(c => c.name.toLowerCase() === 'afk')
         if (!this.afkChannel) this.afkChannel = guild.channels.cache.find(c => c.name.toLowerCase() === 'lounge')
         this.runInfoChannel = guild.channels.cache.get(this.settings.channels.runlogs)
