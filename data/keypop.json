@@ -60,6 +60,18 @@
             "name": "steamworks",
             "modded": true
         },
+        "advancedsteamwork": {
+            "alias": [
+                "ak",
+                "asteam",
+                "asteamworks",
+                "akogbold"
+            ],
+            "points": "steamworkkey",
+            "schema": "advancedSteamworkPops",
+            "name": "advancedsteamwork",
+            "modded": true
+        },
         "moonlight": {
             "alias": [
                 "mv",
