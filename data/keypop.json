@@ -60,7 +60,7 @@
             "name": "steamworks",
             "modded": true
         },
-        "accursedsteamwork": {
+        "advancedsteamwork": {
             "alias": [
                 "ak",
                 "asteam",
@@ -69,7 +69,7 @@
             ],
             "points": "steamworkkey",
             "schema": "advancedSteamworkPops",
-            "name": "accursedsteamwork",
+            "name": "advancedsteamwork",
             "modded": true
         },
         "moonlight": {
