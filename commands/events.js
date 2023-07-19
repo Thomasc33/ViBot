@@ -13,12 +13,16 @@ module.exports = {
         let embed = new Discord.EmbedBuilder()
             .setColor('#ff0000')
             .setTitle('Current event run types')
+        let embeds = []
         for (let x in Events) if (Events[x].enabled) {
             if (Events[x].isExalted && !bot.settings[channel.guild.id].backend.allowExaltedRuns) continue
             if (onlyExalts && !Events[x].isExalt) continue;
-            fitStringIntoEmbed(embed, `${Events[x].keyEmote ? bot.storedEmojis[Events[x].keyEmote].text : ""}${Events[x].headcountEmote ? bot.storedEmojis[Events[x].headcountEmote].text : ""} **${x}**${Events[x].aliases.length > 0 ? `\n*Aliases:${Events[x].aliases.map(a => `${` ${a}`}`)}*` : ''}`)
+            fitStringIntoEmbed(embeds, embed, `${Events[x].keyEmote ? bot.storedEmojis[Events[x].keyEmote].text : ""}${Events[x].headcountEmote ? bot.storedEmojis[Events[x].headcountEmote].text : ""} **${x}**${Events[x].aliases.length > 0 ? `\n*Aliases:${Events[x].aliases.map(a => `${` ${a}`}`)}*` : ''}`)
         }
-        return channel.send({ embeds: [embed] })
+        embeds.push(new Discord.EmbedBuilder(embed.data))
+        return channel.send({ embeds: embeds })
+        
+        
     },
     find(name) {
         name = name.toLowerCase();
@@ -32,19 +36,19 @@ module.exports = {
     }
 }
 
-function fitStringIntoEmbed(embed, string) {
+function fitStringIntoEmbed(embeds, embed, string) {
     if (!embed.data.fields) embed.addFields({ name: '** **', value: string, inline: true })
     else if (embed.data.fields[embed.data.fields.length - 1].value.length + `\n${string}`.length >= 1024) {
         if (JSON.stringify(embed.toJSON()).length + `\n${string}`.length >= 6000) {
             embeds.push(new Discord.EmbedBuilder(embed.data))
-            embed.setDescription('None!')
-            embed.data.fields = []
+            embed.setDescription(null)
+            embed.data.fields = null
         } else embed.addFields({ name: '** **', value: string, inline: true })
     } else {
         if (JSON.stringify(embed.toJSON()).length + `\n${string}`.length >= 6000) {
             embeds.push(new Discord.EmbedBuilder(embed.data))
-            embed.setDescription('None!')
-            embed.data.fields = []
+            embed.setDescription(null)
+            embed.data.fields = null
         } else embed.data.fields[embed.data.fields.length - 1].value = embed.data.fields[embed.data.fields.length - 1].value.concat(`\n${string}`)
     }
 }
