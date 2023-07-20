@@ -126,6 +126,11 @@
                 },
                 {
                     "name": null,
+                    "emoji": "fullskipIcon",
+                    "row": "fullskipsLead"
+                },
+                {
+                    "name": null,
                     "emoji": "forgottenking",
                     "row": "shattersLead"
                 },
@@ -174,11 +179,6 @@
                     "name": null,
                     "emoji": "parse",
                     "row": "parses"
-                },
-                {
-                    "name": null,
-                    "emoji": "fullskipIcon",
-                    "row": "fullskipsLead"
                 }
             ]
         }

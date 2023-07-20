@@ -49,6 +49,12 @@
             "emoji": "<a:steamworksPortal:1050156386547413012>"
         },
         {
+            "role": "accursedSteamworksPing",
+            "name": "Accursed Steamworks",
+            "emojiId": "1129901525674758274",
+            "emoji": "<:advancedSteamworks:1129901525674758274>"
+        },
+        {
             "role": "moonlightping",
             "name": "Moonlight",
             "emojiId": "1090163554872737866",
