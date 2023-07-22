@@ -22,7 +22,7 @@ module.exports = {
         const vetRoles = Object.entries(settings.roles)
             .filter(([key, value]) => {
                 let split = key.split('vetraider')
-                return split[0] == "" && (split[1] ? !isNaN(split[1]) : true) && value && member.roles.cache.has(value)
+                return key != "" && value && split[0] == "" && (split[1] ? !isNaN(split[1]) : true) && member.roles.cache.has(value)
             })
             .map(([key, value]) => message.guild.roles.cache.get(value))
 
