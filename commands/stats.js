@@ -41,10 +41,11 @@ module.exports = {
             let rows = {}
             const schema = guildSchema(template.id)
             if (db) {
-                const [userRows,] = await db.promise().query('SELECT * FROM users WHERE id = ?', [member.id])
+                var [userRows,] = await db.promise().query('SELECT * FROM users WHERE id = ?', [member.id])
+                if (userRows.length == 0) { await db.promise().query(`INSERT INTO users (id) VALUES (${member.id})`); [userRows,] = await db.promise().query('SELECT * FROM users WHERE id = ?', [member.id]) }
                 rows[schema] = userRows
             }
-            if (!rows.hasOwnProperty(schema)) { return; }
+            if (!rows.hasOwnProperty(schema)) { continue; }
             const databaseRow = rows[schema][0]
             embed.addFields({ name: `${storedEmojis[template.emoji].text} ${template.name} ${storedEmojis[template.emoji].text}`, value: `** **`, inline: false })
             template.values.map(value => {
