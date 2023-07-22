@@ -20,59 +20,57 @@ module.exports = {
 
         // get vet roles that arent null and that the raider has assigned to them already
         const vetRoles = Object.entries(settings.roles)
-            .filter(([key, value]) => key.includes('vetraider') && value && member.roles.cache.has(value))
-            .map(([key, value]) => value)
+            .filter(([key, value]) => {
+                let split = key.split('vetraider')
+                return split[0] == "" && (split[1] ? !isNaN(split[1]) : true) && value && member.roles.cache.has(value)
+            })
+            .map(([key, value]) => message.guild.roles.cache.get(value))
 
-        if (vetRoles.length == 0) return
+        if (vetRoles.length == 0) return message.reply(`Raider doesn't have any veteran roles. If this is not the case, please contact a Moderator/Admin to set up veteran roles.`)
         else if (vetRoles.length == 1) {
             // remove the only vet role they have
-            module.exports.removeRole(member, message, vetRoles[0])
+            let vetRaiderRole = vetRoles[0]
+            module.exports.removeRole(settings, member, message, vetRaiderRole)
         } else {
             // provide buttons to select which vet role to remove
             let choiceEmbed = new Discord.EmbedBuilder()
                 .setDescription(`Please select the veteran role to remove from ${member}`);
 
-            const buttons = new Discord.ActionRowBuilder()
-
-            for (let vetRole of vetRoles) {
-                let role = message.guild.roles.cache.get(vetRole)
-                
-                buttons.addComponents(
-                    new Discord.ButtonBuilder()
-                        .setCustomId(role.id)
-                        .setLabel(role.name)
-                        .setStyle(Discord.ButtonStyle.Primary),
-                    );
-            }
-            
-            buttons.addComponents(
-                new Discord.ButtonBuilder()
-                    .setCustomId('Cancelled')
-                    .setLabel('❌ Cancel')
-                    .setStyle(Discord.ButtonStyle.Danger)
-            );
-
-            const reply = await message.reply({ embeds: [choiceEmbed], components: [ buttons ], ephemeral: true })
-            createReactionRow(reply, module.exports.name, 'handleButtons', buttons, message.author, { memberId : member.id, messageId: message.id })
+            await message.reply({ embeds: [choiceEmbed], ephemeral: true }).then(async confirmMessage => {
+                let vetRoleNames = []
+                // get a list of role names to add as buttons
+                vetRoles.forEach(vetRole => vetRoleNames.push(vetRole.name))
+                const choice = await confirmMessage.confirmList(vetRoleNames, message.author.id)
+                if (!choice || choice == 'Cancelled') {
+                    await message.react('✅');
+                    return confirmMessage.delete()
+                } else {
+                    // retrieve the role with the name that was selected
+                    let vetRaiderRole = vetRoles.find(vetRole => vetRole.name == choice)
+                    if (vetRaiderRole) {
+                        module.exports.removeRole(settings, member, message, vetRaiderRole)
+                    } else {
+                        return message.reply('Failed to find veteran role with name ' + choice)
+                    }
+                }
+                return confirmMessage.delete()
+            })
         }
     },
-    async handleButtons(bot, confirmMessage, db, choice, state) {
-        if (!choice || choice == 'Cancelled') {
-            return confirmMessage.delete()
-        } else {
-            let member = confirmMessage.interaction.guild.members.cache.get(state.memberId)
-            let vetRaiderRole = confirmMessage.interaction.guild.roles.cache.get(choice)
-            let message = confirmMessage.interaction.channel.messages.cache.get(state.messageId)
-            module.exports.removeRole(member, message, vetRaiderRole)
-        }
-       
-        return confirmMessage.delete()
-    },
-    async removeRole(member, message, vetRaiderRole) {
-        member.roles.remove(vetRaiderRole)
+    async removeRole(settings, member, message, vetRaiderRole) {
+        await member.roles.remove(vetRaiderRole)
             .then(message.react('✅'))
             .catch(er => {
                 message.channel.send(`Error: \`${er}\``)
             });
+
+        let embed = new Discord.EmbedBuilder()
+            .setTitle('Manual Veteran Unverify')
+            .setDescription(member.toString())
+            .addFields([{name: 'User', value: member.displayName, inline: true}])
+            .addFields([{name: 'Unverified By', value: `<@!${message.author.id}>`, inline: true}])
+            .addFields([{name: 'Role', value: vetRaiderRole.toString(), inline: false}])
+            .setTimestamp(Date.now());
+        message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });
     }
 }

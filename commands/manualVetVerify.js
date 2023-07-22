@@ -27,57 +27,45 @@ module.exports = {
         if (!member) return message.replyUserError("User not found")
         if (member.roles.cache.has(vetBanRole.id)) return message.replyUserError("User is vet banned")
 
-        // get all vet roles that arent null
+        // get all vet roles that arent null and that the raider doesn't have already
         const vetRoles = Object.entries(settings.roles)
-            .filter(([key, value]) => key.includes('vetraider') && value)
-            .map(([key, value]) => value)
+            .filter(([key, value]) => {
+                let split = key.split('vetraider')
+                return split[0] == "" && (split[1] ? !isNaN(split[1]) : true) && value && !member.roles.cache.has(value)
+            })
+            .map(([key, value]) => message.guild.roles.cache.get(value))
 
         // if there isnt a vet role assigned, do nothing
-        if (vetRoles.length == 0) return
+        if (vetRoles.length == 0) return message.reply(`Raider has all available veteran roles. If this is not the case, please contact a Moderator/Admin to set up veteran roles.`)
         else if (vetRoles.length == 1) {
             // get the only vet role and assign it to the raider
-            let vetRaiderRole = message.guild.roles.cache.get(vetRoles[0]);
+            let vetRaiderRole = vetRoles[0]
             module.exports.addRole(bot, db, member, message, vetRaiderRole)
         } else {
             // shows buttons for all vet roles that can be assigned
             let choiceEmbed = new Discord.EmbedBuilder()
                 .setDescription(`Please select the veteran role to give to ${member}`);
-
-            const buttons = new Discord.ActionRowBuilder()
-
-            for (let vetRole of vetRoles) {
-                let role = message.guild.roles.cache.get(vetRole)
-                
-                buttons.addComponents(
-                    new Discord.ButtonBuilder()
-                        .setCustomId(role.id)
-                        .setLabel(role.name)
-                        .setStyle(Discord.ButtonStyle.Primary),
-                    );
-            }
             
-            buttons.addComponents(
-                new Discord.ButtonBuilder()
-                    .setCustomId('Cancelled')
-                    .setLabel('❌ Cancel')
-                    .setStyle(Discord.ButtonStyle.Danger)
-            );
-
-            const reply = await message.reply({ embeds: [choiceEmbed], components: [ buttons ], ephemeral: true })
-            createReactionRow(reply, module.exports.name, 'handleButtons', buttons, message.author, { memberId : member.id, messageId: message.id })
+            await message.reply({ embeds: [choiceEmbed], ephemeral: true }).then(async confirmMessage => {
+                let vetRoleNames = []
+                // get a list of role names to add as buttons
+                vetRoles.forEach(vetRole => vetRoleNames.push(vetRole.name))
+                const choice = await confirmMessage.confirmList(vetRoleNames, message.author.id)
+                if (!choice || choice == 'Cancelled') {
+                    await message.react('✅');
+                    return confirmMessage.delete();
+                } else {
+                    // retrieve the role with the name that was selected
+                    let vetRaiderRole = vetRoles.find(vetRole => vetRole.name == choice)
+                    if (vetRaiderRole) {
+                        module.exports.addRole(bot, db, member, message, vetRaiderRole)
+                    } else {
+                        return message.reply('Failed to find veteran role with name ' + choice)
+                    }
+                }
+                return confirmMessage.delete()
+            })
         }        
-    },
-    async handleButtons(bot, confirmMessage, db, choice, state) {
-        if (!choice || choice == 'Cancelled') {
-            return confirmMessage.delete()
-        } else {
-            let member = confirmMessage.interaction.guild.members.cache.get(state.memberId)
-            let vetRaiderRole = confirmMessage.interaction.guild.roles.cache.get(choice)
-            let message = confirmMessage.interaction.channel.messages.cache.get(state.messageId)
-            module.exports.addRole(bot, db, member, message, vetRaiderRole)
-        }
-       
-        return confirmMessage.delete()
     },
     async addRole(bot, db, member, message, vetRaiderRole) {
         member.roles.add(vetRaiderRole)
