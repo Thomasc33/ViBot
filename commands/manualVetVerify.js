@@ -35,7 +35,7 @@ module.exports = {
             })
             .map(([key, value]) => message.guild.roles.cache.get(value))
 
-        // if there isnt a vet role assigned, do nothing
+        // check if there are vet roles to assign
         if (vetRoles.length == 0) return message.reply(`Raider has all available veteran roles. If this is not the case, please contact a Moderator/Admin to set up veteran roles.`)
         else if (vetRoles.length == 1) {
             // get the only vet role and assign it to the raider
