@@ -43,9 +43,7 @@ module.exports = {
             // get a list of role names to add as buttons
             vetRoles.forEach(vetRole => vetRoleNames.push(vetRole.name))
             const choice = await confirmMessage.confirmList(vetRoleNames, message.author.id)
-            if (!choice || choice == 'Cancelled') {
-                await message.react('✅');
-            } else {
+            if (choice && choice != 'Cancelled') {
                 // retrieve the role with the name that was selected
                 let vetRaiderRole = vetRoles.find(vetRole => vetRole.name == choice)
                 if (!vetRaiderRole) return message.reply('Failed to find veteran role with name ' + choice)
