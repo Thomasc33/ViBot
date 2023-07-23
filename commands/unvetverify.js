@@ -43,12 +43,15 @@ module.exports = {
             // get a list of role names to add as buttons
             vetRoles.forEach(vetRole => vetRoleNames.push(vetRole.name))
             const choice = await confirmMessage.confirmList(vetRoleNames, message.author.id)
-            if (choice && choice != 'Cancelled') {
-                // retrieve the role with the name that was selected
-                let vetRaiderRole = vetRoles.find(vetRole => vetRole.name == choice)
-                if (!vetRaiderRole) return message.reply('Failed to find veteran role with name ' + choice)
-                module.exports.removeRole(settings, member, message, vetRaiderRole)
+            if (!choice || choice == 'Cancelled') {
+                message.react('✅')
+                return confirmMessage.delete()
             }
+          
+            // retrieve the role with the name that was selected
+            let vetRaiderRole = vetRoles.find(vetRole => vetRole.name == choice)
+            if (!vetRaiderRole) return message.reply('Failed to find veteran role with name ' + choice)
+            module.exports.removeRole(settings, member, message, vetRaiderRole)  
             return confirmMessage.delete()
         })
     },
