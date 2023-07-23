@@ -45,7 +45,6 @@ module.exports = {
             const choice = await confirmMessage.confirmList(vetRoleNames, message.author.id)
             if (!choice || choice == 'Cancelled') {
                 await message.react('✅');
-                return confirmMessage.delete()
             } else {
                 // retrieve the role with the name that was selected
                 let vetRaiderRole = vetRoles.find(vetRole => vetRole.name == choice)
