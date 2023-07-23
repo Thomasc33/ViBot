@@ -2,7 +2,6 @@ const Discord = require('discord.js')
 const { manualVetVerifyLog } = require('../commands/vetVerification.js')
 const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
 const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js')
-const { createReactionRow } = require('../redis.js')
 
 module.exports = {
     name: 'manualvetverify',
@@ -36,36 +35,34 @@ module.exports = {
             .map(([key, value]) => message.guild.roles.cache.get(value))
 
         // check if there are vet roles to assign
-        if (vetRoles.length == 0) return message.reply(`Raider has all available veteran roles. If this is not the case, please contact a Moderator/Admin to set up veteran roles.`)
-        else if (vetRoles.length == 1) {
+        if (vetRoles.length == 0) {
+            return message.reply(`Raider has all available veteran roles. If this is not the case, please contact a Moderator/Admin to set up veteran roles.`)
+        } else if (vetRoles.length == 1) {
             // get the only vet role and assign it to the raider
             let vetRaiderRole = vetRoles[0]
-            module.exports.addRole(bot, db, member, message, vetRaiderRole)
-        } else {
-            // shows buttons for all vet roles that can be assigned
-            let choiceEmbed = new Discord.EmbedBuilder()
-                .setDescription(`Please select the veteran role to give to ${member}`);
-            
-            await message.reply({ embeds: [choiceEmbed], ephemeral: true }).then(async confirmMessage => {
-                let vetRoleNames = []
-                // get a list of role names to add as buttons
-                vetRoles.forEach(vetRole => vetRoleNames.push(vetRole.name))
-                const choice = await confirmMessage.confirmList(vetRoleNames, message.author.id)
-                if (!choice || choice == 'Cancelled') {
-                    await message.react('✅');
-                    return confirmMessage.delete();
-                } else {
-                    // retrieve the role with the name that was selected
-                    let vetRaiderRole = vetRoles.find(vetRole => vetRole.name == choice)
-                    if (vetRaiderRole) {
-                        module.exports.addRole(bot, db, member, message, vetRaiderRole)
-                    } else {
-                        return message.reply('Failed to find veteran role with name ' + choice)
-                    }
-                }
-                return confirmMessage.delete()
-            })
-        }        
+            return module.exports.addRole(bot, db, member, message, vetRaiderRole)
+        } 
+
+        // shows all vet roles that can be assigned if there are multiple
+        let choiceEmbed = new Discord.EmbedBuilder()
+            .setDescription(`Please select the veteran role to give to ${member}`);
+        
+        await message.reply({ embeds: [choiceEmbed], ephemeral: true }).then(async confirmMessage => {
+            let vetRoleNames = []
+            // get a list of role names to add as buttons
+            vetRoles.forEach(vetRole => vetRoleNames.push(vetRole.name))
+            const choice = await confirmMessage.confirmList(vetRoleNames, message.author.id)
+            if (!choice || choice == 'Cancelled') {
+                await message.react('✅');
+                return confirmMessage.delete();
+            } else {
+                // retrieve the role with the name that was selected
+                let vetRaiderRole = vetRoles.find(vetRole => vetRole.name == choice)
+                if (!vetRaiderRole) message.reply('Failed to find veteran role with name ' + choice)
+                module.exports.addRole(bot, db, member, message, vetRaiderRole)
+            }
+            return confirmMessage.delete()
+        })
     },
     async addRole(bot, db, member, message, vetRaiderRole) {
         member.roles.add(vetRaiderRole)

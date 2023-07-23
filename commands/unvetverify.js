@@ -1,5 +1,4 @@
 const Discord = require('discord.js')
-const { createReactionRow } = require('../redis.js')
 
 module.exports = {
     name: 'unvetverify',
@@ -27,36 +26,34 @@ module.exports = {
             .map(([key, value]) => message.guild.roles.cache.get(value))
 
         // check if there are vet roles that can be removed
-        if (vetRoles.length == 0) return message.reply(`Raider doesn't have any veteran roles. If this is not the case, please contact a Moderator/Admin to set up veteran roles.`)
-        else if (vetRoles.length == 1) {
+        if (vetRoles.length == 0) {
+            return message.reply(`Raider doesn't have any veteran roles. If this is not the case, please contact a Moderator/Admin to set up veteran roles.`)
+        } else if (vetRoles.length == 1) {
             // remove the only vet role they have
             let vetRaiderRole = vetRoles[0]
-            module.exports.removeRole(settings, member, message, vetRaiderRole)
-        } else {
-            // provide buttons to select which vet role to remove
-            let choiceEmbed = new Discord.EmbedBuilder()
-                .setDescription(`Please select the veteran role to remove from ${member}`);
-
-            await message.reply({ embeds: [choiceEmbed], ephemeral: true }).then(async confirmMessage => {
-                let vetRoleNames = []
-                // get a list of role names to add as buttons
-                vetRoles.forEach(vetRole => vetRoleNames.push(vetRole.name))
-                const choice = await confirmMessage.confirmList(vetRoleNames, message.author.id)
-                if (!choice || choice == 'Cancelled') {
-                    await message.react('✅');
-                    return confirmMessage.delete()
-                } else {
-                    // retrieve the role with the name that was selected
-                    let vetRaiderRole = vetRoles.find(vetRole => vetRole.name == choice)
-                    if (vetRaiderRole) {
-                        module.exports.removeRole(settings, member, message, vetRaiderRole)
-                    } else {
-                        return message.reply('Failed to find veteran role with name ' + choice)
-                    }
-                }
-                return confirmMessage.delete()
-            })
+            return module.exports.removeRole(settings, member, message, vetRaiderRole)
         }
+
+        // shows all vet roles that can be removed if there are multiple
+        let choiceEmbed = new Discord.EmbedBuilder()
+            .setDescription(`Please select the veteran role to remove from ${member}`);
+
+        await message.reply({ embeds: [choiceEmbed], ephemeral: true }).then(async confirmMessage => {
+            let vetRoleNames = []
+            // get a list of role names to add as buttons
+            vetRoles.forEach(vetRole => vetRoleNames.push(vetRole.name))
+            const choice = await confirmMessage.confirmList(vetRoleNames, message.author.id)
+            if (!choice || choice == 'Cancelled') {
+                await message.react('✅');
+                return confirmMessage.delete()
+            } else {
+                // retrieve the role with the name that was selected
+                let vetRaiderRole = vetRoles.find(vetRole => vetRole.name == choice)
+                if (!vetRaiderRole) return message.reply('Failed to find veteran role with name ' + choice)
+                module.exports.removeRole(settings, member, message, vetRaiderRole)
+            }
+            return confirmMessage.delete()
+        })
     },
     async removeRole(settings, member, message, vetRaiderRole) {
         await member.roles.remove(vetRaiderRole)
