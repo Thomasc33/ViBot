@@ -334,7 +334,7 @@ class afkCheck {
 
     startTimers() {
         this.moveInEarlysTimer = setInterval(() => this.moveInEarlys(), 10000)
-        this.updateStatusTimer = setInterval(() => this.updateStatus(), 5000)
+        this.updatePanelTimer = setInterval(() => this.updatePanel(), 5000)
     }
 
     async moveInEarlys() {
@@ -345,7 +345,7 @@ class afkCheck {
         }
     }
 
-    async updateStatus() {
+    async updatePanel() {
         if (!this.timer) this.timer = this.#afkTemplate.body[this.phase].timeLimit
         this.timer = this.timer - 5
         if (this.timer == 0) return this.processPhaseNext()
@@ -603,7 +603,7 @@ class afkCheck {
             return this.removeFromActiveInteractions(interaction.member.id)
         }
         else if (interaction.customId == 'abort' || interaction.customId == 'phase' || interaction.customId.includes(`Log`) || interaction.customId == 'end' || interaction.customId == 'cap') {
-            if (interaction.member.roles.highest.position >= interaction.guild.roles.cache.get(this.#botSettings.roles.eventrl).position) return await this.processPhaseControl(interaction)
+            if (interaction.member.roles.highest.position >= this.#afkTemplate.minimumStaffRole.position) return await this.processPhaseControl(interaction)
             else {
                 await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You do not have the required Staff Role to use this button.`, null)], ephemeral: true })
                 return this.removeFromActiveInteractions(interaction.member.id)
@@ -658,7 +658,7 @@ class afkCheck {
         }
 
         if (this.moveInEarlysTimer) clearInterval(this.moveInEarlysTimer)
-        if (this.updateStatusTimer) clearInterval(this.updateStatusTimer)
+        if (this.updatePanelTimer) clearInterval(this.updatePanelTimer)
         if (this.#channel) await this.#channel.delete()
         
         this.raidStatusEmbed.setImage(null)
@@ -724,7 +724,7 @@ class afkCheck {
         else await subInteraction.update({ embeds: [extensions.createEmbed(interaction, `Successfully set the cap to ${number}. You can dismiss this message.`, null)], components: [] })
         this.#afkTemplate.cap = number
         if (this.#channel) this.#channel.setUserLimit(this.#afkTemplate.cap)
-        this.updateStatus()
+        this.updatePanel()
     }
 
     async processReconnect(interaction) {
@@ -1092,7 +1092,7 @@ class afkCheck {
 
     async postAfk(interaction) {
         if (this.moveInEarlysTimer) clearInterval(this.moveInEarlysTimer)
-        if (this.updateStatusTimer) clearInterval(this.updateStatusTimer)
+        if (this.updatePanelTimer) clearInterval(this.updatePanelTimer)
 
         if (this.#channel) {
             await this.#channel.permissionOverwrites.edit(this.#afkTemplate.minimumJoinRaiderRole.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))

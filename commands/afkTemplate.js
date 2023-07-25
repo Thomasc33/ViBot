@@ -357,6 +357,8 @@ class AfkTemplate {
         this.minimumViewRaiderRole = this.#guild.roles.cache.get(this.#botSettings.roles[this.#template.minViewRaiderRole])
         this.minimumJoinRaiderRole = this.#template.minJoinRaiderRole ? this.#guild.roles.cache.get(this.#botSettings.roles[this.#template.minJoinRaiderRole]) : this.minimumViewRaiderRole
         this.minimumStaffRole = this.#guild.roles.cache.get(this.#botSettings.roles[this.#template.minStaffRole])
+        if (!this.minimumStaffRole && this.#botSettings.commandsRolePermissions["afk"]) this.minimumStaffRole = this.#guild.roles.cache.get(this.#botSettings.roles[this.#botSettings.commandsRolePermissions["afk"]])
+        if (!this.minimumStaffRole) this.minimumStaffRole = this.#guild.roles.cache.get(this.#botSettings.roles[this.#bot.commands.get("afk").role])
         this.raidInfoChannel = this.#guild.channels.cache.get(this.#botSettings.channels.runlogs)
         this.raidCategory = this.#guild.channels.cache.filter(c => c.type == Discord.ChannelType.GuildCategory).find(c => c.name.toLowerCase() === this.#template.category)
         this.raidPartneredStatusChannels = {}
