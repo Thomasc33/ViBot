@@ -7,10 +7,10 @@ const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js')
 module.exports = {
     name: 'mute',
     description: 'Gives user the muted role',
-    args: '<member> <time> <time type s/m/h/d/w/y> (Reason)',
+    args: '<member> <time> <time type s/m/h/d/w/y> <Reason>',
     role: 'security',
     varargs: true,
-    requiredArgs: 1,
+    requiredArgs: 4,
     args: [
         slashArg(SlashArgType.User, 'member', {
             description: "Member in the Server"
