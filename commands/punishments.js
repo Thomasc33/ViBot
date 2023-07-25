@@ -27,10 +27,13 @@ module.exports = {
             if (!member) { usersNotFound.push(user); continue; }
 
             const embeds = [];
-            const memberPosition = member.roles.highest.position;
+            const memberPosition = message.member.roles.highest.position;
             const roleCache = message.guild.roles.cache
             const roles = settings.roles
             const rolePermissions = settings.rolePermissions
+            console.log(memberPosition >= roleCache.get(roles[rolePermissions.punishmentsWarnings]).position && settings.backend.punishmentsWarnings)
+            console.log(memberPosition >= roleCache.get(roles[rolePermissions.punishmentsSuspensions]).position && settings.backend.punishmentsSuspensions)
+            console.log(memberPosition >= roleCache.get(roles[rolePermissions.punishmentsMutes]).position && settings.backend.punishmentsMutes)
 
             if (memberPosition >= roleCache.get(roles[rolePermissions.punishmentsWarnings]).position && settings.backend.punishmentsWarnings) {
                 const row = await db.promise().query(`SELECT * FROM warns WHERE id = '${member.id}' AND guildid = '${message.guild.id}'`);
