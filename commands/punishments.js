@@ -144,9 +144,11 @@ module.exports = {
             if (embeds.length > 0) {
                 await message.reply({ embeds: embeds });
             } else {
-                embedLayout.setTitle('No punishments');
-                embedLayout.setDescription(`${member} has no punishments in this server.`);
-                await message.reply({ embeds: [embedLayout] });
+                let embed = new Discord.EmbedBuilder()
+                    .setTitle('No punishments')
+                    .setDescription(`${member} has no punishments in this server.`)
+                    .setColor('#F04747')
+                await message.reply({ embeds: [embed] });
             }
         }
         if (usersNotFound.length > 0) {
