@@ -30,7 +30,7 @@ module.exports = {
             const memberPosition = member.roles.highest.position;
 
             if (
-                memberPosition >= message.guild.roles.cache.get(settings.roles[settings.rolePermissions.punishmentsWarnings]).position &&
+                (memberPosition >= message.guild.roles.cache.get(settings.roles[settings.rolePermissions.punishmentsWarnings]).position) &&
                 settings.backend.punishmentsWarnings) {
                 const row = await db.promise().query(`SELECT * FROM warns WHERE id = '${member.id}' AND guildid = '${message.guild.id}'`);
                 let embed = new Discord.EmbedBuilder()
@@ -68,7 +68,7 @@ module.exports = {
             }
 
             if (
-                memberPosition >= message.guild.roles.cache.get(settings.roles[settings.rolePermissions.punishmentsSuspensions]).position &&
+                (memberPosition >= message.guild.roles.cache.get(settings.roles[settings.rolePermissions.punishmentsSuspensions]).position) &&
                 settings.backend.punishmentsSuspensions) {
                 const row = await db.promise().query(`SELECT * FROM suspensions WHERE id = '${member.id}' AND guildid = '${message.guild.id}'`);
                 let embed = new Discord.EmbedBuilder()
@@ -105,7 +105,7 @@ module.exports = {
             }
 
             if (
-                memberPosition >= message.guild.roles.cache.get(settings.roles[settings.rolePermissions.punishmentsMutes]).position &&
+                (memberPosition >= message.guild.roles.cache.get(settings.roles[settings.rolePermissions.punishmentsMutes]).position) &&
                 settings.backend.punishmentsMutes) {
                 const row = await db.promise().query(`SELECT * FROM mutes WHERE id = '${member.id}' AND guildid = '${message.guild.id}'`);
                 let embed = new Discord.EmbedBuilder()
