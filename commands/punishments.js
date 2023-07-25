@@ -31,14 +31,12 @@ module.exports = {
             const roleCache = message.guild.roles.cache
             const roles = settings.roles
             const rolePermissions = settings.rolePermissions
-            console.log(memberPosition >= roleCache.get(roles[rolePermissions.punishmentsWarnings]).position && settings.backend.punishmentsWarnings)
-            console.log(memberPosition >= roleCache.get(roles[rolePermissions.punishmentsSuspensions]).position && settings.backend.punishmentsSuspensions)
-            console.log(memberPosition >= roleCache.get(roles[rolePermissions.punishmentsMutes]).position && settings.backend.punishmentsMutes)
 
             if (memberPosition >= roleCache.get(roles[rolePermissions.punishmentsWarnings]).position && settings.backend.punishmentsWarnings) {
                 const row = await db.promise().query(`SELECT * FROM warns WHERE id = '${member.id}' AND guildid = '${message.guild.id}'`);
                 let embed = new Discord.EmbedBuilder()
                     .setColor('#F04747')
+                    .setDescription(`Warnings for ${member}`)
                 if (row[0].length > 0) {
                     let embedFieldStrings = [];
                     let embedFieldLength = 1;
@@ -48,7 +46,7 @@ module.exports = {
                         const stringText = `\`${index.toString().padStart(3, ' ')}\`${punishment.silent ? ' Silently' : ''} By <@!${punishment.modid}> <t:${(parseInt(punishment.time)/1000).toFixed(0)}:R> at <t:${(parseInt(punishment.time)/1000).toFixed(0)}:f>\`\`\`${punishment.reason}\`\`\`\n`
                         if (embedFieldStrings == 0) { embedFieldStrings.push(stringText) }
                         else {
-                            if (embedFieldStrings.join('').length + stringText.length >= 1024) {
+                            if (embedFieldStrings.join('').length + stringText.length >= 800) {
                                 embed.addFields({
                                     name: `Warnings (${embedFieldLength})`,
                                     value: embedFieldStrings.join(''),
@@ -75,8 +73,9 @@ module.exports = {
                 const row = await db.promise().query(`SELECT * FROM suspensions WHERE id = '${member.id}' AND guildid = '${message.guild.id}'`);
                 let embed = new Discord.EmbedBuilder()
                     .setColor('#F04747')
+                    .setDescription(`Suspensions for ${member}`)
                 if (row[0].length > 0) {
-                    const embedFieldStrings = [];
+                    let embedFieldStrings = [];
                     let embedFieldLength = 1;
                     for (let i in row[0]) {
                         let index = parseInt(i) + 1
@@ -84,13 +83,14 @@ module.exports = {
                         const stringText = `\`${index.toString().padStart(3, ' ')}\` By <@!${punishment.modid}> <t:${(parseInt(punishment.uTime)/1000).toFixed(0)}:R> at <t:${(parseInt(punishment.uTime)/1000).toFixed(0)}:f>\`\`\`${punishment.reason}\`\`\`\n`
                         if (embedFieldStrings == 0) { embedFieldStrings.push(stringText) }
                         else {
-                            if (embedFieldStrings.join('').length + stringText.length >= 1024) {
+                            if (embedFieldStrings.join('').length + stringText.length >= 800) {
                                 embed.addFields({
                                     name: `Suspensions (${embedFieldLength})`,
                                     value: embedFieldStrings.join(''),
                                     inline: true
                                 });
                                 embedFieldLength++;
+                                embedFieldStrings = [];
                             } else {
                                 embedFieldStrings.push(stringText);
                             }
@@ -110,8 +110,9 @@ module.exports = {
                 const row = await db.promise().query(`SELECT * FROM mutes WHERE id = '${member.id}' AND guildid = '${message.guild.id}'`);
                 let embed = new Discord.EmbedBuilder()
                     .setColor('#F04747')
+                    .setDescription(`Mutes for ${member}`)
                 if (row[0].length > 0) {
-                    const embedFieldStrings = [];
+                    let embedFieldStrings = [];
                     let embedFieldLength = 1;
                     for (let i in row[0]) {
                         let index = parseInt(i) + 1
@@ -119,13 +120,14 @@ module.exports = {
                         const stringText = `\`${index.toString().padStart(3, ' ')}\` By <@!${punishment.modid}> <t:${(parseInt(punishment.uTime)/1000).toFixed(0)}:R> at <t:${(parseInt(punishment.uTime)/1000).toFixed(0)}:f>\`\`\`${punishment.reason}\`\`\`\n`
                         if (embedFieldStrings == 0) { embedFieldStrings.push(stringText) }
                         else {
-                            if (embedFieldStrings.join('').length + stringText.length >= 1024) {
+                            if (embedFieldStrings.join('').length + stringText.length >= 800) {
                                 embed.addFields({
                                     name: `Mutes (${embedFieldLength})`,
                                     value: embedFieldStrings.join(''),
                                     inline: true
                                 });
                                 embedFieldLength++;
+                                embedFieldStrings = [];
                             } else {
                                 embedFieldStrings.push(stringText);
                             }
