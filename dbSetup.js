@@ -5,6 +5,8 @@ const mysql = require('mysql2')
 let dbs = null
 let uniq_dbs = []
 
+let verbose = !process.title.includes('runner')
+
 module.exports = {
     async init(bot) {
         // Guard so that this only runs once
@@ -12,12 +14,15 @@ module.exports = {
         dbs = {}
 
         let liveGuilds = bot.guilds.cache.filter((g) => !bot.emojiServers.includes(g.id) && !bot.devServers.includes(g.id))
-        liveGuilds.filter((g) => !dbSchemas[g.id]).forEach((g) => console.log(`Missing schema in schema.json for guild: ${g.id}`))
+        liveGuilds.filter((g) => !dbSchemas[g.id]).forEach((g) => { if (verbose) console.log(`Missing schema in schema.json for guild: ${g.id}`) })
 
         let dbInfos = []
 
         Object.entries(dbSchemas).forEach(([guildId, dbConfig]) => {
-            if (!bot.guilds.cache.some((g) => g.id == guildId)) return console.log(`Unused db configuration in schema.json for guild: ${guildId}`)
+            if (!bot.guilds.cache.some((g) => g.id == guildId)) {
+                if (verbose) return console.log(`Unused db configuration in schema.json for guild: ${guildId}`)
+                else return
+            }
             let dbInfo = {
                 port: botSettings.defaultDbInfo.port || 3306,
                 host: dbConfig.host || botSettings.defaultDbInfo.host,
@@ -34,7 +39,7 @@ module.exports = {
                 dbs[guildId] = mysql.createPool(dbInfo)
                 uniq_dbs.push(dbs[guildId])
                 dbInfos.push([dbInfo, guildId])
-                console.log(`Connected to database: ${dbConfig.schema}`)
+                if (verbose) console.log(`Connected to database: ${dbConfig.schema}`)
             }
         })
     },

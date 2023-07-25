@@ -37,6 +37,7 @@ module.exports = {
                             const raiderRole = message.guild.roles.cache.get(settings.roles.raider);
                             member.roles.remove(suspendedRole)
                                 .then(member.roles.add(raiderRole));
+                            if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) member.roles.remove(settings.roles.unverified)
                             message.channel.send("User unsuspended successfully");
                         }
                     } catch (er) {
@@ -56,16 +57,19 @@ module.exports = {
                         role = settings.roles[settings.lists.discordRoles[i]]
                         if (member.roles.cache.get(role)) roles.push(role)
                     }
-                    await member.edit({
-                        roles: roles
-                    })
+                    await member.roles.add(roles);
+                    setTimeout(async () => {
+                        if (member.roles.cache.has(settings.roles.tempsuspended)) await member.roles.remove(settings.roles.tempsuspended);
+                        if (member.roles.cache.has(settings.roles.permasuspended)) await member.roles.remove(settings.roles.permasuspended);
+                        if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) await member.roles.remove(settings.roles.unverified)
+                    }, 5000);
                     try {
-                        let embed = bot.guilds.cache.get(guildId).channels.cache.get(settings.channels.suspendlog).messages.cache.get(proofLogID).embeds.shift();
+                        let embed = Discord.EmbedBuilder.from(bot.guilds.cache.get(guildId).channels.cache.get(settings.channels.suspendlog).messages.cache.get(proofLogID).embeds.shift());
                         embed.setColor('#00ff00')
                             .setDescription(embed.data.description.concat(`\nUnsuspended manually by <@!${message.author.id}>`))
                             .setFooter({ text: 'Unsuspended at' })
                             .setTimestamp(Date.now())
-                            .addFields([{name: 'Reason for unsuspension', value: reason}])
+                            .addFields([{name: 'Reason for unsuspension:', value: reason}])
                         let messages = await bot.guilds.cache.get(guildId).channels.cache.get(settings.channels.suspendlog).messages.fetch({ limit: 100 })
                         messages.filter(m => m.id == proofLogID && m.author.id == bot.user.id).first().edit({ embeds: [embed] })
                     } catch (er) { bot.guilds.cache.get(guildId).channels.cache.get(settings.channels.suspendlog).send(`${member} has been unsuspended by ${message.member}`) }
@@ -94,6 +98,8 @@ module.exports = {
                             const raiderRole = message.guild.roles.cache.get(settings.roles.raider);
                             member.roles.remove(suspendedRole)
                                 .then(member.roles.add(raiderRole));
+                            if (member.roles.cache.has(settings.roles.unverified)) member.roles.remove(settings.roles.unverified)
+                            if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) member.roles.remove(settings.roles.unverified)
                             message.channel.send(`${member} has been unsuspended`)
                                 .then(message.guild.channels.cache.get(settings.channels.suspendlog).send(`${member} unsuspended`))
                         }

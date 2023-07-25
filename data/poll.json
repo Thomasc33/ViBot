@@ -1,0 +1,248 @@
+{
+    "701483950559985705": [
+        {
+            "name": "lost halls",
+            "aliases": [
+                "cult/void",
+                "c/v"
+            ],
+            "reacts": [
+                {
+                    "name": "Cultist",
+                    "emoji": "cultist"
+                },
+                {
+                    "name": "Void",
+                    "emoji": "void"
+                },
+                {
+                    "name": "Rusher",
+                    "emoji": "UTCloakofthePlanewalker"
+                },
+                {
+                    "name": "Vial",
+                    "emoji": "VialOfPureDarkness"
+                }
+            ]
+        },
+        {
+            "name": "server region",
+            "aliases": [
+                "eu/us",
+                "us/eu"
+            ],
+            "reacts": [
+                {
+                    "name": "Europe",
+                    "emoji": "europeanunion"
+                },
+                {
+                    "name": "United States",
+                    "emoji": "usa"
+                }
+            ]
+        },
+        {
+            "name": "regular or Exalted",
+            "aliases": [
+                "r/e",
+                "e/r"
+            ],
+            "reacts": [
+                {
+                    "name": "Exalted",
+                    "emoji": "A_"
+                },
+                {
+                    "name": "Regular",
+                    "emoji": "R_"
+                }
+            ]
+        },
+        {
+            "name": "exaltations",
+            "aliases": [
+                "exalts"
+            ],
+            "reacts": [
+                {
+                    "name": "Void",
+                    "emoji": "void"
+                },
+                {
+                    "name": "Cultist Hideout",
+                    "emoji": "cultist"
+                },
+                {
+                    "name": "The Shatters",
+                    "emoji": "forgottenKing"
+                },
+                {
+                    "name": "Fungal Cavern",
+                    "emoji": "crystal"
+                },
+                {
+                    "name": "The Nest",
+                    "emoji": "killerBeeQueen"
+                }
+            ]
+        },
+        {
+            "name": "fungal or nest",
+            "aliases": [
+                "fc/n"
+            ],
+            "reacts": [
+                {
+                    "name": "Fungal Cavern",
+                    "emoji": "crystal"
+                },
+                {
+                    "name": "The Nest",
+                    "emoji": "killerBeeQueen"
+                }
+            ]
+        }
+    ],
+    "343704644712923138": [
+        {
+            "name": "lost halls",
+            "aliases": [
+                "cult/void",
+                "c/v"
+            ],
+            "reacts": [
+                {
+                    "name": "Cultist",
+                    "emoji": "cultist"
+                },
+                {
+                    "name": "Void",
+                    "emoji": "void"
+                },
+                {
+                    "name": "Rusher",
+                    "emoji": "UTCloakofthePlanewalker"
+                },
+                {
+                    "name": "Vial",
+                    "emoji": "VialOfPureDarkness"
+                }
+            ]
+        },
+        {
+            "name": "server region",
+            "aliases": [
+                "eu/us",
+                "us/eu"
+            ],
+            "reacts": [
+                {
+                    "name": "Europe",
+                    "emoji": "europeanunion"
+                },
+                {
+                    "name": "United States",
+                    "emoji": "usa"
+                }
+            ]
+        },
+        {
+            "name": "regular or Exalted",
+            "aliases": [
+                "r/e",
+                "e/r"
+            ],
+            "reacts": [
+                {
+                    "name": "Exalted",
+                    "emoji": "A_"
+                },
+                {
+                    "name": "Regular",
+                    "emoji": "R_"
+                }
+            ]
+        },
+        {
+            "name": "exaltations",
+            "aliases": [
+                "exalts"
+            ],
+            "reacts": [
+                {
+                    "name": "Void",
+                    "emoji": "void"
+                },
+                {
+                    "name": "Cultist Hideout",
+                    "emoji": "cultist"
+                },
+                {
+                    "name": "The Shatters",
+                    "emoji": "forgottenKing"
+                },
+                {
+                    "name": "Fungal Cavern",
+                    "emoji": "crystal"
+                },
+                {
+                    "name": "The Nest",
+                    "emoji": "killerBeeQueen"
+                }
+            ]
+        },
+        {
+            "name": "fungal or nest",
+            "aliases": [
+                "fc/n"
+            ],
+            "reacts": [
+                {
+                    "name": "Fungal Cavern",
+                    "emoji": "crystal"
+                },
+                {
+                    "name": "The Nest",
+                    "emoji": "killerBeeQueen"
+                }
+            ]
+        }
+    ],
+    "708026927721480254": [
+        {
+            "name": "server region",
+            "aliases": [
+                "eu/us",
+                "us/eu"
+            ],
+            "reacts": [
+                {
+                    "name": "Europe",
+                    "emoji": "europeanunion"
+                },
+                {
+                    "name": "United States",
+                    "emoji": "usa"
+                }
+            ]
+        },
+        {
+            "name": "oryx or oryx",
+            "aliases": [
+                "o",
+                "o/o"
+            ],
+            "reacts": [
+                {
+                    "name": "Oryx",
+                    "emoji": "oryx"
+                },
+                {
+                    "name": "Oryx",
+                    "emoji": "oryxThree"
+                }
+            ]
+        }
+    ]
+}

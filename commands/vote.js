@@ -1,6 +1,8 @@
 const Discord = require('discord.js')
 const getFeedback = require('./getFeedback')
 const ErrorLogger = require('../lib/logError')
+const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
+const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js')
 
 const num_words = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '❌']
 
@@ -12,6 +14,14 @@ module.exports = {
     args: '<ign> [igns...]',
     requiredArgs: 1,
     description: 'Puts up a vote for promotions based on users current role.',
+    args: [
+        slashArg(SlashArgType.User, 'user', {
+            description: "Staff Member"
+        }),
+    ],
+    getSlashCommandData(guild) {
+        return slashCommandJSON(this, guild)
+    },
     getNotes(guildid, member) {
         return 'Puts the message in leader-chat/veteran-rl-chat based on vote'
     },
@@ -85,6 +95,13 @@ async function postVote2(message, member, bot, db) {
         if (message.guild.id !== '708026927721480254') await msg.react('😐');
         await msg.react('❌');
         if (rolekey == 'almostrl' && message.guild.id !== '708026927721480254') await msg.react('👀');
+        try
+        { 
+            if (rolekey == 'rl' && message.guild.id == '708026927721480254') await msg.react('🇷'); await msg.react('🇫');
+        }
+        catch (e) {
+            ErrorLogger.log(e, bot, message.guild.id)
+        }
         return;
     }
 

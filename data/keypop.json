@@ -60,6 +60,18 @@
             "name": "steamworks",
             "modded": true
         },
+        "advancedsteamwork": {
+            "alias": [
+                "ak",
+                "asteam",
+                "asteamworks",
+                "akogbold"
+            ],
+            "points": "steamworkkey",
+            "schema": "advancedSteamworkPops",
+            "name": "advancedsteamwork",
+            "modded": true
+        },
         "moonlight": {
             "alias": [
                 "mv",
@@ -188,25 +200,85 @@
             "modded": true
         }
     },
-    "934611202787643412": {
-        "runepop": {
+    "934611202787643412": { 
+        "shieldrune": {
             "alias": [
-                "rune"
+                "sh",
+                "shield"
             ],
             "points": "runepop",
-            "schema": "runesused",
-            "name": "rune pop",
+            "schema": "shieldRunePops",
+            "name": "shield rune",
             "modded": false
         },
-        "incpop": {
+        "swordrune": {
             "alias": [
-                "incantation",
-                "incantationpop",
+                "sw",
+                "sword"
+            ],
+            "points": "runepop",
+            "schema": "swordRunePops",
+            "name": "sword rune",
+            "modded": false
+        },
+        "helmetrune": {
+            "alias": [
+                "h",
+                "helm"
+            ],
+            "points": "runepop",
+            "schema": "helmetRunePops",
+            "name": "helmet rune",
+            "modded": false
+        },
+        "inc": {
+            "alias": [
                 "inc"
             ],
             "points": "incpop",
             "schema": "incPops",
-            "name": "incantation pop",
+            "name": "inc",
+            "modded": false
+        }
+    },
+    "708026927721480254": { 
+        "shieldrune": {
+            "alias": [
+                "sh",
+                "shield"
+            ],
+            "points": "runepop",
+            "schema": "shieldRunePops",
+            "name": "shield rune",
+            "modded": false
+        },
+        "swordrune": {
+            "alias": [
+                "sw",
+                "sword"
+            ],
+            "points": "runepop",
+            "schema": "swordRunePops",
+            "name": "sword rune",
+            "modded": false
+        },
+        "helmetrune": {
+            "alias": [
+                "h",
+                "helm"
+            ],
+            "points": "runepop",
+            "schema": "helmetRunePops",
+            "name": "helmet rune",
+            "modded": false
+        },
+        "inc": {
+            "alias": [
+                "inc"
+            ],
+            "points": "incpop",
+            "schema": "incPops",
+            "name": "inc",
             "modded": false
         }
     }

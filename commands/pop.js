@@ -22,7 +22,7 @@ module.exports = {
         slashArg(SlashArgType.User, 'user', {
             description: "The key popper"
         }),
-        slashArg(SlashArgType.Number, 'count', {
+        slashArg(SlashArgType.Integer, 'count', {
             required: false,
             description: "The number of keys to add (default 1)"
         }),
@@ -53,21 +53,34 @@ module.exports = {
         let confirmEmbed = new Discord.EmbedBuilder()
             .setColor('#ff0000')
             .setDescription(`Are you sure you want to log \`\`${count}\`\` **${keyInfo.name}** pops for ${user.nickname}?\n\nPlease select which key.`)
+        
+        // add buttons initialized with regular key button
         const buttons = new Discord.ActionRowBuilder()
                                 .addComponents(
                                     new Discord.ButtonBuilder()
                                         .setCustomId('Regular Key')
                                         .setLabel('Regular Key')
                                         .setStyle(Discord.ButtonStyle.Primary),
-                                    new Discord.ButtonBuilder()
-                                        .setCustomId('Modded Key')
-                                        .setLabel('Modded Key')
-                                        .setStyle(Discord.ButtonStyle.Primary),
-                                    new Discord.ButtonBuilder()
-                                            .setCustomId('Cancelled')
-                                            .setLabel('❌ Cancel')
-                                            .setStyle(Discord.ButtonStyle.Danger)
                                 );
+        
+        // only add modded button if the key is able to be modded                    
+        if (keyInfo.modded) {
+            buttons.addComponents(
+                new Discord.ButtonBuilder()
+                    .setCustomId('Modded Key')
+                    .setLabel('Modded Key')
+                    .setStyle(Discord.ButtonStyle.Primary)
+            );
+        }
+
+        // add cancel button to the end
+        buttons.addComponents(
+            new Discord.ButtonBuilder()
+                .setCustomId('Cancelled')
+                .setLabel('❌ Cancel')
+                .setStyle(Discord.ButtonStyle.Danger)
+        );
+
         const reply = await message.reply({ embeds: [confirmEmbed], components: [ buttons ], ephemeral: true })
         createReactionRow(reply, module.exports.name, 'handleButtons', buttons, message.author, {userId: user.id, keyInfo: keyInfo, count: count})
     },

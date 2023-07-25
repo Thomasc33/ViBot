@@ -46,10 +46,12 @@ bot.emojiServers = moduleIsAvailable('./data/emojiServers.json') ? require('./da
 bot.devServers = ["739623118833713214"]
 bot.storedEmojis = moduleIsAvailable('./data/emojis.json') ? require('./data/emojis.json') : {}
 
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
-for (const file of commandFiles) {
-    const command = require(`./commands/${file}`);
-    bot.commands.set(command.name, command);
+function loadCommands() {
+    const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+    for (const file of commandFiles) {
+        const command = require(`./commands/${file}`);
+        bot.commands.set(command.name, command);
+    }
 }
 
 function moduleIsAvailable(path) {
@@ -62,4 +64,4 @@ function moduleIsAvailable(path) {
     }
 }
 
-module.exports = { bot }
+module.exports = { bot, loadCommands }

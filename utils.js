@@ -93,7 +93,7 @@ class LegacyCommandOptions {
     }
 
     getInteger(k) {
-        if (this.#optTypeMatch(SlashArgType.Number, k)) return this.args[k]
+        if (this.#optTypeMatch(SlashArgType.Integer, k)) return this.args[k]
     }
 
     getAttachment(k) {
@@ -123,7 +123,7 @@ class LegacyCommandOptions {
             case SlashArgType.String: {
                 return value
             }
-            case SlashArgType.Number: {
+            case SlashArgType.Integer: {
                 return parseInt(value)
             }
             case SlashArgType.Attachment: {

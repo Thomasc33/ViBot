@@ -49,10 +49,22 @@
             "emoji": "<a:steamworksPortal:1050156386547413012>"
         },
         {
+            "role": "accursedSteamworksPing",
+            "name": "Advanced Steamworks",
+            "emojiId": "1129901525674758274",
+            "emoji": "<:advancedSteamworks:1129901525674758274>"
+        },
+        {
             "role": "moonlightping",
             "name": "Moonlight",
             "emojiId": "1090163554872737866",
             "emoji": "<:mv:1090163554872737866>"
+        },
+        {
+            "role": "eventBoiPing",
+            "name": "Miscellaneous Dungeons",
+            "emojiId": "723001215184535553",
+            "emoji": "<:pcave:723001215184535553>"
         }
     ],
     "708026927721480254": [
@@ -145,6 +157,18 @@
             "name": "Moonlight",
             "emojiId": "1090163554872737866",
             "emoji": "<:mv:1090163554872737866>"
+        },
+        {
+            "role": "eventBoiPing",
+            "name": "Miscellaneous Dungeons",
+            "emojiId": "723001215184535553",
+            "emoji": "<:pcave:723001215184535553>"
+        },
+        {
+            "role": "accursedSteamworksPing",
+            "name": "Advanced Steamworks",
+            "emojiId": "1129901525674758274",
+            "emoji": "<:advancedSteamworks:1129901525674758274>"
         }
     ]
 }

@@ -51,8 +51,8 @@ function startAPI() {
         console.log('api starting')
         var credentials = {}
         try {
-            credentials.key = fs.readFileSync('C:\\Certbot\\live\\a.vibot.tech\\privkey.pem', 'utf8')
-            credentials.cert = fs.readFileSync('C:\\Certbot\\live\\a.vibot.tech\\cert.pem', 'utf8')
+            credentials.key = fs.readFileSync('/etc/letsencrypt/live/a.vibot.tech/privkey.pem', 'utf8')
+            credentials.cert = fs.readFileSync('/etc/letsencrypt/live/a.vibot.tech/cert.pem', 'utf8')
         } catch (e) { }
 
         const apiLimit = rateLimit({

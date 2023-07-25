@@ -24,6 +24,7 @@ const prefix = botSettings.prefix;
 const rootCas = require('ssl-root-cas').create();
 require('https').globalAgent.options.ca = rootCas;
 const bot = require('./botMeta.js').bot
+require('./botMeta.js').loadCommands()
 const serverWhiteList = require('./data/serverWhiteList.json')
 const MessageManager = require('./messageManager.js').MessageManager;
 

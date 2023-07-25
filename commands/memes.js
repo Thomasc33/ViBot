@@ -1,6 +1,8 @@
+const vr_gamers = ['277636691227836419', '130850662522159104', '258286481167220738']
+
 module.exports = {
     name: 'memes',
-    alias: ['phd', 'xbox', 'cwinner', 'eury', 'nefiah', 'abysm', 'drunkdevil', 'shiba', 'rj', 'vr', 'pusbal'],
+    alias: ['phd', 'xbox', 'cwinner', 'eury', 'nefiah', 'abysm', 'drunkdevil', 'shiba', 'rj', 'vr', 'pusbal', 'bantering'],
     role: 'eventrl',
     async execute(message, args, bot) {
         const settings = bot.settings[message.guild.id]
@@ -35,10 +37,13 @@ module.exports = {
                 message.channel.send({ files: ['https://media.discordapp.net/attachments/488881485366165515/795036389834096640/20210102_151014.jpg?width=811&height=1081'] })
                 break;
             case 'vr':
-                message.channel.send(message.author.id == '277636691227836419' ? `<@&${settings.roles.raider}>` : '@verified raider')
+                message.channel.send(vr_gamers.includes(message.author.id) ? `<@&${settings.roles.raider}>` : '@verified raider')
                 break;
             case 'pusbal':
                 message.channel.send({ files: ['https://media.discordapp.net/attachments/488881485366165515/1033372031384817714/52ca3466-744e-4372-8211-175184521ecd.png'] })
+                break;
+            case 'bantering':
+                message.channel.send('Command is too big. Failed to process');
         }
     }
 }

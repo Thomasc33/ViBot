@@ -3,10 +3,11 @@ const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
 const roles = ['admin', 'moderator', 'officer', 'headrl', 'headdev', 'assistantdev', 'vetrl', 'fsvrl', 'mrvrl', 'security', 'fullskip', 'developer', 'rl', 'almostrl',
     'trialrl', 'headeventrl', 'eventrl', 'minimumStaffRole',
-    'rusher', 'lol', 'accursed', 'vetraider', 'raider', 'eventraider', 'muted',
+    'rusher', 'lol', 'accursed', 'vetraider', 'vetraider2', 'vetraider3', 'vetraider4', 'vetraider5', 'raider', 'eventraider', 'muted',
     'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'keyjesus', 'moddedkey', 'topkey', 'bottomkey', 'cultping', 'voidping', 'shattsReact', 'fungalReact', 'nestReact',
     'fskipReact', 'fameReact', 'accursedReact', 'rcPing', 'o3Ping', 'eventBoi', 'veteventrl',
-    'priest', 'warden', 'vetaffiliate', 'affiliatestaff', `toprune`, `bottomrune`, 'helper', 'steamworksping', 'moonlightping', 'supporterTierOne', 'supporterTierTwo', 'supporterTierThree', 'supporterTierFour', 'supporterTierFive', 'supporterTierSix']
+    'priest', 'warden', 'vetaffiliate', 'affiliatestaff', `toprune`, `bottomrune`, 'helper', 'steamworksping', 'moonlightping', 'eventBoiPing', 'accursedSteamworksPing',
+    'supporterTierOne', 'supporterTierTwo', 'supporterTierThree', 'supporterTierFour', 'supporterTierFive', 'supporterTierSix', 'unverified']
 const channels = ['modmail', 'verification', 'manualverification', 'vetverification', 'manualvetverification', 'verificationlog', 'accursedverification', 'activeverification', 'modlogs', 'history', 'suspendlog',
     'viallog', 'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel', 'raidstatus', 'eventstatus',
     'vetstatus', 'exaltstatus', 'raidcommands', 'eventcommands', 'vetcommands', 'accursedcommands', 'accursedstatus', 'raidingchannels', 'eventchannels', 'vetchannels', 'runlogs', 'dmcommands', 'veriactive', 'pointlogging',
@@ -19,17 +20,17 @@ const voice = ['raidingtemplate', 'eventtemplate', 'vettemplate', 'accursedtempl
 const voiceprefixes = ['raidingprefix', 'vetprefix']
 const backend = ['modmail', 'currentweek', 'eventcurrentweek', 'parsecurrentweek', 'verification', 'vetverification', 'points', 'supporter', 'roleassignment', 'realmeyestats', 'automod', 'removekeyreacts', 'characterparse', 'forwadedMessageThumbsUpAndDownReactions',
     'giveeventroleonverification', 'eventcurrentweekdisplaysalleventrl', 'upgradedCheck', 'raidResetMonthly', 'eventResetMonthly', 'parseResetMonthly', 'exaltedEvents', 'sendmissedquota',
-    'exaltsInRSA', 'allowAdvancedRuns', 'raidResetBiweekly', 'eventResetBiweekly', 'parseResetBiweekly', 'onlyUpperStaffSuspendStaff', 'giveEventRoleOnDenial2', 'disableEventsFromHeadcounts',
-    'useStaticVCForRaiding']
+    'exaltsInRSA', 'allowAdvancedRuns', 'allowExaltedRuns', 'raidResetBiweekly', 'eventResetBiweekly', 'parseResetBiweekly', 'onlyUpperStaffSuspendStaff', 'giveEventRoleOnDenial2', 'disableEventsFromHeadcounts',
+    'useStaticVCForRaiding', 'useUnverifiedRole', 'punishmentsWarnings', 'punishmentsSuspensions', 'punishmentsMutes']
 const numerical = ['afktime', 'eventafktime', 'topkey', 'bottomkey', 'ticketlimit', 'supporterlimit', 'keyalertsage', 'waitnewkeyalert', 'prunerushersoffset',
     `toprune`, `bottomrune`]
 const runreqs = ['weapon', 'ability', 'armor', 'ring']
 const autoveri = ['fame', 'stars', 'realmage', 'discordage', 'deathcount']
 const vetverireqs = ['maxed', 'meleemaxed', 'runs']
 const points = ['earlylocation', 'perrun', 'supportermultiplier', 'keypop', 'vialpop', 'rushing', 'brain', 'mystic', 'eventkey', 'cultlocation', 'voidlocation', 'fsvlocation', 'o3streaming',
-    'o3trickster', 'o3puri', 'exaltkey', 'shattskey', 'fungalkey', 'nestkey', 'keymultiplier', 'runepop', 'steamworkkey', 'moonlightkey']
+    'o3trickster', 'o3puri', 'exaltkey', 'shattskey', 'fungalkey', 'nestkey', 'keymultiplier', 'runepop', 'incpop', 'steamworkkey', 'moonlightkey']
 const lists = ['earlyLocation', 'runningEvents', 'warningRoles', 'perkRoles', 'discordRoles', 'commendRoles']
-const strings = ['hallsAccursedReqsImage', 'hallsAdvancedReqsImage', 'exaltsAdvancedReqsImage']
+const strings = ['hallsAccursedReqsImage', 'hallsAdvancedReqsImage', 'exaltsAdvancedReqsImage', 'hallsExaltedReqsImage', 'exaltsExaltedReqsImage', 'vetVerifyDeniedMessage']
 const quotapoints = ['voidLeading', 'cultLeading', 'shattersLeading', 'oryx3Leading', 'fungalLeading', 'nestLeading', 'steamworkLeading',
 'eventLeading', 'failedRun', 'feedback', 'feedbackOnFeedback', 'assist', 'parsing', 'rolledquota', 'rlWeeklyQuota', 'arlWeeklyQuota', 'securityWeeklyQuota', 'wardenWeeklyQuota',
 'eventrlWeeklyQuota', 'arlVote']
@@ -37,11 +38,13 @@ const modmail = ['sendMessage', 'forwardMessage', 'closeModmail', 'blacklistUser
 const supporter = ['supporterCooldownSeconds1', 'supporterCooldownSeconds2', 'supporterCooldownSeconds3', 'supporterCooldownSeconds4', 'supporterCooldownSeconds5', 'supporterCooldownSeconds6',
     'supporterUses1', 'supporterUses2', 'supporterUses3', 'supporterUses4', 'supporterUses5', 'supporterUses6', 
     'supporterLimit1', 'supporterLimit2', 'supporterLimit3', 'supporterLimit4', 'supporterLimit5', 'supporterLimit6']
+const rolePermissions = ['punishmentsWarnings', 'punishmentsSuspensions', 'punishmentsMutes']
 var commands = []
 var commandsRolePermissions = []
 
 const menus = ['roles', 'channels', 'voice', 'voiceprefixes', 'backend', 'numerical', 'runreqs', 'autoveri',
-'vetverireqs', 'points', 'commands', 'categories', 'lists', 'strings', 'quotapoints', 'modmail', 'commandsRolePermissions', 'supporter']
+'vetverireqs', 'points', 'commands', 'categories', 'lists', 'strings', 'quotapoints', 'modmail', 'commandsRolePermissions', 'supporter',
+'rolePermissions']
 
 module.exports = {
     name: 'setup',
@@ -93,6 +96,7 @@ module.exports = {
                         case '16': menu(modmail, 'modmail', 'boolean'); break;
                         case '17': menu(commandsRolePermissions, 'commandsRolePermissions', 'string'); break;
                         case '18': menu(supporter, 'supporter', 'int'); break;
+                        case '19': menu(rolePermissions, 'rolePermissions', 'string'); break;
                     }
                 }
                 /**
@@ -142,7 +146,7 @@ module.exports = {
                                 if (mes.content.toLowerCase() == 'cancel') {
                                     setupMessage.delete()
                                     message.react('✅')
-                                    menuCollector.stop()
+                                    menuMessageCollector.stop()
                                 } else {
                                     let change = `\`\`\`coffeescript\n${array[parseInt(num) - 1]}: ${bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]]} -> ${mes.content}\`\`\``
                                     switch (type) {
@@ -205,7 +209,7 @@ module.exports = {
                                         if (mes.content.toLowerCase() == 'cancel') {
                                             setupMessage.delete()
                                             message.react('✅')
-                                            collector.stop()
+                                            newCollector.stop()
                                         } else {
                                             change = `\`\`\`coffeescript\n${mes.content} added to ${arrayName}\`\`\``
                                             bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]].push(mes.content)
@@ -294,7 +298,9 @@ module.exports = {
                 strings: {},
                 quotapoints: {},
                 modmail: {},
-                commandsRolePermissions: {}
+                commandsRolePermissions: {},
+                supporter: {},
+                rolePermissions: {}
             }
         }
         for (let i of menus) {
@@ -397,6 +403,9 @@ module.exports = {
             if (!bot.settings[guild.id].supporter[supporter[i]]) {
                 bot.settings[guild.id].supporter[supporter[i]] = 0
             }
+        }
+        for (let i of rolePermissions) {
+            if (!bot.settings[guild.id].rolePermissions[i]) bot.settings[guild.id].rolePermissions[i] = null
         }
         fs.writeFileSync('./guildSettings.json', JSON.stringify(bot.settings, null, 4), err => message.channel.send(err.toString()))
     }
@@ -588,7 +597,7 @@ function getDefaultPointValue(name) {
         case 'nestkey': return 5;
         case 'keymultiplier': return 2;
         case 'runepop': return 20;
-        case 'incpop': return 0;
+        case 'incpop': return 5;
         case 'steamworkkey': return 5;
         case 'moonlightkey': return 5;
     }

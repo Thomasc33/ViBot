@@ -37,7 +37,7 @@ module.exports = {
             .setTitle('Verification Steps')
             .setDescription(`**1.** Unprivate your discord PM's to ensure bot can reach you
             
-            **2** Log in to your realmeye page and unprivate everything except for \`last known location\`. If you do not have a password for realmeye, ingame type \`/tell MrEyeBall password\` to get one
+            **2** Log in to your realmeye page and unprivate everything except for \`last known location\`. If you do not have a password for realmeye, ingame type \`/tell MrEyeball password\` to get one
 
             **3.** React with the :white_check_mark: below
 
@@ -259,7 +259,7 @@ module.exports = {
             //check realmeye description for vericode
             let userInfo = await realmEyeScrape.getGraveyardSummary(ign).catch(er => {
                 //ErrorLogger.log(er, bot)
-                if (er.message == 'Unloaded Graveyard') {
+                if (er == 'Unloaded Graveyard') {
                     embed.setDescription(`Your graveyard is not loaded on realmeye or it is privated. If you are sure it is set to public then go to your graveyard and click on the button that says:\n\`Click here if you think that some of your deceased heros are still missing!\`\nOnce you are done, re-react with the ✅`)
                     embedMessage.edit({ embeds: [embed] })
                     LoggingEmbed.setDescription(`<@!${u.id}> Needs to load in their graveyard on their realmeye page *clicking the button*`)
@@ -374,7 +374,7 @@ module.exports = {
         //autoverify
         async function autoVerify() {
             if (!member) member = guild.members.cache.get(u.id)
-            let tag = member.user.tag.substring(0, member.user.tag.length - 5)
+            let tag = member.user.username
             let nick = ''
             if (tag == ign) {
                 nick = ign.toLowerCase()
@@ -385,6 +385,7 @@ module.exports = {
             await member.setNickname(nick)
             setTimeout(async () => {
                 await member.roles.add(settings.roles.raider)
+                if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) await member.roles.remove(settings.roles.unverified)
                 if (settings.backend.giveeventroleonverification) member.roles.add(settings.roles.eventraider)
             }, 1000)
             db.query(`INSERT INTO users (id) VALUES ('${u.id}')`, err => {
@@ -473,7 +474,7 @@ module.exports = {
                         .setDescription(`${member} was manually verified by ${reactor}`)
                     message.guild.channels.cache.get(settings.channels.verificationlog).send({ embeds: [veriEmbed] })
                     //set nickname
-                    let tag = member.user.tag.substring(0, member.user.tag.length - 5)
+                    let tag = member.user.username
                     let nick = ''
                     if (tag == ign) {
                         nick = ign.toLowerCase()
@@ -486,6 +487,7 @@ module.exports = {
                     setTimeout(async () => {
                         await member.roles.add(settings.roles.raider)
                         if (settings.backend.giveeventroleonverification) member.roles.add(settings.roles.eventraider)
+                        if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) await member.roles.remove(settings.roles.unverified)
                     }, 1000)
                     //dm user
                     member.user.send(`You have been successfully verified in \`${message.guild.name}\`. Welcome! AFK-Checks work a little big different here, so make sure to read through the FAQ to learn more.${settings.backend.roleassignment ? ` To get pinged for specific afk checks, head over to <#${settings.channels.roleassignment}>` : null}`)
@@ -530,7 +532,7 @@ module.exports = {
                             db.query(`INSERT INTO veriblacklist (id, modid, guildid, reason) VALUES ('${member.id}', '${reactor.id}', '${message.guild.id}', 'Reacted with 2️⃣ to verification.'),('${ign.toLowerCase()}', '${reactor.id}', '${message.guild.id}', 'Reacted with 2️⃣ to verification.')`)
 
                             //set nickname
-                            let tag = member.user.tag.substring(0, member.user.tag.length - 5)
+                            let tag = member.user.username
                             let nick = ''
                             if (tag == ign) {
                                 nick = ign.toLowerCase()

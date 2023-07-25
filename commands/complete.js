@@ -12,7 +12,7 @@ module.exports = {
     getNotes(guildid, member) {
         return 'Image can either be a link, or an embeded image'
     },
-    role: 'eventrl',
+    role: 'almostrl',
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
 
@@ -56,12 +56,13 @@ module.exports = {
             await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
             return;
         }
-        let query = `UPDATE users SET o3runs = o3runs + 1 WHERE ${members.map(m => `id = '${m.id}'`).join(' OR ')}`
+        members.push(message.member) // doing it here in case the image was bad
+        let query = `UPDATE users SET o3completes  = o3completes  + 1 WHERE ${members.map(m => `id = '${m.id}'`).join(' OR ')}`
         await db.promise().query(query)
         parseStatusEmbed.data.fields[1].value = 'Completed'
 
         const maxMembersPerField = 40
-        for (let i = 0; i < Math.ceil(members.length / maxMembersPerField); i++) parseStatusEmbed.data.fields.push({ name: `Members`, value: members.slice(i * maxMembersPerField, Math.min(startIndex + maxMembersPerField, members.length)).map(m => m.toString()).join(', ') })
+        for (let i = 0; i < Math.ceil(members.length / maxMembersPerField); i++) parseStatusEmbed.data.fields.push({ name: `Members`, value: members.slice(i * maxMembersPerField, Math.min(i * maxMembersPerField + maxMembersPerField, members.length)).map(m => m.toString()).join(', ') })
 
         await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
     }
