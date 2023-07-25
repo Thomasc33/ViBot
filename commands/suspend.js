@@ -5,8 +5,8 @@ const ErrorLogger = require('../lib/logError')
 module.exports = {
     name: 'suspend',
     description: 'Suspends user',
-    args: '[users] <time> <time type s/m/h/d/w/y> <reason>',
-    requiredArgs: 3,
+    args: '<users> <time> <time type s/m/h/d/w/y> <reason>',
+    requiredArgs: 4,
     role: 'warden',
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
@@ -28,6 +28,7 @@ module.exports = {
             }
         }
         try {
+            var timeString =  parseInt(args[0]);
             var time = parseInt(args[0]);
             var timeType = args[1];
             var timeTypeString;
@@ -122,7 +123,7 @@ module.exports = {
                         await member.roles.remove(userRoles)
                         setTimeout(() => { member.roles.add(suspendedRole.id); }, 1000)
                         await member.user.send({ embeds: [embed] }).catch(() => {})
-                        db.query(`INSERT INTO suspensions (id, guildid, suspended, uTime, reason, modid, roles, logmessage) VALUES ('${member.id}', '${message.guild.id}', true, '${Date.now() + time}', ${db.escape(reason)}, '${message.author.id}', '${userRolesString}', '${messageId.id}');`)
+                        db.query(`INSERT INTO suspensions (id, guildid, suspended, uTime, reason, modid, roles, logmessage, unixTimestamp, length) VALUES ('${member.id}', '${message.guild.id}', true, '${Date.now() + time}', ${db.escape(reason)}, '${message.author.id}', '${userRolesString}', '${messageId.id}', '${Date.now()}', '${`${timeString} ${timeTypeString}`}');`)
                     }
                     message.channel.send(`${member} has been suspended`)
                 }

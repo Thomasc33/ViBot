@@ -21,7 +21,7 @@ const voiceprefixes = ['raidingprefix', 'vetprefix']
 const backend = ['modmail', 'currentweek', 'eventcurrentweek', 'parsecurrentweek', 'verification', 'vetverification', 'points', 'supporter', 'roleassignment', 'realmeyestats', 'automod', 'removekeyreacts', 'characterparse', 'forwadedMessageThumbsUpAndDownReactions',
     'giveeventroleonverification', 'eventcurrentweekdisplaysalleventrl', 'upgradedCheck', 'raidResetMonthly', 'eventResetMonthly', 'parseResetMonthly', 'exaltedEvents', 'sendmissedquota',
     'exaltsInRSA', 'allowAdvancedRuns', 'allowExaltedRuns', 'raidResetBiweekly', 'eventResetBiweekly', 'parseResetBiweekly', 'onlyUpperStaffSuspendStaff', 'giveEventRoleOnDenial2', 'disableEventsFromHeadcounts',
-    'useStaticVCForRaiding', 'useUnverifiedRole']
+    'useStaticVCForRaiding', 'useUnverifiedRole', 'punishmentsWarnings', 'punishmentsSuspensions', 'punishmentsMutes']
 const numerical = ['afktime', 'eventafktime', 'topkey', 'bottomkey', 'ticketlimit', 'supporterlimit', 'keyalertsage', 'waitnewkeyalert', 'prunerushersoffset',
     `toprune`, `bottomrune`]
 const runreqs = ['weapon', 'ability', 'armor', 'ring']
@@ -38,11 +38,13 @@ const modmail = ['sendMessage', 'forwardMessage', 'closeModmail', 'blacklistUser
 const supporter = ['supporterCooldownSeconds1', 'supporterCooldownSeconds2', 'supporterCooldownSeconds3', 'supporterCooldownSeconds4', 'supporterCooldownSeconds5', 'supporterCooldownSeconds6',
     'supporterUses1', 'supporterUses2', 'supporterUses3', 'supporterUses4', 'supporterUses5', 'supporterUses6', 
     'supporterLimit1', 'supporterLimit2', 'supporterLimit3', 'supporterLimit4', 'supporterLimit5', 'supporterLimit6']
+const rolePermissions = ['punishmentsWarnings', 'punishmentsSuspensions', 'punishmentsMutes']
 var commands = []
 var commandsRolePermissions = []
 
 const menus = ['roles', 'channels', 'voice', 'voiceprefixes', 'backend', 'numerical', 'runreqs', 'autoveri',
-'vetverireqs', 'points', 'commands', 'categories', 'lists', 'strings', 'quotapoints', 'modmail', 'commandsRolePermissions', 'supporter']
+'vetverireqs', 'points', 'commands', 'categories', 'lists', 'strings', 'quotapoints', 'modmail', 'commandsRolePermissions', 'supporter',
+'rolePermissions']
 
 module.exports = {
     name: 'setup',
@@ -94,6 +96,7 @@ module.exports = {
                         case '16': menu(modmail, 'modmail', 'boolean'); break;
                         case '17': menu(commandsRolePermissions, 'commandsRolePermissions', 'string'); break;
                         case '18': menu(supporter, 'supporter', 'int'); break;
+                        case '19': menu(rolePermissions, 'rolePermissions', 'string'); break;
                     }
                 }
                 /**
@@ -295,7 +298,9 @@ module.exports = {
                 strings: {},
                 quotapoints: {},
                 modmail: {},
-                commandsRolePermissions: {}
+                commandsRolePermissions: {},
+                supporter: {},
+                rolePermissions: {}
             }
         }
         for (let i of menus) {
@@ -398,6 +403,9 @@ module.exports = {
             if (!bot.settings[guild.id].supporter[supporter[i]]) {
                 bot.settings[guild.id].supporter[supporter[i]] = 0
             }
+        }
+        for (let i of rolePermissions) {
+            if (!bot.settings[guild.id].rolePermissions[i]) bot.settings[guild.id].rolePermissions[i] = null
         }
         fs.writeFileSync('./guildSettings.json', JSON.stringify(bot.settings, null, 4), err => message.channel.send(err.toString()))
     }
