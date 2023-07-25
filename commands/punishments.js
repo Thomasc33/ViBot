@@ -29,9 +29,7 @@ module.exports = {
             const embeds = [];
             const memberPosition = member.roles.highest.position;
 
-            if (
-                (memberPosition >= message.guild.roles.cache.get(settings.roles[settings.rolePermissions.punishmentsWarnings]).position) &&
-                settings.backend.punishmentsWarnings) {
+            if ((memberPosition >= message.guild.roles.cache.get(settings.roles[settings.rolePermissions.punishmentsWarnings]).position) && (settings.backend.punishmentsWarnings)) {
                 const row = await db.promise().query(`SELECT * FROM warns WHERE id = '${member.id}' AND guildid = '${message.guild.id}'`);
                 let embed = new Discord.EmbedBuilder()
                     .setColor('#F04747')
@@ -67,9 +65,7 @@ module.exports = {
                 }
             }
 
-            if (
-                (memberPosition >= message.guild.roles.cache.get(settings.roles[settings.rolePermissions.punishmentsSuspensions]).position) &&
-                settings.backend.punishmentsSuspensions) {
+            if ((memberPosition >= message.guild.roles.cache.get(settings.roles[settings.rolePermissions.punishmentsSuspensions]).position) && (settings.backend.punishmentsSuspensions)) {
                 const row = await db.promise().query(`SELECT * FROM suspensions WHERE id = '${member.id}' AND guildid = '${message.guild.id}'`);
                 let embed = new Discord.EmbedBuilder()
                     .setColor('#F04747')
@@ -104,9 +100,7 @@ module.exports = {
                 }
             }
 
-            if (
-                (memberPosition >= message.guild.roles.cache.get(settings.roles[settings.rolePermissions.punishmentsMutes]).position) &&
-                settings.backend.punishmentsMutes) {
+            if ((memberPosition >= message.guild.roles.cache.get(settings.roles[settings.rolePermissions.punishmentsMutes]).position) && (settings.backend.punishmentsMutes)) {
                 const row = await db.promise().query(`SELECT * FROM mutes WHERE id = '${member.id}' AND guildid = '${message.guild.id}'`);
                 let embed = new Discord.EmbedBuilder()
                     .setColor('#F04747')
