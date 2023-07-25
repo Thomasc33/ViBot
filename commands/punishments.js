@@ -25,70 +25,129 @@ module.exports = {
             let user = args[i]
             let member = message.guild.findMember(user)
             if (!member) { usersNotFound.push(user); continue; }
-            let embed = new Discord.EmbedBuilder()
-                .setTitle(`Punishments for ${member.nickname}`)
-                .setColor('#F04747')
-            db.query(`SELECT * FROM warns WHERE id = '${member.user.id}' AND guildid = '${message.guild.id}'`, async function (err, warnings) {
-                if (err) ErrorLogger.log(err, bot, message.guild)
-                db.query(`SELECT * FROM suspensions WHERE id = '${member.user.id}' AND guildid = '${message.guild.id}'`, async function (err, suspensions) {
-                    if (err) ErrorLogger.log(err, bot, message.guild)
-                    db.query(`SELECT * FROM mutes WHERE id = '${member.user.id}' AND guildid = '${message.guild.id}'`, async function (err, mutes) {
-                        if (err) ErrorLogger.log(err, bot, message.guild)
-                        if (warnings.length > 0) {
-                            let warningValue = ``
-                            let warningName = `Warnings`
-                            for (let i in warnings) {
-                                let index = parseInt(i)
-                                let warning = warnings[i]
-                                let currentWarning = `${index+1}. ${warning.silent ? 'Silently ' : ''}By <@!${warning.modid}> <t:${(parseInt(warning.time)/1000).toFixed(0)}:R> at <t:${(parseInt(warning.time)/1000).toFixed(0)}:f>\`\`\`${warning.reason}\`\`\`\n`
-                                if (warningValue.length + currentWarning.length > 1024) {
-                                    embed.addFields({ name: warningName, value: warningValue, inline: false })
-                                    warningValue = ``
-                                    warningName = `Warnings Continued`
-                                }
-                                warningValue += currentWarning
+
+            const embeds = [];
+            const memberPosition = member.roles.highest.position;
+
+            if (
+                memberPosition >= message.guild.roles.cache.get(settings.roles[settings.rolePermissions.punishmentsWarnings]).position &&
+                settings.backend.punishmentsWarnings) {
+                const row = await db.promise().query(`SELECT * FROM warns WHERE id = '${member.id}' AND guildid = '${message.guild.id}'`);
+                let embed = new Discord.EmbedBuilder()
+                    .setColor('#F04747')
+                if (row[0].length > 0) {
+                    let embedFieldStrings = [];
+                    let embedFieldLength = 1;
+                    for (let i in row[0]) {
+                        let index = parseInt(i) + 1
+                        const punishment = row[0][i];
+                        const stringText = `\`${index.toString().padStart(3, ' ')}\`${punishment.silent ? ' Silently' : ''} By <@!${punishment.modid}> <t:${(parseInt(punishment.time)/1000).toFixed(0)}:R> at <t:${(parseInt(punishment.time)/1000).toFixed(0)}:f>\`\`\`${punishment.reason}\`\`\`\n`
+                        if (embedFieldStrings == 0) { embedFieldStrings.push(stringText) }
+                        else {
+                            if (embedFieldStrings.join('').length + stringText.length >= 1024) {
+                                embed.addFields({
+                                    name: `Warnings (${embedFieldLength})`,
+                                    value: embedFieldStrings.join(''),
+                                    inline: true
+                                });
+                                embedFieldLength++;
+                                embedFieldStrings = [];
+                            } else {
+                                embedFieldStrings.push(stringText);
                             }
-                            embed.addFields({ name: warningName, value: warningValue, inline: false })
                         }
-                        if (suspensions.length > 0) {
-                            let suspensionValue = ``
-                            let suspensionName = `Suspensions`
-                            for (let i in suspensions) {
-                                let index = parseInt(i)
-                                let suspension = suspensions[i]
-                                let currentSuspension = `${index+1}. By <@!${suspension.modid}> ${suspension.suspended ? 'Ends' : 'Ended'} <t:${(parseInt(suspension.uTime)/1000).toFixed(0)}:R> at <t:${(parseInt(suspension.uTime)/1000).toFixed(0)}:f>\`\`\`${suspension.reason}\`\`\`\n`
-                                if (suspensionValue.length + currentSuspension.length > 1024) {
-                                    embed.addFields({ name: suspensionName, value: suspensionValue, inline: false })
-                                    suspensionValue = ``
-                                    suspensionName = `Suspensions Continued`
-                                }
-                                suspensionValue += currentSuspension
+                    }
+                    embed.addFields({
+                        name: `Warnings (${embedFieldLength})`,
+                        value: embedFieldStrings.join(''),
+                        inline: true
+                    });
+                    embed.setTitle(`Warnings for ${member.displayName}`)
+                    embeds.push(embed);
+                }
+            }
+
+            if (
+                memberPosition >= message.guild.roles.cache.get(settings.roles[settings.rolePermissions.punishmentsSuspensions]).position &&
+                settings.backend.punishmentsSuspensions) {
+                const row = await db.promise().query(`SELECT * FROM suspensions WHERE id = '${member.id}' AND guildid = '${message.guild.id}'`);
+                let embed = new Discord.EmbedBuilder()
+                    .setColor('#F04747')
+                if (row[0].length > 0) {
+                    const embedFieldStrings = [];
+                    let embedFieldLength = 1;
+                    for (let i in row[0]) {
+                        let index = parseInt(i) + 1
+                        const punishment = row[0][i];
+                        const stringText = `\`${index.toString().padStart(3, ' ')}\` By <@!${punishment.modid}> <t:${(parseInt(punishment.uTime)/1000).toFixed(0)}:R> at <t:${(parseInt(punishment.uTime)/1000).toFixed(0)}:f>\`\`\`${punishment.reason}\`\`\`\n`
+                        if (embedFieldStrings == 0) { embedFieldStrings.push(stringText) }
+                        else {
+                            if (embedFieldStrings.join('').length + stringText.length >= 1024) {
+                                embed.addFields({
+                                    name: `Suspensions (${embedFieldLength})`,
+                                    value: embedFieldStrings.join(''),
+                                    inline: true
+                                });
+                                embedFieldLength++;
+                            } else {
+                                embedFieldStrings.push(stringText);
                             }
-                            embed.addFields({ name: suspensionName, value: suspensionValue, inline: false })
                         }
-                        if (mutes.length > 0) {
-                            let muteValue = ``
-                            let muteName = `Mutes`
-                            for (let i in mutes) {
-                                let index = parseInt(i)
-                                let mute = mutes[i]
-                                let currentMute = `${index+1}. By <@!${mute.modid}> ${mute.muted ? 'Ends' : 'Ended'} <t:${(parseInt(mute.uTime)/1000).toFixed(0)}:R> at <t:${(parseInt(mute.uTime)/1000).toFixed(0)}:f>\`\`\`${mute.reason}\`\`\`\n`
-                                if (muteValue.length + currentMute.length > 1024) {
-                                    embed.addFields({ name: muteName, value: muteValue, inline: false })
-                                    muteValue = ``
-                                    muteName = `Mutes Continued`
-                                }
-                                muteValue += currentMute
+                    }
+                    embed.addFields({
+                        name: `Suspensions (${embedFieldLength})`,
+                        value: embedFieldStrings.join(''),
+                        inline: true
+                    });
+                    embed.setTitle(`Suspensions for ${member.displayName}`)
+                    embeds.push(embed);
+                }
+            }
+
+            if (
+                memberPosition >= message.guild.roles.cache.get(settings.roles[settings.rolePermissions.punishmentsMutes]).position &&
+                settings.backend.punishmentsMutes) {
+                const row = await db.promise().query(`SELECT * FROM mutes WHERE id = '${member.id}' AND guildid = '${message.guild.id}'`);
+                let embed = new Discord.EmbedBuilder()
+                    .setColor('#F04747')
+                if (row[0].length > 0) {
+                    const embedFieldStrings = [];
+                    let embedFieldLength = 1;
+                    for (let i in row[0]) {
+                        let index = parseInt(i) + 1
+                        const punishment = row[0][i];
+                        const stringText = `\`${index.toString().padStart(3, ' ')}\` By <@!${punishment.modid}> <t:${(parseInt(punishment.uTime)/1000).toFixed(0)}:R> at <t:${(parseInt(punishment.uTime)/1000).toFixed(0)}:f>\`\`\`${punishment.reason}\`\`\`\n`
+                        if (embedFieldStrings == 0) { embedFieldStrings.push(stringText) }
+                        else {
+                            if (embedFieldStrings.join('').length + stringText.length >= 1024) {
+                                embed.addFields({
+                                    name: `Mutes (${embedFieldLength})`,
+                                    value: embedFieldStrings.join(''),
+                                    inline: true
+                                });
+                                embedFieldLength++;
+                            } else {
+                                embedFieldStrings.push(stringText);
                             }
-                            embed.addFields({ name: muteName, value: muteValue, inline: false })
                         }
-                        if (!embed.data.fields || embed.data.fields.length == 0) {
-                            embed.setDescription(`No punishments have been issued for ${member}`)
-                        }
-                        await message.reply({ embeds: [embed] })
-                    })
-                })
-            })
+                    }
+                    embed.addFields({
+                        name: `Mutes (${embedFieldLength})`,
+                        value: embedFieldStrings.join(''),
+                        inline: true
+                    });
+                    embed.setTitle(`Mutes for ${member.displayName}`);
+                    embeds.push(embed);
+                }
+            }
+
+            if (embeds.length > 0) {
+                await message.reply({ embeds: embeds });
+            } else {
+                embedLayout.setTitle('No punishments');
+                embedLayout.setDescription(`${member} has no punishments in this server.`);
+                await message.reply({ embeds: [embedLayout] });
+            }
         }
         if (usersNotFound.length > 0) {
             let embedNotFound = new Discord.EmbedBuilder()
