@@ -1,6 +1,7 @@
 {
     "343704644712923138": {
         "losthalls": {
+            "templateID": 1,
             "alias": [
                 "lh"
             ],
@@ -10,6 +11,7 @@
             "modded": true
         },
         "event": {
+            "templateID": 2,
             "alias": [
                 "e"
             ],
@@ -19,6 +21,7 @@
             "modded": true
         },
         "shatters": {
+            "templateID": 3,
             "alias": [
                 "s",
                 "shatts"
@@ -29,6 +32,7 @@
             "modded": true
         },
         "fungal": {
+            "templateID": 4,
             "alias": [
                 "f",
                 "fun",
@@ -40,6 +44,7 @@
             "modded": true
         },
         "nest": {
+            "templateID": 5,
             "alias": [
                 "n"
             ],
@@ -49,6 +54,7 @@
             "modded": true
         },
         "steamwork": {
+            "templateID": 6,
             "alias": [
                 "k",
                 "steam",
@@ -61,6 +67,7 @@
             "modded": true
         },
         "advancedsteamwork": {
+            "templateID": 7,
             "alias": [
                 "ak",
                 "asteam",
@@ -73,6 +80,7 @@
             "modded": true
         },
         "moonlight": {
+            "templateID": 8,
             "alias": [
                 "mv",
                 "moonv",
@@ -83,10 +91,22 @@
             "schema": "moonlightPops",
             "name": "moonlight village",
             "modded": true
+        },
+        "vial": {
+            "templateID": 9,
+            "alias": [
+                "v",
+                "vial"
+            ],
+            "points": "vialpop",
+            "schema": "vialUsed",
+            "name": "Vial of Pure Darkness",
+            "modded": false
         }
     },
     "701483950559985705": {
         "losthalls": {
+            "templateID": 10,
             "alias": [
                 "lh"
             ],
@@ -96,6 +116,7 @@
             "modded": true
         },
         "event": {
+            "templateID": 11,
             "alias": [
                 "e"
             ],
@@ -105,6 +126,7 @@
             "modded": true
         },
         "shatters": {
+            "templateID": 12,
             "alias": [
                 "s",
                 "shatts"
@@ -115,6 +137,7 @@
             "modded": true
         },
         "fungal": {
+            "templateID": 13,
             "alias": [
                 "f",
                 "fun",
@@ -126,6 +149,7 @@
             "modded": true
         },
         "nest": {
+            "templateID": 14,
             "alias": [
                 "n"
             ],
@@ -135,6 +159,7 @@
             "modded": true
         },
         "steamwork": {
+            "templateID": 15,
             "alias": [
                 "k",
                 "steam",
@@ -147,6 +172,7 @@
             "modded": true
         },
         "moonlight": {
+            "templateID": 16,
             "alias": [
                 "mv",
                 "moonv",
@@ -161,6 +187,7 @@
     },
     "451171819672698920": {
         "shatters": {
+            "templateID": 17,
             "alias": [
                 "s"
             ],
@@ -170,6 +197,7 @@
             "modded": true
         },
         "moonlight": {
+            "templateID": 18,
             "alias": [
                 "mv",
                 "moonv",
@@ -182,6 +210,7 @@
             "modded": true
         },
         "event": {
+            "templateID": 19,
             "alias": [
                 "e"
             ],
@@ -191,6 +220,7 @@
             "modded": true
         },
         "exaltation": {
+            "templateID": 20,
             "alias": [
                 "ex"
             ],
@@ -202,6 +232,7 @@
     },
     "934611202787643412": { 
         "shieldrune": {
+            "templateID": 21,
             "alias": [
                 "sh",
                 "shield"
@@ -212,6 +243,7 @@
             "modded": false
         },
         "swordrune": {
+            "templateID": 22,
             "alias": [
                 "sw",
                 "sword"
@@ -222,6 +254,7 @@
             "modded": false
         },
         "helmetrune": {
+            "templateID": 23,
             "alias": [
                 "h",
                 "helm"
@@ -232,6 +265,7 @@
             "modded": false
         },
         "inc": {
+            "templateID": 24,
             "alias": [
                 "inc"
             ],
@@ -243,6 +277,7 @@
     },
     "708026927721480254": { 
         "shieldrune": {
+            "templateID": 25,
             "alias": [
                 "sh",
                 "shield"
@@ -253,6 +288,7 @@
             "modded": false
         },
         "swordrune": {
+            "templateID": 26,
             "alias": [
                 "sw",
                 "sword"
@@ -263,6 +299,7 @@
             "modded": false
         },
         "helmetrune": {
+            "templateID": 27,
             "alias": [
                 "h",
                 "helm"
@@ -273,6 +310,7 @@
             "modded": false
         },
         "inc": {
+            "templateID": 28,
             "alias": [
                 "inc"
             ],

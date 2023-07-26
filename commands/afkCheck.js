@@ -5,6 +5,8 @@ const AfkTemplate = require('./afkTemplate.js')
 const restart = require('./restart')
 const pointLogger = require('../lib/pointLogger')
 const extensions = require(`../lib/extensions`)
+const consumablePopTemplates = require(`../data/keypop.json`);
+const popCommand = require('./pop.js');
 
 module.exports = {
     name: 'afk',
@@ -745,6 +747,7 @@ class afkCheck {
         let member = null
         let number = null
         let logOption = null
+        let isModded = false
         let logBool = Object.keys(buttonInfo.logOptions).length > 1
         let choiceText = buttonInfo.emote ? `${buttonInfo.emote.text} **${button}**` : `**${button}**`
 
@@ -780,6 +783,7 @@ class afkCheck {
                 .setPlaceholder(`Option for ${button}s`)
             for (let i in buttonInfo.logOptions) confirmOptionMenu.addOptions({ label: i, value: i })
             const {value: confirmOptionValue, interaction: subInteractionOption} =  await interaction.selectPanel(text3, null, confirmOptionMenu, 10000, false, true)
+            isModded = confirmOptionValue == "Modded"
             logOption = buttonInfo.logOptions[confirmOptionValue]
             if (!subInteractionOption) return await interaction.followUp({ embeds: [extensions.createEmbed(interaction, `Timed out. You can dismiss this message.`, null)], ephemeral: true })   
             else if (!logOption) return await subInteractionOption.update({ embeds: [extensions.createEmbed(interaction, `Cancelled or Invalid Option. You can dismiss this message.`, null)], components: [] })
@@ -787,6 +791,14 @@ class afkCheck {
         } else logOption = buttonInfo.logOptions[Object.keys(buttonInfo.logOptions)[0]]
         
         for (let option of logOption.logName) {
+            let keyTemplate = popCommand.findKey(this.#guild.id, option);
+            if (keyTemplate) {
+                let consumablepopsValueNames = `userid, guildid, unixtimestamp, amount, ismodded, templateid, raidid`
+                let consumablepopsValues = `'${member.id}', '${this.#guild.id}', '${Date.now()}', '${number}', ${isModded}, '${keyTemplate.templateID}', '${this.#raidID}'`
+                this.#db.query(`INSERT INTO consumablepops (${consumablepopsValueNames}) VALUES (${consumablepopsValues})`, (err, rows) => {
+                    if (err) return console.log(`${option} missing from ${this.#guild.name} ${this.#guild.id}`)
+                })
+            }
             this.#db.query(`UPDATE users SET ${option} = ${option} + ${number} WHERE id = '${member.id}'`, (err, rows) => {
                 if (err) return console.log(`${option} missing from ${this.#guild.name} ${this.#guild.id}`)
             })
@@ -1116,11 +1128,6 @@ class afkCheck {
         else this.earlySlotMembers.forEach(id => this.members.push(id))
 
         for (let u of this.members) {
-            let completionrunsValueNames = `userid, guildid, unixtimestamp, amount, templateid, raidid, parenttemplateid`
-            let completionrunsValues = `'${u}', '${this.#guild.id}', '${Date.now()}', '1', '${this.#afkTemplate.templateID}', '${this.#raidID}', '${this.#afkTemplate.parentTemplateID}'`
-            this.#db.query(`INSERT INTO completionruns (${completionrunsValueNames}) VALUES (${completionrunsValues})`, (err, rows) => {
-                if (err) return console.log(`${u} could not be inserted into completionruns`)
-            })
             this.#db.query(`SELECT id FROM users WHERE id = '${u}'`, async (err, rows) => {
                 if (err) return
                 if (rows.length == 0) return this.#db.query(`INSERT INTO users (id) VALUES('${u}')`)
@@ -1171,6 +1178,11 @@ class afkCheck {
             this.#channel.members.forEach(m => this.members.push(m.id))
         }
         for (let u of this.members) {
+            let completionrunsValueNames = `userid, guildid, unixtimestamp, amount, templateid, raidid, parenttemplateid`
+            let completionrunsValues = `'${u}', '${this.#guild.id}', '${Date.now()}', '1', '${this.#afkTemplate.templateID}', '${this.#raidID}', '${this.#afkTemplate.parentTemplateID}'`
+            this.#db.query(`INSERT INTO completionruns (${completionrunsValueNames}) VALUES (${completionrunsValues})`, (err, rows) => {
+                if (err) return console.log(`${u} could not be inserted into completionruns`)
+            })
             this.#db.query(`UPDATE users SET ${this.#afkTemplate.logName} = ${this.#afkTemplate.logName} + 1 WHERE id = '${u}'`, (err, rows) => {
                 if (err) return console.log('error logging run completes in ', this.#guild.id)
             })
