@@ -2,6 +2,7 @@
     "343704644712923138": {
         "parents": {
             "normal": {
+                "parentTemplateID": 1,
                 "category": "raiding",
                 "templateChannel": "718233461135245322",
                 "partneredStatusChannels": {},
@@ -59,6 +60,7 @@
                 }
             },
             "exalt": {
+                "parentTemplateID": 2,
                 "category": "raiding",
                 "templateChannel": "718233461135245322",
                 "partneredStatusChannels": {},
@@ -116,6 +118,7 @@
                 }
             },
             "event": {
+                "parentTemplateID": 3,
                 "category": "raiding",
                 "templateChannel": "722955080059584585",
                 "partneredStatusChannels": {},
@@ -161,6 +164,7 @@
                 }
             },
             "veteran": {
+                "parentTemplateID": 4,
                 "category": "veteran raiding",
                 "templateChannel": "717947391755681902",
                 "partneredStatusChannels": {},
@@ -218,6 +222,7 @@
                 }
             },
             "veteranEvent": {
+                "parentTemplateID": 5,
                 "category": "veteran raiding",
                 "templateChannel": "717947391755681902",
                 "partneredStatusChannels": {},
@@ -263,6 +268,7 @@
                 }
             },
             "example": {
+                "parentTemplateID": 6,
                 "category": "raiding",
                 "templateChannel": "718233461135245322",
                 "partneredStatusChannels": {},
@@ -320,6 +326,7 @@
         },
         "children": [
             {
+                "templateID": 7,
                 "inherits": [
                     "veteran",
                     "normal"
@@ -720,6 +727,7 @@
                 }
             },
             {
+                "templateID": 8,
                 "inherits": [
                     "veteran",
                     "normal"
@@ -1091,6 +1099,7 @@
                 }
             },
             {
+                "templateID": 9,
                 "inherits": [
                     "veteran",
                     "normal"
@@ -1468,6 +1477,7 @@
                 }
             },
             {
+                "templateID": 10,
                 "inherits": [
                     "veteran",
                     "normal"
@@ -1848,6 +1858,7 @@
                 }
             },
             {
+                "templateID": 11,
                 "inherits": [
                     "veteran",
                     "normal"
@@ -2221,6 +2232,7 @@
                 }
             },
             {
+                "templateID": 12,
                 "inherits": [
                     "veteran",
                     "normal"
@@ -2594,6 +2606,7 @@
                 }
             },
             {
+                "templateID": 13,
                 "inherits": [
                     "veteran",
                     "normal"
@@ -2992,6 +3005,7 @@
                 }
             },
             {
+                "templateID": 14,
                 "inherits": [
                     "veteran"
                 ],
@@ -3405,6 +3419,7 @@
                 }
             },
             {
+                "templateID": 15,
                 "inherits": [
                     "veteran"
                 ],
@@ -3818,6 +3833,7 @@
                 }
             },
             {
+                "templateID": 16,
                 "inherits": [
                     "veteran",
                     "normal"
@@ -4216,6 +4232,7 @@
                 }
             },
             {
+                "templateID": 17,
                 "inherits": [
                     "veteran",
                     "exalt"
@@ -4540,6 +4557,7 @@
                 }
             },
             {
+                "templateID": 18,
                 "inherits": [
                     "veteran",
                     "exalt"
@@ -4876,6 +4894,7 @@
                 }
             },
             {
+                "templateID": 19,
                 "inherits": [
                     "veteran",
                     "exalt"
@@ -5256,6 +5275,7 @@
                 }
             },
             {
+                "templateID": 20,
                 "inherits": [
                     "veteran",
                     "exalt"
@@ -5640,6 +5660,7 @@
                 }
             },
             {
+                "templateID": 21,
                 "inherits": [
                     "veteran",
                     "exalt"
@@ -5921,6 +5942,7 @@
                 }
             },
             {
+                "templateID": 22,
                 "inherits": [
                     "veteran",
                     "exalt"
@@ -6207,6 +6229,7 @@
                 }
             },
             {
+                "templateID": 23,
                 "inherits": [
                     "veteran",
                     "exalt"
@@ -6580,6 +6603,7 @@
                 }
             },
             {
+                "templateID": 24,
                 "inherits": [
                     "veteran",
                     "exalt"
@@ -6956,6 +6980,7 @@
                 }
             },
             {
+                "templateID": 25,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -7237,6 +7262,7 @@
                 }
             },
             {
+                "templateID": 26,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -7520,6 +7546,7 @@
                 }
             },
             {
+                "templateID": 27,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -7801,6 +7828,7 @@
                 }
             },
             {
+                "templateID": 28,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -8083,6 +8111,7 @@
                 }
             },
             {
+                "templateID": 29,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -8363,6 +8392,7 @@
                 }
             },
             {
+                "templateID": 30,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -8587,6 +8617,7 @@
                 }
             },
             {
+                "templateID": 31,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -8810,6 +8841,7 @@
                 }
             },
             {
+                "templateID": 32,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -9033,6 +9065,7 @@
                 }
             },
             {
+                "templateID": 33,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -9237,6 +9270,7 @@
                 }
             },
             {
+                "templateID": 34,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -9519,6 +9553,7 @@
                 }
             },
             {
+                "templateID": 35,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -9724,6 +9759,7 @@
                 }
             },
             {
+                "templateID": 36,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -9985,6 +10021,7 @@
                 }
             },
             {
+                "templateID": 37,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -10264,6 +10301,7 @@
                 }
             },
             {
+                "templateID": 38,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -10524,6 +10562,7 @@
                 }
             },
             {
+                "templateID": 39,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -10788,6 +10827,7 @@
                 }
             },
             {
+                "templateID": 40,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -11032,6 +11072,7 @@
                 }
             },
             {
+                "templateID": 41,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -11254,6 +11295,7 @@
                 }
             },
             {
+                "templateID": 42,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -11517,6 +11559,7 @@
                 }
             },
             {
+                "templateID": 43,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -11760,6 +11803,7 @@
                 }
             },
             {
+                "templateID": 44,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -11947,6 +11991,7 @@
                 }
             },
             {
+                "templateID": 45,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -12093,6 +12138,7 @@
                 }
             },
             {
+                "templateID": 46,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -12356,6 +12402,7 @@
                 }
             },
             {
+                "templateID": 47,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -12582,6 +12629,7 @@
                 }
             },
             {
+                "templateID": 48,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -12900,6 +12948,7 @@
                 }
             },
             {
+                "templateID": 49,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -13083,6 +13132,7 @@
                 }
             },
             {
+                "templateID": 50,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -13269,6 +13319,7 @@
                 }
             },
             {
+                "templateID": 51,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -13455,6 +13506,7 @@
                 }
             },
             {
+                "templateID": 52,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -13639,6 +13691,7 @@
                 }
             },
             {
+                "templateID": 52,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -13822,6 +13875,7 @@
                 }
             },
             {
+                "templateID": 53,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -14007,6 +14061,7 @@
                 }
             },
             {
+                "templateID": 54,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -14192,6 +14247,7 @@
                 }
             },
             {
+                "templateID": 55,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -14376,6 +14432,7 @@
                 }
             },
             {
+                "templateID": 56,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -14560,6 +14617,7 @@
                 }
             },
             {
+                "templateID": 57,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -14745,6 +14803,7 @@
                 }
             },
             {
+                "templateID": 58,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -14933,6 +14992,7 @@
                 }
             },
             {
+                "templateID": 59,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -15118,6 +15178,7 @@
                 }
             },
             {
+                "templateID": 60,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -15302,6 +15363,7 @@
                 }
             },
             {
+                "templateID": 61,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -15485,6 +15547,7 @@
                 }
             },
             {
+                "templateID": 62,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -15668,6 +15731,7 @@
                 }
             },
             {
+                "templateID": 63,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -15851,6 +15915,7 @@
                 }
             },
             {
+                "templateID": 64,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -16034,6 +16099,7 @@
                 }
             },
             {
+                "templateID": 65,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -16216,6 +16282,7 @@
                 }
             },
             {
+                "templateID": 66,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -16436,6 +16503,7 @@
                 }
             },
             {
+                "templateID": 67,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -16715,6 +16783,7 @@
                 }
             },
             {
+                "templateID": 68,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -17051,6 +17120,7 @@
                 }
             },
             {
+                "templateID": 80,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -17350,6 +17420,7 @@
                 }
             },
             {
+                "templateID": 70,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -17516,6 +17587,7 @@
                 }
             },
             {
+                "templateID": 71,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -17737,6 +17809,7 @@
                 }
             },
             {
+                "templateID": 72,
                 "inherits": [
                     "normal"
                 ],
@@ -18127,6 +18200,7 @@
                 }
             },
             {
+                "templateID": 73,
                 "inherits": [
                     "normal"
                 ],
@@ -18497,6 +18571,7 @@
                 }
             },
             {
+                "templateID": 74,
                 "inherits": [
                     "normal"
                 ],
@@ -18891,6 +18966,7 @@
                 }
             },
             {
+                "templateID": 76,
                 "inherits": [
                     "example"
                 ],
@@ -19290,6 +19366,7 @@
                 }
             },
             {
+                "templateID": 77,
                 "inherits": [
                     "example"
                 ],
@@ -19627,6 +19704,7 @@
                 }
             },
             {
+                "templateID": 78,
                 "inherits": [
                     "example"
                 ],
@@ -19909,6 +19987,7 @@
                 }
             },
             {
+                "templateID": 79,
                 "inherits": [
                     "example"
                 ],
@@ -20358,6 +20437,7 @@
     "701483950559985705": {
         "parents": {
             "normal": {
+                "parentTemplateID": 81,
                 "category": "raiding",
                 "templateChannel": "717947391755681902",
                 "partneredStatusChannels": {},
@@ -20415,6 +20495,7 @@
                 }
             },
             "exalt": {
+                "parentTemplateID": 82,
                 "category": "raiding",
                 "templateChannel": "717947391755681902",
                 "partneredStatusChannels": {},
@@ -20472,6 +20553,7 @@
                 }
             },
             "event": {
+                "parentTemplateID": 83,
                 "category": "raiding",
                 "templateChannel": "721894230036840450",
                 "partneredStatusChannels": {},
@@ -20517,6 +20599,7 @@
                 }
             },
             "veteran": {
+                "parentTemplateID": 84,
                 "category": "veteran raiding",
                 "templateChannel": "751630124071256125",
                 "partneredStatusChannels": {},
@@ -20574,6 +20657,7 @@
                 }
             },
             "veteranEvent": {
+                "parentTemplateID": 85,
                 "category": "veteran raiding",
                 "templateChannel": "751630124071256125",
                 "partneredStatusChannels": {},
@@ -20619,6 +20703,7 @@
                 }
             },
             "example": {
+                "parentTemplateID": 86,
                 "category": "raiding",
                 "templateChannel": "717947391755681902",
                 "partneredStatusChannels": {},
@@ -20676,6 +20761,7 @@
         },
         "children": [
             {
+                "templateID": 87,
                 "inherits": [
                     "veteran",
                     "normal"
@@ -21076,6 +21162,7 @@
                 }
             },
             {
+                "templateID": 88,
                 "inherits": [
                     "veteran",
                     "normal"
@@ -21447,6 +21534,7 @@
                 }
             },
             {
+                "templateID": 89,
                 "inherits": [
                     "veteran",
                     "normal"
@@ -21824,6 +21912,7 @@
                 }
             },
             {
+                "templateID": 90,
                 "inherits": [
                     "veteran",
                     "normal"
@@ -22204,6 +22293,7 @@
                 }
             },
             {
+                "templateID": 91,
                 "inherits": [
                     "veteran",
                     "normal"
@@ -22577,6 +22667,7 @@
                 }
             },
             {
+                "templateID": 92,
                 "inherits": [
                     "veteran",
                     "normal"
@@ -22950,6 +23041,7 @@
                 }
             },
             {
+                "templateID": 93,
                 "inherits": [
                     "veteran",
                     "normal"
@@ -23348,6 +23440,7 @@
                 }
             },
             {
+                "templateID": 94,
                 "inherits": [
                     "veteran"
                 ],
@@ -23761,6 +23854,7 @@
                 }
             },
             {
+                "templateID": 95,
                 "inherits": [
                     "veteran"
                 ],
@@ -24174,6 +24268,7 @@
                 }
             },
             {
+                "templateID": 96,
                 "inherits": [
                     "veteran",
                     "normal"
@@ -24572,6 +24667,7 @@
                 }
             },
             {
+                "templateID": 97,
                 "inherits": [
                     "veteran",
                     "exalt"
@@ -24896,6 +24992,7 @@
                 }
             },
             {
+                "templateID": 98,
                 "inherits": [
                     "veteran",
                     "exalt"
@@ -25232,6 +25329,7 @@
                 }
             },
             {
+                "templateID": 99,
                 "inherits": [
                     "veteran",
                     "exalt"
@@ -25612,6 +25710,7 @@
                 }
             },
             {
+                "templateID": 100,
                 "inherits": [
                     "veteran",
                     "exalt"
@@ -25996,6 +26095,7 @@
                 }
             },
             {
+                "templateID": 101,
                 "inherits": [
                     "veteran",
                     "exalt"
@@ -26277,6 +26377,7 @@
                 }
             },
             {
+                "templateID": 102,
                 "inherits": [
                     "veteran",
                     "exalt"
@@ -26563,6 +26664,7 @@
                 }
             },
             {
+                "templateID": 103,
                 "inherits": [
                     "veteran",
                     "exalt"
@@ -26936,6 +27038,7 @@
                 }
             },
             {
+                "templateID": 104,
                 "inherits": [
                     "veteran",
                     "exalt"
@@ -27312,6 +27415,7 @@
                 }
             },
             {
+                "templateID": 105,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -27593,6 +27697,7 @@
                 }
             },
             {
+                "templateID": 106,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -27876,6 +27981,7 @@
                 }
             },
             {
+                "templateID": 107,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -28157,6 +28263,7 @@
                 }
             },
             {
+                "templateID": 108,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -28439,6 +28546,7 @@
                 }
             },
             {
+                "templateID": 109,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -28719,6 +28827,7 @@
                 }
             },
             {
+                "templateID": 110,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -28943,6 +29052,7 @@
                 }
             },
             {
+                "templateID": 111,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -29166,6 +29276,7 @@
                 }
             },
             {
+                "templateID": 112,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -29389,6 +29500,7 @@
                 }
             },
             {
+                "templateID": 113,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -29593,6 +29705,7 @@
                 }
             },
             {
+                "templateID": 114,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -29875,6 +29988,7 @@
                 }
             },
             {
+                "templateID": 115,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -30080,6 +30194,7 @@
                 }
             },
             {
+                "templateID": 116,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -30341,6 +30456,7 @@
                 }
             },
             {
+                "templateID": 117,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -30620,6 +30736,7 @@
                 }
             },
             {
+                "templateID": 118,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -30880,6 +30997,7 @@
                 }
             },
             {
+                "templateID": 119,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -31144,6 +31262,7 @@
                 }
             },
             {
+                "templateID": 120,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -31388,6 +31507,7 @@
                 }
             },
             {
+                "templateID": 121,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -31610,6 +31730,7 @@
                 }
             },
             {
+                "templateID": 122,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -31873,6 +31994,7 @@
                 }
             },
             {
+                "templateID": 123,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -32116,6 +32238,7 @@
                 }
             },
             {
+                "templateID": 124,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -32303,6 +32426,7 @@
                 }
             },
             {
+                "templateID": 125,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -32449,6 +32573,7 @@
                 }
             },
             {
+                "templateID": 126,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -32712,6 +32837,7 @@
                 }
             },
             {
+                "templateID": 127,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -32938,6 +33064,7 @@
                 }
             },
             {
+                "templateID": 128,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -33256,6 +33383,7 @@
                 }
             },
             {
+                "templateID": 129,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -33439,6 +33567,7 @@
                 }
             },
             {
+                "templateID": 130,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -33625,6 +33754,7 @@
                 }
             },
             {
+                "templateID": 131,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -33811,6 +33941,7 @@
                 }
             },
             {
+                "templateID": 132,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -33995,6 +34126,7 @@
                 }
             },
             {
+                "templateID": 133,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -34178,6 +34310,7 @@
                 }
             },
             {
+                "templateID": 134,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -34363,6 +34496,7 @@
                 }
             },
             {
+                "templateID": 135,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -34548,6 +34682,7 @@
                 }
             },
             {
+                "templateID": 136,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -34732,6 +34867,7 @@
                 }
             },
             {
+                "templateID": 137,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -34916,6 +35052,7 @@
                 }
             },
             {
+                "templateID": 138,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -35101,6 +35238,7 @@
                 }
             },
             {
+                "templateID": 139,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -35289,6 +35427,7 @@
                 }
             },
             {
+                "templateID": 140,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -35474,6 +35613,7 @@
                 }
             },
             {
+                "templateID": 141,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -35658,6 +35798,7 @@
                 }
             },
             {
+                "templateID": 142,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -35841,6 +35982,7 @@
                 }
             },
             {
+                "templateID": 143,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -36024,6 +36166,7 @@
                 }
             },
             {
+                "templateID": 144,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -36207,6 +36350,7 @@
                 }
             },
             {
+                "templateID": 145,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -36390,6 +36534,7 @@
                 }
             },
             {
+                "templateID": 146,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -36572,6 +36717,7 @@
                 }
             },
             {
+                "templateID": 147,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -36792,6 +36938,7 @@
                 }
             },
             {
+                "templateID": 148,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -37071,6 +37218,7 @@
                 }
             },
             {
+                "templateID": 149,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -37407,6 +37555,7 @@
                 }
             },
             {
+                "templateID": 150,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -37706,6 +37855,7 @@
                 }
             },
             {
+                "templateID": 150,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -37872,6 +38022,7 @@
                 }
             },
             {
+                "templateID": 151,
                 "inherits": [
                     "veteranEvent",
                     "event"
@@ -38093,6 +38244,7 @@
                 }
             },
             {
+                "templateID": 152,
                 "inherits": [
                     "veteran",
                     "normal"
@@ -38456,6 +38608,7 @@
                 }
             },
             {
+                "templateID": 153,
                 "inherits": [
                    "normal", "veteran"
                 ],
@@ -38857,6 +39010,7 @@
                 }
             },
             {
+                "templateID": 154,
                 "inherits": [
                     "normal"
                 ],
@@ -39247,6 +39401,7 @@
                 }
             },
             {
+                "templateID": 155,
                 "inherits": [
                     "normal"
                 ],
@@ -39617,6 +39772,7 @@
                 }
             },
             {
+                "templateID": 156,
                 "inherits": [
                     "normal"
                 ],
@@ -40015,6 +40171,7 @@
                 }
             },
             {
+                "templateID": 157,
                 "inherits": [
                     "example"
                 ],
@@ -40414,6 +40571,7 @@
                 }
             },
             {
+                "templateID": 158,
                 "inherits": [
                     "example"
                 ],
@@ -40751,6 +40909,7 @@
                 }
             },
             {
+                "templateID": 159,
                 "inherits": [
                     "example"
                 ],
@@ -41033,6 +41192,7 @@
                 }
             },
             {
+                "templateID": 160,
                 "inherits": [
                     "example"
                 ],
@@ -41478,6 +41638,7 @@
                 }
             },
             {
+                "templateID": 161,
                 "inherits": [
                     "example"
                 ],
@@ -41839,6 +42000,7 @@
                 }
             },
             {
+                "templateID": 162,
                 "inherits": [
                     "example"
                 ],
@@ -42239,6 +42401,7 @@
                 }
             },
             {
+                "templateID": 163,
                 "inherits": [
                     "normal", "veteran"
                 ],
@@ -42547,6 +42710,7 @@
                 }
             },
             {
+                "templateID": 164,
                 "inherits": [
                     "normal", "veteran"
                 ],
@@ -42894,6 +43058,7 @@
                 }
             },
             {
+                "templateID": 165,
                 "inherits": [
                    "normal", "veteran"
                 ],
@@ -43257,7 +43422,9 @@
                         "lifetime": 2
                     }
                 }
-            },{
+            },
+            {
+                "templateID": 166,
                 "inherits": [
                     "veteran",
                     "normal"
@@ -43620,6 +43787,7 @@
                 }
             },
             {
+                "templateID": 167,
                 "inherits": [
                     "veteran",
                     "normal"
@@ -43884,6 +44052,7 @@
                 }
             },
             {
+                "templateID": 168,
                 "inherits": [
                     "veteran",
                     "exalt"
@@ -44145,6 +44314,7 @@
     "708026927721480254": {
         "parents": {
             "normal": {
+                "parentTemplateID": 169,
                 "category": "raiding",
                 "templateChannel": "717947391755681902",
                 "partneredStatusChannels": {},
@@ -44202,6 +44372,7 @@
                 }
             },
             "veteran": {
+                "parentTemplateID": 170,
                 "category": "veteran raiding",
                 "templateChannel": "751630124071256125",
                 "partneredStatusChannels": {},
@@ -44259,6 +44430,7 @@
                 }
             },
             "example": {
+                "parentTemplateID": 171,
                 "category": "raiding",
                 "templateChannel": "717947391755681902",
                 "partneredStatusChannels": {},
@@ -44316,6 +44488,7 @@
         },
         "children": [
             {
+                "templateID": 172,
                 "inherits": [
                     "veteran",
                     "normal"
@@ -44679,6 +44852,7 @@
                 }
             },
             {
+                "templateID": 173,
                 "inherits": [
                     "normal",
                     "veteran"
@@ -45081,6 +45255,7 @@
                 }
             },
             {
+                "templateID": 174,
                 "inherits": [
                     "example"
                 ],
@@ -45442,6 +45617,7 @@
                 }
             },
             {
+                "templateID": 175,
                 "inherits": [
                     "example"
                 ],

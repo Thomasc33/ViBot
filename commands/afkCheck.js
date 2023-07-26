@@ -1116,6 +1116,11 @@ class afkCheck {
         else this.earlySlotMembers.forEach(id => this.members.push(id))
 
         for (let u of this.members) {
+            let completionrunsValueNames = `userid, guildid, unixtimestamp, amount, templateid, raidid, parenttemplateid`
+            let completionrunsValues = `'${u}', '${this.#guild.id}', '${Date.now()}', '1', '${this.#afkTemplate.templateID}', '${this.#raidID}', '${this.#afkTemplate.parentTemplateID}'`
+            this.#db.query(`INSERT INTO completionruns (${completionrunsValueNames}) VALUES (${completionrunsValues})`, (err, rows) => {
+                if (err) return console.log(`${u} could not be inserted into completionruns`)
+            })
             this.#db.query(`SELECT id FROM users WHERE id = '${u}'`, async (err, rows) => {
                 if (err) return
                 if (rows.length == 0) return this.#db.query(`INSERT INTO users (id) VALUES('${u}')`)

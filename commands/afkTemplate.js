@@ -380,6 +380,8 @@ class AfkTemplate {
         this.body = this.#template.body
         this.buttons = this.#template.buttons
         this.reacts = this.#template.reacts
+        this.templateID = this.#template.templateID
+        this.parentTemplateID = this.#template.parentTemplateID
     }
 
     processBody(channel) {
