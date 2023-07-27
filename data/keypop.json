@@ -183,11 +183,22 @@
             "schema": "moonlightPops",
             "name": "moonlight village",
             "modded": true
+        },
+        "vial": {
+            "templateID": 17,
+            "alias": [
+                "v",
+                "vial"
+            ],
+            "points": "vialpop",
+            "schema": "vialUsed",
+            "name": "Vial of Pure Darkness",
+            "modded": false
         }
     },
     "451171819672698920": {
         "shatters": {
-            "templateID": 17,
+            "templateID": 18,
             "alias": [
                 "s"
             ],
@@ -197,7 +208,7 @@
             "modded": true
         },
         "moonlight": {
-            "templateID": 18,
+            "templateID": 19,
             "alias": [
                 "mv",
                 "moonv",
@@ -210,7 +221,7 @@
             "modded": true
         },
         "event": {
-            "templateID": 19,
+            "templateID": 20,
             "alias": [
                 "e"
             ],
@@ -220,7 +231,7 @@
             "modded": true
         },
         "exaltation": {
-            "templateID": 20,
+            "templateID": 21,
             "alias": [
                 "ex"
             ],
@@ -232,7 +243,7 @@
     },
     "934611202787643412": { 
         "shieldrune": {
-            "templateID": 21,
+            "templateID": 22,
             "alias": [
                 "sh",
                 "shield"
@@ -243,7 +254,7 @@
             "modded": false
         },
         "swordrune": {
-            "templateID": 22,
+            "templateID": 23,
             "alias": [
                 "sw",
                 "sword"
@@ -254,7 +265,7 @@
             "modded": false
         },
         "helmetrune": {
-            "templateID": 23,
+            "templateID": 24,
             "alias": [
                 "h",
                 "helm"
@@ -265,7 +276,7 @@
             "modded": false
         },
         "inc": {
-            "templateID": 24,
+            "templateID": 25,
             "alias": [
                 "inc"
             ],
@@ -277,7 +288,7 @@
     },
     "708026927721480254": { 
         "shieldrune": {
-            "templateID": 25,
+            "templateID": 26,
             "alias": [
                 "sh",
                 "shield"
@@ -288,7 +299,7 @@
             "modded": false
         },
         "swordrune": {
-            "templateID": 26,
+            "templateID": 27,
             "alias": [
                 "sw",
                 "sword"
@@ -299,7 +310,7 @@
             "modded": false
         },
         "helmetrune": {
-            "templateID": 27,
+            "templateID": 28,
             "alias": [
                 "h",
                 "helm"
@@ -310,7 +321,7 @@
             "modded": false
         },
         "inc": {
-            "templateID": 28,
+            "templateID": 29,
             "alias": [
                 "inc"
             ],

@@ -30,7 +30,7 @@ module.exports = {
         await afkTemplate.init()
         const currentStatus = afkTemplate.getStatus()
         if (currentStatus.state != AfkTemplate.TemplateState.SUCCESS) return await message.channel.send(currentStatus.message)
-        if (message.guild.members.cache.get(message.member.id).roles.highest.position < afkTemplate.minimumStaffRole.position) return await message.channel.send(`You do not have a suitable role above ${afkTemplate.minimumStaffRole.position} to run ${afkTemplate.name}.`)
+        if (message.guild.members.cache.get(message.member.id).roles.highest.position < afkTemplate.minimumStaffRole.position) return await message.channel.send(`You do not have a suitable role above ${afkTemplate.minimumStaffRole} to run ${afkTemplate.name}.`)
         let location = args.join(' ')
         if (location.length >= 1024) return await message.channel.send('Location must be below 1024 characters, try again')
         if (location == '') location = 'None'
@@ -979,8 +979,8 @@ class afkCheck {
             points = rows[0].points
         })
 
-        if (points < this.earlyLocationCost) {
-            await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You do not have enough points.\nYou currently have ${emote} \`${rows[0].points}\` points\nEarly location costs ${emote} \`${earlyLocationCost}\``, null)], ephemeral: true })
+        if (points < this.#botSettings.points.earlylocation) {
+            await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You do not have enough points.\nYou currently have ${emote} \`${points}\` points\nEarly location costs ${emote} \`${this.#botSettings.points.earlylocation}\``, null)], ephemeral: true })
             return false
         }
 
@@ -988,7 +988,7 @@ class afkCheck {
             let descriptionBeginning = `You reacted with ${emote}${interaction.customId}.\n`
             let descriptionEnd = `Press ✅ to confirm your reaction. Otherwise press ❌`
             if (buttonInfo.confirmationMessage) descriptionMiddle = `${buttonInfo.confirmationMessage}\n`
-            else descriptionMiddle = `You currently have ${emote} \`${rows[0].points}\` points\nEarly location costs ${emote} \`${earlyLocationCost}\``
+            else descriptionMiddle = `You currently have ${emote} \`${points}\` points\nEarly location costs ${emote} \`${this.#botSettings.points.earlylocation}\``
             const text = `${descriptionBeginning}${descriptionMiddle}${descriptionEnd}`
             const confirmButton = new Discord.ButtonBuilder()
                 .setLabel('✅ Confirm')

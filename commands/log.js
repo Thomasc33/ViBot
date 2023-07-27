@@ -30,7 +30,6 @@ module.exports = {
 
         //count
         if (args[args.length - 1].replace(/^\d{1,2}$/, '') == '') {
-            console.log('found ' + args[args.length - 1]);
             count = args[args.length - 1]
             if (run.weight) count = count * run.weight
         }
