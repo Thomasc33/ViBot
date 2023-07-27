@@ -259,7 +259,7 @@ module.exports = {
             //check realmeye description for vericode
             let userInfo = await realmEyeScrape.getGraveyardSummary(ign).catch(er => {
                 //ErrorLogger.log(er, bot)
-                if (er.message == 'Unloaded Graveyard') {
+                if (er == 'Unloaded Graveyard') {
                     embed.setDescription(`Your graveyard is not loaded on realmeye or it is privated. If you are sure it is set to public then go to your graveyard and click on the button that says:\n\`Click here if you think that some of your deceased heros are still missing!\`\nOnce you are done, re-react with the ✅`)
                     embedMessage.edit({ embeds: [embed] })
                     LoggingEmbed.setDescription(`<@!${u.id}> Needs to load in their graveyard on their realmeye page *clicking the button*`)

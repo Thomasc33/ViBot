@@ -1,7 +1,7 @@
 {
     "708026927721480254": {
         "realmeyestring": null,
-        "dbnames": ["o3runs"],
+        "dbnames": ["o3completes"],
         "dbisvet": "iso3Vet",
         "lootInfo": "o3",
         "boss": "O3",
