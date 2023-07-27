@@ -376,6 +376,7 @@ class AfkTemplate {
         this.vcOptions = this.#template.vcOptions
         this.startDelay = this.#template.startDelay
         this.cap = this.#template.cap
+        this.capButton = this.#template.capButton
         this.phases = this.#template.phases
         this.body = this.#template.body
         this.buttons = this.#template.buttons

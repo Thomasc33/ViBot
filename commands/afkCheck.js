@@ -143,6 +143,7 @@ class afkCheck {
         this.location = location // Location of the afk
         this.phase = 1 // Current phase of the afk
         this.timer = null // Time left until next phase (in seconds)
+        this.logging = false // Whether logging is active
         this.active = true // Whether the afk is active
 
         this.raidStatusEmbed = null // raid status embed
@@ -604,7 +605,7 @@ class afkCheck {
             await this.raidInfoMessage.edit({ embeds: [this.raidCommandsEmbed] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
             return this.removeFromActiveInteractions(interaction.member.id)
         }
-        else if (interaction.customId == 'abort' || interaction.customId == 'phase' || interaction.customId.includes(`Log`) || interaction.customId == 'end' || interaction.customId == 'cap') {
+        else if (interaction.customId == 'abort' || interaction.customId == 'phase' || interaction.customId.includes(`Log`) || interaction.customId == 'cap' || interaction.customId == 'additional' || interaction.customId == 'end') {
             if (interaction.member.roles.highest.position >= this.#afkTemplate.minimumStaffRole.position) return await this.processPhaseControl(interaction)
             else {
                 await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You do not have the required Staff Role to use this button.`, null)], ephemeral: true })
@@ -629,6 +630,9 @@ class afkCheck {
                 break
             case "cap":
                 await this.processPhaseCap(interaction)
+                break
+            case "additional":
+                await this.processPhaseAdditional(interaction)
                 break
             case "end":
                 await this.processPhaseEnd(interaction)
@@ -720,7 +724,7 @@ class afkCheck {
                 { label: 'None', value: '0' },
             )
         const {value: confirmNumberValue, interaction: subInteraction} = await interaction.selectPanel(text, null, confirmNumberMenu, 30000, true, true)
-        number = Number.isInteger(parseInt(confirmNumberValue)) ? parseInt(confirmNumberValue) : null
+        const number = Number.isInteger(parseInt(confirmNumberValue)) ? parseInt(confirmNumberValue) : null
         if (!subInteraction) return await interaction.editReply({ embeds: [extensions.createEmbed(interaction, `Timed out. You can dismiss this message.`, null)], components: [] })
         else if (!number) return await subInteraction.update({ embeds: [extensions.createEmbed(interaction, `Cancelled or Invalid Cap. You can dismiss this message.`, null)], components: [] })
         else await subInteraction.update({ embeds: [extensions.createEmbed(interaction, `Successfully set the cap to ${number}. You can dismiss this message.`, null)], components: [] })
@@ -729,15 +733,19 @@ class afkCheck {
         this.updatePanel()
     }
 
-    async processReconnect(interaction) {
-        if (this.members.includes(interaction.member.id) || this.earlySlotMembers.includes(interaction.member.id) || this.earlyLocationMembers.includes(interaction.member.id)) {
-            if (!interaction.member.voice.channel) return interaction.reply({ embeds: [extensions.createEmbed(interaction, `Join lounge to be moved into the channel. You can dismiss this message.`, null)], ephemeral: true })
-            else if (interaction.member.voice.channel.id == this.#channel.id) return interaction.reply({ content: 'It looks like you are already in the channel ඞ. You can dismiss this message.', ephemeral: true })
-            else if (interaction.member.voice.channel.name.includes('lounge') || interaction.member.voice.channel.name.includes('Lounge') || interaction.member.voice.channel.name.includes('drag')) {
-                await interaction.member.voice.setChannel(this.#channel.id).catch(er => { })
-                return interaction.reply({ embeds: [extensions.createEmbed(interaction, `Successfully moved you into the channel. You can dismiss this message.`, null)], ephemeral: true })
-            }
-        } else return interaction.reply({ embeds: [extensions.createEmbed(interaction, `You were not part of this run when the afk check ended. Another run will be posted soon. Join that one!`, null)], ephemeral: true });
+    async processPhaseAdditional(interaction) {
+        if (this.logging) return await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have already logged an additional complete recently. Please wait and try again!`, null)], ephemeral: true })
+        const text = `Are you sure you want to log an additional complete to all members of this run?`
+        const confirmButton = new Discord.ButtonBuilder()
+            .setLabel('Log Additional Complete')
+            .setStyle(Discord.ButtonStyle.Secondary)
+        const cancelButton = new Discord.ButtonBuilder()
+        const {value: confirmValue, interaction: subInteraction} = await interaction.confirmPanel(text, null, confirmButton, cancelButton, 10000, true)
+        if (!subInteraction) return await interaction.editReply({ embeds: [extensions.createEmbed(interaction, `Timed out. You can dismiss this message.`, null)], components: [] })   
+        else if (!confirmValue) return await subInteraction.update({ embeds: [extensions.createEmbed(interaction, `Cancelled. You can dismiss this message.`, null)], components: [] })
+        else await subInteraction.update({ embeds: [extensions.createEmbed(interaction, `Successfully logged an additional complete to all members of the run. You can dismiss this message.`, null)], components: [] })
+        this.logging = true
+        setTimeout(this.loggingAfk.bind(this), 60000)
     }
 
     async processPhaseLog(interaction) {
@@ -751,7 +759,7 @@ class afkCheck {
         let logBool = Object.keys(buttonInfo.logOptions).length > 1
         let choiceText = buttonInfo.emote ? `${buttonInfo.emote.text} **${button}**` : `**${button}**`
 
-        const text1 = `Which member you want to log ${choiceText} reacts for this run?\nChoose or input a username or id.`
+        const text1 = `Which member do you want to log ${choiceText} reacts for this run?\nChoose or input a username or id.`
         const confirmMemberMenu = new Discord.StringSelectMenuBuilder()
             .setPlaceholder(`Name of ${button}s`)
         for (let i of this.reactables[button].members) confirmMemberMenu.addOptions({ label: this.#guild.members.cache.get(i).nickname, value: i })
@@ -847,7 +855,18 @@ class afkCheck {
         await this.raidChannelsMessage.delete()
         this.active = false
         this.saveBotAfkCheck(true)
-    } 
+    }
+
+    async processReconnect(interaction) {
+        if (this.members.includes(interaction.member.id) || this.earlySlotMembers.includes(interaction.member.id) || this.earlyLocationMembers.includes(interaction.member.id)) {
+            if (!interaction.member.voice.channel) return interaction.reply({ embeds: [extensions.createEmbed(interaction, `Join lounge to be moved into the channel. You can dismiss this message.`, null)], ephemeral: true })
+            else if (interaction.member.voice.channel.id == this.#channel.id) return interaction.reply({ content: 'It looks like you are already in the channel ඞ. You can dismiss this message.', ephemeral: true })
+            else if (interaction.member.voice.channel.name.includes('lounge') || interaction.member.voice.channel.name.includes('Lounge') || interaction.member.voice.channel.name.includes('drag')) {
+                await interaction.member.voice.setChannel(this.#channel.id).catch(er => { })
+                return interaction.reply({ embeds: [extensions.createEmbed(interaction, `Successfully moved you into the channel. You can dismiss this message.`, null)], ephemeral: true })
+            }
+        } else return interaction.reply({ embeds: [extensions.createEmbed(interaction, `You were not part of this run when the afk check ended. Another run will be posted soon. Join that one!`, null)], ephemeral: true });
+    }
 
     async processReactableNormal(interaction) {
         const buttonInfo = this.#afkTemplate.buttons[interaction.customId]
@@ -1166,6 +1185,7 @@ class afkCheck {
         await this.raidInfoMessage.edit({ embeds: [this.raidCommandsEmbed], components: [] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
         await this.#guild.channels.cache.get(this.#botSettings.channels.history).send({ embeds: [this.raidCommandsEmbed] })
 
+        this.logging = true
         if (restart.restarting) this.loggingAfk()
         else setTimeout(this.loggingAfk.bind(this), 60000)
         this.active = false
@@ -1194,6 +1214,7 @@ class afkCheck {
                 })
             }
         }
+        this.logging = false
     }
 
     addReconnectButton() {
@@ -1209,7 +1230,14 @@ class afkCheck {
     addDeleteandLoggingButtons() {
         const phaseComponents = []
         let phaseActionRow = []
-        let counter = 1
+        let counter = 2
+
+        const phaseLogAdditionalButton = new Discord.ButtonBuilder()
+            .setLabel('Log Additional Complete')
+            .setStyle(1)
+            .setCustomId('additional')
+        phaseActionRow.push(phaseLogAdditionalButton)
+
         for (let i in this.#afkTemplate.buttons) {
             if (this.#afkTemplate.buttons[i].type != AfkTemplate.TemplateButtonType.LOG) continue
             const phaseButton = new Discord.ButtonBuilder()
@@ -1226,11 +1254,11 @@ class afkCheck {
                 phaseActionRow = []
             }
         }
-        const phaseButton = new Discord.ButtonBuilder()
+        const phaseDeleteButton = new Discord.ButtonBuilder()
             .setLabel('Delete Channel')
             .setStyle(Discord.ButtonStyle.Danger)
             .setCustomId('end')
-        phaseActionRow.push(phaseButton)
+        phaseActionRow.push(phaseDeleteButton)
         const phaseComponent = new Discord.ActionRowBuilder({ components: phaseActionRow })
         phaseComponents.push(phaseComponent)
         return phaseComponents
