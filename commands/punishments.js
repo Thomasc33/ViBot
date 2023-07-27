@@ -54,16 +54,19 @@ module.exports = {
                                 });
                                 embedFieldLength++;
                                 embedFieldStrings = [];
+                                embedFieldStrings.push(stringText);
                             } else {
                                 embedFieldStrings.push(stringText);
                             }
                         }
                     }
-                    embed.addFields({
-                        name: `Warnings (${embedFieldLength})`,
-                        value: embedFieldStrings.join(''),
-                        inline: true
-                    });
+                    if (embedFieldStrings.length > 0) {
+                        embed.addFields({
+                            name: `Warnings (${embedFieldLength})`,
+                            value: embedFieldStrings.join(''),
+                            inline: true
+                        });
+                    }
                     embed.setTitle(`Warnings for ${member.displayName}`)
                     embeds.push(embed);
                 }
@@ -91,16 +94,19 @@ module.exports = {
                                 });
                                 embedFieldLength++;
                                 embedFieldStrings = [];
+                                embedFieldStrings.push(stringText)
                             } else {
                                 embedFieldStrings.push(stringText);
                             }
                         }
                     }
-                    embed.addFields({
-                        name: `Suspensions (${embedFieldLength})`,
-                        value: embedFieldStrings.join(''),
-                        inline: true
-                    });
+                    if (embedFieldStrings.length > 0) {
+                        embed.addFields({
+                            name: `Suspensions (${embedFieldLength})`,
+                            value: embedFieldStrings.join(''),
+                            inline: true
+                        });
+                    }
                     embed.setTitle(`Suspensions for ${member.displayName}`)
                     embeds.push(embed);
                 }
@@ -128,16 +134,19 @@ module.exports = {
                                 });
                                 embedFieldLength++;
                                 embedFieldStrings = [];
+                                embedFieldStrings.push(stringText)
                             } else {
                                 embedFieldStrings.push(stringText);
                             }
                         }
                     }
-                    embed.addFields({
-                        name: `Mutes (${embedFieldLength})`,
-                        value: embedFieldStrings.join(''),
-                        inline: true
-                    });
+                    if (embedFieldStrings.length > 0) {
+                        embed.addFields({
+                            name: `Mutes (${embedFieldLength})`,
+                            value: embedFieldStrings.join(''),
+                            inline: true
+                        });
+                    }
                     embed.setTitle(`Mutes for ${member.displayName}`);
                     embeds.push(embed);
                 }
