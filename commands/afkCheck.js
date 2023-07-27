@@ -1213,6 +1213,23 @@ class afkCheck {
                     if (err) return console.log('error logging points for run completes in ', this.#guild.id)
                 })
             }
+            let [userRows,] = await this.#db.promise().query('SELECT * FROM completionruns WHERE userid = ? AND unixtimestamp > ?', [u, this.#botSettings.numerical.milestoneStartTimestamp])
+            for (let milestoneName of Object.keys(milestones[message.guild.id])) {
+                let filteredUserRows = userRows.filter(row => milestones[message.guild.id][milestoneName].templateIDs.includes(parseInt(row.templateid)))
+                let completed = filteredUserRows.length
+                let milestoneNumber = 0
+                let index = 0
+                while (completed >= milestoneNumber) {
+                    milestoneNumber += milestones[message.guild.id][milestoneName].milestones[index].number
+                    if (completed == milestoneNumber) {
+                        this.#db.query(`UPDATE users SET points = points + ${milestones[message.guild.id][milestoneName].milestones[index].points} WHERE id = '${u}'`, (err, rows) => {
+                            if (err) return console.log('error logging points for milestones in ', this.#guild.id)
+                        })
+                        this.#guild.members.cache.get(u).send(`Congratulations! You have completed the ${milestones[message.guild.id][milestoneName].milestones[index].number} ${milestoneName} milestone! You have been awarded ${milestones[message.guild.id][milestoneName].milestones[index].points} points!`)
+                    }
+                    if (!milestones[message.guild.id][milestoneName].milestones[index].recurring) index++
+                }
+            }
         }
         this.logging = false
     }
