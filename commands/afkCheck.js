@@ -703,12 +703,19 @@ class afkCheck {
             if (interaction) this.removeFromActiveInteractions(interaction.member.id)
             return this.postAfk(interaction)
         }
+        if (this.updatePanelTimer) clearInterval(this.updatePanelTimer)
         let tempRaidStatusMessage = null
         if (this.#afkTemplate.body[phase].message) tempRaidStatusMessage = await this.#afkTemplate.raidStatusChannel.send({ content: `${this.#afkTemplate.body[phase].message}` })
+        
+        this.raidStatusMessage.editButtons({ disabled: true})
+        this.raidCommandsMessage.editButtons({ disabled: true})
+        this.raidChannelsMessage.editButtons({ disabled: true})
+
         setTimeout(async () => {
             if (this.#afkTemplate.body[phase].vcState == AfkTemplate.TemplateVCState.OPEN && this.#channel) await this.#channel.permissionOverwrites.edit(this.#afkTemplate.minimumJoinRaiderRole.id, { Connect: true, ViewChannel: true }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
             else if (this.#afkTemplate.body[phase].vcState == AfkTemplate.TemplateVCState.LOCKED && this.#channel) await this.#channel.permissionOverwrites.edit(this.#afkTemplate.minimumJoinRaiderRole.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
             await Promise.all([this.sendStatusMessage(phase), this.sendCommandsMessage(phase), this.sendChannelsMessage(phase)])
+            this.updatePanelTimer = setInterval(() => this.updatePanel(), 5000)
             this.saveBotAfkCheck()
         }, 5000)
         setTimeout(async () => { if (tempRaidStatusMessage) await tempRaidStatusMessage.delete() }, 10000)
