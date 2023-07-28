@@ -7,6 +7,7 @@ const pointLogger = require('../lib/pointLogger')
 const extensions = require(`../lib/extensions`)
 const consumablePopTemplates = require(`../data/keypop.json`);
 const popCommand = require('./pop.js');
+const milestones = require('../data/milestone.json')
 
 module.exports = {
     name: 'afk',
@@ -1187,7 +1188,7 @@ class afkCheck {
 
         this.logging = true
         if (restart.restarting) this.loggingAfk()
-        else setTimeout(this.loggingAfk.bind(this), 60000)
+        else setTimeout(this.loggingAfk.bind(this), 1000)
         this.active = false
         this.saveBotAfkCheck()
     }
@@ -1214,20 +1215,20 @@ class afkCheck {
                 })
             }
             let [userRows,] = await this.#db.promise().query('SELECT * FROM completionruns WHERE userid = ? AND unixtimestamp > ?', [u, this.#botSettings.numerical.milestoneStartTimestamp])
-            for (let milestoneName of Object.keys(milestones[message.guild.id])) {
-                let filteredUserRows = userRows.filter(row => milestones[message.guild.id][milestoneName].templateIDs.includes(parseInt(row.templateid)))
+            for (let milestoneName of Object.keys(milestones[this.#guild.id])) {
+                let filteredUserRows = userRows.filter(row => milestones[this.#guild.id][milestoneName].templateIDs.includes(parseInt(row.templateid)))
                 let completed = filteredUserRows.length
                 let milestoneNumber = 0
                 let index = 0
                 while (completed >= milestoneNumber) {
-                    milestoneNumber += milestones[message.guild.id][milestoneName].milestones[index].number
+                    milestoneNumber += milestones[this.#guild.id][milestoneName].milestones[index].number
                     if (completed == milestoneNumber) {
-                        this.#db.query(`UPDATE users SET points = points + ${milestones[message.guild.id][milestoneName].milestones[index].points} WHERE id = '${u}'`, (err, rows) => {
+                        this.#db.query(`UPDATE users SET points = points + ${milestones[this.#guild.id][milestoneName].milestones[index].points} WHERE id = '${u}'`, (err, rows) => {
                             if (err) return console.log('error logging points for milestones in ', this.#guild.id)
                         })
-                        this.#guild.members.cache.get(u).send(`Congratulations! You have completed the ${milestones[message.guild.id][milestoneName].milestones[index].number} ${milestoneName} milestone! You have been awarded ${milestones[message.guild.id][milestoneName].milestones[index].points} points!`)
+                        this.#guild.members.cache.get(u).send(`Congratulations! You have completed the ${milestones[this.#guild.id][milestoneName].milestones[index].number} ${milestoneName} milestone! You have been awarded ${milestones[this.#guild.id][milestoneName].milestones[index].points} points!`)
                     }
-                    if (!milestones[message.guild.id][milestoneName].milestones[index].recurring) index++
+                    if (!milestones[this.#guild.id][milestoneName].milestones[index].recurring) index++
                 }
             }
         }
