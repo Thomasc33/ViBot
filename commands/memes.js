@@ -57,7 +57,11 @@ module.exports = {
                 let ruler = message.guild.members.cache.get('164887742134616064');
                 const messages = await message.channel.messages.fetch({ limit: 100 });
                 messages.forEach(async channelMessage => {
-                    if (channelMessage.mentions.users.get(ruler.id)) {
+                    if (channelMessage.author.bot) { return; }
+                    if (
+                        channelMessage.mentions.users.get(ruler.id)
+                        || channelMessage.content.toLowerCase().startsWith(';ruler')
+                    ) {
                         await channelMessage.reply('Shut');
                     }
                 })
