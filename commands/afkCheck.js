@@ -15,9 +15,6 @@ module.exports = {
     requiredArgs: 1,
     args: '<run symbol> <location>',
     role: 'eventrl',
-    getNotes(guildid, member) {
-        return `**Run Types:**\n*Regular Afk Checks:*\n${afkCheck.getNotes(guildid, member)}\n*Events:*\nSee \`;events\``
-    },
     /**
      * Main Execution Function
      * @param {Discord.Message} message
@@ -1300,19 +1297,19 @@ class afkCheck {
         }
     }
 
-    async updateReactsRequest(reactable) {
+    async updateReactsRequest(reactable, number) {
         let reactablesRequestActionRow = []
         const i = `${reactable}_request`
         this.reactables[i] = { members: [], position: this.reactables[reactable].position}
         this.#afkTemplate.buttons[i] = JSON.parse(JSON.stringify(this.#afkTemplate.buttons[reactable]))
-        this.#afkTemplate.buttons[i].limit = 1
+        this.#afkTemplate.buttons[i].limit = number
         this.#afkTemplate.buttons[i].disableStart = 69
         this.#afkTemplate.buttons[i].start = 69
         this.#afkTemplate.buttons[i].lifetime = 69
         const emote = this.#afkTemplate.buttons[i].emote ? `${this.#afkTemplate.buttons[i].emote.text} ` : ``
         const reactableButton = new Discord.ButtonBuilder()
             .setStyle(2)
-            .setCustomId(`${reactable}_request`)
+            .setCustomId(i)
         let label = `${this.#afkTemplate.buttons[i].displayName ? `${reactable} ` : ``}${this.#afkTemplate.buttons[i].limit ? ` ${this.reactables[i].members.length}/${this.#afkTemplate.buttons[i].limit}` : ``}`
         reactableButton.setLabel(label)
         if (this.#afkTemplate.buttons[i].emote) reactableButton.setEmoji(this.#afkTemplate.buttons[i].emote.id)
@@ -1322,5 +1319,26 @@ class afkCheck {
         let requestMessage = await this.#afkTemplate.raidStatusChannel.send({ content: `@here`, embeds: [extensions.createEmbed(this.#message, `${this.#leader} is requesting a ${emote}${reactable}.`)], components: [component] })
         let requestInteractionHandler = new Discord.InteractionCollector(this.#bot, { message: requestMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
         requestInteractionHandler.on('collect', interaction => this.interactionHandler(interaction))
+        let updateRequestPanelTimer = setInterval(() => this.updateRequestPanel(requestMessage, requestInteractionHandler, reactable, updateRequestPanelTimer), 5000)
+    }
+
+    async updateRequestPanel(message, interactionHandler, reactable, timer) {
+        if (!this.active) {
+            message.edit({ components: []})
+            interactionHandler.stop()
+            clearInterval(timer)
+        }
+        let reactablesRequestActionRow = []
+        const i = `${reactable}_request`
+        const reactableButton = new Discord.ButtonBuilder()
+            .setStyle(2)
+            .setCustomId(i)
+        let label = `${this.#afkTemplate.buttons[i].displayName ? `${reactable} ` : ``}${this.#afkTemplate.buttons[i].limit ? ` ${this.reactables[i].members.length}/${this.#afkTemplate.buttons[i].limit}` : ``}`
+        reactableButton.setLabel(label)
+        if (this.#afkTemplate.buttons[i].emote) reactableButton.setEmoji(this.#afkTemplate.buttons[i].emote.id)
+        if (this.reactables[i].members.length == this.#afkTemplate.buttons[i].limit) reactableButton.setDisabled(true)
+        reactablesRequestActionRow.push(reactableButton)
+        const component = new Discord.ActionRowBuilder({ components: reactablesRequestActionRow })
+        message.edit({ components: [component] })
     }
 }

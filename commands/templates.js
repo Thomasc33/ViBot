@@ -25,7 +25,7 @@ module.exports = {
                 if (!minStaffRole) continue
                 if (minStaffRole.position > message.member.roles.highest.position) continue
                 const reacts = template.reacts ? Object.keys(template.reacts).filter(react => template.reacts[react].onHeadcount) : []
-                let newTemplate = `\n${reacts[0] ? `${bot.storedEmojis[template.reacts[reacts[0]].emote].text}| ` : ``}\`${template.aliases.reduce((a, b) => a.length <= b.length ? a : b)}\` | **${template.name}**`
+                let newTemplate = `\n${reacts[0] ? `${bot.storedEmojis[template.reacts[reacts[0]].emote].text}| ` : ``}\`${template.aliases.reduce((a, b) => a.length <= b.length ? a : b).padStart(3)}\` | **${template.name}**`
                 if (parentTemplateValue[inherit].value[parentTemplateValue[inherit].field].length + newTemplate.length > 1024) {
                     parentTemplateValue[inherit].field++
                     parentTemplateValue[inherit].value.push('')

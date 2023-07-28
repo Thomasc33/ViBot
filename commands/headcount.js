@@ -8,11 +8,8 @@ module.exports = {
     description: 'Puts a headcount in a raid status channel',
     alias: ['hc'],
     requiredArgs: 1,
-    args: '<run type>',
+    args: '<run type> (time) (time type s/m/h/d/w/y)',
     role: 'eventrl',
-    getNotes(guildid, member) {
-        return `**Run Types:**\n*Regular Afk Checks:*\n${afkCheck.getNotes(guildid, member)}\n*Events:*\nSee \`;events\``
-    },
     async execute(message, args, bot) {
         //settings
         const botSettings = bot.settings[message.guild.id]

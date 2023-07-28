@@ -19,7 +19,7 @@ module.exports = {
     async execute(message, args, bot, db) {
         let voiceChannel = message.member.voice.channel
         let raidID = undefined
-        const raidIDs = afkCheck.returnRaidIDsbyAll(bot, message.member.id, voiceChannel ? voiceChannel.id : null, null)
+        const raidIDs = afkCheck.returnRaidIDsbyAll(bot, message.member.id, voiceChannel ? voiceChannel.id : null, args.shift())
         if (raidIDs.length == 0) return message.channel.send('Could not find an active run. Please try again.')
         else if (raidIDs.length == 1) raidID = raidIDs[0]
         else {
@@ -48,8 +48,22 @@ module.exports = {
             .setMinValues(1)
             .setMaxValues(1)
         Object.keys(raid.afkTemplate.buttons).forEach((key) => { if (raid.afkTemplate.buttons[key].type == AfkTemplate.TemplateButtonType.NORMAL || raid.afkTemplate.buttons[key].type == AfkTemplate.TemplateButtonType.LOG) reactsMenu.addOptions({ label: `${key}`, value: `${key}` }) })
-        const {value: reactsValue, interaction: subInteraction} = await message.selectPanel(text, null, reactsMenu, 30000, false, true)
+        const {value: reactsValue, interaction: subInteractionReacts} = await message.selectPanel(text, null, reactsMenu, 30000, false, true)
         if (!reactsValue) return
-        bot.afkModules[raidID].updateReactsRequest(reactsValue)
+
+        text = `How many of the react would you like to request for the run?`
+        const numbersMenu = new Discord.StringSelectMenuBuilder()
+            .setPlaceholder(`Number`)
+            .setMinValues(1)
+            .setMaxValues(1)
+            .setOptions(
+                { label: '1', value: '1' },
+                { label: '2', value: '2' },
+                { label: '3', value: '3' },
+            )
+        const {value: numberValue, interaction: subInteractionNumber} = await message.selectPanel(text, null, numbersMenu, 30000, false, true)
+        if (!numberValue) return
+
+        bot.afkModules[raidID].updateReactsRequest(reactsValue, numberValue)
     }
 }
