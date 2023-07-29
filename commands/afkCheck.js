@@ -28,7 +28,7 @@ module.exports = {
         await afkTemplate.init()
         const currentStatus = afkTemplate.getStatus()
         if (currentStatus.state != AfkTemplate.TemplateState.SUCCESS) return await message.channel.send(currentStatus.message)
-        if (message.guild.members.cache.get(message.member.id).roles.highest.position < afkTemplate.minimumStaffRole.position) return await message.channel.send(`You do not have a suitable role above ${afkTemplate.minimumStaffRole} to run ${afkTemplate.name}.`)
+        if (!afkTemplate.minimumStaffRoles.some(role => message.member.roles.cache.has(role.id))) return await message.channel.send(`You do not have a suitable role out of ${afkTemplate.minimumStaffRoles.join(', ')} to run ${afkTemplate.name}.`)
         let location = args.join(' ')
         if (location.length >= 1024) return await message.channel.send('Location must be below 1024 characters, try again')
         if (location == '') location = 'None'
@@ -204,9 +204,9 @@ class afkCheck {
         this.#afkTemplate = storedAfkCheck.afkTemplate
         this.#afkTemplate.pingRoles = this.#afkTemplate.pingRoles.map(role => (role == '@here') ? '@here' : this.#guild.roles.cache.get(role.id))
         this.#afkTemplate.perkRoles = this.#botSettings.lists.perkRoles.map(role => this.#guild.roles.cache.get(this.#botSettings.roles[role]))
-        this.#afkTemplate.minimumViewRaiderRole = this.#guild.roles.cache.get(this.#afkTemplate.minimumViewRaiderRole.id)
-        this.#afkTemplate.minimumJoinRaiderRole = this.#guild.roles.cache.get(this.#afkTemplate.minimumJoinRaiderRole.id)
-        this.#afkTemplate.minimumStaffRole = this.#guild.roles.cache.get(this.#afkTemplate.minimumStaffRole.id)
+        this.#afkTemplate.minimumViewRaiderRoles = this.#afkTemplate.minimumViewRaiderRoles.map(role => this.#guild.roles.cache.get(role.id))
+        this.#afkTemplate.minimumJoinRaiderRoles = this.#afkTemplate.minimumJoinRaiderRoles.map(role => this.#guild.roles.cache.get(role.id))
+        this.#afkTemplate.minimumStaffRoles = this.#afkTemplate.minimumStaffRoles.map(role => this.#guild.roles.cache.get(role.id))
         this.#afkTemplate.raidInfoChannel = this.#guild.channels.cache.get(this.#afkTemplate.raidInfoChannel.id)
         this.#afkTemplate.raidTemplateChannel = this.#guild.channels.cache.get(this.#afkTemplate.raidTemplateChannel.id)
         this.#afkTemplate.raidStatusChannel = this.#guild.channels.cache.get(this.#afkTemplate.raidStatusChannel.id)
@@ -259,8 +259,8 @@ class afkCheck {
             position: 0
         })
         await this.#leader.voice.setChannel(channel).catch(er => {})
-        await channel.permissionOverwrites.edit(this.#afkTemplate.minimumViewRaiderRole.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
-        await channel.permissionOverwrites.edit(this.#afkTemplate.minimumJoinRaiderRole.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
+        for (let minimumViewRaiderRole of this.#afkTemplate.minimumViewRaiderRoles) await channel.permissionOverwrites.edit(minimumViewRaiderRole.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
+        for (let minimumJoinRaiderRole of this.#afkTemplate.minimumJoinRaiderRoles) await channel.permissionOverwrites.edit(minimumJoinRaiderRole.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
         await channel.permissionOverwrites.edit(this.#leader.id, { Connect: true, ViewChannel: true, Speak: true }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
         this.#channel = channel
     }
@@ -271,7 +271,7 @@ class afkCheck {
         let buttonChoices = this.#afkTemplate.getButtonChoices()
         let newButtonChoices = []
         for (let i of buttonChoices) {
-            if (this.#afkTemplate.buttons[i].minStaffRole && this.#leader.roles.highest.position < this.#afkTemplate.buttons[i].minStaffRole.position) continue
+            if (this.#afkTemplate.buttons[i].minStaffRoles && !this.#afkTemplate.buttons[i].minStaffRoles.every((role => this.#leader.roles.cache.has(role.id)))) continue
             let choiceText = this.#afkTemplate.buttons[i].emote ? `${this.#afkTemplate.buttons[i].emote.text} **${i}**` : `**${i}**` 
             switch (this.#afkTemplate.buttons[i].choice) {
                 case AfkTemplate.TemplateButtonChoice.YES_NO_CHOICE:
@@ -608,7 +608,7 @@ class afkCheck {
             return this.removeFromActiveInteractions(interaction.member.id)
         }
         else if (['abort', 'phase', 'cap', 'additional', 'end', 'miniboss'].includes(interaction.customId) || interaction.customId.includes(`Log`)) {
-            if (interaction.member.roles.highest.position >= this.#afkTemplate.minimumStaffRole.position) return await this.processPhaseControl(interaction)
+            if (this.#afkTemplate.minimumStaffRoles.some(role => interaction.member.roles.cache.has(role.id))) return await this.processPhaseControl(interaction)
             else {
                 await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You do not have the required Staff Role to use this button.`, null)], ephemeral: true })
                 return this.removeFromActiveInteractions(interaction.member.id)
@@ -716,8 +716,8 @@ class afkCheck {
         this.raidChannelsMessage.editButtons({ disabled: true})
 
         setTimeout(async () => {
-            if (this.#afkTemplate.body[phase].vcState == AfkTemplate.TemplateVCState.OPEN && this.#channel) await this.#channel.permissionOverwrites.edit(this.#afkTemplate.minimumJoinRaiderRole.id, { Connect: true, ViewChannel: true }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
-            else if (this.#afkTemplate.body[phase].vcState == AfkTemplate.TemplateVCState.LOCKED && this.#channel) await this.#channel.permissionOverwrites.edit(this.#afkTemplate.minimumJoinRaiderRole.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
+            if (this.#afkTemplate.body[phase].vcState == AfkTemplate.TemplateVCState.OPEN && this.#channel) for (let minimumJoinRaiderRole of this.#afkTemplate.minimumJoinRaiderRoles) await this.#channel.permissionOverwrites.edit(minimumJoinRaiderRole.id, { Connect: true, ViewChannel: true }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
+            else if (this.#afkTemplate.body[phase].vcState == AfkTemplate.TemplateVCState.LOCKED && this.#channel) for (let minimumJoinRaiderRole of this.#afkTemplate.minimumJoinRaiderRoles) await this.#channel.permissionOverwrites.edit(minimumJoinRaiderRole.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
             await Promise.all([this.sendStatusMessage(phase), this.sendCommandsMessage(phase), this.sendChannelsMessage(phase)])
             if (phase <= this.#afkTemplate.phases) { this.updatePanelTimer = setInterval(() => this.updatePanel(), 5000) }
             this.saveBotAfkCheck()
@@ -831,12 +831,14 @@ class afkCheck {
                 await this.#afkTemplate.raidCommandChannel.send({ embeds: [embed] })
             })
         }
-        let points = logOption.points * number * logOption.multiplier
-        this.#db.query(`UPDATE users SET points = points + ${points} WHERE id = '${member.id}'`, (err, rows) => {
-            if (err) return console.log(`error logging ${i} points in `, this.#guild.id)
-        })
-        let pointsLog = [{ uid: member.id, points: points, reason: `${button}`}]
-        await pointLogger.pointLogging(pointsLog, this.#guild, this.#bot, this.raidCommandsEmbed)
+        if (this.#botSettings.backend.points) {
+            let points = logOption.points * number * logOption.multiplier
+            this.#db.query(`UPDATE users SET points = points + ${points} WHERE id = '${member.id}'`, (err, rows) => {
+                if (err) return console.log(`error logging ${i} points in `, this.#guild.id)
+            })
+            let pointsLog = [{ uid: member.id, points: points, reason: `${button}`}]
+            await pointLogger.pointLogging(pointsLog, this.#guild, this.#bot, this.raidCommandsEmbed)
+        }
         await interaction.followUp({ embeds: [extensions.createEmbed(interaction, `Successfully logged ${number} ${choiceText} for ${member}. You can dismiss this message.`, null)], ephemeral: true })
     }
 
@@ -1199,7 +1201,7 @@ class afkCheck {
         if (this.updatePanelTimer) clearInterval(this.updatePanelTimer)
 
         if (this.#channel) {
-            await this.#channel.permissionOverwrites.edit(this.#afkTemplate.minimumJoinRaiderRole.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
+            for (let minimumJoinRaiderRole of this.#afkTemplate.minimumJoinRaiderRoles) await this.#channel.permissionOverwrites.edit(minimumJoinRaiderRole.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
             await this.#channel.setPosition(0)
         }
 
@@ -1300,10 +1302,12 @@ class afkCheck {
                 while (completed >= milestoneNumber) {
                     milestoneNumber += milestones[this.#guild.id][milestoneName].milestones[index].number
                     if (completed == milestoneNumber) {
-                        this.#db.query(`UPDATE users SET points = points + ${milestones[this.#guild.id][milestoneName].milestones[index].points} WHERE id = '${u}'`, (err, rows) => {
-                            if (err) return console.log('error logging points for milestones in ', this.#guild.id)
-                        })
-                        this.#guild.members.cache.get(u).send(`Congratulations! You have completed the ${milestones[this.#guild.id][milestoneName].milestones[index].number} ${milestoneName} milestone! You have been awarded ${milestones[this.#guild.id][milestoneName].milestones[index].points} points!`)
+                        if (this.#botSettings.backend.points) {
+                            this.#db.query(`UPDATE users SET points = points + ${milestones[this.#guild.id][milestoneName].milestones[index].points} WHERE id = '${u}'`, (err, rows) => {
+                                if (err) return console.log('error logging points for milestones in ', this.#guild.id)
+                            })
+                            this.#guild.members.cache.get(u).send(`Congratulations! You have completed the ${milestones[this.#guild.id][milestoneName].milestones[index].number} ${milestoneName} milestone! You have been awarded ${milestones[this.#guild.id][milestoneName].milestones[index].points} points!`)
+                        }
                     }
                     if (!milestones[this.#guild.id][milestoneName].milestones[index].recurring) index++
                 }
