@@ -19,6 +19,7 @@ module.exports = {
 
         let [userRows,] = await db.promise().query('SELECT * FROM completionruns WHERE userid = ? AND unixtimestamp > ?', [member.id, bot.settings[message.guild.id].numerical.milestoneStartTimestamp])
 
+        let points = 0
         for (let milestoneName of Object.keys(milestones[message.guild.id])) {
             let filteredUserRows = userRows.filter(row => milestones[message.guild.id][milestoneName].templateIDs.includes(parseInt(row.templateid)))
             let completed = filteredUserRows.length
@@ -28,10 +29,13 @@ module.exports = {
             let index = 0
             while (completed >= milestoneNumber) {
                 recentMilestoneNumber = milestones[message.guild.id][milestoneName].milestones[index].number
+                recentPoints = milestones[message.guild.id][milestoneName].milestones[index].points
                 milestoneNumber += recentMilestoneNumber
+                points += milestones[message.guild.id][milestoneName].milestones[index].points
                 milestoneIndex++
                 if (!milestones[message.guild.id][milestoneName].milestones[index].recurring) index++
             }
+            points -= recentPoints
             let progress = 1 - ((milestoneNumber - completed) / recentMilestoneNumber)
             let filled = Math.floor(progress * 20)
             let empty = 20 - filled
@@ -39,8 +43,9 @@ module.exports = {
             const value = `**\`${completed.toString().padStart(3)}\` ${'█'.repeat(filled)}${'▁'.repeat(empty)} \`${milestoneNumber.toString().padStart(3)}\`**`
             embed.addFields({ name: name, value: value, inline: false })
         }
+        embed.addFields({ name: `Total Points Earned`, value: `\`${points.toString().padStart(3)}\` ${bot.storedEmojis.twitterTickets.text}`, inline: false })
         embed.setDescription(`__**Milestone Stats for**__ ${member} ${member ? '\`' + (member.nickname || member.user.tag) + '\`' : ''}`)
-        
+
         await milestoneMessage.edit({ embeds: [embed] })
     }
 }

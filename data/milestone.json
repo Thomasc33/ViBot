@@ -142,7 +142,62 @@
         }
     },
     "708026927721480254": {
-        "Oryx 3": {}
+        "Oryx 3": {
+            "emoji": "oryxThree",
+            "templateIDs": [
+                172,
+                173,
+                178,
+                179,
+                180
+            ],
+            "milestones": [
+                {
+                    "number": 40,
+                    "points": 100,
+                    "recurring": false
+                },
+                {
+                    "number": 30,
+                    "points": 300,
+                    "recurring": false
+                },
+                {
+                    "number": 30,
+                    "points": 500,
+                    "recurring": false
+                }
+            ]
+        }
+    },
+    "934611202787643412": {
+        "Oryx 3": {
+            "emoji": "oryxThree",
+            "templateIDs": [
+                256,
+                257,
+                260,
+                261,
+                262
+            ],
+            "milestones": [
+                {
+                    "number": 40,
+                    "points": 100,
+                    "recurring": false
+                },
+                {
+                    "number": 30,
+                    "points": 300,
+                    "recurring": false
+                },
+                {
+                    "number": 30,
+                    "points": 500,
+                    "recurring": false
+                }
+            ]
+        }
     },
     "701483950559985705": {
         "Nest": {
