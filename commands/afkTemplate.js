@@ -39,7 +39,8 @@ const TemplateButtonType = {
     'LOG': 1,
     'SUPPORTER': 2,
     'POINTS': 3,
-    'DRAG': 4
+    'DRAG': 4,
+    'OPTION': 5
 }
 
 // Enum for the Choice on Buttons in an AFK Template

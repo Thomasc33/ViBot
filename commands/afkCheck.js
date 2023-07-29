@@ -134,6 +134,8 @@ class afkCheck {
         this.dragMembers = [] // All members currently in drag system in the afk
         this.openInteractions = [] // All members currently in the middle of a button interaction
         this.reactables = {} // All members of each reactable and position on embed
+        this.miniBossGuessing = {}
+        this.miniBossGuessed = false
         Object.keys(afkTemplate.buttons).forEach((key) => this.reactables[key] = { members: [], position: null })
         this.capButtons = [] // All buttons that rely on the afk cap
         Object.keys(afkTemplate.buttons).forEach((key) => { if (afkTemplate.buttons[key].limit == 0) this.capButtons.push(key) }) 
@@ -568,7 +570,6 @@ class afkCheck {
             }
 
             let buttonStatus = false
-
             switch (buttonType) {
                 case AfkTemplate.TemplateButtonType.LOG:
                 case AfkTemplate.TemplateButtonType.NORMAL:
@@ -582,6 +583,9 @@ class afkCheck {
                     break
                 case AfkTemplate.TemplateButtonType.DRAG:
                     buttonStatus = await this.processReactableDrag(interaction)
+                    break
+                case AfkTemplate.TemplateButtonType.OPTION:
+                    buttonStatus = await this.processReactableOption(interaction)
                     break
             }
             if (!buttonStatus) return this.removeFromActiveInteractions(interaction.member.id)
@@ -603,7 +607,7 @@ class afkCheck {
             await this.raidInfoMessage.edit({ embeds: [this.raidCommandsEmbed] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
             return this.removeFromActiveInteractions(interaction.member.id)
         }
-        else if (interaction.customId == 'abort' || interaction.customId == 'phase' || interaction.customId.includes(`Log`) || interaction.customId == 'cap' || interaction.customId == 'additional' || interaction.customId == 'end') {
+        else if (['abort', 'phase', 'cap', 'additional', 'end', 'miniboss'].includes(interaction.customId) || interaction.customId.includes(`Log`)) {
             if (interaction.member.roles.highest.position >= this.#afkTemplate.minimumStaffRole.position) return await this.processPhaseControl(interaction)
             else {
                 await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You do not have the required Staff Role to use this button.`, null)], ephemeral: true })
@@ -634,6 +638,9 @@ class afkCheck {
                 break
             case "end":
                 await this.processPhaseEnd(interaction)
+                break
+            case "miniboss":
+                await this.processPhaseMiniboss(interaction)
                 break
             default:
                 if (interaction.customId.includes('Log')) await this.processPhaseLog(interaction)
@@ -712,7 +719,7 @@ class afkCheck {
             if (this.#afkTemplate.body[phase].vcState == AfkTemplate.TemplateVCState.OPEN && this.#channel) await this.#channel.permissionOverwrites.edit(this.#afkTemplate.minimumJoinRaiderRole.id, { Connect: true, ViewChannel: true }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
             else if (this.#afkTemplate.body[phase].vcState == AfkTemplate.TemplateVCState.LOCKED && this.#channel) await this.#channel.permissionOverwrites.edit(this.#afkTemplate.minimumJoinRaiderRole.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
             await Promise.all([this.sendStatusMessage(phase), this.sendCommandsMessage(phase), this.sendChannelsMessage(phase)])
-            this.updatePanelTimer = setInterval(() => this.updatePanel(), 5000)
+            if (phase <= this.#afkTemplate.phases) { this.updatePanelTimer = setInterval(() => this.updatePanel(), 5000) }
             this.saveBotAfkCheck()
         }, 5000)
         setTimeout(async () => { if (tempRaidStatusMessage) await tempRaidStatusMessage.delete() }, 10000)
@@ -860,6 +867,38 @@ class afkCheck {
         await this.raidChannelsMessage.delete()
         this.active = false
         this.saveBotAfkCheck(true)
+    }
+
+    async processPhaseMiniboss(interaction) {
+        const buttonInfo = this.#afkTemplate.buttons['MiniBossGuessing']
+
+        if (this.miniBossGuessed) { return await interaction.reply({ content: "You have already set the miniboss.\nPut more runs up to do more miniboss guessing! :)", ephemeral: true }) }
+
+        let points = this.#botSettings.points.miniBossGuessingPoints
+        let embed = new Discord.EmbedBuilder()
+            .setTitle('Set the Miniboss')
+            .setDescription(`Choose one of the minibosses below.\nAll of the users who reacted correctly will recieve \`${points}\` points.`)
+            .setColor('#FFFFFF')
+        await interaction.reply({ embeds: [embed], ephemeral: true, fetchReply: true })
+        const choice = await interaction.confirmListEmojisWithText(
+            Object.keys(buttonInfo.logOptions).map(key => this.#bot.storedEmojis[buttonInfo.logOptions[key].emojiName].id),
+            Object.keys(buttonInfo.logOptions).map(key => buttonInfo.logOptions[key].name),
+            Object.keys(buttonInfo.logOptions).map(key => buttonInfo.logOptions[key].emojiName),
+            interaction.member.id)
+        if (!choice || choice == 'Cancelled') { return interaction.editReply({ embeds: [failEmbed], ephemeral: true, components: [] }) }
+
+        let choicePrettyName = buttonInfo.logOptions[choice].name;
+        let choiceEmote = this.#bot.storedEmojis[buttonInfo.logOptions[choice].emojiName].text;
+        embed.setDescription(`You set the Miniboss to ${choiceEmote} **${choicePrettyName}** ${choiceEmote}\nThank you!`)
+
+        await interaction.followUp({ embeds: [embed], components: [], ephemeral: true })
+        await interaction.deleteReply()
+
+        const rows = await this.#db.promise().query(`SELECT * FROM miniBossEvent WHERE guildid = '${this.#guild.id}' AND raidid = '${this.#raidID}' AND miniboss = '${choice}'`)
+        rows[0].map(row => {
+            this.#db.query(`UPDATE users SET points = points + ${points} WHERE id = '${row.userid}'`)
+        })
+        this.miniBossGuessed = true
     }
 
     async processReconnect(interaction) {
@@ -1085,6 +1124,35 @@ class afkCheck {
         return false
     }
 
+    async processReactableOption(interaction) {
+        const buttonInfo = this.#afkTemplate.buttons[interaction.customId]
+        const emote = buttonInfo.emote ? `${buttonInfo.emote.text} ` : ``
+        let points = this.#botSettings.points.miniBossGuessingPoints
+
+        let failEmbed = new Discord.EmbedBuilder()
+            .setTitle('Interaction Failed')
+            .setDescription('You either cancelled your interaction, or the interaction timed out.\nTry again if this was a mistake')
+            .setColor('#FF0000')
+        let embed = new Discord.EmbedBuilder()
+            .setTitle('Guess The MiniBoss!')
+            .setDescription(`Choose one of the minibosses below.\nIf you guess correctly you get \`${points}\``)
+            .setColor('#FFFFFF')
+        await interaction.reply({ embeds: [embed], ephemeral: true, fetchReply: true })
+        const choice = await interaction.confirmListEmojisWithText(
+            Object.keys(buttonInfo.logOptions).map(key => this.#bot.storedEmojis[buttonInfo.logOptions[key].emojiName].id),
+            Object.keys(buttonInfo.logOptions).map(key => buttonInfo.logOptions[key].name),
+            Object.keys(buttonInfo.logOptions).map(key => buttonInfo.logOptions[key].emojiName),
+            interaction.member.id)
+        if (!choice || choice == 'Cancelled') { return interaction.editReply({ embeds: [failEmbed], ephemeral: true, components: [] }) }
+        let choicePrettyName = buttonInfo.logOptions[choice].name;
+        let choiceEmote = this.#bot.storedEmojis[buttonInfo.logOptions[choice].emojiName].text;
+        embed.setDescription(`You guessed ${choiceEmote} **${choicePrettyName}** ${choiceEmote}`)
+        this.miniBossGuessing[interaction.member.id] = choice
+        if (!this.reactables[interaction.customId].members.includes(interaction.member.id)) { this.reactables[interaction.customId].members.push(interaction.member.id) }
+        await interaction.followUp({ embeds: [embed], components: [], ephemeral: true })
+        await interaction.deleteReply()
+    }
+
     async dragInteractionHandler(interaction) {
         await interaction.message.delete()
         const memberID = interaction.message.embeds[0].description
@@ -1170,17 +1238,22 @@ class afkCheck {
         
         if (this.#botSettings.backend.points) {
             let pointsLog = []
-            for (let i in this.reactables) for (let u of this.reactables[i].members) {
+            for (let i in this.reactables) for (let memberID of this.reactables[i].members) {
                 switch (this.#afkTemplate.buttons[i].type) {
+                    case AfkTemplate.TemplateButtonType.OPTION:
+                        if (this.miniBossGuessing.hasOwnProperty(memberID.toString()) && this.members.includes(memberID.toString())) {
+                            this.#db.query(`INSERT INTO miniBossEvent (userid, guildid, raidid, unixtimestamp, miniboss) VALUES ('${memberID}', '${this.#guild.id}', '${this.#raidID}', '${Date.now()}', '${this.miniBossGuessing[memberID]}')`)
+                        }
+                        break
                     case AfkTemplate.TemplateButtonType.SUPPORTER:
-                        this.#db.query(`INSERT INTO supporterusage (guildid, userid, utime) VALUES ('${this.#guild.id}', '${u}', '${Date.now()}')`)
+                        this.#db.query(`INSERT INTO supporterusage (guildid, userid, utime) VALUES ('${this.#guild.id}', '${memberID}', '${Date.now()}')`)
                     default:
                         let points = this.#afkTemplate.buttons[i].points
-                        if (this.#afkTemplate.buttons[i].type != AfkTemplate.TemplateButtonType.POINTS && this.#guild.members.cache.get(u).roles.cache.hasAny(...this.#afkTemplate.perkRoles.map(role => role.id))) points = points * this.#botSettings.points.supportermultiplier
-                        this.#db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u}'`, (err, rows) => {
+                        if (this.#afkTemplate.buttons[i].type != AfkTemplate.TemplateButtonType.POINTS && this.#guild.members.cache.get(memberID).roles.cache.hasAny(...this.#afkTemplate.perkRoles.map(role => role.id))) points = points * this.#botSettings.points.supportermultiplier
+                        this.#db.query(`UPDATE users SET points = points + ${points} WHERE id = '${memberID}'`, (err, rows) => {
                             if (err) return console.log(`error logging ${i} points in `, this.#guild.id)
                         })
-                        pointsLog.push({ uid: u, points: points, reason: `${i}`})
+                        pointsLog.push({ uid: memberID, points: points, reason: `${i}`})
                 }
             }
             let pointlog_mid = await pointLogger.pointLogging(pointsLog, this.#guild, this.#bot, this.raidCommandsEmbed)
@@ -1259,6 +1332,16 @@ class afkCheck {
             .setStyle(1)
             .setCustomId('additional')
         phaseActionRow.push(phaseLogAdditionalButton)
+
+        if (this.#botSettings.backend.miniBossGuessing) {
+            counter++
+            const phaseMinibossButton = new Discord.ButtonBuilder()
+                .setLabel('Set Miniboss')
+                .setStyle(Discord.ButtonStyle.Secondary)
+                .setCustomId('miniboss')
+                .setEmoji(this.#bot.storedEmojis.oryxSanctuaryPortal.id)
+            phaseActionRow.push(phaseMinibossButton)
+        }
 
         for (let i in this.#afkTemplate.buttons) {
             if (this.#afkTemplate.buttons[i].type != AfkTemplate.TemplateButtonType.LOG) continue
