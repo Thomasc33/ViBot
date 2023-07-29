@@ -9,7 +9,7 @@ module.exports = {
     args: '[exalts]',
     execute(message, args, bot) {
         const botSettings = bot.settings[message.guild.id]
-        const templateEmbed = createEmbed(message, `The dungeons displayed are specific to this channel, ${message.channel} and your highest staff role, ${message.member.roles.highest}.`, null)
+        const templateEmbed = createEmbed(message, `The dungeons displayed are specific to this channel, ${message.channel} and your staff roles, ${message.member.roles.highest}.`, null)
         templateEmbed.setColor('#ff0000')
         templateEmbed.setTitle('Available Templates')
         const parentTemplates = Object.keys(templates[message.guild.id].parents).filter(template => message.channel.id == templates[message.guild.id].parents[template].commandsChannel)
@@ -20,10 +20,10 @@ module.exports = {
                 if (!parentTemplates.includes(inherit)) continue
                 if (!parentTemplateValue[inherit]) parentTemplateValue[inherit] = {field: 0, value: ['']}
                 const parentTemplate = templates[message.guild.id].parents[inherit]
-                let minStaffRole = template.minStaffRole ? message.guild.roles.cache.get(botSettings.roles[template.minStaffRole]) : null
-                minStaffRole = !minStaffRole && parentTemplate.minStaffRole ? message.guild.roles.cache.get(botSettings.roles[parentTemplate.minStaffRole]) : minStaffRole
-                if (!minStaffRole) continue
-                if (minStaffRole.position > message.member.roles.highest.position) continue
+                let minStaffRoles = template.minStaffRoles ? template.minStaffRoles.map(role => message.guild.roles.cache.get(botSettings.roles[role])) : null
+                minStaffRoles = !minStaffRoles && parentTemplate.minStaffRoles ? parentTemplate.minStaffRoles.map(role => message.guild.roles.cache.get(botSettings.roles[role])) : minStaffRoles
+                if (!minStaffRoles) continue
+                if (!minStaffRoles.every(role => message.member.roles.cache.has(role.id))) continue
                 const reacts = template.reacts ? Object.keys(template.reacts).filter(react => template.reacts[react].onHeadcount) : []
                 let newTemplate = `\n${reacts[0] ? `${bot.storedEmojis[template.reacts[reacts[0]].emote].text}| ` : ``}\`${template.aliases.reduce((a, b) => a.length <= b.length ? a : b).padStart(3)}\` | **${template.name}**`
                 if (parentTemplateValue[inherit].value[parentTemplateValue[inherit].field].length + newTemplate.length > 1024) {
@@ -35,6 +35,7 @@ module.exports = {
         }
         for (let template of parentTemplates) {
             if (!parentTemplateValue[template]) continue
+            if (parentTemplateValue[template].value.length == 1 && !parentTemplateValue[template].value[0]) continue
             parentTemplateValue[template].value.forEach((value, index) => templateEmbed.addFields({ name: `**${template.charAt(0).toUpperCase() + template.slice(1)}${index ? ` Cont.` : ``}**`, value: value, inline: true }))
         }
         message.channel.send({ embeds: [templateEmbed] })
