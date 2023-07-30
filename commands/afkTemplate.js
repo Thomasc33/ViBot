@@ -73,6 +73,7 @@ class AfkTemplate {
         this.#botSettings = botSettings
         this.#guild = message.guild
         this.#channel = message.channel
+        this.#inherit = null
         this.#template = null
         this.#message = message
         this.#alias = alias.toLowerCase()
@@ -120,7 +121,7 @@ class AfkTemplate {
         for (let i in parentTemplate) {
             if (template[i] == undefined || template[i] == null) template[i] = parentTemplate[i]
             else if (typeof template[i] == "object" && template[i] != null && typeof parentTemplate[i] == "object" && parentTemplate[i] != null) {
-                if (Array.isArray(template[i])) template[i] = [...new Set([...parentTemplate[i], ...template[i]])]
+                if (Array.isArray(template[i])) continue
                 else template[i] = Object.assign({}, parentTemplate[i], template[i])
                 this.populateObjectInherit(template[i], parentTemplate[i])
             }
@@ -132,9 +133,13 @@ class AfkTemplate {
         let parentTemplate = null
         this.#template.inherits.forEach((parent) => {
             let currentParentTemplate = templates[this.#guild.id].parents[parent]
-            if (currentParentTemplate && currentParentTemplate.commandsChannel == this.#channel.id) parentTemplate = currentParentTemplate
+            if (currentParentTemplate && currentParentTemplate.commandsChannel == this.#channel.id) {
+                parentTemplate = currentParentTemplate
+                this.#inherit = parent
+            }
         })
         this.populateObjectInherit(this.#template, parentTemplate)
+        this.#template.minStaffRoles = this.#template.minStaffRoles[this.#inherit]
     }
 
     // Function for populating child Body Phase parameters from Body Default parameters
@@ -247,7 +252,7 @@ class AfkTemplate {
         if (!this.validateTemplateChannel(this.#template.statusChannel)) return status = {state: TemplateState.INVALID_CHANNEL, message: 'This afk template has an Invalid Status Channel.'}
         if (!this.validateTemplateChannel(this.#template.commandsChannel)) return status = {state: TemplateState.INVALID_CHANNEL, message: 'This afk template has an Invalid Commands Channel.'}
         if (!this.validateTemplateChannel(this.#template.activeChannel)) return status = {state: TemplateState.INVALID_CHANNEL, message: 'This afk template has an Invalid Active Channel.'}
-        if (this.#template.minStaffRoles && this.#template.minStaffRoles.some(role => !this.validateTemplateRole(role))) return status = {state: TemplateState.INVALID_ROLE, message: 'This afk template has an Invalid Minimum Staff Role.'}
+        if (this.#template.minStaffRoles && this.#template.minStaffRoles.some(roles => roles.some(role => !this.validateTemplateRole(role)))) return status = {state: TemplateState.INVALID_ROLE, message: 'This afk template has an Invalid Minimum Staff Role.'}
         if (this.#template.minViewRaiderRoles && this.#template.minViewRaiderRoles.some(role => !this.validateTemplateRole(role))) return status = {state: TemplateState.INVALID_ROLE, message: 'This afk template has an Invalid Minimum View Raider Role.'}
         if (this.#template.minJoinRaiderRoles && this.#template.minJoinRaiderRoles.some(role => !this.validateTemplateRole(role))) return status = {state: TemplateState.INVALID_ROLE, message: 'This afk template has an Invalid Minimum Join Raider Role.'}
         if (!this.validateTemplateString(this.#template.name)) return status = {state: TemplateState.INVALID_STRING, message: 'This afk template has an Invalid Name.'}
@@ -280,7 +285,7 @@ class AfkTemplate {
             if (!this.validateTemplateBoolean(this.#template.buttons[i].confirm)) return status = {state: TemplateState.INVALID_BOOLEAN, message: `This afk template at Button ${i} has an Invalid Confirm.`}
             if (!this.validateTemplateBoolean(this.#template.buttons[i].location)) return status = {state: TemplateState.INVALID_BOOLEAN, message: `This afk template at Button ${i} has an Invalid Location.`}
             if (this.#template.buttons[i].minRole && !this.validateTemplateRole(this.#template.buttons[i].minRole)) return status = {state: TemplateState.INVALID_ROLE, message: `This afk template at Button ${i} has an Invalid Minimum Role.`}
-            if (this.#template.buttons[i].minStaffRoles && this.#template.buttons[i].minStaffRoles.some(role => !this.validateTemplateRole(role))) return status = {state: TemplateState.INVALID_ROLE, message: `This afk template at Button ${i} has an Invalid Minimum Staff Role.`}
+            if (this.#template.buttons[i].minStaffRoles && this.#template.buttons[i].minStaffRoles.some(roles => roles.some(role => !this.validateTemplateRole(role)))) return status = {state: TemplateState.INVALID_ROLE, message: `This afk template at Button ${i} has an Invalid Minimum Staff Role.`}
             if (this.#template.buttons[i].confirmationMessage && !this.validateTemplateString(this.#template.buttons[i].confirmationMessage)) return status = {state: TemplateState.INVALID_STRING, message: `This afk template at Button ${i} has an Invalid Confirmation Message.`}
             if (this.#template.buttons[i].confirmationMedia && !this.validateTemplateString(this.#template.buttons[i].confirmationMedia)) return status = {state: TemplateState.INVALID_STRING, message: `This afk template at Button ${i} has an Invalid Confirmation Media.`}
             if (this.#template.buttons[i].disableStart && !this.validateTemplateNumber(this.#template.buttons[i].disableStart)) return status = {state: TemplateState.INVALID_NUMBER, message: `This afk template at Button ${i} has an Invalid Disable Start.`}
@@ -357,9 +362,9 @@ class AfkTemplate {
         this.perkRoles = this.#botSettings.lists.perkRoles.map(role => this.#guild.roles.cache.get(this.#botSettings.roles[role]))
         this.minimumViewRaiderRoles = this.#template.minViewRaiderRoles.map(role => this.#guild.roles.cache.get(this.#botSettings.roles[role]))
         this.minimumJoinRaiderRoles = this.#template.minJoinRaiderRoles.map(role => this.#guild.roles.cache.get(this.#botSettings.roles[role]))
-        this.minimumStaffRoles = this.#template.minStaffRoles.map(role => this.#guild.roles.cache.get(this.#botSettings.roles[role]))
-        if (this.minimumStaffRoles == [] && this.#botSettings.commandsRolePermissions["afk"]) this.minimumStaffRoles = [this.#guild.roles.cache.get(this.#botSettings.roles[this.#botSettings.commandsRolePermissions["afk"]])]
-        if (this.minimumStaffRoles == []) this.minimumStaffRoles = [this.#guild.roles.cache.get(this.#botSettings.roles[this.#bot.commands.get("afk").role])]
+        this.minimumStaffRoles = this.#template.minStaffRoles.map(roles => roles.map(role => this.#guild.roles.cache.get(this.#botSettings.roles[role])))
+        if (this.minimumStaffRoles == [] || this.minimumStaffRoles == [[]] && this.#botSettings.commandsRolePermissions["afk"]) this.minimumStaffRoles = [[this.#guild.roles.cache.get(this.#botSettings.roles[this.#botSettings.commandsRolePermissions["afk"]])]]
+        if (this.minimumStaffRoles == [] || this.minimumStaffRoles == [[]]) this.minimumStaffRoles = [[this.#guild.roles.cache.get(this.#botSettings.roles[this.#bot.commands.get("afk").role])]]
         this.raidInfoChannel = this.#guild.channels.cache.get(this.#botSettings.channels.runlogs)
         this.raidCategory = this.#guild.channels.cache.filter(c => c.type == Discord.ChannelType.GuildCategory).find(c => c.name.toLowerCase() === this.#template.category)
         this.raidPartneredStatusChannels = {}
@@ -444,7 +449,7 @@ class AfkTemplate {
             if (!this.buttons[i].disableStart) this.buttons[i].disableStart = this.buttons[i].start
             if (this.buttons[i].emote) this.buttons[i].emote = this.#bot.storedEmojis[this.buttons[i].emote]
             if (this.buttons[i].minRole) this.buttons[i].minRole = this.#guild.roles.cache.get(this.#botSettings.roles[this.buttons[i].minRole])
-            if (this.buttons[i].minStaffRoles) this.buttons[i].minStaffRoles = this.buttons[i].minStaffRoles.map(role => this.#guild.roles.cache.get(this.#botSettings.roles[role]))
+            if (this.buttons[i].minStaffRoles) this.buttons[i].minStaffRoles = this.buttons[i].minStaffRoles.map(roles => roles.map(role => this.#guild.roles.cache.get(this.#botSettings.roles[role])))
             if (this.buttons[i].confirmationMessage) this.buttons[i].confirmationMessage = this.processMessages(channel, this.buttons[i].confirmationMessage)
             for (let j in this.buttons[i].logOptions) {
                 if (!this.buttons[i].logOptions[j].points) this.buttons[i].logOptions[j].points = 0

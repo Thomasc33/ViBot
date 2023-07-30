@@ -28,7 +28,7 @@ module.exports = {
         await afkTemplate.init()
         const currentStatus = afkTemplate.getStatus()
         if (currentStatus.state != AfkTemplate.TemplateState.SUCCESS) return await message.channel.send(currentStatus.message)
-        if (!afkTemplate.minimumStaffRoles.some(role => message.member.roles.cache.has(role.id))) return await message.channel.send(`You do not have a suitable role out of ${afkTemplate.minimumStaffRoles.join(', ')} to run ${afkTemplate.name}.`)
+        if (!afkTemplate.minimumStaffRoles.some(roles => roles.every(role => message.member.roles.cache.has(role.id)))) return await message.channel.send(`You do not have a suitable set of roles out of ${afkTemplate.minimumStaffRoles.reduce((a, b) => `${a}, ${b.join(' + ')}`)})} to run ${afkTemplate.name}.`)
         let location = args.join(' ')
         if (location.length >= 1024) return await message.channel.send('Location must be below 1024 characters, try again')
         if (location == '') location = 'None'
@@ -206,7 +206,7 @@ class afkCheck {
         this.#afkTemplate.perkRoles = this.#botSettings.lists.perkRoles.map(role => this.#guild.roles.cache.get(this.#botSettings.roles[role]))
         this.#afkTemplate.minimumViewRaiderRoles = this.#afkTemplate.minimumViewRaiderRoles.map(role => this.#guild.roles.cache.get(role.id))
         this.#afkTemplate.minimumJoinRaiderRoles = this.#afkTemplate.minimumJoinRaiderRoles.map(role => this.#guild.roles.cache.get(role.id))
-        this.#afkTemplate.minimumStaffRoles = this.#afkTemplate.minimumStaffRoles.map(role => this.#guild.roles.cache.get(role.id))
+        this.#afkTemplate.minimumStaffRoles = this.#afkTemplate.minimumStaffRoles.map(roles => roles.map(role => this.#guild.roles.cache.get(role.id)))
         this.#afkTemplate.raidInfoChannel = this.#guild.channels.cache.get(this.#afkTemplate.raidInfoChannel.id)
         this.#afkTemplate.raidTemplateChannel = this.#guild.channels.cache.get(this.#afkTemplate.raidTemplateChannel.id)
         this.#afkTemplate.raidStatusChannel = this.#guild.channels.cache.get(this.#afkTemplate.raidStatusChannel.id)
@@ -271,7 +271,7 @@ class afkCheck {
         let buttonChoices = this.#afkTemplate.getButtonChoices()
         let newButtonChoices = []
         for (let i of buttonChoices) {
-            if (this.#afkTemplate.buttons[i].minStaffRoles && !this.#afkTemplate.buttons[i].minStaffRoles.every((role => this.#leader.roles.cache.has(role.id)))) continue
+            if (this.#afkTemplate.buttons[i].minStaffRoles && !this.#afkTemplate.buttons[i].minStaffRoles.some(roles => roles.every(role => this.#leader.roles.cache.has(role.id)))) continue
             let choiceText = this.#afkTemplate.buttons[i].emote ? `${this.#afkTemplate.buttons[i].emote.text} **${i}**` : `**${i}**` 
             switch (this.#afkTemplate.buttons[i].choice) {
                 case AfkTemplate.TemplateButtonChoice.YES_NO_CHOICE:
@@ -608,7 +608,7 @@ class afkCheck {
             return this.removeFromActiveInteractions(interaction.member.id)
         }
         else if (['abort', 'phase', 'cap', 'additional', 'end', 'miniboss'].includes(interaction.customId) || interaction.customId.includes(`Log`)) {
-            if (this.#afkTemplate.minimumStaffRoles.some(role => interaction.member.roles.cache.has(role.id))) return await this.processPhaseControl(interaction)
+            if (this.#afkTemplate.minimumStaffRoles.some(roles => roles.every(role => interaction.member.roles.cache.has(role.id)))) return await this.processPhaseControl(interaction)
             else {
                 await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You do not have the required Staff Role to use this button.`, null)], ephemeral: true })
                 return this.removeFromActiveInteractions(interaction.member.id)
@@ -1283,9 +1283,11 @@ class afkCheck {
             this.#db.query(`INSERT INTO completionruns (${completionrunsValueNames}) VALUES (${completionrunsValues})`, (err, rows) => {
                 if (err) return console.log(`${u} could not be inserted into completionruns`)
             })
-            this.#db.query(`UPDATE users SET ${this.#afkTemplate.logName} = ${this.#afkTemplate.logName} + 1 WHERE id = '${u}'`, (err, rows) => {
-                if (err) return console.log('error logging run completes in ', this.#guild.id)
-            })
+            if (this.#afkTemplate.logName) {
+                this.#db.query(`UPDATE users SET ${this.#afkTemplate.logName} = ${this.#afkTemplate.logName} + 1 WHERE id = '${u}'`, (err, rows) => {
+                    if (err) return console.log('error logging run completes in ', this.#guild.id)
+                })
+            }
             if (this.#botSettings.backend.points) {
                 let points = this.#botSettings.points.perrun
                 if (this.#guild.members.cache.get(u).roles.cache.hasAny(...this.#afkTemplate.perkRoles.map(role => role.id))) points = points * this.#botSettings.points.supportermultiplier
