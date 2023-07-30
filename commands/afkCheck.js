@@ -874,7 +874,10 @@ class afkCheck {
     async processPhaseMiniboss(interaction) {
         const buttonInfo = this.#afkTemplate.buttons['MiniBossGuessing']
 
-        if (this.miniBossGuessed) { return await interaction.reply({ content: "You have already set the miniboss.\nPut more runs up to do more miniboss guessing! :)", ephemeral: true }) }
+        if (this.miniBossGuessed) {
+            this.removeFromActiveInteractions(interaction.member.id)
+            return await interaction.reply({ content: "You have already set the miniboss.\nPut more runs up to do more miniboss guessing! :)", ephemeral: true })
+        }
 
         let points = this.#botSettings.points.miniBossGuessingPoints
         let embed = new Discord.EmbedBuilder()
@@ -901,6 +904,7 @@ class afkCheck {
             this.#db.query(`UPDATE users SET points = points + ${points} WHERE id = '${row.userid}'`)
         })
         this.miniBossGuessed = true
+        this.removeFromActiveInteractions(interaction.member.id)
     }
 
     async processReconnect(interaction) {
@@ -1145,7 +1149,10 @@ class afkCheck {
             Object.keys(buttonInfo.logOptions).map(key => buttonInfo.logOptions[key].name),
             Object.keys(buttonInfo.logOptions).map(key => buttonInfo.logOptions[key].emojiName),
             interaction.member.id)
-        if (!choice || choice == 'Cancelled') { return interaction.editReply({ embeds: [failEmbed], ephemeral: true, components: [] }) }
+        if (!choice || choice == 'Cancelled') {
+            this.removeFromActiveInteractions(interaction.member.id)
+            return interaction.editReply({ embeds: [failEmbed], ephemeral: true, components: [] })
+        }
         let choicePrettyName = buttonInfo.logOptions[choice].name;
         let choiceEmote = this.#bot.storedEmojis[buttonInfo.logOptions[choice].emojiName].text;
         embed.setDescription(`You guessed ${choiceEmote} **${choicePrettyName}** ${choiceEmote}`)
@@ -1153,6 +1160,7 @@ class afkCheck {
         if (!this.reactables[interaction.customId].members.includes(interaction.member.id)) { this.reactables[interaction.customId].members.push(interaction.member.id) }
         await interaction.followUp({ embeds: [embed], components: [], ephemeral: true })
         await interaction.deleteReply()
+        this.removeFromActiveInteractions(interaction.member.id)
     }
 
     async dragInteractionHandler(interaction) {
