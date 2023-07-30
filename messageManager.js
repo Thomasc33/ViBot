@@ -47,7 +47,6 @@ class MessageManager {
         switch (message.channel.type) {
             case Discord.ChannelType.GuildText:
                 if (message.author.bot) return;
-                if (message.author.id == "178840516882989056") { message.reply({stickers: [message.guild.stickers.cache.get("888627722161631233")] }) }
                 if (message.content.startsWith(this.#prefix) && message.content[this.#prefix.length] !== ' ') {
                     // Handle commands (messages that start with a prefix + command)
                     this.handleCommand(message, false);
