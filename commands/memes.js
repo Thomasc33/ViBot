@@ -67,7 +67,7 @@ module.exports = {
                 })
                 break;
             case 'grizzell':
-                message.channel.send('<@!340267639295180800>\nhttps://images-ext-2.discordapp.net/external/q4b29Q5UiDUukhqTFxqPM1JfeNbZMx29DR8Qfv5ZjeM/https/media.tenor.com/2z4Gh-mYA2gAAAPo/rat-shower.mp4')
+                message.channel.send({ content: '<@!340267639295180800>', files: ['https://images-ext-2.discordapp.net/external/q4b29Q5UiDUukhqTFxqPM1JfeNbZMx29DR8Qfv5ZjeM/https/media.tenor.com/2z4Gh-mYA2gAAAPo/rat-shower.mp4'] })
                 break
         }
     }
