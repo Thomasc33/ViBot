@@ -58,6 +58,7 @@ class AfkTemplate {
     #botSettings;
     #guild;
     #channel;
+    #inherit;
     #message;
     #alias
     #status;
