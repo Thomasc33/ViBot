@@ -311,7 +311,7 @@ module.exports = {
         }
         if (!currentweekparsename || !parsetotalname) return
         db.query(`UPDATE users SET ${parsetotalname} = ${parsetotalname} + 1, ${currentweekparsename} = ${currentweekparsename} + 1 WHERE id = '${message.author.id}'`)
-        db.query(`INSERT INTO (logged, userid, guildid, utime, amount) values ('parseMembers', '${message.author.id}', '${message.guild.id}', '${Date.now()}', 1)`)
+        db.query(`INSERT INTO loggedusage (logged, userid, guildid, utime, amount) values ('parseMembers', '${message.author.id}', '${message.guild.id}', '${Date.now()}', 1)`)
         const guildQuota = quotas[message.guild.id];
         if (!guildQuota) return;
         const parseQuota = guildQuota.quotas.filter(q => q.id == "security")[0]
