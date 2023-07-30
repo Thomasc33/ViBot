@@ -3,7 +3,7 @@ const vr_gamers = ['277636691227836419', '130850662522159104', '2582864811672207
 module.exports = {
     name: 'memes',
     alias: ['phd', 'xbox', 'cwinner', 'eury', 'nefiah', 'abysm', 'drunkdevil', 'shiba',
-    'rj', 'vr', 'pusbal', 'bantering', 'chevyo', 'ruler', 'shut'],
+    'rj', 'vr', 'pusbal', 'bantering', 'chevyo', 'ruler', 'shut', 'grizzell'],
     role: 'eventrl',
     async execute(message, args, bot) {
         const settings = bot.settings[message.guild.id]
@@ -66,6 +66,9 @@ module.exports = {
                     }
                 })
                 break;
+            case 'grizzell':
+                message.channel.send('<@!340267639295180800>\nhttps://images-ext-2.discordapp.net/external/q4b29Q5UiDUukhqTFxqPM1JfeNbZMx29DR8Qfv5ZjeM/https/media.tenor.com/2z4Gh-mYA2gAAAPo/rat-shower.mp4')
+                break
         }
     }
 }
