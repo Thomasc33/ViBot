@@ -498,4 +498,11 @@ class AfkTemplate {
     }
 }
 
-module.exports = { AfkTemplate, TemplateState, TemplateVCOptions, TemplateVCState, TemplateButtonType, TemplateButtonChoice}
+module.exports = { AfkTemplate, TemplateState, TemplateVCOptions, TemplateVCState, TemplateButtonType, TemplateButtonChoice, 
+    name: "afktemplates",
+    role: "moderator",
+    description: "Unused command as of right now",
+    async execute(message, args, bot, db) {
+        message.reply('This is empty as of right now.')
+    }
+}
