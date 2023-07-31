@@ -271,7 +271,7 @@ class afkCheck {
         let buttonChoices = this.#afkTemplate.getButtonChoices()
         let newButtonChoices = []
         for (let i of buttonChoices) {
-            if (this.#afkTemplate.buttons[i].minStaffRoles && !this.#afkTemplate.buttons[i].minStaffRoles.some(roles => roles.every(role => this.#leader.roles.cache.has(role.id)))) continue
+            if (this.#afkTemplate.buttons[i].minStaffRoles && !this.#afkTemplate.buttons[i].minStaffRoles.some(role => this.#leader.roles.cache.has(role.id))) continue
             let choiceText = this.#afkTemplate.buttons[i].emote ? `${this.#afkTemplate.buttons[i].emote.text} **${i}**` : `**${i}**` 
             switch (this.#afkTemplate.buttons[i].choice) {
                 case AfkTemplate.TemplateButtonChoice.YES_NO_CHOICE:
