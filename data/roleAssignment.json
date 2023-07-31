@@ -49,7 +49,7 @@
             "emoji": "<a:steamworksPortal:1050156386547413012>"
         },
         {
-            "role": "accursedSteamworksPing",
+            "role": "advancedSteamworksPing",
             "name": "Advanced Steamworks",
             "emojiId": "1129901525674758274",
             "emoji": "<:advancedSteamworks:1129901525674758274>"
@@ -165,7 +165,7 @@
             "emoji": "<:pcave:723001215184535553>"
         },
         {
-            "role": "accursedSteamworksPing",
+            "role": "advancedSteamworksPing",
             "name": "Advanced Steamworks",
             "emojiId": "1129901525674758274",
             "emoji": "<:advancedSteamworks:1129901525674758274>"

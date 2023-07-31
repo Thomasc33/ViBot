@@ -19850,6 +19850,7 @@
                 "name": "TRL Void",
                 "templateName": "TRL Void",
                 "pingRoles": [
+                    "here",
                     "voidping"
                 ],
                 "aliases": [
@@ -20258,6 +20259,7 @@
                 "name": "TRL Cult",
                 "templateName": "TRL Cult",
                 "pingRoles": [
+                    "here",
                     "cultping"
                 ],
                 "aliases": [
@@ -20646,6 +20648,7 @@
                 "name": "TRL Shatters",
                 "templateName": "TRL Shatters",
                 "pingRoles": [
+                    "here",
                     "shattsReact"
                 ],
                 "aliases": [
@@ -22648,7 +22651,8 @@
                 "name": "Adv. Kogbold Steamworks",
                 "templateName": "Advanced Kogbold Steamworks",
                 "pingRoles": [
-                    "steamworksping"
+                    "here",
+                    "advancedSteamworksPing"
                 ],
                 "aliases": [
                     "ak",
@@ -23059,7 +23063,8 @@
                 "name": "Exa. Adv. Kogbold Steamworks",
                 "templateName": "Exalted Advanced Kogbold Steamworks",
                 "pingRoles": [
-                    "steamworksping"
+                    "here",
+                    "advancedSteamworksPing"
                 ],
                 "aliases": [
                     "eak",
@@ -23475,6 +23480,7 @@
                 "name": "Adv. Nest",
                 "templateName": " Advanced Nest",
                 "pingRoles": [
+                    "here",
                     "nestReact"
                 ],
                 "aliases": [
@@ -23828,6 +23834,7 @@
                 "name": "Exa. Adv. Nest",
                 "templateName": "Exalted Advanced Nest",
                 "pingRoles": [
+                    "here",
                     "nestReact"
                 ],
                 "aliases": [
@@ -24184,6 +24191,7 @@
                 "name": "VC-Less Kogbold Steamworks",
                 "templateName": "Vitality Exalation Printer",
                 "pingRoles": [
+                    "here",
                     "steamworksping"
                 ],
                 "aliases": [
@@ -25089,6 +25097,7 @@
                 "name": "Void",
                 "templateName": "Void",
                 "pingRoles": [
+                    "here",
                     "voidping"
                 ],
                 "aliases": [
@@ -25517,6 +25526,7 @@
                 "name": "Exa. Void",
                 "templateName": "Exalted Void",
                 "pingRoles": [
+                    "here",
                     "voidping"
                 ],
                 "aliases": [
@@ -25921,6 +25931,7 @@
                 "name": "Full-Skip Void",
                 "templateName": "Full-Skip Void",
                 "pingRoles": [
+                    "here",
                     "fskipReact"
                 ],
                 "aliases": [
@@ -26328,6 +26339,7 @@
                 "name": "Exa. Full-Skip Void",
                 "templateName": "Exalted Full-Skip Void",
                 "pingRoles": [
+                    "here",
                     "fskipReact"
                 ],
                 "aliases": [
@@ -26743,6 +26755,7 @@
                 "name": "Cult",
                 "templateName": "Cult",
                 "pingRoles": [
+                    "here",
                     "cultping"
                 ],
                 "aliases": [
@@ -27144,6 +27157,7 @@
                 "name": "Exa. Cult",
                 "templateName": "Exalted Cult",
                 "pingRoles": [
+                    "here",
                     "cultping"
                 ],
                 "aliases": [
@@ -27552,6 +27566,7 @@
                 "name": "Shatters",
                 "templateName": "Shatters",
                 "pingRoles": [
+                    "here",
                     "shattsReact"
                 ],
                 "aliases": [
@@ -27965,6 +27980,7 @@
                 "name": "Accursed Shatters",
                 "templateName": "Accursed Shatters",
                 "pingRoles": [
+                    "here",
                     "accursedReact"
                 ],
                 "aliases": [
@@ -28394,6 +28410,7 @@
                 "name": "VC-less Accursed Shatters",
                 "templateName": "VC-less Accursed Shatters",
                 "pingRoles": [
+                    "here",
                     "accursedReact"
                 ],
                 "aliases": [
@@ -28836,6 +28853,7 @@
                 "name": "Exa. Shatters",
                 "templateName": "Exalted Shatters",
                 "pingRoles": [
+                    "here",
                     "shattsReact"
                 ],
                 "aliases": [
@@ -29264,6 +29282,7 @@
                 "name": "Nest",
                 "templateName": "Nest",
                 "pingRoles": [
+                    "here",
                     "nestReact"
                 ],
                 "aliases": [
@@ -29617,6 +29636,7 @@
                 "name": "Exa. Nest",
                 "templateName": "Exalted Nest",
                 "pingRoles": [
+                    "here",
                     "nestReact"
                 ],
                 "aliases": [
@@ -29985,6 +30005,7 @@
                 "name": "Kogbold Steamworks",
                 "templateName": "Kogbold Steamworks",
                 "pingRoles": [
+                    "here",
                     "steamworksping"
                 ],
                 "aliases": [
@@ -30394,6 +30415,7 @@
                 "name": "Exa. Kogbold Steamworks",
                 "templateName": "Exalted Kogbold Steamworks",
                 "pingRoles": [
+                    "here",
                     "steamworksping"
                 ],
                 "aliases": [
@@ -30810,6 +30832,7 @@
                 "name": "Moonlight Village",
                 "templateName": "Moonlight Village",
                 "pingRoles": [
+                    "here",
                     "moonlightping"
                 ],
                 "aliases": [
@@ -31120,6 +31143,7 @@
                 "name": "Exa. Moonlight Village",
                 "templateName": "Exalted Moonlight Village",
                 "pingRoles": [
+                    "here",
                     "moonlightping"
                 ],
                 "aliases": [
@@ -31438,6 +31462,7 @@
                 "name": "Fungal Cavern",
                 "templateName": "Fungal Cavern",
                 "pingRoles": [
+                    "here",
                     "fungalReact"
                 ],
                 "aliases": [
@@ -31840,6 +31865,7 @@
                 "name": "Exa. Fungal Cavern",
                 "templateName": "Exalted Fungal Cavern",
                 "pingRoles": [
+                    "here",
                     "fungalReact"
                 ],
                 "aliases": [
@@ -44412,6 +44438,7 @@
                 "name": "Oryx 3",
                 "templateName": "Oryx 3",
                 "pingRoles": [
+                    "here",
                     "o3Ping"
                 ],
                 "aliases": [
@@ -44784,6 +44811,7 @@
                 "name": "Vc-less Oryx 3",
                 "templateName": "RSA React Vc-less O3",
                 "pingRoles": [
+                    "here",
                     "o3Ping"
                 ],
                 "aliases": [
@@ -45209,6 +45237,7 @@
                 "name": "TRL Void",
                 "templateName": "TRL Void",
                 "pingRoles": [
+                    "here",
                     "voidping"
                 ],
                 "aliases": [
@@ -45619,6 +45648,7 @@
                 "name": "TRL Cult",
                 "templateName": "TRL Cult",
                 "pingRoles": [
+                    "here",
                     "cultping"
                 ],
                 "aliases": [
@@ -46007,6 +46037,7 @@
                 "name": "TRL Shatters",
                 "templateName": "TRL Shatters",
                 "pingRoles": [
+                    "here",
                     "shattsReact"
                 ],
                 "aliases": [
@@ -46859,6 +46890,7 @@
                 "name": "Example Exa. Nest",
                 "templateName": "Example Exalted Nest",
                 "pingRoles": [
+                    "here",
                     "nestReact"
                 ],
                 "aliases": [
