@@ -112,7 +112,11 @@ module.exports = {
                         .setDescription(`\`\`\`coffeescript\nPlease select what you wish to edit`)
                     let fieldIndex = 0;
                     let padSize = 0;
-                    for (let i in array) { if (padSize < array[i].length) { padSize = array[i].length; } }
+                    for (let i in array) {
+                        if (padSize < array[i].length) {
+                            padSize = array[i].length;
+                        }
+                    }
                     padSize = padSize + 3;
                     for (let i in array) {
                         settings = bot.settings[message.guild.id]
@@ -373,11 +377,20 @@ module.exports = {
                 bot.settings[guild.id].points[r] = getDefaultPointValue(r)
             }
         }
+        for (let key in bot.settings[guild.id].points) {
+            if (!points.includes(key)) { delete bot.settings[guild.id].points[key] }
+        }
         for (let i of commands) {
             if (!bot.settings[guild.id].commands[i] && bot.settings[guild.id].commands[i] !== false) bot.settings[guild.id].commands[i] = bot.commands.get(i).guildSpecific ? false : true //this might not work lol
         }
+        for (let key in bot.settings[guild.id].commands) {
+            if (!commands.includes(key)) { delete bot.settings[guild.id].commands[key] }
+        }
         for (let i of commandsRolePermissions) {
             if (!bot.settings[guild.id].commandsRolePermissions[i] && bot.settings[guild.id].commandsRolePermissions[i] !== false) bot.settings[guild.id].commandsRolePermissions[i] = null
+        }
+        for (let key in bot.settings[guild.id].commandsRolePermissions) {
+            if (!commands.includes(key)) { delete bot.settings[guild.id].commandsRolePermissions[key] }
         }
         for (let i of categories) {
             if (!bot.settings[guild.id].categories[i]) bot.settings[guild.id].categories[i] = getDefaultCategoryName(i)
