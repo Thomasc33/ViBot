@@ -1001,21 +1001,17 @@ class afkCheck {
         let cooldown = this.#botSettings.supporter[`supporterCooldownSeconds${supporterRole}`]
         let uses = this.#botSettings.supporter[`supporterUses${supporterRole}`]
         let lastUseCheck = Date.now() - (cooldown * 1000)
-        this.#db.query(`SELECT * FROM supporterusage WHERE guildid = '${interaction.guild.id}' AND userid = '${interaction.member.id}' AND utime > '${lastUseCheck}'`, async (err, rows) => {
-            if (err) {
-                ErrorLogger.log(err, this.#bot, this.#guild)
-                return false
-            }
-            if (rows.length >= uses) {
-                let cooldown_text = ''
-                if (cooldown < 3600) cooldown_text = `${(cooldown/60).toFixed(0)} minutes`
-                else cooldown_text = `${(cooldown/3600).toFixed(0)} hours`
-                await interaction.reply({ embeds: [extensions.createEmbed(interaction, `Your perks are limited to ${uses} times every ${cooldown_text}. Your next use is available <t:${(((cooldown*1000)+parseInt(rows[0].utime))/1000).toFixed(0)}:R>`, null)], ephemeral: true })
-                return false
-            }
+        let [rows,] = await this.#db.promise().query(`SELECT * FROM supporterusage WHERE guildid = '${interaction.guild.id}' AND userid = '${interaction.member.id}' AND utime > '${lastUseCheck}'`)
+        if (rows.length >= uses) {
+            let cooldown_text = ''
+            if (cooldown < 3600) cooldown_text = `${(cooldown/60).toFixed(0)} minutes`
+            else cooldown_text = `${(cooldown/3600).toFixed(0)} hours`
+            await interaction.reply({ embeds: [extensions.createEmbed(interaction, `Your perks are limited to ${uses} times every ${cooldown_text}. Your next use is available <t:${(((cooldown*1000)+parseInt(rows[0].utime))/1000).toFixed(0)}:R>`, null)], ephemeral: true })
+            return false
+        } else {
             await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have received a guaranteed slot.${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`, null)], ephemeral: true })
             return true
-        })
+        }
     }
 
     async processReactablePoints(interaction) {
