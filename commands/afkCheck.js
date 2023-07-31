@@ -497,6 +497,7 @@ class afkCheck {
         let reactablesActionRow = []
         let counter = 0
         for (let i in this.#afkTemplate.buttons) {
+            if (i == 'MiniBossGuessing' && !this.#botSettings.backend.miniBossGuessing) { continue }
             let disableStart = this.#afkTemplate.buttons[i].disableStart
             let start = this.#afkTemplate.buttons[i].start
             let end = start + this.#afkTemplate.buttons[i].lifetime
@@ -902,6 +903,12 @@ class afkCheck {
         const rows = await this.#db.promise().query(`SELECT * FROM miniBossEvent WHERE guildid = '${this.#guild.id}' AND raidid = '${this.#raidID}' AND miniboss = '${choice}'`)
         rows[0].map(row => {
             this.#db.query(`UPDATE users SET points = points + ${points} WHERE id = '${row.userid}'`)
+            let user = this.#guild.users.cache.get(row.userid)
+            try {
+                user.send(`Congratiulations!\nYou have been awared ${points} points for guessing the correct miniboss!\nThe Miniboss was ${choiceEmote} **${choicePrettyName}** ${choiceEmote}`)
+            } catch (e) {
+                console.log('Could not DM user\n\n', e)
+            }
         })
         this.miniBossGuessed = true
         this.removeFromActiveInteractions(interaction.member.id)
@@ -1157,7 +1164,7 @@ class afkCheck {
         let choiceEmote = this.#bot.storedEmojis[buttonInfo.logOptions[choice].emojiName].text;
         embed.setDescription(`You guessed ${choiceEmote} **${choicePrettyName}** ${choiceEmote}`)
         this.miniBossGuessing[interaction.member.id] = choice
-        if (!this.reactables[interaction.customId].members.includes(interaction.member.id)) { this.reactables[interaction.customId].members.push(interaction.member.id) }
+        if (!this.reactables[interaction.customId].members.includes(interaction.member.id)) { console.log(true); this.reactables[interaction.customId].members.push(interaction.member.id) }
         await interaction.followUp({ embeds: [embed], components: [], ephemeral: true })
         await interaction.deleteReply()
         this.removeFromActiveInteractions(interaction.member.id)
@@ -1247,11 +1254,15 @@ class afkCheck {
         })
         
         if (this.#botSettings.backend.points) {
+            console.log(4)
             let pointsLog = []
             for (let i in this.reactables) for (let memberID of this.reactables[i].members) {
+                console.log(3)
                 switch (this.#afkTemplate.buttons[i].type) {
                     case AfkTemplate.TemplateButtonType.OPTION:
-                        if (this.miniBossGuessing.hasOwnProperty(memberID.toString()) && this.members.includes(memberID.toString())) {
+                        console.log(2)
+                        if (this.miniBossGuessing.hasOwnProperty(memberID) && this.members.includes(memberID)) {
+                            console.log(1)
                             this.#db.query(`INSERT INTO miniBossEvent (userid, guildid, raidid, unixtimestamp, miniboss) VALUES ('${memberID}', '${this.#guild.id}', '${this.#raidID}', '${Date.now()}', '${this.miniBossGuessing[memberID]}')`)
                         }
                         break
