@@ -87,7 +87,7 @@ module.exports = {
                     kickList = kickList.concat(` ${player}`)
                 } else if (!voiceUsers.includes(member)) {
                     if (member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.almostrl).position) continue;
-                    if (bot.afkChecks[raid].members.includes(member.id)) allowedCrashers.push(member)
+                    if (raid.members.includes(member.id)) allowedCrashers.push(member)
                     if (member.voice.channel) otherChannel.push(`${member}: ${member.voice.channel}`);
                     else crashers.unshift(`<@!${member.id}>`);
                     kickList = kickList.concat(` ${player}`)
@@ -118,13 +118,13 @@ module.exports = {
                 .setColor('#00ff00')
                 .setDescription(`There are ${crashers.length} crashers, ${alts.length} potential alts, and ${otherChannel.length} people in other channels`)
                 .addFields({ name: 'Potential Alts', value: altsS }, { name: 'Other Channels', value: movedS }, { name: 'Crashers', value: crashersS }, { name: 'Find Command', value: `\`\`\`${find}\`\`\`` }, { name: 'Kick List', value: `\`\`\`${kickList}\`\`\`` })
-            if (bot.afkChecks[raid]) embed.addFields([{name: `Were in VC`, value: `The following can use the \`reconnect\` button:\n${allowedCrashers.map(u => `${u} `)}`}])
+            if (raid) embed.addFields([{name: `Were in VC`, value: `The following can use the \`reconnect\` button:\n${allowedCrashers.map(u => `${u} `)}`}])
             await message.channel.send({ embeds: [embed] });
             parseStatusEmbed.data.fields[1].value = `Crasher Parse Completed. See Below. Beginning Character Parse`
             await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
 
-            if (bot.afkChecks[raid]) {
-                let id = bot.afkChecks[raid].reactables.Key.members[0]
+            if (raid) {
+                let id = raid.reactables.Key.members[0]
                 if (id) {
                     let member = message.guild.members.cache.get(id)
                     if (member) {
@@ -134,7 +134,7 @@ module.exports = {
             }
             //post in crasher-list
             let key = null
-            if (bot.afkChecks[raid].reactables.Key && bot.afkChecks[raid].reactables.Key.members[0]) key = bot.afkChecks[raid].reactables.Key.members[0]
+            if (raid.reactables.Key && raid.reactables.Key.members[0]) key = raid.reactables.Key.members[0]
             if (settings.commands.crasherlist)
                 postInCrasherList(embed, message.guild.channels.cache.get(settings.channels.parsechannel), message.member, key)
         }
