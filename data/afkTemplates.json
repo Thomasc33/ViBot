@@ -51674,7 +51674,13 @@
                 "commandsChannel": null,
                 "activeChannel": null,
                 "enabled": true,
-                "minStaffRoles": null,
+                "minStaffRoles":  {
+                    "vcless": [
+                        ["vetrl"],
+                        ["vetaffiliate"],
+                        ["lostboomer"]
+                    ]
+                },
                 "minViewRaiderRoles": null,
                 "minJoinRaiderRoles": null,
                 "name": "VC-less Oryx 3",
