@@ -286,7 +286,7 @@ class AfkTemplate {
             if (!this.validateTemplateBoolean(this.#template.buttons[i].confirm)) return status = {state: TemplateState.INVALID_BOOLEAN, message: `This afk template at Button ${i} has an Invalid Confirm.`}
             if (!this.validateTemplateBoolean(this.#template.buttons[i].location)) return status = {state: TemplateState.INVALID_BOOLEAN, message: `This afk template at Button ${i} has an Invalid Location.`}
             if (this.#template.buttons[i].minRole && !this.validateTemplateRole(this.#template.buttons[i].minRole)) return status = {state: TemplateState.INVALID_ROLE, message: `This afk template at Button ${i} has an Invalid Minimum Role.`}
-            if (this.#template.buttons[i].minStaffRoles && this.#template.buttons[i].minStaffRoles.some(roles => roles.some(role => !this.validateTemplateRole(role)))) return status = {state: TemplateState.INVALID_ROLE, message: `This afk template at Button ${i} has an Invalid Minimum Staff Role.`}
+            if (this.#template.buttons[i].minStaffRoles && this.#template.buttons[i].minStaffRoles.some(role => !this.validateTemplateRole(role))) return status = {state: TemplateState.INVALID_ROLE, message: `This afk template at Button ${i} has an Invalid Minimum Staff Role.`}
             if (this.#template.buttons[i].confirmationMessage && !this.validateTemplateString(this.#template.buttons[i].confirmationMessage)) return status = {state: TemplateState.INVALID_STRING, message: `This afk template at Button ${i} has an Invalid Confirmation Message.`}
             if (this.#template.buttons[i].confirmationMedia && !this.validateTemplateString(this.#template.buttons[i].confirmationMedia)) return status = {state: TemplateState.INVALID_STRING, message: `This afk template at Button ${i} has an Invalid Confirmation Media.`}
             if (this.#template.buttons[i].disableStart && !this.validateTemplateNumber(this.#template.buttons[i].disableStart)) return status = {state: TemplateState.INVALID_NUMBER, message: `This afk template at Button ${i} has an Invalid Disable Start.`}
@@ -450,7 +450,7 @@ class AfkTemplate {
             if (!this.buttons[i].disableStart) this.buttons[i].disableStart = this.buttons[i].start
             if (this.buttons[i].emote) this.buttons[i].emote = this.#bot.storedEmojis[this.buttons[i].emote]
             if (this.buttons[i].minRole) this.buttons[i].minRole = this.#guild.roles.cache.get(this.#botSettings.roles[this.buttons[i].minRole])
-            if (this.buttons[i].minStaffRoles) this.buttons[i].minStaffRoles = this.buttons[i].minStaffRoles.map(roles => roles.map(role => this.#guild.roles.cache.get(this.#botSettings.roles[role])))
+            if (this.buttons[i].minStaffRoles) this.buttons[i].minStaffRoles = this.buttons[i].minStaffRoles.map(role => this.#guild.roles.cache.get(this.#botSettings.roles[role]))
             if (this.buttons[i].confirmationMessage) this.buttons[i].confirmationMessage = this.processMessages(channel, this.buttons[i].confirmationMessage)
             for (let j in this.buttons[i].logOptions) {
                 if (!this.buttons[i].logOptions[j].points) this.buttons[i].logOptions[j].points = 0
