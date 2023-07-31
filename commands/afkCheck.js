@@ -397,7 +397,7 @@ class afkCheck {
         this.raidStatusEmbed.setColor(this.#afkTemplate.body[phase].embed.color ? this.#afkTemplate.body[phase].embed.color : '#ffffff')
         this.raidStatusEmbed.setDescription(this.#afkTemplate.body[phase].embed.description)
         if (this.#afkTemplate.body[phase].embed.thumbnail) this.raidStatusEmbed.setThumbnail(this.#afkTemplate.body[phase].embed.thumbnail[Math.floor(Math.random()*this.#afkTemplate.body[phase].embed.thumbnail.length)])
-        if (this.#afkTemplate.body[phase].embed.image) this.raidStatusEmbed.setImage(this.#afkTemplate.body[phase].embed.image)
+        if (this.#afkTemplate.body[phase].embed.image) this.raidStatusEmbed.setImage(this.#botSettings.strings[this.#afkTemplate.body[phase].embed.image] ? this.#botSettings.strings[this.#afkTemplate.body[phase].embed.image] : this.#afkTemplate.body[phase].embed.image)
         this.raidStatusEmbed.setFooter({ text: `${this.#guild.name} • ${Math.floor(this.#afkTemplate.body[phase].timeLimit / 60)} Minutes and ${this.#afkTemplate.body[phase].timeLimit % 60} Seconds Remaining`, iconURL: this.#guild.iconURL() })
         
         let reactables = this.getReactables(phase)
