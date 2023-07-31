@@ -25,7 +25,6 @@ module.exports = {
                 minStaffRoles = !minStaffRoles && parentTemplate.minStaffRoles[inherit] ? parentTemplate.minStaffRoles[inherit].map(roles => roles.map(role => message.guild.roles.cache.get(botSettings.roles[role]))) : minStaffRoles
                 if (!minStaffRoles) continue
                 if (!minStaffRoles.some(roles => roles.every(role => role ? message.member.roles.cache.has(role.id) : false))) continue
-                console.log(1)
                 const reacts = template.reacts ? Object.keys(template.reacts).filter(react => template.reacts[react].onHeadcount) : []
                 let newTemplate = `\n${reacts[0] ? `${bot.storedEmojis[template.reacts[reacts[0]].emote].text}| ` : ``}\`${template.aliases.reduce((a, b) => a.length <= b.length ? a : b).padStart(3)}\` | **${template.name}**`
                 if (parentTemplateValue[inherit].value[parentTemplateValue[inherit].field].length + newTemplate.length > 1024) {
