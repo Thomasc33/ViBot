@@ -156,6 +156,7 @@ class afkCheck {
         this.raidChannelsEmbed = null // raid channels embed
         this.raidChannelsMessage = null // raid channels message
         this.raidChannelsInteractionHandler = null // raid channels interaction handler
+        this.vcLounge = this.#guild.channels.cache.get(this.#botSettings.voice.lounge)
         this.raidDragThreads = {}
         Object.keys(afkTemplate.buttons).forEach((key) => { if (afkTemplate.buttons[key].type == AfkTemplate.TemplateButtonType.DRAG) this.raidDragThreads[key] = { thread: null, collector: null } })
 
@@ -193,7 +194,8 @@ class afkCheck {
                 raidInfoMessage: this.raidInfoMessage,
                 raidChannelsEmbed: this.raidChannelsEmbed,
                 raidChannelsMessage: this.raidChannelsMessage,
-                raidDragThreads: this.raidDragThreads
+                raidDragThreads: this.raidDragThreads,
+                vcLounge: this.vcLounge
             }
             this.#bot.afkModules[this.#raidID] = this
         }
@@ -232,6 +234,7 @@ class afkCheck {
         this.raidCommandsMessage = await this.#afkTemplate.raidCommandChannel.messages.fetch(storedAfkCheck.raidCommandsMessage.id)
         this.raidInfoMessage = await this.#afkTemplate.raidInfoChannel.messages.fetch(storedAfkCheck.raidInfoMessage.id)
         this.raidChannelsMessage = await this.#afkTemplate.raidActiveChannel.messages.fetch(storedAfkCheck.raidChannelsMessage.id)
+        this.vcLounge = await this.#guild.channels.cache.get(this.#botSettings.voice.lounge)
 
         this.raidStatusEmbed = new Discord.EmbedBuilder(storedAfkCheck.raidStatusEmbed)
         this.raidCommandsEmbed = new Discord.EmbedBuilder(storedAfkCheck.raidCommandsEmbed)
@@ -1218,7 +1221,7 @@ class afkCheck {
 
         if (this.#channel) {
             for (let minimumJoinRaiderRole of this.#afkTemplate.minimumJoinRaiderRoles) await this.#channel.permissionOverwrites.edit(minimumJoinRaiderRole.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
-            await this.#channel.setPosition(0)
+            await this.#channel.setPosition(this.vcLounge.position + 1)
         }
 
         this.raidStatusEmbed.setDescription(`This afk check has been ended.${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` If you get disconnected during the run, **JOIN LOUNGE** *then* press the huge **RECONNECT** button` : ``}`)
