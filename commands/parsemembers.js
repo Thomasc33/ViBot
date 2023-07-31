@@ -74,7 +74,7 @@ module.exports = {
             var findA = []
             let allowedCrashers = []
             var kickList = '/kick'
-            const raidIDs = afkCheck.returnRaidIDsbyMemberVoice(channel.id)
+            const raidIDs = afkCheck.returnRaidIDsbyMemberVoice(bot, channel.id)
             if (raidIDs.length == 0) return message.channel.send('No raid found in this channel')
             const raid = bot.afkChecks[raidIDs[0]]
             voiceUsers = channel.members.map(m => m);
