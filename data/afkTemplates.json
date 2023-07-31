@@ -2162,7 +2162,7 @@
                         "timeLimit": null,
                         "message": null,
                         "embed": {
-                            "color": "#2f075c",
+                            "color": null,
                             "description": null,
                             "image": null,
                             "thumbnail": null
@@ -2564,7 +2564,7 @@
                         "timeLimit": null,
                         "message": null,
                         "embed": {
-                            "color": "#2f075c",
+                            "color": null,
                             "description": null,
                             "image": null,
                             "thumbnail": null
@@ -10475,8 +10475,8 @@
                     }
                 },
                 "reacts": {
-                    "encore": {
-                        "emote": "encore",
+                    "randomalien": {
+                        "emote": "randomalien",
                         "onHeadcount": true,
                         "start": 1,
                         "lifetime": 2
@@ -10708,8 +10708,8 @@
                         }
                     },
                     "reacts": {
-                        "davy": {
-                            "emote": "davy",
+                        "davys": {
+                            "emote": "davys",
                             "onHeadcount": true,
                             "start": 1,
                             "lifetime": 2
@@ -13915,8 +13915,8 @@
                     }
                 },
                 "reacts": {
-                    "third": {
-                        "emote": "third",
+                    "wetland": {
+                        "emote": "wetland",
                         "onHeadcount": true,
                         "start": 1,
                         "lifetime": 2
@@ -20289,7 +20289,7 @@
                         "timeLimit": null,
                         "message": null,
                         "embed": {
-                            "color": "#2f075c",
+                            "color": null,
                             "description": null,
                             "image": null,
                             "thumbnail": null
@@ -26774,7 +26774,7 @@
                         "timeLimit": null,
                         "message": null,
                         "embed": {
-                            "color": "#2f075c",
+                            "color": null,
                             "description": null,
                             "image": null,
                             "thumbnail": null
@@ -27175,7 +27175,7 @@
                         "timeLimit": null,
                         "message": null,
                         "embed": {
-                            "color": "#2f075c",
+                            "color": null,
                             "description": null,
                             "image": null,
                             "thumbnail": null
@@ -35036,8 +35036,8 @@
                     }
                 },
                 "reacts": {
-                    "encore": {
-                        "emote": "encore",
+                    "randomalien": {
+                        "emote": "randomalien",
                         "onHeadcount": true,
                         "start": 1,
                         "lifetime": 2
@@ -35269,8 +35269,8 @@
                         }
                     },
                     "reacts": {
-                        "davy": {
-                            "emote": "davy",
+                        "davys": {
+                            "emote": "davys",
                             "onHeadcount": true,
                             "start": 1,
                             "lifetime": 2
@@ -38476,8 +38476,8 @@
                     }
                 },
                 "reacts": {
-                    "third": {
-                        "emote": "third",
+                    "wetland": {
+                        "emote": "wetland",
                         "onHeadcount": true,
                         "start": 1,
                         "lifetime": 2
@@ -45650,7 +45650,7 @@
                         "timeLimit": null,
                         "message": null,
                         "embed": {
-                            "color": "#2f075c",
+                            "color": null,
                             "description": null,
                             "image": null,
                             "thumbnail": null
@@ -61347,7 +61347,7 @@
                         "timeLimit": null,
                         "message": null,
                         "embed": {
-                            "color": "#2f075c",
+                            "color": null,
                             "description": null,
                             "image": null,
                             "thumbnail": null
@@ -65238,8 +65238,8 @@
                     }
                 },
                 "reacts": {
-                    "encore": {
-                        "emote": "encore",
+                    "randomalien": {
+                        "emote": "randomalien",
                         "onHeadcount": true,
                         "start": 1,
                         "lifetime": 2
@@ -65459,8 +65459,8 @@
                         }
                     },
                     "reacts": {
-                        "davy": {
-                            "emote": "davy",
+                        "davys": {
+                            "emote": "davys",
                             "onHeadcount": true,
                             "start": 1,
                             "lifetime": 2
@@ -68332,8 +68332,8 @@
                     }
                 },
                 "reacts": {
-                    "third": {
-                        "emote": "third",
+                    "wetland": {
+                        "emote": "wetland",
                         "onHeadcount": true,
                         "start": 1,
                         "lifetime": 2

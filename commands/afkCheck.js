@@ -430,7 +430,7 @@ class afkCheck {
             let position = 0
             for (let i in this.#afkTemplate.buttons) {
                 this.reactables[i].position = position
-                this.raidCommandsEmbed.addFields({ name: `${this.#afkTemplate.buttons[i].emote ? this.#afkTemplate.buttons[i].emote.text : ''} ${i} ${this.#afkTemplate.buttons[i].limit ? `(${this.#afkTemplate.buttons[i].limit})` : ''}`, value: 'None!', inline: true })
+                this.raidCommandsEmbed.addFields({ name: `${this.#afkTemplate.buttons[i].emote ? this.#afkTemplate.buttons[i].emote.text : ''} ${i} ${this.#afkTemplate.buttons[i].limit ? `(${this.#afkTemplate.buttons[i].limit}) ${this.#afkTemplate.buttons[i].location ? `\`L\`` : `` }` : ''}`, value: 'None!', inline: true })
                 position++
             }
         }
