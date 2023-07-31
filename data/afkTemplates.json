@@ -217,7 +217,7 @@
             "veteran": {
                 "parentTemplateID": 4,
                 "category": "veteran raiding",
-                "templateChannel": "717947391755681902",
+                "templateChannel": "718233874643157043",
                 "partneredStatusChannels": {},
                 "statusChannel": "556931967497666570",
                 "commandsChannel": "556932682316120109",
@@ -288,7 +288,7 @@
             "veteranEvent": {
                 "parentTemplateID": 5,
                 "category": "veteran raiding",
-                "templateChannel": "717947391755681902",
+                "templateChannel": "718233874643157043",
                 "partneredStatusChannels": {},
                 "statusChannel": "556931967497666570",
                 "commandsChannel": "556932682316120109",
@@ -49667,11 +49667,11 @@
             "normal": {
                 "parentTemplateID": 169,
                 "category": "raiding",
-                "templateChannel": "717947391755681902",
+                "templateChannel": "1050201090047623229",
                 "partneredStatusChannels": {},
-                "statusChannel": "701483952233250863",
-                "commandsChannel": "701483952233250864",
-                "activeChannel": "1110595993193422941",
+                "statusChannel": "708026932188676171",
+                "commandsChannel": "708026932188676173",
+                "activeChannel": "1110693078555168798",
                 "enabled": true,
                 "minStaffRoles":  {
                     "normal": [
@@ -49735,7 +49735,7 @@
             "silent": {
                 "parentTemplateID": 170,
                 "category": "silent raiding",
-                "templateChannel": "717947391755681902",
+                "templateChannel": "1050201427311595530",
                 "partneredStatusChannels": {},
                 "statusChannel": "1134260973037961247",
                 "commandsChannel": "1134261194828554311",
@@ -49803,7 +49803,7 @@
             "vcless": {
                 "parentTemplateID": 176,
                 "category": "silent raiding",
-                "templateChannel": "717947391755681902",
+                "templateChannel": "1050201427311595530",
                 "partneredStatusChannels": {},
                 "statusChannel": "1134260973037961247",
                 "commandsChannel": "1134261194828554311",
@@ -49871,11 +49871,11 @@
             "example": {
                 "parentTemplateID": 171,
                 "category": "raiding",
-                "templateChannel": "717947391755681902",
+                "templateChannel": "1050201090047623229",
                 "partneredStatusChannels": {},
-                "statusChannel": "701483952233250864",
-                "commandsChannel": "701483952233250864",
-                "activeChannel": "1110595993193422941",
+                "statusChannel": "708026932188676173",
+                "commandsChannel": "708026932188676173",
+                "activeChannel": "1110693078555168798",
                 "enabled": true,
                 "minStaffRoles":  {
                     "example": [
