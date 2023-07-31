@@ -27,8 +27,9 @@ module.exports = {
         const afkTemplate = new AfkTemplate.AfkTemplate(bot, bot.settings[message.guild.id], message, alias)
         await afkTemplate.init()
         const currentStatus = afkTemplate.getStatus()
+        if (currentStatus.state == AfkTemplate.TemplateState.INVALID_CHANNEL) await message.delete()
         if (currentStatus.state != AfkTemplate.TemplateState.SUCCESS) return await message.channel.send(currentStatus.message)
-        if (!afkTemplate.minimumStaffRoles.some(roles => roles.every(role => message.member.roles.cache.has(role.id)))) return await message.channel.send(`You do not have a suitable set of roles out of ${afkTemplate.minimumStaffRoles.reduce((a, b) => `${a}, ${b.join(' + ')}`)})} to run ${afkTemplate.name}.`)
+        if (!afkTemplate.minimumStaffRoles.some(roles => roles.every(role => message.member.roles.cache.has(role.id)))) return await message.channel.send(`You do not have a suitable set of roles out of ${afkTemplate.minimumStaffRoles.reduce((a, b) => `${a}, ${b.join(' + ')}`)} to run ${afkTemplate.name}.`)
         let location = args.join(' ')
         if (location.length >= 1024) return await message.channel.send('Location must be below 1024 characters, try again')
         if (location == '') location = 'None'
@@ -46,21 +47,21 @@ module.exports = {
     returnRaidIDsbyMemberID(bot, memberID) {
         const afkChecks = []
         for (let raidID in bot.afkChecks) {
-            if (bot.afkChecks[raidID].active && bot.afkChecks[raidID].leader == memberID) afkChecks.push(raidID)
+            if (bot.afkChecks[raidID].leader == memberID) afkChecks.push(raidID)
         }
         return afkChecks
     },
     returnRaidIDsbyMemberVoice(bot, voiceID) {
         const afkChecks = []
         for (let raidID in bot.afkChecks) {
-            if (bot.afkChecks[raidID].active && bot.afkChecks[raidID].channel == voiceID) afkChecks.push(raidID)
+            if (bot.afkChecks[raidID].channel == voiceID) afkChecks.push(raidID)
         }
         return afkChecks
     },
     returnRaidIDsbyRaidID(bot, RSAID) {
         const afkChecks = []
         for (let raidID in bot.afkChecks) {
-            if (bot.afkChecks[raidID].active && bot.afkChecks[raidID].raidStatusMessage && bot.afkChecks[raidID].raidStatusMessage.id == RSAID) afkChecks.push(raidID)
+            if (bot.afkChecks[raidID].raidStatusMessage && bot.afkChecks[raidID].raidStatusMessage.id == RSAID) afkChecks.push(raidID)
         }
         return afkChecks
     },
@@ -76,7 +77,7 @@ module.exports = {
     returnActiveRaidIDs() {
         const afkChecks = []
         for (let raidID in bot.afkChecks) {
-            if (bot.afkChecks[raidID].active) afkChecks.push(raidID)
+            afkChecks.push(raidID)
         }
         return afkChecks
     },
@@ -400,7 +401,7 @@ class afkCheck {
         this.raidStatusEmbed.setColor(this.#afkTemplate.body[phase].embed.color ? this.#afkTemplate.body[phase].embed.color : '#ffffff')
         this.raidStatusEmbed.setDescription(this.#afkTemplate.body[phase].embed.description)
         if (this.#afkTemplate.body[phase].embed.thumbnail) this.raidStatusEmbed.setThumbnail(this.#afkTemplate.body[phase].embed.thumbnail[Math.floor(Math.random()*this.#afkTemplate.body[phase].embed.thumbnail.length)])
-        if (this.#afkTemplate.body[phase].embed.image) this.raidStatusEmbed.setImage(this.#afkTemplate.body[phase].embed.image)
+        if (this.#afkTemplate.body[phase].embed.image) this.raidStatusEmbed.setImage(this.#botSettings.strings[this.#afkTemplate.body[phase].embed.image] ? this.#botSettings.strings[this.#afkTemplate.body[phase].embed.image] : this.#afkTemplate.body[phase].embed.image)
         this.raidStatusEmbed.setFooter({ text: `${this.#guild.name} • ${Math.floor(this.#afkTemplate.body[phase].timeLimit / 60)} Minutes and ${this.#afkTemplate.body[phase].timeLimit % 60} Seconds Remaining`, iconURL: this.#guild.iconURL() })
         
         let reactables = this.getReactables(phase)
@@ -514,7 +515,7 @@ class afkCheck {
             let label = `${this.#afkTemplate.buttons[i].displayName ? `${i} ` : ``}${this.#afkTemplate.buttons[i].limit ? ` ${this.reactables[i].members.length}/${this.#afkTemplate.buttons[i].limit}` : ``}`
             reactableButton.setLabel(label)
             if (this.#afkTemplate.buttons[i].emote) reactableButton.setEmoji(this.#afkTemplate.buttons[i].emote.id)
-            if (this.reactables[i].members.length == this.#afkTemplate.buttons[i].limit) reactableButton.setDisabled(true)
+            if (this.reactables[i].members.length >= this.#afkTemplate.buttons[i].limit) reactableButton.setDisabled(true)
             if (disableStart < start && start > phase) reactableButton.setDisabled(true)
             reactablesActionRow.push(reactableButton)
             counter ++
@@ -607,6 +608,13 @@ class afkCheck {
             if (!this.earlySlotMembers.includes(interaction.member.id)) this.earlySlotMembers.push(interaction.member.id)
             if (buttonInfo.location && !this.earlyLocationMembers.includes(interaction.member.id)) this.earlyLocationMembers.push(interaction.member.id)
             this.raidCommandsEmbed.data.fields[position].value = this.reactables[interaction.customId].members.reduce((string, id, ind) => string + `${emote ? emote : ind+1}: <@!${id}>\n`, '')
+            if (interaction.customId.includes('request')) {
+                this.raidCommandsEmbed.data.fields[position].value = this.reactables[interaction.customId.substring(0, interaction.customId.length - 8)].members.reduce((string, id, ind) => string + `${emote ? emote : ind+1}: <@!${id}>\n`, '')
+                this.raidCommandsEmbed.data.fields[position].value += this.reactables[interaction.customId].members.reduce((string, id, ind) => string + `${emote ? emote : ind+1}: <@!${id}>\n`, '')
+            } else if (this.reactables[`${interaction.customId}_request`]) {
+                this.raidCommandsEmbed.data.fields[position].value = this.reactables[interaction.customId].members.reduce((string, id, ind) => string + `${emote ? emote : ind+1}: <@!${id}>\n`, '')
+                this.raidCommandsEmbed.data.fields[position].value += this.reactables[`${interaction.customId}_request`].members.reduce((string, id, ind) => string + `${emote ? emote : ind+1}: <@!${id}>\n`, '')
+            }
             if (this.raidCommandsEmbed.data.fields[position].value.length >= 1024) this.raidCommandsEmbed.data.fields[position].value = '*Too many users to process*'
             await this.raidCommandsMessage.edit({ embeds: [this.raidCommandsEmbed] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
             await this.raidInfoMessage.edit({ embeds: [this.raidCommandsEmbed] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
@@ -1004,21 +1012,16 @@ class afkCheck {
         let cooldown = this.#botSettings.supporter[`supporterCooldownSeconds${supporterRole}`]
         let uses = this.#botSettings.supporter[`supporterUses${supporterRole}`]
         let lastUseCheck = Date.now() - (cooldown * 1000)
-        this.#db.query(`SELECT * FROM supporterusage WHERE guildid = '${interaction.guild.id}' AND userid = '${interaction.member.id}' AND utime > '${lastUseCheck}'`, async (err, rows) => {
-            if (err) {
-                ErrorLogger.log(err, this.#bot, this.#guild)
-                return false
-            }
-            if (rows.length >= uses) {
-                let cooldown_text = ''
-                if (cooldown < 3600) cooldown_text = `${(cooldown/60).toFixed(0)} minutes`
-                else cooldown_text = `${(cooldown/3600).toFixed(0)} hours`
-                await interaction.reply({ embeds: [extensions.createEmbed(interaction, `Your perks are limited to ${uses} times every ${cooldown_text}. Your next use is available <t:${(((cooldown*1000)+parseInt(rows[0].utime))/1000).toFixed(0)}:R>`, null)], ephemeral: true })
-                return false
-            }
-            await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have received a guaranteed slot.${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`, null)], ephemeral: true })
-            return true
-        })
+        let [rows,] = await this.#db.promise().query(`SELECT * FROM supporterusage WHERE guildid = '${interaction.guild.id}' AND userid = '${interaction.member.id}' AND utime > '${lastUseCheck}'`)
+        if (rows.length >= uses) {
+            let cooldown_text = ''
+            if (cooldown < 3600) cooldown_text = `${(cooldown/60).toFixed(0)} minutes`
+            else cooldown_text = `${(cooldown/3600).toFixed(0)} hours`
+            await interaction.reply({ embeds: [extensions.createEmbed(interaction, `Your perks are limited to ${uses} times every ${cooldown_text}. Your next use is available <t:${(((cooldown*1000)+parseInt(rows[0].utime))/1000).toFixed(0)}:R>`, null)], ephemeral: true })
+            return false
+        }
+        await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have received a guaranteed slot.${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`, null)], ephemeral: true })
+        return true
     }
 
     async processReactablePoints(interaction) {
@@ -1031,14 +1034,9 @@ class afkCheck {
         }
         
         let points = 0
-        this.#db.query(`SELECT points FROM users WHERE id = '${interaction.member.id}'`, async (err, rows) => {
-            if (err) {
-                ErrorLogger.log(err, this.#bot, this.#guild)
-                return false
-            }
-            if (rows.length == 0) return this.#db.query(`INSERT INTO users (id) VALUES ('${interaction.member.id}')`)
-            points = rows[0].points
-        })
+        let [userRows,] = await this.#db.promise().query(`SELECT points FROM users WHERE id = '${interaction.member.id}'`)
+        if (userRows.length == 0) return this.#db.query(`INSERT INTO users (id) VALUES ('${interaction.member.id}')`)
+        points = userRows[0].points
 
         if (points < this.#botSettings.points.earlylocation) {
             await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You do not have enough points.\nYou currently have ${emote} \`${points}\` points\nEarly location costs ${emote} \`${this.#botSettings.points.earlylocation}\``, null)], ephemeral: true })
@@ -1048,8 +1046,9 @@ class afkCheck {
         if (buttonInfo.confirm) {
             let descriptionBeginning = `You reacted with ${emote}${interaction.customId}.\n`
             let descriptionEnd = `Press ✅ to confirm your reaction. Otherwise press ❌`
+            let descriptionMiddle = ``
             if (buttonInfo.confirmationMessage) descriptionMiddle = `${buttonInfo.confirmationMessage}\n`
-            else descriptionMiddle = `You currently have ${emote} \`${points}\` points\nEarly location costs ${emote} \`${this.#botSettings.points.earlylocation}\``
+            else descriptionMiddle = `You currently have ${emote} \`${points}\` points\nEarly location costs ${emote} \`${this.#botSettings.points.earlylocation}\`.\n`
             const text = `${descriptionBeginning}${descriptionMiddle}${descriptionEnd}`
             const confirmButton = new Discord.ButtonBuilder()
                 .setLabel('✅ Confirm')
