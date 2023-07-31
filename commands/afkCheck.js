@@ -1028,14 +1028,9 @@ class afkCheck {
         }
         
         let points = 0
-        this.#db.query(`SELECT points FROM users WHERE id = '${interaction.member.id}'`, async (err, rows) => {
-            if (err) {
-                ErrorLogger.log(err, this.#bot, this.#guild)
-                return false
-            }
-            if (rows.length == 0) return this.#db.query(`INSERT INTO users (id) VALUES ('${interaction.member.id}')`)
-            points = rows[0].points
-        })
+        let [userRows,] = await this.#db.promise().query(`SELECT points FROM users WHERE id = '${interaction.member.id}'`)
+        if (userRows.length == 0) return this.#db.query(`INSERT INTO users (id) VALUES ('${interaction.member.id}')`)
+        points = userRows[0].points
 
         if (points < this.#botSettings.points.earlylocation) {
             await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You do not have enough points.\nYou currently have ${emote} \`${points}\` points\nEarly location costs ${emote} \`${this.#botSettings.points.earlylocation}\``, null)], ephemeral: true })
@@ -1045,8 +1040,9 @@ class afkCheck {
         if (buttonInfo.confirm) {
             let descriptionBeginning = `You reacted with ${emote}${interaction.customId}.\n`
             let descriptionEnd = `Press ✅ to confirm your reaction. Otherwise press ❌`
+            let descriptionMiddle = ``
             if (buttonInfo.confirmationMessage) descriptionMiddle = `${buttonInfo.confirmationMessage}\n`
-            else descriptionMiddle = `You currently have ${emote} \`${points}\` points\nEarly location costs ${emote} \`${this.#botSettings.points.earlylocation}\``
+            else descriptionMiddle = `You currently have ${emote} \`${points}\` points\nEarly location costs ${emote} \`${this.#botSettings.points.earlylocation}\`.\n`
             const text = `${descriptionBeginning}${descriptionMiddle}${descriptionEnd}`
             const confirmButton = new Discord.ButtonBuilder()
                 .setLabel('✅ Confirm')
