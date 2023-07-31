@@ -30,9 +30,11 @@ async function tryUnsuspend(bot, g, row, isVetBan) {
             const rolesString = row.roles;
             rolesString.split(' ').forEach(r => { if (r !== '') roles.push(r) })
 
-            await member.edit({ roles }).catch(er => ErrorLogger.log(er, bot, g))
-            setTimeout(() => {
-                if (member.roles.cache.has(settings.roles.tempsuspended)) {member.edit({ roles }).catch(er => ErrorLogger.log(er, bot, g))}
+            await member.roles.add(roles).catch(er => ErrorLogger.log(er, bot, g));
+            setTimeout(async () => {
+                if (member.roles.cache.has(settings.roles.tempsuspended)) await member.roles.remove(settings.roles.tempsuspended).catch(er => ErrorLogger.log(er, bot, g));
+                if (member.roles.cache.has(settings.roles.permasuspended)) await member.roles.remove(settings.roles.permasuspended);
+                if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) await member.roles.remove(settings.roles.unverified)
             }, 5000)
         }
 

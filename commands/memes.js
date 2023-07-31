@@ -2,7 +2,8 @@ const vr_gamers = ['277636691227836419', '130850662522159104', '2582864811672207
 
 module.exports = {
     name: 'memes',
-    alias: ['phd', 'xbox', 'cwinner', 'eury', 'nefiah', 'abysm', 'drunkdevil', 'shiba', 'rj', 'vr', 'pusbal', 'bantering'],
+    alias: ['phd', 'xbox', 'cwinner', 'eury', 'nefiah', 'abysm', 'drunkdevil', 'shiba',
+    'rj', 'vr', 'pusbal', 'bantering', 'chevyo', 'ruler', 'shut', 'grizzell'],
     role: 'eventrl',
     async execute(message, args, bot) {
         const settings = bot.settings[message.guild.id]
@@ -44,6 +45,30 @@ module.exports = {
                 break;
             case 'bantering':
                 message.channel.send('Command is too big. Failed to process');
+                break;
+            case 'chevyo':
+                message.channel.send('https://images-ext-2.discordapp.net/external/y4eQmXCyla2kGBKtkNxYpwBttqTmShOkaVTU_6I7y-s/https/media.tenor.com/3y2b_SLSDMEAAAPo/rotmg-rotmg-oryx3.mp4');
+                break;
+            case 'ruler':
+                message.channel.send(`<@!164887742134616064> Happy Birthday!`);
+                break;
+            case 'shut':
+                if (!['164887742134616064'].includes(message.member.id)) { return }
+                let ruler = message.guild.members.cache.get('164887742134616064');
+                const messages = await message.channel.messages.fetch({ limit: 100 });
+                messages.forEach(async channelMessage => {
+                    if (channelMessage.author.bot) { return; }
+                    if (
+                        channelMessage.mentions.users.get(ruler.id)
+                        || channelMessage.content.toLowerCase().startsWith(';ruler')
+                    ) {
+                        await channelMessage.reply('Shut');
+                    }
+                })
+                break;
+            case 'grizzell':
+                message.channel.send({ content: '<@!340267639295180800>', files: ['https://images-ext-2.discordapp.net/external/q4b29Q5UiDUukhqTFxqPM1JfeNbZMx29DR8Qfv5ZjeM/https/media.tenor.com/2z4Gh-mYA2gAAAPo/rat-shower.mp4'] })
+                break
         }
     }
 }
