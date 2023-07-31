@@ -29,7 +29,7 @@ module.exports = {
         const currentStatus = afkTemplate.getStatus()
         if (currentStatus.state == AfkTemplate.TemplateState.INVALID_CHANNEL) await message.delete()
         if (currentStatus.state != AfkTemplate.TemplateState.SUCCESS) return await message.channel.send(currentStatus.message)
-        if (!afkTemplate.minimumStaffRoles.some(roles => roles.every(role => message.member.roles.cache.has(role.id)))) return await message.channel.send(`You do not have a suitable set of roles out of ${afkTemplate.minimumStaffRoles.reduce((a, b) => `${a}, ${b.join(' + ')}`)} to run ${afkTemplate.name}.`)
+        if (!afkTemplate.minimumStaffRoles.some(roles => roles.every(role => message.member.roles.cache.has(role.id)))) return await message.channel.send({embeds: [extensions.createEmbed(message, `You do not have a suitable set of roles out of ${afkTemplate.minimumStaffRoles.reduce((a, b) => `${a}, ${b.join(' + ')}`)} to run ${afkTemplate.name}.`, null)] })
         let location = args.join(' ')
         if (location.length >= 1024) return await message.channel.send('Location must be below 1024 characters, try again')
         if (location == '') location = 'None'
@@ -1349,13 +1349,16 @@ class afkCheck {
     addDeleteandLoggingButtons() {
         const phaseComponents = []
         let phaseActionRow = []
-        let counter = 2
+        let counter = 1
 
-        const phaseLogAdditionalButton = new Discord.ButtonBuilder()
-            .setLabel('Log Additional Complete')
-            .setStyle(1)
-            .setCustomId('additional')
-        phaseActionRow.push(phaseLogAdditionalButton)
+        if (this.#botSettings.backend.allowAdditionalCompletes) {
+            counter++
+            const phaseLogAdditionalButton = new Discord.ButtonBuilder()
+                .setLabel('Log Additional Complete')
+                .setStyle(1)
+                .setCustomId('additional')
+            phaseActionRow.push(phaseLogAdditionalButton)
+        }
 
         if (this.#botSettings.backend.miniBossGuessing) {
             counter++

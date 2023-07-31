@@ -31,7 +31,7 @@ module.exports = {
         await afkTemplate.init()
         const currentStatus = afkTemplate.getStatus()
         if (currentStatus.state != AfkTemplate.TemplateState.SUCCESS) return await message.channel.send(currentStatus.message)
-        if (!afkTemplate.minimumStaffRoles.some(roles => roles.every(role => message.member.roles.cache.has(role.id)))) return await message.channel.send(`You do not have a suitable set of roles out of ${afkTemplate.minimumStaffRoles.reduce((a, b) => `${a}, ${b.join(' + ')}`)} to run ${afkTemplate.name}.`)
+        if (!afkTemplate.minimumStaffRoles.some(roles => roles.every(role => message.member.roles.cache.has(role.id)))) return await message.channel.send({ embeds: [createEmbed(message, `You do not have a suitable set of roles out of ${afkTemplate.minimumStaffRoles.reduce((a, b) => `${a}, ${b.join(' + ')}`)} to run ${afkTemplate.name}.`, null)] })
         afkTemplate.processReacts()
         afkTemplate.processButtons(null)
         const raidStatusEmbed = createEmbed(message, afkTemplate.processBodyDescriptionHeadcount(), botSettings.strings[afkTemplate.body[1].embed.image] ? botSettings.strings[afkTemplate.body[1].embed.image] : afkTemplate.body[1].embed.image)
@@ -47,7 +47,7 @@ module.exports = {
             if (afkTemplate.reacts[i].onHeadcount && afkTemplate.reacts[i].emote) await raidStatusMessage.react(afkTemplate.reacts[i].emote.id)
         }
         for (let i in afkTemplate.buttons) {
-            if (afkTemplate.buttons[i].type == AfkTemplate.TemplateButtonType.NORMAL || afkTemplate.buttons[i].type == AfkTemplate.TemplateButtonType.LOG && afkTemplate.buttons[i].emote) await raidStatusMessage.react(afkTemplate.buttons[i].emote.id)
+            if ((afkTemplate.buttons[i].type == AfkTemplate.TemplateButtonType.NORMAL || afkTemplate.buttons[i].type == AfkTemplate.TemplateButtonType.LOG) && afkTemplate.buttons[i].emote) await raidStatusMessage.react(afkTemplate.buttons[i].emote.id)
         }
 
         function updateHeadcount() {
