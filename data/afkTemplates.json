@@ -56522,7 +56522,7 @@
                         ["rl","vetMoonlightBanner"]
                     ],
                     "veteran": [
-                        ["vetrl", "veteranMoonlightBanner"]
+                        ["vetrl", "vetMoonlightBanner"]
                     ]
                 },
                 "minViewRaiderRoles": null,
@@ -57625,7 +57625,7 @@
                 "enabled": true,
                 "minStaffRoles":{
                     "veteran": [
-                        ["vetrl", "veteranMoonlightBanner"]
+                        ["vetrl", "vetMoonlightBanner"]
                     ]
                 },
                 "minViewRaiderRoles": null,
