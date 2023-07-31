@@ -49694,31 +49694,31 @@
                 "capButton": false,
                 "phases": 2,
                 "body": {
+                    "1": {
+                        "vcState": 0,
+                        "nextPhaseButton": "Open Channel",
+                        "timeLimit": 360,
+                        "message": "Early Reacts, click the buttons",
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    "2": {
+                        "vcState": 1,
+                        "nextPhaseButton": "Start Run",
+                        "timeLimit": 360,
+                        "message": "The channel will be open",
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
                     "default": {
-                        "1": {
-                            "vcState": 0,
-                            "nextPhaseButton": "Open Channel",
-                            "timeLimit": 360,
-                            "message": "Early Reacts, click the buttons",
-                            "embed": {
-                                "color": null,
-                                "description": null,
-                                "image": null,
-                                "thumbnail": null
-                            }
-                        },
-                        "2": {
-                            "vcState": 1,
-                            "nextPhaseButton": "Start Run",
-                            "timeLimit": 360,
-                            "message": "The channel will be open",
-                            "embed": {
-                                "color": null,
-                                "description": null,
-                                "image": null,
-                                "thumbnail": null
-                            }
-                        },
                         "vcState": 0,
                         "nextPhaseButton": "Open Channel",
                         "timeLimit": 360,
@@ -49899,31 +49899,31 @@
                 "capButton": false,
                 "phases": 2,
                 "body": {
+                    "1": {
+                        "vcState": 0,
+                        "nextPhaseButton": "Open Channel",
+                        "timeLimit": 360,
+                        "message": "Early Reacts, click the buttons",
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    "2": {
+                        "vcState": 1,
+                        "nextPhaseButton": "Start Run",
+                        "timeLimit": 360,
+                        "message": "The channel will be open",
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
                     "default": {
-                        "1": {
-                            "vcState": 0,
-                            "nextPhaseButton": "Open Channel",
-                            "timeLimit": 360,
-                            "message": "Early Reacts, click the buttons",
-                            "embed": {
-                                "color": null,
-                                "description": null,
-                                "image": null,
-                                "thumbnail": null
-                            }
-                        },
-                        "2": {
-                            "vcState": 1,
-                            "nextPhaseButton": "Start Run",
-                            "timeLimit": 360,
-                            "message": "The channel will be open",
-                            "embed": {
-                                "color": null,
-                                "description": null,
-                                "image": null,
-                                "thumbnail": null
-                            }
-                        },
                         "vcState": 0,
                         "nextPhaseButton": "Open Channel",
                         "timeLimit": 360,
@@ -55955,31 +55955,31 @@
                 "capButton": false,
                 "phases": 2,
                 "body": {
+                    "1": {
+                        "vcState": 0,
+                        "nextPhaseButton": "Open Channel",
+                        "timeLimit": 360,
+                        "message": "Early Reacts, click the buttons",
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    "2": {
+                        "vcState": 1,
+                        "nextPhaseButton": "Start Run",
+                        "timeLimit": 360,
+                        "message": "The channel will be open",
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
                     "default": {
-                        "1": {
-                            "vcState": 0,
-                            "nextPhaseButton": "Open Channel",
-                            "timeLimit": 360,
-                            "message": "Early Reacts, click the buttons",
-                            "embed": {
-                                "color": null,
-                                "description": null,
-                                "image": null,
-                                "thumbnail": null
-                            }
-                        },
-                        "2": {
-                            "vcState": 1,
-                            "nextPhaseButton": "Start Run",
-                            "timeLimit": 360,
-                            "message": "The channel will be open",
-                            "embed": {
-                                "color": null,
-                                "description": null,
-                                "image": null,
-                                "thumbnail": null
-                            }
-                        },
                         "vcState": 0,
                         "nextPhaseButton": "Open Channel",
                         "timeLimit": 360,
@@ -56021,31 +56021,31 @@
                 "capButton": false,
                 "phases": 2,
                 "body": {
+                    "1": {
+                        "vcState": 0,
+                        "nextPhaseButton": "Open Channel",
+                        "timeLimit": 360,
+                        "message": "Early Reacts, click the buttons",
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    "2": {
+                        "vcState": 1,
+                        "nextPhaseButton": "Start Run",
+                        "timeLimit": 360,
+                        "message": "The channel will be open",
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
                     "default": {
-                        "1": {
-                            "vcState": 0,
-                            "nextPhaseButton": "Open Channel",
-                            "timeLimit": 360,
-                            "message": "Early Reacts, click the buttons",
-                            "embed": {
-                                "color": null,
-                                "description": null,
-                                "image": null,
-                                "thumbnail": null
-                            }
-                        },
-                        "2": {
-                            "vcState": 1,
-                            "nextPhaseButton": "Start Run",
-                            "timeLimit": 360,
-                            "message": "The channel will be open",
-                            "embed": {
-                                "color": null,
-                                "description": null,
-                                "image": null,
-                                "thumbnail": null
-                            }
-                        },
                         "vcState": 0,
                         "nextPhaseButton": "Open Channel",
                         "timeLimit": 360,
@@ -56091,31 +56091,31 @@
                 "capButton": false,
                 "phases": 2,
                 "body": {
+                    "1": {
+                        "vcState": 0,
+                        "nextPhaseButton": "Open Channel",
+                        "timeLimit": 360,
+                        "message": "Early Reacts, click the buttons",
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    "2": {
+                        "vcState": 1,
+                        "nextPhaseButton": "Start Run",
+                        "timeLimit": 360,
+                        "message": "The channel will be open",
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
                     "default": {
-                        "1": {
-                            "vcState": 0,
-                            "nextPhaseButton": "Open Channel",
-                            "timeLimit": 360,
-                            "message": "Early Reacts, click the buttons",
-                            "embed": {
-                                "color": null,
-                                "description": null,
-                                "image": null,
-                                "thumbnail": null
-                            }
-                        },
-                        "2": {
-                            "vcState": 1,
-                            "nextPhaseButton": "Start Run",
-                            "timeLimit": 360,
-                            "message": "The channel will be open",
-                            "embed": {
-                                "color": null,
-                                "description": null,
-                                "image": null,
-                                "thumbnail": null
-                            }
-                        },
                         "vcState": 0,
                         "nextPhaseButton": "Open Channel",
                         "timeLimit": 360,
@@ -56159,31 +56159,31 @@
                 "capButton": false,
                 "phases": 2,
                 "body": {
+                    "1": {
+                        "vcState": 0,
+                        "nextPhaseButton": "Open Channel",
+                        "timeLimit": 360,
+                        "message": "Early Reacts, click the buttons",
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    "2": {
+                        "vcState": 1,
+                        "nextPhaseButton": "Start Run",
+                        "timeLimit": 360,
+                        "message": "The channel will be open",
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
                     "default": {
-                        "1": {
-                            "vcState": 0,
-                            "nextPhaseButton": "Open Channel",
-                            "timeLimit": 360,
-                            "message": "Early Reacts, click the buttons",
-                            "embed": {
-                                "color": null,
-                                "description": null,
-                                "image": null,
-                                "thumbnail": null
-                            }
-                        },
-                        "2": {
-                            "vcState": 1,
-                            "nextPhaseButton": "Start Run",
-                            "timeLimit": 360,
-                            "message": "The channel will be open",
-                            "embed": {
-                                "color": null,
-                                "description": null,
-                                "image": null,
-                                "thumbnail": null
-                            }
-                        },
                         "vcState": 0,
                         "nextPhaseButton": "Open Channel",
                         "timeLimit": 360,
