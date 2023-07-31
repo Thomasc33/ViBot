@@ -27,8 +27,9 @@ module.exports = {
         const afkTemplate = new AfkTemplate.AfkTemplate(bot, bot.settings[message.guild.id], message, alias)
         await afkTemplate.init()
         const currentStatus = afkTemplate.getStatus()
+        if (currentStatus.state == AfkTemplate.TemplateState.INVALID_CHANNEL) await message.delete()
         if (currentStatus.state != AfkTemplate.TemplateState.SUCCESS) return await message.channel.send(currentStatus.message)
-        if (!afkTemplate.minimumStaffRoles.some(roles => roles.every(role => message.member.roles.cache.has(role.id)))) return await message.channel.send(`You do not have a suitable set of roles out of ${afkTemplate.minimumStaffRoles.reduce((a, b) => `${a}, ${b.join(' + ')}`)})} to run ${afkTemplate.name}.`)
+        if (!afkTemplate.minimumStaffRoles.some(roles => roles.every(role => message.member.roles.cache.has(role.id)))) return await message.channel.send(`You do not have a suitable set of roles out of ${afkTemplate.minimumStaffRoles.reduce((a, b) => `${a}, ${b.join(' + ')}`)} to run ${afkTemplate.name}.`)
         let location = args.join(' ')
         if (location.length >= 1024) return await message.channel.send('Location must be below 1024 characters, try again')
         if (location == '') location = 'None'
@@ -511,7 +512,7 @@ class afkCheck {
             let label = `${this.#afkTemplate.buttons[i].displayName ? `${i} ` : ``}${this.#afkTemplate.buttons[i].limit ? ` ${this.reactables[i].members.length}/${this.#afkTemplate.buttons[i].limit}` : ``}`
             reactableButton.setLabel(label)
             if (this.#afkTemplate.buttons[i].emote) reactableButton.setEmoji(this.#afkTemplate.buttons[i].emote.id)
-            if (this.reactables[i].members.length == this.#afkTemplate.buttons[i].limit) reactableButton.setDisabled(true)
+            if (this.reactables[i].members.length >= this.#afkTemplate.buttons[i].limit) reactableButton.setDisabled(true)
             if (disableStart < start && start > phase) reactableButton.setDisabled(true)
             reactablesActionRow.push(reactableButton)
             counter ++
