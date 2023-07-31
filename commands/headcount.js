@@ -37,7 +37,10 @@ module.exports = {
         const raidStatusEmbed = createEmbed(message, afkTemplate.processBodyDescriptionHeadcount(), botSettings.strings[afkTemplate.body[1].embed.image] ? botSettings.strings[afkTemplate.body[1].embed.image] : afkTemplate.body[1].embed.image)
         raidStatusEmbed.setColor(afkTemplate.body[1].embed.color ? afkTemplate.body[1].embed.color : '#ffffff')
         raidStatusEmbed.setAuthor({ name: `Headcount for ${afkTemplate.name} by ${message.member.nickname}`, iconURL: message.member.user.avatarURL() })
-        if (time != 0) raidStatusEmbed.setFooter({ text: `${message.guild.name} • ${Math.floor(time / 60)} Minutes and ${time % 60} Seconds Remaining`, iconURL: message.guild.iconURL() })
+        if (time != 0) {
+            raidStatusEmbed.setFooter({ text: `${message.guild.name} • ${Math.floor(time / 60)} Minutes and ${time % 60} Seconds Remaining`, iconURL: message.guild.iconURL() })
+            raidStatusEmbed.setDescription(`**Abort <t:${Math.floor(Date.now()/1000)+time}:R>**\n${raidStatusEmbed.data.description}`)
+        }
         if (afkTemplate.body[1].embed.thumbnail) raidStatusEmbed.setThumbnail(afkTemplate.body[1].embed.thumbnail[Math.floor(Math.random()*afkTemplate.body[1].embed.thumbnail.length)])
         const raidStatusMessage = await afkTemplate.raidStatusChannel.send({ content: `${afkTemplate.pingRoles ? afkTemplate.pingRoles.join(' ') : ''}`, embeds: [raidStatusEmbed] })
         for (let i in afkTemplate.reacts) {
