@@ -455,6 +455,7 @@
                 "name": "Void",
                 "templateName": "Void",
                 "pingRoles": [
+                    "here",
                     "voidping"
                 ],
                 "aliases": [
@@ -869,6 +870,7 @@
                 "name": "Exa. Void",
                 "templateName": "Exalted Void",
                 "pingRoles": [
+                    "here",
                     "voidping"
                 ],
                 "aliases": [
@@ -1254,6 +1256,7 @@
                 "name": "Full-Skip Void",
                 "templateName": "Full-Skip Void",
                 "pingRoles": [
+                    "here",
                     "fskipReact"
                 ],
                 "aliases": [
@@ -1645,6 +1648,7 @@
                 "name": "Exa. Full-Skip Void",
                 "templateName": "Exalted Full-Skip Void",
                 "pingRoles": [
+                    "here",
                     "fskipReact"
                 ],
                 "aliases": [
@@ -2040,6 +2044,7 @@
                 "name": "Cult",
                 "templateName": "Cult",
                 "pingRoles": [
+                    "here",
                     "cultping"
                 ],
                 "aliases": [
@@ -2427,6 +2432,7 @@
                 "name": "Exa. Cult",
                 "templateName": "Exalted Cult",
                 "pingRoles": [
+                    "here",
                     "cultping"
                 ],
                 "aliases": [
@@ -2815,6 +2821,7 @@
                 "name": "Shatters",
                 "templateName": "Shatters",
                 "pingRoles": [
+                    "here",
                     "shattsReact"
                 ],
                 "aliases": [
@@ -3217,6 +3224,7 @@
                 "name": "Accursed Shatters",
                 "templateName": "Accursed Shatters",
                 "pingRoles": [
+                    "here",
                     "accursedReact"
                 ],
                 "aliases": [
@@ -3635,6 +3643,7 @@
                 "name": "VC-less Accursed Shatters",
                 "templateName": "VC-less Accursed Shatters",
                 "pingRoles": [
+                    "here",
                     "accursedReact"
                 ],
                 "aliases": [
@@ -4063,6 +4072,7 @@
                 "name": "Exa. Shatters",
                 "templateName": "Exalted Shatters",
                 "pingRoles": [
+                    "here",
                     "shattsReact"
                 ],
                 "aliases": [
@@ -4474,6 +4484,7 @@
                 "name": "Nest",
                 "templateName": "Nest",
                 "pingRoles": [
+                    "here",
                     "nestReact"
                 ],
                 "aliases": [
@@ -4813,6 +4824,7 @@
                 "name": "Exa. Nest",
                 "templateName": "Exalted Nest",
                 "pingRoles": [
+                    "here",
                     "nestReact"
                 ],
                 "aliases": [
@@ -5164,6 +5176,7 @@
                 "name": "Kogbold Steamworks",
                 "templateName": "Kogbold Steamworks",
                 "pingRoles": [
+                    "here",
                     "steamworksping"
                 ],
                 "aliases": [
@@ -5559,6 +5572,7 @@
                 "name": "Exa. Kogbold Steamworks",
                 "templateName": "Exalted Kogbold Steamworks",
                 "pingRoles": [
+                    "here",
                     "steamworksping"
                 ],
                 "aliases": [
@@ -5958,6 +5972,7 @@
                 "name": "Moonlight Village",
                 "templateName": "Moonlight Village",
                 "pingRoles": [
+                    "here",
                     "moonlightping"
                 ],
                 "aliases": [
@@ -6273,6 +6288,7 @@
                 "name": "Exa. Moonlight Village",
                 "templateName": "Exalted Moonlight Village",
                 "pingRoles": [
+                    "here",
                     "moonlightping"
                 ],
                 "aliases": [
@@ -6593,6 +6609,7 @@
                 "name": "Fungal Cavern",
                 "templateName": "Fungal Cavern",
                 "pingRoles": [
+                    "here",
                     "fungalReact"
                 ],
                 "aliases": [
@@ -6981,6 +6998,7 @@
                 "name": "Exa. Fungal Cavern",
                 "templateName": "Exalted Fungal Cavern",
                 "pingRoles": [
+                    "here",
                     "fungalReact"
                 ],
                 "aliases": [
@@ -49969,6 +49987,7 @@
                 "name": "Oryx 3",
                 "templateName": "Oryx 3",
                 "pingRoles": [
+                    "here",
                     "o3Ping"
                 ],
                 "aliases": [
@@ -50386,6 +50405,7 @@
                 "name": "VC-less Oryx 3",
                 "templateName": "VC-less Oryx 3",
                 "pingRoles": [
+                    "here",
                     "o3Ping"
                 ],
                 "aliases": [
@@ -51686,6 +51706,7 @@
                 "name": "VC-less Oryx 3",
                 "templateName": "VC-less runes only Oryx 3",
                 "pingRoles": [
+                    "here",
                     "o3Ping"
                 ],
                 "aliases": [
@@ -51966,6 +51987,7 @@
                 "name": "Celestial Oryx 3",
                 "templateName": " Celestial Oryx 3",
                 "pingRoles": [
+                    "here",
                     "o3Ping"
                 ],
                 "aliases": [
@@ -52330,6 +52352,7 @@
                 "name": "Oryx 3",
                 "templateName": "Life Exaltation Printer",
                 "pingRoles": [
+                    "here",
                     "o3Ping"
                 ],
                 "aliases": [
@@ -56233,6 +56256,7 @@
                 "name": "Shatters",
                 "templateName": "Shatters",
                 "pingRoles": [
+                    "here",
                     "shattsReact"
                 ],
                 "aliases": [
@@ -56498,7 +56522,7 @@
                         ["rl","vetMoonlightBanner"]
                     ],
                     "veteran": [
-                        ["vetrl", "veteranMoonlightBanner"]
+                        ["vetrl", "vetMoonlightBanner"]
                     ]
                 },
                 "minViewRaiderRoles": null,
@@ -56506,6 +56530,7 @@
                 "name": "Moonlight Village",
                 "templateName": "Moonlight Village",
                 "pingRoles": [
+                    "here",
                     "moonlightping"
                 ],
                 "aliases": [
@@ -56771,6 +56796,7 @@
                 "name": "HARD MODE Shatters",
                 "templateName": "HM Shatters",
                 "pingRoles": [
+                    "here",
                     "hmShattsReact"
                 ],
                 "aliases": [
@@ -57048,6 +57074,7 @@
                 "name": "TRL Shatters",
                 "templateName": "TRL Shatters",
                 "pingRoles": [
+                    "here",
                     "shattsReact"
                 ],
                 "aliases": [
@@ -57339,6 +57366,7 @@
                 "name": "TRL Moonlight Village",
                 "templateName": "TRL Moonlight Village",
                 "pingRoles": [
+                    "here",
                     "moonlightping"
                 ],
                 "aliases": [
@@ -57597,7 +57625,7 @@
                 "enabled": true,
                 "minStaffRoles":{
                     "veteran": [
-                        ["vetrl", "veteranMoonlightBanner"]
+                        ["vetrl", "vetMoonlightBanner"]
                     ]
                 },
                 "minViewRaiderRoles": null,
@@ -57605,6 +57633,7 @@
                 "name": "0 FLAME Moonlight Village",
                 "templateName": "Shatter's 0 Flame Moonlight Village",
                 "pingRoles": [
+                    "here",
                     "moonlightping"
                 ],
                 "aliases": [

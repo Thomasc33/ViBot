@@ -21,6 +21,11 @@ module.exports = {
 
 
         if (args.length != 0 && args[0].toLowerCase() == 'force') process.exit()
+        if (args.length != 0 && args[0].toLowerCase() == 'afk') {
+            bot.afkChecks = {}
+            fs.writeFileSync('./data/afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot, message.guild) })
+            return message.reply('AFK Checks have been reset')
+        }
         let Promises = []
 
         //afk checks
