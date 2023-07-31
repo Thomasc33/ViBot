@@ -31,6 +31,7 @@ module.exports = {
         await afkTemplate.init()
         const currentStatus = afkTemplate.getStatus()
         if (currentStatus.state != AfkTemplate.TemplateState.SUCCESS) return await message.channel.send(currentStatus.message)
+        if (!afkTemplate.minimumStaffRoles.some(roles => roles.every(role => message.member.roles.cache.has(role.id)))) return await message.channel.send(`You do not have a suitable set of roles out of ${afkTemplate.minimumStaffRoles.reduce((a, b) => `${a}, ${b.join(' + ')}`)} to run ${afkTemplate.name}.`)
         afkTemplate.processReacts()
         afkTemplate.processButtons(null)
         const raidStatusEmbed = createEmbed(message, afkTemplate.processBodyDescriptionHeadcount(), botSettings.strings[afkTemplate.body[1].embed.image] ? botSettings.strings[afkTemplate.body[1].embed.image] : afkTemplate.body[1].embed.image)
