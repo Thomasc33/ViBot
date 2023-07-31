@@ -1,0 +1,344 @@
+{
+    "343704644712923138": {
+        "Nest": {
+            "emoji" : "nest",
+            "templateIDs": [
+                17,
+                18
+            ],
+            "milestones": [
+                {
+                    "number": 150,
+                    "points": 300,
+                    "recurring": false
+                },
+                {
+                    "number": 50,
+                    "points": 75,
+                    "recurring": true
+                }
+            ]
+        },
+        "Fungal": {
+            "emoji" : "fungal",
+            "templateIDs": [
+                23,
+                24
+            ],
+            "milestones": [
+                {
+                    "number": 100,
+                    "points": 300,
+                    "recurring": false
+                },
+                {
+                    "number": 25,
+                    "points": 75,
+                    "recurring": true
+                }
+            ]
+        },
+        "Cult": {
+            "emoji" : "cultist",
+            "templateIDs": [
+                11,
+                12,
+                73
+            ],
+            "milestones": [
+                {
+                    "number": 100,
+                    "points": 300,
+                    "recurring": false
+                },
+                {
+                    "number": 50,
+                    "points": 75,
+                    "recurring": true
+                }
+            ]
+        },
+        "Void": {
+            "emoji" : "void",
+            "templateIDs": [
+                7,
+                8,
+                9,
+                10,
+                72
+            ],
+            "milestones": [
+                {
+                    "number": 75,
+                    "points": 300,
+                    "recurring": false
+                },
+                {
+                    "number": 25,
+                    "points": 75,
+                    "recurring": true
+                }
+            ]
+        },
+        "Kogbold": {
+            "emoji" : "steamworksPortal",
+            "templateIDs": [
+                19,
+                20
+            ],
+            "milestones": [
+                {
+                    "number": 100,
+                    "points": 300,
+                    "recurring": false
+                },
+                {
+                    "number": 25,
+                    "points": 75,
+                    "recurring": true
+                }
+            ]
+        },
+        "Moonlight": {
+            "emoji" : "mv",
+            "templateIDs": [
+                21,
+                22
+            ],
+            "milestones": [
+                {
+                    "number": 50,
+                    "points": 300,
+                    "recurring": false
+                },
+                {
+                    "number": 10,
+                    "points": 75,
+                    "recurring": true
+                }
+            ]
+        },
+        "Shatters": {
+            "emoji" : "shatters",
+            "templateIDs": [
+                13,
+                14,
+                15,
+                16,
+                74
+            ],
+            "milestones": [
+                {
+                    "number": 30,
+                    "points": 300,
+                    "recurring": false
+                },
+                {
+                    "number": 5,
+                    "points": 75,
+                    "recurring": true
+                }
+            ]
+        }
+    },
+    "708026927721480254": {
+        "Oryx 3": {
+            "emoji": "oryxThree",
+            "templateIDs": [
+                172,
+                173,
+                178,
+                179,
+                180
+            ],
+            "milestones": [
+                {
+                    "number": 40,
+                    "points": 100,
+                    "recurring": false
+                },
+                {
+                    "number": 30,
+                    "points": 300,
+                    "recurring": false
+                },
+                {
+                    "number": 30,
+                    "points": 500,
+                    "recurring": false
+                }
+            ]
+        }
+    },
+    "934611202787643412": {
+        "Oryx 3": {
+            "emoji": "oryxThree",
+            "templateIDs": [
+                256,
+                257,
+                260,
+                261,
+                262
+            ],
+            "milestones": [
+                {
+                    "number": 40,
+                    "points": 100,
+                    "recurring": false
+                },
+                {
+                    "number": 30,
+                    "points": 300,
+                    "recurring": false
+                },
+                {
+                    "number": 30,
+                    "points": 500,
+                    "recurring": false
+                }
+            ]
+        }
+    },
+    "701483950559985705": {
+        "Nest": {
+            "emoji": "nest",
+            "templateIDs": [
+                97,
+                98
+            ],
+            "milestones": [
+                {
+                    "number": 150,
+                    "points": 300,
+                    "recurring": false
+                },
+                {
+                    "number": 50,
+                    "points": 75,
+                    "recurring": true
+                }
+            ]
+        },
+        "Fungal": {
+            "emoji": "fungal",
+            "templateIDs": [
+                103,
+                104
+            ],
+            "milestones": [
+                {
+                    "number": 100,
+                    "points": 300,
+                    "recurring": false
+                },
+                {
+                    "number": 25,
+                    "points": 75,
+                    "recurring": true
+                }
+            ]
+        },
+        "Cult": {
+            "emoji": "cultist",
+            "templateIDs": [
+                91,
+                92,
+                155
+            ],
+            "milestones": [
+                {
+                    "number": 100,
+                    "points": 300,
+                    "recurring": false
+                },
+                {
+                    "number": 50,
+                    "points": 75,
+                    "recurring": true
+                }
+            ]
+        },
+        "Void": {
+            "emoji": "void",
+            "templateIDs": [
+                87,
+                88,
+                89,
+                90,
+                154
+            ],
+            "milestones": [
+                {
+                    "number": 75,
+                    "points": 300,
+                    "recurring": false
+                },
+                {
+                    "number": 25,
+                    "points": 75,
+                    "recurring": true
+                }
+            ]
+        },
+        "Kogbold": {
+            "emoji": "steamworksPortal",
+            "templateIDs": [
+                99,
+                100
+            ],
+            "milestones": [
+                {
+                    "number": 100,
+                    "points": 300,
+                    "recurring": false
+                },
+                {
+                    "number": 25,
+                    "points": 75,
+                    "recurring": true
+                }
+            ]
+        },
+        "Moonlight": {
+            "emoji": "mv",
+            "templateIDs": [
+                101,
+                102
+            ],
+            "milestones": [
+                {
+                    "number": 50,
+                    "points": 300,
+                    "recurring": false
+                },
+                {
+                    "number": 10,
+                    "points": 75,
+                    "recurring": true
+                }
+            ]
+        },
+        "Shatters": {
+            "emoji": "shatters",
+            "templateIDs": [
+                93,
+                94,
+                95,
+                96,
+                156
+            ],
+            "milestones": [
+                {
+                    "number": 30,
+                    "points": 300,
+                    "recurring": false
+                },
+                {
+                    "number": 5,
+                    "points": 75,
+                    "recurring": true
+                }
+            ]
+        }
+    }
+}

@@ -25,30 +25,8 @@ module.exports = {
     },
     async update(guild, bot, db) {
         let settings = bot.settings[guild.id]
-        await updateChannel(guild.channels.cache.get(settings.channels.raidingchannels))
-        await updateChannel(guild.channels.cache.get(settings.channels.vetchannels))
-        await updateChannel(guild.channels.cache.get(settings.channels.eventchannels))
         await updateModmailListeners(guild.channels.cache.get(settings.channels.modmail), settings, bot, db)
         await updateRoleAssignmentListeners(guild.channels.cache.get(settings.channels.roleassignment), settings, bot, db)
-        async function updateChannel(c) {
-            if (!c) return;
-            let messages = await c.messages.fetch()
-            messages.each(async m => {
-                if (m.author.id !== bot.user.id) return;
-                if (m.embeds.length == 0) return;
-                let embed = new Discord.EmbedBuilder()
-                embed.data = m.embeds[0].data
-                //we have a message, we have no channel -> delete message
-                if (!guild.channels.cache.get(embed.data.footer.text)) {
-                    m.delete();
-                }
-                //we have a message, we have a channel -> check if its watched already
-                else if (watchedButtons[embed.data.footer.text] === undefined) {
-                    //no? add a listener
-                    module.exports.addCloseChannelButtons(bot, m);
-                }
-            })
-        }
         async function updateModmailListeners(modmailChannel, settings, bot, db) {
             if (!modmailChannel) { return } // If there is no modmail channel it will not continue
             let modmailChannelMessages = await modmailChannel.messages.fetch() // This fetches all the messages in the modmail channel
@@ -92,9 +70,9 @@ module.exports = {
                 if (rsa_m) module.exports.addReconnectButton(bot, rsa_m, i);
             }
         }
-        fs.writeFile('./data/afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => {
-            if (err) ErrorLogger.log(err, bot, guild)
-        })
+        // fs.writeFile('./data/afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => {
+        //     if (err) ErrorLogger.log(err, bot, guild)
+        // })
     },
     async watchMessage(message, bot, settings) {
         let m = message
@@ -182,20 +160,6 @@ module.exports = {
         let button_manager = { hndlr: hndlr, confirm_hndlrs: [], RSAMessage: undefined, reconnect_hndlr: undefined };
         watchedButtons[m.embeds[0].footer.text] = button_manager;
     },
-
-    async addReconnectButton(bot, rsa_message, vc_channel_id) {
-        let reconnect_button = new Discord.ActionRowBuilder()
-            .addComponents(new Discord.ButtonBuilder()
-                .setLabel('Reconnect')
-                .setStyle(1)
-                .setCustomId('reconnect_raider'))
-        rsa_message = await rsa_message.edit({ components: [reconnect_button] });
-        let reconnect_hndlr = rsa_message.createMessageComponentCollector({ componentType: Discord.ComponentType.Button });
-        reconnect_hndlr.on('collect', async (interaction) => reconnectButtonHandler(interaction, vc_channel_id, bot));
-        watchedButtons[vc_channel_id].RSAMessage = rsa_message;
-        watchedButtons[vc_channel_id].reconnect_hndlr = reconnect_hndlr;
-    },
-
     async registerAFKCheck(afkCheckMod) {
         afkCheckModule = afkCheckMod;
     },
@@ -296,19 +260,6 @@ async function watchConfirmButtonsHandler(interaction, prev_interaction, bot, th
             }
         }
     }
-}
-
-async function reconnectButtonHandler(interaction, vc_channel_id, bot) {
-    if (!interaction.isButton()) return;
-    if (!bot.afkChecks[vc_channel_id]) interaction.reply({ content: 'Something went wrong. Bug the RL for drags.', ephemeral: true });
-    if ((bot.afkChecks[vc_channel_id].raiders && bot.afkChecks[vc_channel_id].raiders.includes(interaction.member.id)) || (bot.afkChecks[vc_channel_id].earlyLocation && bot.afkChecks[vc_channel_id].earlyLocation.includes(interaction.member.id))) {
-        if (interaction.member.voice.channel) {
-            if (interaction.member.voice.channel.id == vc_channel_id) interaction.reply({ content: 'It looks like you are already in the channel. ඞ', ephemeral: true });
-            else interaction.member.voice.setChannel(vc_channel_id, 'reconnect').then(interaction.reply({ content: 'You have been dragged back in. Enjoy!', ephemeral: true })).catch(er => interaction.reply({ content: 'Please connect to lounge and try again.', ephemeral: true }));
-        }
-        else interaction.reply({ content: 'Please connect to lounge and try again.', ephemeral: true });
-    }
-    else interaction.reply({ content: 'You were not part of this run when the afk check ended. Another run will be posted soon. Join that one!', ephemeral: true });
 }
 
 const xFilter = (r, u) => r.emoji.name === '❌' && !u.bot

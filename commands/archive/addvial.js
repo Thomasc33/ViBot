@@ -1,5 +1,5 @@
-const ErrorLogger = require('../lib/logError')
-const dbInfo = require('../data/database.json')
+const ErrorLogger = require('../../lib/logError')
+const dbInfo = require('../../data/database.json')
 const Discord = require('discord.js')
 
 module.exports = {

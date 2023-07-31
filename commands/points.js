@@ -88,19 +88,5 @@ module.exports = {
                 resolve(pointEmbed)
             })
         })
-    },
-    buyEarlyLocaton(user, db, cost, runInfo, bot, guild) {
-        return new Promise((resolve, reject) => {
-            db.query(`SELECT points FROM users WHERE id = '${user.id}'`, (err, rows) => {
-                if (err) return reject(err)
-                if (rows.length == 0) return reject('User not in DB')
-                if (rows[0].points < cost) return reject(`Only has ${rows[0].points}/${cost} points`)
-                db.query(`UPDATE users SET points = points - ${cost} WHERE id = '${user.id}'`, err => {
-                    if (err) return reject(err)
-                    resolve(`${rows[0].points - cost}`)
-                    pointLogger.earlyLocation(user, runInfo, guild, cost, bot, rows[0].points - cost)
-                })
-            })
-        })
     }
 }

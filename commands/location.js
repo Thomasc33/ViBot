@@ -1,6 +1,5 @@
-const afkCheck = require('./afkCheck.js');
-const EventAFK = require('./eventAfk')
 const Discord = require('discord.js')
+const afkCheck = require('./afkCheck.js')
 
 module.exports = {
     name: 'location',
@@ -9,19 +8,32 @@ module.exports = {
     requiredArgs: 1,
     args: '<location>',
     role: 'eventrl',
-    allowedInRestart: true,
-    execute(message, args, bot) {
-        let channel = message.member.voice.channelId
-        if (!channel) return message.channel.send('Please join a voice channel to change location')
-        let location = "";
-        for (i = 0; i < args.length; i++) location = location.concat(args[i]) + ' ';
-        location = location.trim();
-        if (location.length >= 1024) return message.channel.send('Location must be below 1024 characters, try again');
-        if (location == '') return;
-        //if (message.channel.parent.name.toLowerCase() === 'events') return afkCheck.changeLocation(location, channel)
-        let res = afkCheck.changeLocation(location, channel)
-        if (res) message.channel.send(res)
-        else message.react('✅');
-
+    async execute(message, args, bot) {
+        let voiceChannel = message.member.voice.channel
+        let location = args.join(' ')
+        if (location.length >= 1024) return await message.channel.send('Location must be below 1024 characters, try again')
+        if (location == '') location = 'None'
+        let raidID = undefined
+        const raidIDs = afkCheck.returnRaidIDsbyAll(bot, message.member.id, voiceChannel ? voiceChannel.id : null, null)
+        if (raidIDs.length == 0) return message.channel.send('Could not find an active run. Please try again.')
+        else if (raidIDs.length == 1) raidID = raidIDs[0]
+        else {
+            const locationMenu = new Discord.StringSelectMenuBuilder()
+                .setPlaceholder(`Active Runs`)
+                .setMinValues(1)
+                .setMaxValues(1)
+            let text = `Which active run would you like to change location for?.\n If no response is received, the command will use the default run at \`\`${1}.\`\`.`
+            let index = 0
+            for (let raidID of raidIDs) {
+                text += `\n\`\`${index+1}.\`\` ${bot.afkChecks[raidID].afkTemplate.name} by ${bot.afkChecks[raidID].leader} at <t:${bot.afkChecks[raidID].time}:f>`
+                locationMenu.addOptions({ label: `${index+1}. ${bot.afkChecks[raidID].afkTemplate.name} by ${bot.afkChecks[raidID].leader}`, value: index })
+                index++
+            }
+            const {value: locationValue, interaction: subInteraction} = await message.selectPanel(text, null, locationMenu, 30000, false, true)
+            raidID = locationValue
+        }
+        bot.afkChecks[raidID].location = location
+        bot.afkModules[raidID].updateLocation()
+        message.react('✅')
     }
 }

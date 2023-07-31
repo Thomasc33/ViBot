@@ -14,6 +14,7 @@ const ErrorLogger = require(`./lib/logError`)
 // Commands
 const emoji = require('./commands/emoji.js');
 const globalSetup = require('./commands/setup')
+const afkCheck = require('./commands/afkCheck.js')
 const vibotChannels = require('./commands/vibotChannels')
 const vetVerification = require('./commands/vetVerification')
 const verification = require('./commands/verification')
@@ -142,6 +143,7 @@ async function setup(bot) {
     iterServers(bot, function (bot, g) {
         vibotChannels.update(g, bot).catch(er => { })
         const db = dbSetup.getDB(g.id)
+        afkCheck.loadBotAfkChecks(g, bot, db)
         // if (bot.settings[g.id].backend.modmail) modmail.init(g, bot, db).catch(er => { ErrorLogger.log(er, bot, g); })
         if (bot.settings[g.id].backend.verification) verification.init(g, bot, db).catch(er => { ErrorLogger.log(er, bot, g); })
         if (bot.settings[g.id].backend.vetverification) vetVerification.init(g, bot, db).catch(er => { ErrorLogger.log(er, bot, g); })

@@ -46,7 +46,7 @@ module.exports = {
 
         //Validate Command Arguments
         if (!keypops[message.guild.id]) return message.replyUserError('Key information missing for this guild')
-        let keyInfo = findKey(message.guild.id, args[0].toLowerCase())
+        let keyInfo = module.exports.findKey(message.guild.id, args[0].toLowerCase())
         if (!keyInfo) return message.replyUserError(`\`${args[0]}\` not recognized`)
 
         //Create Discord Embed Confirmation
@@ -89,6 +89,7 @@ module.exports = {
         const count = state.count
         const settings = bot.settings[confirmMessage.interaction.guild.id]
         const keyInfo = state.keyInfo
+        var guild = confirmMessage.interaction.guild
         let moddedKey = false
         if (!choice || choice == 'Cancelled')
             return confirmMessage.delete()
@@ -117,6 +118,11 @@ module.exports = {
                 })
                 if (!success) return;
             }
+            let consumablepopsValueNames = `userid, guildid, unixtimestamp, amount, ismodded, templateid`
+            let consumablepopsValues = `'${user.id}', '${guild.id}', '${Date.now()}', '${count}', ${moddedKey}, '${keyInfo.templateID}'`
+            db.query(`INSERT INTO consumablepops (${consumablepopsValueNames}) VALUES (${consumablepopsValues})`, (err, rows) => {
+                if (err) return console.log(`${keyInfo.schema} missing from ${guild.name} ${guild.id}`)
+            })
             db.query(`UPDATE users SET ${keyInfo.schema} = ${keyInfo.schema } + ${count} WHERE id = '${user.id}'`, (err, rows) => {
                 keyRoles.checkUser(user, bot, db);
             });
@@ -140,13 +146,14 @@ module.exports = {
 
         //Delete Confirmation Message
         return confirmMessage.delete()
+    },
+    findKey(guildid, key) {
+        let info = keypops[guildid]
+        if (Object.keys(info).includes(key)) return info[key]
+        for (let i in info) {
+            if (info[i].alias.includes(key)) return info[i]
+            if (info[i].schema.includes(key)) return info[i]
+        }
+        return null
     }
-}
-
-function findKey(guildid, key) {
-    let info = keypops[guildid]
-    if (Object.keys(info).includes(key)) return info[key]
-    for (let i in info)
-        if (info[i].alias.includes(key)) return info[i]
-    return null
 }
