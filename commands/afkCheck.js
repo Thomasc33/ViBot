@@ -46,21 +46,21 @@ module.exports = {
     returnRaidIDsbyMemberID(bot, memberID) {
         const afkChecks = []
         for (let raidID in bot.afkChecks) {
-            if (bot.afkChecks[raidID].active && bot.afkChecks[raidID].leader == memberID) afkChecks.push(raidID)
+            if (bot.afkChecks[raidID].leader == memberID) afkChecks.push(raidID)
         }
         return afkChecks
     },
     returnRaidIDsbyMemberVoice(bot, voiceID) {
         const afkChecks = []
         for (let raidID in bot.afkChecks) {
-            if (bot.afkChecks[raidID].active && bot.afkChecks[raidID].channel == voiceID) afkChecks.push(raidID)
+            if (bot.afkChecks[raidID].channel == voiceID) afkChecks.push(raidID)
         }
         return afkChecks
     },
     returnRaidIDsbyRaidID(bot, RSAID) {
         const afkChecks = []
         for (let raidID in bot.afkChecks) {
-            if (bot.afkChecks[raidID].active && bot.afkChecks[raidID].raidStatusMessage && bot.afkChecks[raidID].raidStatusMessage.id == RSAID) afkChecks.push(raidID)
+            if (bot.afkChecks[raidID].raidStatusMessage && bot.afkChecks[raidID].raidStatusMessage.id == RSAID) afkChecks.push(raidID)
         }
         return afkChecks
     },
@@ -76,7 +76,7 @@ module.exports = {
     returnActiveRaidIDs() {
         const afkChecks = []
         for (let raidID in bot.afkChecks) {
-            if (bot.afkChecks[raidID].active) afkChecks.push(raidID)
+            afkChecks.push(raidID)
         }
         return afkChecks
     },
