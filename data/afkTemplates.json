@@ -48031,7 +48031,7 @@
                         ["rl","vetShattersBanner"]
                     ],
                     "veteran": [
-                        ["vetrl", "veteranShattersBanner"]
+                        ["vetrl", "vetShattersBanner"]
                     ]
                 },
                 "minViewRaiderRoles": null,
@@ -56219,7 +56219,7 @@
                         ["rl","vetShattersBanner"]
                     ],
                     "veteran": [
-                        ["vetrl", "veteranShattersBanner"]
+                        ["vetrl", "vetShattersBanner"]
                     ]
                 },
                 "minViewRaiderRoles": null,
