@@ -8,6 +8,6 @@ module.exports = {
     guildspecific: true,
     role: 'developer',
     async execute(message, args, bot, db) {
-        message.reply('Toast');
+        await message.reply('Toast!')
     }
 }
