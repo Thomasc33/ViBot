@@ -20,8 +20,9 @@ module.exports = {
                 if (!parentTemplates.includes(inherit)) continue
                 if (!parentTemplateValue[inherit]) parentTemplateValue[inherit] = {field: 0, value: ['']}
                 const parentTemplate = templates[message.guild.id].parents[inherit]
-                let minStaffRoles = template.minStaffRoles ? template.minStaffRoles.map(role => message.guild.roles.cache.get(botSettings.roles[role])) : null
-                minStaffRoles = !minStaffRoles && parentTemplate.minStaffRoles ? parentTemplate.minStaffRoles.map(role => message.guild.roles.cache.get(botSettings.roles[role])) : minStaffRoles
+
+                let minStaffRoles = template.minStaffRoles[inherit] ? template.minStaffRoles[inherit].map(roles => roles.map(role => message.guild.roles.cache.get(botSettings.roles[role]))) : null
+                minStaffRoles = !minStaffRoles && parentTemplate.minStaffRoles[inherit] ? parentTemplate.minStaffRoles[inherit].map(roles => roles.map(role => message.guild.roles.cache.get(botSettings.roles[role]))) : minStaffRoles
                 if (!minStaffRoles) continue
                 if (!minStaffRoles.every(role => message.member.roles.cache.has(role.id))) continue
                 const reacts = template.reacts ? Object.keys(template.reacts).filter(react => template.reacts[react].onHeadcount) : []
