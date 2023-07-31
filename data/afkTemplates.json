@@ -58463,7 +58463,7 @@
             },
             "veteran": {
                 "parentTemplateID": 186,
-                "category": "raiding",
+                "category": "veteran raiding",
                 "templateChannel": "1134416280825368667",
                 "partneredStatusChannels": {},
                 "statusChannel": "559095243660722196",
@@ -58531,7 +58531,7 @@
             },
             "event": {
                 "parentTemplateID": 187,
-                "category": "raiding",
+                "category": "events",
                 "templateChannel": "1134417384917184561",
                 "partneredStatusChannels": {},
                 "statusChannel": "830616025262719006",
