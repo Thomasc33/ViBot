@@ -55170,7 +55170,8 @@
                         "confirmationMedia": null,
                         "disableStart": null,
                         "start": 1,
-                        "lifetime": 69
+                        "lifetime": 69,
+                        "logOptions": null
                     },
                     "Winecellar Incantation": {
                         "type": 1,
@@ -58405,7 +58406,8 @@
                         "confirmationMedia": null,
                         "disableStart": null,
                         "start": 1,
-                        "lifetime": 69
+                        "lifetime": 69,
+                        "logOptions": null
                     },
                     "Winecellar Incantation": {
                         "type": 1,
