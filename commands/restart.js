@@ -30,7 +30,7 @@ module.exports = {
 
         //afk checks
         
-        const raidIDs = afkCheck.returnActiveRaidIDs()
+        const raidIDs = afkCheck.returnActiveRaidIDs(bot)
         for (let i of raidIDs) {
             Promises.push(new Promise((res, rej) => {
                 setInterval(checkActive, 5000)
