@@ -972,7 +972,8 @@ class afkCheck {
                     await subInteraction.update({ embeds: [extensions.createEmbed(interaction, `Too many people have already reacted and confirmed for the main react ${i}. Try another react or try again next run.`, null)], components: [] })
                     return false
                 }
-            } else await interaction.deleteReply()
+            }
+            await interaction.deleteReply()
         }
         let locationText = ''
         if (buttonInfo.location) locationText = `The location for this run has been set to \`${this.location}\`, get there ASAP!${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`
@@ -1075,7 +1076,8 @@ class afkCheck {
                     await subInteraction.update({ embeds: [extensions.createEmbed(interaction, `Too many people have already reacted and confirmed for the main react ${i}. Try another react or try again next run.`, null)], components: [] })
                     return false
                 }
-            } else await interaction.deleteReply()
+            }
+            interaction.deleteReply()
         }
 
         let locationText = ''
