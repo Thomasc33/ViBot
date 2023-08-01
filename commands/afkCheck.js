@@ -2,7 +2,6 @@ const Discord = require('discord.js')
 const fs = require('fs')
 const ErrorLogger = require('../lib/logError')
 const AfkTemplate = require('./afkTemplate.js')
-const restart = require('./restart')
 const pointLogger = require('../lib/pointLogger')
 const extensions = require(`../lib/extensions`)
 const consumablePopTemplates = require(`../data/keypop.json`);
@@ -74,7 +73,7 @@ module.exports = {
         const afkChecks = [...new Set(afkCheckPlaceHolders)]
         return afkChecks
     },
-    returnActiveRaidIDs() {
+    returnActiveRaidIDs(bot) {
         const afkChecks = []
         for (let raidID in bot.afkChecks) {
             afkChecks.push(raidID)
@@ -1284,8 +1283,7 @@ class afkCheck {
         await this.#guild.channels.cache.get(this.#botSettings.channels.history).send({ embeds: [this.raidCommandsEmbed] })
 
         this.logging = true
-        if (restart.restarting) this.loggingAfk()
-        else setTimeout(this.loggingAfk.bind(this), 1000)
+        setTimeout(this.loggingAfk.bind(this), 60000)
         this.active = false
         this.saveBotAfkCheck()
     }
