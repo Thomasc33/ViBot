@@ -162,7 +162,7 @@ class afkCheck {
         Object.keys(afkTemplate.buttons).forEach((key) => { if (afkTemplate.buttons[key].type == AfkTemplate.TemplateButtonType.DRAG) this.raidDragThreads[key] = { thread: null, collector: null } })
 
         this.raidLeaderDisplayName = this.#leader.displayName.replace(/[^a-z|]/gi, '').split('|')[0]
-        this.flag = {'us': ':flag_us:', 'eu': ':flag_eu:'}[this.location.substring(0, 2)]
+        this.flag = {'us': ':flag_us:', 'eu': ':flag_eu:'}[this.location.toLowerCase().substring(0, 2)]
         this.pingText = this.#afkTemplate.pingRoles ? `${this.#afkTemplate.pingRoles.join(' ')}, ` : ``
     }
     
@@ -577,6 +577,7 @@ class afkCheck {
                     return this.removeFromActiveInteractions(interaction.member.id)
                 }
             }
+            this.reactables[interaction.customId].members.push(interaction.member.id)
 
             let buttonStatus = false
             switch (buttonType) {
@@ -595,10 +596,13 @@ class afkCheck {
                     break
                 case AfkTemplate.TemplateButtonType.OPTION:
                     buttonStatus = await this.processReactableOption(interaction)
-                    break
+                    return this.removeFromActiveInteractions(interaction.member.id)
             }
-            if (!buttonStatus) return this.removeFromActiveInteractions(interaction.member.id)
-            this.reactables[interaction.customId].members.push(interaction.member.id)
+            if (!buttonStatus) {
+                let ind = this.reactables[interaction.customId].members.indexOf(interaction.member.id)
+                if (ind > -1) this.reactables[interaction.customId].members.splice(ind)
+                return this.removeFromActiveInteractions(interaction.member.id)
+            }
             if (buttonInfo.parent) {
                 for (let i of buttonInfo.parent) {
                     const parentButtonInfo = this.#afkTemplate.buttons[i]
@@ -964,14 +968,6 @@ class afkCheck {
             } else if (!confirmValue) {
                 await subInteraction.update({ embeds: [extensions.createEmbed(interaction, `Cancelled. You can dismiss this message.`, null)], components: [] })
                 return false
-            } else if (this.reactables[interaction.customId].members.length >= buttonInfo.limit) {
-                await subInteraction.update({ embeds: [extensions.createEmbed(interaction, `Too many people have already reacted and confirmed for that. Try another react or try again next run.`, null)], components: [] })
-                return false
-            } else if (buttonInfo.parent) {
-                for (let i of buttonInfo.parent) if (this.reactables[i].members.length >= this.#afkTemplate.buttons[i].limit) {
-                    await subInteraction.update({ embeds: [extensions.createEmbed(interaction, `Too many people have already reacted and confirmed for the main react ${i}. Try another react or try again next run.`, null)], components: [] })
-                    return false
-                }
             }
             await interaction.deleteReply()
         }
@@ -1007,12 +1003,12 @@ class afkCheck {
             await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You are not eligible for this reaction as you do not have the required Supporter role`, null)], ephemeral: true })
             return false
         }
-        if (this.reactables[interaction.customId].members.length >= this.#botSettings.numerical.supporterlimit) {
+        if (this.reactables[interaction.customId].members.length > this.#botSettings.numerical.supporterlimit) {
             this.#afkTemplate.buttons[interaction.customId].limit = this.#botSettings.numerical.supporterlimit
             await interaction.reply({ embeds: [extensions.createEmbed(interaction, `Too many Supporters have already reacted and received guaranteed slots. Try another react or try again next run.`, null)], ephemeral: true })
             return false 
         }
-        if (this.reactables[interaction.customId].members.length >= this.#botSettings.supporter[`supporterLimit${supporterRole}`]) {
+        if (this.reactables[interaction.customId].members.length > this.#botSettings.supporter[`supporterLimit${supporterRole}`]) {
             await interaction.reply({ embeds: [extensions.createEmbed(interaction, `Too many Supporters have already reacted and received guaranteed slots. Try another react or try again next run.`, null)], ephemeral: true })
             return false
         }
@@ -1068,14 +1064,6 @@ class afkCheck {
             } else if (!confirmValue) {
                 await subInteraction.update({ embeds: [extensions.createEmbed(interaction, `Cancelled. You can dismiss this message.`, null)], components: [] })
                 return false
-            } else if (this.reactables[interaction.customId].members.length >= buttonInfo.limit) {
-                await subInteraction.update({ embeds: [extensions.createEmbed(interaction, `Too many people have already reacted and confirmed for that. Try another react or try again next run.`, null)], components: [] })
-                return false
-            } else if (buttonInfo.parent) {
-                for (let i of buttonInfo.parent) if (this.reactables[i].members.length >= this.#afkTemplate.buttons[i].limit) {
-                    await subInteraction.update({ embeds: [extensions.createEmbed(interaction, `Too many people have already reacted and confirmed for the main react ${i}. Try another react or try again next run.`, null)], components: [] })
-                    return false
-                }
             }
             interaction.deleteReply()
         }
@@ -1168,17 +1156,16 @@ class afkCheck {
             Object.keys(buttonInfo.logOptions).map(key => buttonInfo.logOptions[key].emojiName),
             interaction.member.id)
         if (!choice || choice == 'Cancelled') {
-            this.removeFromActiveInteractions(interaction.member.id)
-            return interaction.editReply({ embeds: [failEmbed], ephemeral: true, components: [] })
+            let ind = this.reactables[interaction.customId].members.indexOf(interaction.member.id)
+            if (ind > -1) this.reactables[interaction.customId].members.splice(ind)
+            return await interaction.editReply({ embeds: [failEmbed], ephemeral: true, components: [] }) 
         }
         let choicePrettyName = buttonInfo.logOptions[choice].name;
         let choiceEmote = this.#bot.storedEmojis[buttonInfo.logOptions[choice].emojiName].text;
         embed.setDescription(`You guessed ${choiceEmote} **${choicePrettyName}** ${choiceEmote}`)
         this.miniBossGuessing[interaction.member.id] = choice
-        if (!this.reactables[interaction.customId].members.includes(interaction.member.id)) { this.reactables[interaction.customId].members.push(interaction.member.id) }
         await interaction.followUp({ embeds: [embed], components: [], ephemeral: true })
         await interaction.deleteReply()
-        this.removeFromActiveInteractions(interaction.member.id)
     }
 
     async dragInteractionHandler(interaction) {
@@ -1406,7 +1393,7 @@ class afkCheck {
     
     async updateLocation() {
         this.location = this.#bot.afkChecks[this.#raidID].location
-        this.flag = {'us': ':flag_us:', 'eu': ':flag_eu:'}[this.location.substring(0, 2)]
+        this.flag = {'us': ':flag_us:', 'eu': ':flag_eu:'}[this.location.toLowerCase().substring(0, 2)]
         this.saveBotAfkCheck()
         await Promise.all([this.sendStatusMessage(this.phase), this.sendCommandsMessage(this.phase), this.sendChannelsMessage(this.phase)])
         for (let i of this.earlyLocationMembers) {
@@ -1454,7 +1441,7 @@ class afkCheck {
         let label = `${this.#afkTemplate.buttons[i].displayName ? `${reactable} ` : ``}${this.#afkTemplate.buttons[i].limit ? ` ${this.reactables[i].members.length}/${this.#afkTemplate.buttons[i].limit}` : ``}`
         reactableButton.setLabel(label)
         if (this.#afkTemplate.buttons[i].emote) reactableButton.setEmoji(this.#afkTemplate.buttons[i].emote.id)
-        if (this.reactables[i].members.length == this.#afkTemplate.buttons[i].limit) reactableButton.setDisabled(true)
+        if (this.reactables[i].members.length >= this.#afkTemplate.buttons[i].limit) reactableButton.setDisabled(true)
         reactablesRequestActionRow.push(reactableButton)
         const component = new Discord.ActionRowBuilder({ components: reactablesRequestActionRow })
         message.edit({ components: [component] })
