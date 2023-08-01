@@ -515,7 +515,7 @@ class afkCheck {
             let label = `${this.#afkTemplate.buttons[i].displayName ? `${i} ` : ``}${this.#afkTemplate.buttons[i].limit ? ` ${this.reactables[i].members.length}/${this.#afkTemplate.buttons[i].limit}` : ``}`
             reactableButton.setLabel(label)
             if (this.#afkTemplate.buttons[i].emote) reactableButton.setEmoji(this.#afkTemplate.buttons[i].emote.id)
-            if (this.reactables[i].members.length >= this.#afkTemplate.buttons[i].limit) reactableButton.setDisabled(true)
+            if (this.#afkTemplate.buttons[i].limit && this.reactables[i].members.length >= this.#afkTemplate.buttons[i].limit) reactableButton.setDisabled(true)
             if (disableStart < start && start > phase) reactableButton.setDisabled(true)
             reactablesActionRow.push(reactableButton)
             counter ++
