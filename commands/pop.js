@@ -152,7 +152,7 @@ module.exports = {
         if (Object.keys(info).includes(key)) return info[key]
         for (let i in info) {
             if (info[i].alias.includes(key)) return info[i]
-            if (info[i].schema.includes(key)) return info[i]
+            if (info[i].schema.toLowerCase() == (key.toLowerCase())) return info[i]
         }
         return null
     }
