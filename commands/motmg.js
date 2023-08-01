@@ -23,10 +23,13 @@ module.exports = {
         userPoints = module.exports.accumulateAllUserPoints(rows, userPoints, uniqueUsers)
         const emoji = emojis[template[dungeon].emoji].text
         const sortedUserPoints = module.exports.sortObject(userPoints)
+        const totalPoints = module.exports.getTotalPoints(sortedUserPoints)
         var seperateFieldStrings = []
         var strings = []
+        userIndex = 1;
         for (let user in sortedUserPoints) {
-            let prettyString = `<@!${user}>: \`${sortedUserPoints[user]}\``
+            let prettyString = `\`${userIndex.toString().padStart(3, ' ')}.\` \`${sortedUserPoints[user].toString().padStart(4, ' ')}\` \`${Math.round((sortedUserPoints[user] / totalPoints) * 100).toString().padStart(3, ' ')}%\` <@!${user}>`
+            userIndex++
             if (strings.length == 0) { strings.push(prettyString); continue; }
             if ((strings.join('\n') + prettyString.length) >= 1023) {
                 seperateFieldStrings.push(strings)
@@ -114,5 +117,12 @@ module.exports = {
             newObject[user] = 0
         }
         return newObject
+    },
+    getTotalPoints(object) {
+        let points = 0;
+        for (const key in object) {
+            points += object[key]
+        }
+        return points
     }
 }

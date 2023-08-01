@@ -18,6 +18,7 @@ const afkCheck = require('./commands/afkCheck.js')
 const vibotChannels = require('./commands/vibotChannels')
 const vetVerification = require('./commands/vetVerification')
 const verification = require('./commands/verification')
+const motmg = require('./commands/motmg.js')
 // Specific Jobs
 const unbanJobs = require('./jobs/unban.js')
 const UnbanVet = unbanJobs.UnbanVet;
