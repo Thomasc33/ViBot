@@ -24189,7 +24189,7 @@
                 "minViewRaiderRoles": null,
                 "minJoinRaiderRoles": null,
                 "name": "VC-Less Kogbold Steamworks",
-                "templateName": "Vitality Exalation Printer",
+                "templateName": "Vitality Exaltation Printer",
                 "pingRoles": [
                     "here",
                     "steamworksping"
@@ -24249,7 +24249,7 @@
                     "Key": {
                         "type": 1,
                         "parent": [
-                            "join"
+                            "Join"
                         ],
                         "choice": 0,
                         "limit": 3,
@@ -24288,7 +24288,7 @@
                     "Dragger": {
                         "type": 0,
                         "parent": [
-                            "join"
+                            "Join"
                         ],
                         "choice": 0,
                         "limit": 1,
@@ -24309,7 +24309,7 @@
                     "Curse": {
                         "type": 0,
                         "parent": [
-                            "join"
+                            "Join"
                         ],
                         "choice": 0,
                         "limit": 1,
@@ -24330,7 +24330,7 @@
                     "Armor Break": {
                         "type": 0,
                         "parent": [
-                            "join"
+                            "Join"
                         ],
                         "choice": 0,
                         "limit": 1,
@@ -24351,7 +24351,7 @@
                     "Expose": {
                         "type": 0,
                         "parent": [
-                            "join"
+                            "Join"
                         ],
                         "choice": 0,
                         "limit": 1,
@@ -24372,7 +24372,7 @@
                     "Slow": {
                         "type": 0,
                         "parent": [
-                            "join"
+                            "Join"
                         ],
                         "choice": 0,
                         "limit": 2,
@@ -24393,7 +24393,7 @@
                     "Daze": {
                         "type": 0,
                         "parent": [
-                            "join"
+                            "Join"
                         ],
                         "choice": 0,
                         "limit": 1,
@@ -24414,7 +24414,7 @@
                     "Marble Seal": {
                         "type": 0,
                         "parent": [
-                            "join"
+                            "Join"
                         ],
                         "choice": 0,
                         "limit": 1,
@@ -24435,7 +24435,7 @@
                     "Fungal Tome": {
                         "type": 0,
                         "parent": [
-                            "join"
+                            "Join"
                         ],
                         "choice": 0,
                         "limit": 1,
@@ -24456,7 +24456,7 @@
                     "Trickster": {
                         "type": 0,
                         "parent": [
-                            "join"
+                            "Join"
                         ],
                         "choice": 0,
                         "limit": 1,
@@ -47990,6 +47990,396 @@
                     },
                     "Trickster": {
                         "emote": "Trickster",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    }
+                }
+            },
+            {
+                "templateID": 268,
+                "inherits": [
+                    "veteran"
+                ],
+                "category": null,
+                "templateChannel": null,
+                "partneredStatusChannels": null,
+                "statusChannel": null,
+                "commandsChannel": null,
+                "activeChannel": null,
+                "enabled": true,
+                "minStaffRoles": {
+                    "veteran": [
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "vetaffiliate"
+                        ],
+                        [
+                            "lostboomer"
+                        ]
+                    ]
+                },
+                "minViewRaiderRoles": null,
+                "minJoinRaiderRoles": null,
+                "name": "VC-Less Kogbold Steamworks",
+                "templateName": "Vitality Exaltation Printer",
+                "pingRoles": [
+                    "here",
+                    "steamworksping"
+                ],
+                "aliases": [
+                    "vep"
+                ],
+                "logName": "steamworksRuns",
+                "vcOptions": 0,
+                "startDelay": null,
+                "cap": null,
+                "capButton": null,
+                "phases": 2,
+                "body": {
+                    "1": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    "2": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    "default": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#ffd700",
+                            "description": null,
+                            "image": null,
+                            "thumbnail": [
+                                "https://media.discordapp.net/attachments/1114574154021208186/1115944571709431938/1XDVki7.png",
+                                "https://media.discordapp.net/attachments/1114574154021208186/1115944585160573028/hkaea5D.png",
+                                "https://media.discordapp.net/attachments/1114574154021208186/1115944598099992607/wSoAGoR.png"
+                            ]
+                        }
+                    }
+                },
+                "buttons": {
+                    "Key": {
+                        "type": 1,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 3,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "steamworksKey",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": [
+                            "eventrl"
+                        ],
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "steamworkPops"
+                                ],
+                                "points": "steamworkkey",
+                                "multiplier": null
+                            },
+                            "Modded": {
+                                "logName": [
+                                    "steamworkPops",
+                                    "moddedpops"
+                                ],
+                                "points": "steamworkkey",
+                                "multiplier": "keymultiplier"
+                            }
+                        }
+                    },
+                    "Dragger": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": true,
+                        "emote": "kogbolddragger",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must know how to drag the boss around in the Enforcer phases especially, Minefield. (Check GIF Below).\n- You are recommended to have **60+ Defense** on your character.",
+                        "confirmationMedia": "https://cdn.discordapp.com/attachments/230500411835023362/1059570168558256178/how_to_drag_minefields.gif",
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Curse": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Curse",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Armor Break": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 2,
+                        "displayName": false,
+                        "emote": "Ogmur",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Expose": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Expose",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Slow": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Slow",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Daze": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "daze",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Marble Seal": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "UTMarbleSeal",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Fungal Tome": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "tomeOfTheMushroomTribesFungal",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Trickster": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Trickster",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Join": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 0,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": null,
+                        "confirm": false,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": 1,
+                        "start": 2,
+                        "lifetime": 69,
+                        "logOptions": null
+                    }
+                },
+                "reacts": {
+                    "steamworksPortal": {
+                        "emote": "steamworksPortal",
+                        "onHeadcount": true,
+                        "start": 1,
+                        "lifetime": 2
+                    },
+                    "Warrior": {
+                        "emote": "Warrior",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Paladin": {
+                        "emote": "Paladin",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Knight": {
+                        "emote": "Knight",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Bard": {
+                        "emote": "Bard",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Trickster": {
+                        "emote": "Trickster",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Priest": {
+                        "emote": "Priest",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Sorcerer": {
+                        "emote": "Priest",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "ScholarsSeal": {
+                        "emote": "UTScholarsSeal",
                         "onHeadcount": false,
                         "start": 1,
                         "lifetime": 69
