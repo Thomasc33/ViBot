@@ -18,7 +18,7 @@ const afkCheck = require('./commands/afkCheck.js')
 const vibotChannels = require('./commands/vibotChannels')
 const vetVerification = require('./commands/vetVerification')
 const verification = require('./commands/verification')
-const motmg = require('./commands/motmg.js')
+const motmg = require('./commands/motmg.js').Motmg
 // Specific Jobs
 const unbanJobs = require('./jobs/unban.js')
 const UnbanVet = unbanJobs.UnbanVet;
@@ -130,6 +130,7 @@ async function setup(bot) {
     const biWeeklyQuotaJob = new BiWeeklyQuota(bot)
     const monthlyQuotaJob = new MonthlyQuota(bot)
     const botStatusUpdateJob = new BotStatusUpdate(bot)
+    const motmgJob = new motmg(bot)
 
     unbanVetJob.runAtInterval(120000)
     unsuspendJob.runAtInterval(60000)
@@ -139,6 +140,9 @@ async function setup(bot) {
     monthlyQuotaJob.schedule('0 0 1 * *')
     await botStatusUpdateJob.runOnce()
     botStatusUpdateJob.runAtInterval(30000)
+    await motmgJob.runOnce()
+    await motmgJob.runAtInterval(300000)
+
 
     //initialize components (eg. modmail, verification)
     iterServers(bot, function (bot, g) {

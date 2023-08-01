@@ -1,16 +1,28 @@
 const Discord = require('discord.js')
 const leaderboardTemplates = require('../data/motmgLeaderboard.json')
 const ErrorLogger = require(`../lib/logError`)
+const { iterServers } = require('../jobs/util.js')
+const dbSetup = require('../dbSetup.js');
+const { RepeatedJob } = require('../jobs/RepeatedJob.js')
+
+class Motmg extends RepeatedJob {
+    async run(bot) {
+        await iterServers(bot, async function(bot, g) {
+            await module.exports.sendMotmgLeaderboardChannelMessage(g, bot, dbSetup.getDB(g.id))
+        })
+    }
+}
 
 module.exports = {
     name: 'motmg',
     role: 'headrl',
     guildSpecific: true,
-    description: 'Hold on, still figuring it out. Just contact me ~Ben',
+    description: 'Manually updates the leaderboard channel',
     async execute(message, args, bot, db) {
         await module.exports.sendMotmgLeaderboardChannelMessage(message.guild, bot, db)
         await message.replySuccess()
     },
+    Motmg,
     async getLeaderboardEmbed(guild, bot, db, dungeon) {
         const settings = bot.settings[guild.id]
         const emojis = bot.storedEmojis
@@ -18,7 +30,7 @@ module.exports = {
         let template = module.exports.getMotmgLeaderboardTemplate(guild)
         const databaseColumn = template[dungeon].databaseColumn
         const [rows,] = await db.promise().query('SELECT userid, amount FROM loggedusage WHERE guildid = ? AND logged = ? AND utime > ?', [guild.id, databaseColumn, unixTimestamp])
-        const uniqueUsers = await module.exports.getUniqueUsers(rows)
+        const uniqueUsers = module.exports.getUniqueUsers(rows)
         var userPoints = module.exports.addAllUserPoints(uniqueUsers)
         userPoints = module.exports.accumulateAllUserPoints(rows, userPoints, uniqueUsers)
         const emoji = emojis[template[dungeon].emoji].text
@@ -72,16 +84,33 @@ module.exports = {
     async sendMotmgLeaderboardChannelMessage(guild, bot, db) {
         const settings = bot.settings[guild.id]
         let channel = bot.channels.cache.get(settings.channels.motmgLeaderboard)
+        if (!channel) { return }
         await module.exports.deleteMotmgLeaderboardChannelMessages(guild, bot)
         let template = module.exports.getMotmgLeaderboardTemplate(guild)
-        Object.keys(template).map(async row => {
-            let embedList = await module.exports.getLeaderboardEmbed(guild, bot, db, row)
+        var embedList = []
+        for (let row in template) {
+            let embeds = await module.exports.getLeaderboardEmbed(guild, bot, db, row)
+            for (let i in embeds) {
+                embedList.push(embeds[i])
+            }
+        }
+        var embedListArray = []
+        var temporaryEmbedList = []
+        for (let i in embedList) {
+            if (temporaryEmbedList.length >= 5) {
+                embedListArray.push(temporaryEmbedList)
+                temporaryEmbedList = []
+            }
+            temporaryEmbedList.push(embedList[i])
+        }
+        if (temporaryEmbedList.length > 0) { embedListArray.push(temporaryEmbedList) }
+        for (let i in embedListArray) {
             try {
-                await channel.send({ embeds: embedList })
-            } catch (e) {
+                await channel.send({ embeds: embedListArray[i] })
+            }  catch (e) {
                 ErrorLogger.log(e, bot, guild);
             }
-        })
+        }
     },
     getMotmgLeaderboardTemplate(guild) {
         if (!Object.hasOwn(leaderboardTemplates, guild.id)) return undefined
@@ -94,7 +123,7 @@ module.exports = {
             (a, b) => b[1] - a[1]
         ));
     },
-    async getUniqueUsers(object) {
+    getUniqueUsers(object) {
         const uniqueUsers = []
         object.map(row => {
             if (!uniqueUsers.includes(row.userid)) {
@@ -124,5 +153,10 @@ module.exports = {
             points += object[key]
         }
         return points
+    },
+    async sendMessages(bot) {
+        iterServers(bot, async function(bot, g) {
+            await module.exports.sendMotmgLeaderboardChannelMessage(g, bot, dbSetup.getDB(g.id))
+        })
     }
 }
