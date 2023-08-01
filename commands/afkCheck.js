@@ -151,6 +151,7 @@ class afkCheck {
         this.raidStatusInteractionHandler = null // raid status interaction handler
         this.raidCommandsEmbed = null // raid commands embed
         this.raidCommandsMessage = null // raid commands message
+        this.raidInfoEmbed = null // raid info embed
         this.raidInfoMessage = null // raid info message
         this.raidCommandsInteractionHandler = null // raid commands interaction handler
         this.raidChannelsEmbed = null // raid channels embed
@@ -191,6 +192,7 @@ class afkCheck {
                 raidStatusMessage: this.raidStatusMessage,
                 raidCommandsEmbed: this.raidCommandsEmbed,
                 raidCommandsMessage: this.raidCommandsMessage,
+                raidInfoEmbed: this.raidInfoEmbed,
                 raidInfoMessage: this.raidInfoMessage,
                 raidChannelsEmbed: this.raidChannelsEmbed,
                 raidChannelsMessage: this.raidChannelsMessage,
@@ -238,6 +240,7 @@ class afkCheck {
 
         this.raidStatusEmbed = new Discord.EmbedBuilder(storedAfkCheck.raidStatusEmbed)
         this.raidCommandsEmbed = new Discord.EmbedBuilder(storedAfkCheck.raidCommandsEmbed)
+        this.raidInfoEmbed = new Discord.EmbedBuilder(storedAfkCheck.raidInfoEmbed)
         this.raidChannelsEmbed = new Discord.EmbedBuilder(storedAfkCheck.raidChannelsEmbed)
 
         if (this.phase <= this.#afkTemplate.phases) start(this)
@@ -358,12 +361,13 @@ class afkCheck {
         if (!this.raidStatusMessage) return
         this.raidStatusEmbed.setFooter({ text: `${this.#guild.name} • ${Math.floor(this.timer / 60)} Minutes and ${this.timer % 60} Seconds Remaining`, iconURL: this.#guild.iconURL() })
         this.raidCommandsEmbed.setFooter({ text: `${this.#guild.name} • ${Math.floor(this.timer / 60)} Minutes and ${this.timer % 60} Seconds Remaining`, iconURL: this.#guild.iconURL() })
+        this.raidInfoEmbed.setFooter({ text: `${this.#guild.name} • ${Math.floor(this.timer / 60)} Minutes and ${this.timer % 60} Seconds Remaining`, iconURL: this.#guild.iconURL() })
         this.raidChannelsEmbed.setFooter({ text: `${this.#guild.name} • ${Math.floor(this.timer / 60)} Minutes and ${this.timer % 60} Seconds Remaining`, iconURL: this.#guild.iconURL() })
         let reactables = this.getReactables(this.phase)
         let components = reactables.concat(this.getPhaseControls(this.phase))
         if (this.raidStatusMessage) await this.raidStatusMessage.edit({ embeds: [this.raidStatusEmbed], components: components })
         if (this.raidCommandsMessage) await this.raidCommandsMessage.edit({ embeds: [this.raidCommandsEmbed] })
-        if (this.raidInfoMessage) await this.raidInfoMessage.edit({embeds: [this.raidCommandsEmbed]})
+        if (this.raidInfoMessage) await this.raidInfoMessage.edit({embeds: [this.raidInfoEmbed]})
         if (this.raidChannelsMessage) await this.raidChannelsMessage.edit({ embeds: [this.raidChannelsEmbed] })
         this.openInteractions = []
     }
@@ -439,13 +443,14 @@ class afkCheck {
         this.raidCommandsEmbed.setColor(this.#afkTemplate.body[phase].embed.color ? this.#afkTemplate.body[phase].embed.color : '#ffffff')
         this.raidCommandsEmbed.setDescription(`**Raid Leader: ${this.#leader} \`\`${this.#leader.nickname}\`\`\nVC: ${this.#channel ? this.#channel : "VCLess"}\nLocation:** \`\`${this.location}\`\` ${this.flag ? ` in (${this.flag})` : ''}`)
         this.raidCommandsEmbed.setFooter({ text: `${this.#guild.name} • ${Math.floor(this.#afkTemplate.body[phase].timeLimit / 60)} Minutes and ${this.#afkTemplate.body[phase].timeLimit % 60} Seconds Remaining`, iconURL: this.#guild.iconURL() })
+        this.raidInfoEmbed = this.raidCommandsEmbed
 
         let components = this.getPhaseControls(phase)
         
         if (this.raidCommandsMessage) this.raidCommandsMessage = await this.raidCommandsMessage.edit({ embeds: [this.raidCommandsEmbed], components: components})
         else this.raidCommandsMessage = await this.#afkTemplate.raidCommandChannel.send({ embeds: [this.raidCommandsEmbed], components: components})
-        if (this.raidInfoMessage) this.raidInfoMessage = await this.raidInfoMessage.edit({embeds: [this.raidCommandsEmbed]})
-        else this.raidInfoMessage = await this.#afkTemplate.raidInfoChannel.send({embeds: [this.raidCommandsEmbed]})
+        if (this.raidInfoMessage) this.raidInfoMessage = await this.raidInfoMessage.edit({embeds: [this.raidInfoEmbed]})
+        else this.raidInfoMessage = await this.#afkTemplate.raidInfoChannel.send({embeds: [this.raidInfoEmbed]})
         
         if (!this.raidCommandsInteractionHandler) {
             this.raidCommandsInteractionHandler = new Discord.InteractionCollector(this.#bot, { message: this.raidCommandsMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
@@ -615,8 +620,9 @@ class afkCheck {
                 this.raidCommandsEmbed.data.fields[position].value += this.reactables[`${interaction.customId}_request`].members.reduce((string, id, ind) => string + `${emote ? emote : ind+1}: <@!${id}>\n`, '')
             }
             if (this.raidCommandsEmbed.data.fields[position].value.length >= 1024) this.raidCommandsEmbed.data.fields[position].value = '*Too many users to process*'
+            this.raidInfoEmbed = this.raidCommandsEmbed
             await this.raidCommandsMessage.edit({ embeds: [this.raidCommandsEmbed] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
-            await this.raidInfoMessage.edit({ embeds: [this.raidCommandsEmbed] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
+            await this.raidInfoMessage.edit({ embeds: [this.raidInfoEmbed] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
             return this.removeFromActiveInteractions(interaction.member.id)
         }
         else if (['abort', 'phase', 'cap', 'additional', 'end', 'miniboss'].includes(interaction.customId) || interaction.customId.includes(`Log`)) {
@@ -688,11 +694,12 @@ class afkCheck {
         this.raidStatusEmbed.setDescription(`This afk check has been aborted`)
         this.raidStatusEmbed.setFooter({ text: `${this.#guild.name} • Aborted by ${this.#guild.members.cache.get(interaction.member.id).nickname}`, iconURL: this.#guild.iconURL() })
         this.raidCommandsEmbed.setFooter({ text: `${this.#guild.name} • Aborted by ${this.#guild.members.cache.get(interaction.member.id).nickname}`, iconURL: this.#guild.iconURL() })
+        this.raidInfoEmbed.setFooter({ text: `${this.#guild.name} • Aborted by ${this.#guild.members.cache.get(interaction.member.id).nickname}`, iconURL: this.#guild.iconURL() })
 
         this.raidStatusMessage.reactions.removeAll()
         await this.raidStatusMessage.edit({ content: null, embeds: [this.raidStatusEmbed], components: [] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
         await this.raidCommandsMessage.edit({ embeds: [this.raidCommandsEmbed], components: []})
-        await this.raidInfoMessage.edit({ embeds: [this.raidCommandsEmbed] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
+        await this.raidInfoMessage.edit({ embeds: [this.raidInfoEmbed] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
         await this.raidChannelsMessage.delete()
         
         this.active = false
@@ -849,7 +856,7 @@ class afkCheck {
                 if (err) return console.log(`error logging ${i} points in `, this.#guild.id)
             })
             let pointsLog = [{ uid: member.id, points: points, reason: `${button}`}]
-            await pointLogger.pointLogging(pointsLog, this.#guild, this.#bot, this.raidCommandsEmbed)
+            await pointLogger.pointLogging(pointsLog, this.#guild, this.#bot, this.raidInfoEmbed)
         }
         await interaction.followUp({ embeds: [extensions.createEmbed(interaction, `Successfully logged ${number} ${choiceText} for ${member}. You can dismiss this message.`, null)], ephemeral: true })
     }
@@ -877,7 +884,7 @@ class afkCheck {
 
         await this.raidStatusMessage.edit({ content: null, embeds: [this.raidStatusEmbed], components: [] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
         await this.raidCommandsMessage.edit({ embeds: [this.raidCommandsEmbed], components: []})
-        await this.raidInfoMessage.edit({ embeds: [this.raidCommandsEmbed] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
+        await this.raidInfoMessage.edit({ embeds: [this.raidInfoEmbed] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
         await this.raidChannelsMessage.delete()
         this.active = false
         this.saveBotAfkCheck(true)
@@ -1208,8 +1215,9 @@ class afkCheck {
             if (!this.earlySlotMembers.includes(memberID)) this.earlySlotMembers.push(memberID)
             if (buttonInfo.location && !this.earlyLocationMembers.includes(memberID)) this.earlyLocationMembers.push(memberID)
             this.raidCommandsEmbed.data.fields[position].value = this.reactables[customID].members.reduce((string, id, ind) => string + `${emote ? emote : ind+1}: <@!${id}>\n`, '')
+            this.raidInfoEmbed = this.raidCommandsEmbed
             await this.raidCommandsMessage.edit({ embeds: [this.raidCommandsEmbed] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
-            await this.raidInfoMessage.edit({ embeds: [this.raidCommandsEmbed] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
+            await this.raidInfoMessage.edit({ embeds: [this.raidInfoEmbed] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
         }
     }
 
@@ -1225,6 +1233,7 @@ class afkCheck {
         this.raidStatusEmbed.setDescription(`This afk check has been ended.${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` If you get disconnected during the run, **JOIN LOUNGE** *then* press the huge **RECONNECT** button` : ``}`)
         this.raidStatusEmbed.setFooter({ text: `${this.#guild.name} • Ended by ${interaction ? this.#guild.members.cache.get(interaction.member.id).nickname : this.#guild.members.cache.get(this.#leader.id).nickname}`, iconURL: this.#guild.iconURL() })
         this.raidCommandsEmbed.setFooter({ text: `${this.#guild.name} • Ended by ${interaction ? this.#guild.members.cache.get(interaction.member.id).nickname : this.#guild.members.cache.get(this.#leader.id).nickname}`, iconURL: this.#guild.iconURL() })
+        this.raidInfoEmbed.setFooter({ text: `${this.#guild.name} • Ended by ${interaction ? this.#guild.members.cache.get(interaction.member.id).nickname : this.#guild.members.cache.get(this.#leader.id).nickname}`, iconURL: this.#guild.iconURL() })
         this.raidChannelsEmbed.setFooter({ text: `${this.#guild.name} • Ended by ${interaction ? this.#guild.members.cache.get(interaction.member.id).nickname : this.#guild.members.cache.get(this.#leader.id).nickname}`, iconURL: this.#guild.iconURL() })
 
         const reconnectComponents = this.addReconnectButton()
@@ -1244,16 +1253,6 @@ class afkCheck {
                 if (rows.length == 0) return this.#db.query(`INSERT INTO users (id) VALUES('${u}')`)
             })
         }
-
-        let raiders_text = `Raiders`
-        let raiders_value = `None!`
-        this.members.forEach(m => {
-            if (raiders_value.length >= 1000) {
-                this.raidCommandsEmbed.addFields({ name: raiders_text, value: raiders_value })
-                raiders_text = `-`
-                raiders_value = `, <@!${m}>`
-            } else raiders_value == 'None!' ? raiders_value = `<@!${m}>` : raiders_value += `, <@!${m}>`
-        })
         
         if (this.#botSettings.backend.points) {
             let pointsLog = []
@@ -1275,12 +1274,21 @@ class afkCheck {
                         pointsLog.push({ uid: memberID, points: points, reason: `${i}`})
                 }
             }
-            let pointlog_mid = await pointLogger.pointLogging(pointsLog, this.#guild, this.#bot, this.raidCommandsEmbed)
-            this.raidCommandsEmbed.addFields({ name: 'Points Log MID', value: pointlog_mid })
+            let pointlog_mid = await pointLogger.pointLogging(pointsLog, this.#guild, this.#bot, this.raidInfoEmbed)
+            this.raidInfoEmbed.addFields({ name: 'Points Log MID', value: pointlog_mid })
         }
-        this.raidCommandsEmbed.addFields({ name: raiders_text, value: raiders_value })
-        await this.raidInfoMessage.edit({ embeds: [this.raidCommandsEmbed], components: [] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
-        await this.#guild.channels.cache.get(this.#botSettings.channels.history).send({ embeds: [this.raidCommandsEmbed] })
+        let raiders_text = `Raiders`
+        let raiders_value = `None!`
+        this.members.forEach(m => {
+            if (raiders_value.length >= 1000) {
+                this.raidInfoEmbed.addFields({ name: raiders_text, value: raiders_value })
+                raiders_text = `-`
+                raiders_value = `, <@!${m}>`
+            } else raiders_value == 'None!' ? raiders_value = `<@!${m}>` : raiders_value += `, <@!${m}>`
+        })
+        this.raidInfoEmbed.addFields({ name: raiders_text, value: raiders_value })
+        await this.raidInfoMessage.edit({ embeds: [this.raidInfoEmbed], components: [] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
+        await this.#guild.channels.cache.get(this.#botSettings.channels.history).send({ embeds: [this.raidInfoEmbed] })
 
         this.logging = true
         setTimeout(this.loggingAfk.bind(this), 60000)
