@@ -136,7 +136,7 @@ class MessageManager {
         // Validate the command is enabled
         if (!this.#bot.settings[e.guild.id].commands[command.name]) return await commandError('This command is disabled', 'disabled');
         // Validate the command is not disabled during restart if a restart is pending
-        if (restarting.restarting && !command.allowedInRestart) return await commandError('Cannot execute command as a restart is pending', 'pending restart')
+        if (restarting.restarting && !command.allowedInRestart && !this.#bot.adminUsers.includes(e.member.id)) return await commandError('Cannot execute command as a restart is pending', 'pending restart')
         // Validate the user has permission to use the command
         if (!e.guild.roles.cache.get(this.#bot.settings[e.guild.id].roles[command.role])) return await commandError('Permissions not set up for this commands role', 'permissions not setup')
 
