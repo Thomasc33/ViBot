@@ -26,14 +26,14 @@ module.exports = {
     async execute(message, args, bot, db) {
         var member;
         if (args.length == 0) member = message.member
-        if (message.channel.type == Discord.ChannelType.DM) member = message.member
+        if (message.channel.type == Discord.ChannelType.DM) member = message.author
         if (!member) member = message.guild.findMember(args.join(''))
         if (!member) return message.reply('Could not find a member.')
         const storedEmojis = bot.storedEmojis
 
         const embed = new Discord.EmbedBuilder()
             .setColor('#015c21')
-            .setDescription(`__**Stats for**__ ${member} ${member ? '\`' + (member.nickname || member.user.tag) + '\`' : ''}\n\nHold on... Processing`)
+            .setDescription(`__**Stats for**__ ${member} ${member ? '\`' + (member.nickname || member.tag) + '\`' : ''}\n\nHold on... Processing`)
         var statsMessage = await message.reply({ embeds: [embed] })
         for (template in statsTemplate) {
             template = statsTemplate[template]
@@ -56,7 +56,7 @@ module.exports = {
                 })
             })
         }
-        embed.setDescription(`__**Stats for**__ ${member} ${member ? '\`' + (member.nickname || member.user.tag) + '\`' : ''}`)
+        embed.setDescription(`__**Stats for**__ ${member} ${member ? '\`' + (member.nickname || member.tag) + '\`' : ''}`)
         await statsMessage.edit({ embeds: [embed] })
     }
 }
