@@ -215,7 +215,7 @@ class MessageManager {
             this.#logCommand(guild, message)
             if (!cancelled) {
                 try {
-                    message.channel.send({ embeds: [await stats.getStatsEmbed(message.author.id, guild, this.#bot)] })
+                    stats.execute(message, [], this.#bot)
                 } catch (er) {
                     message.channel.send('You are not currently logged in the database. The database gets updated every 24-48 hours')
                 }
