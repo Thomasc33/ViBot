@@ -1,5 +1,7 @@
 const Discord = require('discord.js');
 const ErrorLogger = require('../lib/logError');
+const cron = require('cron');
+const moment = require('moment')
 
 module.exports = {
     name: 'test',
