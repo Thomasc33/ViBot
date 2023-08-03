@@ -141,7 +141,7 @@ async function setup(bot) {
     await botStatusUpdateJob.runOnce()
     botStatusUpdateJob.runAtInterval(30000)
     await motmgJob.runOnce()
-    await motmgJob.runAtInterval(900000)
+    motmgJob.runAtInterval(900000)
 
 
     //initialize components (eg. modmail, verification)
