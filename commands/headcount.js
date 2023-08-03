@@ -8,7 +8,7 @@ module.exports = {
     description: 'Puts a headcount in a raid status channel',
     alias: ['hc'],
     requiredArgs: 1,
-    args: '<run type> (time) (time type s/m/h/d/w/y)',
+    args: '<run type> (time) (time type s/m)',
     role: 'eventrl',
     async execute(message, args, bot) {
         //settings
