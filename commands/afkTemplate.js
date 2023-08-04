@@ -513,7 +513,7 @@ module.exports = { AfkTemplate, TemplateState, TemplateVCOptions, TemplateVCStat
         const guildID = initialGuildID ? initialGuildID : message.guild.id
         const raidIDs = []
         for (let raidID in bot.afkChecks) {
-            if (bot.afkChecks[raidID].guild.id == guildID || guildID == 'all') raidIDs.push(raidID)
+            if (guildID == 'all' || bot.afkChecks[raidID].guild.id == guildID) raidIDs.push(raidID)
         }
         switch (command) {
             case 'number':
