@@ -39,7 +39,6 @@ module.exports = {
         await afkModule.sendButtonChoices()
         await afkModule.sendInitialStatusMessage(afkModule.phase)
         await afkModule.createThreads()
-        afkModule.saveBotAfkCheck()
         if (afkTemplate.startDelay > 0) setTimeout(start, afkTemplate.startDelay*1000, afkModule)
         else start(afkModule)
     },
@@ -1422,7 +1421,6 @@ class afkCheck {
     async updateLocation() {
         this.location = this.#bot.afkChecks[this.#raidID].location
         this.flag = this.location ? {'us': ':flag_us:', 'eu': ':flag_eu:'}[this.location.toLowerCase().substring(0, 2)] : '' 
-        this.saveBotAfkCheck()
         await Promise.all([this.sendStatusMessage(this.phase), this.sendCommandsMessage(this.phase), this.sendChannelsMessage(this.phase)])
         for (let i of this.earlyLocationMembers) {
             let member = this.#guild.members.cache.get(i)
