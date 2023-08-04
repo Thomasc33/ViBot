@@ -345,7 +345,8 @@ class afkCheck {
 
     startTimers() {
         if (this.#channel) this.moveInEarlysTimer = setInterval(() => this.moveInEarlys(), 10000)
-        this.updatePanelTimer = setInterval(() => this.updatePanel(), 5000)
+        let updatePanelTimer = setInterval((updatePanelTimer) => this.updatePanel(updatePanelTimer), 5000)
+        this.updatePanelTimer = updatePanelTimer
     }
 
     async moveInEarlys() {
@@ -356,7 +357,8 @@ class afkCheck {
         }
     }
 
-    async updatePanel() {
+    async updatePanel(timer) {
+        if (this.phase > this.#afkTemplate.phases) return clearInterval(timer)
         if (!this.timer) this.timer = this.#afkTemplate.body[this.phase].timeLimit
         this.timer = this.timer - 5
         if (this.timer == 0) return this.processPhaseNext()
@@ -760,7 +762,10 @@ class afkCheck {
             if (this.#afkTemplate.body[phase].vcState == AfkTemplate.TemplateVCState.OPEN && this.#channel) for (let minimumJoinRaiderRole of this.#afkTemplate.minimumJoinRaiderRoles) await this.#channel.permissionOverwrites.edit(minimumJoinRaiderRole.id, { Connect: true, ViewChannel: true }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
             else if (this.#afkTemplate.body[phase].vcState == AfkTemplate.TemplateVCState.LOCKED && this.#channel) for (let minimumJoinRaiderRole of this.#afkTemplate.minimumJoinRaiderRoles) await this.#channel.permissionOverwrites.edit(minimumJoinRaiderRole.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
             await Promise.all([this.sendStatusMessage(phase), this.sendCommandsMessage(phase), this.sendChannelsMessage(phase)])
-            if (phase <= this.#afkTemplate.phases) { this.updatePanelTimer = setInterval(() => this.updatePanel(), 5000) }
+            if (phase <= this.#afkTemplate.phases) {
+                let updatePanelTimer = setInterval((updatePanelTimer) => this.updatePanel(updatePanelTimer), 5000)
+                this.updatePanelTimer = updatePanelTimer
+            }
             this.saveBotAfkCheck()
         }, 5000)
         setTimeout(async () => { if (tempRaidStatusMessage) await tempRaidStatusMessage.delete() }, 5000)
