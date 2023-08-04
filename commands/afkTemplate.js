@@ -1,5 +1,7 @@
+const fs = require('fs')
 const Discord = require('discord.js')
 const templates = require('../data/afkTemplates.json')
+const { createEmbed } = require('../lib/extensions.js')
 
 // Enum for the Error States in a Template
 const TemplateState = { 
@@ -499,10 +501,55 @@ class AfkTemplate {
 }
 
 module.exports = { AfkTemplate, TemplateState, TemplateVCOptions, TemplateVCState, TemplateButtonType, TemplateButtonChoice, 
-    name: "afktemplates",
-    role: "moderator",
-    description: "Unused command as of right now",
+    name: 'afkinfo',
+    description: 'Gives information about afk checks on the bot.',
+    args: '<number/reset/delete/show> (guildID/all)',
+    role: 'developer',
+    allowedInRestart: true,
     async execute(message, args, bot, db) {
-        message.reply('This is empty as of right now.')
+        let initialCommand = args.shift()
+        let initialGuildID = args.shift()
+        const command = initialCommand ? initialCommand.toLowerCase() : null
+        const guildID = initialGuildID ? initialGuildID : message.guild.id
+        const raidIDs = []
+        for (let raidID in bot.afkChecks) {
+            if (bot.afkChecks[raidID].guild.id == guildID || guildID == 'all') raidIDs.push(raidID)
+        }
+        switch (command) {
+            case 'number':
+                return await message.reply({ embeds: [createEmbed(message, `There are currently \`${raidIDs.length}\` afk checks.`, null)] })
+            case 'show':
+                let textShow = `There are currently \`${raidIDs.length}\` afk checks.`
+                let indexShow = 0
+                for (let raidID of raidIDs) {
+                    textShow += `\n\`\`${indexShow+1}.\`\` ${bot.afkChecks[raidID].afkTemplate.name} by ${bot.afkChecks[raidID].leader} at <t:${Math.floor(bot.afkChecks[raidID].time/1000)}:f> is ${bot.afkChecks[raidID].active ? 'active' : 'inactive'}`
+                    indexShow++
+                }
+                return await message.reply({ embeds: [createEmbed(message, textShow, null)] })
+            case 'delete':
+                const deleteMenu = new Discord.StringSelectMenuBuilder()
+                .setPlaceholder(`Afk Checks`)
+                .setMinValues(1)
+                .setMaxValues(1)
+                let textDelete = `There are currently \`${raidIDs.length}\` afk checks.`
+                let indexDelete = 0
+                for (let raidID of raidIDs) {
+                    textDelete += `\n\`\`${indexDelete+1}.\`\` ${bot.afkChecks[raidID].afkTemplate.name} by ${bot.afkChecks[raidID].leader} at <t:${Math.floor(bot.afkChecks[raidID].time/1000)}:f> is ${bot.afkChecks[raidID].active ? 'active' : 'inactive'}`
+                    deleteMenu.addOptions({ label: `${indexDelete+1}. ${bot.afkChecks[raidID].afkTemplate.name} by ${bot.afkChecks[raidID].leader.displayName}`, value: raidID })
+                    indexDelete++
+                }
+
+                if (raidIDs.length == 0) return await message.reply({ embeds: [createEmbed(message, textDelete, null)] })
+                const {value: raidID, interaction: subInteraction} = await message.selectPanel(textDelete, null, deleteMenu, 30000, false, true)
+                if (!raidID) return
+                delete bot.afkChecks[raidID]
+                fs.writeFileSync('./data/afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot, message.guild) })
+                return await message.reply({ embeds: [createEmbed(message, `Afk check \`${raidID}\` has been deleted.`, null)] })
+            case 'reset':
+                for (let raidID of raidIDs) delete bot.afkChecks[raidID]
+                fs.writeFileSync('./data/afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot, message.guild) })
+                return await message.reply({ embeds: [createEmbed(message, `\`${raidIDs.length}\` afk checks have been reset.`, null)] })
+        }
+        await message.reply({ embeds: [createEmbed(message, 'afkInfo is missing arguments.', null)] })
     }
 }
