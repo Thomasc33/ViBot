@@ -548,7 +548,6 @@ module.exports = {
                                 //give user event raider role
                                 setTimeout(async () => {
                                     await member.roles.add(settings.roles.eventraider)
-                                    if (settings.backend.giveeventroleonverification) member.roles.add(settings.roles.eventraider)
                                     if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) await member.roles.remove(settings.roles.unverified)
                                 }, 1000)
                                 er_msg = 'For now, you have been given access to the events section to participate in non-Lost Halls dungeons.';
