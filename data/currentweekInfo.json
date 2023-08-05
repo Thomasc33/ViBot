@@ -48,7 +48,7 @@
         {
             "id": "451171819672698920",
             "verificationcurrentweek": "currentweekverifications",
-            "verficationtotal": "verifications",
+            "verificationtotal": "verifications",
             "vetverificationcurrentweek": "currentweekvetVerifications",
             "vetverificationtotal": "vetVerifications",
             "disabled": false,
