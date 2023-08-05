@@ -141,7 +141,7 @@ module.exports = {
                     setupEmbed.data.description += `\n\`\`\``
                     for (let i = 0; i < fieldIndex + 1; i++) if (setupEmbed.data.fields && setupEmbed.data.fields[i]) setupEmbed.data.fields[i].value += '```'
                     await setupMessage.edit({ embeds: [setupEmbed] })
-                    let menuCollector = new Discord.MessageCollector(message.channel, m => m.author.id == message.author.id)
+                    let menuCollector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id == message.author.id })
                     menuCollector.on('collect', async m => {
                         let num = m.content
                         if (m.content.replace(/[^0-9]/g, '') != m.content) {
