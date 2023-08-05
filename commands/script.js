@@ -82,8 +82,13 @@ module.exports = {
                         unverifiedUsers++;
                         return true
                     })
-                    console.log(unverifiedUsers)
-                    await Promise.all(allUnverifiedUsers.map(async member => { await member.roles.add(settings.roles.unverified) }))
+                    const allUnverifiedUsersID = allUnverifiedUsers.map(member => member.id)
+                    for (let index in allUnverifiedUsersID) {
+                        let member = allUnverifiedUsersID[index]
+                        member = message.guild.members.cache.get(member)
+                        await member.roles.add(settings.roles.unverified)
+                        await new Promise(resolve => setTimeout(resolve, 250))
+                    }
 
                     embed.setTitle('Statistics')
                     embed.setDescription(`*Comannd has finished running*\n\n**Unverified Users: \`\`${unverifiedUsers}\`\`\nVerified Users: \`\`${verifiedUsers}\`\`\nSuspended Users:** \`\`${suspendedUsers}\`\``)
