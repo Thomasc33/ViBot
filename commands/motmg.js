@@ -7,7 +7,7 @@ const { RepeatedJob } = require('../jobs/RepeatedJob.js')
 
 class Motmg extends RepeatedJob {
     async run(bot) {
-        await iterServers(bot, async function(bot, g) {
+        await iterServers(bot, async function (bot, g) {
             await module.exports.sendMotmgLeaderboardChannelMessage(g, bot, dbSetup.getDB(g.id))
         })
     }
@@ -63,7 +63,7 @@ module.exports = {
             .setColor('#015c21')
         let embedIndex = 1
         for (let index in seperateFieldStrings) {
-            if (embedIndex >= 9) {
+            if (embedIndex >= 9 || embed.length + stringArray.join('\n').length + `${emoji} ${dungeon} Week ${startWeek + 1} - ${endWeek} (${embedIndex}) ${emoji}`.length >= 5950) { // giving it a 50 buffer
                 embeds.push(embed)
                 embed = new Discord.EmbedBuilder()
                     .setTitle('Leaderboard')
@@ -73,7 +73,7 @@ module.exports = {
             }
             let stringArray = seperateFieldStrings[index]
             embed.addFields({
-                name: `${emoji} ${dungeon} Week ${startWeek+1} - ${endWeek} (${embedIndex}) ${emoji}`,
+                name: `${emoji} ${dungeon} Week ${startWeek + 1} - ${endWeek} (${embedIndex}) ${emoji}`,
                 value: stringArray.join('\n'),
                 inline: true
             })
@@ -174,7 +174,7 @@ module.exports = {
             .setDescription(`These runs are between ${discordTimestampStart} and ${discordTimestampEnd}`)
         let embedIndex = 1
         for (let index in seperateFieldStrings) {
-            if (embedIndex >= 9) {
+            if (embedIndex >= 9 || embed.length + stringArray.join('\n').length + `${emoji} Week ${startWeek + 1} - ${endWeek} (${embedIndex}) ${emoji}`.length >= 5950) { // giving it a 50 buffer
                 embeds.push(embed)
                 embed = new Discord.EmbedBuilder()
                     .setTitle('Leaderboard')
@@ -184,7 +184,7 @@ module.exports = {
             }
             let stringArray = seperateFieldStrings[index]
             embed.addFields({
-                name: `${emoji} Week ${startWeek+1} - ${endWeek} (${embedIndex}) ${emoji}`,
+                name: `${emoji} Week ${startWeek + 1} - ${endWeek} (${embedIndex}) ${emoji}`,
                 value: stringArray.join('\n'),
                 inline: true
             })
@@ -274,7 +274,7 @@ module.exports = {
             .setDescription(`These runs are between ${discordTimestampStart} and ${discordTimestampEnd}\nTeam: ${teamRole}`)
         let embedIndex = 1
         for (let index in seperateFieldStrings) {
-            if (embedIndex >= 9) {
+            if (embedIndex >= 9 || embed.length + stringArray.join('\n').length + `${emoji} ${teamRole.name} Week ${startWeek + 1} - ${endWeek} (${embedIndex}) ${emoji}`.length >= 5950) { // giving it a 50 buffer
                 embeds.push(embed)
                 embed = new Discord.EmbedBuilder()
                     .setTitle('Leaderboard')
@@ -284,7 +284,7 @@ module.exports = {
             }
             let stringArray = seperateFieldStrings[index]
             embed.addFields({
-                name: `${emoji} ${teamRole.name} Week ${startWeek+1} - ${endWeek} (${embedIndex}) ${emoji}`,
+                name: `${emoji} ${teamRole.name} Week ${startWeek + 1} - ${endWeek} (${embedIndex}) ${emoji}`,
                 value: stringArray.join('\n'),
                 inline: true
             })
@@ -313,18 +313,18 @@ module.exports = {
         }
         for (let row in template) {
             for (let i = 0; i < 5; i++) {
-                let embeds = await module.exports.getLeaderboardEmbed(guild, bot, db, row, i, i+1)
+                let embeds = await module.exports.getLeaderboardEmbed(guild, bot, db, row, i, i + 1)
                 for (let i in embeds) {
                     embedList.push(embeds[i])
                 }
             }
         }
         let embeds = await module.exports.getLeaderboardEmbedTotal(guild, bot, db, 0, 4)
-            for (let i in embeds) {
-                embedList.push(embeds[i])
-            }
+        for (let i in embeds) {
+            embedList.push(embeds[i])
+        }
         for (let i = 0; i < 5; i++) {
-            let embeds = await module.exports.getLeaderboardEmbedTotal(guild, bot, db, i, i+1)
+            let embeds = await module.exports.getLeaderboardEmbedTotal(guild, bot, db, i, i + 1)
             for (let i in embeds) {
                 embedList.push(embeds[i])
             }
@@ -338,7 +338,7 @@ module.exports = {
         }
         for (let teamIndex in teams) {
             for (let i = 0; i < 5; i++) {
-                let embeds = await module.exports.getLeaderboardEmbedTotalTeam(guild, bot, db, teams[teamIndex], i, i+1)
+                let embeds = await module.exports.getLeaderboardEmbedTotalTeam(guild, bot, db, teams[teamIndex], i, i + 1)
                 for (let i in embeds) {
                     embedList.push(embeds[i])
                 }
@@ -357,7 +357,7 @@ module.exports = {
         for (let i in embedListArray) {
             try {
                 await channel.send({ embeds: embedListArray[i] })
-            }  catch (e) {
+            } catch (e) {
                 ErrorLogger.log(e, bot, guild);
             }
         }
@@ -366,8 +366,8 @@ module.exports = {
         const settings = bot.settings[guild.id]
         const teamRoles = []
         for (let i = 0; i < 30; i++) {
-            if (!settings.roles[`motmgTeam${i+1}`]) { continue; }
-            teamRoles.push(settings.roles[`motmgTeam${i+1}`])
+            if (!settings.roles[`motmgTeam${i + 1}`]) { continue; }
+            teamRoles.push(settings.roles[`motmgTeam${i + 1}`])
         }
         return teamRoles
     },
@@ -414,7 +414,7 @@ module.exports = {
         return points
     },
     async sendMessages(bot) {
-        iterServers(bot, async function(bot, g) {
+        iterServers(bot, async function (bot, g) {
             await module.exports.sendMotmgLeaderboardChannelMessage(g, bot, dbSetup.getDB(g.id))
         })
     }
