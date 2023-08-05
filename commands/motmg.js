@@ -63,7 +63,7 @@ module.exports = {
             .setColor('#015c21')
         let embedIndex = 1
         for (let index in seperateFieldStrings) {
-            if (embedIndex >= 9 || embed.length + seperateFieldStrings[index].join('\n').length + `${emoji} ${dungeon} Week ${startWeek + 1} - ${endWeek} (${embedIndex}) ${emoji}`.length >= 5950) { // giving it a 50 buffer
+            if (embedIndex >= 5) {
                 embeds.push(embed)
                 embed = new Discord.EmbedBuilder()
                     .setTitle('Leaderboard')
@@ -174,7 +174,7 @@ module.exports = {
             .setDescription(`These runs are between ${discordTimestampStart} and ${discordTimestampEnd}`)
         let embedIndex = 1
         for (let index in seperateFieldStrings) {
-            if (embedIndex >= 9 || embed.length + seperateFieldStrings[index].join('\n').length + `${emoji} Week ${startWeek + 1} - ${endWeek} (${embedIndex}) ${emoji}`.length >= 5950) { // giving it a 50 buffer
+            if (embedIndex >= 5) {
                 embeds.push(embed)
                 embed = new Discord.EmbedBuilder()
                     .setTitle('Leaderboard')
@@ -274,7 +274,7 @@ module.exports = {
             .setDescription(`These runs are between ${discordTimestampStart} and ${discordTimestampEnd}\nTeam: ${teamRole}`)
         let embedIndex = 1
         for (let index in seperateFieldStrings) {
-            if (embedIndex >= 9 || embed.length + seperateFieldStrings[index].join('\n').length + `${emoji} ${teamRole.name} Week ${startWeek + 1} - ${endWeek} (${embedIndex}) ${emoji}`.length >= 5950) { // giving it a 50 buffer
+            if (embedIndex >= 5) {
                 embeds.push(embed)
                 embed = new Discord.EmbedBuilder()
                     .setTitle('Leaderboard')
