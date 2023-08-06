@@ -75,10 +75,12 @@ module.exports = {
                     let unverifiedUsers = 0
                     let verifiedUsers = 0
                     let suspendedUsers = 0
+                    let alreadyUnverifiedUsers = 0
                     const allUnverifiedUsers = message.guild.members.cache.filter(member => {
                         if (member.roles.cache.has(settings.roles.raider)) { verifiedUsers++; return false; }
                         if (member.roles.cache.has(settings.roles.tempsuspended)) {suspendedUsers++; return false; }
                         if (member.roles.cache.has(settings.roles.permasuspended)) {suspendedUsers++; return false; }
+                        if (member.roles.cache.has(settings.roles.unverified)) {alreadyUnverifiedUsers++; return false; }
                         unverifiedUsers++;
                         return true
                     })
@@ -86,12 +88,12 @@ module.exports = {
                     for (let index in allUnverifiedUsersID) {
                         let member = allUnverifiedUsersID[index]
                         member = message.guild.members.cache.get(member)
-                        await member.roles.add(settings.roles.unverified)
+                        try { await member.roles.add(settings.roles.unverified) } catch (e) { console.log(e) }
                         await new Promise(resolve => setTimeout(resolve, 250))
                     }
 
                     embed.setTitle('Statistics')
-                    embed.setDescription(`*Comannd has finished running*\n\n**Unverified Users: \`\`${unverifiedUsers}\`\`\nVerified Users: \`\`${verifiedUsers}\`\`\nSuspended Users:** \`\`${suspendedUsers}\`\``)
+                    embed.setDescription(`*Comannd has finished running*\n\n**Unverified Users: \`\`${unverifiedUsers}\`\`\nVerified Users: \`\`${verifiedUsers}\`\`\nSuspended Users:** \`\`${suspendedUsers}\`\`\nAlready Unverified Users: \`\`${alreadyUnverifiedUsers}\`\``)
                     embed.setColor('#FF0000')
                     await message.react('✅')
                     await message.author.send(`Hello ${message.author} I have completed the script\nYou may view some statistics here: ${statisticMessage.url}`)
