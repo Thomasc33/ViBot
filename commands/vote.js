@@ -92,12 +92,19 @@ async function postVote2(message, member, bot, db) {
 
         const msg = await message.guild.channels.cache.get(settings.channels[guilds.channels[rolekey]]).send({ embeds: [embed] });
         await msg.react('✅');
-        if (message.guild.id !== '708026927721480254') await msg.react('😐');
+        if (!['343704644712923138', '708026927721480254', '701483950559985705'].includes(message.guild.id)) {
+            await msg.react('😐')
+        }
         await msg.react('❌');
-        if (rolekey == 'almostrl' && message.guild.id !== '708026927721480254') await msg.react('👀');
+        if (rolekey == 'almostrl' && message.guild.id !== '708026927721480254') {
+            await msg.react('👀')
+        }
         try
         { 
-            if (rolekey == 'rl' && message.guild.id == '708026927721480254') await msg.react('🇷'); await msg.react('🇫');
+            if (rolekey == 'rl' && message.guild.id == '708026927721480254') {
+                await msg.react('🇷')
+                await msg.react('🇫')
+            }
         }
         catch (e) {
             ErrorLogger.log(e, bot, message.guild.id)
