@@ -85,7 +85,7 @@ module.exports = {
                 .setTimestamp(Date.now() + millisecondTime);
             modlogs.send({ embeds: [embed] });
             }           
-        db.query(`INSERT INTO mutes (id, guildid, muted, reason, modid, uTime) VALUES ('${member.id}', '${message.guild.id}', true, '${reason || 'None Provided'}','${message.author.id}', '${Date.now() + time}')`, err => {
+        db.query(`INSERT INTO mutes (id, guildid, muted, reason, modid, uTime) VALUES ('${member.id}', '${message.guild.id}', true, '${reason || 'None Provided'}','${message.author.id}', '${Date.now() + millisecondTime}')`, err => {
             member.roles.add(muted).catch(er => ErrorLogger.log(er, bot, message.guild))
             message.reply(`${member} has been muted`);
             muteProcess();
