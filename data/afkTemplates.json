@@ -24550,6 +24550,551 @@
                         "lifetime": 69
                     }
                 }
+            },
+            {
+                "templateID": 269,
+                "inherits": [
+                    "veteranEvent",
+                    "event"
+                ],
+                "category": null,
+                "templateChannel": null,
+                "partneredStatusChannels": null,
+                "statusChannel": null,
+                "commandsChannel": null,
+                "activeChannel": null,
+                "enabled": true,
+                "minStaffRoles": {
+                    "event": [
+                        [
+                            "eventrl"
+                        ],
+                        [
+                            "almostrl"
+                        ],
+                        [
+                            "rl"
+                        ],
+                        [
+                            "lostboomer"
+                        ]
+                    ],
+                    "veteranEvent": [
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "vetaffiliate"
+                        ],
+                        [
+                            "lostboomer"
+                        ]
+                    ]
+                },
+                "minViewRaiderRoles": null,
+                "minJoinRaiderRoles": null,
+                "name": "Fame OT",
+                "templateName": "Fame Ocean Trench",
+                "pingRoles": null,
+                "aliases": [
+                    "fameot"
+                ],
+                "logName": "eventruns",
+                "vcOptions": 2,
+                "startDelay": null,
+                "cap": null,
+                "capButton": null,
+                "phases": 2,
+                "body": {
+                    "1": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    "2": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    "default": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#ff00ff",
+                            "description": null,
+                            "image": null,
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/1114574154021208186/1114979454654103582/Thessal20the20Mermaid20Goddess.png"
+                            ]
+                        }
+                    }
+                },
+                "buttons": {
+                    "Key": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 2,
+                        "limit": 3,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "otK",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": [
+                            "eventrl"
+                        ],
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Grade C** Key with **+100% Minion Exp** or **+30% Boss Exp** {otK} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "eventpops"
+                                ],
+                                "points": "eventkey",
+                                "multiplier": null
+                            },
+                            "Modded": {
+                                "logName": [
+                                    "eventpops",
+                                    "moddedpops"
+                                ],
+                                "points": "eventkey",
+                                "multiplier": "keymultiplier"
+                            }
+                        }
+                    },
+                    "Scholar’s Seal": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "UTScholarsSeal",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Warrior": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Warrior",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Paladin": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Paladin",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Inspire": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Inspire",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Sorcerer": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 5,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Sorcerer",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Supporter": {
+                        "type": 2,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": null,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "NitroBooster",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    }
+                },
+                "reacts": {
+                    "fame": {
+                        "emote": "fame",
+                        "onHeadcount": true,
+                        "start": 1,
+                        "lifetime": 2
+                    }
+                }
+            },
+            {
+                "templateID": 270,
+                "inherits": [
+                    "veteranEvent",
+                    "event"
+                ],
+                "category": null,
+                "templateChannel": null,
+                "partneredStatusChannels": null,
+                "statusChannel": null,
+                "commandsChannel": null,
+                "activeChannel": null,
+                "enabled": true,
+                "minStaffRoles": {
+                    "event": [
+                        [
+                            "eventrl"
+                        ],
+                        [
+                            "almostrl"
+                        ],
+                        [
+                            "rl"
+                        ],
+                        [
+                            "lostboomer"
+                        ]
+                    ],
+                    "veteranEvent": [
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "vetaffiliate"
+                        ],
+                        [
+                            "lostboomer"
+                        ]
+                    ]
+                },
+                "minViewRaiderRoles": null,
+                "minJoinRaiderRoles": null,
+                "name": "VC-less Fame OT",
+                "templateName": "VC-less Fame Ocean Trench",
+                "pingRoles": null,
+                "aliases": [
+                    "fameot"
+                ],
+                "logName": "eventruns",
+                "vcOptions": 0,
+                "startDelay": null,
+                "cap": null,
+                "capButton": null,
+                "phases": 2,
+                "body": {
+                    "1": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    "2": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    "default": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#ff00ff",
+                            "description": null,
+                            "image": null,
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/1114574154021208186/1114979454654103582/Thessal20the20Mermaid20Goddess.png"
+                            ]
+                        }
+                    }
+                },
+                "buttons": {
+                    "Key": {
+                        "type": 1,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 2,
+                        "limit": 3,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "otK",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": [
+                            "eventrl"
+                        ],
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Grade C** Key with **+100% Minion Exp** or **+30% Boss Exp** {otK} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "eventpops"
+                                ],
+                                "points": "eventkey",
+                                "multiplier": null
+                            },
+                            "Modded": {
+                                "logName": [
+                                    "eventpops",
+                                    "moddedpops"
+                                ],
+                                "points": "eventkey",
+                                "multiplier": "keymultiplier"
+                            }
+                        }
+                    },
+                    "Scholar’s Seal": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "UTScholarsSeal",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Warrior": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Warrior",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Paladin": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Paladin",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Inspire": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Inspire",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Sorcerer": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 5,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Sorcerer",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Supporter": {
+                        "type": 2,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": null,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "NitroBooster",
+                        "confirm": false,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Join": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 0,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": null,
+                        "confirm": false,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": 1,
+                        "start": 2,
+                        "lifetime": 69,
+                        "logOptions": null
+                    }
+                },
+                "reacts": {
+                    "fame": {
+                        "emote": "fame",
+                        "onHeadcount": true,
+                        "start": 1,
+                        "lifetime": 2
+                    }
+                }
             }
         ]
     },
@@ -36539,7 +37084,7 @@
                 "minViewRaiderRoles": null,
                 "minJoinRaiderRoles": null,
                 "name": "Ocean Trench",
-                "templateName": "Oecan Trench",
+                "templateName": "Ocean Trench",
                 "pingRoles": null,
                 "aliases": [
                     "ot",
@@ -44496,7 +45041,7 @@
                 },
                 "buttons": {
                     "Winecellar Incantation": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -44523,7 +45068,7 @@
                         }
                     },
                     "Shield Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -44550,7 +45095,7 @@
                         }
                     },
                     "Sword Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -44577,7 +45122,7 @@
                         }
                     },
                     "Helmet Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -44869,7 +45414,7 @@
                 },
                 "buttons": {
                     "Winecellar Incantation": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -44898,7 +45443,7 @@
                         }
                     },
                     "Shield Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -44927,7 +45472,7 @@
                         }
                     },
                     "Sword Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -44956,7 +45501,7 @@
                         }
                     },
                     "Helmet Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -48487,7 +49032,7 @@
                 },
                 "buttons": {
                     "Winecellar Incantation": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -48514,7 +49059,7 @@
                         }
                     },
                     "Shield Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -48541,7 +49086,7 @@
                         }
                     },
                     "Sword Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -48568,7 +49113,7 @@
                         }
                     },
                     "Helmet Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -48854,7 +49399,7 @@
                 },
                 "buttons": {
                     "Winecellar Incantation": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -48883,7 +49428,7 @@
                         }
                     },
                     "Shield Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -48912,7 +49457,7 @@
                         }
                     },
                     "Sword Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -48941,7 +49486,7 @@
                         }
                     },
                     "Helmet Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -49274,7 +49819,7 @@
                 },
                 "buttons": {
                     "Winecellar Incantation": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -49301,7 +49846,7 @@
                         }
                     },
                     "Shield Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -49328,7 +49873,7 @@
                         }
                     },
                     "Sword Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -49355,7 +49900,7 @@
                         }
                     },
                     "Helmet Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -49598,7 +50143,7 @@
                 },
                 "buttons": {
                     "Winecellar Incantation": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -49627,7 +50172,7 @@
                         }
                     },
                     "Shield Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -49656,7 +50201,7 @@
                         }
                     },
                     "Sword Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -49685,7 +50230,7 @@
                         }
                     },
                     "Helmet Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -49960,7 +50505,7 @@
                 },
                 "buttons": {
                     "Winecellar Incantation": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -49989,7 +50534,7 @@
                         }
                     },
                     "Shield Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -50018,7 +50563,7 @@
                         }
                     },
                     "Sword Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -50047,7 +50592,7 @@
                         }
                     },
                     "Helmet Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -50341,7 +50886,7 @@
                 },
                 "buttons": {
                     "Winecellar Incantation": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 1,
@@ -50368,7 +50913,7 @@
                         }
                     },
                     "Shield Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -50395,7 +50940,7 @@
                         }
                     },
                     "Sword Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -50422,7 +50967,7 @@
                         }
                     },
                     "Helmet Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -52326,6 +52871,551 @@
                         "lifetime": 69
                     }
                 }
+            },
+            {
+                "templateID": 271,
+                "inherits": [
+                    "veteranEvent",
+                    "event"
+                ],
+                "category": null,
+                "templateChannel": null,
+                "partneredStatusChannels": null,
+                "statusChannel": null,
+                "commandsChannel": null,
+                "activeChannel": null,
+                "enabled": true,
+                "minStaffRoles": {
+                    "event": [
+                        [
+                            "eventrl"
+                        ],
+                        [
+                            "almostrl"
+                        ],
+                        [
+                            "rl"
+                        ],
+                        [
+                            "lostboomer"
+                        ]
+                    ],
+                    "veteranEvent": [
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "vetaffiliate"
+                        ],
+                        [
+                            "lostboomer"
+                        ]
+                    ]
+                },
+                "minViewRaiderRoles": null,
+                "minJoinRaiderRoles": null,
+                "name": "Fame OT",
+                "templateName": "Fame Ocean Trench",
+                "pingRoles": null,
+                "aliases": [
+                    "fameot"
+                ],
+                "logName": "eventruns",
+                "vcOptions": 2,
+                "startDelay": null,
+                "cap": null,
+                "capButton": null,
+                "phases": 2,
+                "body": {
+                    "1": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    "2": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    "default": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#ff00ff",
+                            "description": null,
+                            "image": null,
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/1114574154021208186/1114979454654103582/Thessal20the20Mermaid20Goddess.png"
+                            ]
+                        }
+                    }
+                },
+                "buttons": {
+                    "Key": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 2,
+                        "limit": 3,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "otK",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": [
+                            "eventrl"
+                        ],
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Grade C** Key with **+100% Minion Exp** or **+30% Boss Exp** {otK} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "eventpops"
+                                ],
+                                "points": "eventkey",
+                                "multiplier": null
+                            },
+                            "Modded": {
+                                "logName": [
+                                    "eventpops",
+                                    "moddedpops"
+                                ],
+                                "points": "eventkey",
+                                "multiplier": "keymultiplier"
+                            }
+                        }
+                    },
+                    "Scholar’s Seal": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "UTScholarsSeal",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Warrior": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Warrior",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Paladin": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Paladin",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Inspire": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Inspire",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Sorcerer": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 5,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Sorcerer",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Supporter": {
+                        "type": 2,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": null,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "NitroBooster",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    }
+                },
+                "reacts": {
+                    "fame": {
+                        "emote": "fame",
+                        "onHeadcount": true,
+                        "start": 1,
+                        "lifetime": 2
+                    }
+                }
+            },
+            {
+                "templateID": 272,
+                "inherits": [
+                    "veteranEvent",
+                    "event"
+                ],
+                "category": null,
+                "templateChannel": null,
+                "partneredStatusChannels": null,
+                "statusChannel": null,
+                "commandsChannel": null,
+                "activeChannel": null,
+                "enabled": true,
+                "minStaffRoles": {
+                    "event": [
+                        [
+                            "eventrl"
+                        ],
+                        [
+                            "almostrl"
+                        ],
+                        [
+                            "rl"
+                        ],
+                        [
+                            "lostboomer"
+                        ]
+                    ],
+                    "veteranEvent": [
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "vetaffiliate"
+                        ],
+                        [
+                            "lostboomer"
+                        ]
+                    ]
+                },
+                "minViewRaiderRoles": null,
+                "minJoinRaiderRoles": null,
+                "name": "VC-less Fame OT",
+                "templateName": "VC-less Fame Ocean Trench",
+                "pingRoles": null,
+                "aliases": [
+                    "fameot"
+                ],
+                "logName": "eventruns",
+                "vcOptions": 0,
+                "startDelay": null,
+                "cap": null,
+                "capButton": null,
+                "phases": 2,
+                "body": {
+                    "1": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    "2": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    "default": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#ff00ff",
+                            "description": null,
+                            "image": null,
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/1114574154021208186/1114979454654103582/Thessal20the20Mermaid20Goddess.png"
+                            ]
+                        }
+                    }
+                },
+                "buttons": {
+                    "Key": {
+                        "type": 1,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 2,
+                        "limit": 3,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "otK",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": [
+                            "eventrl"
+                        ],
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Grade C** Key with **+100% Minion Exp** or **+30% Boss Exp** {otK} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "eventpops"
+                                ],
+                                "points": "eventkey",
+                                "multiplier": null
+                            },
+                            "Modded": {
+                                "logName": [
+                                    "eventpops",
+                                    "moddedpops"
+                                ],
+                                "points": "eventkey",
+                                "multiplier": "keymultiplier"
+                            }
+                        }
+                    },
+                    "Scholar’s Seal": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "UTScholarsSeal",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Warrior": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Warrior",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Paladin": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Paladin",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Inspire": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Inspire",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Sorcerer": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 5,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Sorcerer",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Supporter": {
+                        "type": 2,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": null,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "NitroBooster",
+                        "confirm": false,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Join": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 0,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": null,
+                        "confirm": false,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": 1,
+                        "start": 2,
+                        "lifetime": 69,
+                        "logOptions": null
+                    }
+                },
+                "reacts": {
+                    "fame": {
+                        "emote": "fame",
+                        "onHeadcount": true,
+                        "start": 1,
+                        "lifetime": 2
+                    }
+                }
             }
         ]
     },
@@ -52736,7 +53826,7 @@
                 },
                 "buttons": {
                     "Winecellar Incantation": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -52763,7 +53853,7 @@
                         }
                     },
                     "Shield Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -52790,7 +53880,7 @@
                         }
                     },
                     "Sword Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -52817,7 +53907,7 @@
                         }
                     },
                     "Helmet Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -53162,7 +54252,7 @@
                 },
                 "buttons": {
                     "Winecellar Incantation": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -53191,7 +54281,7 @@
                         }
                     },
                     "Shield Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -53220,7 +54310,7 @@
                         }
                     },
                     "Sword Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -53249,7 +54339,7 @@
                         }
                     },
                     "Helmet Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -53608,7 +54698,7 @@
                 },
                 "buttons": {
                     "Winecellar Incantation": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -53635,7 +54725,7 @@
                         }
                     },
                     "Shield Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -53662,7 +54752,7 @@
                         }
                     },
                     "Sword Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -53689,7 +54779,7 @@
                         }
                     },
                     "Helmet Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -54031,7 +55121,7 @@
                 },
                 "buttons": {
                     "Winecellar Incantation": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -54060,7 +55150,7 @@
                         }
                     },
                     "Shield Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -54089,7 +55179,7 @@
                         }
                     },
                     "Sword Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -54118,7 +55208,7 @@
                         }
                     },
                     "Helmet Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -54481,7 +55571,7 @@
                 },
                 "buttons": {
                     "Winecellar Incantation": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -54510,7 +55600,7 @@
                         }
                     },
                     "Shield Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -54539,7 +55629,7 @@
                         }
                     },
                     "Sword Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -54568,7 +55658,7 @@
                         }
                     },
                     "Helmet Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -54774,7 +55864,7 @@
                 },
                 "buttons": {
                     "Winecellar Incantation": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -54801,7 +55891,7 @@
                         }
                     },
                     "Shield Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -54828,7 +55918,7 @@
                         }
                     },
                     "Sword Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -54855,7 +55945,7 @@
                         }
                     },
                     "Helmet Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -55174,7 +56264,7 @@
                         "logOptions": null
                     },
                     "Winecellar Incantation": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -55203,7 +56293,7 @@
                         }
                     },
                     "Shield Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -55232,7 +56322,7 @@
                         }
                     },
                     "Sword Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -55261,7 +56351,7 @@
                         }
                     },
                     "Helmet Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -55954,7 +57044,7 @@
                 },
                 "buttons": {
                     "Winecellar Incantation": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -55981,7 +57071,7 @@
                         }
                     },
                     "Shield Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -56008,7 +57098,7 @@
                         }
                     },
                     "Sword Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -56035,7 +57125,7 @@
                         }
                     },
                     "Helmet Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -56380,7 +57470,7 @@
                 },
                 "buttons": {
                     "Winecellar Incantation": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -56409,7 +57499,7 @@
                         }
                     },
                     "Shield Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -56438,7 +57528,7 @@
                         }
                     },
                     "Sword Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -56467,7 +57557,7 @@
                         }
                     },
                     "Helmet Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -56835,7 +57925,7 @@
                 },
                 "buttons": {
                     "Winecellar Incantation": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -56862,7 +57952,7 @@
                         }
                     },
                     "Shield Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -56889,7 +57979,7 @@
                         }
                     },
                     "Sword Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -56916,7 +58006,7 @@
                         }
                     },
                     "Helmet Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -57267,7 +58357,7 @@
                 },
                 "buttons": {
                     "Winecellar Incantation": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -57296,7 +58386,7 @@
                         }
                     },
                     "Shield Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -57325,7 +58415,7 @@
                         }
                     },
                     "Sword Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -57354,7 +58444,7 @@
                         }
                     },
                     "Helmet Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -57717,7 +58807,7 @@
                 },
                 "buttons": {
                     "Winecellar Incantation": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -57746,7 +58836,7 @@
                         }
                     },
                     "Shield Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -57775,7 +58865,7 @@
                         }
                     },
                     "Sword Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -57804,7 +58894,7 @@
                         }
                     },
                     "Helmet Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -58010,7 +59100,7 @@
                 },
                 "buttons": {
                     "Winecellar Incantation": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -58037,7 +59127,7 @@
                         }
                     },
                     "Shield Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -58064,7 +59154,7 @@
                         }
                     },
                     "Sword Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -58091,7 +59181,7 @@
                         }
                     },
                     "Helmet Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -58410,7 +59500,7 @@
                         "logOptions": null
                     },
                     "Winecellar Incantation": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -58439,7 +59529,7 @@
                         }
                     },
                     "Shield Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -58468,7 +59558,7 @@
                         }
                     },
                     "Sword Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -58497,7 +59587,7 @@
                         }
                     },
                     "Helmet Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -66994,7 +68084,7 @@
                 "minViewRaiderRoles": null,
                 "minJoinRaiderRoles": null,
                 "name": "Ocean Trench",
-                "templateName": "Oecan Trench",
+                "templateName": "Ocean Trench",
                 "pingRoles": null,
                 "aliases": [
                     "ot",
@@ -73974,7 +75064,7 @@
                 },
                 "buttons": {
                     "Winecellar Incantation": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -74003,7 +75093,7 @@
                         }
                     },
                     "Shield Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -74032,7 +75122,7 @@
                         }
                     },
                     "Sword Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -74061,7 +75151,7 @@
                         }
                     },
                     "Helmet Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": [
                             "Join"
                         ],
@@ -74206,7 +75296,7 @@
                 },
                 "buttons": {
                     "Winecellar Incantation": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -74233,7 +75323,7 @@
                         }
                     },
                     "Shield Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -74260,7 +75350,7 @@
                         }
                     },
                     "Sword Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
@@ -74287,7 +75377,7 @@
                         }
                     },
                     "Helmet Rune": {
-                        "type": 1,
+                        "type": 6,
                         "parent": null,
                         "choice": 0,
                         "limit": 2,
