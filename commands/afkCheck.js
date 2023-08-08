@@ -440,7 +440,7 @@ class afkCheck {
             let position = 0
             for (let i in this.#afkTemplate.buttons) {
                 this.reactables[i].position = position
-                this.raidCommandsEmbed.addFields({ name: `${this.#afkTemplate.buttons[i].emote ? this.#afkTemplate.buttons[i].emote.text : ''} ${i} ${this.#afkTemplate.buttons[i].limit ? `(${this.#afkTemplate.buttons[i].limit}) ${this.#afkTemplate.buttons[i].location ? `\`L\`` : `` }` : ''}`, value: 'None!', inline: true })
+                this.raidCommandsEmbed.addFields({ name: `${this.#afkTemplate.buttons[i].emote ? this.#afkTemplate.buttons[i].emote.text : ''} ${i}${this.#afkTemplate.buttons[i].limit ? ` (${this.#afkTemplate.buttons[i].limit})` : ''}${this.#afkTemplate.buttons[i].location ? ` \`L\`` : `` }`, value: 'None!', inline: true })
                 position++
             }
         }
@@ -1011,7 +1011,9 @@ class afkCheck {
         return true
     }
 
-    async processReactableSupporter(interaction) {
+    async processReactableSupporter(interaction) {    
+        const buttonInfo = this.#afkTemplate.buttons[interaction.customId]
+       
         if (this.earlySlotMembers.includes(interaction.member.id)) {
             await interaction.reply({ embeds: [extensions.createEmbed(interaction, `Supporter Perks in \`${interaction.guild.name}\` only gives a guaranteed slot in the raid and you already have this from another react.\nYour Supporter Perks have not been used.${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`, null)], ephemeral: true })
             return false
@@ -1055,7 +1057,8 @@ class afkCheck {
             await interaction.reply({ embeds: [extensions.createEmbed(interaction, `Your perks are limited to ${uses} times every ${cooldown_text}. Your next use is available <t:${(((cooldown*1000)+parseInt(rows[0].utime))/1000).toFixed(0)}:R>`, null)], ephemeral: true })
             return false
         }
-        await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have received a guaranteed slot.${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`, null)], ephemeral: true })
+        if (buttonInfo.location) await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have received a guaranteed slot.\nThe location for this run has been set to \`${this.location}\`, get there ASAP!${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`, null)], ephemeral: true })
+        else await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have received a guaranteed slot.${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`, null)], ephemeral: true })
         return true
     }
 
