@@ -42,7 +42,8 @@ const TemplateButtonType = {
     'SUPPORTER': 2,
     'POINTS': 3,
     'DRAG': 4,
-    'OPTION': 5
+    'OPTION': 5,
+    'LOG_SINGLE': 6,
 }
 
 // Enum for the Choice on Buttons in an AFK Template
@@ -421,7 +422,7 @@ class AfkTemplate {
             let end = start + this.buttons[j].lifetime
             if (i < this.buttons[j].start && i >= end ) continue
             if (this.buttons[j].type == TemplateButtonType.NORMAL && this.buttons[j].emote) emotes.push(this.buttons[j].emote.text)
-            if (this.buttons[j].type == TemplateButtonType.LOG) description += `If you have a **${j}**, react with ${this.buttons[j].emote ? this.buttons[j].emote.text : "the button"}\n`
+            if (this.buttons[j].type == TemplateButtonType.LOG || this.buttons[j].type == TemplateButtonType.LOG_SINGLE) description += `If you have a **${j}**, react with ${this.buttons[j].emote ? this.buttons[j].emote.text : "the button"}\n`
             if (this.buttons[j].type == TemplateButtonType.SUPPORTER) supporter = this.buttons[j].emote.text
         }
         if (emotes.length > 0) description += `If you have an early react, react with ${emotes.join(" ")}\n`
@@ -438,7 +439,7 @@ class AfkTemplate {
         }
         for (let i in this.buttons) {
             if (this.buttons[i].type == TemplateButtonType.NORMAL && this.buttons[i].emote) buttonEmotes.push(this.buttons[i].emote.text)
-            if (this.buttons[i].type == TemplateButtonType.LOG && this.buttons[i].emote) description += `If you plan on bringing a **${i}**, react with ${this.buttons[i].emote.text}\n`
+            if ((this.buttons[i].type == TemplateButtonType.LOG || this.buttons[i].type == TemplateButtonType.LOG_SINGLE) && this.buttons[i].emote) description += `If you plan on bringing a **${i}**, react with ${this.buttons[i].emote.text}\n`
         }
         if (reactEmotes.length > 0) description += `If you plan on coming, react with ${reactEmotes.join(" ")}\n`
         if (buttonEmotes.length > 0) description += `If you plan on bringing an early react, react with ${buttonEmotes.join(" ")}\n`
