@@ -945,7 +945,10 @@ class afkCheck {
             Object.keys(buttonInfo.logOptions).map(key => buttonInfo.logOptions[key].name),
             Object.keys(buttonInfo.logOptions).map(key => buttonInfo.logOptions[key].emojiName),
             interaction.member.id)
-        if (!choice || choice == 'Cancelled') { return interaction.editReply({ embeds: [failEmbed], ephemeral: true, components: [] }) }
+        if (!choice || choice == 'Cancelled') {
+            this.removeFromActiveInteractions(interaction.member.id)
+            return interaction.editReply({ embeds: [failEmbed], ephemeral: true, components: [] })
+        }
 
         let choicePrettyName = buttonInfo.logOptions[choice].name;
         let choiceEmote = this.#bot.storedEmojis[buttonInfo.logOptions[choice].emojiName].text;
@@ -959,7 +962,7 @@ class afkCheck {
             this.#db.query(`UPDATE users SET points = points + ${points} WHERE id = '${row.userid}'`)
             let user = this.#guild.members.cache.get(row.userid)
             try {
-                user.send(`Congratiulations!\nYou have been awared ${points} points for guessing the correct miniboss!\nThe Miniboss was ${choiceEmote} **${choicePrettyName}** ${choiceEmote}`)
+                user.send(`Congratulations!\nYou have been awarded ${points} points for guessing the correct miniboss!\nThe Miniboss was ${choiceEmote} **${choicePrettyName}** ${choiceEmote}`)
             } catch (e) {
                 console.log('Could not DM user\n\n', e)
             }
@@ -1354,14 +1357,19 @@ class afkCheck {
                 let index = 0
                 while (completed >= milestoneNumber) {
                     milestoneNumber += milestones[this.#guild.id][milestoneName].milestones[index].number
-                    if (completed == milestoneNumber) {
-                        if (this.#botSettings.backend.points) {
-                            this.#db.query(`UPDATE users SET points = points + ${milestones[this.#guild.id][milestoneName].milestones[index].points} WHERE id = '${u}'`, (err, rows) => {
-                                if (err) return console.log('error logging points for milestones in ', this.#guild.id)
-                            })
-                            this.#guild.members.cache.get(u).send(`Congratulations! You have completed the ${milestones[this.#guild.id][milestoneName].milestones[index].number} ${milestoneName} milestone! You have been awarded ${milestones[this.#guild.id][milestoneName].milestones[index].points} points!`)
-                        }
-                    }
+                    if (completed != milestoneNumber) { continue }
+                    if (!this.#botSettings.backend.points) { continue }
+                    let isMilestoneRecurring = milestones[this.#guild.id][milestoneName].milestones[index].recurring
+                    let [hasGottenMilestone,] = await this.#db.promise().query('SELECT * FROM milestoneAchievements WHERE userid = ? AND guildid = ? AND milestoneName = ? AND milestoneIndex = ?', [
+                        u, this.#guild.id, milestoneName, index])
+                    if (hasGottenMilestone.length > 0 && !isMilestoneRecurring) { continue }
+                    this.#db.query(`UPDATE users SET points = points + ${milestones[this.#guild.id][milestoneName].milestones[index].points} WHERE id = '${u}'`, (err, rows) => {
+                        if (err) return console.log('error logging points for milestones in ', this.#guild.id)
+                    })
+                    this.#db.query(`INSERT INTO milestoneAchievements (userid, guildid, milestoneName, milestoneIndex) VALUES ('${u}', '${this.#guild.id}', '${milestoneName}', '${index}')`, (err, rows) => {
+                        if (err) return console.log(`error inserting ${u} into milestoneAchievements.\nUser ID: ${u}\nGuild ID: ${this.#guild.id}\nMilestone Name: ${milestoneName}\nMilestone Index: ${index}`)
+                    })
+                    this.#guild.members.cache.get(u).send(`Congratulations! You have completed the ${milestones[this.#guild.id][milestoneName].milestones[index].number} ${milestoneName} milestone! You have been awarded ${milestones[this.#guild.id][milestoneName].milestones[index].points} points!`)
                     if (!milestones[this.#guild.id][milestoneName].milestones[index].recurring) index++
                 }
             }
