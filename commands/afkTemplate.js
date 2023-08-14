@@ -411,6 +411,19 @@ class AfkTemplate {
         }
     }
 
+    processBodyHeadcount(channel) {
+        let description = ""
+        if (!this.body[1].embed.description) description = this.processBodyDescriptionHeadcount()
+        else {
+            for (let i in this.body[1].embed.description) {
+                if (!this.body[1].embed.description[i]) this.body[1].embed.description[i] = this.processBodyDescriptionHeadcount()
+                else this.body[1].embed.description[i] = this.processMessages(channel, this.body[1].embed.description[i])
+            }
+            description = this.body[1].embed.description.reduce((a, b) => a + b)
+        }
+        return description
+    }
+
     processBodyDescription(channel, i) {
         let description = ""
         if (this.vcOptions == TemplateVCOptions.STATIC_VC || this.vcOptions == TemplateVCOptions.CREATE_VC) description += `To join **click here** ${channel}\n`
