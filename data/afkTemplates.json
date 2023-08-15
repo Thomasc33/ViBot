@@ -23481,7 +23481,7 @@
                 "templateName": " Advanced Nest",
                 "pingRoles": [
                     "here",
-                    "nestReact"
+                    "advancedNestPing"
                 ],
                 "aliases": [
                     "an",
@@ -23835,7 +23835,7 @@
                 "templateName": "Exalted Advanced Nest",
                 "pingRoles": [
                     "here",
-                    "nestReact"
+                    "advancedNestPing"
                 ],
                 "aliases": [
                     "ean",
@@ -54292,7 +54292,7 @@
                 "templateName": " Advanced Nest",
                 "pingRoles": [
                     "here",
-                    "nestReact"
+                    "advancedNestPing"
                 ],
                 "aliases": [
                     "an",
@@ -54646,7 +54646,7 @@
                 "templateName": "Exalted Advanced Nest",
                 "pingRoles": [
                     "here",
-                    "nestReact"
+                    "advancedNestPing"
                 ],
                 "aliases": [
                     "ean",
