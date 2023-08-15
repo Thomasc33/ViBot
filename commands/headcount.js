@@ -34,7 +34,7 @@ module.exports = {
         if (!afkTemplate.minimumStaffRoles.some(roles => roles.every(role => message.member.roles.cache.has(role.id)))) return await message.channel.send({ embeds: [createEmbed(message, `You do not have a suitable set of roles out of ${afkTemplate.minimumStaffRoles.reduce((a, b) => `${a}, ${b.join(' + ')}`)} to run ${afkTemplate.name}.`, null)] })
         afkTemplate.processReacts()
         afkTemplate.processButtons(null)
-        const raidStatusEmbed = createEmbed(message, afkTemplate.processBodyDescriptionHeadcount(), botSettings.strings[afkTemplate.body[1].embed.image] ? botSettings.strings[afkTemplate.body[1].embed.image] : afkTemplate.body[1].embed.image)
+        const raidStatusEmbed = createEmbed(message, afkTemplate.processBodyHeadcount(null), botSettings.strings[afkTemplate.body[1].embed.image] ? botSettings.strings[afkTemplate.body[1].embed.image] : afkTemplate.body[1].embed.image)
         raidStatusEmbed.setColor(afkTemplate.body[1].embed.color ? afkTemplate.body[1].embed.color : '#ffffff')
         raidStatusEmbed.setAuthor({ name: `Headcount for ${afkTemplate.name} by ${message.member.nickname}`, iconURL: message.member.user.avatarURL() })
         if (time != 0) {
