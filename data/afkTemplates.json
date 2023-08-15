@@ -22736,14 +22736,14 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "steamworkPops"
+                                    "advancedSteamworkPops"
                                 ],
                                 "points": "steamworkkey",
                                 "multiplier": null
                             },
                             "Modded": {
                                 "logName": [
-                                    "steamworkPops",
+                                    "advancedSteamworkPops",
                                     "moddedpops"
                                 ],
                                 "points": "steamworkkey",
@@ -23153,14 +23153,14 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "steamworkPops"
+                                    "advancedSteamworkPops"
                                 ],
                                 "points": "steamworkkey",
                                 "multiplier": null
                             },
                             "Modded": {
                                 "logName": [
-                                    "steamworkPops",
+                                    "advancedSteamworkPops",
                                     "moddedpops"
                                 ],
                                 "points": "steamworkkey",
@@ -23481,7 +23481,7 @@
                 "templateName": " Advanced Nest",
                 "pingRoles": [
                     "here",
-                    "nestReact"
+                    "advancedNestPing"
                 ],
                 "aliases": [
                     "an",
@@ -23525,11 +23525,11 @@
                         "timeLimit": null,
                         "message": null,
                         "embed": {
-                            "color": "#ffd700",
+                            "color": "#469628",
                             "description": null,
                             "image": null,
                             "thumbnail": [
-                                "https://i.imgur.com/hUWc3IV.png"
+                                "https://cdn.discordapp.com/attachments/1114574154021208186/1141019469313998909/0R2f_8eCnjFL2V8MC8jnsXD1fLTcRJOmKN6uJrFfSVGB1udAdGeOIlFC0oaYchvVKKg6BpxjDlCJ02fK8PabFL0gcQ_hlw7a9mG_NFF5msR3itRQDnYiL75bmKXESvSNy_cz9s3fQdCucDMaFESSeA.png"
                             ]
                         }
                     }
@@ -23542,7 +23542,7 @@
                         "limit": 3,
                         "points": 0,
                         "displayName": false,
-                        "emote": "nestK",
+                        "emote": "advancedNestKey",
                         "confirm": true,
                         "location": true,
                         "minRole": null,
@@ -23557,14 +23557,14 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "nestPops"
+                                    "advancedNestPops"
                                 ],
                                 "points": "nestkey",
                                 "multiplier": null
                             },
                             "Modded": {
                                 "logName": [
-                                    "nestPops",
+                                    "advancedNestPops",
                                     "moddedpops"
                                 ],
                                 "points": "nestkey",
@@ -23746,7 +23746,7 @@
                 },
                 "reacts": {
                     "nest": {
-                        "emote": "nest",
+                        "emote": "advancedNestPortal",
                         "onHeadcount": true,
                         "start": 1,
                         "lifetime": 2
@@ -23835,7 +23835,7 @@
                 "templateName": "Exalted Advanced Nest",
                 "pingRoles": [
                     "here",
-                    "nestReact"
+                    "advancedNestPing"
                 ],
                 "aliases": [
                     "ean",
@@ -23882,14 +23882,14 @@
                         "timeLimit": null,
                         "message": null,
                         "embed": {
-                            "color": "#ffd700",
+                            "color": "#469628",
                             "description": [
                                 null,
                                 "### __Exalted Runs__\nThis is an **exalted** run, meaning there are extended requirements you **MUST **meet. You must be **both** 8/8 and follow the requirements sheet listed below.\nBasic raiding rules from [raidingrules] will still apply."
                             ],
                             "image": "hallsExaltedReqsImage",
                             "thumbnail": [
-                                "https://i.imgur.com/hUWc3IV.png"
+                                "https://cdn.discordapp.com/attachments/1114574154021208186/1141019469313998909/0R2f_8eCnjFL2V8MC8jnsXD1fLTcRJOmKN6uJrFfSVGB1udAdGeOIlFC0oaYchvVKKg6BpxjDlCJ02fK8PabFL0gcQ_hlw7a9mG_NFF5msR3itRQDnYiL75bmKXESvSNy_cz9s3fQdCucDMaFESSeA.png"
                             ]
                         }
                     }
@@ -23902,7 +23902,7 @@
                         "limit": 3,
                         "points": 0,
                         "displayName": false,
-                        "emote": "nestK",
+                        "emote": "advancedNestKey",
                         "confirm": true,
                         "location": true,
                         "minRole": null,
@@ -23917,14 +23917,14 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "nestPops"
+                                    "advancedNestPops"
                                 ],
                                 "points": "nestkey",
                                 "multiplier": null
                             },
                             "Modded": {
                                 "logName": [
-                                    "nestPops",
+                                    "advancedNestPops",
                                     "moddedpops"
                                 ],
                                 "points": "nestkey",
@@ -24106,7 +24106,7 @@
                 },
                 "reacts": {
                     "nest": {
-                        "emote": "nest",
+                        "emote": "advancedNestPortal",
                         "onHeadcount": true,
                         "start": 1,
                         "lifetime": 2
@@ -53414,6 +53414,1561 @@
                         "onHeadcount": true,
                         "start": 1,
                         "lifetime": 2
+                    }
+                }
+            },
+            {
+                "templateID": 273,
+                "inherits": [
+                    "veteran",
+                    "exalt"
+                ],
+                "category": null,
+                "templateChannel": null,
+                "partneredStatusChannels": null,
+                "statusChannel": null,
+                "commandsChannel": null,
+                "activeChannel": null,
+                "enabled": true,
+                "minStaffRoles": {
+                    "exalt": [
+                        [
+                            "eventrl"
+                        ],
+                        [
+                            "almostrl"
+                        ],
+                        [
+                            "rl"
+                        ],
+                        [
+                            "lostboomer"
+                        ]
+                    ],
+                    "veteran": [
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "vetaffiliate"
+                        ],
+                        [
+                            "lostboomer"
+                        ]
+                    ]
+                },
+                "minViewRaiderRoles": null,
+                "minJoinRaiderRoles": null,
+                "name": "Adv. Kogbold Steamworks",
+                "templateName": "Advanced Kogbold Steamworks",
+                "pingRoles": [
+                    "here",
+                    "advancedSteamworksPing"
+                ],
+                "aliases": [
+                    "ak",
+                    "akog",
+                    "asteamworks",
+                    "asw",
+                    "aksw",
+                    "akogbold",
+                    "advkog",
+                    "advsw",
+                    "advsteamworks"
+                ],
+                "logName": "steamworksRuns",
+                "vcOptions": 2,
+                "startDelay": null,
+                "cap": null,
+                "capButton": null,
+                "phases": 2,
+                "body": {
+                    "1": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    "2": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    "default": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#ffd700",
+                            "description": null,
+                            "image": null,
+                            "thumbnail": [
+                                "https://media.discordapp.net/attachments/1114574154021208186/1115944571709431938/1XDVki7.png",
+                                "https://media.discordapp.net/attachments/1114574154021208186/1115944585160573028/hkaea5D.png",
+                                "https://media.discordapp.net/attachments/1114574154021208186/1115944598099992607/wSoAGoR.png"
+                            ]
+                        }
+                    }
+                },
+                "buttons": {
+                    "Key": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 3,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "advancedSteamworksKey",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": [
+                            "eventrl"
+                        ],
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "advancedSteamworkPops"
+                                ],
+                                "points": "steamworkkey",
+                                "multiplier": null
+                            },
+                            "Modded": {
+                                "logName": [
+                                    "advancedSteamworkPops",
+                                    "moddedpops"
+                                ],
+                                "points": "steamworkkey",
+                                "multiplier": "keymultiplier"
+                            }
+                        }
+                    },
+                    "Dragger": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": true,
+                        "emote": "kogbolddragger",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must know how to drag the boss around in the Enforcer phases especially, Minefield. (Check GIF Below).\n- You are recommended to have **60+ Defense** on your character.",
+                        "confirmationMedia": "https://cdn.discordapp.com/attachments/230500411835023362/1059570168558256178/how_to_drag_minefields.gif",
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Curse": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Curse",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Armor Break": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 2,
+                        "displayName": false,
+                        "emote": "Ogmur",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Expose": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Expose",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Slow": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Slow",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Daze": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "daze",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Marble Seal": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "UTMarbleSeal",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Fungal Tome": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "tomeOfTheMushroomTribesFungal",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Trickster": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Trickster",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Supporter": {
+                        "type": 2,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": null,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "NitroBooster",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Tickets": {
+                        "type": 3,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 5,
+                        "points": -20,
+                        "displayName": true,
+                        "emote": "tickets",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    }
+                },
+                "reacts": {
+                    "steamworksPortal": {
+                        "emote": "steamworksPortal",
+                        "onHeadcount": true,
+                        "start": 1,
+                        "lifetime": 2
+                    },
+                    "Warrior": {
+                        "emote": "Warrior",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Paladin": {
+                        "emote": "Paladin",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Knight": {
+                        "emote": "Knight",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Bard": {
+                        "emote": "Bard",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Trickster": {
+                        "emote": "Trickster",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Priest": {
+                        "emote": "Priest",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Sorcerer": {
+                        "emote": "Priest",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "ScholarsSeal": {
+                        "emote": "UTScholarsSeal",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    }
+                }
+            },
+            {
+                "templateID": 274,
+                "inherits": [
+                    "veteran",
+                    "exalt"
+                ],
+                "category": null,
+                "templateChannel": null,
+                "partneredStatusChannels": null,
+                "statusChannel": null,
+                "commandsChannel": null,
+                "activeChannel": null,
+                "enabled": true,
+                "minStaffRoles": {
+                    "exalt": [
+                        [
+                            "eventrl"
+                        ],
+                        [
+                            "almostrl"
+                        ],
+                        [
+                            "rl"
+                        ],
+                        [
+                            "lostboomer"
+                        ]
+                    ],
+                    "veteran": [
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "vetaffiliate"
+                        ],
+                        [
+                            "lostboomer"
+                        ]
+                    ]
+                },
+                "minViewRaiderRoles": null,
+                "minJoinRaiderRoles": null,
+                "name": "Exa. Adv. Kogbold Steamworks",
+                "templateName": "Exalted Advanced Kogbold Steamworks",
+                "pingRoles": [
+                    "here",
+                    "advancedSteamworksPing"
+                ],
+                "aliases": [
+                    "eak",
+                    "easteamworks",
+                    "easw",
+                    "eaksw",
+                    "eaxak",
+                    "exaltedadvancedkogbold",
+                    "exaltedadvsteamwork",
+                    "exaltedadvancedsteamworks",
+                    "exaltedadvkogboldsteamwork",
+                    "exaltedadvancedkogboldsteamworks",
+                    "eafk"
+                ],
+                "logName": "steamworksRuns",
+                "vcOptions": 2,
+                "startDelay": null,
+                "cap": null,
+                "capButton": null,
+                "phases": 2,
+                "body": {
+                    "1": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    "2": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    "default": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#ffd700",
+                            "description": [
+                                null,
+                                "### __Exalted Runs__\nThis is an **exalted** run, meaning there are extended requirements you **MUST **meet. You must be **both** 8/8 and follow the requirements sheet listed below.\nBasic raiding rules from [raidingrules] will still apply."
+                            ],
+                            "image": "hallsExaltedReqsImage",
+                            "thumbnail": [
+                                "https://media.discordapp.net/attachments/1114574154021208186/1115944571709431938/1XDVki7.png",
+                                "https://media.discordapp.net/attachments/1114574154021208186/1115944585160573028/hkaea5D.png",
+                                "https://media.discordapp.net/attachments/1114574154021208186/1115944598099992607/wSoAGoR.png"
+                            ]
+                        }
+                    }
+                },
+                "buttons": {
+                    "Key": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 3,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "advancedSteamworksKey",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": [
+                            "eventrl"
+                        ],
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "advancedSteamworkPops"
+                                ],
+                                "points": "steamworkkey",
+                                "multiplier": null
+                            },
+                            "Modded": {
+                                "logName": [
+                                    "advancedSteamworkPops",
+                                    "moddedpops"
+                                ],
+                                "points": "steamworkkey",
+                                "multiplier": "keymultiplier"
+                            }
+                        }
+                    },
+                    "Dragger": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "kogbolddragger",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must know how to drag the boss around in the Enforcer phases especially, Minefield. (Check GIF Below).\n- You are recommended to have **60+ Defense** on your character.",
+                        "confirmationMedia": "https://cdn.discordapp.com/attachments/230500411835023362/1059570168558256178/how_to_drag_minefields.gif",
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Curse": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Curse",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Armor Break": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 2,
+                        "displayName": false,
+                        "emote": "Ogmur",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Expose": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Expose",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Slow": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Slow",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Daze": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "daze",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Marble Seal": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "UTMarbleSeal",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Fungal Tome": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "tomeOfTheMushroomTribesFungal",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Trickster": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Trickster",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Supporter": {
+                        "type": 2,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": null,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "NitroBooster",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Tickets": {
+                        "type": 3,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 5,
+                        "points": -20,
+                        "displayName": true,
+                        "emote": "tickets",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    }
+                },
+                "reacts": {
+                    "steamworksPortal": {
+                        "emote": "steamworksPortal",
+                        "onHeadcount": true,
+                        "start": 1,
+                        "lifetime": 2
+                    },
+                    "Warrior": {
+                        "emote": "Warrior",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Paladin": {
+                        "emote": "Paladin",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Knight": {
+                        "emote": "Knight",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Bard": {
+                        "emote": "Bard",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Trickster": {
+                        "emote": "Trickster",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Priest": {
+                        "emote": "Priest",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Sorcerer": {
+                        "emote": "Priest",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "ScholarsSeal": {
+                        "emote": "UTScholarsSeal",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    }
+                }
+            },
+            {
+                "templateID": 275,
+                "inherits": [
+                    "veteran",
+                    "exalt"
+                ],
+                "category": null,
+                "templateChannel": null,
+                "partneredStatusChannels": null,
+                "statusChannel": null,
+                "commandsChannel": null,
+                "activeChannel": null,
+                "enabled": true,
+                "minStaffRoles": {
+                    "exalt": [
+                        [
+                            "eventrl"
+                        ],
+                        [
+                            "almostrl"
+                        ],
+                        [
+                            "rl"
+                        ],
+                        [
+                            "lostboomer"
+                        ]
+                    ],
+                    "veteran": [
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "vetaffiliate"
+                        ],
+                        [
+                            "lostboomer"
+                        ]
+                    ]
+                },
+                "minViewRaiderRoles": null,
+                "minJoinRaiderRoles": null,
+                "name": "Adv. Nest",
+                "templateName": " Advanced Nest",
+                "pingRoles": [
+                    "here",
+                    "advancedNestPing"
+                ],
+                "aliases": [
+                    "an",
+                    "anest",
+                    "whyarethebeesgreen"
+                ],
+                "logName": "nestRuns",
+                "vcOptions": 2,
+                "startDelay": null,
+                "cap": null,
+                "capButton": null,
+                "phases": 2,
+                "body": {
+                    "1": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    "2": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    "default": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#469628",
+                            "description": null,
+                            "image": null,
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/1114574154021208186/1141019469313998909/0R2f_8eCnjFL2V8MC8jnsXD1fLTcRJOmKN6uJrFfSVGB1udAdGeOIlFC0oaYchvVKKg6BpxjDlCJ02fK8PabFL0gcQ_hlw7a9mG_NFF5msR3itRQDnYiL75bmKXESvSNy_cz9s3fQdCucDMaFESSeA.png"
+                            ]
+                        }
+                    }
+                },
+                "buttons": {
+                    "Key": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 3,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "advancedNestKey",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": [
+                            "eventrl"
+                        ],
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "advancedNestPops"
+                                ],
+                                "points": "nestkey",
+                                "multiplier": null
+                            },
+                            "Modded": {
+                                "logName": [
+                                    "advancedNestPops",
+                                    "moddedpops"
+                                ],
+                                "points": "nestkey",
+                                "multiplier": "keymultiplier"
+                            }
+                        }
+                    },
+                    "Curse": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Curse",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Armor Break": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 2,
+                        "displayName": false,
+                        "emote": "Ogmur",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Expose": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Expose",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Stun": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Knight",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Stunning** Shield {T6ColossusShield} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Slow": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Slow",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Daze": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "daze",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Marble Seal": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "UTMarbleSeal",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Supporter": {
+                        "type": 2,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": null,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "NitroBooster",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Tickets": {
+                        "type": 3,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 5,
+                        "points": -20,
+                        "displayName": true,
+                        "emote": "tickets",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    }
+                },
+                "reacts": {
+                    "nest": {
+                        "emote": "advancedNestPortal",
+                        "onHeadcount": true,
+                        "start": 1,
+                        "lifetime": 2
+                    },
+                    "Warrior": {
+                        "emote": "Warrior",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Paladin": {
+                        "emote": "Paladin",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Knight": {
+                        "emote": "Knight",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Trickster": {
+                        "emote": "Trickster",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Bard": {
+                        "emote": "Bard",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Priest": {
+                        "emote": "Priest",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    }
+                }
+            },
+            {
+                "templateID": 276,
+                "inherits": [
+                    "veteran",
+                    "exalt"
+                ],
+                "category": null,
+                "templateChannel": null,
+                "partneredStatusChannels": null,
+                "statusChannel": null,
+                "commandsChannel": null,
+                "activeChannel": null,
+                "enabled": true,
+                "minStaffRoles": {
+                    "exalt": [
+                        [
+                            "eventrl"
+                        ],
+                        [
+                            "almostrl"
+                        ],
+                        [
+                            "rl"
+                        ],
+                        [
+                            "lostboomer"
+                        ]
+                    ],
+                    "veteran": [
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "vetaffiliate"
+                        ],
+                        [
+                            "lostboomer"
+                        ]
+                    ]
+                },
+                "minViewRaiderRoles": null,
+                "minJoinRaiderRoles": null,
+                "name": "Exa. Adv. Nest",
+                "templateName": "Exalted Advanced Nest",
+                "pingRoles": [
+                    "here",
+                    "advancedNestPing"
+                ],
+                "aliases": [
+                    "ean",
+                    "eanest",
+                    "exaanest",
+                    "eadvnest",
+                    "exadvnext",
+                    "exaltedwhyarethebeesgreen"
+                ],
+                "logName": "nestRuns",
+                "vcOptions": 2,
+                "startDelay": null,
+                "cap": null,
+                "capButton": null,
+                "phases": 2,
+                "body": {
+                    "1": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    "2": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    "default": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#469628",
+                            "description": [
+                                null,
+                                "### __Exalted Runs__\nThis is an **exalted** run, meaning there are extended requirements you **MUST **meet. You must be **both** 8/8 and follow the requirements sheet listed below.\nBasic raiding rules from [raidingrules] will still apply."
+                            ],
+                            "image": "hallsExaltedReqsImage",
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/1114574154021208186/1141019469313998909/0R2f_8eCnjFL2V8MC8jnsXD1fLTcRJOmKN6uJrFfSVGB1udAdGeOIlFC0oaYchvVKKg6BpxjDlCJ02fK8PabFL0gcQ_hlw7a9mG_NFF5msR3itRQDnYiL75bmKXESvSNy_cz9s3fQdCucDMaFESSeA.png"
+                            ]
+                        }
+                    }
+                },
+                "buttons": {
+                    "Key": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 3,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "advancedNestKey",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": [
+                            "eventrl"
+                        ],
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "advancedNestPops"
+                                ],
+                                "points": "nestkey",
+                                "multiplier": null
+                            },
+                            "Modded": {
+                                "logName": [
+                                    "advancedNestPops",
+                                    "moddedpops"
+                                ],
+                                "points": "nestkey",
+                                "multiplier": "keymultiplier"
+                            }
+                        }
+                    },
+                    "Curse": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Curse",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Armor Break": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 2,
+                        "displayName": false,
+                        "emote": "Ogmur",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Expose": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Expose",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Stun": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Knight",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Stunning** Shield {T6ColossusShield} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Slow": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Slow",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Daze": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "daze",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Marble Seal": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "UTMarbleSeal",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Supporter": {
+                        "type": 2,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": null,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "NitroBooster",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Tickets": {
+                        "type": 3,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 5,
+                        "points": -20,
+                        "displayName": true,
+                        "emote": "tickets",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    }
+                },
+                "reacts": {
+                    "nest": {
+                        "emote": "advancedNestPortal",
+                        "onHeadcount": true,
+                        "start": 1,
+                        "lifetime": 2
+                    },
+                    "Warrior": {
+                        "emote": "Warrior",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Paladin": {
+                        "emote": "Paladin",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Knight": {
+                        "emote": "Knight",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Trickster": {
+                        "emote": "Trickster",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Bard": {
+                        "emote": "Bard",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Priest": {
+                        "emote": "Priest",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Sorcerer": {
+                        "emote": "Priest",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "ScholarsSeal": {
+                        "emote": "UTScholarsSeal",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
                     }
                 }
             }

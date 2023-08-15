@@ -7,7 +7,7 @@ const roles = [
     'rusher', 'lol', 'accursed', 'vetraider', 'vetraider2', 'vetraider3', 'vetraider4', 'vetraider5', 'raider', 'eventraider', 'muted',
     'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'keyjesus', 'moddedkey', 'topkey', 'bottomkey', 'cultping', 'voidping', 'shattsReact', 'hmShattsReact', 'fungalReact', 'nestReact',
     'fskipReact', 'fameReact', 'accursedReact', 'rcPing', 'o3Ping', 'eventBoi', 'veteventrl', 'lostboomer',
-    'priest', 'warden', 'vetaffiliate', 'affiliatestaff', `toprune`, `bottomrune`, 'helper', 'steamworksping', 'moonlightping', 'eventBoiPing', 'advancedSteamworksPing',
+    'priest', 'warden', 'vetaffiliate', 'affiliatestaff', `toprune`, `bottomrune`, 'helper', 'steamworksping', 'moonlightping', 'eventBoiPing', 'advancedSteamworksPing', 'advancedNestPing',
     'almostShattersBanner', 'almostMoonlightBanner', 'hallsBanner', 'shattersBanner', 'fullskipBanner', 'hmShattersBanner', 'moonlightBanner', 'vetHallsBanner', 'vetShattersBanner', 'vetFullskipBanner', 'vetHmShattersBanner', 'vetMoonlightBanner',
     'supporterTierOne', 'supporterTierTwo', 'supporterTierThree', 'supporterTierFour', 'supporterTierFive', 'supporterTierSix', 'unverified',
     'motmgTeam1', 'motmgTeam2', 'motmgTeam3', 'motmgTeam4', 'motmgTeam5', 'motmgTeam6', 'motmgTeam7', 'motmgTeam8', 'motmgTeam9', 'motmgTeam10',

@@ -25,6 +25,12 @@
             "emoji": "<:nest:723001215407095899>"
         },
         {
+            "role": "advancedNestPing",
+            "name": "Advanced Nests",
+            "emojiId": "1135560355750359050",
+            "emoji": "<:advancedNestPortal:1135560355750359050>"
+        },
+        {
             "role": "fungalReact",
             "name": "Fungals",
             "emojiId": "723001215696240660",
@@ -127,6 +133,12 @@
             "name": "Nests",
             "emojiId": "723001215407095899",
             "emoji": "<:nest:723001215407095899>"
+        },
+        {
+            "role": "advancedNestPing",
+            "name": "Advanced Nests",
+            "emojiId": "1135560355750359050",
+            "emoji": "<:advancedNestPortal:1135560355750359050>"
         },
         {
             "role": "fungalReact",
