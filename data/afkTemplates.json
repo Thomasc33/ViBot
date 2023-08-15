@@ -22736,14 +22736,14 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "steamworkPops"
+                                    "advancedSteamworkPops"
                                 ],
                                 "points": "steamworkkey",
                                 "multiplier": null
                             },
                             "Modded": {
                                 "logName": [
-                                    "steamworkPops",
+                                    "advancedSteamworkPops",
                                     "moddedpops"
                                 ],
                                 "points": "steamworkkey",
@@ -23153,14 +23153,14 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "steamworkPops"
+                                    "advancedSteamworkPops"
                                 ],
                                 "points": "steamworkkey",
                                 "multiplier": null
                             },
                             "Modded": {
                                 "logName": [
-                                    "steamworkPops",
+                                    "advancedSteamworkPops",
                                     "moddedpops"
                                 ],
                                 "points": "steamworkkey",
@@ -23557,14 +23557,14 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "nestPops"
+                                    "advancedNestPops"
                                 ],
                                 "points": "nestkey",
                                 "multiplier": null
                             },
                             "Modded": {
                                 "logName": [
-                                    "nestPops",
+                                    "advancedNestPops",
                                     "moddedpops"
                                 ],
                                 "points": "nestkey",
@@ -23917,14 +23917,14 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "nestPops"
+                                    "advancedNestPops"
                                 ],
                                 "points": "nestkey",
                                 "multiplier": null
                             },
                             "Modded": {
                                 "logName": [
-                                    "nestPops",
+                                    "advancedNestPops",
                                     "moddedpops"
                                 ],
                                 "points": "nestkey",
@@ -53547,14 +53547,14 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "steamworkPops"
+                                    "advancedSteamworkPops"
                                 ],
                                 "points": "steamworkkey",
                                 "multiplier": null
                             },
                             "Modded": {
                                 "logName": [
-                                    "steamworkPops",
+                                    "advancedSteamworkPops",
                                     "moddedpops"
                                 ],
                                 "points": "steamworkkey",
@@ -53964,14 +53964,14 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "steamworkPops"
+                                    "advancedSteamworkPops"
                                 ],
                                 "points": "steamworkkey",
                                 "multiplier": null
                             },
                             "Modded": {
                                 "logName": [
-                                    "steamworkPops",
+                                    "advancedSteamworkPops",
                                     "moddedpops"
                                 ],
                                 "points": "steamworkkey",
@@ -54368,14 +54368,14 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "nestPops"
+                                    "advancedNestPops"
                                 ],
                                 "points": "nestkey",
                                 "multiplier": null
                             },
                             "Modded": {
                                 "logName": [
-                                    "nestPops",
+                                    "advancedNestPops",
                                     "moddedpops"
                                 ],
                                 "points": "nestkey",
@@ -54728,14 +54728,14 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "nestPops"
+                                    "advancedNestPops"
                                 ],
                                 "points": "nestkey",
                                 "multiplier": null
                             },
                             "Modded": {
                                 "logName": [
-                                    "nestPops",
+                                    "advancedNestPops",
                                     "moddedpops"
                                 ],
                                 "points": "nestkey",

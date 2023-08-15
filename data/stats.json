@@ -29,6 +29,11 @@
                 },
                 {
                     "name": null,
+                    "emoji": "advancedNestKey",
+                    "row": "advancedNestPops"
+                },
+                {
+                    "name": null,
                     "emoji": "steamworksKey",
                     "row": "steamworkPops"
                 },
