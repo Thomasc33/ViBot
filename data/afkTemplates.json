@@ -23447,7 +23447,7 @@
                 "statusChannel": null,
                 "commandsChannel": null,
                 "activeChannel": null,
-                "enabled": false,
+                "enabled": true,
                 "minStaffRoles": {
                     "exalt": [
                         [
@@ -23801,7 +23801,7 @@
                 "statusChannel": null,
                 "commandsChannel": null,
                 "activeChannel": null,
-                "enabled": false,
+                "enabled": true,
                 "minStaffRoles": {
                     "exalt": [
                         [
