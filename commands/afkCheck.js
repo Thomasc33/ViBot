@@ -23,11 +23,30 @@ module.exports = {
      */
     async execute(message, args, bot, db) {
         let alias = args.shift().toLowerCase()
-        const afkTemplate = new AfkTemplate.AfkTemplate(bot, bot.settings[message.guild.id], message, alias)
-        await afkTemplate.init()
-        const currentStatus = afkTemplate.getStatus()
-        if (currentStatus.state == AfkTemplate.TemplateState.INVALID_CHANNEL) await message.delete()
-        if (currentStatus.state != AfkTemplate.TemplateState.SUCCESS) return await message.channel.send(currentStatus.message)
+        let afkTemplateName;
+        const templateNames = AfkTemplate.resolveTemplateAlias(message.guild.id, alias)
+        if (templateNames.length == 0) return await message.channel.send('This afk template does not exist.')
+        else if (templateNames.length == 1) afkTemplateName = templateNames[0]
+        else {
+            const templateMenu = new Discord.StringSelectMenuBuilder() // If multiple found, give option to choose AFK Template
+                .setCustomId(`template`)
+                .setPlaceholder(`Name of Afk`)
+                .setMinValues(1)
+                .setMaxValues(1)
+            for (const templateName of templateNames) templateMenu.addOptions({ label: templateName, value: templateName })
+            const text = `Which template would you like to use for this run?.\n If no response is received, this run will use the default ${templateNames[0]}.`
+            const {value: templateValue, interaction: subInteraction} = await message.selectPanel(text, null, templateMenu, 30000, false, true)
+            afkTemplateName = templateValue || templateNames[0]
+        }
+        let afkTemplate;
+        try {
+            afkTemplate = new AfkTemplate.AfkTemplate(bot, bot.settings[message.guild.id], message, afkTemplateName)
+        } catch (e) {
+            if (e instanceof AfkTemplate.AfkTemplateValidationError) {
+                if (e.invalidChannel()) await message.delete()
+                return await message.channel.send(e.message())
+            }
+        }
         if (!afkTemplate.minimumStaffRoles.some(roles => roles.every(role => message.member.roles.cache.has(role.id)))) return await message.channel.send({embeds: [extensions.createEmbed(message, `You do not have a suitable set of roles out of ${afkTemplate.minimumStaffRoles.reduce((a, b) => `${a}, ${b.join(' + ')}`)} to run ${afkTemplate.name}.`, null)] })
         let location = args.join(' ')
         if (location.length >= 1024) return await message.channel.send('Location must be below 1024 characters, try again')
