@@ -68,7 +68,9 @@ function startAPI() {
         app.use('/api/', apiLimit)
         app.use('/api', require('./lib/API'))
 
-        app.use((req, res, next) => {
+        app.use((err, req, res, next) => {
+            if (err) return res.status(err.status).send({ status: err.status, message: err.message});
+            
             let d = new Date();
             let formatted_date = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
             let log = `[${formatted_date}] ${req.method}:${req.url} ${res.statusCode}`;
