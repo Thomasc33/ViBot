@@ -6,7 +6,6 @@ module.exports = {
     name: 'currentweek',
     description: 'Check user\'s currentweek quota.',
     args: '[users]',
-    alias: ['cw'],
     role: 'eventrl',
     getNotes(guildid, member) {
         return `Types: ${logs[guildid].main.map(log => log.key + ' (' + log.name + ')').join(', ')}`
