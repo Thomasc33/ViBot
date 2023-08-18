@@ -320,7 +320,7 @@ class AfkTemplate {
     }
 
     validateTemplateRole(role) {
-        if (!this.#botSettings.roles[role]) { console.log(`INR: ${role}`); return false }
+        if (!this.#botSettings.roles[role]) return false
         return this.#guild.roles.cache.get(this.#botSettings.roles[role])
     }
 
