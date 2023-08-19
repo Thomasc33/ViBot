@@ -23,11 +23,17 @@ module.exports = {
      */
     async execute(message, args, bot, db) {
         let alias = args.shift().toLowerCase()
-        const afkTemplate = new AfkTemplate.AfkTemplate(bot, bot.settings[message.guild.id], message, alias)
-        await afkTemplate.init()
-        const currentStatus = afkTemplate.getStatus()
-        if (currentStatus.state == AfkTemplate.TemplateState.INVALID_CHANNEL) await message.delete()
-        if (currentStatus.state != AfkTemplate.TemplateState.SUCCESS) return await message.channel.send(currentStatus.message)
+        const afkTemplateNames = AfkTemplate.resolveTemplateAlias(message.guild.id, alias)
+        if (afkTemplateNames.length == 0) return await message.channel.send('This afk template does not exist.')
+        const afkTemplateName = afkTemplateNames.length == 1 ? afkTemplateNames[0] : await AfkTemplate.templateNamePrompt(message, afkTemplateNames)
+
+        const afkTemplate = await AfkTemplate.AfkTemplate.tryCreate(bot, bot.settings[message.guild.id], message, afkTemplateName)
+        if (afkTemplate instanceof AfkTemplate.AfkTemplateValidationError) {
+            if (afkTemplate.invalidChannel()) await message.delete()
+            await message.channel.send(afkTemplate.message())
+            return
+        }
+
         if (!afkTemplate.minimumStaffRoles.some(roles => roles.every(role => message.member.roles.cache.has(role.id)))) return await message.channel.send({embeds: [extensions.createEmbed(message, `You do not have a suitable set of roles out of ${afkTemplate.minimumStaffRoles.reduce((a, b) => `${a}, ${b.join(' + ')}`)} to run ${afkTemplate.name}.`, null)] })
         let location = args.join(' ')
         if (location.length >= 1024) return await message.channel.send('Location must be below 1024 characters, try again')
