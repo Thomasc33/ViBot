@@ -146,6 +146,7 @@ class afkCheck {
         Object.keys(afkTemplate.buttons).forEach((key) => { if (afkTemplate.buttons[key].limit == 0) this.capButtons.push(key) }) 
 
         this.location = location // Location of the afk
+        this.singleUseHotfixStopTimersDontUseThisAnywhereElse = false // DO NOT USE THIS. ITS A HOTFIX. https://canary.discord.com/channels/343704644712923138/706670131115196588/1142549685719027822
         this.phase = 1 // Current phase of the afk
         this.timer = null // Time left until next phase (in seconds)
         this.completes = 0 // Number of times the afk has been completed
@@ -364,7 +365,7 @@ class afkCheck {
     }
 
     async updatePanel(timer) {
-        if (this.phase > this.#afkTemplate.phases) return clearInterval(timer)
+        if (this.singleUseHotfixStopTimersDontUseThisAnywhereElse) return clearInterval(timer)
         if (!this.timer) this.timer = this.#afkTemplate.body[this.phase].timeLimit
         this.timer = this.timer - 5
         if (this.timer == 0) return this.processPhaseNext()
@@ -1260,6 +1261,7 @@ class afkCheck {
     }
 
     async postAfk(interaction) {
+        this.singleUseHotfixStopTimersDontUseThisAnywhereElse = true // DO NOT USE THIS. ITS A HOTFIX. https://canary.discord.com/channels/343704644712923138/706670131115196588/1142549685719027822
         if (this.moveInEarlysTimer) clearInterval(this.moveInEarlysTimer)
         if (this.updatePanelTimer) clearInterval(this.updatePanelTimer)
 
