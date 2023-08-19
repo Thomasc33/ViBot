@@ -10554,28 +10554,6 @@
                 "phases": 2,
                 "body": {
                     "default": {
-                        "1": {
-                            "vcState": null,
-                            "nextPhaseButton": null,
-                            "timeLimit": null,
-                            "embed": {
-                                "color": null,
-                                "description": null,
-                                "image": null,
-                                "thumbnail": null
-                            }
-                        },
-                        "2": {
-                            "vcState": null,
-                            "nextPhaseButton": null,
-                            "timeLimit": null,
-                            "embed": {
-                                "color": null,
-                                "description": null,
-                                "image": null,
-                                "thumbnail": null
-                            }
-                        },
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
@@ -10589,143 +10567,181 @@
                             ]
                         }
                     },
-                    "buttons": {
-                        "Key": {
-                            "type": 1,
-                            "parent": null,
-                            "choice": 0,
-                            "limit": 3,
-                            "points": "eventkey",
-                            "displayName": false,
-                            "emote": "davyK",
-                            "confirm": true,
-                            "location": true,
-                            "minRole": null,
-                            "minStaffRoles": [
-                                "eventrl"
-                            ],
-                            "confirmationMessage": null,
-                            "confirmationMedia": null,
-                            "logName": "eventpops",
-                            "disableStart": null,
-                            "start": 1,
-                            "lifetime": 69
-                        },
-                        "Marble Seal": {
-                            "type": 0,
-                            "parent": null,
-                            "choice": 0,
-                            "limit": 1,
-                            "points": 1,
-                            "displayName": false,
-                            "emote": "UTMarbleSeal",
-                            "confirm": true,
-                            "location": false,
-                            "minRole": null,
-                            "minStaffRoles": null,
-                            "confirmationMessage": null,
-                            "confirmationMedia": null,
-                            "logName": null,
-                            "disableStart": null,
-                            "start": 1,
-                            "lifetime": 69
-                        },
-                        "Slow": {
-                            "type": 0,
-                            "parent": null,
-                            "choice": 0,
-                            "limit": 2,
-                            "points": 1,
-                            "displayName": false,
-                            "emote": "Slow",
-                            "confirm": true,
-                            "location": false,
-                            "minRole": null,
-                            "minStaffRoles": null,
-                            "confirmationMessage": null,
-                            "confirmationMedia": null,
-                            "logName": null,
-                            "disableStart": null,
-                            "start": 1,
-                            "lifetime": 69
-                        },
-                        "Trickster": {
-                            "type": 0,
-                            "parent": null,
-                            "choice": 0,
-                            "limit": 1,
-                            "points": 1,
-                            "displayName": false,
-                            "emote": "Trickster",
-                            "confirm": true,
-                            "location": false,
-                            "minRole": null,
-                            "minStaffRoles": null,
-                            "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} available.",
-                            "confirmationMedia": null,
-                            "logName": null,
-                            "disableStart": null,
-                            "start": 1,
-                            "lifetime": 69
-                        },
-                        "Supporter": {
-                            "type": 2,
-                            "parent": null,
-                            "choice": 0,
-                            "limit": null,
-                            "points": 0,
-                            "displayName": true,
-                            "emote": "NitroBooster",
-                            "confirm": false,
-                            "location": false,
-                            "minRole": null,
-                            "minStaffRoles": null,
-                            "confirmationMessage": null,
-                            "confirmationMedia": null,
-                            "logName": null,
-                            "disableStart": null,
-                            "start": 1,
-                            "lifetime": 69
-                        },
-                        "Tickets": {
-                            "type": 3,
-                            "parent": null,
-                            "choice": 0,
-                            "limit": 5,
-                            "points": -20,
-                            "displayName": true,
-                            "emote": "tickets",
-                            "confirm": true,
-                            "location": false,
-                            "minRole": null,
-                            "minStaffRoles": null,
-                            "confirmationMessage": null,
-                            "confirmationMedia": null,
-                            "logName": null,
-                            "disableStart": null,
-                            "start": 1,
-                            "lifetime": 69
+                    "1": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
                         }
                     },
-                    "reacts": {
-                        "davys": {
-                            "emote": "davys",
-                            "onHeadcount": true,
-                            "start": 1,
-                            "lifetime": 2
-                        },
-                        "Warrior": {
-                            "emote": "Warrior",
-                            "onHeadcount": false,
-                            "start": 1,
-                            "lifetime": 69
-                        },
-                        "Paladin": {
-                            "emote": "Paladin",
-                            "onHeadcount": false,
-                            "start": 1,
-                            "lifetime": 69
+                    "2": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
                         }
+                    }
+                },
+                "buttons": {
+                    "Key": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 3,
+                        "points": "eventkey",
+                        "displayName": false,
+                        "emote": "davyK",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": [
+                            "eventrl"
+                        ],
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "eventpops"
+                                ],
+                                "points": "eventkey",
+                                "multiplier": null
+                            },
+                            "Modded": {
+                                "logName": [
+                                    "eventpops",
+                                    "moddedpops"
+                                ],
+                                "points": "eventkey",
+                                "multiplier": "keymultiplier"
+                            }
+                        },
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Marble Seal": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "UTMarbleSeal",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "logOptions": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Slow": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Slow",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "logOptions": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Trickster": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Trickster",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} available.",
+                        "confirmationMedia": null,
+                        "logOptions": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Supporter": {
+                        "type": 2,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": null,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "NitroBooster",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "logOptions": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Tickets": {
+                        "type": 3,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 5,
+                        "points": -20,
+                        "displayName": true,
+                        "emote": "tickets",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "logOptions": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69
+                    }
+                },
+                "reacts": {
+                    "davys": {
+                        "emote": "davys",
+                        "onHeadcount": true,
+                        "start": 1,
+                        "lifetime": 2
+                    },
+                    "Warrior": {
+                        "emote": "Warrior",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Paladin": {
+                        "emote": "Paladin",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
                     }
                 }
             },
@@ -35686,28 +35702,6 @@
                 "phases": 2,
                 "body": {
                     "default": {
-                        "1": {
-                            "vcState": null,
-                            "nextPhaseButton": null,
-                            "timeLimit": null,
-                            "embed": {
-                                "color": null,
-                                "description": null,
-                                "image": null,
-                                "thumbnail": null
-                            }
-                        },
-                        "2": {
-                            "vcState": null,
-                            "nextPhaseButton": null,
-                            "timeLimit": null,
-                            "embed": {
-                                "color": null,
-                                "description": null,
-                                "image": null,
-                                "thumbnail": null
-                            }
-                        },
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
@@ -35721,143 +35715,181 @@
                             ]
                         }
                     },
-                    "buttons": {
-                        "Key": {
-                            "type": 1,
-                            "parent": null,
-                            "choice": 0,
-                            "limit": 3,
-                            "points": "eventkey",
-                            "displayName": false,
-                            "emote": "davyK",
-                            "confirm": true,
-                            "location": true,
-                            "minRole": null,
-                            "minStaffRoles": [
-                                "eventrl"
-                            ],
-                            "confirmationMessage": null,
-                            "confirmationMedia": null,
-                            "logName": "eventpops",
-                            "disableStart": null,
-                            "start": 1,
-                            "lifetime": 69
-                        },
-                        "Marble Seal": {
-                            "type": 0,
-                            "parent": null,
-                            "choice": 0,
-                            "limit": 1,
-                            "points": 1,
-                            "displayName": false,
-                            "emote": "UTMarbleSeal",
-                            "confirm": true,
-                            "location": false,
-                            "minRole": null,
-                            "minStaffRoles": null,
-                            "confirmationMessage": null,
-                            "confirmationMedia": null,
-                            "logName": null,
-                            "disableStart": null,
-                            "start": 1,
-                            "lifetime": 69
-                        },
-                        "Slow": {
-                            "type": 0,
-                            "parent": null,
-                            "choice": 0,
-                            "limit": 2,
-                            "points": 1,
-                            "displayName": false,
-                            "emote": "Slow",
-                            "confirm": true,
-                            "location": false,
-                            "minRole": null,
-                            "minStaffRoles": null,
-                            "confirmationMessage": null,
-                            "confirmationMedia": null,
-                            "logName": null,
-                            "disableStart": null,
-                            "start": 1,
-                            "lifetime": 69
-                        },
-                        "Trickster": {
-                            "type": 0,
-                            "parent": null,
-                            "choice": 0,
-                            "limit": 1,
-                            "points": 1,
-                            "displayName": false,
-                            "emote": "Trickster",
-                            "confirm": true,
-                            "location": false,
-                            "minRole": null,
-                            "minStaffRoles": null,
-                            "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} available.",
-                            "confirmationMedia": null,
-                            "logName": null,
-                            "disableStart": null,
-                            "start": 1,
-                            "lifetime": 69
-                        },
-                        "Supporter": {
-                            "type": 2,
-                            "parent": null,
-                            "choice": 0,
-                            "limit": null,
-                            "points": 0,
-                            "displayName": true,
-                            "emote": "NitroBooster",
-                            "confirm": false,
-                            "location": false,
-                            "minRole": null,
-                            "minStaffRoles": null,
-                            "confirmationMessage": null,
-                            "confirmationMedia": null,
-                            "logName": null,
-                            "disableStart": null,
-                            "start": 1,
-                            "lifetime": 69
-                        },
-                        "Tickets": {
-                            "type": 3,
-                            "parent": null,
-                            "choice": 0,
-                            "limit": 5,
-                            "points": -20,
-                            "displayName": true,
-                            "emote": "tickets",
-                            "confirm": true,
-                            "location": false,
-                            "minRole": null,
-                            "minStaffRoles": null,
-                            "confirmationMessage": null,
-                            "confirmationMedia": null,
-                            "logName": null,
-                            "disableStart": null,
-                            "start": 1,
-                            "lifetime": 69
+                    "1": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
                         }
                     },
-                    "reacts": {
-                        "davys": {
-                            "emote": "davys",
-                            "onHeadcount": true,
-                            "start": 1,
-                            "lifetime": 2
-                        },
-                        "Warrior": {
-                            "emote": "Warrior",
-                            "onHeadcount": false,
-                            "start": 1,
-                            "lifetime": 69
-                        },
-                        "Paladin": {
-                            "emote": "Paladin",
-                            "onHeadcount": false,
-                            "start": 1,
-                            "lifetime": 69
+                    "2": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
                         }
+                    }
+                },
+                "buttons": {
+                    "Key": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 3,
+                        "points": "eventkey",
+                        "displayName": false,
+                        "emote": "davyK",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": [
+                            "eventrl"
+                        ],
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "eventpops"
+                                ],
+                                "points": "eventkey",
+                                "multiplier": null
+                            },
+                            "Modded": {
+                                "logName": [
+                                    "eventpops",
+                                    "moddedpops"
+                                ],
+                                "points": "eventkey",
+                                "multiplier": "keymultiplier"
+                            }
+                        },
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Marble Seal": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "UTMarbleSeal",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "logOptions": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Slow": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Slow",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "logOptions": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Trickster": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Trickster",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} available.",
+                        "confirmationMedia": null,
+                        "logOptions": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Supporter": {
+                        "type": 2,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": null,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "NitroBooster",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "logOptions": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Tickets": {
+                        "type": 3,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 5,
+                        "points": -20,
+                        "displayName": true,
+                        "emote": "tickets",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "logOptions": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69
+                    }
+                },
+                "reacts": {
+                    "davys": {
+                        "emote": "davys",
+                        "onHeadcount": true,
+                        "start": 1,
+                        "lifetime": 2
+                    },
+                    "Warrior": {
+                        "emote": "Warrior",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Paladin": {
+                        "emote": "Paladin",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
                     }
                 }
             },
@@ -68377,28 +68409,6 @@
                 "phases": 2,
                 "body": {
                     "default": {
-                        "1": {
-                            "vcState": null,
-                            "nextPhaseButton": null,
-                            "timeLimit": null,
-                            "embed": {
-                                "color": null,
-                                "description": null,
-                                "image": null,
-                                "thumbnail": null
-                            }
-                        },
-                        "2": {
-                            "vcState": null,
-                            "nextPhaseButton": null,
-                            "timeLimit": null,
-                            "embed": {
-                                "color": null,
-                                "description": null,
-                                "image": null,
-                                "thumbnail": null
-                            }
-                        },
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
@@ -68412,143 +68422,181 @@
                             ]
                         }
                     },
-                    "buttons": {
-                        "Key": {
-                            "type": 1,
-                            "parent": null,
-                            "choice": 0,
-                            "limit": 3,
-                            "points": "eventkey",
-                            "displayName": false,
-                            "emote": "davyK",
-                            "confirm": true,
-                            "location": true,
-                            "minRole": null,
-                            "minStaffRoles": [
-                                "eventrl"
-                            ],
-                            "confirmationMessage": null,
-                            "confirmationMedia": null,
-                            "logName": "eventpops",
-                            "disableStart": null,
-                            "start": 1,
-                            "lifetime": 69
-                        },
-                        "Marble Seal": {
-                            "type": 0,
-                            "parent": null,
-                            "choice": 0,
-                            "limit": 1,
-                            "points": 1,
-                            "displayName": false,
-                            "emote": "UTMarbleSeal",
-                            "confirm": true,
-                            "location": false,
-                            "minRole": null,
-                            "minStaffRoles": null,
-                            "confirmationMessage": null,
-                            "confirmationMedia": null,
-                            "logName": null,
-                            "disableStart": null,
-                            "start": 1,
-                            "lifetime": 69
-                        },
-                        "Slow": {
-                            "type": 0,
-                            "parent": null,
-                            "choice": 0,
-                            "limit": 2,
-                            "points": 1,
-                            "displayName": false,
-                            "emote": "Slow",
-                            "confirm": true,
-                            "location": false,
-                            "minRole": null,
-                            "minStaffRoles": null,
-                            "confirmationMessage": null,
-                            "confirmationMedia": null,
-                            "logName": null,
-                            "disableStart": null,
-                            "start": 1,
-                            "lifetime": 69
-                        },
-                        "Trickster": {
-                            "type": 0,
-                            "parent": null,
-                            "choice": 0,
-                            "limit": 1,
-                            "points": 1,
-                            "displayName": false,
-                            "emote": "Trickster",
-                            "confirm": true,
-                            "location": false,
-                            "minRole": null,
-                            "minStaffRoles": null,
-                            "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} available.",
-                            "confirmationMedia": null,
-                            "logName": null,
-                            "disableStart": null,
-                            "start": 1,
-                            "lifetime": 69
-                        },
-                        "Supporter": {
-                            "type": 2,
-                            "parent": null,
-                            "choice": 0,
-                            "limit": null,
-                            "points": 0,
-                            "displayName": true,
-                            "emote": "NitroBooster",
-                            "confirm": false,
-                            "location": false,
-                            "minRole": null,
-                            "minStaffRoles": null,
-                            "confirmationMessage": null,
-                            "confirmationMedia": null,
-                            "logName": null,
-                            "disableStart": null,
-                            "start": 1,
-                            "lifetime": 69
-                        },
-                        "Tickets": {
-                            "type": 3,
-                            "parent": null,
-                            "choice": 0,
-                            "limit": 5,
-                            "points": -20,
-                            "displayName": true,
-                            "emote": "tickets",
-                            "confirm": true,
-                            "location": false,
-                            "minRole": null,
-                            "minStaffRoles": null,
-                            "confirmationMessage": null,
-                            "confirmationMedia": null,
-                            "logName": null,
-                            "disableStart": null,
-                            "start": 1,
-                            "lifetime": 69
+                    "1": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
                         }
                     },
-                    "reacts": {
-                        "davys": {
-                            "emote": "davys",
-                            "onHeadcount": true,
-                            "start": 1,
-                            "lifetime": 2
-                        },
-                        "Warrior": {
-                            "emote": "Warrior",
-                            "onHeadcount": false,
-                            "start": 1,
-                            "lifetime": 69
-                        },
-                        "Paladin": {
-                            "emote": "Paladin",
-                            "onHeadcount": false,
-                            "start": 1,
-                            "lifetime": 69
+                    "2": {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
                         }
+                    }
+                },
+                "buttons": {
+                    "Key": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 3,
+                        "points": "eventkey",
+                        "displayName": false,
+                        "emote": "davyK",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": [
+                            "eventrl"
+                        ],
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "eventpops"
+                                ],
+                                "points": "eventkey",
+                                "multiplier": null
+                            },
+                            "Modded": {
+                                "logName": [
+                                    "eventpops",
+                                    "moddedpops"
+                                ],
+                                "points": "eventkey",
+                                "multiplier": "keymultiplier"
+                            }
+                        },
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Marble Seal": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "UTMarbleSeal",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "logOptions": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Slow": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Slow",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "logOptions": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Trickster": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Trickster",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} available.",
+                        "confirmationMedia": null,
+                        "logOptions": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Supporter": {
+                        "type": 2,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": null,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "NitroBooster",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "logOptions": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Tickets": {
+                        "type": 3,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 5,
+                        "points": -20,
+                        "displayName": true,
+                        "emote": "tickets",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "logOptions": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69
+                    }
+                },
+                "reacts": {
+                    "davys": {
+                        "emote": "davys",
+                        "onHeadcount": true,
+                        "start": 1,
+                        "lifetime": 2
+                    },
+                    "Warrior": {
+                        "emote": "Warrior",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Paladin": {
+                        "emote": "Paladin",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
                     }
                 }
             },
