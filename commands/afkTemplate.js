@@ -60,6 +60,18 @@ function resolveTemplateAlias(guildId, alias) {
     return selectedTemplates.map((t) => t.templateName)
 }
 
+async function templateNamePrompt(message, templateNames) {
+    const templateMenu = new Discord.StringSelectMenuBuilder() // If multiple found, give option to choose AFK Template
+        .setCustomId(`template`)
+        .setPlaceholder(`Name of Afk`)
+        .setMinValues(1)
+        .setMaxValues(1)
+    for (const templateName of templateNames) templateMenu.addOptions({ label: templateName, value: templateName })
+    const text = `Which template would you like to use for this run?.\n If no response is received, this run will use the default ${templateNames[0]}.`
+    const {value: templateValue, interaction: subInteraction} = await message.selectPanel(text, null, templateMenu, 30000, false, true)
+    return templateValue || templateNames[0]
+}
+
 class AfkTemplateValidationError extends Error {
     #error_type;
     #message;
@@ -88,7 +100,6 @@ class AfkTemplate {
     #guild;
     #channel;
     #inherit;
-    #message;
 
     /** Constructor for the AFK Template Class
      * @param {Discord.Client} bot The client which is running the bot
@@ -102,8 +113,6 @@ class AfkTemplate {
         this.#guild = message.guild
         this.#channel = message.channel
         this.#inherit = null
-        this.#template = null
-        this.#message = message
 
         // Build AFK template from JSON
         this.#template = JSON.parse(JSON.stringify(templates[this.#guild.id].children.filter(t => t.templateName == templateName)[0]))
@@ -119,6 +128,16 @@ class AfkTemplate {
         // Populate all parameters used in AfkCheck
         this.#processParameters()
     }
+
+    static async tryCreate(bot, botSettings, message, templateName) {
+        try {
+            return new this(bot, bot.settings[message.guild.id], message, templateName)
+        } catch (e) {
+            if (e instanceof AfkTemplateValidationError) return e
+            throw e
+        }
+    }
+
 
     // Function for populating child AFK Template parameters in an object from Parent AFK Template object
     #populateObjectInherit(template, parentTemplate) {
@@ -242,116 +261,116 @@ class AfkTemplate {
 
     // Function for validating values of the AFK Template parameters
     #validateTemplateValues() {
-        if (!this.validateTemplateCategory(this.#template.category)) throw new AfkTemplateValidationError(TemplateState.INVALID_CATEGORY, 'This afk template has an Invalid Category.')
-        if (!this.validateTemplateChannel(this.#template.templateChannel)) throw new Afk(TemplateState.INVALID_CHANNEL, 'This afk template has an Invalid Template Channel.')
-        if (this.#template.partneredStatusChannels && !this.validateTemplateObject(this.#template.partneredStatusChannels)) throw new Afk(TemplateState.INVALID_OBJECT, 'This afk template has an Invalid Partnered Status Channels.')
+        if (!this.#validateTemplateCategory(this.#template.category)) throw new AfkTemplateValidationError(TemplateState.INVALID_CATEGORY, 'This afk template has an Invalid Category.')
+        if (!this.#validateTemplateChannel(this.#template.templateChannel)) throw new AfkTemplateValidationError(TemplateState.INVALID_CHANNEL, 'This afk template has an Invalid Template Channel.')
+        if (this.#template.partneredStatusChannels && !this.#validateTemplateObject(this.#template.partneredStatusChannels)) throw new AfkTemplateValidationError(TemplateState.INVALID_OBJECT, 'This afk template has an Invalid Partnered Status Channels.')
         for (let i in this.#template.partneredStatusChannels) {
-            if (!this.validateTemplateGuild(i, this.#template.partneredStatusChannels[i].channels)) throw new Afk(TemplateState.INVALID_GUILD, `This afk template at Partnered Status Channels ${i} has an Invalid Channel/Guild.`)
+            if (!this.#validateTemplateGuild(i, this.#template.partneredStatusChannels[i].channels)) throw new AfkTemplateValidationError(TemplateState.INVALID_GUILD, `This afk template at Partnered Status Channels ${i} has an Invalid Channel/Guild.`)
         }
-        if (!this.validateTemplateChannel(this.#template.statusChannel)) throw new Afk(TemplateState.INVALID_CHANNEL, 'This afk template has an Invalid Status Channel.')
-        if (!this.validateTemplateChannel(this.#template.commandsChannel)) throw new Afk(TemplateState.INVALID_CHANNEL, 'This afk template has an Invalid Commands Channel.')
-        if (!this.validateTemplateChannel(this.#template.activeChannel)) throw new Afk(TemplateState.INVALID_CHANNEL, 'This afk template has an Invalid Active Channel.')
-        if (this.#template.minStaffRoles && this.#template.minStaffRoles.some(roles => roles.some(role => !this.validateTemplateRole(role)))) throw new Afk(TemplateState.INVALID_ROLE, 'This afk template has an Invalid Minimum Staff Role.')
-        if (this.#template.minViewRaiderRoles && this.#template.minViewRaiderRoles.some(role => !this.validateTemplateRole(role))) throw new Afk(TemplateState.INVALID_ROLE, 'This afk template has an Invalid Minimum View Raider Role.')
-        if (this.#template.minJoinRaiderRoles && this.#template.minJoinRaiderRoles.some(role => !this.validateTemplateRole(role))) throw new Afk(TemplateState.INVALID_ROLE, 'This afk template has an Invalid Minimum Join Raider Role.')
-        if (!this.validateTemplateString(this.#template.name)) throw new Afk(TemplateState.INVALID_STRING, 'This afk template has an Invalid Name.')
-        if (this.#template.pingRoles && this.#template.pingRoles.some(role => role != 'here' && !this.validateTemplateRole(role))) throw new Afk(TemplateState.INVALID_ROLE, `This afk template has an Invalid Ping Role. ${this.#template.pingRoles.filter(role => role != 'here' && !this.validateTemplateRole(role))}`)
-        if (this.#template.aliases.some(alias => !this.validateTemplateString(alias))) throw new Afk(TemplateState.INVALID_STRING, 'This afk template has an Invalid Aliases.')
-        if (!this.validateTemplateNumber(this.#template.vcOptions, TemplateVCOptions)) throw new Afk(TemplateState.INVALID_NUMBER, 'This afk template has an Invalid VC Option.')
-        if (this.#template.startDelay && !this.validateTemplateNumber(this.#template.startDelay)) throw new Afk(TemplateState.INVALID_NUMBER, 'This afk template has an Invalid Start Delay.')
-        if (!this.validateTemplateNumber(this.#template.cap)) throw new Afk(TemplateState.INVALID_NUMBER, 'This afk template has an Invalid Cap.')
-        if (!this.validateTemplateBoolean(this.#template.capButton)) throw new Afk(TemplateState.INVALID_BOOLEAN, 'This afk template has an Invalid Cap Button.')
-        if (!this.validateTemplateNumber(this.#template.phases)) throw new Afk(TemplateState.INVALID_NUMBER, 'This afk template has an Invalid Phases.')
-        if (!this.validateTemplateObject(this.#template.body)) throw new Afk(TemplateState.INVALID_OBJECT, 'This afk template has an Invalid Body.')
+        if (!this.#validateTemplateChannel(this.#template.statusChannel)) throw new AfkTemplateValidationError(TemplateState.INVALID_CHANNEL, 'This afk template has an Invalid Status Channel.')
+        if (!this.#validateTemplateChannel(this.#template.commandsChannel)) throw new AfkTemplateValidationError(TemplateState.INVALID_CHANNEL, 'This afk template has an Invalid Commands Channel.')
+        if (!this.#validateTemplateChannel(this.#template.activeChannel)) throw new AfkTemplateValidationError(TemplateState.INVALID_CHANNEL, 'This afk template has an Invalid Active Channel.')
+        if (this.#template.minStaffRoles && this.#template.minStaffRoles.some(roles => roles.some(role => !this.#validateTemplateRole(role)))) throw new AfkTemplateValidationError(TemplateState.INVALID_ROLE, 'This afk template has an Invalid Minimum Staff Role.')
+        if (this.#template.minViewRaiderRoles && this.#template.minViewRaiderRoles.some(role => !this.#validateTemplateRole(role))) throw new AfkTemplateValidationError(TemplateState.INVALID_ROLE, 'This afk template has an Invalid Minimum View Raider Role.')
+        if (this.#template.minJoinRaiderRoles && this.#template.minJoinRaiderRoles.some(role => !this.#validateTemplateRole(role))) throw new AfkTemplateValidationError(TemplateState.INVALID_ROLE, 'This afk template has an Invalid Minimum Join Raider Role.')
+        if (!this.#validateTemplateString(this.#template.name)) throw new AfkTemplateValidationError(TemplateState.INVALID_STRING, 'This afk template has an Invalid Name.')
+        if (this.#template.pingRoles && this.#template.pingRoles.some(role => role != 'here' && !this.#validateTemplateRole(role))) throw new AfkTemplateValidationError(TemplateState.INVALID_ROLE, `This afk template has an Invalid Ping Role. ${this.#template.pingRoles.filter(role => role != 'here' && !this.#validateTemplateRole(role))}`)
+        if (this.#template.aliases.some(alias => !this.#validateTemplateString(alias))) throw new AfkTemplateValidationError(TemplateState.INVALID_STRING, 'This afk template has an Invalid Aliases.')
+        if (!this.#validateTemplateNumber(this.#template.vcOptions, TemplateVCOptions)) throw new AfkTemplateValidationError(TemplateState.INVALID_NUMBER, 'This afk template has an Invalid VC Option.')
+        if (this.#template.startDelay && !this.#validateTemplateNumber(this.#template.startDelay)) throw new AfkTemplateValidationError(TemplateState.INVALID_NUMBER, 'This afk template has an Invalid Start Delay.')
+        if (!this.#validateTemplateNumber(this.#template.cap)) throw new AfkTemplateValidationError(TemplateState.INVALID_NUMBER, 'This afk template has an Invalid Cap.')
+        if (!this.#validateTemplateBoolean(this.#template.capButton)) throw new AfkTemplateValidationError(TemplateState.INVALID_BOOLEAN, 'This afk template has an Invalid Cap Button.')
+        if (!this.#validateTemplateNumber(this.#template.phases)) throw new AfkTemplateValidationError(TemplateState.INVALID_NUMBER, 'This afk template has an Invalid Phases.')
+        if (!this.#validateTemplateObject(this.#template.body)) throw new AfkTemplateValidationError(TemplateState.INVALID_OBJECT, 'This afk template has an Invalid Body.')
         for (let i in this.#template.body) {
-            if (!this.validateTemplateNumber(this.#template.body[i].vcState, TemplateVCState)) throw new Afk(TemplateState.INVALID_NUMBER, `This afk template at Body ${i} has an Invalid VC State.`)
-            if (this.#template.body[i].nextPhaseButton && !this.validateTemplateString(this.#template.body[i].nextPhaseButton)) throw new Afk(TemplateState.INVALID_STRING, `This afk template at Body ${i} has an Invalid Next Phase Button.`)
-            if (!this.validateTemplateNumber(this.#template.body[i].timeLimit)) throw new Afk(TemplateState.INVALID_NUMBER, `This afk template at Body ${i} has an Invalid Time Limit.`)
-            if (this.#template.body[i].message && !this.validateTemplateString(this.#template.body[i].message)) throw new Afk(TemplateState.INVALID_STRING, `This afk template at Body ${i} has an Invalid Message.`)
-            if (this.#template.body[i].embed.description && this.#template.body[i].embed.description.some(description => description && !this.validateTemplateString(description))) throw new Afk(TemplateState.INVALID_STRING, `This afk template at Body ${i} has an Invalid Embed Description.`)
-            if (this.#template.body[i].embed.image && !(this.validateTemplateString(this.#template.body[i].embed.image) || this.validateTemplateImage(this.#template.body[i].embed.image))) throw new Afk(TemplateState.INVALID_STRING, `This afk template at Body ${i} has an Invalid Embed Image.`)
-            if (this.#template.body[i].embed.thumbnail && this.#template.body[i].embed.thumbnail.some(thumbnail => !this.validateTemplateString(thumbnail))) throw new Afk(TemplateState.INVALID_STRING, `This afk template at Body ${i} has an Invalid Embed Thumbnail.`)
+            if (!this.#validateTemplateNumber(this.#template.body[i].vcState, TemplateVCState)) throw new AfkTemplateValidationError(TemplateState.INVALID_NUMBER, `This afk template at Body ${i} has an Invalid VC State.`)
+            if (this.#template.body[i].nextPhaseButton && !this.#validateTemplateString(this.#template.body[i].nextPhaseButton)) throw new AfkTemplateValidationError(TemplateState.INVALID_STRING, `This afk template at Body ${i} has an Invalid Next Phase Button.`)
+            if (!this.#validateTemplateNumber(this.#template.body[i].timeLimit)) throw new AfkTemplateValidationError(TemplateState.INVALID_NUMBER, `This afk template at Body ${i} has an Invalid Time Limit.`)
+            if (this.#template.body[i].message && !this.#validateTemplateString(this.#template.body[i].message)) throw new AfkTemplateValidationError(TemplateState.INVALID_STRING, `This afk template at Body ${i} has an Invalid Message.`)
+            if (this.#template.body[i].embed.description && this.#template.body[i].embed.description.some(description => description && !this.#validateTemplateString(description))) throw new AfkTemplateValidationError(TemplateState.INVALID_STRING, `This afk template at Body ${i} has an Invalid Embed Description.`)
+            if (this.#template.body[i].embed.image && !(this.#validateTemplateString(this.#template.body[i].embed.image) || this.#validateTemplateImage(this.#template.body[i].embed.image))) throw new AfkTemplateValidationError(TemplateState.INVALID_STRING, `This afk template at Body ${i} has an Invalid Embed Image.`)
+            if (this.#template.body[i].embed.thumbnail && this.#template.body[i].embed.thumbnail.some(thumbnail => !this.#validateTemplateString(thumbnail))) throw new AfkTemplateValidationError(TemplateState.INVALID_STRING, `This afk template at Body ${i} has an Invalid Embed Thumbnail.`)
         }
-        if (!this.validateTemplateObject(this.#template.buttons)) throw new Afk(TemplateState.INVALID_OBJECT, 'This afk template has an Invalid Buttons.')
+        if (!this.#validateTemplateObject(this.#template.buttons)) throw new AfkTemplateValidationError(TemplateState.INVALID_OBJECT, 'This afk template has an Invalid Buttons.')
         for (let i in this.#template.buttons) {
-            if (!this.validateTemplateNumber(this.#template.buttons[i].type, TemplateButtonType)) throw new Afk(TemplateState.INVALID_NUMBER, `This afk template at Button ${i} has an Invalid Type.`)
-            if (this.#template.buttons[i].parent && this.#template.buttons[i].parent.some(name => !this.#template.buttons[name])) throw new Afk(TemplateState.INVALID_NUMBER, `This afk template at Button ${i} has an Invalid Parent.`)
-            if (!this.validateTemplateNumber(this.#template.buttons[i].choice, TemplateButtonChoice)) throw new Afk(TemplateState.INVALID_NUMBER, `This afk template at Button ${i} has an Invalid Choice.`)
-            if (this.#template.buttons[i].limit && !this.validateTemplateNumber(this.#template.buttons[i].limit)) throw new Afk(TemplateState.INVALID_NUMBER, `This afk template at Button ${i} has an Invalid Limit.`)
-            if (this.#template.buttons[i].points && !(this.validateTemplateNumber(this.#template.buttons[i].points) || this.validateTemplatePoints(this.#template.buttons[i].points))) throw new Afk(TemplateState.INVALID_NUMBER, `This afk template at Button ${i} has an Invalid Points.`)
-            if (!this.validateTemplateBoolean(this.#template.buttons[i].displayName)) throw new Afk(TemplateState.INVALID_BOOLEAN, `This afk template at Button ${i} has an Invalid Display Name.`)
-            if (this.#template.buttons[i].emote && !this.validateTemplateEmote(this.#template.buttons[i].emote)) throw new Afk(TemplateState.INVALID_EMOTE, `This afk template at Button ${i} has an Invalid Emote.`)
-            if (!this.validateTemplateBoolean(this.#template.buttons[i].confirm)) throw new Afk(TemplateState.INVALID_BOOLEAN, `This afk template at Button ${i} has an Invalid Confirm.`)
-            if (!this.validateTemplateBoolean(this.#template.buttons[i].location)) throw new Afk(TemplateState.INVALID_BOOLEAN, `This afk template at Button ${i} has an Invalid Location.`)
-            if (this.#template.buttons[i].minRole && !this.validateTemplateRole(this.#template.buttons[i].minRole)) throw new Afk(TemplateState.INVALID_ROLE, `This afk template at Button ${i} has an Invalid Minimum Role.`)
-            if (this.#template.buttons[i].minStaffRoles && this.#template.buttons[i].minStaffRoles.some(role => !this.validateTemplateRole(role))) throw new Afk(TemplateState.INVALID_ROLE, `This afk template at Button ${i} has an Invalid Minimum Staff Role.`)
-            if (this.#template.buttons[i].confirmationMessage && !this.validateTemplateString(this.#template.buttons[i].confirmationMessage)) throw new Afk(TemplateState.INVALID_STRING, `This afk template at Button ${i} has an Invalid Confirmation Message.`)
-            if (this.#template.buttons[i].confirmationMedia && !this.validateTemplateString(this.#template.buttons[i].confirmationMedia)) throw new Afk(TemplateState.INVALID_STRING, `This afk template at Button ${i} has an Invalid Confirmation Media.`)
-            if (this.#template.buttons[i].disableStart && !this.validateTemplateNumber(this.#template.buttons[i].disableStart)) throw new Afk(TemplateState.INVALID_NUMBER, `This afk template at Button ${i} has an Invalid Disable Start.`)
-            if (!this.validateTemplateNumber(this.#template.buttons[i].start)) throw new Afk(TemplateState.INVALID_NUMBER, `This afk template at Button ${i} has an Invalid Start.`)
-            if (!this.validateTemplateNumber(this.#template.buttons[i].lifetime)) throw new Afk(TemplateState.INVALID_NUMBER, `This afk template at Button ${i} has an Invalid Lifetime.`)
+            if (!this.#validateTemplateNumber(this.#template.buttons[i].type, TemplateButtonType)) throw new AfkTemplateValidationError(TemplateState.INVALID_NUMBER, `This afk template at Button ${i} has an Invalid Type.`)
+            if (this.#template.buttons[i].parent && this.#template.buttons[i].parent.some(name => !this.#template.buttons[name])) throw new AfkTemplateValidationError(TemplateState.INVALID_NUMBER, `This afk template at Button ${i} has an Invalid Parent.`)
+            if (!this.#validateTemplateNumber(this.#template.buttons[i].choice, TemplateButtonChoice)) throw new AfkTemplateValidationError(TemplateState.INVALID_NUMBER, `This afk template at Button ${i} has an Invalid Choice.`)
+            if (this.#template.buttons[i].limit && !this.#validateTemplateNumber(this.#template.buttons[i].limit)) throw new AfkTemplateValidationError(TemplateState.INVALID_NUMBER, `This afk template at Button ${i} has an Invalid Limit.`)
+            if (this.#template.buttons[i].points && !(this.#validateTemplateNumber(this.#template.buttons[i].points) || this.#validateTemplatePoints(this.#template.buttons[i].points))) throw new AfkTemplateValidationError(TemplateState.INVALID_NUMBER, `This afk template at Button ${i} has an Invalid Points.`)
+            if (!this.#validateTemplateBoolean(this.#template.buttons[i].displayName)) throw new AfkTemplateValidationError(TemplateState.INVALID_BOOLEAN, `This afk template at Button ${i} has an Invalid Display Name.`)
+            if (this.#template.buttons[i].emote && !this.#validateTemplateEmote(this.#template.buttons[i].emote)) throw new AfkTemplateValidationError(TemplateState.INVALID_EMOTE, `This afk template at Button ${i} has an Invalid Emote.`)
+            if (!this.#validateTemplateBoolean(this.#template.buttons[i].confirm)) throw new AfkTemplateValidationError(TemplateState.INVALID_BOOLEAN, `This afk template at Button ${i} has an Invalid Confirm.`)
+            if (!this.#validateTemplateBoolean(this.#template.buttons[i].location)) throw new AfkTemplateValidationError(TemplateState.INVALID_BOOLEAN, `This afk template at Button ${i} has an Invalid Location.`)
+            if (this.#template.buttons[i].minRole && !this.#validateTemplateRole(this.#template.buttons[i].minRole)) throw new AfkTemplateValidationError(TemplateState.INVALID_ROLE, `This afk template at Button ${i} has an Invalid Minimum Role.`)
+            if (this.#template.buttons[i].minStaffRoles && this.#template.buttons[i].minStaffRoles.some(role => !this.#validateTemplateRole(role))) throw new AfkTemplateValidationError(TemplateState.INVALID_ROLE, `This afk template at Button ${i} has an Invalid Minimum Staff Role.`)
+            if (this.#template.buttons[i].confirmationMessage && !this.#validateTemplateString(this.#template.buttons[i].confirmationMessage)) throw new AfkTemplateValidationError(TemplateState.INVALID_STRING, `This afk template at Button ${i} has an Invalid Confirmation Message.`)
+            if (this.#template.buttons[i].confirmationMedia && !this.#validateTemplateString(this.#template.buttons[i].confirmationMedia)) throw new AfkTemplateValidationError(TemplateState.INVALID_STRING, `This afk template at Button ${i} has an Invalid Confirmation Media.`)
+            if (this.#template.buttons[i].disableStart && !this.#validateTemplateNumber(this.#template.buttons[i].disableStart)) throw new AfkTemplateValidationError(TemplateState.INVALID_NUMBER, `This afk template at Button ${i} has an Invalid Disable Start.`)
+            if (!this.#validateTemplateNumber(this.#template.buttons[i].start)) throw new AfkTemplateValidationError(TemplateState.INVALID_NUMBER, `This afk template at Button ${i} has an Invalid Start.`)
+            if (!this.#validateTemplateNumber(this.#template.buttons[i].lifetime)) throw new AfkTemplateValidationError(TemplateState.INVALID_NUMBER, `This afk template at Button ${i} has an Invalid Lifetime.`)
             if (this.#template.buttons[i].logOptions != null) for (let j in this.#template.buttons[i].logOptions) {
-                if (this.#template.buttons[i].logOptions[j].points && !(this.validateTemplateNumber(this.#template.buttons[i].logOptions[j].points) || this.validateTemplatePoints(this.#template.buttons[i].logOptions[j].points))) throw new Afk(TemplateState.INVALID_NUMBER, `This afk template at Button ${i} at Log Option ${j} has an Invalid Points.`)
-                if (this.#template.buttons[i].logOptions[j].multiplier && !(this.validateTemplateNumber(this.#template.buttons[i].logOptions[j].multiplier) || this.validateTemplatePoints(this.#template.buttons[i].logOptions[j].multiplier))) throw new Afk(TemplateState.INVALID_NUMBER, `This afk template at Button ${i} at Log Option ${j} has an Invalid Multiplier.`)
+                if (this.#template.buttons[i].logOptions[j].points && !(this.#validateTemplateNumber(this.#template.buttons[i].logOptions[j].points) || this.#validateTemplatePoints(this.#template.buttons[i].logOptions[j].points))) throw new AfkTemplateValidationError(TemplateState.INVALID_NUMBER, `This afk template at Button ${i} at Log Option ${j} has an Invalid Points.`)
+                if (this.#template.buttons[i].logOptions[j].multiplier && !(this.#validateTemplateNumber(this.#template.buttons[i].logOptions[j].multiplier) || this.#validateTemplatePoints(this.#template.buttons[i].logOptions[j].multiplier))) throw new AfkTemplateValidationError(TemplateState.INVALID_NUMBER, `This afk template at Button ${i} at Log Option ${j} has an Invalid Multiplier.`)
             }
         }
-        if (!this.validateTemplateObject(this.#template.reacts)) throw new Afk(TemplateState.INVALID_OBJECT, 'This afk template has an Invalid Reacts.')
+        if (!this.#validateTemplateObject(this.#template.reacts)) throw new AfkTemplateValidationError(TemplateState.INVALID_OBJECT, 'This afk template has an Invalid Reacts.')
         for (let i in this.#template.reacts) {
-            if (!this.validateTemplateEmote(this.#template.reacts[i].emote)) throw new Afk(TemplateState.INVALID_EMOTE, `This afk template at React ${i} has an Invalid Emote.`)
-            if (!this.validateTemplateBoolean(this.#template.reacts[i].onHeadcount)) throw new Afk(TemplateState.INVALID_BOOLEAN, `This afk template at React ${i} has an Invalid On Headcount.`)
-            if (!this.validateTemplateNumber(this.#template.reacts[i].start)) throw new Afk(TemplateState.INVALID_NUMBER, `This afk template at React ${i} has an Invalid Start.`)
-            if (!this.validateTemplateNumber(this.#template.reacts[i].lifetime)) throw new Afk(TemplateState.INVALID_NUMBER, `This afk template at React ${i} has an Invalid Lifetime.`)
+            if (!this.#validateTemplateEmote(this.#template.reacts[i].emote)) throw new AfkTemplateValidationError(TemplateState.INVALID_EMOTE, `This afk template at React ${i} has an Invalid Emote.`)
+            if (!this.#validateTemplateBoolean(this.#template.reacts[i].onHeadcount)) throw new AfkTemplateValidationError(TemplateState.INVALID_BOOLEAN, `This afk template at React ${i} has an Invalid On Headcount.`)
+            if (!this.#validateTemplateNumber(this.#template.reacts[i].start)) throw new AfkTemplateValidationError(TemplateState.INVALID_NUMBER, `This afk template at React ${i} has an Invalid Start.`)
+            if (!this.#validateTemplateNumber(this.#template.reacts[i].lifetime)) throw new AfkTemplateValidationError(TemplateState.INVALID_NUMBER, `This afk template at React ${i} has an Invalid Lifetime.`)
         }
     }
 
-    validateTemplateGuild(guild, channels = null) {
+    #validateTemplateGuild(guild, channels = null) {
         const otherGuild = this.#bot.guilds.cache.get(guild)
         if (!otherGuild) return false
-        if (channels && channels.some(channel => !this.validateTemplateChannel(channel, otherGuild))) return false
+        if (channels && channels.some(channel => !this.#validateTemplateChannel(channel, otherGuild))) return false
         return true
     }
 
-    validateTemplateCategory(category) {
+    #validateTemplateCategory(category) {
         return this.#guild.channels.cache.filter(c => c.type == Discord.ChannelType.GuildCategory).find(c => c.name.toLowerCase() === category)
     }
 
-    validateTemplateChannel(channel, guild = this.#guild) {
+    #validateTemplateChannel(channel, guild = this.#guild) {
         return guild.channels.cache.get(channel)
     }
 
-    validateTemplateRole(role) {
+    #validateTemplateRole(role) {
         if (!this.#botSettings.roles[role]) return false
         return this.#guild.roles.cache.get(this.#botSettings.roles[role])
     }
 
-    validateTemplatePoints(points) {
+    #validateTemplatePoints(points) {
         if (!this.#botSettings.points[points]) return false
         return this.#botSettings.points[points]
     }
 
-    validateTemplateImage(image) {
+    #validateTemplateImage(image) {
         if (!this.#botSettings.strings[image]) return false
         return this.#botSettings.strings[image]
     }
 
-    validateTemplateString(string) {
+    #validateTemplateString(string) {
         return typeof string === 'string'
     }
 
-    validateTemplateNumber(number, dictionary = null) {
+    #validateTemplateNumber(number, dictionary = null) {
         if (dictionary) return Object.values(dictionary).includes(number)
         return Number.isInteger(number)
     }
 
-    validateTemplateObject(object) {
+    #validateTemplateObject(object) {
         return typeof object === "object"
     }
 
-    validateTemplateEmote(emote) {
+    #validateTemplateEmote(emote) {
         return this.#bot.storedEmojis[emote]
     }
 
-    validateTemplateBoolean(bool) {
+    #validateTemplateBoolean(bool) {
         return typeof bool === "boolean"
     }
 
@@ -504,7 +523,7 @@ class AfkTemplate {
     }
 }
 
-module.exports = { AfkTemplate, TemplateVCOptions, TemplateVCState, TemplateButtonType, TemplateButtonChoice, resolveTemplateAlias, AfkTemplateValidationError,
+module.exports = { AfkTemplate, TemplateVCOptions, TemplateVCState, TemplateButtonType, TemplateButtonChoice, templateNamePrompt, AfkTemplateValidationError, resolveTemplateAlias,
     name: 'afkinfo',
     description: 'Gives information about afk checks on the bot.',
     args: '<number/reset/delete/show> (guildID/all)',
