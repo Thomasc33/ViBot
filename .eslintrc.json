@@ -1,0 +1,40 @@
+{
+    "env": {
+        "node": true,
+        "es2021": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "xo"
+    ],
+    "overrides": [
+    ],
+    "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+    },
+    "rules": {
+        "indent": ["error", 4, { "SwitchCase": 1 }],
+        "brace-style": ["error", "1tbs", { "allowSingleLine": true }],
+        "object-curly-spacing": ["warn", "always"],
+        "curly": ["error", "multi-line"],
+
+        "no-unused-vars": ["error", { "argsIgnorePattern": "er" }],
+
+        "no-return-assign": "warn",
+        "no-negated-condition": "warn",
+
+        "max-statements-per-line": "off",
+        "semi": "off",
+        "radix": "off",
+        "eqeqeq": "off",
+        "arrow-parens": "off",
+        "no-return-await": "off",
+        "max-params": "off",
+        "camelcase": "off",
+        "new-cap": "warn",
+        "padding-line-between-statements": ["warn", { "blankLine": "never", "prev": "*", "next": "return" }],
+        "object-shorthand": ["warn", "consistent-as-needed"],
+        "comma-dangle": ["error", "never"]
+    }
+}
