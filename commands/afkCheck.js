@@ -400,22 +400,19 @@ class afkCheck {
     #genRaidStatusEmbed() {
         const embed = new Discord.EmbedBuilder()
         const afkTemplateBody = this.#afkTemplate.body[this.phase || 1]
+        embed.setColor(afkTemplateBody.embed.color ? afkTemplateBody.embed.color : '#ffffff')
+        embed.setAuthor({ name: `AFK for ${this.#afkTemplate.name} by ${this.raidLeaderDisplayName}`, iconURL: this.#leader.user.avatarURL() })
+        embed.setTimestamp(Date.now())
+        if (afkTemplateBody.embed.thumbnail) embed.setThumbnail(afkTemplateBody.embed.thumbnail[Math.floor(Math.random()*afkTemplateBody.embed.thumbnail.length)])
         if (this.phase == 0) {
             embed.setDescription(`\`${this.#afkTemplate.name}\`${this.flag ? ` in (${this.flag})` : ''} will begin in ${Math.round(this.#afkTemplate.startDelay)} seconds. Be prepared to join the raid.`)
+            embed.setFooter({ text: this.#message.guild.name, iconURL: this.#message.guild.iconURL() })
         } else {
             embed.setDescription(afkTemplateBody.embed.description)
             if (afkTemplateBody.embed.image) embed.setImage(this.#botSettings.strings[afkTemplateBody.embed.image] ? this.#botSettings.strings[afkTemplateBody.embed.image] : afkTemplateBody.embed.image)
-        }
-        embed.setTimestamp(Date.now())
-        if (this.phase == 0) {
-            embed.setFooter({ text: this.#message.guild.name, iconURL: this.#message.guild.iconURL() })
-        } else {
             const secondsRemaining = this.#timerSecondsRemaining()
             embed.setFooter({ text: `${this.#guild.name} • ${Math.floor(secondsRemaining / 60)} Minutes and ${secondsRemaining % 60} Seconds Remaining`, iconURL: this.#guild.iconURL() })
         }
-        embed.setColor(afkTemplateBody.embed.color ? afkTemplateBody.embed.color : '#ffffff')
-        embed.setAuthor({ name: `AFK for ${this.#afkTemplate.name} by ${this.raidLeaderDisplayName}`, iconURL: this.#leader.user.avatarURL() })
-        if (afkTemplateBody.embed.thumbnail) embed.setThumbnail(afkTemplateBody.embed.thumbnail[Math.floor(Math.random()*afkTemplateBody.embed.thumbnail.length)])
         if (this.aborted_by) {
             embed.setImage(null)
             embed.setDescription(`This afk check has been aborted`)
