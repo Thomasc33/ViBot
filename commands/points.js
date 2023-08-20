@@ -13,8 +13,8 @@ module.exports = {
      * @param {String} guildid 
      * @param {Discord.GuildMember} member 
      */
-    getNotes(guildid, member) {
-        let settings = member.client.settings[guildid]
+    getNotes(guild, member, bot) {
+        let settings = member.client.settings[guild.id]
         if (!settings) return null
         if (member.roles.highest.position >= member.guild.roles.cache.get(settings.roles.headrl).position || adminUsers.includes(member.id)) return 'EO+ <user> | HRL+ <add/remove> <user>'
         if (member.roles.highest.position >= member.guild.roles.cache.get(settings.roles.eventrl).position || adminUsers.includes(member.id)) return '<user> to see someones points'

@@ -10,8 +10,8 @@ module.exports = {
     name: 'pop',
     description: 'Logs key pops',
     args: '<keytype> <user> (count)',
-    getNotes(guildid, u) {
-        return keypops[guildid] ? Object.keys(keypops[guildid]).toString() : `not setup for guild ${guildid}`
+    getNotes(guild, member, bot) {
+        return keypops[guild.id] ? Object.keys(keypops[guild.id]).toString() : `not setup for guild ${guild.id}`
     },
     requiredArgs: 2,
     role: 'eventrl',

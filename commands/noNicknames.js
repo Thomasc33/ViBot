@@ -4,7 +4,7 @@ module.exports = {
     description: 'Lists all verified raiders that dont have a nickname',
     role: 'security',
     alias: ['nn'],
-    getNotes(guildid, member) {
+    getNotes(guild, member, bot) {
         return 'Only usable in mod-bot-commands'
     },
     execute(message, args, bot) {

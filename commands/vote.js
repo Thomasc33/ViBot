@@ -22,7 +22,7 @@ module.exports = {
     getSlashCommandData(guild) {
         return slashCommandJSON(this, guild)
     },
-    getNotes(guildid, member) {
+    getNotes(guild, member, bot) {
         return 'Puts the message in leader-chat/veteran-rl-chat based on vote'
     },
     async execute(message, args, bot, db) {

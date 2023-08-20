@@ -10,7 +10,7 @@ module.exports = {
     args: "<user> <reason>",
     varargs: true,
     requiredArgs: 2,
-    getNotes(guildid, member) {
+    getNotes(guild, member, bot) {
         return 'Using swarn will silently warn, not sending the user a message.'
     },
     args: [
