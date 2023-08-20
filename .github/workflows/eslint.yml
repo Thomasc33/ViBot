@@ -17,4 +17,5 @@ jobs:
       with:
         node-version: 19.x
         cache: 'npm'
+    - run: npm install
     - run: npm exec eslint redis.js
