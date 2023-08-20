@@ -49,49 +49,32 @@ module.exports = {
         else start(afkModule)
     },
     returnRaidIDsbyMemberID(bot, memberID) {
-        const afkChecks = []
-        for (let raidID in bot.afkChecks) {
-            if (bot.afkChecks[raidID].leader == memberID) afkChecks.push(raidID)
-        }
-        return afkChecks
+        return Object.keys(bot.afkChecks).filter(raidID => bot.afkChecks[raidID].leader == memberID)
     },
     returnRaidIDsbyMemberVoice(bot, voiceID) {
-        const afkChecks = []
-        for (let raidID in bot.afkChecks) {
-            if (bot.afkChecks[raidID].channel == voiceID) afkChecks.push(raidID)
-        }
-        return afkChecks
+        return Object.keys(bot.afkChecks).filter(raidID => bot.afkChecks[raidID].channel == voiceID)
     },
     returnRaidIDsbyRaidID(bot, RSAID) {
-        const afkChecks = []
-        for (let raidID in bot.afkChecks) {
-            if (bot.afkChecks[raidID].raidStatusMessage && bot.afkChecks[raidID].raidStatusMessage.id == RSAID) afkChecks.push(raidID)
-        }
-        return afkChecks
+        return Object.keys(bot.afkChecks).filter(raidID => bot.afkChecks[raidID].raidStatusMessage && bot.afkChecks[raidID].raidStatusMessage.id == RSAID)
     },
     returnRaidIDsbyAll(bot, memberID, voiceID, argument) {
-        const afkCheckPlaceHolders = []
-        afkCheckPlaceHolders.push(...this.returnRaidIDsbyMemberID(bot, memberID))
-        afkCheckPlaceHolders.push(...this.returnRaidIDsbyMemberVoice(bot, voiceID))
-        afkCheckPlaceHolders.push(...this.returnRaidIDsbyMemberVoice(bot, argument))
-        afkCheckPlaceHolders.push(...this.returnRaidIDsbyRaidID(bot, argument))
-        const afkChecks = [...new Set(afkCheckPlaceHolders)]
-        return afkChecks
+        return [...new Set([
+            ...this.returnRaidIDsbyMemberID(bot, memberID),
+            ...this.returnRaidIDsbyMemberVoice(bot, voiceID),
+            ...this.returnRaidIDsbyMemberVoice(bot, argument),
+            ...this.returnRaidIDsbyRaidID(bot, argument)
+        ])]
     },
     returnActiveRaidIDs(bot) {
-        const afkChecks = []
-        for (let raidID in bot.afkChecks) {
-            afkChecks.push(raidID)
-        }
-        return afkChecks
+        return Object.keys(afkChecks)
     },
     async loadBotAfkChecks(guild, bot, db) {
-        let storedAfkChecks = require('../data/afkChecks.json')
+        const storedAfkChecks = require('../data/afkChecks.json')
         for (let raidID in storedAfkChecks) {
             if (storedAfkChecks[raidID].guild.id != guild.id) continue
-            let currentStoredAfkCheck = storedAfkChecks[raidID]
-            let messageChannel = guild.channels.cache.get(currentStoredAfkCheck.message.channelId)
-            let message = await messageChannel.messages.fetch(currentStoredAfkCheck.message.id)
+            const currentStoredAfkCheck = storedAfkChecks[raidID]
+            const messageChannel = guild.channels.cache.get(currentStoredAfkCheck.message.channelId)
+            const message = await messageChannel.messages.fetch(currentStoredAfkCheck.message.id)
             bot.afkChecks[raidID] = new afkCheck(currentStoredAfkCheck.afkTemplate, bot, db, message, currentStoredAfkCheck.location)
             await bot.afkChecks[raidID].loadBotAfkCheck(currentStoredAfkCheck)
         }
