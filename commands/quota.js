@@ -11,8 +11,8 @@ module.exports = {
     description: 'Updates the current week stats or force starts the next week',
     role: 'developer',
     requiredArgs: 1,
-    getNotes(guildid) {
-        return `Available Quotas: ${quotas[guildid] && quotas[guildid].quotas.length ? quotas[guildid].quotas.map(q => q.id).join(', ') : 'None'}`;
+    getNotes(guild, member, bot) {
+        return `Available Quotas: ${quotas[guild.id] && quotas[guild.id].quotas.length ? quotas[guild.id].quotas.map(q => q.id).join(', ') : 'None'}`;
     },
     async execute(message, args, bot, db) {
         const settings = bot.settings[message.guild.id];

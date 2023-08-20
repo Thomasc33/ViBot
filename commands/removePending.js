@@ -4,7 +4,7 @@ module.exports = {
     roleOverride: { '343704644712923138': 'security' },
     description: 'Removes a pending verification or veteran verification module if bot hiccups',
     args: '<r/v> <id>',
-    getNotes(guildid, member) {
+    getNotes(guild, member, bot) {
         return 'r = regular, v = veteran'
     },
     requiredArgs: 2,

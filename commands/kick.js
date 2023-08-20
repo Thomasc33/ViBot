@@ -6,9 +6,9 @@ module.exports = {
     name: 'kick',
     description: 'Kicks user from server and logs it',
     args: '<id/mention> <reason>',
-    getNotes(guildid, member) {
-        if (!kickTemplates[guildid]) return undefined
-        return `Available Templates: `.concat(Object.keys(kickTemplates[guildid]).map(k => k).join(', '))
+    getNotes(guild, member, bot) {
+        if (!kickTemplates[guild.id]) return undefined
+        return `Available Templates: `.concat(Object.keys(kickTemplates[guild.id]).map(k => k).join(', '))
     },
     requiredArgs: 1,
     role: 'security',

@@ -11,8 +11,8 @@ module.exports = {
     description: 'Makes sure everyone that should have a key popper role does',
     role: 'security',
     args: 'None | <check> <user/all>',
-    getNotes(guildid, member) {
-        const moderator = member.guild.roles.cache.get(guildSettings[guildid].roles.moderator);
+    getNotes(guild, member, bot) {
+        const moderator = member.guild.roles.cache.get(guildSettings[guild.id].roles.moderator);
         return moderator && member.can(moderator) ? `Additional ${moderator} Arguments: \`<check reset>\`. Reset all key popper roles for the server and apply roles. This may take some time so be careful.` : ``;
     },
     execute(message, args, bot, db) {
