@@ -16,7 +16,7 @@ module.exports = {
     description: 'Parse',
     alias: ['pm'],
     args: '<image>',
-    getNotes(guildid, member) {
+    getNotes(guild, member, bot) {
         return 'Image can either be a link, or an embeded image'
     },
     role: 'eventrl',

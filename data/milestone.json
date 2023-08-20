@@ -8,12 +8,12 @@
             ],
             "milestones": [
                 {
-                    "number": 150,
+                    "number": 75,
                     "points": 300,
                     "recurring": false
                 },
                 {
-                    "number": 50,
+                    "number": 25,
                     "points": 75,
                     "recurring": true
                 }
@@ -27,12 +27,12 @@
             ],
             "milestones": [
                 {
-                    "number": 100,
+                    "number": 50,
                     "points": 300,
                     "recurring": false
                 },
                 {
-                    "number": 25,
+                    "number": 15,
                     "points": 75,
                     "recurring": true
                 }
@@ -47,12 +47,12 @@
             ],
             "milestones": [
                 {
-                    "number": 100,
+                    "number": 60,
                     "points": 300,
                     "recurring": false
                 },
                 {
-                    "number": 50,
+                    "number": 20,
                     "points": 75,
                     "recurring": true
                 }
@@ -69,12 +69,12 @@
             ],
             "milestones": [
                 {
-                    "number": 75,
+                    "number": 50,
                     "points": 300,
                     "recurring": false
                 },
                 {
-                    "number": 25,
+                    "number": 15,
                     "points": 75,
                     "recurring": true
                 }
@@ -88,12 +88,12 @@
             ],
             "milestones": [
                 {
-                    "number": 100,
+                    "number": 60,
                     "points": 300,
                     "recurring": false
                 },
                 {
-                    "number": 25,
+                    "number": 20,
                     "points": 75,
                     "recurring": true
                 }
@@ -107,12 +107,12 @@
             ],
             "milestones": [
                 {
-                    "number": 50,
+                    "number": 25,
                     "points": 300,
                     "recurring": false
                 },
                 {
-                    "number": 10,
+                    "number": 5,
                     "points": 75,
                     "recurring": true
                 }
@@ -129,7 +129,7 @@
             ],
             "milestones": [
                 {
-                    "number": 30,
+                    "number": 15,
                     "points": 300,
                     "recurring": false
                 },

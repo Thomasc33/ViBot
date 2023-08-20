@@ -28,7 +28,8 @@ module.exports = {
                 host: dbConfig.host || botSettings.defaultDbInfo.host,
                 user: dbConfig.user || botSettings.defaultDbInfo.user,
                 password: dbConfig.password || botSettings.defaultDbInfo.password,
-                database: dbConfig.schema
+                database: dbConfig.schema,
+                maxIdle: 5
             }
 
             // If a different guild as an identical config, share the connection pool

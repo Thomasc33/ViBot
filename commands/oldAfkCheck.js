@@ -22,8 +22,8 @@ module.exports = {
     requiredArgs: 1,
     args: '<run symbol> (key count) <location>',
     role: 'almostrl',
-    getNotes(guildid, member) {
-        return `${afkTemplates[guildid] ? Object.keys(afkTemplates[guildid]).map(afk => `\`${afkTemplates[guildid][afk].symbol}\``).join(', ') : 'None for guild'}${afkTemplates[member.id] ? `, ${Object.keys(afkTemplates[member.id]).map(afk => `\`${afkTemplates[member.id][afk].symbol}\``).join(', ')}` : ''}`
+    getNotes(guild, member, bot) {
+        return `${afkTemplates[guild.id] ? Object.keys(afkTemplates[guild.id]).map(afk => `\`${afkTemplates[guild.id][afk].symbol}\``).join(', ') : 'None for guild'}${afkTemplates[member.id] ? `, ${Object.keys(afkTemplates[member.id]).map(afk => `\`${afkTemplates[member.id][afk].symbol}\``).join(', ')}` : ''}`
     },
     emitter,
     getRunType,

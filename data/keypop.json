@@ -7,7 +7,7 @@
             ],
             "points": "keypop",
             "schema": "keypops",
-            "name": "lost halls",
+            "name": "Lost Halls",
             "modded": true
         },
         "event": {
@@ -17,7 +17,7 @@
             ],
             "points": "eventkey",
             "schema": "eventpops",
-            "name": "event key",
+            "name": "Event Key",
             "modded": true
         },
         "shatters": {
@@ -28,7 +28,7 @@
             ],
             "points": "shattskey",
             "schema": "shattersPops",
-            "name": "shatters",
+            "name": "Shatters",
             "modded": true
         },
         "fungal": {
@@ -40,7 +40,7 @@
             ],
             "points": "fungalkey",
             "schema": "fungalPops",
-            "name": "fungal",
+            "name": "Fungal",
             "modded": true
         },
         "nest": {
@@ -50,7 +50,7 @@
             ],
             "points": "nestkey",
             "schema": "nestPops",
-            "name": "nest",
+            "name": "Nest",
             "modded": true
         },
         "steamwork": {
@@ -63,7 +63,7 @@
             ],
             "points": "steamworkkey",
             "schema": "steamworkPops",
-            "name": "steamworks",
+            "name": "Steamworks",
             "modded": true
         },
         "advancedsteamwork": {
@@ -76,7 +76,7 @@
             ],
             "points": "steamworkkey",
             "schema": "advancedSteamworkPops",
-            "name": "advancedsteamwork",
+            "name": "Advanced Steamworks",
             "modded": true
         },
         "moonlight": {
@@ -89,7 +89,7 @@
             ],
             "points": "moonlightkey",
             "schema": "moonlightPops",
-            "name": "moonlight village",
+            "name": "Moonlight Village",
             "modded": true
         },
         "vial": {
@@ -102,6 +102,18 @@
             "schema": "vialUsed",
             "name": "Vial of Pure Darkness",
             "modded": false
+        },
+        "advancednest": {
+            "templateID": 30,
+            "alias": [
+                "an",
+                "anest",
+                "advnest"
+            ],
+            "points": "nestkey",
+            "schema": "advancedNestPops",
+            "name": "Advanced Nest",
+            "modded": true
         }
     },
     "701483950559985705": {
@@ -112,7 +124,7 @@
             ],
             "points": "keypop",
             "schema": "keypops",
-            "name": "lost halls",
+            "name": "Lost Halls",
             "modded": true
         },
         "event": {
@@ -122,7 +134,7 @@
             ],
             "points": "eventkey",
             "schema": "eventpops",
-            "name": "event key",
+            "name": "Event Key",
             "modded": true
         },
         "shatters": {
@@ -133,7 +145,7 @@
             ],
             "points": "shattskey",
             "schema": "shattersPops",
-            "name": "shatters",
+            "name": "Shatters",
             "modded": true
         },
         "fungal": {
@@ -145,7 +157,7 @@
             ],
             "points": "fungalkey",
             "schema": "fungalPops",
-            "name": "fungal",
+            "name": "Fungal",
             "modded": true
         },
         "nest": {
@@ -155,7 +167,7 @@
             ],
             "points": "nestkey",
             "schema": "nestPops",
-            "name": "nest",
+            "name": "Nest",
             "modded": true
         },
         "steamwork": {
@@ -168,7 +180,7 @@
             ],
             "points": "steamworkkey",
             "schema": "steamworkPops",
-            "name": "steamworks",
+            "name": "Steamworks",
             "modded": true
         },
         "moonlight": {
@@ -181,7 +193,7 @@
             ],
             "points": "moonlightkey",
             "schema": "moonlightPops",
-            "name": "moonlight village",
+            "name": "Moonlight Village",
             "modded": true
         },
         "vial": {
@@ -194,6 +206,18 @@
             "schema": "vialUsed",
             "name": "Vial of Pure Darkness",
             "modded": false
+        },
+        "advancednest": {
+            "templateID": 31,
+            "alias": [
+                "an",
+                "anest",
+                "advnest"
+            ],
+            "points": "nestkey",
+            "schema": "advancedNestPops",
+            "name": "Advanced Nest",
+            "modded": true
         }
     },
     "451171819672698920": {
@@ -204,7 +228,7 @@
             ],
             "points": "keypop",
             "schema": "shatterspops",
-            "name": "shatters",
+            "name": "Shatters",
             "modded": true
         },
         "moonlight": {
@@ -217,7 +241,7 @@
             ],
             "points": "keypop",
             "schema": "moonlightPops",
-            "name": "moonlight village",
+            "name": "Moonlight Village",
             "modded": true
         },
         "event": {
@@ -227,7 +251,7 @@
             ],
             "points": "eventkey",
             "schema": "eventpops",
-            "name": "event key",
+            "name": "Event Key",
             "modded": true
         },
         "exaltation": {
@@ -237,7 +261,7 @@
             ],
             "points": "exaltkey",
             "schema": "eventpops",
-            "name": "exaltation key",
+            "name": "Exaltation Key",
             "modded": true
         }
     },
@@ -250,7 +274,7 @@
             ],
             "points": "runepop",
             "schema": "shieldRunePops",
-            "name": "shield rune",
+            "name": "Shield Rune",
             "modded": false
         },
         "swordrune": {
@@ -261,7 +285,7 @@
             ],
             "points": "runepop",
             "schema": "swordRunePops",
-            "name": "sword rune",
+            "name": "Sword Rune",
             "modded": false
         },
         "helmetrune": {
@@ -272,7 +296,7 @@
             ],
             "points": "runepop",
             "schema": "helmetRunePops",
-            "name": "helmet rune",
+            "name": "Helmet Rune",
             "modded": false
         },
         "inc": {
@@ -282,7 +306,7 @@
             ],
             "points": "incpop",
             "schema": "incPops",
-            "name": "inc",
+            "name": "Incantation",
             "modded": false
         }
     },
@@ -295,7 +319,7 @@
             ],
             "points": "runepop",
             "schema": "shieldRunePops",
-            "name": "shield rune",
+            "name": "Shield Rune",
             "modded": false
         },
         "swordrune": {
@@ -306,7 +330,7 @@
             ],
             "points": "runepop",
             "schema": "swordRunePops",
-            "name": "sword rune",
+            "name": "Sword Rune",
             "modded": false
         },
         "helmetrune": {
@@ -317,7 +341,7 @@
             ],
             "points": "runepop",
             "schema": "helmetRunePops",
-            "name": "helmet rune",
+            "name": "Helmet Rune",
             "modded": false
         },
         "inc": {
@@ -327,7 +351,7 @@
             ],
             "points": "incpop",
             "schema": "incPops",
-            "name": "inc",
+            "name": "Incantation",
             "modded": false
         }
     }

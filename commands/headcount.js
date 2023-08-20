@@ -27,14 +27,21 @@ module.exports = {
                     return message.channel.send("Please enter a valid time type __**s**__econd, __**m**__inute)")
             }
         }
-        const afkTemplate = new AfkTemplate.AfkTemplate(bot, botSettings, message, alias)
-        await afkTemplate.init()
-        const currentStatus = afkTemplate.getStatus()
-        if (currentStatus.state != AfkTemplate.TemplateState.SUCCESS) return await message.channel.send(currentStatus.message)
+
+        const afkTemplateNames = AfkTemplate.resolveTemplateAlias(message.guild.id, alias)
+        if (afkTemplateNames.length == 0) return await message.channel.send('This afk template does not exist.')
+        const afkTemplateName = afkTemplateNames.length == 1 ? afkTemplateNames[0] : await AfkTemplate.templateNamePrompt(message, afkTemplateNames)
+
+        const afkTemplate = await AfkTemplate.AfkTemplate.tryCreate(bot, bot.settings[message.guild.id], message, afkTemplateName)
+        if (afkTemplate instanceof AfkTemplate.AfkTemplateValidationError) {
+            await message.channel.send(afkTemplate.message())
+            return
+        }
+
         if (!afkTemplate.minimumStaffRoles.some(roles => roles.every(role => message.member.roles.cache.has(role.id)))) return await message.channel.send({ embeds: [createEmbed(message, `You do not have a suitable set of roles out of ${afkTemplate.minimumStaffRoles.reduce((a, b) => `${a}, ${b.join(' + ')}`)} to run ${afkTemplate.name}.`, null)] })
         afkTemplate.processReacts()
         afkTemplate.processButtons(null)
-        const raidStatusEmbed = createEmbed(message, afkTemplate.processBodyDescriptionHeadcount(), botSettings.strings[afkTemplate.body[1].embed.image] ? botSettings.strings[afkTemplate.body[1].embed.image] : afkTemplate.body[1].embed.image)
+        const raidStatusEmbed = createEmbed(message, afkTemplate.processBodyHeadcount(null), botSettings.strings[afkTemplate.body[1].embed.image] ? botSettings.strings[afkTemplate.body[1].embed.image] : afkTemplate.body[1].embed.image)
         raidStatusEmbed.setColor(afkTemplate.body[1].embed.color ? afkTemplate.body[1].embed.color : '#ffffff')
         raidStatusEmbed.setAuthor({ name: `Headcount for ${afkTemplate.name} by ${message.member.nickname}`, iconURL: message.member.user.avatarURL() })
         if (time != 0) {

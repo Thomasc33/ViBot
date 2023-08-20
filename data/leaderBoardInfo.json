@@ -1,228 +1,548 @@
 {
     "343704644712923138": [
         {
-            "dbNames": [
-                "keypops"
-            ],
-            "name": "Key Pops"
+            "prettyName": "Runs Lead",
+            "emoji": "MBC",
+            "embedColor": "#7289da",
+            "templates": [
+                {
+                    "prettyName": "Voids Lead",
+                    "emoji": "void",
+                    "embedColor": "#8c00ff",
+                    "dbRows": [
+                        "voidsLead"
+                    ]
+                },
+                {
+                    "prettyName": "Cults Lead",
+                    "emoji": "cultist",
+                    "embedColor": "#ff0000",
+                    "dbRows": [
+                        "cultsLead"
+                    ]
+                },
+                {
+                    "prettyName": "Fullskips Lead",
+                    "emoji": "fullskipIcon",
+                    "embedColor": "#ffa500",
+                    "dbRows": [
+                        "fullskipsLead"
+                    ]
+                },
+                {
+                    "prettyName": "Shatters Lead",
+                    "emoji": "forgottenking",
+                    "embedColor": "#467606",
+                    "dbRows": [
+                        "shattersLead"
+                    ]
+                },
+                {
+                    "prettyName": "Fungals Lead",
+                    "emoji": "crystal",
+                    "embedColor": "#75cdbd",
+                    "dbRows": [
+                        "fungalsLead"
+                    ]
+                },
+                {
+                    "prettyName": "Nests Lead",
+                    "emoji": "queenbee",
+                    "embedColor": "#ff9b18",
+                    "dbRows": [
+                        "nestsLead"
+                    ]
+                },
+                {
+                    "prettyName": "Steamworks Lead",
+                    "emoji": "SteamworksBoss",
+                    "embedColor": "#3b3e46",
+                    "dbRows": [
+                        "steamworkLead"
+                    ]
+                },
+                {
+                    "prettyName": "Moonlights Lead",
+                    "emoji": "MoonlightBoss",
+                    "embedColor": "#d81c10",
+                    "dbRows": [
+                        "moonlightLead"
+                    ]
+                },
+                {
+                    "prettyName": "Events Lead",
+                    "emoji": "epicMysteryKey",
+                    "embedColor": "#5e00a4",
+                    "dbRows": [
+                        "eventsLead"
+                    ]
+                },
+                {
+                    "prettyName": "Feedbacks Done",
+                    "emoji": "feedback",
+                    "embedColor": "#8c00ff",
+                    "dbRows": [
+                        "feedback",
+                        "shattersFeedback"
+                    ]
+                },
+                {
+                    "prettyName": "Assists Gotten",
+                    "emoji": "twitterHandshake",
+                    "embedColor": "#cfa900",
+                    "dbRows": [
+                        "assists"
+                    ]
+                },
+                {
+                    "prettyName": "Parses Done",
+                    "emoji": "parse",
+                    "embedColor": "#4c68ba",
+                    "dbRows": [
+                        "parses"
+                    ]
+                }
+            ]
         },
         {
-            "dbNames": [
-                "eventpops"
-            ],
-            "name": "Event Key Pops"
+            "prettyName": "Keys Popped",
+            "emoji": "hallsK",
+            "embedColor": "#7289da",
+            "templates": [
+                {
+                    "prettyName": "Lost Halls Pops",
+                    "emoji": "hallsK",
+                    "embedColor": "#8c00ff",
+                    "dbRows": [
+                        "keypops"
+                    ]
+                },
+                {
+                    "prettyName": "Shatters Pops",
+                    "emoji": "shattersKey",
+                    "embedColor": "#467606",
+                    "dbRows": [
+                        "shattersPops"
+                    ]
+                },
+                {
+                    "prettyName": "Fungal Pops",
+                    "emoji": "fungalK",
+                    "embedColor": "#75cdbd",
+                    "dbRows": [
+                        "fungalPops"
+                    ]
+                },
+                {
+                    "prettyName": "Nest Pops",
+                    "emoji": "nestK",
+                    "embedColor": "#ff9b18",
+                    "dbRows": [
+                        "nestPops"
+                    ]
+                },
+                {
+                    "prettyName": "Advanced Nest Pops",
+                    "emoji": "advancedNestKey",
+                    "embedColor": "#469628",
+                    "dbRows": [
+                        "advancedNestPops"
+                    ]
+                },
+                {
+                    "prettyName": "Steamwork Pops",
+                    "emoji": "steamworksKey",
+                    "embedColor": "#3b3e46",
+                    "dbRows": [
+                        "steamworkPops"
+                    ]
+                },
+                {
+                    "prettyName": "Advanced Steamwork Pops",
+                    "emoji": "advancedSteamworksKey",
+                    "embedColor": "#3b3e46",
+                    "dbRows": [
+                        "advancedSteamworkPops"
+                    ]
+                },
+                {
+                    "prettyName": "Moonlight Pops",
+                    "emoji": "mvK",
+                    "embedColor": "#d81c10",
+                    "dbRows": [
+                        "moonlightPops"
+                    ]
+                },
+                {
+                    "prettyName": "Event Pops",
+                    "emoji": "epicMysteryKey",
+                    "embedColor": "#5e00a4",
+                    "dbRows": [
+                        "eventpops"
+                    ]
+                },
+                {
+                    "prettyName": "Modded Pops",
+                    "emoji": "moddedKey",
+                    "embedColor": "#eb3f3f",
+                    "dbRows": [
+                        "moddedPops"
+                    ]
+                },
+                {
+                    "prettyName": "Vials",
+                    "emoji": "VialOfPureDarkness",
+                    "embedColor": "#5e00a4",
+                    "dbRows": [
+                        "vialUsed"
+                    ]
+                }
+            ]
         },
         {
-            "dbNames": [
-                "moddedPops"
-            ],
-            "name": "Modded Key Pops"
+            "prettyName": "Runs Done",
+            "emoji": "halls",
+            "embedColor": "#7289da",
+            "templates": [
+                {
+                    "prettyName": "Void Completes",
+                    "emoji": "void",
+                    "embedColor": "#8c00ff",
+                    "dbRows": [
+                        "voidRuns"
+                    ]
+                },
+                {
+                    "prettyName": "Cult Completes",
+                    "emoji": "cultist",
+                    "embedColor": "#ff0000",
+                    "dbRows": [
+                        "cultRuns"
+                    ]
+                },
+                {
+                    "prettyName": "Shatter Completes",
+                    "emoji": "forgottenking",
+                    "embedColor": "#467606",
+                    "dbRows": [
+                        "shattersRuns"
+                    ]
+                },
+                {
+                    "prettyName": "Fungal Completes",
+                    "emoji": "crystal",
+                    "embedColor": "#75cdbd",
+                    "dbRows": [
+                        "fungalRuns"
+                    ]
+                },
+                {
+                    "prettyName": "Nest Completes",
+                    "emoji": "queenbee",
+                    "embedColor": "#ff9b18",
+                    "dbRows": [
+                        "nestRuns"
+                    ]
+                },
+                {
+                    "prettyName": "Steamwork Completes",
+                    "emoji": "SteamworksBoss",
+                    "embedColor": "#3b3e46",
+                    "dbRows": [
+                        "steamworkRuns"
+                    ]
+                },
+                {
+                    "prettyName": "Moonlight Completes",
+                    "emoji": "MoonlightBoss",
+                    "embedColor": "#d81c10",
+                    "dbRows": [
+                        "moonlightRuns"
+                    ]
+                },
+                {
+                    "prettyName": "Event Completes",
+                    "emoji": "epicMysteryKey",
+                    "embedColor": "#5e00a4",
+                    "dbRows": [
+                        "eventruns"
+                    ]
+                }
+            ]
         },
         {
-            "dbNames": [
-                "cultRuns",
-                "voidRuns"
-            ],
-            "name": "Total Runs"
-        },
-        {
-            "dbNames": [
-                "cultsLead",
-                "voidsLead"
-            ],
-            "name": "Total Runs Lead"
-        },
-        {
-            "dbNames": [
-                "shattersLead"
-            ],
-            "name": "Shatters Lead"
-        },
-        {
-            "dbNames": [
-                "fullskipsLead"
-            ],
-            "name": "Fullskips Lead"
-        },
-        {
-            "dbNames": [
-                "vialUsed"
-            ],
-            "name": "Vials Used"
-        },
-        {
-            "dbNames": [
-                "points"
-            ],
-            "name": "Points"
-        },
-        {
-            "dbNames": [
-                "feedback",
-                "shattersFeedback"
-            ],
-            "name": "Feedbacks"
-        },
-        {
-            "dbNames": [
-                "parses"
-            ],
-            "name": "Parses"
+            "prettyName": "Miscellaneous",
+            "emoji": "HalloweenMysterySkin",
+            "embedColor": "#7289da",
+            "templates": [
+                {
+                    "prettyName": "Tickets",
+                    "emoji": "tickets",
+                    "embedColor": "#ff0000",
+                    "dbRows": [
+                        "points"
+                    ]
+                }
+            ]
         }
     ],
-    "701483950559985705": [
-        {
-            "dbNames": [
-                "keypops"
-            ],
-            "name": "Key Pops"
-        },
-        {
-            "dbNames": [
-                "eventpops"
-            ],
-            "name": "Event Key Pops"
-        },
-        {
-            "dbNames": [
-                "moddedPops"
-            ],
-            "name": "Modded Key Pops"
-        },
-        {
-            "dbNames": [
-                "cultRuns",
-                "voidRuns"
-            ],
-            "name": "Total Runs"
-        },
-        {
-            "dbNames": [
-                "cultsLead",
-                "voidsLead"
-            ],
-            "name": "Total Runs Lead"
-        },
-        {
-            "dbNames": [
-                "vialUsed"
-            ],
-            "name": "Vials Used"
-        },
-        {
-            "dbNames": [
-                "points"
-            ],
-            "name": "Points"
-        },
-        {
-            "dbNames": [
-                "feedback",
-                "shattersFeedback"
-            ],
-            "name": "Feedbacks"
-        },
-        {
-            "dbNames": [
-                "parses"
-            ],
-            "name": "Parses"
-        }
-    ],
+    "701483950559985705": {
+        "__REDIRECT": "343704644712923138"
+    },
     "451171819672698920": [
         {
-            "dbNames": [
-                "shatterspops"
-            ],
-            "name": "Key Pops"
+            "prettyName": "Runs Lead",
+            "emoji": "forgottenking",
+            "embedColor": "#467606",
+            "templates": [
+                {
+                    "prettyName": "Shatters Lead (Regular)",
+                    "emoji": "theShattersPortal",
+                    "embedColor": "#467606",
+                    "dbRows": [
+                        "successruns"
+                    ]
+                },
+                {
+                    "prettyName": "Shatters Lead (Veteran)",
+                    "emoji": "forgottenking",
+                    "embedColor": "#467606",
+                    "dbRows": [
+                        "veteranShattersLead"
+                    ]
+                },
+                {
+                    "prettyName": "Shatters Lead (Hardmode)",
+                    "emoji": "accursedKing",
+                    "embedColor": "#467606",
+                    "dbRows": [
+                        "hardmodeLead"
+                    ]
+                },
+                {
+                    "prettyName": "Moonlights",
+                    "emoji": "MoonlightBoss",
+                    "embedColor": "#d81c10",
+                    "dbRows": [
+                        "moonlightLead"
+                    ]
+                },
+                {
+                    "prettyName": "Assists",
+                    "emoji": "twitterHandshake",
+                    "embedColor": "#cfa900",
+                    "dbRows": [
+                        "assists"
+                    ]
+                }
+            ]
         },
         {
-            "dbNames": [
-                "eventpops"
-            ],
-            "name": "Event Key Pops"
+            "prettyName": "Keys Popped",
+            "emoji": "shattersKey",
+            "embedColor": "#467606",
+            "templates": [
+                {
+                    "prettyName": "Shatters Popped",
+                    "emoji": "shattersKey",
+                    "embedColor": "#467606",
+                    "dbRows": [
+                        "shatterspops"
+                    ]
+                },
+                {
+                    "prettyName": "Moonlights Popped",
+                    "emoji": "mvK",
+                    "embedColor": "#d81c10",
+                    "dbRows": [
+                        "moonlightPops"
+                    ]
+                },
+                {
+                    "prettyName": "Event Pops",
+                    "emoji": "epicMysteryKey",
+                    "embedColor": "#5e00a4",
+                    "dbRows": [
+                        "eventpops"
+                    ]
+                }
+            ]
         },
         {
-            "dbNames": [
-                "runs"
-            ],
-            "name": "Total Runs"
-        },
-        {
-            "dbNames": [
-                "successruns"
-            ],
-            "name": "Total Runs Lead"
-        },
-        {
-            "dbNames": [
-                "veteranShattersLead"
-            ],
-            "name": "Veteran Shatters Lead"
-        },
-        {
-            "dbNames": [
-                "hardmodeLead"
-            ],
-            "name": "Hardmodes Lead"
-        },
-        {
-            "dbNames": [
-                "points"
-            ],
-            "name": "Points"
-        },
-        {
-            "dbNames": [
-                "oldruns"
-            ],
-            "name": "Legacy Runs"
-        },
-        {
-            "dbNames": [
-                "oldsuccessruns"
-            ],
-            "name": "Legacy Shatters Lead"
+            "prettyName": "Runs Done",
+            "emoji": "theShattersPortal",
+            "embedColor": "#467606",
+            "templates": [
+                {
+                    "prettyName": "Shatters Runs",
+                    "emoji": "forgottenking",
+                    "embedColor": "#467606",
+                    "dbRows": [
+                        "runs"
+                    ]
+                },
+                {
+                    "prettyName": "Moonlight Runs",
+                    "emoji": "mv",
+                    "embedColor": "#d81c10",
+                    "dbRows": [
+                        "moonlightRuns"
+                    ]
+                },
+                {
+                    "prettyName": "Event Runs",
+                    "emoji": "epicMysteryKey",
+                    "embedColor": "#5e00a4",
+                    "dbRows": [
+                        "eventruns"
+                    ]
+                },
+                {
+                    "prettyName": "Shatters Runs (Legacy)",
+                    "emoji": "theShattersPortal",
+                    "embedColor": "#467606",
+                    "dbRows": [
+                        "oldruns"
+                    ]
+                }
+            ]
         }
     ],
     "708026927721480254": [
         {
-            "dbNames": [
-                "o3leads"
-            ],
-            "name": "Runs Lead"
+            "prettyName": "Runs Lead",
+            "emoji": "oryxThree",
+            "embedColor": "#7289da",
+            "templates": [
+                {
+                    "prettyName": "Regular Leads",
+                    "emoji": "o3portal",
+                    "embedColor": "#7289da",
+                    "dbRows": [
+                        "o3leads"
+                    ]
+                },
+                {
+                    "prettyName": "Veteran Leads",
+                    "emoji": "oryxThree",
+                    "embedColor": "#7289da",
+                    "dbRows": [
+                        "o3vetLeads"
+                    ]
+                },
+                {
+                    "prettyName": "Feedbacks Given",
+                    "emoji": "feedback",
+                    "embedColor": "#7289da",
+                    "dbRows": [
+                        "o3feedback"
+                    ]
+                },
+                {
+                    "prettyName": "Assists Gotten",
+                    "emoji": "twitterHandshake",
+                    "embedColor": "#7289da",
+                    "dbRows": [
+                        "o3assists"
+                    ]
+                },
+                {
+                    "prettyName": "Parses Done",
+                    "emoji": "parse",
+                    "embedColor": "#7289da",
+                    "dbRows": [
+                        "o3parses"
+                    ]
+                }
+            ]
         },
         {
-            "dbNames": [
-                "o3feedback"
-            ],
-            "name": "Feedbacks"
+            "prettyName": "Runs Done",
+            "emoji": "oryxSanctuaryPortal",
+            "embedColor": "#7289da",
+            "templates": [
+                {
+                    "prettyName": "Regular Runs",
+                    "emoji": "o3portal",
+                    "embedColor": "#7289da",
+                    "dbRows": [
+                        "o3runs"
+                    ]
+                },
+                {
+                    "prettyName": "Veteran Runs",
+                    "emoji": "oryxSanctuaryPortal",
+                    "embedColor": "#7289da",
+                    "dbRows": [
+                        "o3vetruns"
+                    ]
+                },
+                {
+                    "prettyName": "Oryx Completes",
+                    "emoji": "oryxThree",
+                    "embedColor": "#7289da",
+                    "dbRows": [
+                        "o3completes"
+                    ]
+                }
+            ]
         },
         {
-            "dbNames": [
-                "o3parses"
-            ],
-            "name": "Parses"
+            "prettyName": "Runes Popped",
+            "emoji": "helmetRune",
+            "embedColor": "#7289da",
+            "templates": [
+                {
+                    "prettyName": "Helmet Runes Popped",
+                    "emoji": "helmetRune",
+                    "embedColor": "#d6471c",
+                    "dbRows": [
+                        "helmetRunePops"
+                    ]
+                },
+                {
+                    "prettyName": "Shield Runes Popped",
+                    "emoji": "shieldRune",
+                    "embedColor": "#d6471c",
+                    "dbRows": [
+                        "shieldRunePops"
+                    ]
+                },
+                {
+                    "prettyName": "Sword Runes Popped",
+                    "emoji": "swordRune",
+                    "embedColor": "#d6471c",
+                    "dbRows": [
+                        "swordRunePops"
+                    ]
+                },
+                {
+                    "prettyName": "Incantation Pops",
+                    "emoji": "inc",
+                    "embedColor": "#e85000",
+                    "dbRows": [
+                        "incPops"
+                    ]
+                }
+            ]
+        },
+        {
+            "prettyName": "Miscellaneous",
+            "emoji": "HalloweenMysterySkin",
+            "embedColor": "#7289da",
+            "templates": [
+                {
+                    "prettyName": "Tickets",
+                    "emoji": "tickets",
+                    "embedColor": "#ff0000",
+                    "dbRows": [
+                        "points"
+                    ]
+                }
+            ]
         }
     ],
-    "934611202787643412": [
-        {
-            "dbNames": [
-                "o3leads"
-            ],
-            "name": "Runs Lead"
-        },
-        {
-            "dbNames": [
-                "o3feedback"
-            ],
-            "name": "Feedbacks"
-        },
-        {
-            "dbNames": [
-                "o3parses"
-            ],
-            "name": "Parses"
-        }
-    ]
+    "934611202787643412": {
+        "__REDIRECT": "708026927721480254"
+    }
 }

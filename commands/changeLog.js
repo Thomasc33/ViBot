@@ -23,8 +23,8 @@ module.exports = {
         })
     ],
     requiredArgs: 4,
-    getNotes(guildid, member) {
-        return getLogTypes(guildid) ? getLogTypes(guildid).toString() : `Not setup for guild ${guildid}`
+    getNotes(guild, member, bot) {
+        return getLogTypes(guild.id) ? getLogTypes(guild.id).toString() : `Not setup for guild ${guild.id}`
     },
     getSlashCommandData(guild) {
         let json = slashCommandJSON(this, guild)
