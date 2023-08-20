@@ -100,11 +100,11 @@ module.exports = {
         }
         
         //Execute Database Query
-        db.query(`SELECT * FROM users WHERE id = '${user.id}'`, async(err, rows) => {
+        db.query('SELECT * FROM users WHERE id = ?', [user.id], async(err, rows) => {
             if (err) ErrorLogger.log(err, bot)
             if (rows.length == 0) {
                 const success = await new Promise((res) => {
-                    db.query(`INSERT INTO users (id) VALUES ('${user.id}')`, (err, rows) => {
+                    db.query('INSERT INTO users (id) VALUES (?)', [user.id], (err, rows) => {
                         if (err || !rows || rows.length == 0) {
                             confirmMessage.interaction.reply({
                                 embeds: [
@@ -118,15 +118,24 @@ module.exports = {
                 })
                 if (!success) return;
             }
-            let consumablepopsValueNames = `userid, guildid, unixtimestamp, amount, ismodded, templateid`
-            let consumablepopsValues = `'${user.id}', '${guild.id}', '${Date.now()}', '${count}', ${moddedKey}, '${keyInfo.templateID}'`
-            db.query(`INSERT INTO consumablepops (${consumablepopsValueNames}) VALUES (${consumablepopsValues})`, (err, rows) => {
+            const consumablepops = {
+                userid: user.id,
+                guildid: guild.id,
+                unixtimestamp: Date.now(),
+                amount: count,
+                ismodded: moddedKey,
+                templateid: keyInfo.templateID
+            }
+            db.query(`INSERT INTO consumablepops (${Object.keys(consumablepops).join(', ')}) VALUES (?, ?, ?, ?, ?, ?)`, Object.values(consumablepops), (err, rows) => {
+                if (err) throw err
                 if (err) return console.log(`${keyInfo.schema} missing from ${guild.name} ${guild.id}`)
             })
-            db.query(`UPDATE users SET ${keyInfo.schema} = ${keyInfo.schema } + ${count} WHERE id = '${user.id}'`, (err, rows) => {
+            db.query(`UPDATE users SET ${keyInfo.schema} = ${keyInfo.schema} + ? WHERE id = ?`, [count, user.id], (err, rows) => {
+                if (err) throw err
                 keyRoles.checkUser(user, bot, db);
             });
-            if (moddedKey) db.query(`UPDATE users SET moddedPops = moddedPops + ${count} WHERE id = '${user.id}'`, (err, rows) => {
+            if (moddedKey) db.query('UPDATE users SET moddedPops = moddedPops + ? WHERE id = ?', [count, user.id], (err, rows) => {
+                if (err) throw err
                 keyRoles.checkUser(user, bot, db);
             });
             let embed = new Discord.EmbedBuilder()
@@ -141,7 +150,7 @@ module.exports = {
             let points = settings.points[keyInfo.points] * count
             if (user.roles.cache.hasAny(...settings.lists.perkRoles.map(role => settings.roles[role]))) points = points * settings.points.nitromultiplier
             if (moddedKey) points = points * settings.points.keymultiplier
-            db.query(`UPDATE users SET points = points + ${points} WHERE id = '${user.id}'`)
+            db.query('UPDATE users SET points = points + ? WHERE id = ?', [points, user.id])
         }
 
         //Delete Confirmation Message

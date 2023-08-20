@@ -7,16 +7,34 @@
             "emoji": "<:malus:701491230332157972>"
         },
         {
+            "role": "fameReact",
+            "name": "Fame Runs",
+            "emojiId": "1024104144845406248",
+            "emoji": "<:fame:1024104144845406248>"
+        },
+        {
             "role": "voidping",
             "name": "Voids",
             "emojiId": "701491230210523247",
             "emoji": "<:void:701491230210523247>"
         },
         {
+            "role": "fskipReact",
+            "name": "Full-Skip Voids",
+            "emojiId": "701491230391140453",
+            "emoji": "<:SkipBoi:701491230391140453>"
+        },
+        {
             "role": "shattsReact",
             "name": "Shatters",
             "emojiId": "1008068892071055512",
             "emoji": "<:forgottenking:1008068892071055512>"
+        },
+        {
+            "role": "accursedReact",
+            "name": "Accursed",
+            "emojiId": "1142347997670289471",
+            "emoji": "<:accursedKing:1142347997670289471>"
         },
         {
             "role": "nestReact",
@@ -31,24 +49,6 @@
             "emoji": "<:advancedNestPortal:1135560355750359050>"
         },
         {
-            "role": "fungalReact",
-            "name": "Fungals",
-            "emojiId": "723001215696240660",
-            "emoji": "<:fungal:723001215696240660>"
-        },
-        {
-            "role": "fskipReact",
-            "name": "Full-Skip Voids",
-            "emojiId": "701491230391140453",
-            "emoji": "<:SkipBoi:701491230391140453>"
-        },
-        {
-            "role": "fameReact",
-            "name": "Fame Runs",
-            "emojiId": "1024104144845406248",
-            "emoji": "<:fame:1024104144845406248>"
-        },
-        {
             "role": "steamworksping",
             "name": "Steamworks",
             "emojiId": "1050156386547413012",
@@ -59,6 +59,12 @@
             "name": "Advanced Steamworks",
             "emojiId": "1129901525674758274",
             "emoji": "<:advancedSteamworks:1129901525674758274>"
+        },
+        {
+            "role": "fungalReact",
+            "name": "Fungals",
+            "emojiId": "723001215696240660",
+            "emoji": "<:fungal:723001215696240660>"
         },
         {
             "role": "moonlightping",
@@ -117,16 +123,34 @@
             "emoji": "<:malus:701491230332157972>"
         },
         {
+            "role": "fameReact",
+            "name": "Fame Runs",
+            "emojiId": "1024104144845406248",
+            "emoji": "<:fame:1024104144845406248>"
+        },
+        {
             "role": "voidping",
             "name": "Voids",
             "emojiId": "701491230210523247",
             "emoji": "<:void:701491230210523247>"
         },
         {
+            "role": "fskipReact",
+            "name": "Full-Skip Voids",
+            "emojiId": "701491230391140453",
+            "emoji": "<:SkipBoi:701491230391140453>"
+        },
+        {
             "role": "shattsReact",
             "name": "Shatters",
             "emojiId": "1008068892071055512",
             "emoji": "<:forgottenking:1008068892071055512>"
+        },
+        {
+            "role": "accursedReact",
+            "name": "Accursed",
+            "emojiId": "1142347997670289471",
+            "emoji": "<:accursedKing:1142347997670289471>"
         },
         {
             "role": "nestReact",
@@ -141,28 +165,22 @@
             "emoji": "<:advancedNestPortal:1135560355750359050>"
         },
         {
-            "role": "fungalReact",
-            "name": "Fungals",
-            "emojiId": "723001215696240660",
-            "emoji": "<:fungal:723001215696240660>"
-        },
-        {
-            "role": "fskipReact",
-            "name": "Full-Skip Voids",
-            "emojiId": "701491230391140453",
-            "emoji": "<:SkipBoi:701491230391140453>"
-        },
-        {
-            "role": "fameReact",
-            "name": "Fame Runs",
-            "emojiId": "1024104144845406248",
-            "emoji": "<:fame:1024104144845406248>"
-        },
-        {
             "role": "steamworksping",
             "name": "Steamworks",
             "emojiId": "1050156386547413012",
             "emoji": "<a:steamworksPortal:1050156386547413012>"
+        },
+        {
+            "role": "advancedSteamworksPing",
+            "name": "Advanced Steamworks",
+            "emojiId": "1129901525674758274",
+            "emoji": "<:advancedSteamworks:1129901525674758274>"
+        },
+        {
+            "role": "fungalReact",
+            "name": "Fungals",
+            "emojiId": "723001215696240660",
+            "emoji": "<:fungal:723001215696240660>"
         },
         {
             "role": "moonlightping",
@@ -175,12 +193,6 @@
             "name": "Miscellaneous Dungeons",
             "emojiId": "723001215184535553",
             "emoji": "<:pcave:723001215184535553>"
-        },
-        {
-            "role": "advancedSteamworksPing",
-            "name": "Advanced Steamworks",
-            "emojiId": "1129901525674758274",
-            "emoji": "<:advancedSteamworks:1129901525674758274>"
         }
     ]
 }
