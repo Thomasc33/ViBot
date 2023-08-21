@@ -356,7 +356,7 @@ module.exports = {
         if (temporaryEmbedList.length > 0) { embedListArray.push(temporaryEmbedList) }
         for (let i in embedListArray) {
             try {
-                await channel.send({ embeds: embedListArray[i] })
+                if (embedListArray[i].data.length <= 6000) await channel.send({ embeds: embedListArray[i] })
             } catch (e) {
                 ErrorLogger.log(e, bot, guild);
             }

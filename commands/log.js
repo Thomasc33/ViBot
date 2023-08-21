@@ -9,7 +9,7 @@ module.exports = {
     requiredArgs: 1,
     role: 'eventrl',
     getNotes(guild, member, bot) {
-        return `Types: ${logs[guild.id].main.map(log => log.key + ' (' + log.name + ')').join(', ')}`
+        return logs[guild.id] ? 'No loginfo for this server' : `Types: ${logs[guild.id].main.map(log => log.key + ' (' + log.name + ')').join(', ')}`
     },
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
