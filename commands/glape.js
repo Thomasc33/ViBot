@@ -41,6 +41,7 @@ class Glape {
             let glaper = sortedGlapers[i]
             let temporaryString = `\`${glaper.toString().padStart(4, ' ')}\` ${this.glapeEmoji.text} <@!${i}>`
             if (i == this.goldenGlaper) { temporaryString += ` ${this.goldenGlapeEmoji.text}` }
+            if (temporaryString.length + glapeStrings.join('\n').length >= 1024) { break }
             glapeStrings.push(temporaryString)
         }
         return glapeStrings.join('\n')
