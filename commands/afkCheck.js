@@ -148,6 +148,7 @@ class afkCheck {
         this.logging = false // Whether logging is active
         this.ended_by = null
         this.aborted_by = null
+        this.deleted_by = null
 
         this.raidStatusMessage = null // raid status message
         this.raidStatusInteractionHandler = null // raid status interaction handler
@@ -169,7 +170,7 @@ class afkCheck {
     }
 
     #active() {
-        return !(this.ended_by || this.aborted_by)
+        return !(this.ended_by || this.aborted_by || this.deleted_by)
     }
 
     async start() {
@@ -203,6 +204,7 @@ class afkCheck {
                 completes: this.completes,
                 ended_by: this.ended_by,
                 aborted_by: this.aborted_by,
+                deleted_by: this.deleted_by,
 
                 raidStatusMessage: this.raidStatusMessage,
                 raidCommandsEmbed: this.raidCommandsEmbed,
@@ -247,6 +249,7 @@ class afkCheck {
         this.timer = new Date(storedAfkCheck.timer)
         this.completes = storedAfkCheck.completes
         this.ended_by = storedAfkCheck.ended_by == null ? null : this.#guild.members.cache.get(storedAfkCheck.ended_by.id)
+        this.deleted_by = storedAfkCheck.deleted_by == null ? null : this.#guild.members.cache.get(storedAfkCheck.deleted_by.id)
         this.aborted_by = storedAfkCheck.aborted_by == null ? null : this.#guild.members.cache.get(storedAfkCheck.aborted_by.id)
 
         this.raidStatusMessage = await this.#afkTemplate.raidStatusChannel.messages.fetch(storedAfkCheck.raidStatusMessage.id)
@@ -403,24 +406,39 @@ class afkCheck {
         embed.setColor(afkTemplateBody.embed.color ? afkTemplateBody.embed.color : '#ffffff')
         embed.setAuthor({ name: `AFK for ${this.#afkTemplate.name} by ${this.raidLeaderDisplayName}`, iconURL: this.#leader.user.avatarURL() })
         embed.setTimestamp(Date.now())
+        // This RNG might need to get fixed or it will change every time the embed is generated
         if (afkTemplateBody.embed.thumbnail) embed.setThumbnail(afkTemplateBody.embed.thumbnail[Math.floor(Math.random()*afkTemplateBody.embed.thumbnail.length)])
+
         if (this.phase == 0) {
             embed.setDescription(`\`${this.#afkTemplate.name}\`${this.flag ? ` in (${this.flag})` : ''} will begin in ${Math.round(this.#afkTemplate.startDelay)} seconds. Be prepared to join the raid.`)
             embed.setFooter({ text: this.#message.guild.name, iconURL: this.#message.guild.iconURL() })
-        } else {
-            embed.setDescription(afkTemplateBody.embed.description)
-            if (afkTemplateBody.embed.image) embed.setImage(this.#botSettings.strings[afkTemplateBody.embed.image] ? this.#botSettings.strings[afkTemplateBody.embed.image] : afkTemplateBody.embed.image)
-            const secondsRemaining = this.#timerSecondsRemaining()
-            embed.setFooter({ text: `${this.#guild.name} • ${Math.floor(secondsRemaining / 60)} Minutes and ${secondsRemaining % 60} Seconds Remaining`, iconURL: this.#guild.iconURL() })
+            return embed
         }
+
+        if (!(this.aborted_by || this.deleted_by) && afkTemplateBody.embed.image) embed.setImage(this.#botSettings.strings[afkTemplateBody.embed.image] ? this.#botSettings.strings[afkTemplateBody.embed.image] : afkTemplateBody.embed.image)
+
         if (this.aborted_by) {
-            embed.setImage(null)
             embed.setDescription(`This afk check has been aborted`)
             embed.setFooter({ text: `${this.#guild.name} • Aborted by ${this.aborted_by.nickname}`, iconURL: this.#guild.iconURL() })
-        } else if (this.ended_by) {
+            return embed
+        }
+
+        if (this.ended_by) {
             embed.setDescription(`This afk check has been ended.${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` If you get disconnected during the run, **JOIN LOUNGE** *then* press the huge **RECONNECT** button` : ``}`)
             embed.setFooter({ text: `${this.#guild.name} • Ended by ${this.ended_by.nickname}`, iconURL: this.#guild.iconURL() })
+            return embed
         }
+
+        embed.setDescription(afkTemplateBody.embed.description)
+
+        if (this.deleted_by) {
+            embed.setFooter({ text: `${this.#guild.name} • Deleted by ${this.deleted_by.nickname}`, iconURL: this.#guild.iconURL() })
+            return embed
+        }
+
+        const secondsRemaining = this.#timerSecondsRemaining()
+        embed.setFooter({ text: `${this.#guild.name} • ${Math.floor(secondsRemaining / 60)} Minutes and ${secondsRemaining % 60} Seconds Remaining`, iconURL: this.#guild.iconURL() })
+
         return embed
     }
 
@@ -434,7 +452,7 @@ class afkCheck {
         for (let i in this.#afkTemplate.raidPartneredStatusChannels) this.#afkTemplate.raidPartneredStatusChannels[i].map(async channel => await channel.send({ content: `**${this.#afkTemplate.name}** is starting inside of **${this.#guild.name}**${this.#channel ? ` in ${this.#channel}` : ``}` }))
         
         let tempRaidStatusMessage = null
-        if (this.#afkTemplate.body[this.phase].message) tempRaidStatusMessage = await this.#afkTemplate.raidStatusChannel.send({ content: `${this.#afkTemplate.body[this.phase].message} in 5 seconds...` })
+        if (this.#afkTemplate.body[1].message) tempRaidStatusMessage = await this.#afkTemplate.raidStatusChannel.send({ content: `${this.#afkTemplate.body[1].message} in 5 seconds...` })
         setTimeout(async () => { if (tempRaidStatusMessage) await tempRaidStatusMessage.delete() }, 5000)
 
         this.raidStatusInteractionHandler = new Discord.InteractionCollector(this.#bot, { message: this.raidStatusMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
@@ -773,13 +791,13 @@ class afkCheck {
             else subInteraction.update({ embeds: [extensions.createEmbed(interaction, `Successfully moved to the next phase of the run. You can dismiss this message.`, null)], components: [] })
         } else if (interaction) interaction.reply({ embeds: [extensions.createEmbed(interaction, `Successfully moved to the next phase of the run. You can dismiss this message.`, null)], ephemeral: true })
         
-        this.timer = new Date(Date.now() + (this.#afkTemplate.body[this.phase].timeLimit * 1000))
         if (this.phase >= this.#afkTemplate.phases) {
             if (interaction) this.removeFromActiveInteractions(interaction.member.id)
             return this.postAfk(interaction)
         } else {
             this.phase += 1
         }
+        this.timer = new Date(Date.now() + (this.#afkTemplate.body[this.phase].timeLimit * 1000))
         if (this.updatePanelTimer) clearInterval(this.updatePanelTimer)
         let tempRaidStatusMessage = null
         if (this.#afkTemplate.body[this.phase].message) tempRaidStatusMessage = await this.#afkTemplate.raidStatusChannel.send({ content: `${this.#afkTemplate.body[this.phase].message} in 5 seconds...` })
@@ -947,7 +965,7 @@ class afkCheck {
 
         if (this.#channel) await this.#channel.delete()
 
-        this.ended_by = this.#guild.members.cache.get(interaction.member.id)
+        this.deleted_by = this.#guild.members.cache.get(interaction.member.id)
         this.raidCommandsEmbed.setFooter({ text: `${this.#guild.name} • Deleted by ${this.#guild.members.cache.get(interaction.member.id).nickname}`, iconURL: this.#guild.iconURL() })
         this.raidInfoEmbed.setFooter({ text: `${this.#guild.name} • Deleted by ${this.#guild.members.cache.get(interaction.member.id).nickname}`, iconURL: this.#guild.iconURL() })
 
