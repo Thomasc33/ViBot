@@ -19635,7 +19635,7 @@
                 "logName": "eventruns",
                 "vcOptions": 2,
                 "startDelay": null,
-                "cap": null,
+                "cap": 15,
                 "capButton": null,
                 "phases": 2,
                 "body": {
@@ -44783,7 +44783,7 @@
                 "logName": "eventruns",
                 "vcOptions": 2,
                 "startDelay": null,
-                "cap": null,
+                "cap": 15,
                 "capButton": null,
                 "phases": 2,
                 "body": {
@@ -76400,7 +76400,7 @@
                 "logName": null,
                 "vcOptions": 2,
                 "startDelay": null,
-                "cap": null,
+                "cap": 15,
                 "capButton": null,
                 "phases": 2,
                 "body": {
