@@ -22,7 +22,7 @@ class Glape {
         this.bot = bot
         this.settings = this.bot.settings[this.guild.id]
 
-        this.timeoutMinutes = 1
+        this.timeoutMinutes = 10
         this.isGoldenGlapeClicked = false // If the golden glape has already been clicked or not
 
         this.embedColor = "#ac714e"
