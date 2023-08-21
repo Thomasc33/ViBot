@@ -22,7 +22,7 @@ class Glape {
         this.bot = bot
         this.settings = this.bot.settings[this.guild.id]
 
-        this.timeoutMinutes = 10
+        this.timeoutMinutes = 5
         this.isGoldenGlapeClicked = false // If the golden glape has already been clicked or not
 
         this.embedColor = "#ac714e"
@@ -77,10 +77,18 @@ class Glape {
 
     async updateGlapeField() {
         this.embed.setFields({
-            name: `${this.glapeEmoji.text} Glapers ${this.glapeEmoji.text}`,
+            name: `${this.glapeEmoji.text} ${Object.keys(this.glapers).length} Glapers ${this.glapeEmoji.text}`,
             value: this.sortedGlapers(),
             inline: false
         })
+        if (this.goldenGlaper) {
+            this.embed.addFields({
+                name: `${this.goldenGlapeEmoji.text} Golden Glaper ${this.goldenGlapeEmoji.text}`,
+                value: `<@!${this.goldenGlaper}>`,
+                inline: false
+            })
+        }
+        this.embed.setFooter({ text: `Total Glapes ${this.totalGlapes()}, Glapes per second ${this.glapesPerSecond()}` })
         await this.glapeMessage.edit({ embeds: [this.embed] })
     }
 
@@ -116,6 +124,7 @@ class Glape {
         })
         this.glapeListener = new Discord.InteractionCollector(this.bot, { message: this.glapeMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
         this.glapeListener.on('collect', async interaction => await this.glapeInteractionHandler(interaction))
+        this.momentStarted = moment().unix()
         const glapeEmbedUpdaterInterval = setInterval(this.updateGlapeField.bind(this), 2000)
         setTimeout(this.goldenGlapeSender.bind(this), Math.floor(this.timeoutMinutes * 60 * 1000 / 2))
         setTimeout(async () => {
@@ -157,9 +166,22 @@ class Glape {
         // Only valid button clicks, and golden glape clicks should pass through.
 
         if (!this.glapers.hasOwnProperty(interaction.member.id)) { this.glapers[interaction.member.id] = 0 }
-        this.glapers[interaction.member.id] += 10
+        this.glapers[interaction.member.id] += 25
         this.goldenGlapeListener.stop()
         interaction.message.edit({ components: [] })
         interaction.reply({ content: `Woo you got the golden glape! ${this.goldenGlapeEmoji.text}`, ephemeral: true })
+    }
+
+    totalGlapes() {
+        let totalPoints = 0
+        for (let i in this.glapers) {
+            totalPoints += this.glapers[i]
+        }
+        return totalPoints
+    }
+
+    glapesPerSecond() {
+        let totalGlapes = this.totalGlapes()
+        return Math.floor(totalGlapes / (moment().unix() - this.momentStarted))
     }
 } 
