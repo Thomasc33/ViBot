@@ -28,6 +28,7 @@ module.exports = {
             return {
                 lastActiveTime: `${c.lastActiveTime} (${new Date(c.lastActiveTime).toISOString()}; ${((new Date() - c.lastActiveTime) / 1000) / 60} minutes ago)`,
                 connectionId: c.connectionId,
+                commands: c._commands,
                 isFree: freeConnections.delete(c.connectionId)
             }
         })
