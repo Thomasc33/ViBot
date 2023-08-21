@@ -3,9 +3,9 @@ const dbSchemas = require('./data/schemas.json')
 const mysql = require('mysql2')
 
 let dbs = null
-let uniq_dbs = []
+const uniq_dbs = []
 
-let verbose = !process.title.includes('runner')
+const verbose = !process.title.includes('runner')
 
 module.exports = {
     async init(bot) {
@@ -13,17 +13,17 @@ module.exports = {
         if (dbs !== null) return
         dbs = {}
 
-        let liveGuilds = bot.guilds.cache.filter((g) => !bot.emojiServers.includes(g.id) && !bot.devServers.includes(g.id))
+        const liveGuilds = bot.guilds.cache.filter((g) => !bot.emojiServers.includes(g.id) && !bot.devServers.includes(g.id))
         liveGuilds.filter((g) => !dbSchemas[g.id]).forEach((g) => { if (verbose) console.log(`Missing schema in schema.json for guild: ${g.id}`) })
 
-        let dbInfos = []
+        const dbInfos = []
 
         Object.entries(dbSchemas).forEach(([guildId, dbConfig]) => {
             if (!bot.guilds.cache.some((g) => g.id == guildId)) {
-                if (verbose) return console.log(`Unused db configuration in schema.json for guild: ${guildId}`)
-                else return
+                if (verbose) console.log(`Unused db configuration in schema.json for guild: ${guildId}`)
+                return
             }
-            let dbInfo = {
+            const dbInfo = {
                 port: botSettings.defaultDbInfo.port || 3306,
                 host: dbConfig.host || botSettings.defaultDbInfo.host,
                 user: dbConfig.user || botSettings.defaultDbInfo.user,
@@ -33,7 +33,7 @@ module.exports = {
             }
 
             // If a different guild as an identical config, share the connection pool
-            let matchingGuild = dbInfos.find(([info, _]) => Object.keys(info).every((k) => info[k] == dbInfo[k]))
+            const matchingGuild = dbInfos.find(([info]) => Object.keys(info).every((k) => info[k] == dbInfo[k]))
             if (matchingGuild) {
                 dbs[guildId] = dbs[matchingGuild[1]]
             } else {
@@ -60,5 +60,5 @@ module.exports = {
             db.end()
         })
         dbs = null
-    },
+    }
 }

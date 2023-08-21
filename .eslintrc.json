@@ -45,6 +45,7 @@
         "space-unary-ops": ["error", {"overrides": { "typeof": false }}],
         "keyword-spacing": ["error", {"overrides": { "throw": { "after": false }}}],
         "prefer-promise-reject-errors": "warn",
-        "capitalized-comments": "off"
+        "capitalized-comments": "off",
+        "quotes": ["error", "single", { "avoidEscape": true }]
     }
 }
