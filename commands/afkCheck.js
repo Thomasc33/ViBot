@@ -151,7 +151,7 @@ class afkCheck {
         this.pingText = this.#afkTemplate.pingRoles ? `${this.#afkTemplate.pingRoles.join(' ')}, ` : ``
     }
 
-    #active() {
+    get active() {
         return !(this.ended_by || this.aborted_by || this.deleted_by)
     }
 
@@ -256,7 +256,7 @@ class afkCheck {
             this.raidCommandsInteractionHandler.on('collect', (interaction) => this.interactionHandler(interaction))
             this.raidChannelsInteractionHandler = new Discord.InteractionCollector(this.#bot, { message: this.raidChannelsMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
             this.raidChannelsInteractionHandler.on('collect', (interaction) => this.interactionHandler(interaction))
-            if (this.#active()) this.postAfk(null)
+            if (this.active) this.postAfk(null)
         }
     }
 
@@ -1507,7 +1507,7 @@ class afkCheck {
     }
 
     async updateRequestPanel(message, interactionHandler, reactable, timer) {
-        if (!this.#active()) {
+        if (!this.active) {
             message.edit({ components: []})
             interactionHandler.stop()
             clearInterval(timer)
