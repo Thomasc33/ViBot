@@ -10,7 +10,7 @@ module.exports = {
     alias: ['cn'],
     args: '<new name>',
     requiredArgs: 1,
-    getNotes(guildid, member) {
+    getNotes(guild, member, bot) {
         return 'Security+: [mention | ID] <new name> [proof]'
     },
     role: 'raider',

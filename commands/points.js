@@ -1,7 +1,7 @@
 const Discord = require('discord.js')
 const botSettings = require('../settings.json')
 const pointLogger = require('../lib/pointLogger')
-const adminUsers = ['277636691227836419', '258286481167220738', '178840516882989056', '120540036855889921']
+const adminUsers = ['277636691227836419', '258286481167220738', '190572077219184650', '120540036855889921']
 
 module.exports = {
     name: 'points',
@@ -13,8 +13,8 @@ module.exports = {
      * @param {String} guildid 
      * @param {Discord.GuildMember} member 
      */
-    getNotes(guildid, member) {
-        let settings = member.client.settings[guildid]
+    getNotes(guild, member, bot) {
+        let settings = member.client.settings[guild.id]
         if (!settings) return null
         if (member.roles.highest.position >= member.guild.roles.cache.get(settings.roles.headrl).position || adminUsers.includes(member.id)) return 'EO+ <user> | HRL+ <add/remove> <user>'
         if (member.roles.highest.position >= member.guild.roles.cache.get(settings.roles.eventrl).position || adminUsers.includes(member.id)) return '<user> to see someones points'
@@ -28,7 +28,7 @@ module.exports = {
         if (message.member.roles.highest.position < message.guild.roles.cache.get(settings.roles.eventrl).position) {
             await message.member.send({ embeds: [await this.getPointEmbed(message.member, db)] })
             message.react('✅')
-        } else if (message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.headrl).position || bot.adminUsers.includes(member.id)) {
+        } else if (message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.headrl).position || bot.adminUsers.includes(message.member.id)) {
             if (args.length == 0) return await message.member.send({ embeds: [await this.getPointEmbed(message.member, db)] }).then(message.react('✅'))
             switch (args[0].toLowerCase()) {
                 case 'add':

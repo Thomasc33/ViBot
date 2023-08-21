@@ -11,7 +11,7 @@ module.exports = {
     alias: ['host', 'key', 'keys'],
     requiredArgs: 0,
     guildSpecific: true,
-    getNotes(guildid, member) {
+    getNotes(guild, member, bot) {
         return 'Maximum of 5 key types per notification. There is a 30 minute waiting period after a successful notification sent before another can be done.';
     },
     activePanels: [],

@@ -10,8 +10,8 @@ module.exports = {
     name: 'pop',
     description: 'Logs key pops',
     args: '<keytype> <user> (count)',
-    getNotes(guildid, u) {
-        return keypops[guildid] ? Object.keys(keypops[guildid]).toString() : `not setup for guild ${guildid}`
+    getNotes(guild, member, bot) {
+        return keypops[guild.id] ? Object.keys(keypops[guild.id]).toString() : `not setup for guild ${guild.id}`
     },
     requiredArgs: 2,
     role: 'eventrl',
@@ -118,15 +118,24 @@ module.exports = {
                 })
                 if (!success) return;
             }
-            let consumablepopsValueNames = `userid, guildid, unixtimestamp, amount, ismodded, templateid`
-            let consumablepopsValues = `'${user.id}', '${guild.id}', '${Date.now()}', '${count}', ${moddedKey}, '${keyInfo.templateID}'`
-            db.query('INSERT INTO consumablepops (?) VALUES (?)', [consumablepopsValueNames, consumablepopsValues], (err, rows) => {
+            const consumablepops = {
+                userid: user.id,
+                guildid: guild.id,
+                unixtimestamp: Date.now(),
+                amount: count,
+                ismodded: moddedKey,
+                templateid: keyInfo.templateID
+            }
+            db.query(`INSERT INTO consumablepops (${Object.keys(consumablepops).join(', ')}) VALUES (?, ?, ?, ?, ?, ?)`, Object.values(consumablepops), (err, rows) => {
+                if (err) throw err
                 if (err) return console.log(`${keyInfo.schema} missing from ${guild.name} ${guild.id}`)
             })
-            db.query('UPDATE users SET ? = ? + ? WHERE id = ?', [keyInfo.schema, keyInfo.schema, count, user.id], (err, rows) => {
+            db.query(`UPDATE users SET ${keyInfo.schema} = ${keyInfo.schema} + ? WHERE id = ?`, [count, user.id], (err, rows) => {
+                if (err) throw err
                 keyRoles.checkUser(user, bot, db);
             });
             if (moddedKey) db.query('UPDATE users SET moddedPops = moddedPops + ? WHERE id = ?', [count, user.id], (err, rows) => {
+                if (err) throw err
                 keyRoles.checkUser(user, bot, db);
             });
             let embed = new Discord.EmbedBuilder()

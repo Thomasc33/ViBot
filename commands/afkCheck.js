@@ -49,49 +49,32 @@ module.exports = {
         else afkModule.start()
     },
     returnRaidIDsbyMemberID(bot, memberID) {
-        const afkChecks = []
-        for (let raidID in bot.afkChecks) {
-            if (bot.afkChecks[raidID].leader == memberID) afkChecks.push(raidID)
-        }
-        return afkChecks
+        return Object.keys(bot.afkChecks).filter(raidID => bot.afkChecks[raidID].leader == memberID)
     },
     returnRaidIDsbyMemberVoice(bot, voiceID) {
-        const afkChecks = []
-        for (let raidID in bot.afkChecks) {
-            if (bot.afkChecks[raidID].channel == voiceID) afkChecks.push(raidID)
-        }
-        return afkChecks
+        return Object.keys(bot.afkChecks).filter(raidID => bot.afkChecks[raidID].channel == voiceID)
     },
     returnRaidIDsbyRaidID(bot, RSAID) {
-        const afkChecks = []
-        for (let raidID in bot.afkChecks) {
-            if (bot.afkChecks[raidID].raidStatusMessage && bot.afkChecks[raidID].raidStatusMessage.id == RSAID) afkChecks.push(raidID)
-        }
-        return afkChecks
+        return Object.keys(bot.afkChecks).filter(raidID => bot.afkChecks[raidID].raidStatusMessage && bot.afkChecks[raidID].raidStatusMessage.id == RSAID)
     },
     returnRaidIDsbyAll(bot, memberID, voiceID, argument) {
-        const afkCheckPlaceHolders = []
-        afkCheckPlaceHolders.push(...this.returnRaidIDsbyMemberID(bot, memberID))
-        afkCheckPlaceHolders.push(...this.returnRaidIDsbyMemberVoice(bot, voiceID))
-        afkCheckPlaceHolders.push(...this.returnRaidIDsbyMemberVoice(bot, argument))
-        afkCheckPlaceHolders.push(...this.returnRaidIDsbyRaidID(bot, argument))
-        const afkChecks = [...new Set(afkCheckPlaceHolders)]
-        return afkChecks
+        return [...new Set([
+            ...this.returnRaidIDsbyMemberID(bot, memberID),
+            ...this.returnRaidIDsbyMemberVoice(bot, voiceID),
+            ...this.returnRaidIDsbyMemberVoice(bot, argument),
+            ...this.returnRaidIDsbyRaidID(bot, argument)
+        ])]
     },
     returnActiveRaidIDs(bot) {
-        const afkChecks = []
-        for (let raidID in bot.afkChecks) {
-            afkChecks.push(raidID)
-        }
-        return afkChecks
+        return Object.keys(afkChecks)
     },
     async loadBotAfkChecks(guild, bot, db) {
-        let storedAfkChecks = require('../data/afkChecks.json')
+        const storedAfkChecks = require('../data/afkChecks.json')
         for (let raidID in storedAfkChecks) {
             if (storedAfkChecks[raidID].guild.id != guild.id) continue
-            let currentStoredAfkCheck = storedAfkChecks[raidID]
-            let messageChannel = guild.channels.cache.get(currentStoredAfkCheck.message.channelId)
-            let message = await messageChannel.messages.fetch(currentStoredAfkCheck.message.id)
+            const currentStoredAfkCheck = storedAfkChecks[raidID]
+            const messageChannel = guild.channels.cache.get(currentStoredAfkCheck.message.channelId)
+            const message = await messageChannel.messages.fetch(currentStoredAfkCheck.message.id)
             bot.afkChecks[raidID] = new afkCheck(currentStoredAfkCheck.afkTemplate, bot, db, message, currentStoredAfkCheck.location)
             await bot.afkChecks[raidID].loadBotAfkCheck(currentStoredAfkCheck)
         }
@@ -165,7 +148,6 @@ class afkCheck {
         Object.keys(afkTemplate.buttons).forEach((key) => { if (afkTemplate.buttons[key].type == AfkTemplate.TemplateButtonType.DRAG) this.raidDragThreads[key] = { thread: null, collector: null } })
 
         this.raidLeaderDisplayName = this.#leader.displayName.replace(/[^a-z|]/gi, '').split('|')[0]
-        this.flag = this.location ? {'us': ':flag_us:', 'eu': ':flag_eu:'}[this.location.toLowerCase().substring(0, 2)] : ''
         this.pingText = this.#afkTemplate.pingRoles ? `${this.#afkTemplate.pingRoles.join(' ')}, ` : ``
     }
 
@@ -179,6 +161,10 @@ class afkCheck {
         await Promise.all([this.sendStatusMessage(), this.sendCommandsMessage(), this.sendChannelsMessage()])
         this.startTimers()
         this.saveBotAfkCheck()
+    }
+
+    get flag() {
+        return this.location ? {'us': ':flag_us:', 'eu': ':flag_eu:'}[this.location.toLowerCase().substring(0, 2)] : ''
     }
     
     saveBotAfkCheck(deleteCheck = false) {
@@ -1488,7 +1474,6 @@ class afkCheck {
     
     async updateLocation() {
         this.location = this.#bot.afkChecks[this.#raidID].location
-        this.flag = this.location ? {'us': ':flag_us:', 'eu': ':flag_eu:'}[this.location.toLowerCase().substring(0, 2)] : '' 
         await Promise.all([this.sendStatusMessage(), this.sendCommandsMessage(), this.sendChannelsMessage()])
         for (let i of this.earlyLocationMembers) {
             let member = this.#guild.members.cache.get(i)
