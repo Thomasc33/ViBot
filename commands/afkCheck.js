@@ -135,7 +135,6 @@ class afkCheck {
 
         this.raidStatusMessage = null // raid status message
         this.raidStatusInteractionHandler = null // raid status interaction handler
-        this.raidCommandsEmbed = null // raid commands embed
         this.raidCommandsMessage = null // raid commands message
         this.raidInfoEmbed = null // raid info embed
         this.raidInfoMessage = null // raid info message
@@ -193,7 +192,6 @@ class afkCheck {
                 deleted_by: this.deleted_by,
 
                 raidStatusMessage: this.raidStatusMessage,
-                raidCommandsEmbed: this.raidCommandsEmbed,
                 raidCommandsMessage: this.raidCommandsMessage,
                 raidInfoEmbed: this.raidInfoEmbed,
                 raidInfoMessage: this.raidInfoMessage,
@@ -244,7 +242,6 @@ class afkCheck {
         this.raidChannelsMessage = await this.#afkTemplate.raidActiveChannel.messages.fetch(storedAfkCheck.raidChannelsMessage.id)
         this.vcLounge = await this.#guild.channels.cache.get(this.#botSettings.voice.lounge)
 
-        this.raidCommandsEmbed = new Discord.EmbedBuilder(storedAfkCheck.raidCommandsEmbed)
         this.raidInfoEmbed = new Discord.EmbedBuilder(storedAfkCheck.raidInfoEmbed)
         this.raidChannelsEmbed = new Discord.EmbedBuilder(storedAfkCheck.raidChannelsEmbed)
 
@@ -387,8 +384,8 @@ class afkCheck {
 
     #genEmbedFooter() {
         if (this.aborted_by) return { text: `${this.#guild.name} • Aborted by ${this.aborted_by.nickname}`, iconURL: this.#guild.iconURL() }
-        if (this.ended_by) return { text: `${this.#guild.name} • Ended by ${this.ended_by.nickname}`, iconURL: this.#guild.iconURL() }
         if (this.deleted_by) return { text: `${this.#guild.name} • Deleted by ${this.deleted_by.nickname}`, iconURL: this.#guild.iconURL() }
+        if (this.ended_by) return { text: `${this.#guild.name} • Ended by ${this.ended_by.nickname}`, iconURL: this.#guild.iconURL() }
 
         const secondsRemaining = this.#timerSecondsRemaining()
         return { text: `${this.#guild.name} • ${Math.floor(secondsRemaining / 60)} Minutes and ${secondsRemaining % 60} Seconds Remaining`, iconURL: this.#guild.iconURL() }
@@ -439,29 +436,20 @@ class afkCheck {
             position++
         }
 
-        const positionButton = {}
-        for (const buttonInfo of Object.values(this.#afkTemplate.buttons)) {
-            if (!buttonInfo.parent) continue
-            for (let i of buttonInfo.parent) {
-                const parentButtonInfo = this.#afkTemplate.buttons[i]
-                const parentPosition = this.reactables[i].position
-                const parentEmote = parentButtonInfo.emote ? `${parentButtonInfo.emote.text} ` : ``
-                positionButton[parentPosition] = buttonInfo
-                embed.data.fields[parentPosition].value = this.reactables[i].members.reduce((string, id, ind) => string + `${parentEmote ? parentEmote : ind+1}: <@!${id}>\n`, '')
-            }
-        }
-
         for (const customId of Object.keys(this.reactables)) {
             const position = this.reactables[customId].position
-            const buttonInfo = positionButton[position]
+            const buttonInfo = Object.values(this.#afkTemplate.buttons)[position]
             const emote = (buttonInfo && buttonInfo.emote) ? `${buttonInfo.emote.text} ` : ``
-            embed.data.fields[position].value = this.reactables[customId].members.reduce((string, id, ind) => string + `${emote ? emote : ind+1}: <@!${id}>\n`, '')
-            if (customId.includes('request')) {
+            if (this.reactables[customId].members.length == 0) {
+                embed.data.fields[position].value = "None!"
+            } else if (customId.includes('request')) {
                 embed.data.fields[position].value = this.reactables[customId.substring(0, customId.length - 8)].members.reduce((string, id, ind) => string + `${emote ? emote : ind+1}: <@!${id}>\n`, '')
                 embed.data.fields[position].value += this.reactables[customId].members.reduce((string, id, ind) => string + `${emote ? emote : ind+1}: <@!${id}>\n`, '')
             } else if (this.reactables[`${customId}_request`]) {
                 embed.data.fields[position].value = this.reactables[customId].members.reduce((string, id, ind) => string + `${emote ? emote : ind+1}: <@!${id}>\n`, '')
                 embed.data.fields[position].value += this.reactables[`${customId}_request`].members.reduce((string, id, ind) => string + `${emote ? emote : ind+1}: <@!${id}>\n`, '')
+            } else {
+                embed.data.fields[position].value = this.reactables[customId].members.reduce((string, id, ind) => string + `${emote ? emote : ind+1}: <@!${id}>\n`, '')
             }
             if (embed.data.fields[position].value.length >= 1024) embed.data.fields[position].value = '*Too many users to process*'
         }
