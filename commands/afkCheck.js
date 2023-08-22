@@ -436,29 +436,20 @@ class afkCheck {
             position++
         }
 
-        const positionButton = {}
-        for (const buttonInfo of Object.values(this.#afkTemplate.buttons)) {
-            if (!buttonInfo.parent) continue
-            for (let i of buttonInfo.parent) {
-                const parentButtonInfo = this.#afkTemplate.buttons[i]
-                const parentPosition = this.reactables[i].position
-                const parentEmote = parentButtonInfo.emote ? `${parentButtonInfo.emote.text} ` : ``
-                positionButton[parentPosition] = buttonInfo
-                embed.data.fields[parentPosition].value = this.reactables[i].members.reduce((string, id, ind) => string + `${parentEmote ? parentEmote : ind+1}: <@!${id}>\n`, '')
-            }
-        }
-
         for (const customId of Object.keys(this.reactables)) {
             const position = this.reactables[customId].position
-            const buttonInfo = positionButton[position]
+            const buttonInfo = Object.values(this.#afkTemplate.buttons)[position]
             const emote = (buttonInfo && buttonInfo.emote) ? `${buttonInfo.emote.text} ` : ``
-            embed.data.fields[position].value = this.reactables[customId].members.reduce((string, id, ind) => string + `${emote ? emote : ind+1}: <@!${id}>\n`, '')
-            if (customId.includes('request')) {
+            if (this.reactables[customId].members.length == 0) {
+                embed.data.fields[position].value = "None!"
+            } else if (customId.includes('request')) {
                 embed.data.fields[position].value = this.reactables[customId.substring(0, customId.length - 8)].members.reduce((string, id, ind) => string + `${emote ? emote : ind+1}: <@!${id}>\n`, '')
                 embed.data.fields[position].value += this.reactables[customId].members.reduce((string, id, ind) => string + `${emote ? emote : ind+1}: <@!${id}>\n`, '')
             } else if (this.reactables[`${customId}_request`]) {
                 embed.data.fields[position].value = this.reactables[customId].members.reduce((string, id, ind) => string + `${emote ? emote : ind+1}: <@!${id}>\n`, '')
                 embed.data.fields[position].value += this.reactables[`${customId}_request`].members.reduce((string, id, ind) => string + `${emote ? emote : ind+1}: <@!${id}>\n`, '')
+            } else {
+                embed.data.fields[position].value = this.reactables[customId].members.reduce((string, id, ind) => string + `${emote ? emote : ind+1}: <@!${id}>\n`, '')
             }
             if (embed.data.fields[position].value.length >= 1024) embed.data.fields[position].value = '*Too many users to process*'
         }
