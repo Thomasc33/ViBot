@@ -162,15 +162,15 @@ class AfkTemplate {
             }
         })
         this.#populateObjectInherit(this.#template, parentTemplate)
+        for (let i = 0; i <= this.#template.phases; i++) this.#populateObjectInherit(this.#template.body[i], parentTemplate.body[i])
         this.#template.minStaffRoles = this.#template.minStaffRoles[this.#inherit]
     }
 
     // Function for populating child Body Phase parameters from Body Default parameters
     #populateBodyInherit() {
-        let phases = Array.from({length: this.#template.phases},(_,k)=>k+1)
-        for (let i of phases) {
-            if (this.#template.body[i] == undefined) this.#template.body[i] = this.#template.body.default
-            else this.#populateObjectInherit(this.#template.body[i], this.#template.body.default)
+        for (let i = 0; i <= this.#template.phases; i++) {
+            if (this.#template.body[i] == undefined) this.#template.body[i] = this.#template.body[0]
+            else this.#populateObjectInherit(this.#template.body[i], this.#template.body[0])
         }
     }
 
@@ -203,9 +203,7 @@ class AfkTemplate {
         if (!Object.hasOwn(this.#template, 'phases')) properties.push('phases')
         if (!Object.hasOwn(this.#template, 'body')) properties.push('body')
         if (this.#template.body != null && typeof this.#template.body === 'object') {
-            let phases = Array.from({length: this.#template.phases},(_,k)=>k+1)
-            if (!Object.hasOwn(this.#template.body, 'default')) properties.push('body.default')
-            phases.map(k => { if(!Object.hasOwn(this.#template.body, `${k}`)) properties.push(`body.${k}`) })
+            for (let i = 0; i <= this.#template.phases; i++) if (!Object.hasOwn(this.#template.body, i)) properties.push(`body.${k}`)
             for (let i in this.#template.body) {
                 if (!Object.hasOwn(this.#template.body[i], 'vcState')) properties.push(`body.${i}.vcState`)
                 if (!Object.hasOwn(this.#template.body[i], 'nextPhaseButton')) properties.push(`body.${i}.nextPhaseButton`)
@@ -409,8 +407,7 @@ class AfkTemplate {
     }
 
     processBody(channel) {
-        let phases = Array.from({length: this.#template.phases},(_,k)=>k+1)
-        for (let i of phases) {
+        for (let i = 1; i <= this.#template.phases; i++) {
             if (this.body[i].message) this.body[i].message = this.processMessages(channel, this.body[i].message)
             if (!this.body[i].embed.description) this.body[i].embed.description = this.processBodyDescription(channel, i)
             else {
