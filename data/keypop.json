@@ -218,6 +218,40 @@
             "schema": "advancedNestPops",
             "name": "Advanced Nest",
             "modded": true
+        },
+        "helmetrune": {
+            "templateID": 28,
+            "alias": [
+                "h",
+                "helm",
+                "helmet"
+            ],
+            "points": "runepop",
+            "schema": "helmetRunePops",
+            "name": "Helmet Rune",
+            "modded": false
+        },
+        "shieldrune": {
+            "templateID": 22,
+            "alias": [
+                "sh",
+                "shield"
+            ],
+            "points": "runepop",
+            "schema": "shieldRunePops",
+            "name": "Shield Rune",
+            "modded": false
+        },
+        "swordrune": {
+            "templateID": 23,
+            "alias": [
+                "sw",
+                "sword"
+            ],
+            "points": "runepop",
+            "schema": "swordRunePops",
+            "name": "Sword Rune",
+            "modded": false
         }
     },
     "451171819672698920": {
@@ -292,7 +326,8 @@
             "templateID": 24,
             "alias": [
                 "h",
-                "helm"
+                "helm",
+                "helmet"
             ],
             "points": "runepop",
             "schema": "helmetRunePops",
@@ -337,7 +372,8 @@
             "templateID": 28,
             "alias": [
                 "h",
-                "helm"
+                "helm",
+                "helmet"
             ],
             "points": "runepop",
             "schema": "helmetRunePops",
