@@ -4,7 +4,7 @@ const mysql = require('mysql2')
 require('./lib/extensions.js')
 
 // Import Internal Libraries
-const ErrorLogger = require(`./lib/logError`)
+const ErrorLogger = require('./lib/logError')
 const botSetup = require('./botSetup.js')
 const dbSetup = require('./dbSetup.js');
 const memberHandler = require('./memberHandler.js')
@@ -13,28 +13,24 @@ const { handleReactionRow } = require('./redis.js')
 
 // Specific Commands
 const verification = require('./commands/verification')
-const roleAssignment = require('./commands/roleAssignment')
 
 // Global Variables/Data
-const CommandLogger = require('./lib/logCommand')
-const { restarting } = require('./commands/restart.js');
 const botSettings = require('./settings.json')
 const token = require('./data/botKey.json')
-const prefix = botSettings.prefix;
 const rootCas = require('ssl-root-cas').create();
 require('https').globalAgent.options.ca = rootCas;
-const bot = require('./botMeta.js').bot
+const { bot } = require('./botMeta.js')
 require('./botMeta.js').loadCommands()
 const serverWhiteList = require('./data/serverWhiteList.json')
-const MessageManager = require('./messageManager.js').MessageManager;
+const { MessageManager } = require('./messageManager.js');
 
 const messageManager = new MessageManager(bot, botSettings);
 
 // Bot Event Handlers
 bot.on('messageCreate', logWrapper('message', async (logger, message) => {
     // Ignore messages to non-whitelisted servers (but let DMs through)
-    if (message.guild && !serverWhiteList.includes(message.guild.id)) return logger("serverBlacklisted")
-    if (message.author.bot) return logger("botAuthor")
+    if (message.guild && !serverWhiteList.includes(message.guild.id)) return logger('serverBlacklisted')
+    if (message.author.bot) return logger('botAuthor')
 
     try {
         return await messageManager.handleMessage(message);
@@ -45,23 +41,18 @@ bot.on('messageCreate', logWrapper('message', async (logger, message) => {
 
 bot.on('interactionCreate', logWrapper('message', async (logger, interaction) => {
     // Validate the server is whitelisted
-    if (interaction.guild && !serverWhiteList.includes(interaction.guild.id)) return logger("serverBlacklisted")
+    if (interaction.guild && !serverWhiteList.includes(interaction.guild.id)) return logger('serverBlacklisted')
 
     // Validate the interaction is a command
-    if (interaction.isChatInputCommand()) {
-        return await messageManager.handleCommand(interaction, true)
-    } else if (interaction.isUserContextMenuCommand()) {
-        return await messageManager.handleCommand(interaction, true)
-    } else if (interaction.isButton()) {
-        return await handleReactionRow(bot, interaction)
-    }
-
+    if (interaction.isChatInputCommand()) return await messageManager.handleCommand(interaction, true)
+    if (interaction.isUserContextMenuCommand()) return await messageManager.handleCommand(interaction, true)
+    if (interaction.isButton()) return await handleReactionRow(bot, interaction)
 }))
 
-bot.on("ready", async () => {
+bot.on('ready', async () => {
     console.log(`Bot loaded: ${bot.user.username}`);
-    bot.user.setActivity(`vibot.tech`)
-    let vi = bot.users.cache.get(botSettings.developerId)
+    bot.user.setActivity('vibot.tech')
+    const vi = bot.users.cache.get(botSettings.developerId)
     vi.send('Halls Bot Starting Back Up')
 
     await botSetup.setup(bot)
@@ -97,19 +88,19 @@ bot.on('guildMemberRemove', async (member) => {
 
 bot.on('messageReactionAdd', async (r, u) => {
     if (u.bot) return
-    //modmail
+    // modmail
     if (r.message.partial) r.message = await r.message.fetch();
-    //spongemock
+    // spongemock
     if (r.emoji.id == '812959258638549022') {
-        let content = [...r.message.content]
-        for (let i in content) {
+        const content = [...r.message.content]
+        for (const i in content) {
             if (!content[i]) continue
             try {
-                if (Math.random() > .5) content[i] = content[i].toLowerCase()
+                if (Math.random() > 0.5) content[i] = content[i].toLowerCase()
                 else content[i] = content[i].toUpperCase()
             } catch (er) { console.log(er) }
         }
-        let spongemockEmbed = new Discord.EmbedBuilder()
+        const spongemockEmbed = new Discord.EmbedBuilder()
             .setColor('#FDF300')
             .setDescription(content.join(''))
             .setThumbnail('https://res.cloudinary.com/nashex/image/upload/v1613698392/assets/759584001131544597_im3kgg.png')
@@ -128,9 +119,10 @@ bot.on('typingStart', (c, u) => {
 
 bot.login(token.key);
 
-
-
+// ===========================================================================================================
 // Process Event Listening
+// ===========================================================================================================
+
 process.on('uncaughtException', err => {
     if (!err) return
     ErrorLogger.log(err, bot);
@@ -149,7 +141,7 @@ process.on('unhandledRejection', err => {
 })
 
 // Data Base Connectors (Global DB was here, now moved to bot ready listener)
-var tokenDB = mysql.createConnection(botSettings.tokenDBInfo)
+let tokenDB = mysql.createConnection(botSettings.tokenDBInfo)
 
 tokenDB.connect(err => {
     if (err) ErrorLogger.log(err, bot);
@@ -161,20 +153,22 @@ tokenDB.on('error', err => {
     else ErrorLogger.log(err, bot)
 })
 
-
+// ===========================================================================================================
 // Functions
+// ===========================================================================================================
 
-var vibotControlGuild
+let vibotControlGuild
 /**
  * Checks user by ID's to see if they have a patreon role in control panel discord
- * @param {String} patreonRoleId 
- * @param {String} userId 
- * @returns 
+ * @param {String} patreonRoleId
+ * @param {String} userId
+ * @returns
  */
+// eslint-disable-next-line no-unused-vars
 function checkPatreon(patreonRoleId, userId) {
     if (!vibotControlGuild) vibotControlGuild = bot.guilds.cache.get('739623118833713214')
     if (vibotControlGuild.members.cache.get(userId) && vibotControlGuild.members.cache.get(userId).roles.cache.has(patreonRoleId)) return true
-    else return false
+    return false
 }
 
 module.exports = { bot }
