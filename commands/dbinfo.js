@@ -1,4 +1,5 @@
 const { botOwners } = require('../settings.json');
+const Discord = require('discord.js')
 
 function peekMysql2Queue(q) {
     let i = 0;
@@ -32,7 +33,9 @@ module.exports = {
                 isFree: freeConnections.delete(c.connectionId)
             }
         })
-        await message.channel.send(`Live connections:\n\`\`\`\n${JSON.stringify(connectionInfo, null, 2)}\`\`\``)
+        const attachment = new Discord.AttachmentBuilder(Buffer.from(JSON.stringify(connectionInfo, null, 2)), {name: 'log.txt'})
+        connectionInfo.map(i => delete i.commands)
+        await message.channel.send({content: `Live connections:\n\`\`\`\n${JSON.stringify(connectionInfo, null, 2)}\`\`\``, files: [attachment]})
         if (freeConnections.size != 0) await message.channel.send(`Other free connections: ${freeConnections.values()}`)
     }
 }
