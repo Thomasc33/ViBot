@@ -66,7 +66,7 @@ module.exports = {
         ])]
     },
     returnActiveRaidIDs(bot) {
-        return Object.keys(afkChecks)
+        return Object.keys(bot.afkChecks)
     },
     async loadBotAfkChecks(guild, bot, db) {
         const storedAfkChecks = require('../data/afkChecks.json')
