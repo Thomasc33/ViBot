@@ -407,8 +407,7 @@ class AfkTemplate {
     }
 
     processBody(channel) {
-        let phases = Array.from({length: this.#template.phases},(_,k)=>k+1)
-        for (let i of phases) {
+        for (let i = 1; i <= this.#template.phases; i++) {
             if (this.body[i].message) this.body[i].message = this.processMessages(channel, this.body[i].message)
             if (!this.body[i].embed.description) this.body[i].embed.description = this.processBodyDescription(channel, i)
             else {
