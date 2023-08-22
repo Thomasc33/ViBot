@@ -162,7 +162,7 @@ class AfkTemplate {
             }
         })
         this.#populateObjectInherit(this.#template, parentTemplate)
-        for (let i = 0; i <= this.#template.phases; i++) this.#populateObjectInherit(this.#template.body[i], parentTemplate.body[i])
+        if (parentTemplate) for (let i = 0; i <= this.#template.phases; i++) this.#populateObjectInherit(this.#template.body[i], parentTemplate.body[i])
         this.#template.minStaffRoles = this.#template.minStaffRoles[this.#inherit]
     }
 
