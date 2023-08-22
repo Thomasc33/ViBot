@@ -56,7 +56,7 @@ const TemplateButtonChoice = {
 
 function resolveTemplateAlias(guildId, alias) {
     let selectedTemplates = templates[guildId].children.filter(t => t.aliases.includes(alias)) // Search for all matches of the alias across all guild-specific AFK Templates
-    if (selectedTemplates.length == 0) selectedTemplates = templates[guildId].children.filter(t => { for (let alias of t.aliases) if (alias.includes(alias)) return true }) // Search for all substring matches of the alias if direct matches were not found
+    if (selectedTemplates.length == 0) selectedTemplates = templates[guildId].children.filter(t => t.aliases.some(templateAlias => templateAlias.includes(alias))) // Search for all substring matches of the alias if direct matches were not found
     return selectedTemplates.map((t) => t.templateName)
 }
 
