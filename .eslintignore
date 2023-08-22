@@ -18,7 +18,6 @@ commands/complete.js
 commands/crasherList.js
 commands/createChannel.js
 commands/currentweek.js
-commands/dbinfo.js
 commands/drag.js
 commands/echo.js
 commands/emoji.js
