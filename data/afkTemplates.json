@@ -61547,14 +61547,19 @@
                     "veteran": [
                         [
                             "vetrl"
+                        ],
+                        [
+                            "veteventrl"
                         ]
                     ]
                 },
                 "minViewRaiderRoles": [
-                    "vetraider"
+                    "vetraider",
+                    "vetraider2"
                 ],
                 "minJoinRaiderRoles": [
-                    "vetraider"
+                    "vetraider",
+                    "vetraider2"
                 ],
                 "pingRoles": [
                     "here"
@@ -61618,12 +61623,6 @@
                         ],
                         [
                             "veteventrl"
-                        ],
-                        [
-                            "almostrl"
-                        ],
-                        [
-                            "rl"
                         ]
                     ]
                 },
@@ -61701,17 +61700,18 @@
                         ],
                         [
                             "rl"
-                        ],
-                        [
-                            "headrl"
                         ]
                     ]
                 },
                 "minViewRaiderRoles": [
-                    "eventrl"
+                    "eventrl",
+                    "almostrl",
+                    "rl"
                 ],
                 "minJoinRaiderRoles": [
-                    "eventrl"
+                    "eventrl",
+                    "almostrl",
+                    "rl"
                 ],
                 "pingRoles": null,
                 "startDelay": 10,
@@ -61794,8 +61794,12 @@
                         ]
                     ]
                 },
-                "minViewRaiderRoles": null,
-                "minJoinRaiderRoles": null,
+                "minViewRaiderRoles": [
+                    "vetraider"
+                ],
+                "minJoinRaiderRoles": [
+                    "vetraider"
+                ],
                 "name": "Shatters",
                 "templateName": "Shatters",
                 "pingRoles": [
@@ -62080,8 +62084,12 @@
                         ]
                     ]
                 },
-                "minViewRaiderRoles": null,
-                "minJoinRaiderRoles": null,
+                "minViewRaiderRoles": [
+                    "vetraider2"
+                ],
+                "minJoinRaiderRoles": [
+                    "vetraider2"
+                ],
                 "name": "Moonlight Village",
                 "templateName": "Moonlight Village",
                 "pingRoles": [
