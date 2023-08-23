@@ -15,7 +15,7 @@ function peekMysql2Queue(q) {
 
 module.exports = {
     name: 'dbinfo',
-    role: 'assistantdev',
+    role: 'developer',
     description: 'Gets db stats',
     async execute(message, args, bot, db) {
         const config = {
