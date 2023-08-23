@@ -1001,9 +1001,9 @@ class afkCheck {
         await interaction.followUp({ embeds: [embed], components: [], ephemeral: true })
         await interaction.deleteReply()
 
-        const rows = await this.#db.promise().query(`SELECT * FROM miniBossEvent WHERE guildid = '${this.#guild.id}' AND raidid = '${this.#raidID}' AND miniboss = '${choice}'`)
-        rows[0].map(row => {
-            this.#db.query(`UPDATE users SET points = points + ${points} WHERE id = '${row.userid}'`)
+        const [rows] = await this.#db.promise().query('SELECT * FROM miniBossEvent WHERE guildid = ? AND raidid = ? AND miniboss = ?', [this.#guild.id, this.#raidID, choice])
+        rows.map(row => {
+            this.#db.query('UPDATE users SET points = points + ? WHERE id = ?', [points, row.userid])
             let user = this.#guild.members.cache.get(row.userid)
             try {
                 user.send(`Congratulations!\nYou have been awarded ${points} points for guessing the correct miniboss!\nThe Miniboss was ${choiceEmote} **${choicePrettyName}** ${choiceEmote}`)
@@ -1096,7 +1096,7 @@ class afkCheck {
         let cooldown = this.#botSettings.supporter[`supporterCooldownSeconds${supporterRole}`]
         let uses = this.#botSettings.supporter[`supporterUses${supporterRole}`]
         let lastUseCheck = Date.now() - (cooldown * 1000)
-        let [rows,] = await this.#db.promise().query(`SELECT * FROM supporterusage WHERE guildid = '${interaction.guild.id}' AND userid = '${interaction.member.id}' AND utime > '${lastUseCheck}'`)
+        let [rows,] = await this.#db.promise().query(`SELECT * FROM supporterusage WHERE guildid = ? AND userid = ? AND utime > ?`, [interaction.guild.id, interaction.member.id, lastUseCheck])
         if (rows.length >= uses) {
             let cooldown_text = ''
             if (cooldown < 3600) cooldown_text = `${(cooldown/60).toFixed(0)} minutes`
@@ -1119,8 +1119,8 @@ class afkCheck {
         }
         
         let points = 0
-        let [userRows,] = await this.#db.promise().query(`SELECT points FROM users WHERE id = '${interaction.member.id}'`)
-        if (userRows.length == 0) return this.#db.query(`INSERT INTO users (id) VALUES ('${interaction.member.id}')`)
+        let [userRows,] = await this.#db.promise().query('SELECT points FROM users WHERE id = ?', [interaction.member.id])
+        if (userRows.length == 0) return this.#db.query('INSERT INTO users (id) VALUES (?)', [interaction.member.id])
         points = userRows[0].points
 
         if (points < this.#botSettings.points.earlylocation) {
@@ -1308,9 +1308,9 @@ class afkCheck {
         else this.earlySlotMembers.forEach(id => this.members.push(id))
 
         for (let u of this.members) {
-            this.#db.query(`SELECT id FROM users WHERE id = '${u}'`, async (err, rows) => {
+            this.#db.query('SELECT id FROM users WHERE id = ?', [u], async (err, rows) => {
                 if (err) return
-                if (rows.length == 0) return this.#db.query(`INSERT INTO users (id) VALUES('${u}')`)
+                if (rows.length == 0) return this.#db.query('INSERT INTO users (id) VALUES(?)', [u])
             })
         }
         
@@ -1328,7 +1328,7 @@ class afkCheck {
                     default:
                         let points = this.#afkTemplate.buttons[i].points
                         if (this.#afkTemplate.buttons[i].type != AfkTemplate.TemplateButtonType.POINTS && this.#guild.members.cache.get(memberID).roles.cache.hasAny(...this.#afkTemplate.perkRoles.map(role => role.id))) points = points * this.#botSettings.points.supportermultiplier
-                        this.#db.query(`UPDATE users SET points = points + ${points} WHERE id = '${memberID}'`, (err, rows) => {
+                        this.#db.query('UPDATE users SET points = points + ? WHERE id = ?', [points, memberID], (err, rows) => {
                             if (err) return console.log(`error logging ${i} points in `, this.#guild.id)
                         })
                         pointsLog.push({ uid: memberID, points: points, reason: `${i}`})
@@ -1351,21 +1351,18 @@ class afkCheck {
             this.members = []
             this.#channel.members.forEach(m => this.members.push(m.id))
         }
+        await this.#db.promise().query('INSERT INTO completionruns (??) VALUES ?', [
+                                  ['userid', 'guildid',      'unixtimestamp', 'amount', 'templateid',                 'raidid',     'parenttemplateid'],
+            this.members.map(u => [u,        this.#guild.id, Date.now(),      1,        this.#afkTemplate.templateID, this.#raidID, this.#afkTemplate.parentTemplateID])
+        ])
+        if (this.#afkTemplate.logName) {
+            await this.#db.promise().query('UPDATE users SET ?? = ?? + 1 WHERE id IN (?)', [this.#afkTemplate.logName, this.#afkTemplate.logName, [...this.members]])
+        }
         for (let u of this.members) {
-            let completionrunsValueNames = `userid, guildid, unixtimestamp, amount, templateid, raidid, parenttemplateid`
-            let completionrunsValues = `'${u}', '${this.#guild.id}', '${Date.now()}', '1', '${this.#afkTemplate.templateID}', '${this.#raidID}', '${this.#afkTemplate.parentTemplateID}'`
-            this.#db.query(`INSERT INTO completionruns (${completionrunsValueNames}) VALUES (${completionrunsValues})`, (err, rows) => {
-                if (err) return console.log(`${u} could not be inserted into completionruns`)
-            })
-            if (this.#afkTemplate.logName) {
-                this.#db.query(`UPDATE users SET ${this.#afkTemplate.logName} = ${this.#afkTemplate.logName} + 1 WHERE id = '${u}'`, (err, rows) => {
-                    if (err) return console.log('error logging run completes in ', this.#guild.id)
-                })
-            }
             if (this.#botSettings.backend.points) {
                 let points = this.#botSettings.points.perrun
                 if (this.#guild.members.cache.get(u).roles.cache.hasAny(...this.#afkTemplate.perkRoles.map(role => role.id))) points = points * this.#botSettings.points.supportermultiplier
-                this.#db.query(`UPDATE users SET points = points + ${points} WHERE id = '${u}'`, (err, rows) => {
+                this.#db.query('UPDATE users SET points = points + ? WHERE id = ?', [points, u], (err, rows) => {
                     if (err) return console.log('error logging points for run completes in ', this.#guild.id)
                 })
             }
@@ -1383,10 +1380,13 @@ class afkCheck {
                     let [hasGottenMilestone,] = await this.#db.promise().query('SELECT * FROM milestoneAchievements WHERE userid = ? AND guildid = ? AND milestoneName = ? AND milestoneIndex = ?', [
                         u, this.#guild.id, milestoneName, index])
                     if (hasGottenMilestone.length > 0 && !isMilestoneRecurring) { continue }
-                    this.#db.query(`UPDATE users SET points = points + ${milestones[this.#guild.id][milestoneName].milestones[index].points} WHERE id = '${u}'`, (err, rows) => {
+                    this.#db.query('UPDATE users SET points = points + ? WHERE id = ?', [milestones[this.#guild.id][milestoneName].milestones[index].points, u], (err, rows) => {
                         if (err) return console.log('error logging points for milestones in ', this.#guild.id)
                     })
-                    this.#db.query(`INSERT INTO milestoneAchievements (userid, guildid, milestoneName, milestoneIndex) VALUES ('${u}', '${this.#guild.id}', '${milestoneName}', '${index}')`, (err, rows) => {
+                    this.#db.query('INSERT INTO milestoneAchievements (??) VALUES (?)', [
+                        ['userid', 'guildid', 'milestoneName', 'milestoneIndex'],
+                        [u, this.#guild.id, milestoneName, index]
+                    ], (err, rows) => {
                         if (err) return console.log(`error inserting ${u} into milestoneAchievements.\nUser ID: ${u}\nGuild ID: ${this.#guild.id}\nMilestone Name: ${milestoneName}\nMilestone Index: ${index}`)
                     })
                     this.#guild.members.cache.get(u).send(`Congratulations! You have completed the ${milestones[this.#guild.id][milestoneName].milestones[index].number} ${milestoneName} milestone! You have been awarded ${milestones[this.#guild.id][milestoneName].milestones[index].points} points!`)
