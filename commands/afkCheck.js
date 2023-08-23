@@ -460,7 +460,7 @@ class afkCheck {
     #genRaidInfoEmbed() {
         const embed = this.#genRaidCommandsEmbed()
         if (this.ended_by) {
-            if (this.pointlog_mid) embed.addFields({ name: 'Points Log MID', value: this.pointlog_mid })
+            if (this.#pointlog_mid) embed.addFields({ name: 'Points Log MID', value: this.#pointlog_mid })
 
             let raiders_text = `Raiders`
             let raiders_value = `None!`
