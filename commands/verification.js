@@ -37,7 +37,7 @@ module.exports = {
             .setTitle('Verification Steps')
             .setDescription(`**1.** Unprivate your discord PM's to ensure bot can reach you
             
-            **2** Log in to your realmeye page and unprivate everything except for \`last known location\`. If you do not have a password for realmeye, ingame type \`/tell MrEyeBall password\` to get one
+            **2** Log in to your realmeye page and unprivate everything except for \`last known location\`. If you do not have a password for realmeye, ingame type \`/tell MrEyeball password\` to get one
 
             **3.** React with the :white_check_mark: below
 
@@ -83,8 +83,8 @@ module.exports = {
 
             const staff = blGuild.members.cache.get(blInfo.modid);
             if (!staff || staff.id == bot.user.id || staff.roles.highest.comparePositionTo(bot.settings[blGuild.id].roles.security) < 0) {
-                 if (guild.id == botSettings.hallsId) return u.send(`You are currently blacklisted from the __${blGuild.name}__ server and cannot verify. The person who blacklisted you is no longer staff. Please DM any online security to appeal.`);
-                 return u.send(`You are currently blacklisted from the __${blGuild.name}__ server and cannot verify. The person who blacklisted you is no longer staff. Please DM me and send mod-mail to that server to appeal.`);
+                if (guild.id == botSettings.hallsId) return u.send(`You are currently blacklisted from the __${blGuild.name}__ server and cannot verify. The person who blacklisted you is no longer staff. Please DM any online security to appeal.`);
+                return u.send(`You are currently blacklisted from the __${blGuild.name}__ server and cannot verify. The person who blacklisted you is no longer staff. Please DM me and send mod-mail to that server to appeal.`);
             }
 
             return u.send(`You are currently blacklisted from the __${blGuild.name}__ server and cannot verify. Please contact ${staff} in order to appeal. If they do not reply within 48 hours, feel free to mod-mail the ${blGuild.name} server to get assistance.`);
@@ -166,8 +166,8 @@ module.exports = {
                 case 2:
                     LoggingEmbed.setDescription(`<@!${u.id}> was auto-denied because ${ign} is blacklisted`)
                     const blGuild = bot.guilds.cache.get(info.guildid);
-                    LoggingEmbed.addFields([{name: 'Server', value: blGuild ? blGuild.name : 'Unknown', inline: true}]);
-                    LoggingEmbed.addFields([{name: 'Security', value: `<@!${info.modid}>`, inline: true}]);
+                    LoggingEmbed.addFields([{ name: 'Server', value: blGuild ? blGuild.name : 'Unknown', inline: true }]);
+                    LoggingEmbed.addFields([{ name: 'Security', value: `<@!${info.modid}>`, inline: true }]);
 
                     if (!blGuild)
                         embed.setDescription(`You are currently blacklisted from verifying. Please DM me to contact mod-mail and find out why`);
@@ -176,7 +176,7 @@ module.exports = {
                         const blgsettings = bot.settings[blGuild.id];
                         const currently = blgsettings && staff && staff.roles.highest.comparePositionTo(blgsettings.roles.security) >= 0;
                         if (blGuild.id != guild.id)
-                            LoggingEmbed.addFields([{name: `Staff?`, value: currently ? '✅' : '❌', inline: true}]);
+                            LoggingEmbed.addFields([{ name: `Staff?`, value: currently ? '✅' : '❌', inline: true }]);
                         else if (!currently)
                             embed.setDescription(`You are currently blacklisted from the __${blGuild.name}__ server and cannot verify. The person who blacklisted you is no longer staff. Please DM me and send mod-mail to that server to appeal.`);
                         else
@@ -259,7 +259,7 @@ module.exports = {
             //check realmeye description for vericode
             let userInfo = await realmEyeScrape.getGraveyardSummary(ign).catch(er => {
                 //ErrorLogger.log(er, bot)
-                if (er.message == 'Unloaded Graveyard') {
+                if (er == 'Unloaded Graveyard') {
                     embed.setDescription(`Your graveyard is not loaded on realmeye or it is privated. If you are sure it is set to public then go to your graveyard and click on the button that says:\n\`Click here if you think that some of your deceased heros are still missing!\`\nOnce you are done, re-react with the ✅`)
                     embedMessage.edit({ embeds: [embed] })
                     LoggingEmbed.setDescription(`<@!${u.id}> Needs to load in their graveyard on their realmeye page *clicking the button*`)
@@ -365,7 +365,7 @@ module.exports = {
                 reason += '\n'
             })
             reason = reason.trim()
-            if (reason && reason != '') manualEmbed.addFields([{name: 'Problems', value: reason}])
+            if (reason && reason != '') manualEmbed.addFields([{ name: 'Problems', value: reason }])
             let m = await veripending.send({ embeds: [manualEmbed] })
             await m.react('🔑')
             module.exports.watchMessage(m, bot, db)
@@ -385,6 +385,7 @@ module.exports = {
             await member.setNickname(nick)
             setTimeout(async () => {
                 await member.roles.add(settings.roles.raider)
+                if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) await member.roles.remove(settings.roles.unverified)
                 if (settings.backend.giveeventroleonverification) member.roles.add(settings.roles.eventraider)
             }, 1000)
             db.query(`INSERT INTO users (id) VALUES ('${u.id}')`, err => {
@@ -486,6 +487,7 @@ module.exports = {
                     setTimeout(async () => {
                         await member.roles.add(settings.roles.raider)
                         if (settings.backend.giveeventroleonverification) member.roles.add(settings.roles.eventraider)
+                        if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) await member.roles.remove(settings.roles.unverified)
                     }, 1000)
                     //dm user
                     member.user.send(`You have been successfully verified in \`${message.guild.name}\`. Welcome! AFK-Checks work a little big different here, so make sure to read through the FAQ to learn more.${settings.backend.roleassignment ? ` To get pinged for specific afk checks, head over to <#${settings.channels.roleassignment}>` : null}`)
@@ -544,7 +546,10 @@ module.exports = {
                             if (role && settings.backend.giveEventRoleOnDenial2) {
                                 await member.setNickname(nick)
                                 //give user event raider role
-                                setTimeout(() => { member.roles.add(settings.roles.eventraider) }, 1000)
+                                setTimeout(async () => {
+                                    await member.roles.add(settings.roles.eventraider)
+                                    if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) await member.roles.remove(settings.roles.unverified)
+                                }, 1000)
                                 er_msg = 'For now, you have been given access to the events section to participate in non-Lost Halls dungeons.';
                             } else {
                                 db.query(`INSERT INTO veriblacklist (id, modid, guildid, reason) VALUES ('${member.id}', '${reactor.id}', '${message.guild.id}', 'Reacted with 2️⃣ to verification.'),('${ign.toLowerCase()}', '${reactor.id}', '${message.guild.id}', 'Reacted with 2️⃣ to verification.')`)
@@ -623,7 +628,7 @@ module.exports = {
             let i = 0
             uniqueNames.forEach(nick => {
                 if (i >= 9) return
-                embed.addFields([{name: numberToEmoji(i), value: nick, inline: true}])
+                embed.addFields([{ name: numberToEmoji(i), value: nick, inline: true }])
                 i++;
             })
             let m = await u.send({ embeds: [embed] })
@@ -657,7 +662,7 @@ module.exports = {
         let currentweekverificationname, verificationtotalname
         for (let i in VerificationCurrentWeek) {
             i = VerificationCurrentWeek[i]
-            if (message.guild.id == i.id && !i.disabled) { 
+            if (message.guild.id == i.id && !i.disabled) {
                 currentweekverificationname = i.verificationcurrentweek
                 verificationtotalname = i.verificationtotal
             }

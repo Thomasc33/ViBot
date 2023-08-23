@@ -1,5 +1,7 @@
 const Discord = require('discord.js');
 const ErrorLogger = require('../lib/logError');
+const cron = require('cron');
+const moment = require('moment')
 
 module.exports = {
     name: 'test',
@@ -8,6 +10,9 @@ module.exports = {
     guildspecific: true,
     role: 'developer',
     async execute(message, args, bot, db) {
-        message.channel.send('Test')
+        let members = await message.guild.members.fetch()
+        let memberDefault = await message.guild.members.cache
+        await message.reply(`${members.size}`)
+        await message.reply(`${memberDefault.size}`)
     }
 }

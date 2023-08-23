@@ -43,14 +43,14 @@
             ]
         },
         {
-            "name": "regular or advanced",
+            "name": "regular or Exalted",
             "aliases": [
-                "r/a",
-                "a/r"
+                "r/e",
+                "e/r"
             ],
             "reacts": [
                 {
-                    "name": "Advanced",
+                    "name": "Exalted",
                     "emoji": "A_"
                 },
                 {
@@ -148,14 +148,14 @@
             ]
         },
         {
-            "name": "regular or advanced",
+            "name": "regular or Exalted",
             "aliases": [
-                "r/a",
-                "a/r"
+                "r/e",
+                "e/r"
             ],
             "reacts": [
                 {
-                    "name": "Advanced",
+                    "name": "Exalted",
                     "emoji": "A_"
                 },
                 {

@@ -18,13 +18,13 @@ module.exports = {
         slashArg(SlashArgType.String, 'type', {
             description: 'Type of log to change',
         }),
-        slashArg(SlashArgType.Number, 'number', {
+        slashArg(SlashArgType.Integer, 'number', {
             description: 'Number of logs to change'
         })
     ],
     requiredArgs: 4,
-    getNotes(guildid, member) {
-        return getLogTypes(guildid) ? getLogTypes(guildid).toString() : `Not setup for guild ${guildid}`
+    getNotes(guild, member, bot) {
+        return getLogTypes(guild.id) ? getLogTypes(guild.id).toString() : `Not setup for guild ${guild.id}`
     },
     getSlashCommandData(guild) {
         let json = slashCommandJSON(this, guild)

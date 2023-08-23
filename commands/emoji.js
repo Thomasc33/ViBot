@@ -17,7 +17,7 @@ module.exports = {
         switch (choice.toLowerCase()) {
             case 'update':
                 try {
-                    this.update(message, bot)
+                    this.update(bot)
                     await message.channel.send('Updated ViBots emoji database successfully')
                 } catch (error) {
                     ErrorLogger.log(error, bot, message.guild)

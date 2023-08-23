@@ -8,8 +8,8 @@ module.exports = {
     args: '<type> [mention for assists] (#)',
     requiredArgs: 1,
     role: 'eventrl',
-    getNotes(guildid, member) {
-        return `Types: ${logs[guildid].main.map(log => log.key + ' (' + log.name + ')').join(', ')}`
+    getNotes(guild, member, bot) {
+        return logs[guild.id] ? `Types: ${logs[guild.id].main.map(log => log.key + ' (' + log.name + ')').join(', ')}` : 'No loginfo for this server'
     },
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
@@ -30,7 +30,6 @@ module.exports = {
 
         //count
         if (args[args.length - 1].replace(/^\d{1,2}$/, '') == '') {
-            console.log('found ' + args[args.length - 1]);
             count = args[args.length - 1]
             if (run.weight) count = count * run.weight
         }
@@ -43,7 +42,7 @@ module.exports = {
 
         //send query
         promises.push(new Promise(res => {
-            db.query(`INSERT INTO loggedusage (logged, userid, guildid, utime) VALUES ('${run.name}', '${message.member.id}', '${message.guild.id}', '${Date.now()}')`);
+            db.query(`INSERT INTO loggedusage (logged, userid, guildid, utime, amount) VALUES ('${run.name}', '${message.member.id}', '${message.guild.id}', '${Date.now()}', '${count}')`);
             db.query(`UPDATE users SET ${run.main} = ${run.main} + ${count}, ${run.currentweek} = ${run.currentweek} + ${count} WHERE id = '${message.author.id}'`, (err, rows) => {
                 //return if any errors
                 if (err) { res(null); return message.channel.send(`Error: ${err}`) }

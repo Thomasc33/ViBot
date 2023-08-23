@@ -23,15 +23,18 @@ async function tryUnsuspend(bot, g, row, isVetBan) {
             setTimeout(() => { member.roles.add(settings.roles.vetraider); }, 1000)
             setTimeout(() => {
                 if (!member.roles.cache.has(settings.roles.vetraider)) {member.roles.add(settings.roles.vetraider).catch(er => ErrorLogger.log(er, bot, g))}
+                if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) member.roles.remove(settings.roles.unverified)
             }, 5000)
         } else {
             const roles = []
             const rolesString = row.roles;
             rolesString.split(' ').forEach(r => { if (r !== '') roles.push(r) })
 
-            await member.edit({ roles }).catch(er => ErrorLogger.log(er, bot, g))
-            setTimeout(() => {
-                if (member.roles.cache.has(settings.roles.tempsuspended)) {member.edit({ roles }).catch(er => ErrorLogger.log(er, bot, g))}
+            await member.roles.add(roles).catch(er => ErrorLogger.log(er, bot, g));
+            setTimeout(async () => {
+                if (member.roles.cache.has(settings.roles.tempsuspended)) await member.roles.remove(settings.roles.tempsuspended).catch(er => ErrorLogger.log(er, bot, g));
+                if (member.roles.cache.has(settings.roles.permasuspended)) await member.roles.remove(settings.roles.permasuspended);
+                if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) await member.roles.remove(settings.roles.unverified)
             }, 5000)
         }
 

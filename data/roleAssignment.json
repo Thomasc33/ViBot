@@ -7,28 +7,16 @@
             "emoji": "<:malus:701491230332157972>"
         },
         {
+            "role": "fameReact",
+            "name": "Fame Runs",
+            "emojiId": "1024104144845406248",
+            "emoji": "<:fame:1024104144845406248>"
+        },
+        {
             "role": "voidping",
             "name": "Voids",
             "emojiId": "701491230210523247",
             "emoji": "<:void:701491230210523247>"
-        },
-        {
-            "role": "shattsReact",
-            "name": "Shatters",
-            "emojiId": "1008068892071055512",
-            "emoji": "<:forgottenking:1008068892071055512>"
-        },
-        {
-            "role": "nestReact",
-            "name": "Nests",
-            "emojiId": "723001215407095899",
-            "emoji": "<:nest:723001215407095899>"
-        },
-        {
-            "role": "fungalReact",
-            "name": "Fungals",
-            "emojiId": "723001215696240660",
-            "emoji": "<:fungal:723001215696240660>"
         },
         {
             "role": "fskipReact",
@@ -37,10 +25,28 @@
             "emoji": "<:SkipBoi:701491230391140453>"
         },
         {
-            "role": "fameReact",
-            "name": "Fame Runs",
-            "emojiId": "1024104144845406248",
-            "emoji": "<:fame:1024104144845406248>"
+            "role": "shattsReact",
+            "name": "Shatters",
+            "emojiId": "1008068892071055512",
+            "emoji": "<:forgottenking:1008068892071055512>"
+        },
+        {
+            "role": "accursedReact",
+            "name": "Accursed",
+            "emojiId": "1142347997670289471",
+            "emoji": "<:accursedKing:1142347997670289471>"
+        },
+        {
+            "role": "nestReact",
+            "name": "Nests",
+            "emojiId": "723001215407095899",
+            "emoji": "<:nest:723001215407095899>"
+        },
+        {
+            "role": "advancedNestPing",
+            "name": "Advanced Nests",
+            "emojiId": "1135560355750359050",
+            "emoji": "<:advancedNestPortal:1135560355750359050>"
         },
         {
             "role": "steamworksping",
@@ -49,10 +55,28 @@
             "emoji": "<a:steamworksPortal:1050156386547413012>"
         },
         {
+            "role": "advancedSteamworksPing",
+            "name": "Advanced Steamworks",
+            "emojiId": "1129901525674758274",
+            "emoji": "<:advancedSteamworks:1129901525674758274>"
+        },
+        {
+            "role": "fungalReact",
+            "name": "Fungals",
+            "emojiId": "723001215696240660",
+            "emoji": "<:fungal:723001215696240660>"
+        },
+        {
             "role": "moonlightping",
             "name": "Moonlight",
             "emojiId": "1090163554872737866",
             "emoji": "<:mv:1090163554872737866>"
+        },
+        {
+            "role": "eventBoiPing",
+            "name": "Miscellaneous Dungeons",
+            "emojiId": "723001215184535553",
+            "emoji": "<:pcave:723001215184535553>"
         }
     ],
     "708026927721480254": [
@@ -99,28 +123,16 @@
             "emoji": "<:malus:701491230332157972>"
         },
         {
+            "role": "fameReact",
+            "name": "Fame Runs",
+            "emojiId": "1024104144845406248",
+            "emoji": "<:fame:1024104144845406248>"
+        },
+        {
             "role": "voidping",
             "name": "Voids",
             "emojiId": "701491230210523247",
             "emoji": "<:void:701491230210523247>"
-        },
-        {
-            "role": "shattsReact",
-            "name": "Shatters",
-            "emojiId": "1008068892071055512",
-            "emoji": "<:forgottenking:1008068892071055512>"
-        },
-        {
-            "role": "nestReact",
-            "name": "Nests",
-            "emojiId": "723001215407095899",
-            "emoji": "<:nest:723001215407095899>"
-        },
-        {
-            "role": "fungalReact",
-            "name": "Fungals",
-            "emojiId": "723001215696240660",
-            "emoji": "<:fungal:723001215696240660>"
         },
         {
             "role": "fskipReact",
@@ -129,10 +141,28 @@
             "emoji": "<:SkipBoi:701491230391140453>"
         },
         {
-            "role": "fameReact",
-            "name": "Fame Runs",
-            "emojiId": "1024104144845406248",
-            "emoji": "<:fame:1024104144845406248>"
+            "role": "shattsReact",
+            "name": "Shatters",
+            "emojiId": "1008068892071055512",
+            "emoji": "<:forgottenking:1008068892071055512>"
+        },
+        {
+            "role": "accursedReact",
+            "name": "Accursed",
+            "emojiId": "1142347997670289471",
+            "emoji": "<:accursedKing:1142347997670289471>"
+        },
+        {
+            "role": "nestReact",
+            "name": "Nests",
+            "emojiId": "723001215407095899",
+            "emoji": "<:nest:723001215407095899>"
+        },
+        {
+            "role": "advancedNestPing",
+            "name": "Advanced Nests",
+            "emojiId": "1135560355750359050",
+            "emoji": "<:advancedNestPortal:1135560355750359050>"
         },
         {
             "role": "steamworksping",
@@ -141,10 +171,28 @@
             "emoji": "<a:steamworksPortal:1050156386547413012>"
         },
         {
+            "role": "advancedSteamworksPing",
+            "name": "Advanced Steamworks",
+            "emojiId": "1129901525674758274",
+            "emoji": "<:advancedSteamworks:1129901525674758274>"
+        },
+        {
+            "role": "fungalReact",
+            "name": "Fungals",
+            "emojiId": "723001215696240660",
+            "emoji": "<:fungal:723001215696240660>"
+        },
+        {
             "role": "moonlightping",
             "name": "Moonlight",
             "emojiId": "1090163554872737866",
             "emoji": "<:mv:1090163554872737866>"
+        },
+        {
+            "role": "eventBoiPing",
+            "name": "Miscellaneous Dungeons",
+            "emojiId": "723001215184535553",
+            "emoji": "<:pcave:723001215184535553>"
         }
     ]
 }

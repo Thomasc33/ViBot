@@ -119,7 +119,7 @@ module.exports = {
             }
             //Timestamp embed end
             const combine = quota.values.map(v => `(${v.column}*${v.value})`).join(' + ') + ' as total';
-            const query = db.query(`SELECT id, ` + quota.values.map(v => v.column).join(', ') + `, ${combine} FROM Users WHERE ` + quota.values.map(v => `${v.column} != 0`).join(' OR ') + ` order by total desc`, async (err, rows) => {
+            const query = db.query(`SELECT id, ` + quota.values.map(v => v.column).join(', ') + `, ${combine} FROM users WHERE ` + quota.values.map(v => `${v.column} != 0`).join(' OR ') + ` order by total desc`, async (err, rows) => {
                 if (err) return reject(err);
                 let runCount = 0;
                 for (const idx in rows) {

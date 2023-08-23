@@ -7,9 +7,10 @@ module.exports = {
     role: 'eventrl',
     description: 'Warns a user for a given reason',
     alias: ['swarn'],
+    args: "<user> <reason>",
     varargs: true,
-    requiredArgs: 1,
-    getNotes(guildid, member) {
+    requiredArgs: 2,
+    getNotes(guild, member, bot) {
         return 'Using swarn will silently warn, not sending the user a message.'
     },
     args: [

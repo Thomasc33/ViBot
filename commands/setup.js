@@ -1,16 +1,24 @@
 const fs = require('fs')
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
-const roles = ['admin', 'moderator', 'officer', 'headrl', 'headdev', 'assistantdev', 'vetrl', 'fsvrl', 'mrvrl', 'security', 'fullskip', 'developer', 'rl', 'almostrl',
+const roles = [
+    'admin', 'moderator', 'officer', 'headrl', 'headdev', 'assistantdev', 'vetrl', 'fsvrl', 'mrvrl', 'security', 'fullskip', 'developer', 'rl', 'almostrl',
     'trialrl', 'headeventrl', 'eventrl', 'minimumStaffRole',
-    'rusher', 'lol', 'accursed', 'vetraider', 'raider', 'eventraider', 'muted',
-    'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'keyjesus', 'moddedkey', 'topkey', 'bottomkey', 'cultping', 'voidping', 'shattsReact', 'fungalReact', 'nestReact',
-    'fskipReact', 'fameReact', 'rcPing', 'o3Ping', 'eventBoi', 'veteventrl',
-    'priest', 'warden', 'vetaffiliate', 'affiliatestaff', `toprune`, `bottomrune`, 'helper', 'steamworksping', 'moonlightping', 'supporterTierOne', 'supporterTierTwo', 'supporterTierThree', 'supporterTierFour', 'supporterTierFive', 'supporterTierSix']
+    'rusher', 'lol', 'accursed', 'vetraider', 'vetraider2', 'vetraider3', 'vetraider4', 'vetraider5', 'raider', 'eventraider', 'muted',
+    'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'keyjesus', 'moddedkey', 'topkey', 'bottomkey', 'cultping', 'voidping', 'shattsReact', 'hmShattsReact', 'fungalReact', 'nestReact',
+    'fskipReact', 'fameReact', 'accursedReact', 'rcPing', 'o3Ping', 'eventBoi', 'veteventrl', 'lostboomer',
+    'priest', 'warden', 'vetaffiliate', 'affiliatestaff', `toprune`, `bottomrune`, 'helper', 'steamworksping', 'moonlightping', 'eventBoiPing', 'advancedSteamworksPing', 'advancedNestPing',
+    'almostShattersBanner', 'almostMoonlightBanner', 'hallsBanner', 'shattersBanner', 'fullskipBanner', 'hmShattersBanner', 'moonlightBanner', 'vetHallsBanner', 'vetShattersBanner', 'vetFullskipBanner', 'vetHmShattersBanner', 'vetMoonlightBanner',
+    'supporterTierOne', 'supporterTierTwo', 'supporterTierThree', 'supporterTierFour', 'supporterTierFive', 'supporterTierSix', 'unverified',
+    'motmgTeam1', 'motmgTeam2', 'motmgTeam3', 'motmgTeam4', 'motmgTeam5', 'motmgTeam6', 'motmgTeam7', 'motmgTeam8', 'motmgTeam9', 'motmgTeam10',
+    'motmgTeam11', 'motmgTeam12', 'motmgTeam13', 'motmgTeam14', 'motmgTeam15', 'motmgTeam16', 'motmgTeam17', 'motmgTeam18', 'motmgTeam19', 'motmgTeam20',
+    'motmgTeam21', 'motmgTeam22', 'motmgTeam23', 'motmgTeam24', 'motmgTeam25', 'motmgTeam26', 'motmgTeam27', 'motmgTeam28', 'motmgTeam29', 'motmgTeam30'
+]
 const channels = ['modmail', 'verification', 'manualverification', 'vetverification', 'manualvetverification', 'verificationlog', 'accursedverification', 'activeverification', 'modlogs', 'history', 'suspendlog',
     'viallog', 'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel', 'raidstatus', 'eventstatus',
     'vetstatus', 'exaltstatus', 'raidcommands', 'eventcommands', 'vetcommands', 'accursedcommands', 'accursedstatus', 'raidingchannels', 'eventchannels', 'vetchannels', 'runlogs', 'dmcommands', 'veriactive', 'pointlogging',
-    'veriattempts', 'modmailinfo', 'parsecurrentweek', 'pastparseweeks', 'roleassignment', 'botstatus', 'keyalerts', 'activitylog', 'raidingrules', 'forwardedModmailMessage']
+    'veriattempts', 'modmailinfo', 'parsecurrentweek', 'pastparseweeks', 'roleassignment', 'botstatus', 'keyalerts', 'activitylog', 'raidingrules',
+    'forwardedModmailMessage', 'motmgLeaderboard']
 const categories = ['raiding', 'veteran', 'event']
 const voice = ['raidingtemplate', 'eventtemplate', 'vettemplate', 'accursedtemplate','veteventtemplate', 'lounge', 'vetlounge', 'eventlounge', 'afk',
     'raiding1', 'raiding2', 'raiding3', 'raiding4', 'raiding5', 'raiding6', 'raiding7', 'raiding8', 'raiding9',
@@ -19,17 +27,20 @@ const voice = ['raidingtemplate', 'eventtemplate', 'vettemplate', 'accursedtempl
 const voiceprefixes = ['raidingprefix', 'vetprefix']
 const backend = ['modmail', 'currentweek', 'eventcurrentweek', 'parsecurrentweek', 'verification', 'vetverification', 'points', 'supporter', 'roleassignment', 'realmeyestats', 'automod', 'removekeyreacts', 'characterparse', 'forwadedMessageThumbsUpAndDownReactions',
     'giveeventroleonverification', 'eventcurrentweekdisplaysalleventrl', 'upgradedCheck', 'raidResetMonthly', 'eventResetMonthly', 'parseResetMonthly', 'exaltedEvents', 'sendmissedquota',
-    'exaltsInRSA', 'allowAdvancedRuns', 'raidResetBiweekly', 'eventResetBiweekly', 'parseResetBiweekly', 'onlyUpperStaffSuspendStaff', 'giveEventRoleOnDenial2', 'disableEventsFromHeadcounts',
-    'useStaticVCForRaiding']
+    'exaltsInRSA', 'allowAdvancedRuns', 'allowExaltedRuns', 'raidResetBiweekly', 'eventResetBiweekly', 'parseResetBiweekly', 'onlyUpperStaffSuspendStaff', 'giveEventRoleOnDenial2', 'disableEventsFromHeadcounts',
+    'useStaticVCForRaiding', 'useUnverifiedRole', 'punishmentsWarnings', 'punishmentsSuspensions', 'punishmentsMutes', 'allowAdditionalCompletes', 'miniBossGuessing']
 const numerical = ['afktime', 'eventafktime', 'topkey', 'bottomkey', 'ticketlimit', 'supporterlimit', 'keyalertsage', 'waitnewkeyalert', 'prunerushersoffset',
-    `toprune`, `bottomrune`]
+    `toprune`, `bottomrune`,
+    `milestoneStartTimestamp`, 'timestamp1', 'timestamp2', 'timestamp3', 'timestamp4', 'timestamp5', 'timestamp6', 'timestamp7',
+    `timestamp8`, 'timestamp9', 'timestamp10', 'timestamp11', 'timestamp12', 'timestamp13', 'timestamp14', 'timestamp15']
 const runreqs = ['weapon', 'ability', 'armor', 'ring']
 const autoveri = ['fame', 'stars', 'realmage', 'discordage', 'deathcount']
 const vetverireqs = ['maxed', 'meleemaxed', 'runs']
 const points = ['earlylocation', 'perrun', 'supportermultiplier', 'keypop', 'vialpop', 'rushing', 'brain', 'mystic', 'eventkey', 'cultlocation', 'voidlocation', 'fsvlocation', 'o3streaming',
-    'o3trickster', 'o3puri', 'exaltkey', 'shattskey', 'fungalkey', 'nestkey', 'keymultiplier', 'runepop', 'steamworkkey', 'moonlightkey']
+    'o3trickster', 'o3puri', 'exaltkey', 'shattskey', 'fungalkey', 'nestkey', 'keymultiplier', 'runepop', 'incpop', 'steamworkkey',
+    'moonlightkey', 'miniBossGuessingPoints']
 const lists = ['earlyLocation', 'runningEvents', 'warningRoles', 'perkRoles', 'discordRoles', 'commendRoles']
-const strings = ['hallsAccursedReqsImage', 'hallsAdvancedReqsImage', 'exaltsAdvancedReqsImage']
+const strings = ['hallsAccursedReqsImage', 'hallsAdvancedReqsImage', 'exaltsAdvancedReqsImage', 'hallsExaltedReqsImage', 'exaltsExaltedReqsImage', 'vetVerifyDeniedMessage']
 const quotapoints = ['voidLeading', 'cultLeading', 'shattersLeading', 'oryx3Leading', 'fungalLeading', 'nestLeading', 'steamworkLeading',
 'eventLeading', 'failedRun', 'feedback', 'feedbackOnFeedback', 'assist', 'parsing', 'rolledquota', 'rlWeeklyQuota', 'arlWeeklyQuota', 'securityWeeklyQuota', 'wardenWeeklyQuota',
 'eventrlWeeklyQuota', 'arlVote']
@@ -37,11 +48,13 @@ const modmail = ['sendMessage', 'forwardMessage', 'closeModmail', 'blacklistUser
 const supporter = ['supporterCooldownSeconds1', 'supporterCooldownSeconds2', 'supporterCooldownSeconds3', 'supporterCooldownSeconds4', 'supporterCooldownSeconds5', 'supporterCooldownSeconds6',
     'supporterUses1', 'supporterUses2', 'supporterUses3', 'supporterUses4', 'supporterUses5', 'supporterUses6', 
     'supporterLimit1', 'supporterLimit2', 'supporterLimit3', 'supporterLimit4', 'supporterLimit5', 'supporterLimit6']
+const rolePermissions = ['punishmentsWarnings', 'punishmentsSuspensions', 'punishmentsMutes']
 var commands = []
 var commandsRolePermissions = []
 
 const menus = ['roles', 'channels', 'voice', 'voiceprefixes', 'backend', 'numerical', 'runreqs', 'autoveri',
-'vetverireqs', 'points', 'commands', 'categories', 'lists', 'strings', 'quotapoints', 'modmail', 'commandsRolePermissions', 'supporter']
+'vetverireqs', 'points', 'commands', 'categories', 'lists', 'strings', 'quotapoints', 'modmail', 'commandsRolePermissions', 'supporter',
+'rolePermissions']
 
 module.exports = {
     name: 'setup',
@@ -93,6 +106,7 @@ module.exports = {
                         case '16': menu(modmail, 'modmail', 'boolean'); break;
                         case '17': menu(commandsRolePermissions, 'commandsRolePermissions', 'string'); break;
                         case '18': menu(supporter, 'supporter', 'int'); break;
+                        case '19': menu(rolePermissions, 'rolePermissions', 'string'); break;
                     }
                 }
                 /**
@@ -106,7 +120,11 @@ module.exports = {
                         .setDescription(`\`\`\`coffeescript\nPlease select what you wish to edit`)
                     let fieldIndex = 0;
                     let padSize = 0;
-                    for (let i in array) { if (padSize < array[i].length) { padSize = array[i].length; } }
+                    for (let i in array) {
+                        if (padSize < array[i].length) {
+                            padSize = array[i].length;
+                        }
+                    }
                     padSize = padSize + 3;
                     for (let i in array) {
                         settings = bot.settings[message.guild.id]
@@ -123,7 +141,7 @@ module.exports = {
                     setupEmbed.data.description += `\n\`\`\``
                     for (let i = 0; i < fieldIndex + 1; i++) if (setupEmbed.data.fields && setupEmbed.data.fields[i]) setupEmbed.data.fields[i].value += '```'
                     await setupMessage.edit({ embeds: [setupEmbed] })
-                    let menuCollector = new Discord.MessageCollector(message.channel, m => m.author.id == message.author.id)
+                    let menuCollector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id == message.author.id })
                     menuCollector.on('collect', async m => {
                         let num = m.content
                         if (m.content.replace(/[^0-9]/g, '') != m.content) {
@@ -142,7 +160,7 @@ module.exports = {
                                 if (mes.content.toLowerCase() == 'cancel') {
                                     setupMessage.delete()
                                     message.react('✅')
-                                    menuCollector.stop()
+                                    menuMessageCollector.stop()
                                 } else {
                                     let change = `\`\`\`coffeescript\n${array[parseInt(num) - 1]}: ${bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]]} -> ${mes.content}\`\`\``
                                     switch (type) {
@@ -205,7 +223,7 @@ module.exports = {
                                         if (mes.content.toLowerCase() == 'cancel') {
                                             setupMessage.delete()
                                             message.react('✅')
-                                            collector.stop()
+                                            newCollector.stop()
                                         } else {
                                             change = `\`\`\`coffeescript\n${mes.content} added to ${arrayName}\`\`\``
                                             bot.settings[message.guild.id][arrayName][[array[parseInt(num) - 1]]].push(mes.content)
@@ -294,7 +312,9 @@ module.exports = {
                 strings: {},
                 quotapoints: {},
                 modmail: {},
-                commandsRolePermissions: {}
+                commandsRolePermissions: {},
+                supporter: {},
+                rolePermissions: {}
             }
         }
         for (let i of menus) {
@@ -365,11 +385,20 @@ module.exports = {
                 bot.settings[guild.id].points[r] = getDefaultPointValue(r)
             }
         }
+        for (let key in bot.settings[guild.id].points) {
+            if (!points.includes(key)) { delete bot.settings[guild.id].points[key] }
+        }
         for (let i of commands) {
             if (!bot.settings[guild.id].commands[i] && bot.settings[guild.id].commands[i] !== false) bot.settings[guild.id].commands[i] = bot.commands.get(i).guildSpecific ? false : true //this might not work lol
         }
+        for (let key in bot.settings[guild.id].commands) {
+            if (!commands.includes(key)) { delete bot.settings[guild.id].commands[key] }
+        }
         for (let i of commandsRolePermissions) {
             if (!bot.settings[guild.id].commandsRolePermissions[i] && bot.settings[guild.id].commandsRolePermissions[i] !== false) bot.settings[guild.id].commandsRolePermissions[i] = null
+        }
+        for (let key in bot.settings[guild.id].commandsRolePermissions) {
+            if (!commands.includes(key)) { delete bot.settings[guild.id].commandsRolePermissions[key] }
         }
         for (let i of categories) {
             if (!bot.settings[guild.id].categories[i]) bot.settings[guild.id].categories[i] = getDefaultCategoryName(i)
@@ -397,6 +426,9 @@ module.exports = {
             if (!bot.settings[guild.id].supporter[supporter[i]]) {
                 bot.settings[guild.id].supporter[supporter[i]] = 0
             }
+        }
+        for (let i of rolePermissions) {
+            if (!bot.settings[guild.id].rolePermissions[i]) bot.settings[guild.id].rolePermissions[i] = null
         }
         fs.writeFileSync('./guildSettings.json', JSON.stringify(bot.settings, null, 4), err => message.channel.send(err.toString()))
     }
@@ -588,7 +620,7 @@ function getDefaultPointValue(name) {
         case 'nestkey': return 5;
         case 'keymultiplier': return 2;
         case 'runepop': return 20;
-        case 'incpop': return 0;
+        case 'incpop': return 5;
         case 'steamworkkey': return 5;
         case 'moonlightkey': return 5;
     }

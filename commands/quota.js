@@ -11,8 +11,8 @@ module.exports = {
     description: 'Updates the current week stats or force starts the next week',
     role: 'developer',
     requiredArgs: 1,
-    getNotes(guildid) {
-        return `Available Quotas: ${quotas[guildid] && quotas[guildid].quotas.length ? quotas[guildid].quotas.map(q => q.id).join(', ') : 'None'}`;
+    getNotes(guild, member, bot) {
+        return `Available Quotas: ${quotas[guild.id] && quotas[guild.id].quotas.length ? quotas[guild.id].quotas.map(q => q.id).join(', ') : 'None'}`;
     },
     async execute(message, args, bot, db) {
         const settings = bot.settings[message.guild.id];
@@ -164,7 +164,7 @@ module.exports = {
             if (emojiList.length > 0) { fitStringIntoEmbed(embeds, embed, emojiList.join('\n') + '\n') }
             const combine = quota.values.map(v => `(${v.column}*${v.value})`).join(' + ') + ' as total';
             const unrolled = quota.values.filter(v => !v.rolling).map(v => `(${v.column}*${v.value})`).join(' + ') + ' as unrolled';
-            const query = db.query(`SELECT id, ` + quota.values.map(v => v.column).join(', ') + `, ${combine}, ${unrolled} FROM Users WHERE ` + quota.values.map(v => `${v.column} != 0`).join(' OR ') + ` order by total desc`, async (err, rows) => {
+            const query = db.query(`SELECT id, ` + quota.values.map(v => v.column).join(', ') + `, ${combine}, ${unrolled} FROM users WHERE ` + quota.values.map(v => `${v.column} != 0`).join(' OR ') + ` order by total desc`, async (err, rows) => {
                 if (err) return reject(err);
                 let runCount = 0;
                 const roles = quota.roles.map(r => channel.guild.roles.cache.get(settings.roles[r])?.id).filter(r => r);

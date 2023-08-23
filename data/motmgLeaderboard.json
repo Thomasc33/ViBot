@@ -1,0 +1,37 @@
+{
+    "343704644712923138": {
+        "Nest": {
+            "emoji" : "nest",
+            "databaseColumn": "nest"
+        },
+        "Fungal": {
+            "emoji" : "fungal",
+            "databaseColumn": "fungal"
+        },
+        "Cult": {
+            "emoji" : "cultist",
+            "databaseColumn": "cult"
+        },
+        "Void": {
+            "emoji" : "void",
+            "databaseColumn": "void"
+        },
+        "Kogbold": {
+            "emoji" : "steamworksPortal",
+            "databaseColumn": "kogbold steamworks"
+        },
+        "Moonlight": {
+            "emoji" : "mv",
+            "databaseColumn": "moonlight village"
+        },
+        "Shatters": {
+            "emoji" : "shatters",
+            "databaseColumn": "shatters"
+        },
+        "Parsing": {
+            "emoji" : "parse",
+            "databaseColumn": "parseMembers"
+        }
+    },
+    "701483950559985705": { "__REDIRECTION": "343704644712923138" }
+}

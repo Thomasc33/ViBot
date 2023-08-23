@@ -10,8 +10,8 @@ module.exports = {
     name: 'pop',
     description: 'Logs key pops',
     args: '<keytype> <user> (count)',
-    getNotes(guildid, u) {
-        return keypops[guildid] ? Object.keys(keypops[guildid]).toString() : `not setup for guild ${guildid}`
+    getNotes(guild, member, bot) {
+        return keypops[guild.id] ? Object.keys(keypops[guild.id]).toString() : `not setup for guild ${guild.id}`
     },
     requiredArgs: 2,
     role: 'eventrl',
@@ -22,7 +22,7 @@ module.exports = {
         slashArg(SlashArgType.User, 'user', {
             description: "The key popper"
         }),
-        slashArg(SlashArgType.Number, 'count', {
+        slashArg(SlashArgType.Integer, 'count', {
             required: false,
             description: "The number of keys to add (default 1)"
         }),
@@ -46,28 +46,41 @@ module.exports = {
 
         //Validate Command Arguments
         if (!keypops[message.guild.id]) return message.replyUserError('Key information missing for this guild')
-        let keyInfo = findKey(message.guild.id, args[0].toLowerCase())
+        let keyInfo = module.exports.findKey(message.guild.id, args[0].toLowerCase())
         if (!keyInfo) return message.replyUserError(`\`${args[0]}\` not recognized`)
 
         //Create Discord Embed Confirmation
         let confirmEmbed = new Discord.EmbedBuilder()
             .setColor('#ff0000')
             .setDescription(`Are you sure you want to log \`\`${count}\`\` **${keyInfo.name}** pops for ${user.nickname}?\n\nPlease select which key.`)
+        
+        // add buttons initialized with regular key button
         const buttons = new Discord.ActionRowBuilder()
                                 .addComponents(
                                     new Discord.ButtonBuilder()
                                         .setCustomId('Regular Key')
                                         .setLabel('Regular Key')
                                         .setStyle(Discord.ButtonStyle.Primary),
-                                    new Discord.ButtonBuilder()
-                                        .setCustomId('Modded Key')
-                                        .setLabel('Modded Key')
-                                        .setStyle(Discord.ButtonStyle.Primary),
-                                    new Discord.ButtonBuilder()
-                                            .setCustomId('Cancelled')
-                                            .setLabel('❌ Cancel')
-                                            .setStyle(Discord.ButtonStyle.Danger)
                                 );
+        
+        // only add modded button if the key is able to be modded                    
+        if (keyInfo.modded) {
+            buttons.addComponents(
+                new Discord.ButtonBuilder()
+                    .setCustomId('Modded Key')
+                    .setLabel('Modded Key')
+                    .setStyle(Discord.ButtonStyle.Primary)
+            );
+        }
+
+        // add cancel button to the end
+        buttons.addComponents(
+            new Discord.ButtonBuilder()
+                .setCustomId('Cancelled')
+                .setLabel('❌ Cancel')
+                .setStyle(Discord.ButtonStyle.Danger)
+        );
+
         const reply = await message.reply({ embeds: [confirmEmbed], components: [ buttons ], ephemeral: true })
         createReactionRow(reply, module.exports.name, 'handleButtons', buttons, message.author, {userId: user.id, keyInfo: keyInfo, count: count})
     },
@@ -76,6 +89,7 @@ module.exports = {
         const count = state.count
         const settings = bot.settings[confirmMessage.interaction.guild.id]
         const keyInfo = state.keyInfo
+        var guild = confirmMessage.interaction.guild
         let moddedKey = false
         if (!choice || choice == 'Cancelled')
             return confirmMessage.delete()
@@ -86,11 +100,11 @@ module.exports = {
         }
         
         //Execute Database Query
-        db.query(`SELECT * FROM users WHERE id = '${user.id}'`, async(err, rows) => {
+        db.query('SELECT * FROM users WHERE id = ?', [user.id], async(err, rows) => {
             if (err) ErrorLogger.log(err, bot)
             if (rows.length == 0) {
                 const success = await new Promise((res) => {
-                    db.query(`INSERT INTO users (id) VALUES ('${user.id}')`, (err, rows) => {
+                    db.query('INSERT INTO users (id) VALUES (?)', [user.id], (err, rows) => {
                         if (err || !rows || rows.length == 0) {
                             confirmMessage.interaction.reply({
                                 embeds: [
@@ -104,10 +118,24 @@ module.exports = {
                 })
                 if (!success) return;
             }
-            db.query(`UPDATE users SET ${keyInfo.schema} = ${keyInfo.schema } + ${count} WHERE id = '${user.id}'`, (err, rows) => {
+            const consumablepops = {
+                userid: user.id,
+                guildid: guild.id,
+                unixtimestamp: Date.now(),
+                amount: count,
+                ismodded: moddedKey,
+                templateid: keyInfo.templateID
+            }
+            db.query(`INSERT INTO consumablepops (${Object.keys(consumablepops).join(', ')}) VALUES (?, ?, ?, ?, ?, ?)`, Object.values(consumablepops), (err, rows) => {
+                if (err) throw err
+                if (err) return console.log(`${keyInfo.schema} missing from ${guild.name} ${guild.id}`)
+            })
+            db.query(`UPDATE users SET ${keyInfo.schema} = ${keyInfo.schema} + ? WHERE id = ?`, [count, user.id], (err, rows) => {
+                if (err) throw err
                 keyRoles.checkUser(user, bot, db);
             });
-            if (moddedKey) db.query(`UPDATE users SET moddedPops = moddedPops + ${count} WHERE id = '${user.id}'`, (err, rows) => {
+            if (moddedKey) db.query('UPDATE users SET moddedPops = moddedPops + ? WHERE id = ?', [count, user.id], (err, rows) => {
+                if (err) throw err
                 keyRoles.checkUser(user, bot, db);
             });
             let embed = new Discord.EmbedBuilder()
@@ -122,18 +150,19 @@ module.exports = {
             let points = settings.points[keyInfo.points] * count
             if (user.roles.cache.hasAny(...settings.lists.perkRoles.map(role => settings.roles[role]))) points = points * settings.points.nitromultiplier
             if (moddedKey) points = points * settings.points.keymultiplier
-            db.query(`UPDATE users SET points = points + ${points} WHERE id = '${user.id}'`)
+            db.query('UPDATE users SET points = points + ? WHERE id = ?', [points, user.id])
         }
 
         //Delete Confirmation Message
         return confirmMessage.delete()
+    },
+    findKey(guildid, key) {
+        let info = keypops[guildid]
+        if (Object.keys(info).includes(key)) return info[key]
+        for (let i in info) {
+            if (info[i].alias.includes(key)) return info[i]
+            if (info[i].schema.toLowerCase() == (key.toLowerCase())) return info[i]
+        }
+        return null
     }
-}
-
-function findKey(guildid, key) {
-    let info = keypops[guildid]
-    if (Object.keys(info).includes(key)) return info[key]
-    for (let i in info)
-        if (info[i].alias.includes(key)) return info[i]
-    return null
 }

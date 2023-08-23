@@ -132,11 +132,11 @@ class MessageManager {
             })
         }
 
-        if (!command) return await commandError('Command doesnt exist, check \`commands\` and try again', 'does not exist');
+        if (!command) return await commandError('Command doesnt exist, check `commands` and try again', 'does not exist');
         // Validate the command is enabled
         if (!this.#bot.settings[e.guild.id].commands[command.name]) return await commandError('This command is disabled', 'disabled');
         // Validate the command is not disabled during restart if a restart is pending
-        if (restarting.restarting && !command.allowedInRestart) return await commandError('Cannot execute command as a restart is pending', 'pending restart')
+        if (restarting.restarting && !command.allowedInRestart && !this.#bot.adminUsers.includes(e.member.id)) return await commandError('Cannot execute command as a restart is pending', 'pending restart')
         // Validate the user has permission to use the command
         if (!e.guild.roles.cache.get(this.#bot.settings[e.guild.id].roles[command.role])) return await commandError('Permissions not set up for this commands role', 'permissions not setup')
 
@@ -146,14 +146,13 @@ class MessageManager {
 
         if (command.cooldown) {
             if (this.#cooldowns.get(command.name)) {
-                if (Date.now() + command.cooldown * 1000 < Date.now()) this.#cooldowns.delete(command.name)
+                if (Date.now() + (command.cooldown * 1000) < Date.now()) this.#cooldowns.delete(command.name)
                 else return await commandError(null, 'cooldown')
             } else this.#cooldowns.set(command.name, Date.now())
             setTimeout(() => { this.#cooldowns.delete(command.name) }, command.cooldown * 1000)
         }
 
-        const point = genPoint('commandexecution', e)
-                            .tag('command', commandName)
+        const point = genPoint('commandexecution', e).tag('command', commandName)
         try {
             const db = getDB(e.guild.id)
             if (isInteraction && command.slashCommandExecute) {
@@ -169,11 +168,8 @@ class MessageManager {
                             }
                         })
                     } catch (err) {
-                        if (err instanceof LegacyParserError) {
-                            return e.replyUserError(err.message)
-                        } else {
-                            throw(err)
-                        }
+                        if (err instanceof LegacyParserError) return e.replyUserError(err.message)
+                        throw(err)
                     }
                 }
                 const start = Date.now()
@@ -188,7 +184,7 @@ class MessageManager {
             }
         } catch (er) {
             ErrorLogger.log(er, this.#bot, e.guild)
-            e.reply("Issue executing the command, check \`;commands\` and try again");
+            e.reply('Issue executing the command, check `;commands` and try again');
             point.stringField('error', er.name)
         } finally {
             writePoint(point)
@@ -215,7 +211,7 @@ class MessageManager {
             this.#logCommand(guild, message)
             if (!cancelled) {
                 try {
-                    message.channel.send({ embeds: [await stats.getStatsEmbed(message.author.id, guild, this.#bot)] })
+                    stats.execute(message, [], this.#bot)
                 } catch (er) {
                     message.channel.send('You are not currently logged in the database. The database gets updated every 24-48 hours')
                 }
@@ -253,6 +249,7 @@ class MessageManager {
         }
 
     }
+
     async #logCommand(guild, message) {
         if (!guild || !this.#bot.settings[guild.id]) return
         const logEmbed = new Discord.EmbedBuilder()
@@ -266,12 +263,14 @@ class MessageManager {
     }
 
     async #sendModMail(message) {
+        let cancelled = false
         const confirmModMailEmbed = new Discord.EmbedBuilder()
             .setColor('#ff0000')
             .setTitle('Are you sure you want to message modmail?')
             .setFooter({ text: 'Spamming modmail with junk will result in being modmail blacklisted' })
             .setDescription(`\`\`\`${message.content}\`\`\``)
-        const guild = await this.getGuild(message).catch(er => { cancelled = true })
+        const guild = await this.getGuild(message).catch(er => cancelled = true)
+        if (cancelled) return
         await message.channel.send({ embeds: [confirmModMailEmbed] }).then(async confirmMessage => {
             if (await confirmMessage.confirmButton(message.author.id)) {
                 modmail.sendModMail(message, guild, this.#bot, getDB(guild.id))
@@ -323,37 +322,36 @@ class MessageManager {
      * @returns {Discord.Guild} guild
      */
     async getGuild(message) {
-        return new Promise(async (resolve, reject) => {
-            const guilds = []
-            const guildNames = []
-            this.#bot.guilds.cache.each(g => {
-                if (this.#bot.emojiServers.includes(g.id)) return
-                if (this.#bot.devServers.includes(g.id)) return
-                if (!g.members.cache.get(message.author.id)) return
-                guilds.push(g)
-                guildNames.push(g.name)
-            })
-            if (guilds.length == 0) reject('We dont share any servers')
-            else if (guilds.length == 1) resolve(guilds[0])
-            else {
-                const guildSelectionEmbed = new Discord.EmbedBuilder()
-                    .setTitle('Please select a server')
-                    .setColor('#fefefe')
-                    .setDescription('Press Cancel if you don\'t wanna proceed')
-                const guildSelectionMessage = await message.channel.send({ embeds: [guildSelectionEmbed] })
-                const choice = await guildSelectionMessage.confirmList(guildNames, message.author.id);
-                if (!choice || choice == 'Cancelled') return guildSelectionMessage.delete();
-                guildSelectionMessage.delete();
-
-                function getGuildByName(guildName) {
-                    for (const i in guilds) {
-                        if (guilds[i].name == choice) return guilds[i]
-                    }
-                }
-
-                resolve(getGuildByName(choice));
-            }
+        const guilds = []
+        const guildNames = []
+        this.#bot.guilds.cache.each(g => {
+            const settings = this.#bot.settings[g.id]
+            if (this.#bot.emojiServers.includes(g.id)) return
+            if (this.#bot.devServers.includes(g.id)) return
+            if (!g.members.cache.get(message.author.id)) return
+            if (!settings.backend.modmail) return
+            guilds.push(g)
+            guildNames.push(g.name)
         })
+        if (guilds.length == 0) return Promise.reject('We dont share any servers')
+        if (guilds.length == 1) return guilds[0]
+
+        const guildSelectionEmbed = new Discord.EmbedBuilder()
+            .setTitle('Please select a server')
+            .setColor('#fefefe')
+            .setDescription('Press Cancel if you don\'t wanna proceed')
+        const guildSelectionMessage = await message.channel.send({ embeds: [guildSelectionEmbed] })
+        const choice = await guildSelectionMessage.confirmList(guildNames, message.author.id);
+        if (!choice || choice == 'Cancelled') return guildSelectionMessage.delete();
+        guildSelectionMessage.delete();
+
+        function getGuildByName() {
+            for (const i in guilds) {
+                if (guilds[i].name == choice) return guilds[i]
+            }
+        }
+
+        return getGuildByName(choice)
     }
 
     /**

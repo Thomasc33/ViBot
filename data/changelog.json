@@ -25,7 +25,8 @@
             "moonlightRuns",
             "moonlightLead",
             "moonlightPops",
-            "totalUnexcused"
+            "totalUnexcused",
+            "fullskipsLead"
         ],
         "currentweeks": [
             {
@@ -83,6 +84,10 @@
             {
                 "case": "moonlightLead",
                 "currentWeekName": "currentweekMoonlight"
+            },
+            {
+                "case": "fullskipsLead",
+                "currentWeekName": "currentweekFullskipsLead"
             }
         ]
     },
@@ -111,7 +116,8 @@
             "moonlightRuns",
             "moonlightLead",
             "moonlightPops",
-            "totalUnexcused"
+            "totalUnexcused",
+            "fullskipsLead"
         ],
         "currentweeks": [
             {
@@ -165,6 +171,10 @@
             {
                 "case": "moonlightLead",
                 "currentWeekName": "currentweekMoonlight"
+            },
+            {
+                "case": "fullskipsLead",
+                "currentWeekName": "currentweekFullskipsLead"
             }
         ]
     },

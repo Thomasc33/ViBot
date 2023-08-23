@@ -138,6 +138,7 @@ module.exports = {
             //vet verify
             veriLog.send(`${member} (${member} has been given the Veteran Raider role automatically)`)
             await member.roles.add(vetRaider)
+            if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) await member.roles.remove(settings.roles.unverified)
             // db.query(`UPDATE users SET ${dungeon.dbisvet} = true WHERE id = '${u.id}'`)
         } else {
             //manual verify
@@ -301,6 +302,7 @@ module.exports = {
                         embed.setFooter({ text: `Accepted by ${reactor.nickname}` })
                         await message.edit({ embeds: [embed] })
                         await member.roles.add(vetRaider.id)
+                        if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) await member.roles.remove(settings.roles.unverified)
                         //member.user.send(ext.parse(settings.messages.verifications.acceptvetveri, info))
                         try {
                             member.user.send(`You have been verified for the ${info.role.name} role in \`${info.guild.name}\`.`)
@@ -319,9 +321,12 @@ module.exports = {
                         embed.setColor('#ff0000')
                         embed.setFooter({ text: `Rejected by ${reactor.nickname}` })
                         await message.edit({ embeds: [embed] })
-                        //member.user.send(ext.parse(settings.messages.verifications.deniedvetveri, info))
                         try {
-                            member.user.send(`You were denied from verifying for the \`${info.role.name}\` role in \`${info.guild.name}\`. Feel free to contact any Security+ staff member directly with screenshots in game if you have \`${info.reqs.runs}\` confirmable ${info.dungeon.boss} runs in your exaltations **or** between your live characters and graveyard.`)
+                            if (settings.strings.vetVerifyDeniedMessage) {
+                                member.user.send(`${settings.strings.vetVerifyDeniedMessage}`)
+                            } else {
+                                member.user.send(`You were denied from verifying for the \`${info.role.name}\` role in \`${info.guild.name}\`. Feel free to contact any Security+ staff member directly with screenshots in game if you have \`${info.reqs.runs}\` confirmable ${info.dungeon.boss} runs in your exaltations **or** between your live characters and graveyard.`)
+                            }
                         } catch (e) {
                             //user has DMs off
                         }

@@ -8,7 +8,7 @@ module.exports = {
     dms: true,
     dmNeedsGuild: true,
     async execute(message, args, bot, db) {
-        this.findChannel(message, bot, message.guild)
+        message.channel.send('`;join` is now deprecated. Please use the reconnect button instead.')
     },
     async dmExecution(message, args, bot, db, guild) {
         this.findChannel(message, bot, guild)

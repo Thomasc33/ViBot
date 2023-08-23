@@ -50,7 +50,7 @@ module.exports = {
                 .setFooter({ text: '<Required> (Optional) [Item1, Item2, Item3]' });
             if (command.alias) commandPanel.addFields({ name: 'Aliases', value: command.alias.map(a => a).join(', ') })
             if (command.args) commandPanel.addFields({ name: 'Args', value: this.argString(command.args) })
-            if (command.getNotes && command.getNotes(message.guild.id, message.member)) commandPanel.addFields({ name: 'Special Notes', value: command.getNotes(message.guild.id, message.member) })
+            if (command.getNotes && command.getNotes(message.guild, message.member, bot)) commandPanel.addFields({ name: 'Special Notes', value: command.getNotes(message.guild.id, message.member) })
 
             var roleOverride
             var minimumRole
@@ -80,9 +80,10 @@ module.exports = {
                     else if (c.role == roleName && bot.settings[message.guild.id].commands[c.name])
                         fields[role.name].commands.push(';' + c.name);*/
                     if (!settings.commands[command.name]) { return }
-                    if (settings.commandsRolePermissions[command.name] && settings.commandsRolePermissions[command.name] == roleName) {
+                    let minimumRole = settings.commandsRolePermissions[command.name]
+                    if (minimumRole && minimumRole == roleName) {
                         fields[role.name].commands.push(';' + command.name)
-                    } else if (command.role == roleName) {
+                    } else if (!minimumRole && command.role == roleName) {
                         fields[role.name].commands.push(';' + command.name)
                     }
                 })

@@ -941,15 +941,15 @@
         "earlyLocationCost": 15,
         "earlyLocationReacts": []
     },
-    "advancedfungal": {
-        "runType": "Advanced Fungal Cavern",
-        "runName": "Advanced Fungal Cavern",
+    "Exaltedfungal": {
+        "runType": "Exalted Fungal Cavern",
+        "runName": "Exalted Fungal Cavern",
         "aliases": [
-            "af",
-            "afun",
-            "afungal",
-            "advf",
-            "advfungal"
+            "ef",
+            "efun",
+            "efungal",
+            "exaltedf",
+            "exaltedfungal"
         ],
         "enabled": true,
         "keyEmoteID": "723001429614395402",
@@ -989,7 +989,7 @@
     "nest": {
         "runType": "Nest",
         "runName": "Nest",
-        "aliases": [],
+        "aliases": ["n"],
         "enabled": true,
         "keyEmoteID": "723001429693956106",
         "vialEmoteID": "723001215407095899",
@@ -1022,13 +1022,13 @@
         "earlyLocationCost": 15,
         "earlyLocationReacts": []
     },
-    "advancednest": {
-        "runType": "Advanced Nest",
-        "runName": "Advanced Nest",
+    "Exaltednest": {
+        "runType": "Exalted Nest",
+        "runName": "Exalted Nest",
         "aliases": [
-            "an",
-            "anest",
-            "advnest"
+            "en",
+            "enest",
+            "exaltednest"
         ],
         "enabled": true,
         "keyEmoteID": "723001429693956106",
@@ -1103,13 +1103,13 @@
         "earlyLocationCost": 15,
         "earlyLocationReacts": []
     },
-    "advancedfullskipnest": {
-        "runType": "Advanced Full-skip Nest",
-        "runName": "Advanced Full-skip Nest",
+    "Exaltedfullskipnest": {
+        "runType": "Exalted Full-skip Nest",
+        "runName": "Exalted Full-skip Nest",
         "aliases": [
-            "afn",
-            "afsn",
-            "afsnest"
+            "efn",
+            "efsn",
+            "efsnest"
         ],
         "enabled": true,
         "keyEmoteID": "723001429693956106",
@@ -1694,12 +1694,12 @@
                 }
             ]
         },
-        "advancedfullskipnest": {
-            "name": "Advanced Full-skip Nest",
+        "Exaltedfullskipnest": {
+            "name": "Exalted Full-skip Nest",
             "aliases": [
-                "afn",
-                "afsn",
-                "afsnest"
+                "efn",
+                "efsn",
+                "efsnest"
             ],
             "enabled": true,
             "keyEmojiId": "723001429693956106",
@@ -1721,7 +1721,7 @@
             "vcCap": 30,
             "rolePing": "nestReact",
             "isExalt": true,
-            "isAdvanced": true,
+            "isExalted": true,
             "earlyLocationReacts": [{
                     "emoteID": "723019533580894279",
                     "pointsGiven": 0,
