@@ -1052,7 +1052,7 @@ class afkCheck {
         }
         let locationText = ''
         if (buttonInfo.location) locationText = `The location for this run has been set to \`${this.location}\`, get there ASAP!${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`
-        else locationText = `The location for this run is not given for this reaction.${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`
+        else locationText = `You have received a guaranteed slot for this raid. ${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`
         if (interaction.replied || interaction.deferred) await interaction.followUp({ embeds: [extensions.createEmbed(interaction, locationText, null)], ephemeral: true })
         else await interaction.reply({ embeds: [extensions.createEmbed(interaction, locationText, null)], ephemeral: true })
         return true
@@ -1104,8 +1104,8 @@ class afkCheck {
             await interaction.reply({ embeds: [extensions.createEmbed(interaction, `Your perks are limited to ${uses} times every ${cooldown_text}. Your next use is available <t:${(((cooldown*1000)+parseInt(rows[0].utime))/1000).toFixed(0)}:R>`, null)], ephemeral: true })
             return false
         }
-        if (buttonInfo.location) await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have received a guaranteed slot.\nThe location for this run has been set to \`${this.location}\`, get there ASAP!${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`, null)], ephemeral: true })
-        else await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have received a guaranteed slot.${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`, null)], ephemeral: true })
+        if (buttonInfo.location) await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have received a guaranteed slot for this raid.\nThe location for this run has been set to \`${this.location}\`, get there ASAP!${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`, null)], ephemeral: true })
+        else await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have received a guaranteed slot for this raid.${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`, null)], ephemeral: true })
         return true
     }
 
@@ -1124,7 +1124,7 @@ class afkCheck {
         points = userRows[0].points
 
         if (points < this.#botSettings.points.earlylocation) {
-            await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You do not have enough points.\nYou currently have ${emote} \`${points}\` points\nEarly location costs ${emote} \`${this.#botSettings.points.earlylocation}\``, null)], ephemeral: true })
+            await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You do not have enough points.\nYou currently have ${emote} \`${points}\` points\n${buttonInfo.location ? `Early location` : `A guaranteed slot in the channel`} costs ${emote} \`${this.#botSettings.points.earlylocation}\``, null)], ephemeral: true })
             return false
         }
 
@@ -1133,7 +1133,7 @@ class afkCheck {
             let descriptionEnd = `Press ✅ to confirm your reaction. Otherwise press ❌`
             let descriptionMiddle = ``
             if (buttonInfo.confirmationMessage) descriptionMiddle = `${buttonInfo.confirmationMessage}\n`
-            else descriptionMiddle = `You currently have ${emote} \`${points}\` points\nEarly location costs ${emote} \`${this.#botSettings.points.earlylocation}\`.\n`
+            else descriptionMiddle = `You currently have ${emote} \`${points}\` points\n${buttonInfo.location ? `Early location` : `A guaranteed slot in the channel`} costs ${emote} \`${this.#botSettings.points.earlylocation}\`.\n`
             const text = `${descriptionBeginning}${descriptionMiddle}${descriptionEnd}`
             const confirmButton = new Discord.ButtonBuilder()
                 .setLabel('✅ Confirm')
@@ -1152,7 +1152,7 @@ class afkCheck {
 
         let locationText = ''
         if (buttonInfo.location) locationText = `The location for this run has been set to \`${this.location}\`, get there ASAP!${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`
-        else locationText = `The location for this run is not given for this reaction.${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`
+        else locationText = `You have received a guaranteed slot for this raid. ${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`
         if (interaction.replied || interaction.deferred) await interaction.followUp({ embeds: [extensions.createEmbed(interaction, locationText, null)], ephemeral: true })
         else await interaction.reply({ embeds: [extensions.createEmbed(interaction, locationText, null)], ephemeral: true })
         return true
