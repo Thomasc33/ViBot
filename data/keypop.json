@@ -292,7 +292,8 @@
             "templateID": 24,
             "alias": [
                 "h",
-                "helm"
+                "helm",
+                "helmet"
             ],
             "points": "runepop",
             "schema": "helmetRunePops",
@@ -337,7 +338,8 @@
             "templateID": 28,
             "alias": [
                 "h",
-                "helm"
+                "helm",
+                "helmet"
             ],
             "points": "runepop",
             "schema": "helmetRunePops",
