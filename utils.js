@@ -151,7 +151,7 @@ module.exports = {
     slashCommandJSON(obj, guild) {
         const name = obj.slashCommandName || [obj.name, ...(obj.alias || [])].reduce((i, acc) => i.length < acc.length ? i : acc)
         const jsons = [{
-            name: name,
+            name,
             type: 1,
             description: obj.description,
             guild_id: guild.id, /* Not currently necessary bc we use the per-guild command creation endpoint, but just in case */
@@ -159,7 +159,7 @@ module.exports = {
         }]
         if (obj.userCommand) {
             jsons.push({
-                name: name,
+                name,
                 type: 2
             })
         }
