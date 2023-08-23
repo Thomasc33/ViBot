@@ -34,8 +34,7 @@ bot.afkModules = {}
 bot.settings = moduleIsAvailable('./guildSettings.json') ? require('./guildSettings.json') : {}
 bot.partneredServers = moduleIsAvailable('./data/partneredServers.json') ? require('./data/partneredServers.json') : []
 bot.fetchPartneredServer = function (guildId) {
-    for (const i of bot.partneredServers) {
-        const server = bot.partneredServers[i]
+    for (const server of bot.partneredServers) {
         if (server.guildId == guildId) return server
     }
     return null
