@@ -8,13 +8,8 @@ module.exports = {
     role: 'eventrl',
     async execute(message, args, bot) {
         if (!message.member.voice) { return message.channel.send('You are not in any voice channel') }
-        let channel = message.channel
         let settings = bot.settings[message.guild.id]
         let lounge = null;
-        if (channel.parent.name.toLowerCase() === settings.categories.raiding) lounge = message.guild.channels.cache.get(settings.voice.lounge)
-        else if (channel.parent.name.toLowerCase() === settings.categories.veteran) lounge = message.guild.channels.cache.get(settings.voice.vetlounge)
-        else lounge = message.guild.channels.cache.get(settings.voice.eventlounge)
-        if (channel.id === settings.channels.accursedcommands) lounge = message.guild.channels.cache.get(settings.voice.vetlounge)
         if (!lounge) lounge = message.guild.channels.cache.get(settings.voice.lounge)
         if (!lounge) lounge = message.guild.channels.cache.get(settings.voice.afk)
         if (!lounge) await message.channel.send('I could not find any lounge to move all of the raiders to')
