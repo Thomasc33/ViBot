@@ -3,12 +3,12 @@
         "parents": {
             "normal": {
                 "parentTemplateID": 1,
-                "category": "raiding",
-                "templateChannel": "718233461135245322",
+                "category": "category1",
+                "templateChannel": "templateChannel1",
                 "partneredStatusChannels": {},
-                "statusChannel": "379779029479194624",
-                "commandsChannel": "432995686678790144",
-                "activeChannel": "718232943364931595",
+                "statusChannel": "statusChannel1",
+                "commandsChannel": "commandsChannel1",
+                "activeChannel": "activeChannel1",
                 "enabled": true,
                 "minStaffRoles": {
                     "normal": [
@@ -74,12 +74,12 @@
             },
             "exalt": {
                 "parentTemplateID": 2,
-                "category": "raiding",
-                "templateChannel": "718233461135245322",
+                "category": "category2",
+                "templateChannel": "templateChannel2",
                 "partneredStatusChannels": {},
-                "statusChannel": "379779029479194624",
-                "commandsChannel": "432995686678790144",
-                "activeChannel": "718232943364931595",
+                "statusChannel": "statusChannel2",
+                "commandsChannel": "commandsChannel2",
+                "activeChannel": "activeChannel2",
                 "enabled": true,
                 "minStaffRoles": {
                     "exalt": [
@@ -151,12 +151,12 @@
             },
             "event": {
                 "parentTemplateID": 3,
-                "category": "raiding",
-                "templateChannel": "722955080059584585",
+                "category": "category3",
+                "templateChannel": "templateChannel3",
                 "partneredStatusChannels": {},
-                "statusChannel": "379779029479194624",
-                "commandsChannel": "432995686678790144",
-                "activeChannel": "718232943364931595",
+                "statusChannel": "statusChannel3",
+                "commandsChannel": "commandsChannel3",
+                "activeChannel": "activeChannel3",
                 "enabled": true,
                 "minStaffRoles": {
                     "event": [
@@ -216,12 +216,12 @@
             },
             "veteran": {
                 "parentTemplateID": 4,
-                "category": "veteran raiding",
-                "templateChannel": "718233874643157043",
+                "category": "category4",
+                "templateChannel": "templateChannel4",
                 "partneredStatusChannels": {},
-                "statusChannel": "556931967497666570",
-                "commandsChannel": "556932682316120109",
-                "activeChannel": "721046869366669403",
+                "statusChannel": "statusChannel4",
+                "commandsChannel": "commandsChannel4",
+                "activeChannel": "activeChannel4",
                 "enabled": true,
                 "minStaffRoles": {
                     "veteran": [
@@ -287,12 +287,12 @@
             },
             "veteranEvent": {
                 "parentTemplateID": 5,
-                "category": "veteran raiding",
-                "templateChannel": "718233874643157043",
+                "category": "category5",
+                "templateChannel": "templateChannel5",
                 "partneredStatusChannels": {},
-                "statusChannel": "556931967497666570",
-                "commandsChannel": "556932682316120109",
-                "activeChannel": "721046869366669403",
+                "statusChannel": "statusChannel5",
+                "commandsChannel": "commandsChannel5",
+                "activeChannel": "activeChannel5",
                 "enabled": true,
                 "minStaffRoles": {
                     "veteranEvent": [
@@ -346,12 +346,12 @@
             },
             "example": {
                 "parentTemplateID": 6,
-                "category": "raiding",
-                "templateChannel": "718233461135245322",
+                "category": "category6",
+                "templateChannel": "templateChannel6",
                 "partneredStatusChannels": {},
-                "statusChannel": "432995686678790144",
-                "commandsChannel": "432995686678790144",
-                "activeChannel": "718232943364931595",
+                "statusChannel": "statusChannel6",
+                "commandsChannel": "commandsChannel6",
+                "activeChannel": "activeChannel6",
                 "enabled": true,
                 "minStaffRoles": {
                     "example": [
@@ -25118,12 +25118,12 @@
         "parents": {
             "normal": {
                 "parentTemplateID": 81,
-                "category": "raiding",
-                "templateChannel": "717947391755681902",
+                "category": "category1",
+                "templateChannel": "templateChannel1",
                 "partneredStatusChannels": {},
-                "statusChannel": "701483952233250863",
-                "commandsChannel": "701483952233250864",
-                "activeChannel": "1110595993193422941",
+                "statusChannel": "statusChannel1",
+                "commandsChannel": "commandsChannel1",
+                "activeChannel": "activeChannel1",
                 "enabled": true,
                 "minStaffRoles": {
                     "normal": [
@@ -25189,12 +25189,12 @@
             },
             "exalt": {
                 "parentTemplateID": 82,
-                "category": "raiding",
-                "templateChannel": "717947391755681902",
+                "category": "category2",
+                "templateChannel": "category2",
                 "partneredStatusChannels": {},
-                "statusChannel": "701483952233250863",
-                "commandsChannel": "701483952233250864",
-                "activeChannel": "1110595993193422941",
+                "statusChannel": "statusChannel2",
+                "commandsChannel": "commandsChannel2",
+                "activeChannel": "activeChannel2",
                 "enabled": true,
                 "minStaffRoles": {
                     "exalt": [
@@ -25266,12 +25266,12 @@
             },
             "event": {
                 "parentTemplateID": 83,
-                "category": "raiding",
-                "templateChannel": "721894230036840450",
+                "category": "category3",
+                "templateChannel": "templateChannel3",
                 "partneredStatusChannels": {},
-                "statusChannel": "701483952233250863",
-                "commandsChannel": "701483952233250864",
-                "activeChannel": "1110595993193422941",
+                "statusChannel": "statusChannel3",
+                "commandsChannel": "commandsChannel3",
+                "activeChannel": "activeChannel3",
                 "enabled": true,
                 "minStaffRoles": {
                     "event": [
@@ -25331,12 +25331,12 @@
             },
             "veteran": {
                 "parentTemplateID": 84,
-                "category": "veteran raiding",
-                "templateChannel": "751630124071256125",
+                "category": "category4",
+                "templateChannel": "templateChannel4",
                 "partneredStatusChannels": {},
-                "statusChannel": "701483951687991339",
-                "commandsChannel": "701483951687991341",
-                "activeChannel": "721880245321465936",
+                "statusChannel": "statusChannel4",
+                "commandsChannel": "commandsChannel4",
+                "activeChannel": "activeChannel4",
                 "enabled": true,
                 "minStaffRoles": {
                     "veteran": [
@@ -25402,12 +25402,12 @@
             },
             "silentvcless": {
                 "parentTemplateID": 177,
-                "category": "veteran raiding",
-                "templateChannel": "751630124071256125",
+                "category": "category5",
+                "templateChannel": "templateChannel5",
                 "partneredStatusChannels": {},
-                "statusChannel": "701483951687991339",
-                "commandsChannel": "701483951687991341",
-                "activeChannel": "721880245321465936",
+                "statusChannel": "statusChannel5",
+                "commandsChannel": "commandsChannel5",
+                "activeChannel": "activeChannel5",
                 "enabled": true,
                 "minStaffRoles": {
                     "veteran": [
@@ -25473,12 +25473,12 @@
             },
             "veteranEvent": {
                 "parentTemplateID": 85,
-                "category": "veteran raiding",
-                "templateChannel": "751630124071256125",
+                "category": "category6",
+                "templateChannel": "templateChannel6",
                 "partneredStatusChannels": {},
-                "statusChannel": "701483951687991339",
-                "commandsChannel": "701483951687991341",
-                "activeChannel": "721880245321465936",
+                "statusChannel": "statusChannel6",
+                "commandsChannel": "commandsChannel6",
+                "activeChannel": "activeChannel6",
                 "enabled": true,
                 "minStaffRoles": {
                     "veteran": [
@@ -25532,12 +25532,12 @@
             },
             "example": {
                 "parentTemplateID": 86,
-                "category": "raiding",
-                "templateChannel": "717947391755681902",
+                "category": "category7",
+                "templateChannel": "templateChannel7",
                 "partneredStatusChannels": {},
-                "statusChannel": "701483952233250864",
-                "commandsChannel": "701483952233250864",
-                "activeChannel": "1110595993193422941",
+                "statusChannel": "statusChannel7",
+                "commandsChannel": "commandsChannel7",
+                "activeChannel": "activeChannel7",
                 "enabled": true,
                 "minStaffRoles": {
                     "example": [
@@ -55010,12 +55010,12 @@
         "parents": {
             "normal": {
                 "parentTemplateID": 169,
-                "category": "raiding",
-                "templateChannel": "1050201090047623229",
+                "category": "category1",
+                "templateChannel": "templateChannel1",
                 "partneredStatusChannels": {},
-                "statusChannel": "708026932188676171",
-                "commandsChannel": "708026932188676173",
-                "activeChannel": "1110693078555168798",
+                "statusChannel": "statusChannel1",
+                "commandsChannel": "commandsChannel1",
+                "activeChannel": "activeChannel1",
                 "enabled": true,
                 "minStaffRoles": {
                     "normal": [
@@ -55084,12 +55084,12 @@
             },
             "silent": {
                 "parentTemplateID": 170,
-                "category": "silent raiding",
-                "templateChannel": "1050201427311595530",
+                "category": "category2",
+                "templateChannel": "templateChannel2",
                 "partneredStatusChannels": {},
-                "statusChannel": "1134260973037961247",
-                "commandsChannel": "1134261194828554311",
-                "activeChannel": "1134261576883503194",
+                "statusChannel": "statusChannel2",
+                "commandsChannel": "commandsChannel2",
+                "activeChannel": "activeChannel2",
                 "enabled": true,
                 "minStaffRoles": {
                     "silent": [
@@ -55158,12 +55158,12 @@
             },
             "vcless": {
                 "parentTemplateID": 176,
-                "category": "silent raiding",
-                "templateChannel": "1050201427311595530",
+                "category": "category3",
+                "templateChannel": "templateChannel3",
                 "partneredStatusChannels": {},
-                "statusChannel": "1134260973037961247",
-                "commandsChannel": "1134261194828554311",
-                "activeChannel": "1134261576883503194",
+                "statusChannel": "statusChannel3",
+                "commandsChannel": "commandsChannel3",
+                "activeChannel": "activeChannel3",
                 "enabled": true,
                 "minStaffRoles": {
                     "vcless": [
@@ -55232,12 +55232,12 @@
             },
             "example": {
                 "parentTemplateID": 171,
-                "category": "raiding",
-                "templateChannel": "1050201090047623229",
+                "category": "category4",
+                "templateChannel": "templateChannel4",
                 "partneredStatusChannels": {},
-                "statusChannel": "708026932188676173",
-                "commandsChannel": "708026932188676173",
-                "activeChannel": "1110693078555168798",
+                "statusChannel": "statusChannel4",
+                "commandsChannel": "commandsChannel4",
+                "activeChannel": "activeChannel4",
                 "enabled": true,
                 "minStaffRoles": {
                     "example": [
@@ -58229,12 +58229,12 @@
         "parents": {
             "normal": {
                 "parentTemplateID": 252,
-                "category": "raiding",
-                "templateChannel": "1050175865104904293",
+                "category": "category1",
+                "templateChannel": "templateChannel1",
                 "partneredStatusChannels": {},
-                "statusChannel": "934611208789692448",
-                "commandsChannel": "934611208789692449",
-                "activeChannel": "1050134726687588382",
+                "statusChannel": "statusChannel1",
+                "commandsChannel": "commandsChannel1",
+                "activeChannel": "activeChannel1",
                 "enabled": true,
                 "minStaffRoles": {
                     "normal": [
@@ -58303,12 +58303,12 @@
             },
             "silent": {
                 "parentTemplateID": 253,
-                "category": "silent raiding",
-                "templateChannel": "1050175865104904293",
+                "category": "category2",
+                "templateChannel": "templateChannel2",
                 "partneredStatusChannels": {},
-                "statusChannel": "934611207858561047",
-                "commandsChannel": "934611207858561048",
-                "activeChannel": "1050134808723992616",
+                "statusChannel": "statusChannel2",
+                "commandsChannel": "commandsChannel2",
+                "activeChannel": "activeChannel2",
                 "enabled": true,
                 "minStaffRoles": {
                     "silent": [
@@ -58377,12 +58377,12 @@
             },
             "vcless": {
                 "parentTemplateID": 254,
-                "category": "silent raiding",
-                "templateChannel": "1050175865104904293",
+                "category": "category3",
+                "templateChannel": "templateChannel3",
                 "partneredStatusChannels": {},
-                "statusChannel": "934611207858561047",
-                "commandsChannel": "934611207858561048",
-                "activeChannel": "1050134808723992616",
+                "statusChannel": "statusChannel3",
+                "commandsChannel": "commandsChannel3",
+                "activeChannel": "activeChannel3",
                 "enabled": true,
                 "minStaffRoles": {
                     "vcless": [
@@ -58451,12 +58451,12 @@
             },
             "example": {
                 "parentTemplateID": 255,
-                "category": "raiding",
-                "templateChannel": "1050175865104904293",
+                "category": "category4",
+                "templateChannel": "templateChannel4",
                 "partneredStatusChannels": {},
-                "statusChannel": "934611208789692448",
-                "commandsChannel": "934611208789692449",
-                "activeChannel": "1050134726687588382",
+                "statusChannel": "statusChannel4",
+                "commandsChannel": "commandsChannel4",
+                "activeChannel": "activeChannel4",
                 "enabled": true,
                 "minStaffRoles": {
                     "example": [
@@ -61465,12 +61465,12 @@
         "parents": {
             "normal": {
                 "parentTemplateID": 185,
-                "category": "raiding",
-                "templateChannel": "1134414627942449253",
+                "category": "category1",
+                "templateChannel": "templateChannel1",
                 "partneredStatusChannels": {},
-                "statusChannel": "451181425115398184",
-                "commandsChannel": "451188304566681600",
-                "activeChannel": "748214265361465345",
+                "statusChannel": "statusChannel1",
+                "commandsChannel": "commandsChannel1",
+                "activeChannel": "activeChannel1",
                 "enabled": true,
                 "minStaffRoles": {
                     "normal": [
@@ -61536,12 +61536,12 @@
             },
             "veteran": {
                 "parentTemplateID": 186,
-                "category": "veteran raiding",
-                "templateChannel": "1134416280825368667",
+                "category": "category2",
+                "templateChannel": "templateChannel2",
                 "partneredStatusChannels": {},
-                "statusChannel": "559095243660722196",
-                "commandsChannel": "559095494417055759",
-                "activeChannel": "1134416828450480159",
+                "statusChannel": "statusChannel2",
+                "commandsChannel": "commandsChannel2",
+                "activeChannel": "activeChannel2",
                 "enabled": true,
                 "minStaffRoles": {
                     "veteran": [
@@ -61609,12 +61609,12 @@
             },
             "event": {
                 "parentTemplateID": 187,
-                "category": "events",
-                "templateChannel": "1134417384917184561",
+                "category": "category3",
+                "templateChannel": "templateChannel3",
                 "partneredStatusChannels": {},
-                "statusChannel": "830616025262719006",
-                "commandsChannel": "672664112114696202",
-                "activeChannel": "1134417587044888636",
+                "statusChannel": "statusChannel3",
+                "commandsChannel": "commandsChannel3",
+                "activeChannel": "activeChannel3",
                 "enabled": true,
                 "minStaffRoles": {
                     "event": [
@@ -61680,12 +61680,12 @@
             },
             "example": {
                 "parentTemplateID": 188,
-                "category": "raiding",
-                "templateChannel": "1134414627942449253",
+                "category": "category4",
+                "templateChannel": "templateChannel4",
                 "partneredStatusChannels": {},
-                "statusChannel": "451188304566681600",
-                "commandsChannel": "451188304566681600",
-                "activeChannel": "748214265361465345",
+                "statusChannel": "statusChannel4",
+                "commandsChannel": "commandsChannel4",
+                "activeChannel": "activeChannel4",
                 "enabled": true,
                 "minStaffRoles": {
                     "example": [
