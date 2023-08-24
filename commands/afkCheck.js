@@ -929,9 +929,7 @@ class afkCheck {
         }
         if (this.#botSettings.backend.points) {
             let points = logOption.points * number * logOption.multiplier
-            this.#db.query(`UPDATE users SET points = points + ${points} WHERE id = '${member.id}'`, (err, rows) => {
-                if (err) return console.log(`error logging ${i} points in `, this.#guild.id)
-            })
+            await this.#db.promise().query('UPDATE users SET points = points + ? WHERE id = ?', [points, member.id])
             let pointsLog = [{ uid: member.id, points: points, reason: `${button}`}]
             await pointLogger.pointLogging(pointsLog, this.#guild, this.#bot, this.#genEmbedBase())
         }
@@ -1001,9 +999,9 @@ class afkCheck {
         await interaction.followUp({ embeds: [embed], components: [], ephemeral: true })
         await interaction.deleteReply()
 
-        const [rows] = await this.#db.promise().query('SELECT * FROM miniBossEvent WHERE guildid = ? AND raidid = ? AND miniboss = ?', [this.#guild.id, this.#raidID, choice])
-        rows.map(row => {
-            this.#db.query('UPDATE users SET points = points + ? WHERE id = ?', [points, row.userid])
+        const [rows] = await this.#db.promise().query('SELECT userid FROM miniBossEvent WHERE guildid = ? AND raidid = ? AND miniboss = ?', [this.#guild.id, this.#raidID, choice])
+        await this.#db.promise().query('UPDATE users SET points = points + ? WHERE id IN (?)', [points, rows.map(row => row.userid)])
+        rows.forEach(row => {
             let user = this.#guild.members.cache.get(row.userid)
             try {
                 user.send(`Congratulations!\nYou have been awarded ${points} points for guessing the correct miniboss!\nThe Miniboss was ${choiceEmote} **${choicePrettyName}** ${choiceEmote}`)
@@ -1120,7 +1118,7 @@ class afkCheck {
         
         let points = 0
         let [userRows,] = await this.#db.promise().query('SELECT points FROM users WHERE id = ?', [interaction.member.id])
-        if (userRows.length == 0) return this.#db.query('INSERT INTO users (id) VALUES (?)', [interaction.member.id])
+        if (userRows.length == 0) return this.#db.promise().query('INSERT INTO users (id) VALUES (?)', [interaction.member.id])
         points = userRows[0].points
 
         if (points < this.#botSettings.points.earlylocation) {
@@ -1307,11 +1305,11 @@ class afkCheck {
         if (this.#channel) this.#channel.members.forEach(m => this.members.push(m.id))
         else this.earlySlotMembers.forEach(id => this.members.push(id))
 
-        for (let u of this.members) {
-            this.#db.query('SELECT id FROM users WHERE id = ?', [u], async (err, rows) => {
-                if (err) return
-                if (rows.length == 0) return this.#db.query('INSERT INTO users (id) VALUES(?)', [u])
-            })
+        if (this.members.length > 0) {
+            let [db_members] = await this.#db.promise().query('SELECT id FROM users WHERE id IN (?)', [this.members])
+            db_members = db_members.map(u => u.id)
+            const new_members = this.members.filter(u => !db_members.includes(u))
+            if (new_members.length > 0) await this.#db.promise().query('INSERT INTO users (id) VALUES (?)', [new_members])
         }
         
         if (this.#botSettings.backend.points) {
@@ -1328,9 +1326,7 @@ class afkCheck {
                     default:
                         let points = this.#afkTemplate.buttons[i].points
                         if (this.#afkTemplate.buttons[i].type != AfkTemplate.TemplateButtonType.POINTS && this.#guild.members.cache.get(memberID).roles.cache.hasAny(...this.#afkTemplate.perkRoles.map(role => role.id))) points = points * this.#botSettings.points.supportermultiplier
-                        this.#db.query('UPDATE users SET points = points + ? WHERE id = ?', [points, memberID], (err, rows) => {
-                            if (err) return console.log(`error logging ${i} points in `, this.#guild.id)
-                        })
+                        await this.#db.promise().query('UPDATE users SET points = points + ? WHERE id = ?', [points, memberID])
                         pointsLog.push({ uid: memberID, points: points, reason: `${i}`})
                 }
             }
