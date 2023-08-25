@@ -621,6 +621,12 @@ class afkCheck {
         return loggingText
     }
 
+    #reactionIsFull(customId) {
+        const buttonInfo = this.#afkTemplate.buttons[customId]
+        return (buttonInfo.limit && this.reactables[customId].members.length >= buttonInfo.limit)
+            || (buttonInfo.parent && buttonInfo.parent.some(i => this.reactables[i].members.length >= this.#afkTemplate.buttons[i].limit))
+    }
+
     /**
      *
      * @param {Discord.MessageComponentInteraction} interaction
@@ -650,17 +656,10 @@ class afkCheck {
                 await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have already reacted as ${emote}${interaction.customId.substring(0, interaction.customId - 7)}. Try another react or try again next run.`, null)], ephemeral: true })
                 return this.removeFromActiveInteractions(interaction.member.id)
             }
-            if (buttonInfo.limit && this.reactables[interaction.customId].members.length >= buttonInfo.limit) {
+            if (this.#reactionIsFull(interaction.customId)) {
                 await interaction.reply({ embeds: [extensions.createEmbed(interaction, `Too many people have already reacted and confirmed for that. Try another react or try again next run.`, null)], ephemeral: true })
                 return this.removeFromActiveInteractions(interaction.member.id)
             }
-            if (buttonInfo.parent) {
-                for (let i of buttonInfo.parent) if (this.reactables[i].members.length >= this.#afkTemplate.buttons[i].limit) {
-                    await interaction.reply({ embeds: [extensions.createEmbed(interaction, `Too many people have already reacted and confirmed for the main react ${i}. Try another react or try again next run.`, null)], ephemeral: true })
-                    return this.removeFromActiveInteractions(interaction.member.id)
-                }
-            }
-            this.reactables[interaction.customId].members.push(interaction.member.id)
 
             let buttonStatus = false
             switch (buttonType) {
@@ -682,11 +681,16 @@ class afkCheck {
                     buttonStatus = await this.processReactableOption(interaction)
                     return this.removeFromActiveInteractions(interaction.member.id)
             }
-            if (!buttonStatus) {
-                let ind = this.reactables[interaction.customId].members.indexOf(interaction.member.id)
-                if (ind > -1) this.reactables[interaction.customId].members.splice(ind)
+
+            if (!buttonStatus) return this.removeFromActiveInteractions(interaction.member.id)
+
+            if (this.#reactionIsFull(interaction.customId)) {
+                await interaction.reply({ embeds: [extensions.createEmbed(interaction, `Too many people have already reacted and confirmed for that. Try another react or try again next run.`, null)], ephemeral: true })
                 return this.removeFromActiveInteractions(interaction.member.id)
             }
+
+            this.reactables[interaction.customId].members.push(interaction.member.id)
+
             if (buttonInfo.parent) {
                 for (let i of buttonInfo.parent) {
                     if (!this.reactables[i].members.includes(interaction.member.id)) this.reactables[i].members.push(interaction.member.id)
