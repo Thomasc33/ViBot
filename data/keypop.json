@@ -89,8 +89,7 @@
             ],
             "points": "moonlightkey",
             "schema": "moonlightPops",
-            "name": "Moonlight Village",
-            "modded": true
+            "name": "Moonlight Village"
         },
         "vial": {
             "templateID": 9,
@@ -193,8 +192,7 @@
             ],
             "points": "moonlightkey",
             "schema": "moonlightPops",
-            "name": "Moonlight Village",
-            "modded": true
+            "name": "Moonlight Village"
         },
         "vial": {
             "templateID": 17,
@@ -241,8 +239,7 @@
             ],
             "points": "keypop",
             "schema": "moonlightPops",
-            "name": "Moonlight Village",
-            "modded": true
+            "name": "Moonlight Village"
         },
         "event": {
             "templateID": 20,
