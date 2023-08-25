@@ -61794,12 +61794,8 @@
                         ]
                     ]
                 },
-                "minViewRaiderRoles": [
-                    "vetraider"
-                ],
-                "minJoinRaiderRoles": [
-                    "vetraider"
-                ],
+                "minViewRaiderRoles": null,
+                "minJoinRaiderRoles": null,
                 "name": "Shatters",
                 "templateName": "Shatters",
                 "pingRoles": [
@@ -62084,12 +62080,8 @@
                         ]
                     ]
                 },
-                "minViewRaiderRoles": [
-                    "vetraider2"
-                ],
-                "minJoinRaiderRoles": [
-                    "vetraider2"
-                ],
+                "minViewRaiderRoles": null,
+                "minJoinRaiderRoles": null,
                 "name": "Moonlight Village",
                 "templateName": "Moonlight Village",
                 "pingRoles": [
