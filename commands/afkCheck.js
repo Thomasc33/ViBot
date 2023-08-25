@@ -689,6 +689,9 @@ class afkCheck {
                 return this.removeFromActiveInteractions(interaction.member.id)
             }
 
+            this.reactables[interaction.customId].members.push(interaction.member.id)
+
+
             switch (buttonType) {
                 case AfkTemplate.TemplateButtonType.LOG:
                 case AfkTemplate.TemplateButtonType.LOG_SINGLE:
@@ -708,8 +711,6 @@ class afkCheck {
                     // buttonStatus = await this.processReactableOption(interaction)
                     return this.removeFromActiveInteractions(interaction.member.id)
             }
-
-            this.reactables[interaction.customId].members.push(interaction.member.id)
 
             if (buttonInfo.parent) {
                 for (let i of buttonInfo.parent) {
