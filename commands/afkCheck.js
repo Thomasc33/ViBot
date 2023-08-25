@@ -115,7 +115,6 @@ class afkCheck {
         this.earlyLocationMembers = [] // All members with early location in the afk
         this.earlySlotMembers = [] // All members with early slots in the afk
         this.dragMembers = [] // All members currently in drag system in the afk
-        this.openInteractions = [] // All members currently in the middle of a button interaction
         this.reactables = {} // All members of each reactable and position on embed
         this.miniBossGuessing = {}
         this.miniBossGuessed = false
@@ -370,12 +369,6 @@ class afkCheck {
         if (this.raidCommandsMessage) await this.raidCommandsMessage.edit({ embeds: [this.#genRaidCommandsEmbed()] })
         if (this.raidInfoMessage) await this.raidInfoMessage.edit({embeds: [this.#genRaidInfoEmbed()]})
         if (this.raidChannelsMessage) await this.raidChannelsMessage.edit({ embeds: [this.#genRaidChannelsEmbed()] })
-        this.openInteractions = []
-    }
-
-    removeFromActiveInteractions(id) {
-        let ind = this.openInteractions.indexOf(id)
-        if (ind > -1) this.openInteractions.splice(ind)
     }
 
     #genEmbedFooter() {
@@ -633,11 +626,6 @@ class afkCheck {
      */
     async interactionHandler(interaction) {
         if (!interaction.isButton()) return
-        if (this.openInteractions.includes(interaction.member.id)) {
-            await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You are already in the process of reacting. Please wait and try again!`, null)], ephemeral: true })
-            return
-        }
-        this.openInteractions.push(interaction.member.id)
 
         if (this.#afkTemplate.buttons[interaction.customId]) {
             const buttonType = this.#afkTemplate.buttons[interaction.customId].type
@@ -645,51 +633,56 @@ class afkCheck {
             const emote = buttonInfo.emote ? `${buttonInfo.emote.text} ` : ``
 
             if (buttonInfo.minRole && !interaction.member.roles.cache.has(buttonInfo.minRole.id)) {
-                await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You do not have the required role ${buttonInfo.minRole} to react to this run.`, null)], ephemeral: true })
-                return this.removeFromActiveInteractions(interaction.member.id)
+                return await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You do not have the required role ${buttonInfo.minRole} to react to this run.`, null)], ephemeral: true })
             }
             if (this.reactables[interaction.customId].members.includes(interaction.member.id)) {
-                await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have already reacted as ${emote}${interaction.customId}. Try another react or try again next run.`, null)], ephemeral: true })
-                return this.removeFromActiveInteractions(interaction.member.id)
+                return await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have already reacted as ${emote}${interaction.customId}. Try another react or try again next run.`, null)], ephemeral: true })
             }
             if (interaction.customId.includes('request') && this.reactables[interaction.customId.substring(0, interaction.customId.length - 8)].members.includes(interaction.member.id)) {
-                await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have already reacted as ${emote}${interaction.customId.substring(0, interaction.customId - 7)}. Try another react or try again next run.`, null)], ephemeral: true })
-                return this.removeFromActiveInteractions(interaction.member.id)
+                return await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have already reacted as ${emote}${interaction.customId.substring(0, interaction.customId - 7)}. Try another react or try again next run.`, null)], ephemeral: true })
             }
             if (this.#reactionIsFull(interaction.customId)) {
-                await interaction.reply({ embeds: [extensions.createEmbed(interaction, `Too many people have already reacted and confirmed for that. Try another react or try again next run.`, null)], ephemeral: true })
-                return this.removeFromActiveInteractions(interaction.member.id)
+                return await interaction.reply({ embeds: [extensions.createEmbed(interaction, `Too many people have already reacted and confirmed for that. Try another react or try again next run.`, null)], ephemeral: true })
             }
 
-            let buttonStatus = false
+            let confirmInteraction = false
             switch (buttonType) {
                 case AfkTemplate.TemplateButtonType.LOG:
                 case AfkTemplate.TemplateButtonType.LOG_SINGLE:
                 case AfkTemplate.TemplateButtonType.NORMAL:
-                    buttonStatus = await this.processReactableNormal(interaction)
+                    confirmInteraction = await this.processReactableNormal(interaction)
                     break
                 case AfkTemplate.TemplateButtonType.SUPPORTER:
-                    buttonStatus = await this.processReactableSupporter(interaction)
+                    confirmInteraction = await this.processReactableSupporter(interaction)
                     break
                 case AfkTemplate.TemplateButtonType.POINTS:
-                    buttonStatus = await this.processReactablePoints(interaction)
+                    confirmInteraction = await this.processReactablePoints(interaction)
                     break
                 case AfkTemplate.TemplateButtonType.DRAG:
-                    buttonStatus = await this.processReactableDrag(interaction)
+                    confirmInteraction = await this.processReactableDrag(interaction)
                     break
                 case AfkTemplate.TemplateButtonType.OPTION:
-                    buttonStatus = await this.processReactableOption(interaction)
-                    return this.removeFromActiveInteractions(interaction.member.id)
+                    return await this.processReactableOption(interaction)
             }
 
-            if (!buttonStatus) return this.removeFromActiveInteractions(interaction.member.id)
+            if (!confirmInteraction) return
 
             if (this.#reactionIsFull(interaction.customId)) {
-                await interaction.reply({ embeds: [extensions.createEmbed(interaction, `Too many people have already reacted and confirmed for that. Try another react or try again next run.`, null)], ephemeral: true })
-                return this.removeFromActiveInteractions(interaction.member.id)
+                return await confirmInteraction.reply({ embeds: [extensions.createEmbed(interaction, `Too many people have already reacted and confirmed for that. Try another react or try again next run.`, null)], ephemeral: true })
+            }
+
+            if (this.reactables[interaction.customId].members.includes(interaction.member.id)) {
+                return await confirmInteraction.reply({ embeds: [extensions.createEmbed(interaction, `You have already been confirmed for this reaction`, null)], ephemeral: true })
             }
 
             this.reactables[interaction.customId].members.push(interaction.member.id)
+
+            if ([
+                AfkTemplate.TemplateButtonType.LOG,
+                AfkTemplate.TemplateButtonType.LOG_SINGLE,
+                AfkTemplate.TemplateButtonType.NORMAL,
+                AfkTemplate.TemplateButtonType.POINTS
+            ].includes(buttonType)) await this.reactableSendLoc(confirmInteraction, buttonInfo.location)
 
             if (buttonInfo.parent) {
                 for (let i of buttonInfo.parent) {
@@ -702,20 +695,17 @@ class afkCheck {
             if (buttonInfo.location && !this.earlyLocationMembers.includes(interaction.member.id)) this.earlyLocationMembers.push(interaction.member.id)
             await this.raidCommandsMessage.edit({ embeds: [this.#genRaidCommandsEmbed()] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
             await this.raidInfoMessage.edit({ embeds: [this.#genRaidInfoEmbed()] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
-            return this.removeFromActiveInteractions(interaction.member.id)
+            return
         }
         else if (['abort', 'phase', 'cap', 'additional', 'end', 'miniboss'].includes(interaction.customId) || interaction.customId.includes(`Log`)) {
             if (this.#afkTemplate.minimumStaffRoles.some(roles => roles.every(role => interaction.member.roles.cache.has(role.id)))) return await this.processPhaseControl(interaction)
             else {
-                await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You do not have the required Staff Role to use this button.`, null)], ephemeral: true })
-                return this.removeFromActiveInteractions(interaction.member.id)
+                return await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You do not have the required Staff Role to use this button.`, null)], ephemeral: true })
             }
         } else if (interaction.customId == 'reconnect') {
-            await this.processReconnect(interaction)
-            return this.removeFromActiveInteractions(interaction.member.id)
+            return await this.processReconnect(interaction)
         } else {
-            await interaction.reply({ embeds: [extensions.createEmbed(interaction, `How did you press something that's unpressable? ඞ.`, null)], ephemeral: true })
-            return this.removeFromActiveInteractions(interaction.member.id)
+            return await interaction.reply({ embeds: [extensions.createEmbed(interaction, `How did you press something that's unpressable? ඞ.`, null)], ephemeral: true })
         }
     }
 
@@ -743,7 +733,6 @@ class afkCheck {
                 if (interaction.customId.includes('Log')) await this.processPhaseLog(interaction)
                 break
         }
-        return this.removeFromActiveInteractions(interaction.member.id)
     }
 
     async processPhaseAbort(interaction) {
@@ -794,7 +783,6 @@ class afkCheck {
         } else if (interaction) interaction.reply({ embeds: [extensions.createEmbed(interaction, `Successfully moved to the next phase of the run. You can dismiss this message.`, null)], ephemeral: true })
         
         if (this.phase >= this.#afkTemplate.phases) {
-            if (interaction) this.removeFromActiveInteractions(interaction.member.id)
             return this.postAfk(interaction)
         } else {
             this.phase += 1
@@ -976,7 +964,6 @@ class afkCheck {
         const buttonInfo = this.#afkTemplate.buttons['MiniBossGuessing']
 
         if (this.miniBossGuessed) {
-            this.removeFromActiveInteractions(interaction.member.id)
             return await interaction.reply({ content: "You have already set the miniboss.\nPut more runs up to do more miniboss guessing! :)", ephemeral: true })
         }
 
@@ -992,7 +979,6 @@ class afkCheck {
             Object.keys(buttonInfo.logOptions).map(key => buttonInfo.logOptions[key].emojiName),
             interaction.member.id)
         if (!choice || choice == 'Cancelled') {
-            this.removeFromActiveInteractions(interaction.member.id)
             return interaction.editReply({ embeds: [failEmbed], ephemeral: true, components: [] })
         }
 
@@ -1014,7 +1000,6 @@ class afkCheck {
             }
         })
         this.miniBossGuessed = true
-        this.removeFromActiveInteractions(interaction.member.id)
     }
 
     async processReconnect(interaction) {
@@ -1026,6 +1011,15 @@ class afkCheck {
                 return interaction.reply({ embeds: [extensions.createEmbed(interaction, `Successfully moved you into the channel. You can dismiss this message.`, null)], ephemeral: true })
             }
         } else return interaction.reply({ embeds: [extensions.createEmbed(interaction, `You were not part of this run when the afk check ended. Another run will be posted soon. Join that one!`, null)], ephemeral: true });
+    }
+
+    async reactableSendLoc(interaction, hasLoc) {
+        let locationText = ''
+        if (hasLoc) locationText += `The location for this run has been set to \`${this.location}\`, get there ASAP!`
+        else locationText += `You have received a guaranteed slot for this raid.`
+        locationText += `${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`
+        if (interaction.replied || interaction.deferred) await interaction.followUp({ embeds: [extensions.createEmbed(interaction, locationText, null)], ephemeral: true })
+        else await interaction.reply({ embeds: [extensions.createEmbed(interaction, locationText, null)], ephemeral: true })
     }
 
     async processReactableNormal(interaction) {
@@ -1051,13 +1045,9 @@ class afkCheck {
                 return false
             }
             await interaction.deleteReply()
+            return subInteraction
         }
-        let locationText = ''
-        if (buttonInfo.location) locationText = `The location for this run has been set to \`${this.location}\`, get there ASAP!${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`
-        else locationText = `You have received a guaranteed slot for this raid. ${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`
-        if (interaction.replied || interaction.deferred) await interaction.followUp({ embeds: [extensions.createEmbed(interaction, locationText, null)], ephemeral: true })
-        else await interaction.reply({ embeds: [extensions.createEmbed(interaction, locationText, null)], ephemeral: true })
-        return true
+        return interaction
     }
 
     async processReactableSupporter(interaction) {    
@@ -1106,9 +1096,7 @@ class afkCheck {
             await interaction.reply({ embeds: [extensions.createEmbed(interaction, `Your perks are limited to ${uses} times every ${cooldown_text}. Your next use is available <t:${(((cooldown*1000)+parseInt(rows[0].utime))/1000).toFixed(0)}:R>`, null)], ephemeral: true })
             return false
         }
-        if (buttonInfo.location) await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have received a guaranteed slot for this raid.\nThe location for this run has been set to \`${this.location}\`, get there ASAP!${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`, null)], ephemeral: true })
-        else await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have received a guaranteed slot for this raid.${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`, null)], ephemeral: true })
-        return true
+        return interaction
     }
 
     async processReactablePoints(interaction) {
@@ -1150,14 +1138,9 @@ class afkCheck {
                 return false
             }
             interaction.deleteReply()
+            return subInteraction
         }
-
-        let locationText = ''
-        if (buttonInfo.location) locationText = `The location for this run has been set to \`${this.location}\`, get there ASAP!${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`
-        else locationText = `You have received a guaranteed slot for this raid. ${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`
-        if (interaction.replied || interaction.deferred) await interaction.followUp({ embeds: [extensions.createEmbed(interaction, locationText, null)], ephemeral: true })
-        else await interaction.reply({ embeds: [extensions.createEmbed(interaction, locationText, null)], ephemeral: true })
-        return true
+        return interaction
     }
 
     async processReactableDrag(interaction) {
@@ -1169,8 +1152,7 @@ class afkCheck {
         }
 
         if (this.dragMembers.includes(interaction.member.id)) {
-            await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have already reacted as ${emote}${interaction.customId}. Please wait for the RL to accept or deny you.`, null)], ephemeral: true })
-            return this.removeFromActiveInteractions(interaction.member.id)
+            return await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have already reacted as ${emote}${interaction.customId}. Please wait for the RL to accept or deny you.`, null)], ephemeral: true })
         }
 
         let descriptionBeginning = `You reacted with ${emote}${interaction.customId}.\n`
