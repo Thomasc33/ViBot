@@ -29,6 +29,7 @@ class DbWrap {
         let args
         if (!params || (!cb && typeof params == 'function')) {
             args = [query]
+            cb = params
             msg_fut = this.#channel.send(`:alarm_clock: (${this.#pool_id}) Executing query \`${query}\` ${cb ? 'CB' : ''}`)
         } else {
             args = [query, params]
