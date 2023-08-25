@@ -1,5 +1,5 @@
 const { bot } = require('../botMeta.js');
-const token = require('../data/botKey.json')
+const { discordToken } = require('../settings.json')
 const { setupBotDBs } = require('../botSetup.js')
 const dbSetup = require('../dbSetup.js')
 
@@ -70,4 +70,4 @@ bot.on('ready', async () => {
     dbSetup.endAll()
 })
 
-bot.login(token.key);
+bot.login(discordToken);

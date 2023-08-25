@@ -33,7 +33,7 @@ async function deployCommands(bot, guild) {
     const slashCommands = bot.commands.filter(c => c.getSlashCommandData).map(c => c.getSlashCommandData(guild)).filter(c => c).flat();
 
     // Deploy commands
-    const rest = new Discord.REST({ version: '10' }).setToken(require('./data/botKey.json').key)
+    const rest = new Discord.REST({ version: '10' }).setToken(botSettings.discordToken)
     try {
         console.log(`Deploying ${slashCommands.length} slash commands to ${guild.name} (${guild.id})`)
         await rest.put(Discord.Routes.applicationGuildCommands(bot.user.id, guild.id), { body: slashCommands })

@@ -16,7 +16,6 @@ const verification = require('./commands/verification')
 
 // Global Variables/Data
 const botSettings = require('./settings.json')
-const token = require('./data/botKey.json')
 const rootCas = require('ssl-root-cas').create();
 require('https').globalAgent.options.ca = rootCas;
 const { bot } = require('./botMeta.js')
@@ -117,7 +116,7 @@ bot.on('typingStart', (c, u) => {
     }, 7500)
 })
 
-bot.login(token.key);
+bot.login(botSettings.discordToken);
 
 // ===========================================================================================================
 // Process Event Listening
