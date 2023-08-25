@@ -1,11 +1,78 @@
 const botSettings = require('./settings.json')
 const dbSchemas = require('./data/schemas.json')
 const mysql = require('mysql2')
+const Discord = require('discord.js')
+const loggingInfo = require('./data/loggingInfo.json')
 
 let dbs = null
 const uniq_dbs = []
 
 const verbose = !process.title.includes('runner')
+let pool_id = 0
+
+class DbWrap {
+    #db
+    #channel
+    #pool_id
+
+    constructor(db, bot, schema) {
+        this.#db = db
+        this.#pool_id = pool_id
+        pool_id += 1
+        const guild = bot.guilds.cache.get(loggingInfo.info.guildid)
+        const channel_id = loggingInfo.info[schema == 'testinghalls' ? 'channelTestSql' : 'channelSql']
+        this.#channel = guild.channels.cache.get(channel_id)
+    }
+
+    query(query, params, cb) {
+        let msg_fut
+        let args
+        if (!params || (!cb && typeof params == 'function')) {
+            args = [query]
+            msg_fut = this.#channel.send(`:alarm_clock: (${this.#pool_id}) Executing query \`${query}\` ${cb ? 'CB' : ''}`)
+        } else {
+            args = [query, params]
+            msg_fut = this.#channel.send(`:alarm_clock: (${this.#pool_id}) Executing query \`${query}\` with params \`${params}\` ${cb ? 'CB' : ''}`)
+        }
+        return this.#db.query(...args, (...resp) => {
+            if (cb) {
+                cb(...resp)
+            }
+            const resp_string = JSON.stringify(resp.slice(0, 2), null, 2)
+            if (resp_string.length > 1500) {
+                const attachment = new Discord.AttachmentBuilder(Buffer.from(resp_string), { name: 'query.txt' })
+                msg_fut.then((msg) => { msg.edit(msg.content.replace(':alarm_clock:', ':white_check_mark:')); msg.reply({ content: 'Execution complete.', files: [attachment] }) })
+            } else {
+                msg_fut.then((msg) => { msg.edit(msg.content.replace(':alarm_clock:', ':white_check_mark:')); msg.reply(`Execution complete. Response:\n\`\`\`${resp_string}\`\`\``) })
+            }
+        })
+    }
+
+    promise() {
+        const db_promise = this.#db.promise()
+        const channel = this.#channel
+        const pool_id = this.#pool_id
+        return {
+            async query(query, params, cb) {
+                let msg_fut
+                if (!params || (!cb && typeof params == 'function')) {
+                    msg_fut = channel.send(`:alarm_clock: (${pool_id}) Executing query \`${query}\``)
+                } else {
+                    msg_fut = channel.send(`:alarm_clock: (${pool_id}) Executing query \`${query}\` with params \`${params}\``)
+                }
+                const rv = await db_promise.query(query, params, cb)
+                const resp_string = JSON.stringify(rv[0], null, 2)
+                if (resp_string.length > 1500) {
+                    const attachment = new Discord.AttachmentBuilder(Buffer.from(resp_string), { name: 'query.txt' })
+                    msg_fut.then((msg) => { msg.edit(msg.content.replace(':alarm_clock:', ':white_check_mark:')); msg.reply({ content: 'Execution complete.', files: [attachment] }) })
+                } else {
+                    msg_fut.then((msg) => { msg.edit(msg.content.replace(':alarm_clock:', ':white_check_mark:')); msg.reply(`Execution complete. Response:\n\`\`\`${resp_string}\`\`\``) })
+                }
+                return rv
+            }
+        }
+    }
+}
 
 async function setup_connections(bot) {
     dbs = {}
@@ -34,7 +101,8 @@ async function setup_connections(bot) {
         if (matchingGuild) {
             dbs[guildId] = dbs[matchingGuild[1]]
         } else {
-            dbs[guildId] = mysql.createPool(dbInfo)
+            const pool = mysql.createPool(dbInfo)
+            dbs[guildId] = new DbWrap(pool, bot, dbInfo.database)
             uniq_dbs.push(dbs[guildId])
             dbInfos.push([dbInfo, guildId])
             if (verbose) console.log(`Connected to database: ${dbConfig.schema}`)
