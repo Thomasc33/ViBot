@@ -263,14 +263,13 @@ class MessageManager {
     }
 
     async #sendModMail(message) {
-        let cancelled = false
+        const guild = await this.getGuild(message)
+        if (!guild) return
         const confirmModMailEmbed = new Discord.EmbedBuilder()
             .setColor('#ff0000')
             .setTitle('Are you sure you want to message modmail?')
             .setFooter({ text: 'Spamming modmail with junk will result in being modmail blacklisted' })
             .setDescription(`\`\`\`${message.content}\`\`\``)
-        const guild = await this.getGuild(message).catch(er => cancelled = true)
-        if (cancelled) return
         await message.channel.send({ embeds: [confirmModMailEmbed] }).then(async confirmMessage => {
             if (await confirmMessage.confirmButton(message.author.id)) {
                 modmail.sendModMail(message, guild, this.#bot, getDB(guild.id))
@@ -333,7 +332,7 @@ class MessageManager {
             guilds.push(g)
             guildNames.push(g.name)
         })
-        if (guilds.length == 0) return Promise.reject('We dont share any servers')
+        if (guilds.length == 0) return false // We don't share servers
         if (guilds.length == 1) return guilds[0]
 
         const guildSelectionEmbed = new Discord.EmbedBuilder()
@@ -342,16 +341,12 @@ class MessageManager {
             .setDescription('Press Cancel if you don\'t wanna proceed')
         const guildSelectionMessage = await message.channel.send({ embeds: [guildSelectionEmbed] })
         const choice = await guildSelectionMessage.confirmList(guildNames, message.author.id);
-        if (!choice || choice == 'Cancelled') return guildSelectionMessage.delete();
         guildSelectionMessage.delete();
+        if (!choice || choice == 'Cancelled') return false
 
-        function getGuildByName() {
-            for (const i in guilds) {
-                if (guilds[i].name == choice) return guilds[i]
-            }
+        for (const i in guilds) {
+            if (guilds[i].name == choice) return guilds[i]
         }
-
-        return getGuildByName(choice)
     }
 
     /**
