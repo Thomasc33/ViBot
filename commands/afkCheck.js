@@ -681,7 +681,8 @@ class afkCheck {
                 AfkTemplate.TemplateButtonType.LOG,
                 AfkTemplate.TemplateButtonType.LOG_SINGLE,
                 AfkTemplate.TemplateButtonType.NORMAL,
-                AfkTemplate.TemplateButtonType.POINTS
+                AfkTemplate.TemplateButtonType.POINTS,
+                AfkTemplate.TemplateButtonType.SUPPORTER
             ].includes(buttonType)) await this.reactableSendLoc(confirmInteraction, buttonInfo.location)
 
             if (buttonInfo.parent) {
