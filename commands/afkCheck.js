@@ -691,24 +691,20 @@ class afkCheck {
 
             this.reactables[interaction.customId].members.push(interaction.member.id)
 
-
             switch (buttonType) {
                 case AfkTemplate.TemplateButtonType.LOG:
                 case AfkTemplate.TemplateButtonType.LOG_SINGLE:
                 case AfkTemplate.TemplateButtonType.NORMAL:
+                case AfkTemplate.TemplateButtonType.POINTS:
                     await this.reactableSendLoc(interaction, buttonInfo.location, !buttonInfo.location)
+                    this.removeFromActiveInteractions(interaction.member.id)
                     break
                 case AfkTemplate.TemplateButtonType.SUPPORTER:
                     await this.reactableSendLoc(interaction, buttonInfo.location, true)
-                    break
-                case AfkTemplate.TemplateButtonType.POINTS:
-                    await this.reactableSendLoc(interaction, buttonInfo.location, !buttonInfo.location)
+                    this.removeFromActiveInteractions(interaction.member.id)
                     break
                 case AfkTemplate.TemplateButtonType.DRAG:
-                    // buttonStatus = await this.processReactableDrag(interaction)
-                    break
                 case AfkTemplate.TemplateButtonType.OPTION:
-                    // buttonStatus = await this.processReactableOption(interaction)
                     return this.removeFromActiveInteractions(interaction.member.id)
             }
 
