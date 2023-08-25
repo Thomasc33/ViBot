@@ -1334,10 +1334,12 @@ class afkCheck {
             this.members = []
             this.#channel.members.forEach(m => this.members.push(m.id))
         }
-        await this.#db.promise().query('INSERT INTO completionruns (??) VALUES ?', [
-                                  ['userid', 'guildid',      'unixtimestamp', 'amount', 'templateid',                 'raidid',     'parenttemplateid'],
-            this.members.map(u => [u,        this.#guild.id, Date.now(),      1,        this.#afkTemplate.templateID, this.#raidID, this.#afkTemplate.parentTemplateID])
-        ])
+        if (this.members.length > 0) {
+            await this.#db.promise().query('INSERT INTO completionruns (??) VALUES ?', [
+                                      ['userid', 'guildid',      'unixtimestamp', 'amount', 'templateid',                 'raidid',     'parenttemplateid'],
+                this.members.map(u => [u,        this.#guild.id, Date.now(),      1,        this.#afkTemplate.templateID, this.#raidID, this.#afkTemplate.parentTemplateID])
+            ])
+        }
         if (this.#afkTemplate.logName) {
             await this.#db.promise().query('UPDATE users SET ?? = ?? + 1 WHERE id IN (?)', [this.#afkTemplate.logName, this.#afkTemplate.logName, [...this.members]])
         }
