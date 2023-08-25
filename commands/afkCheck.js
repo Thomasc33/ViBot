@@ -115,7 +115,6 @@ class afkCheck {
         this.earlyLocationMembers = [] // All members with early location in the afk
         this.earlySlotMembers = [] // All members with early slots in the afk
         this.dragMembers = [] // All members currently in drag system in the afk
-        this.openInteractions = [] // All members currently in the middle of a button interaction
         this.reactables = {} // All members of each reactable and position on embed
         this.miniBossGuessing = {}
         this.miniBossGuessed = false
@@ -370,12 +369,6 @@ class afkCheck {
         if (this.raidCommandsMessage) await this.raidCommandsMessage.edit({ embeds: [this.#genRaidCommandsEmbed()] })
         if (this.raidInfoMessage) await this.raidInfoMessage.edit({embeds: [this.#genRaidInfoEmbed()]})
         if (this.raidChannelsMessage) await this.raidChannelsMessage.edit({ embeds: [this.#genRaidChannelsEmbed()] })
-        this.openInteractions = []
-    }
-
-    removeFromActiveInteractions(id) {
-        let ind = this.openInteractions.indexOf(id)
-        if (ind > -1) this.openInteractions.splice(ind)
     }
 
     #genEmbedFooter() {
@@ -633,11 +626,6 @@ class afkCheck {
      */
     async interactionHandler(interaction) {
         if (!interaction.isButton()) return
-        if (this.openInteractions.includes(interaction.member.id)) {
-            await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You are already in the process of reacting. Please wait and try again!`, null)], ephemeral: true })
-            return
-        }
-        this.openInteractions.push(interaction.member.id)
 
         if (this.#afkTemplate.buttons[interaction.customId]) {
             const buttonType = this.#afkTemplate.buttons[interaction.customId].type
@@ -645,20 +633,16 @@ class afkCheck {
             const emote = buttonInfo.emote ? `${buttonInfo.emote.text} ` : ``
 
             if (buttonInfo.minRole && !interaction.member.roles.cache.has(buttonInfo.minRole.id)) {
-                await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You do not have the required role ${buttonInfo.minRole} to react to this run.`, null)], ephemeral: true })
-                return this.removeFromActiveInteractions(interaction.member.id)
+                return await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You do not have the required role ${buttonInfo.minRole} to react to this run.`, null)], ephemeral: true })
             }
             if (this.reactables[interaction.customId].members.includes(interaction.member.id)) {
-                await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have already reacted as ${emote}${interaction.customId}. Try another react or try again next run.`, null)], ephemeral: true })
-                return this.removeFromActiveInteractions(interaction.member.id)
+                return await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have already reacted as ${emote}${interaction.customId}. Try another react or try again next run.`, null)], ephemeral: true })
             }
             if (interaction.customId.includes('request') && this.reactables[interaction.customId.substring(0, interaction.customId.length - 8)].members.includes(interaction.member.id)) {
-                await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have already reacted as ${emote}${interaction.customId.substring(0, interaction.customId - 7)}. Try another react or try again next run.`, null)], ephemeral: true })
-                return this.removeFromActiveInteractions(interaction.member.id)
+                return await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have already reacted as ${emote}${interaction.customId.substring(0, interaction.customId - 7)}. Try another react or try again next run.`, null)], ephemeral: true })
             }
             if (this.#reactionIsFull(interaction.customId)) {
-                await interaction.reply({ embeds: [extensions.createEmbed(interaction, `Too many people have already reacted and confirmed for that. Try another react or try again next run.`, null)], ephemeral: true })
-                return this.removeFromActiveInteractions(interaction.member.id)
+                return await interaction.reply({ embeds: [extensions.createEmbed(interaction, `Too many people have already reacted and confirmed for that. Try another react or try again next run.`, null)], ephemeral: true })
             }
 
             let buttonStatus = false
@@ -678,15 +662,17 @@ class afkCheck {
                     buttonStatus = await this.processReactableDrag(interaction)
                     break
                 case AfkTemplate.TemplateButtonType.OPTION:
-                    buttonStatus = await this.processReactableOption(interaction)
-                    return this.removeFromActiveInteractions(interaction.member.id)
+                    return await this.processReactableOption(interaction)
             }
 
-            if (!buttonStatus) return this.removeFromActiveInteractions(interaction.member.id)
+            if (!buttonStatus) return
 
             if (this.#reactionIsFull(interaction.customId)) {
-                await interaction.reply({ embeds: [extensions.createEmbed(interaction, `Too many people have already reacted and confirmed for that. Try another react or try again next run.`, null)], ephemeral: true })
-                return this.removeFromActiveInteractions(interaction.member.id)
+                return await interaction.followUp({ embeds: [extensions.createEmbed(interaction, `Too many people have already reacted and confirmed for that. Try another react or try again next run.`, null)], ephemeral: true })
+            }
+
+            if (this.reactables[interaction.customId].members.includes(interaction.member.id)) {
+                return await interaction.followUp({ embeds: [extensions.createEmbed(interaction, `You have already been confirmed for this reaction`, null)], ephemeral: true })
             }
 
             this.reactables[interaction.customId].members.push(interaction.member.id)
@@ -697,15 +683,12 @@ class afkCheck {
                 case AfkTemplate.TemplateButtonType.NORMAL:
                 case AfkTemplate.TemplateButtonType.POINTS:
                     await this.reactableSendLoc(interaction, buttonInfo.location, !buttonInfo.location)
-                    this.removeFromActiveInteractions(interaction.member.id)
                     break
                 case AfkTemplate.TemplateButtonType.SUPPORTER:
                     await this.reactableSendLoc(interaction, buttonInfo.location, true)
-                    this.removeFromActiveInteractions(interaction.member.id)
                     break
-                case AfkTemplate.TemplateButtonType.DRAG:
-                case AfkTemplate.TemplateButtonType.OPTION:
-                    return this.removeFromActiveInteractions(interaction.member.id)
+                default:
+                    break
             }
 
             if (buttonInfo.parent) {
@@ -719,20 +702,17 @@ class afkCheck {
             if (buttonInfo.location && !this.earlyLocationMembers.includes(interaction.member.id)) this.earlyLocationMembers.push(interaction.member.id)
             await this.raidCommandsMessage.edit({ embeds: [this.#genRaidCommandsEmbed()] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
             await this.raidInfoMessage.edit({ embeds: [this.#genRaidInfoEmbed()] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
-            return this.removeFromActiveInteractions(interaction.member.id)
+            return
         }
         else if (['abort', 'phase', 'cap', 'additional', 'end', 'miniboss'].includes(interaction.customId) || interaction.customId.includes(`Log`)) {
             if (this.#afkTemplate.minimumStaffRoles.some(roles => roles.every(role => interaction.member.roles.cache.has(role.id)))) return await this.processPhaseControl(interaction)
             else {
-                await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You do not have the required Staff Role to use this button.`, null)], ephemeral: true })
-                return this.removeFromActiveInteractions(interaction.member.id)
+                return await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You do not have the required Staff Role to use this button.`, null)], ephemeral: true })
             }
         } else if (interaction.customId == 'reconnect') {
-            await this.processReconnect(interaction)
-            return this.removeFromActiveInteractions(interaction.member.id)
+            return await this.processReconnect(interaction)
         } else {
-            await interaction.reply({ embeds: [extensions.createEmbed(interaction, `How did you press something that's unpressable? ඞ.`, null)], ephemeral: true })
-            return this.removeFromActiveInteractions(interaction.member.id)
+            return await interaction.reply({ embeds: [extensions.createEmbed(interaction, `How did you press something that's unpressable? ඞ.`, null)], ephemeral: true })
         }
     }
 
@@ -760,7 +740,6 @@ class afkCheck {
                 if (interaction.customId.includes('Log')) await this.processPhaseLog(interaction)
                 break
         }
-        return this.removeFromActiveInteractions(interaction.member.id)
     }
 
     async processPhaseAbort(interaction) {
@@ -811,7 +790,6 @@ class afkCheck {
         } else if (interaction) interaction.reply({ embeds: [extensions.createEmbed(interaction, `Successfully moved to the next phase of the run. You can dismiss this message.`, null)], ephemeral: true })
         
         if (this.phase >= this.#afkTemplate.phases) {
-            if (interaction) this.removeFromActiveInteractions(interaction.member.id)
             return this.postAfk(interaction)
         } else {
             this.phase += 1
@@ -993,7 +971,6 @@ class afkCheck {
         const buttonInfo = this.#afkTemplate.buttons['MiniBossGuessing']
 
         if (this.miniBossGuessed) {
-            this.removeFromActiveInteractions(interaction.member.id)
             return await interaction.reply({ content: "You have already set the miniboss.\nPut more runs up to do more miniboss guessing! :)", ephemeral: true })
         }
 
@@ -1009,7 +986,6 @@ class afkCheck {
             Object.keys(buttonInfo.logOptions).map(key => buttonInfo.logOptions[key].emojiName),
             interaction.member.id)
         if (!choice || choice == 'Cancelled') {
-            this.removeFromActiveInteractions(interaction.member.id)
             return interaction.editReply({ embeds: [failEmbed], ephemeral: true, components: [] })
         }
 
@@ -1031,7 +1007,6 @@ class afkCheck {
             }
         })
         this.miniBossGuessed = true
-        this.removeFromActiveInteractions(interaction.member.id)
     }
 
     async processReconnect(interaction) {
@@ -1181,8 +1156,7 @@ class afkCheck {
         }
 
         if (this.dragMembers.includes(interaction.member.id)) {
-            await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have already reacted as ${emote}${interaction.customId}. Please wait for the RL to accept or deny you.`, null)], ephemeral: true })
-            return this.removeFromActiveInteractions(interaction.member.id)
+            return await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have already reacted as ${emote}${interaction.customId}. Please wait for the RL to accept or deny you.`, null)], ephemeral: true })
         }
 
         let descriptionBeginning = `You reacted with ${emote}${interaction.customId}.\n`
