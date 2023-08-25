@@ -689,6 +689,26 @@ class afkCheck {
                 return this.removeFromActiveInteractions(interaction.member.id)
             }
 
+            switch (buttonType) {
+                case AfkTemplate.TemplateButtonType.LOG:
+                case AfkTemplate.TemplateButtonType.LOG_SINGLE:
+                case AfkTemplate.TemplateButtonType.NORMAL:
+                    await this.reactableSendLoc(interaction, buttonInfo.location, !buttonInfo.location)
+                    break
+                case AfkTemplate.TemplateButtonType.SUPPORTER:
+                    await this.reactableSendLoc(interaction, buttonInfo.location, true)
+                    break
+                case AfkTemplate.TemplateButtonType.POINTS:
+                    await this.reactableSendLoc(interaction, buttonInfo.location, !buttonInfo.location)
+                    break
+                case AfkTemplate.TemplateButtonType.DRAG:
+                    // buttonStatus = await this.processReactableDrag(interaction)
+                    break
+                case AfkTemplate.TemplateButtonType.OPTION:
+                    // buttonStatus = await this.processReactableOption(interaction)
+                    return this.removeFromActiveInteractions(interaction.member.id)
+            }
+
             this.reactables[interaction.customId].members.push(interaction.member.id)
 
             if (buttonInfo.parent) {
@@ -1028,6 +1048,14 @@ class afkCheck {
         } else return interaction.reply({ embeds: [extensions.createEmbed(interaction, `You were not part of this run when the afk check ended. Another run will be posted soon. Join that one!`, null)], ephemeral: true });
     }
 
+    async reactableSendLoc(interaction, hasLoc, hasEarlyVc) {
+        let locationText = ''
+        if (hasLoc) locationText += `The location for this run has been set to \`${this.location}\`, get there ASAP!${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`
+        if (hasEarlyVc) locationText += `You have received a guaranteed slot for this raid. ${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`
+        if (interaction.replied || interaction.deferred) await interaction.followUp({ embeds: [extensions.createEmbed(interaction, locationText, null)], ephemeral: true })
+        else await interaction.reply({ embeds: [extensions.createEmbed(interaction, locationText, null)], ephemeral: true })
+    }
+
     async processReactableNormal(interaction) {
         const buttonInfo = this.#afkTemplate.buttons[interaction.customId]
         const emote = buttonInfo.emote ? `${buttonInfo.emote.text} ` : ``
@@ -1052,11 +1080,6 @@ class afkCheck {
             }
             await interaction.deleteReply()
         }
-        let locationText = ''
-        if (buttonInfo.location) locationText = `The location for this run has been set to \`${this.location}\`, get there ASAP!${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`
-        else locationText = `You have received a guaranteed slot for this raid. ${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`
-        if (interaction.replied || interaction.deferred) await interaction.followUp({ embeds: [extensions.createEmbed(interaction, locationText, null)], ephemeral: true })
-        else await interaction.reply({ embeds: [extensions.createEmbed(interaction, locationText, null)], ephemeral: true })
         return true
     }
 
@@ -1106,8 +1129,6 @@ class afkCheck {
             await interaction.reply({ embeds: [extensions.createEmbed(interaction, `Your perks are limited to ${uses} times every ${cooldown_text}. Your next use is available <t:${(((cooldown*1000)+parseInt(rows[0].utime))/1000).toFixed(0)}:R>`, null)], ephemeral: true })
             return false
         }
-        if (buttonInfo.location) await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have received a guaranteed slot for this raid.\nThe location for this run has been set to \`${this.location}\`, get there ASAP!${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`, null)], ephemeral: true })
-        else await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have received a guaranteed slot for this raid.${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`, null)], ephemeral: true })
         return true
     }
 
@@ -1151,12 +1172,6 @@ class afkCheck {
             }
             interaction.deleteReply()
         }
-
-        let locationText = ''
-        if (buttonInfo.location) locationText = `The location for this run has been set to \`${this.location}\`, get there ASAP!${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`
-        else locationText = `You have received a guaranteed slot for this raid. ${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`
-        if (interaction.replied || interaction.deferred) await interaction.followUp({ embeds: [extensions.createEmbed(interaction, locationText, null)], ephemeral: true })
-        else await interaction.reply({ embeds: [extensions.createEmbed(interaction, locationText, null)], ephemeral: true })
         return true
     }
 
