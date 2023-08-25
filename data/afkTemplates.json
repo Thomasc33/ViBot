@@ -6289,14 +6289,6 @@
                                 ],
                                 "points": "moonlightkey",
                                 "multiplier": null
-                            },
-                            "Modded": {
-                                "logName": [
-                                    "moonlightPops",
-                                    "moddedpops"
-                                ],
-                                "points": "moonlightkey",
-                                "multiplier": "keymultiplier"
                             }
                         }
                     },
@@ -6627,14 +6619,6 @@
                                 ],
                                 "points": "moonlightkey",
                                 "multiplier": null
-                            },
-                            "Modded": {
-                                "logName": [
-                                    "moonlightPops",
-                                    "moddedpops"
-                                ],
-                                "points": "moonlightkey",
-                                "multiplier": "keymultiplier"
                             }
                         }
                     },
@@ -31475,14 +31459,6 @@
                                 ],
                                 "points": "moonlightkey",
                                 "multiplier": null
-                            },
-                            "Modded": {
-                                "logName": [
-                                    "moonlightPops",
-                                    "moddedpops"
-                                ],
-                                "points": "moonlightkey",
-                                "multiplier": "keymultiplier"
                             }
                         }
                     },
@@ -31794,14 +31770,6 @@
                                 ],
                                 "points": "moonlightkey",
                                 "multiplier": null
-                            },
-                            "Modded": {
-                                "logName": [
-                                    "moonlightPops",
-                                    "moddedpops"
-                                ],
-                                "points": "moonlightkey",
-                                "multiplier": "keymultiplier"
                             }
                         }
                     },
