@@ -35,16 +35,18 @@ class DbWrap {
             args = [query, params]
             msg_fut = this.#channel.send(`:alarm_clock: (${this.#pool_id}) Executing query \`${query}\` with params \`${params}\` ${cb ? 'CB' : ''}`)
         }
+        const start = new Date()
         return this.#db.query(...args, (...resp) => {
+            const runtime = new Date() - start
             if (cb) {
                 cb(...resp)
             }
             const resp_string = JSON.stringify(resp.slice(0, 2), null, 2)
             if (resp_string.length > 1500) {
                 const attachment = new Discord.AttachmentBuilder(Buffer.from(resp_string), { name: 'query.txt' })
-                msg_fut.then((msg) => { msg.edit(msg.content.replace(':alarm_clock:', ':white_check_mark:')); msg.reply({ content: 'Execution complete.', files: [attachment] }) })
+                msg_fut.then((msg) => { msg.edit(msg.content.replace(':alarm_clock:', `:white_check_mark: (${runtime}ms)`)); msg.reply({ content: `Execution complete in ${runtime}ms.`, files: [attachment] }) })
             } else {
-                msg_fut.then((msg) => { msg.edit(msg.content.replace(':alarm_clock:', ':white_check_mark:')); msg.reply(`Execution complete. Response:\n\`\`\`${resp_string}\`\`\``) })
+                msg_fut.then((msg) => { msg.edit(msg.content.replace(':alarm_clock:', `:white_check_mark: (${runtime}ms)`)); msg.reply(`Execution complete in ${runtime}ms. Response:\n\`\`\`${resp_string}\`\`\``) })
             }
         })
     }
@@ -61,13 +63,15 @@ class DbWrap {
                 } else {
                     msg_fut = channel.send(`:alarm_clock: (${pool_id}) Executing query \`${query}\` with params \`${params}\``)
                 }
+                const start = new Date()
                 const rv = await db_promise.query(query, params, cb)
+                const runtime = new Date() - start
                 const resp_string = JSON.stringify(rv[0], null, 2)
                 if (resp_string.length > 1500) {
                     const attachment = new Discord.AttachmentBuilder(Buffer.from(resp_string), { name: 'query.txt' })
-                    msg_fut.then((msg) => { msg.edit(msg.content.replace(':alarm_clock:', ':white_check_mark:')); msg.reply({ content: 'Execution complete.', files: [attachment] }) })
+                    msg_fut.then((msg) => { msg.edit(msg.content.replace(':alarm_clock:', `:white_check_mark: (${runtime}ms)`)); msg.reply({ content: `Execution complet in ${runtime}ms.`, files: [attachment] }) })
                 } else {
-                    msg_fut.then((msg) => { msg.edit(msg.content.replace(':alarm_clock:', ':white_check_mark:')); msg.reply(`Execution complete. Response:\n\`\`\`${resp_string}\`\`\``) })
+                    msg_fut.then((msg) => { msg.edit(msg.content.replace(':alarm_clock:', `:white_check_mark: (${runtime}ms)`)); msg.reply(`Execution complete in ${runtime}ms. Response:\n\`\`\`${resp_string}\`\`\``) })
                 }
                 return rv
             }
