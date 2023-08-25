@@ -645,34 +645,34 @@ class afkCheck {
                 return await interaction.reply({ embeds: [extensions.createEmbed(interaction, `Too many people have already reacted and confirmed for that. Try another react or try again next run.`, null)], ephemeral: true })
             }
 
-            let buttonStatus = false
+            let subInteraction = false
             switch (buttonType) {
                 case AfkTemplate.TemplateButtonType.LOG:
                 case AfkTemplate.TemplateButtonType.LOG_SINGLE:
                 case AfkTemplate.TemplateButtonType.NORMAL:
-                    buttonStatus = await this.processReactableNormal(interaction)
+                    subInteraction = await this.processReactableNormal(interaction)
                     break
                 case AfkTemplate.TemplateButtonType.SUPPORTER:
-                    buttonStatus = await this.processReactableSupporter(interaction)
+                    subInteraction = await this.processReactableSupporter(interaction)
                     break
                 case AfkTemplate.TemplateButtonType.POINTS:
-                    buttonStatus = await this.processReactablePoints(interaction)
+                    subInteraction = await this.processReactablePoints(interaction)
                     break
                 case AfkTemplate.TemplateButtonType.DRAG:
-                    buttonStatus = await this.processReactableDrag(interaction)
+                    subInteraction = await this.processReactableDrag(interaction)
                     break
                 case AfkTemplate.TemplateButtonType.OPTION:
                     return await this.processReactableOption(interaction)
             }
 
-            if (!buttonStatus) return
+            if (!subInteraction) return
 
             if (this.#reactionIsFull(interaction.customId)) {
-                return await interaction.followUp({ embeds: [extensions.createEmbed(interaction, `Too many people have already reacted and confirmed for that. Try another react or try again next run.`, null)], ephemeral: true })
+                return await subInteraction.reply({ embeds: [extensions.createEmbed(interaction, `Too many people have already reacted and confirmed for that. Try another react or try again next run.`, null)], ephemeral: true })
             }
 
             if (this.reactables[interaction.customId].members.includes(interaction.member.id)) {
-                return await interaction.followUp({ embeds: [extensions.createEmbed(interaction, `You have already been confirmed for this reaction`, null)], ephemeral: true })
+                return await subInteraction.reply({ embeds: [extensions.createEmbed(interaction, `You have already been confirmed for this reaction`, null)], ephemeral: true })
             }
 
             this.reactables[interaction.customId].members.push(interaction.member.id)
@@ -682,10 +682,10 @@ class afkCheck {
                 case AfkTemplate.TemplateButtonType.LOG_SINGLE:
                 case AfkTemplate.TemplateButtonType.NORMAL:
                 case AfkTemplate.TemplateButtonType.POINTS:
-                    await this.reactableSendLoc(interaction, buttonInfo.location, !buttonInfo.location)
+                    await this.reactableSendLoc(subInteraction, buttonInfo.location)
                     break
                 case AfkTemplate.TemplateButtonType.SUPPORTER:
-                    await this.reactableSendLoc(interaction, buttonInfo.location, true)
+                    await this.reactableSendLoc(subInteraction, buttonInfo.location)
                     break
                 default:
                     break
@@ -1020,10 +1020,11 @@ class afkCheck {
         } else return interaction.reply({ embeds: [extensions.createEmbed(interaction, `You were not part of this run when the afk check ended. Another run will be posted soon. Join that one!`, null)], ephemeral: true });
     }
 
-    async reactableSendLoc(interaction, hasLoc, hasEarlyVc) {
+    async reactableSendLoc(interaction, hasLoc) {
         let locationText = ''
-        if (hasLoc) locationText += `The location for this run has been set to \`${this.location}\`, get there ASAP!${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`
-        if (hasEarlyVc) locationText += `You have received a guaranteed slot for this raid. ${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`
+        if (hasLoc) locationText += `The location for this run has been set to \`${this.location}\`, get there ASAP!`
+        else locationText += `You have received a guaranteed slot for this raid.`
+        locationText += `${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`
         if (interaction.replied || interaction.deferred) await interaction.followUp({ embeds: [extensions.createEmbed(interaction, locationText, null)], ephemeral: true })
         else await interaction.reply({ embeds: [extensions.createEmbed(interaction, locationText, null)], ephemeral: true })
     }
@@ -1051,8 +1052,9 @@ class afkCheck {
                 return false
             }
             await interaction.deleteReply()
+            return subInteraction
         }
-        return true
+        return interaction
     }
 
     async processReactableSupporter(interaction) {    
@@ -1101,7 +1103,7 @@ class afkCheck {
             await interaction.reply({ embeds: [extensions.createEmbed(interaction, `Your perks are limited to ${uses} times every ${cooldown_text}. Your next use is available <t:${(((cooldown*1000)+parseInt(rows[0].utime))/1000).toFixed(0)}:R>`, null)], ephemeral: true })
             return false
         }
-        return true
+        return interaction
     }
 
     async processReactablePoints(interaction) {
@@ -1143,8 +1145,9 @@ class afkCheck {
                 return false
             }
             interaction.deleteReply()
+            return subInteraction
         }
-        return true
+        return interaction
     }
 
     async processReactableDrag(interaction) {
