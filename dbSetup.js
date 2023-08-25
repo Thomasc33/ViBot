@@ -72,6 +72,10 @@ class DbWrap {
             }
         }
     }
+
+    escape(...params) {
+        return this.#db.escape(...params)
+    }
 }
 
 async function setup_connections(bot) {
