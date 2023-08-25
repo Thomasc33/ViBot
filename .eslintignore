@@ -25,8 +25,8 @@ commands/eval.js
 commands/excuse.js
 commands/expelled.js
 commands/falseSuspensions.js
-commands/find.js
 commands/fixName.js
+commands/glape.js
 commands/getFeedback.js
 commands/headcount.js
 commands/id.js
@@ -57,7 +57,6 @@ commands/parsemembers.js
 commands/permaSuspend.js
 commands/points.js
 commands/poll.js
-commands/pop.js
 commands/prunerushers.js
 commands/pull.js
 commands/punishments.js

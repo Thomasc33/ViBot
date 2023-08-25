@@ -34,13 +34,12 @@ bot.afkModules = {}
 bot.settings = moduleIsAvailable('./guildSettings.json') ? require('./guildSettings.json') : {}
 bot.partneredServers = moduleIsAvailable('./data/partneredServers.json') ? require('./data/partneredServers.json') : []
 bot.fetchPartneredServer = function (guildId) {
-    for (const i of bot.partneredServers) {
-        const server = bot.partneredServers[i]
+    for (const server of bot.partneredServers) {
         if (server.guildId == guildId) return server
     }
     return null
 }
-bot.adminUsers = ['277636691227836419', '258286481167220738', '190572077219184650', '120540036855889921']
+bot.adminUsers = ['277636691227836419', '258286481167220738', '190572077219184650', '120540036855889921', '658783569191370802']
 bot.partneredServers = moduleIsAvailable('./data/partneredServers.json') ? require('./data/partneredServers.json') : {}
 bot.emojiServers = moduleIsAvailable('./data/emojiServers.json') ? require('./data/emojiServers.json') : {}
 bot.devServers = ['739623118833713214']

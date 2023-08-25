@@ -34,7 +34,6 @@
         "camelcase": "warn",
         "new-cap": "warn",
         "padding-line-between-statements": ["warn", { "blankLine": "never", "prev": "*", "next": "return" }],
-        "object-shorthand": ["warn", "consistent-as-needed"],
         "comma-dangle": ["error", {"arrays": "ignore"}],
         "no-lonely-if": "off",
         "array-bracket-spacing": "warn",
@@ -46,6 +45,7 @@
         "keyword-spacing": ["error", {"overrides": { "throw": { "after": false }}}],
         "prefer-promise-reject-errors": "warn",
         "capitalized-comments": "off",
-        "quotes": ["error", "single", { "avoidEscape": true }]
+        "quotes": ["error", "single", { "avoidEscape": true }],
+        "operator-assignment": "warn"
     }
 }
