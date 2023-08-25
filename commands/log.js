@@ -102,22 +102,23 @@ module.exports = {
     }
 }
 
-function confirm(runInfo, message, count) {
-    return new Promise(async (res, rej) => {
-        const multiplier = runInfo.multiply === null ? 1 : runInfo.multiply;
-        let confirmEmbed = new Discord.EmbedBuilder()
-            .setColor(runInfo.color)
-            .setTitle('Confirm')
-            .setDescription(`Are you sure you want to log ${parseInt(count) * multiplier} ${runInfo.confirmSuffix}?`)
-            .setFooter({ text: message.member.displayName })
-            .setTimestamp()
-        await message.channel.send({ embeds: [confirmEmbed] }).then(async confirmMessage => {
-            if (await confirmMessage.confirmButton(message.author.id)) {
-                await confirmMessage.delete()
-                return res(true)
-            } else await confirmMessage.delete(); return res(false)
-        })
+async function confirm(runInfo, message, count) {
+    const multiplier = runInfo.multiply === null ? 1 : runInfo.multiply;
+    const confirmEmbed = new Discord.EmbedBuilder()
+        .setColor(runInfo.color)
+        .setTitle('Confirm')
+        .setDescription(`Are you sure you want to log ${parseInt(count) * multiplier} ${runInfo.confirmSuffix}?`)
+        .setFooter({ text: message.member.displayName })
+        .setTimestamp()
+    const rv = await message.channel.send({ embeds: [confirmEmbed] }).then(async confirmMessage => {
+        if (await confirmMessage.confirmButton(message.author.id)) {
+            await confirmMessage.delete()
+            return true
+        }
+        await confirmMessage.delete()
+        return false
     })
+    return rv
 }
 
 function getRunInfo(guildInfo, key) {
