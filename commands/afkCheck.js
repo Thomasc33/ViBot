@@ -645,51 +645,44 @@ class afkCheck {
                 return await interaction.reply({ embeds: [extensions.createEmbed(interaction, `Too many people have already reacted and confirmed for that. Try another react or try again next run.`, null)], ephemeral: true })
             }
 
-            let subInteraction = false
+            let confirmInteraction = false
             switch (buttonType) {
                 case AfkTemplate.TemplateButtonType.LOG:
                 case AfkTemplate.TemplateButtonType.LOG_SINGLE:
                 case AfkTemplate.TemplateButtonType.NORMAL:
-                    subInteraction = await this.processReactableNormal(interaction)
+                    confirmInteraction = await this.processReactableNormal(interaction)
                     break
                 case AfkTemplate.TemplateButtonType.SUPPORTER:
-                    subInteraction = await this.processReactableSupporter(interaction)
+                    confirmInteraction = await this.processReactableSupporter(interaction)
                     break
                 case AfkTemplate.TemplateButtonType.POINTS:
-                    subInteraction = await this.processReactablePoints(interaction)
+                    confirmInteraction = await this.processReactablePoints(interaction)
                     break
                 case AfkTemplate.TemplateButtonType.DRAG:
-                    subInteraction = await this.processReactableDrag(interaction)
+                    confirmInteraction = await this.processReactableDrag(interaction)
                     break
                 case AfkTemplate.TemplateButtonType.OPTION:
                     return await this.processReactableOption(interaction)
             }
 
-            if (!subInteraction) return
+            if (!confirmInteraction) return
 
             if (this.#reactionIsFull(interaction.customId)) {
-                return await subInteraction.reply({ embeds: [extensions.createEmbed(interaction, `Too many people have already reacted and confirmed for that. Try another react or try again next run.`, null)], ephemeral: true })
+                return await confirmInteraction.reply({ embeds: [extensions.createEmbed(interaction, `Too many people have already reacted and confirmed for that. Try another react or try again next run.`, null)], ephemeral: true })
             }
 
             if (this.reactables[interaction.customId].members.includes(interaction.member.id)) {
-                return await subInteraction.reply({ embeds: [extensions.createEmbed(interaction, `You have already been confirmed for this reaction`, null)], ephemeral: true })
+                return await confirmInteraction.reply({ embeds: [extensions.createEmbed(interaction, `You have already been confirmed for this reaction`, null)], ephemeral: true })
             }
 
             this.reactables[interaction.customId].members.push(interaction.member.id)
 
-            switch (buttonType) {
-                case AfkTemplate.TemplateButtonType.LOG:
-                case AfkTemplate.TemplateButtonType.LOG_SINGLE:
-                case AfkTemplate.TemplateButtonType.NORMAL:
-                case AfkTemplate.TemplateButtonType.POINTS:
-                    await this.reactableSendLoc(subInteraction, buttonInfo.location)
-                    break
-                case AfkTemplate.TemplateButtonType.SUPPORTER:
-                    await this.reactableSendLoc(subInteraction, buttonInfo.location)
-                    break
-                default:
-                    break
-            }
+            if ([
+                AfkTemplate.TemplateButtonType.LOG,
+                AfkTemplate.TemplateButtonType.LOG_SINGLE,
+                AfkTemplate.TemplateButtonType.NORMAL,
+                AfkTemplate.TemplateButtonType.POINTS
+            ].includes(buttonType)) await this.reactableSendLoc(confirmInteraction, buttonInfo.location)
 
             if (buttonInfo.parent) {
                 for (let i of buttonInfo.parent) {
