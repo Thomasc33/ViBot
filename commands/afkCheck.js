@@ -873,7 +873,9 @@ class afkCheck {
             throw e
         }
         const newMemberName = keyNameResp.fields.getField('keyname').value
-        return [this.#lookupGuildMember(newMemberName), keyNameResp]
+        const newMember = this.#lookupGuildMember(newMemberName)
+        if (!newMember) return [undefined, keyNameResp.reply({content: `Invalid username: ${newMemberName}`, ephemeral: true})]
+        return [newMember, keyNameResp]
     }
 
     async processPhaseLog(interaction, modded) {
@@ -889,6 +891,7 @@ class afkCheck {
 
         if (this.reactables[button].members.length == 0) {
             [member, interaction] = await this.#keyNameInputPrompt(interaction)
+            if (!member) return
         } else if (this.reactables[button].members.length == 1) {
             member = this.#guild.members.cache.get(this.reactables[button].members[0])
         } else {
@@ -933,7 +936,7 @@ class afkCheck {
                     case 'changeuser':
                         let newMember;
                         [newMember, i] = await this.#keyNameInputPrompt(i)
-                        if (!newMember) return i.reply({content: `Invalid username: ${newMemberName}`, ephemeral: true})
+                        if (!newMember) return
                         member = newMember
                         break
                     case 'input':
