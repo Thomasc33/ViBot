@@ -46,6 +46,7 @@
         "prefer-promise-reject-errors": "warn",
         "capitalized-comments": "off",
         "quotes": ["error", "single", { "avoidEscape": true }],
-        "operator-assignment": "warn"
+        "operator-assignment": "warn",
+        "dot-notation": ["error", { "allowPattern": "^[A-Z].*" }]
     }
 }

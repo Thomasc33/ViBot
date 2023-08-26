@@ -2,7 +2,7 @@ const Discord = require('discord.js')
 const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType
 const { slashArg, slashCommandJSON } = require('../utils.js')
 
-function buildPunishmentEmbed(rows, member, title, time_field) {
+function buildPunishmentEmbed(rows, member, title) {
     const embed = new Discord.EmbedBuilder()
         .setColor('#F04747')
         .setDescription(`${title} for ${member}`)
@@ -11,7 +11,7 @@ function buildPunishmentEmbed(rows, member, title, time_field) {
         let embedFieldLength = 1
         for (let i = 0; i < rows.length; i++) {
             const punishment = rows[i]
-            const stringText = `\`${(i + 1).toString().padStart(3, ' ')}\`${punishment.silent ? ' Silently' : ''} By <@!${punishment.modid}> <t:${(parseInt(punishment[time_field]) / 1000).toFixed(0)}:R> at <t:${(parseInt(punishment[time_field]) / 1000).toFixed(0)}:f>\`\`\`${punishment.reason}\`\`\`\n`
+            const stringText = `\`${(i + 1).toString().padStart(3, ' ')}\`${punishment.silent ? ' Silently' : ''} By <@!${punishment.modid}> <t:${(parseInt(punishment.uTime) / 1000).toFixed(0)}:R> at <t:${(parseInt(punishment.uTime) / 1000).toFixed(0)}:f>\`\`\`${punishment.reason}\`\`\`\n`
             if (embedFieldStrings == 0) embedFieldStrings.push(stringText)
             else {
                 if (embedFieldStrings.join('').length + stringText.length >= 800) {
@@ -75,29 +75,23 @@ module.exports = {
             else usersNotFound.push(user)
         }
 
-        const [warnRows] = await db.promise().query('SELECT * FROM ?? WHERE id IN (?) AND guildid = ?', ['warns', members.map(member => member.id), message.guild.id])
-        const userWarns = flattenOnId(warnRows)
-        const [suspendRows] = await db.promise().query('SELECT * FROM ?? WHERE id IN (?) AND guildid = ?', ['suspensions', members.map(member => member.id), message.guild.id])
-        const userSuspends = flattenOnId(suspendRows)
-        const [muteRows] = await db.promise().query('SELECT * FROM ?? WHERE id IN (?) AND guildid = ?', ['mutes', members.map(member => member.id), message.guild.id])
-        const userMutes = flattenOnId(muteRows)
+        const punishmentsByType = {}
+        const memberPosition = message.member.roles.highest.position
+        if (memberPosition >= roleCache.get(roles[rolePermissions.punishmentsWarnings]).position && settings.backend.punishmentsWarnings) {
+            const [warnRows] = await db.promise().query('SELECT *, time as uTime FROM ?? WHERE id IN (?) AND guildid = ?', ['warns', members.map(member => member.id), message.guild.id])
+            punishmentsByType['Warnings'] = flattenOnId(warnRows)
+        }
+        if (memberPosition >= roleCache.get(roles[rolePermissions.punishmentsSuspensions]).position && settings.backend.punishmentsSuspensions) {
+            const [suspendRows] = await db.promise().query('SELECT *, false silent FROM ?? WHERE id IN (?) AND guildid = ?', ['suspensions', members.map(member => member.id), message.guild.id])
+            punishmentsByType['Suspensions'] = flattenOnId(suspendRows)
+        }
+        if (memberPosition >= roleCache.get(roles[rolePermissions.punishmentsMutes]).position && settings.backend.punishmentsMutes) {
+            const [muteRows] = await db.promise().query('SELECT *, false silent FROM ?? WHERE id IN (?) AND guildid = ?', ['mutes', members.map(member => member.id), message.guild.id])
+            punishmentsByType['Mutes'] = flattenOnId(muteRows)
+        }
 
         for (const member of members) {
-            const memberPosition = message.member.roles.highest.position
-
-            const embeds = []
-            if (memberPosition >= roleCache.get(roles[rolePermissions.punishmentsWarnings]).position && settings.backend.punishmentsWarnings) {
-                const embed = buildPunishmentEmbed(userWarns[member.id], member, 'Warnings', 'time')
-                if (embed) embeds.push(embed)
-            }
-            if (memberPosition >= roleCache.get(roles[rolePermissions.punishmentsSuspensions]).position && settings.backend.punishmentsSuspensions) {
-                const embed = buildPunishmentEmbed(userSuspends[member.id], member, 'Suspensions', 'uTime')
-                if (embed) embeds.push(embed)
-            }
-            if (memberPosition >= roleCache.get(roles[rolePermissions.punishmentsMutes]).position && settings.backend.punishmentsMutes) {
-                const embed = buildPunishmentEmbed(userMutes[member.id], member, 'Mutes', 'uTime')
-                if (embed) embeds.push(embed)
-            }
+            const embeds = Object.entries(punishmentsByType).map(([title, punishmentsByUserId]) => punishmentsByUserId[member.id] && buildPunishmentEmbed(punishmentsByUserId[member.id], member, title)).filter(i => i)
 
             // Disabling eslint await in loop error because we need the
             // messages to send in order, so the await is required
