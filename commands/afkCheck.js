@@ -1340,7 +1340,7 @@ class afkCheck {
                 this.members.map(u => [u,        this.#guild.id, Date.now(),      1,        this.#afkTemplate.templateID, this.#raidID, this.#afkTemplate.parentTemplateID])
             ])
         }
-        if (this.#afkTemplate.logName) {
+        if (this.#afkTemplate.logName && this.members.length > 0) {
             await this.#db.promise().query('UPDATE users SET ?? = ?? + 1 WHERE id IN (?)', [this.#afkTemplate.logName, this.#afkTemplate.logName, [...this.members]])
         }
         for (let u of this.members) {
