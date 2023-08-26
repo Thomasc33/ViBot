@@ -872,7 +872,6 @@ class afkCheck {
             embeds: [
                 new Discord.EmbedBuilder()
                     .setDescription(`Logging ${number} ${choiceText} for ${member}.`)
-                    .setTimestamp(Date.now())
                     .setFooter({ text: `${interaction.guild.name} • ${this.raidLeaderDisplayName}'s ${this.#afkTemplate.name}`, iconURL: interaction.guild.iconURL() })
             ],
             components: [
@@ -908,7 +907,13 @@ class afkCheck {
                                     )
                                 )
                         )
-                        const keyCountResp = await i.awaitModalSubmit({time: 60_000})
+                        let keyCountResp
+                        try {
+                            keyCountResp = await i.awaitModalSubmit({time: 600_000})
+                        } catch(e) {
+                            if (e.code == 'InteractionCollectorError') return
+                            throw e
+                        }
                         const newNumber = parseInt(keyCountResp.fields.getField('keycount').value)
                         if (isNaN(newNumber) || newNumber < 0) return await keyCountResp.reply({content: `Invalid number: ${newNumber}`, ephemeral: true})
                         number = newNumber
@@ -941,7 +946,6 @@ class afkCheck {
                     .setColor('#0000ff')
                     .setTitle(`${button} logged!`)
                     .setDescription(`${member} now has \`\`${parseInt(rows[0][option]) + parseInt(number)}\`\` (+\`${number}\`) ${choiceText} pops`)
-                    .setTimestamp(Date.now())
                     .setFooter({ text: `${interaction.guild.name} • ${this.raidLeaderDisplayName}'s ${this.#afkTemplate.name}`, iconURL: interaction.guild.iconURL() })
                 await this.#afkTemplate.raidCommandChannel.send({ embeds: [embed] })
             })
