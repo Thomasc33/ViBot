@@ -868,33 +868,54 @@ class afkCheck {
         if (!logKeyInteraction) return await interaction.followUp({ embeds: [extensions.createEmbed(interaction, `Timed out. You can dismiss this message.`, null)], ephemeral: true })
         else if (!member) return await logKeyInteraction.update({ embeds: [extensions.createEmbed(interaction, `Cancelled or Invalid Member. You can dismiss this message.`, null)], components: [] })
 
-        const row = new Discord.ActionRowBuilder()
-            .addComponents(
-                new Discord.ButtonBuilder()
-                        .setCustomId('incr')
-                        .setLabel('+1')
-                        .setStyle(Discord.ButtonStyle.Primary),
-                new Discord.ButtonBuilder()
-                        .setCustomId('save')
-                        .setLabel('Save')
-                        .setStyle(Discord.ButtonStyle.Success),
-                new Discord.ButtonBuilder()
-                        .setCustomId('cancel')
-                        .setLabel('Cancel')
-                        .setStyle(Discord.ButtonStyle.Danger))
-        const keyCountMsg = await logKeyInteraction.update({ embeds: [extensions.createEmbed(interaction, `Logging ${number} ${choiceText} for ${member}.`, null)], components: [row] })
+        const keyCountMsg = await logKeyInteraction.update({
+            embeds: [
+                new Discord.EmbedBuilder()
+                    .setDescription(`Logging ${number} ${choiceText} for ${member}.`)
+                    .setTimestamp(Date.now())
+                    .setFooter({ text: `${interaction.guild.name} • ${this.raidLeaderDisplayName}'s ${this.#afkTemplate.name}`, iconURL: interaction.guild.iconURL() })
+            ],
+            components: [
+                new Discord.ActionRowBuilder()
+                    .addComponents(
+                        new Discord.ButtonBuilder().setCustomId('incr').setLabel('+1').setStyle(Discord.ButtonStyle.Primary),
+                        new Discord.ButtonBuilder().setCustomId('save').setLabel('Save').setStyle(Discord.ButtonStyle.Success),
+                        new Discord.ButtonBuilder().setCustomId('cancel').setLabel('Cancel').setStyle(Discord.ButtonStyle.Danger),
+                        new Discord.ButtonBuilder().setCustomId('input').setLabel('Input Key Count').setStyle(Discord.ButtonStyle.Secondary)
+                    )
+            ]
+        })
         const collector = keyCountMsg.createMessageComponentCollector({ componentType: Discord.ComponentType.Button });
         const savePops = await new Promise(res => {
             collector.on('collect', async i => {
                 switch (i.customId) {
+                    case 'save': return res(true)
+                    case 'cancel': return res(false)
                     case 'incr':
                         number += 1
-                        return await i.update({ embeds: [extensions.createEmbed(interaction, `Logging ${number} ${choiceText} for ${member}.`, null)] })
-                    case 'save':
-                        return res(true)
-                    case 'cancel':
-                        return res(false)
+                        break
+                    case 'input':
+                        await i.showModal(
+                            new Discord.ModalBuilder()
+                                .setTitle('How many keys would you like to log?')
+                                .setCustomId('keylogmodal')
+                                .addComponents(
+                                    new Discord.ActionRowBuilder().addComponents(
+                                        new Discord.TextInputBuilder()
+                                            .setLabel('Key Count')
+                                            .setCustomId('keycount')
+                                            .setStyle(Discord.TextInputStyle.Short)
+                                    )
+                                )
+                        )
+                        const keyCountResp = await i.awaitModalSubmit({time: 60_000})
+                        const newNumber = parseInt(keyCountResp.fields.getField('keycount').value)
+                        if (isNaN(newNumber) || newNumber < 0) return await keyCountResp.reply({content: `Invalid number: ${newNumber}`, ephemeral: true})
+                        number = newNumber
+                        i = keyCountResp
+                        break
                 }
+                return await i.update({ embeds: [extensions.createEmbed(interaction, `Logging ${number} ${choiceText} for ${member}.`, null)] })
             });
         })
 
@@ -920,6 +941,8 @@ class afkCheck {
                     .setColor('#0000ff')
                     .setTitle(`${button} logged!`)
                     .setDescription(`${member} now has \`\`${parseInt(rows[0][option]) + parseInt(number)}\`\` (+\`${number}\`) ${choiceText} pops`)
+                    .setTimestamp(Date.now())
+                    .setFooter({ text: `${interaction.guild.name} • ${this.raidLeaderDisplayName}'s ${this.#afkTemplate.name}`, iconURL: interaction.guild.iconURL() })
                 await this.#afkTemplate.raidCommandChannel.send({ embeds: [embed] })
             })
         }
@@ -1420,9 +1443,7 @@ class afkCheck {
 
         for (let i in this.#afkTemplate.buttons) {
             if (this.#afkTemplate.buttons[i].type != AfkTemplate.TemplateButtonType.LOG && this.#afkTemplate.buttons[i].type != AfkTemplate.TemplateButtonType.LOG_SINGLE) continue
-            console.log(this.#afkTemplate.buttons[i].logOptions)
             const logOptions = Object.keys(this.#afkTemplate.buttons[i].logOptions)
-            console.log(logOptions)
             const phaseButtons = logOptions.map(type => {
                 const phaseButton = new Discord.ButtonBuilder()
                             .setStyle(2)
