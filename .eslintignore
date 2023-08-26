@@ -59,7 +59,6 @@ commands/points.js
 commands/poll.js
 commands/prunerushers.js
 commands/pull.js
-commands/punishments.js
 commands/purge.js
 commands/quota.js
 commands/reload.js
