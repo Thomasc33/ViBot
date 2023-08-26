@@ -847,6 +847,35 @@ class afkCheck {
         setTimeout(this.loggingAfk.bind(this), 60000)
     }
 
+    #lookupGuildMember(name) {
+        return this.#guild.members.cache.get(name) || this.#guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(name.toLowerCase()))
+    }
+
+    async #keyNameInputPrompt(i) {
+        await i.showModal(
+            new Discord.ModalBuilder()
+                .setTitle("Whose key are you logging?")
+                .setCustomId('keynamemodal')
+                .addComponents(
+                    new Discord.ActionRowBuilder().addComponents(
+                        new Discord.TextInputBuilder()
+                            .setLabel('Key Name')
+                            .setCustomId('keyname')
+                            .setStyle(Discord.TextInputStyle.Short)
+                    )
+                )
+        )
+        let keyNameResp
+        try {
+            keyNameResp = await i.awaitModalSubmit({time: 600_000})
+        } catch(e) {
+            if (e.code == 'InteractionCollectorError') return [undefined, i]
+            throw e
+        }
+        const newMemberName = keyNameResp.fields.getField('keyname').value
+        return [this.#lookupGuildMember(newMemberName), keyNameResp]
+    }
+
     async processPhaseLog(interaction, modded) {
         const button = interaction.customId.split(' ')[2]
         const buttonType = interaction.customId.split(' ')[1]
@@ -858,17 +887,23 @@ class afkCheck {
         let isModded = interaction.customId.split(' ')[1] == 'Modded'
         let choiceText = buttonInfo.emote ? `${buttonInfo.emote.text} **${buttonType} ${button}**` : `**${buttonType} ${button}**`
 
-        const text1 = `Which member do you want to log ${choiceText} reacts for this run?\nChoose or input a username or id.`
-        const confirmMemberMenu = new Discord.StringSelectMenuBuilder()
-            .setPlaceholder(`Name of ${button}s`)
-        for (let i of this.reactables[button].members) confirmMemberMenu.addOptions({ label: this.#guild.members.cache.get(i).nickname, value: i })
-        const {value: confirmMemberValue, interaction: logKeyInteraction} = await interaction.selectPanel(text1, null, confirmMemberMenu, 10000, true, true)
-        if (!member && confirmMemberValue) member = this.#guild.members.cache.get(confirmMemberValue)
-        if (!member && confirmMemberValue) member = this.#guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(confirmMemberValue.toLowerCase()))
-        if (!logKeyInteraction) return await interaction.followUp({ embeds: [extensions.createEmbed(interaction, `Timed out. You can dismiss this message.`, null)], ephemeral: true })
-        else if (!member) return await logKeyInteraction.update({ embeds: [extensions.createEmbed(interaction, `Cancelled or Invalid Member. You can dismiss this message.`, null)], components: [] })
+        if (this.reactables[button].members.length == 0) {
+            [member, interaction] = await this.#keyNameInputPrompt(interaction)
+        } else if (this.reactables[button].members.length == 1) {
+            member = this.#guild.members.cache.get(this.reactables[button].members[0])
+        } else {
+            const text1 = `Which member do you want to log ${choiceText} reacts for this run?\nChoose or input a username or id.`
+            const confirmMemberMenu = new Discord.StringSelectMenuBuilder()
+                .setPlaceholder(`Name of ${button}s`)
+            for (let i of this.reactables[button].members) confirmMemberMenu.addOptions({ label: this.#guild.members.cache.get(i).nickname, value: i })
+            const {value: confirmMemberValue, interaction: logKeyInteraction} = await interaction.selectPanel(text1, null, confirmMemberMenu, 10000, true, true)
+            if (confirmMemberValue) member = this.#lookupGuildMember(confirmMemberValue)
+            if (!logKeyInteraction) return await interaction.followUp({ embeds: [extensions.createEmbed(interaction, `Timed out. You can dismiss this message.`, null)], ephemeral: true })
+            else if (!member) return await logKeyInteraction.update({ embeds: [extensions.createEmbed(interaction, `Cancelled or Invalid Member. You can dismiss this message.`, null)], components: [] })
+            interaction = logKeyInteraction
+        }
 
-        const keyCountMsg = await logKeyInteraction.update({
+        const keyCountMsg = await interaction.reply({
             embeds: [
                 new Discord.EmbedBuilder()
                     .setDescription(`Logging ${number} ${choiceText} for ${member}.`)
@@ -880,9 +915,11 @@ class afkCheck {
                         new Discord.ButtonBuilder().setCustomId('incr').setLabel('+1').setStyle(Discord.ButtonStyle.Primary),
                         new Discord.ButtonBuilder().setCustomId('save').setLabel('Save').setStyle(Discord.ButtonStyle.Success),
                         new Discord.ButtonBuilder().setCustomId('cancel').setLabel('Cancel').setStyle(Discord.ButtonStyle.Danger),
-                        new Discord.ButtonBuilder().setCustomId('input').setLabel('Input Key Count').setStyle(Discord.ButtonStyle.Secondary)
+                        new Discord.ButtonBuilder().setCustomId('input').setLabel('Input Key Count').setStyle(Discord.ButtonStyle.Secondary),
+                        new Discord.ButtonBuilder().setCustomId('changeuser').setLabel('Change Key Popper').setStyle(Discord.ButtonStyle.Secondary)
                     )
-            ]
+            ],
+            ephemeral: true
         })
         const collector = keyCountMsg.createMessageComponentCollector({ componentType: Discord.ComponentType.Button });
         const savePops = await new Promise(res => {
@@ -893,11 +930,17 @@ class afkCheck {
                     case 'incr':
                         number += 1
                         break
+                    case 'changeuser':
+                        let newMember;
+                        [newMember, i] = await this.#keyNameInputPrompt(i)
+                        if (!newMember) return i.reply({content: `Invalid username: ${newMemberName}`, ephemeral: true})
+                        member = newMember
+                        break
                     case 'input':
                         await i.showModal(
                             new Discord.ModalBuilder()
                                 .setTitle('How many keys would you like to log?')
-                                .setCustomId('keylogmodal')
+                                .setCustomId('keycountmodal')
                                 .addComponents(
                                     new Discord.ActionRowBuilder().addComponents(
                                         new Discord.TextInputBuilder()
