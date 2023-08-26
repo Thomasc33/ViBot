@@ -698,7 +698,7 @@ class afkCheck {
             await this.raidInfoMessage.edit({ embeds: [this.#genRaidInfoEmbed()] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
             return
         }
-        else if (['abort', 'phase', 'cap', 'additional', 'end', 'miniboss'].includes(interaction.customId) || interaction.customId.includes(`Log`)) {
+        else if (['abort', 'phase', 'cap', 'additional', 'end', 'miniboss'].includes(interaction.customId) || interaction.customId.startsWith('log ')) {
             if (this.#afkTemplate.minimumStaffRoles.some(roles => roles.every(role => interaction.member.roles.cache.has(role.id)))) return await this.processPhaseControl(interaction)
             else {
                 return await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You do not have the required Staff Role to use this button.`, null)], ephemeral: true })
@@ -731,7 +731,7 @@ class afkCheck {
                 await this.processPhaseMiniboss(interaction)
                 break
             default:
-                if (interaction.customId.includes('Log')) await this.processPhaseLog(interaction)
+                if (interaction.customId.startsWith('log ')) await this.processPhaseLog(interaction)
                 break
         }
     }
@@ -837,68 +837,71 @@ class afkCheck {
             .setLabel('Log Additional Complete')
             .setStyle(Discord.ButtonStyle.Secondary)
         const cancelButton = new Discord.ButtonBuilder()
-        const {value: confirmValue, interaction: subInteraction} = await interaction.confirmPanel(text, null, confirmButton, cancelButton, 10000, true)
-        if (!subInteraction) return await interaction.editReply({ embeds: [extensions.createEmbed(interaction, `Timed out. You can dismiss this message.`, null)], components: [] })   
-        else if (!confirmValue) return await subInteraction.update({ embeds: [extensions.createEmbed(interaction, `Cancelled. You can dismiss this message.`, null)], components: [] })
-        else await subInteraction.update({ embeds: [extensions.createEmbed(interaction, `Successfully logged an additional complete to all members of the run. You can dismiss this message.`, null)], components: [] })
+        const {value: confirmValue, interaction: logCompleteInteraction} = await interaction.confirmPanel(text, null, confirmButton, cancelButton, 10000, true)
+        if (!logCompleteInteraction) return await interaction.editReply({ embeds: [extensions.createEmbed(interaction, `Timed out. You can dismiss this message.`, null)], components: [] })   
+        else if (!confirmValue) return await logCompleteInteraction.update({ embeds: [extensions.createEmbed(interaction, `Cancelled. You can dismiss this message.`, null)], components: [] })
+        else await logCompleteInteraction.update({ embeds: [extensions.createEmbed(interaction, `Successfully logged an additional complete to all members of the run. You can dismiss this message.`, null)], components: [] })
         this.logging = true
         this.completes++
         await this.raidChannelsMessage.edit({ embeds: [this.#genRaidChannelsEmbed()] })
         setTimeout(this.loggingAfk.bind(this), 60000)
     }
 
-    async processPhaseLog(interaction) {
-        const button = interaction.customId.substring(4)
+    async processPhaseLog(interaction, modded) {
+        const button = interaction.customId.split(' ')[2]
+        const buttonType = interaction.customId.split(' ')[1]
         const buttonInfo = this.#afkTemplate.buttons[button]
 
         let member = null
-        let number = null
-        let logOption = null
-        let isModded = false
-        let logBool = Object.keys(buttonInfo.logOptions).length > 1
-        let choiceText = buttonInfo.emote ? `${buttonInfo.emote.text} **${button}**` : `**${button}**`
+        let number = 1
+        let logOption = buttonInfo.logOptions[interaction.customId.split(' ')[1]]
+        let isModded = interaction.customId.split(' ')[1] == 'Modded'
+        let choiceText = buttonInfo.emote ? `${buttonInfo.emote.text} **${buttonType} ${button}**` : `**${buttonType} ${button}**`
 
         const text1 = `Which member do you want to log ${choiceText} reacts for this run?\nChoose or input a username or id.`
         const confirmMemberMenu = new Discord.StringSelectMenuBuilder()
             .setPlaceholder(`Name of ${button}s`)
         for (let i of this.reactables[button].members) confirmMemberMenu.addOptions({ label: this.#guild.members.cache.get(i).nickname, value: i })
-        const {value: confirmMemberValue, interaction: subInteractionMember} = await interaction.selectPanel(text1, null, confirmMemberMenu, 10000, true, true)
+        const {value: confirmMemberValue, interaction: logKeyInteraction} = await interaction.selectPanel(text1, null, confirmMemberMenu, 10000, true, true)
         if (!member && confirmMemberValue) member = this.#guild.members.cache.get(confirmMemberValue)
         if (!member && confirmMemberValue) member = this.#guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(confirmMemberValue.toLowerCase()))
-        if (!subInteractionMember) return await interaction.followUp({ embeds: [extensions.createEmbed(interaction, `Timed out. You can dismiss this message.`, null)], ephemeral: true })
-        else if (!member) return await subInteractionMember.update({ embeds: [extensions.createEmbed(interaction, `Cancelled or Invalid Member. You can dismiss this message.`, null)], components: [] })
-        else await subInteractionMember.update({ embeds: [extensions.createEmbed(interaction, `Successfully set the member to ${member}. You can dismiss this message.`, null)], components: [] })
+        if (!logKeyInteraction) return await interaction.followUp({ embeds: [extensions.createEmbed(interaction, `Timed out. You can dismiss this message.`, null)], ephemeral: true })
+        else if (!member) return await logKeyInteraction.update({ embeds: [extensions.createEmbed(interaction, `Cancelled or Invalid Member. You can dismiss this message.`, null)], components: [] })
 
-        if (!(buttonInfo.type == AfkTemplate.TemplateButtonType.LOG_SINGLE)) {
-            const text2 = `How many ${choiceText} reacts do you want to log for this run?\nChoose or input a number.`
-            const confirmNumberMenu = new Discord.StringSelectMenuBuilder()
-                .setPlaceholder(`Number of ${button}s`)
-                .setOptions(
-                    { label: '1', value: '1' },
-                    { label: '2', value: '2' },
-                    { label: '3', value: '3' },
-                    { label: 'None', value: '0' },
-                )
-            const {value: confirmNumberValue, interaction: subInteractionNumber} = await interaction.selectPanel(text2, null, confirmNumberMenu, 10000, true, true)
-            number = Number.isInteger(parseInt(confirmNumberValue)) ? parseInt(confirmNumberValue) : null
-            if (!subInteractionNumber) return await interaction.followUp({ embeds: [extensions.createEmbed(interaction, `Timed out. You can dismiss this message.`, null)], ephemeral: true })   
-            else if (!number) return await subInteractionNumber.update({ embeds: [extensions.createEmbed(interaction, `Cancelled or Invalid Number. You can dismiss this message.`, null)], components: [] })
-            else await subInteractionNumber.update({ embeds: [extensions.createEmbed(interaction, `Successfully set the number to ${number}. You can dismiss this message.`, null)], components: [] })
-        } else number = 1
+        const row = new Discord.ActionRowBuilder()
+            .addComponents(
+                new Discord.ButtonBuilder()
+                        .setCustomId('incr')
+                        .setLabel('+1')
+                        .setStyle(Discord.ButtonStyle.Primary),
+                new Discord.ButtonBuilder()
+                        .setCustomId('save')
+                        .setLabel('Save')
+                        .setStyle(Discord.ButtonStyle.Success),
+                new Discord.ButtonBuilder()
+                        .setCustomId('cancel')
+                        .setLabel('Cancel')
+                        .setStyle(Discord.ButtonStyle.Danger))
+        const keyCountMsg = await logKeyInteraction.update({ embeds: [extensions.createEmbed(interaction, `Logging ${number} ${choiceText} for ${member}.`, null)], components: [row] })
+        const collector = keyCountMsg.createMessageComponentCollector({ componentType: Discord.ComponentType.Button });
+        const savePops = await new Promise(res => {
+            collector.on('collect', async i => {
+                switch (i.customId) {
+                    case 'incr':
+                        number += 1
+                        return await i.update({ embeds: [extensions.createEmbed(interaction, `Logging ${number} ${choiceText} for ${member}.`, null)] })
+                    case 'save':
+                        return res(true)
+                    case 'cancel':
+                        return res(false)
+                }
+            });
+        })
 
-        if (logBool) {
-            const text3 = `How do you want ${choiceText} to be logged for this run?\nChoose or input an option.`
-            const confirmOptionMenu = new Discord.StringSelectMenuBuilder()
-                .setPlaceholder(`Option for ${button}s`)
-            for (let i in buttonInfo.logOptions) confirmOptionMenu.addOptions({ label: i, value: i })
-            const {value: confirmOptionValue, interaction: subInteractionOption} =  await interaction.selectPanel(text3, null, confirmOptionMenu, 10000, false, true)
-            isModded = confirmOptionValue == "Modded"
-            logOption = buttonInfo.logOptions[confirmOptionValue]
-            if (!subInteractionOption) return await interaction.followUp({ embeds: [extensions.createEmbed(interaction, `Timed out. You can dismiss this message.`, null)], ephemeral: true })   
-            else if (!logOption) return await subInteractionOption.update({ embeds: [extensions.createEmbed(interaction, `Cancelled or Invalid Option. You can dismiss this message.`, null)], components: [] })
-            else await subInteractionOption.update({ embeds: [extensions.createEmbed(interaction, `Successfully set the option to ${confirmOptionValue}. You can dismiss this message.`, null)], components: [] })
-        } else logOption = buttonInfo.logOptions[Object.keys(buttonInfo.logOptions)[0]]
-        
+        collector.stop()
+        await keyCountMsg.delete()
+        if (!savePops) return
+
         for (let option of logOption.logName) {
             let keyTemplate = popCommand.findKey(this.#guild.id, option);
             if (keyTemplate) {
@@ -1418,12 +1421,18 @@ class afkCheck {
 
         for (let i in this.#afkTemplate.buttons) {
             if (this.#afkTemplate.buttons[i].type != AfkTemplate.TemplateButtonType.LOG && this.#afkTemplate.buttons[i].type != AfkTemplate.TemplateButtonType.LOG_SINGLE) continue
-            const phaseButton = new Discord.ButtonBuilder()
-            .setStyle(2)
-            .setCustomId(`Log ${i}`)
-            phaseButton.setLabel(`Log ${i}`)
-            if (this.#afkTemplate.buttons[i].emote) phaseButton.setEmoji(this.#afkTemplate.buttons[i].emote.id)
-            phaseActionRow.push(phaseButton)
+            console.log(this.#afkTemplate.buttons[i].logOptions)
+            const logOptions = Object.keys(this.#afkTemplate.buttons[i].logOptions)
+            console.log(logOptions)
+            const phaseButtons = logOptions.map(type => {
+                const phaseButton = new Discord.ButtonBuilder()
+                            .setStyle(2)
+                            .setCustomId(`log ${type} ${i}`)
+                            .setLabel(logOptions.length > 1 ? `Log ${type} ${i}` : `Log ${i}`)
+                if (this.#afkTemplate.buttons[i].emote) phaseButton.setEmoji(this.#afkTemplate.buttons[i].emote.id)
+                return phaseButton
+            })
+            phaseActionRow.push(...phaseButtons)
             counter ++
             if (counter == 5) {
                 counter = 0
