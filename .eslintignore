@@ -95,7 +95,6 @@ commands/vetBan.js
 commands/vetVerification.js
 commands/vibotChannels.js
 commands/vote.js
-commands/warn.js
 commands/warnRemove.js
 commands/warns.js
 jobs/runner.js
