@@ -1,8 +1,52 @@
-const Discord = require('discord.js');
-const ErrorLogger = require('../lib/logError');
-const moment = require('moment');
-const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
-const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js')
+const Discord = require('discord.js')
+const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType
+const { slashArg, slashCommandJSON } = require('../utils.js')
+
+function buildPunishmentEmbed(rows, member, title, time_field) {
+    const embed = new Discord.EmbedBuilder()
+        .setColor('#F04747')
+        .setDescription(`${title} for ${member}`)
+    if (rows.length > 0) {
+        let embedFieldStrings = []
+        let embedFieldLength = 1
+        for (let i = 0; i < rows.length; i++) {
+            const punishment = rows[i]
+            const stringText = `\`${(i + 1).toString().padStart(3, ' ')}\`${punishment.silent ? ' Silently' : ''} By <@!${punishment.modid}> <t:${(parseInt(punishment[time_field]) / 1000).toFixed(0)}:R> at <t:${(parseInt(punishment[time_field]) / 1000).toFixed(0)}:f>\`\`\`${punishment.reason}\`\`\`\n`
+            if (embedFieldStrings == 0) embedFieldStrings.push(stringText)
+            else {
+                if (embedFieldStrings.join('').length + stringText.length >= 800) {
+                    embed.addFields({
+                        name: `${title} (${embedFieldLength})`,
+                        value: embedFieldStrings.join(''),
+                        inline: true
+                    })
+                    embedFieldLength++
+                    embedFieldStrings = []
+                    embedFieldStrings.push(stringText)
+                } else {
+                    embedFieldStrings.push(stringText)
+                }
+            }
+        }
+        if (embedFieldStrings.length > 0) {
+            embed.addFields({
+                name: `${title} (${embedFieldLength})`,
+                value: embedFieldStrings.join(''),
+                inline: true
+            })
+        }
+        embed.setTitle(`${title} for ${member.displayName}`)
+        return embed
+    }
+}
+
+function flattenOnId(rows) {
+    return rows.reduce((obj, row) => {
+        if (!obj[row.id]) obj[row.id] = []
+        obj[row.id].push(row)
+        return obj
+    }, {})
+}
 
 module.exports = {
     role: 'security',
@@ -14,156 +58,64 @@ module.exports = {
     varargs: true,
     args: [
         slashArg(SlashArgType.String, 'user', {
-            description: "The discord user ID, @mention, or ign you want to view"
+            description: 'The discord user ID, @mention, or ign you want to view'
         }),
     ],
     getSlashCommandData(guild) { return slashCommandJSON(this, guild) },
     async execute(message, args, bot, db) {
         const settings = bot.settings[message.guild.id]
-        var usersNotFound = [];
-        for (let i in args) {
-            let user = args[i]
-            let member = message.guild.findMember(user)
-            if (!member) { usersNotFound.push(user); continue; }
+        const { roles, rolePermissions } = settings
+        const roleCache = message.guild.roles.cache
 
-            const embeds = [];
-            const memberPosition = message.member.roles.highest.position;
-            const roleCache = message.guild.roles.cache
-            const roles = settings.roles
-            const rolePermissions = settings.rolePermissions
+        const usersNotFound = []
+        const members = []
+        for (const user of args) {
+            const member = message.guild.findMember(user)
+            if (member) members.push(member)
+            else usersNotFound.push(user)
+        }
 
+        const [warnRows] = await db.promise().query('SELECT * FROM ?? WHERE id IN (?) AND guildid = ?', ['warns', members.map(member => member.id), message.guild.id])
+        const userWarns = flattenOnId(warnRows)
+        const [suspendRows] = await db.promise().query('SELECT * FROM ?? WHERE id IN (?) AND guildid = ?', ['suspensions', members.map(member => member.id), message.guild.id])
+        const userSuspends = flattenOnId(suspendRows)
+        const [muteRows] = await db.promise().query('SELECT * FROM ?? WHERE id IN (?) AND guildid = ?', ['mutes', members.map(member => member.id), message.guild.id])
+        const userMutes = flattenOnId(muteRows)
+
+        for (const member of members) {
+            const memberPosition = message.member.roles.highest.position
+
+            const embeds = []
             if (memberPosition >= roleCache.get(roles[rolePermissions.punishmentsWarnings]).position && settings.backend.punishmentsWarnings) {
-                const row = await db.promise().query(`SELECT * FROM warns WHERE id = '${member.id}' AND guildid = '${message.guild.id}'`);
-                let embed = new Discord.EmbedBuilder()
-                    .setColor('#F04747')
-                    .setDescription(`Warnings for ${member}`)
-                if (row[0].length > 0) {
-                    let embedFieldStrings = [];
-                    let embedFieldLength = 1;
-                    for (let i in row[0]) {
-                        let index = parseInt(i) + 1
-                        const punishment = row[0][i];
-                        const stringText = `\`${index.toString().padStart(3, ' ')}\`${punishment.silent ? ' Silently' : ''} By <@!${punishment.modid}> <t:${(parseInt(punishment.time)/1000).toFixed(0)}:R> at <t:${(parseInt(punishment.time)/1000).toFixed(0)}:f>\`\`\`${punishment.reason}\`\`\`\n`
-                        if (embedFieldStrings == 0) { embedFieldStrings.push(stringText) }
-                        else {
-                            if (embedFieldStrings.join('').length + stringText.length >= 800) {
-                                embed.addFields({
-                                    name: `Warnings (${embedFieldLength})`,
-                                    value: embedFieldStrings.join(''),
-                                    inline: true
-                                });
-                                embedFieldLength++;
-                                embedFieldStrings = [];
-                                embedFieldStrings.push(stringText);
-                            } else {
-                                embedFieldStrings.push(stringText);
-                            }
-                        }
-                    }
-                    if (embedFieldStrings.length > 0) {
-                        embed.addFields({
-                            name: `Warnings (${embedFieldLength})`,
-                            value: embedFieldStrings.join(''),
-                            inline: true
-                        });
-                    }
-                    embed.setTitle(`Warnings for ${member.displayName}`)
-                    embeds.push(embed);
-                }
+                const embed = buildPunishmentEmbed(userWarns[member.id], member, 'Warnings', 'time')
+                if (embed) embeds.push(embed)
             }
-
             if (memberPosition >= roleCache.get(roles[rolePermissions.punishmentsSuspensions]).position && settings.backend.punishmentsSuspensions) {
-                const row = await db.promise().query(`SELECT * FROM suspensions WHERE id = '${member.id}' AND guildid = '${message.guild.id}'`);
-                let embed = new Discord.EmbedBuilder()
-                    .setColor('#F04747')
-                    .setDescription(`Suspensions for ${member}`)
-                if (row[0].length > 0) {
-                    let embedFieldStrings = [];
-                    let embedFieldLength = 1;
-                    for (let i in row[0]) {
-                        let index = parseInt(i) + 1
-                        const punishment = row[0][i];
-                        const stringText = `\`${index.toString().padStart(3, ' ')}\` By <@!${punishment.modid}> <t:${(parseInt(punishment.uTime)/1000).toFixed(0)}:R> at <t:${(parseInt(punishment.uTime)/1000).toFixed(0)}:f>\`\`\`${punishment.reason}\`\`\`\n`
-                        if (embedFieldStrings == 0) { embedFieldStrings.push(stringText) }
-                        else {
-                            if (embedFieldStrings.join('').length + stringText.length >= 800) {
-                                embed.addFields({
-                                    name: `Suspensions (${embedFieldLength})`,
-                                    value: embedFieldStrings.join(''),
-                                    inline: true
-                                });
-                                embedFieldLength++;
-                                embedFieldStrings = [];
-                                embedFieldStrings.push(stringText)
-                            } else {
-                                embedFieldStrings.push(stringText);
-                            }
-                        }
-                    }
-                    if (embedFieldStrings.length > 0) {
-                        embed.addFields({
-                            name: `Suspensions (${embedFieldLength})`,
-                            value: embedFieldStrings.join(''),
-                            inline: true
-                        });
-                    }
-                    embed.setTitle(`Suspensions for ${member.displayName}`)
-                    embeds.push(embed);
-                }
+                const embed = buildPunishmentEmbed(userSuspends[member.id], member, 'Suspensions', 'uTime')
+                if (embed) embeds.push(embed)
             }
-
             if (memberPosition >= roleCache.get(roles[rolePermissions.punishmentsMutes]).position && settings.backend.punishmentsMutes) {
-                const row = await db.promise().query(`SELECT * FROM mutes WHERE id = '${member.id}' AND guildid = '${message.guild.id}'`);
-                let embed = new Discord.EmbedBuilder()
-                    .setColor('#F04747')
-                    .setDescription(`Mutes for ${member}`)
-                if (row[0].length > 0) {
-                    let embedFieldStrings = [];
-                    let embedFieldLength = 1;
-                    for (let i in row[0]) {
-                        let index = parseInt(i) + 1
-                        const punishment = row[0][i];
-                        const stringText = `\`${index.toString().padStart(3, ' ')}\` By <@!${punishment.modid}> <t:${(parseInt(punishment.uTime)/1000).toFixed(0)}:R> at <t:${(parseInt(punishment.uTime)/1000).toFixed(0)}:f>\`\`\`${punishment.reason}\`\`\`\n`
-                        if (embedFieldStrings == 0) { embedFieldStrings.push(stringText) }
-                        else {
-                            if (embedFieldStrings.join('').length + stringText.length >= 800) {
-                                embed.addFields({
-                                    name: `Mutes (${embedFieldLength})`,
-                                    value: embedFieldStrings.join(''),
-                                    inline: true
-                                });
-                                embedFieldLength++;
-                                embedFieldStrings = [];
-                                embedFieldStrings.push(stringText)
-                            } else {
-                                embedFieldStrings.push(stringText);
-                            }
-                        }
-                    }
-                    if (embedFieldStrings.length > 0) {
-                        embed.addFields({
-                            name: `Mutes (${embedFieldLength})`,
-                            value: embedFieldStrings.join(''),
-                            inline: true
-                        });
-                    }
-                    embed.setTitle(`Mutes for ${member.displayName}`);
-                    embeds.push(embed);
-                }
+                const embed = buildPunishmentEmbed(userMutes[member.id], member, 'Mutes', 'uTime')
+                if (embed) embeds.push(embed)
             }
 
+            // Disabling eslint await in loop error because we need the
+            // messages to send in order, so the await is required
             if (embeds.length > 0) {
-                await message.reply({ embeds: embeds });
+                // eslint-disable-next-line no-await-in-loop
+                await message.reply({ embeds })
             } else {
-                let embed = new Discord.EmbedBuilder()
+                const embed = new Discord.EmbedBuilder()
                     .setTitle('No punishments')
                     .setDescription(`${member} has no punishments in this server.`)
                     .setColor('#F04747')
-                await message.reply({ embeds: [embed] });
+                // eslint-disable-next-line no-await-in-loop
+                await message.reply({ embeds: [embed] })
             }
         }
+
         if (usersNotFound.length > 0) {
-            let embedNotFound = new Discord.EmbedBuilder()
+            const embedNotFound = new Discord.EmbedBuilder()
                 .setTitle('Users not found')
                 .setColor('#fAA61A')
                 .setDescription(usersNotFound.join(', '))
