@@ -919,7 +919,7 @@ class afkCheck {
                 let embed = new Discord.EmbedBuilder()
                     .setColor('#0000ff')
                     .setTitle(`${button} logged!`)
-                    .setDescription(`${member} now has \`\`${parseInt(rows[0][option]) + parseInt(number)}\`\` ${choiceText} pops`)
+                    .setDescription(`${member} now has \`\`${parseInt(rows[0][option]) + parseInt(number)}\`\` (+\`${number}\`) ${choiceText} pops`)
                 await this.#afkTemplate.raidCommandChannel.send({ embeds: [embed] })
             })
         }
@@ -931,7 +931,6 @@ class afkCheck {
         }
         this.reactables[button].logged += number
         await this.raidChannelsMessage.edit({ embeds: [this.#genRaidChannelsEmbed()] })
-        await interaction.followUp({ embeds: [extensions.createEmbed(interaction, `Successfully logged ${number} ${choiceText} for ${member}. You can dismiss this message.`, null)], ephemeral: true })
     }
 
     async processPhaseEnd(interaction) {
