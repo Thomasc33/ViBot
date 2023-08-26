@@ -91,9 +91,7 @@ module.exports = {
         }
 
         for (const member of members) {
-            const embeds = Object.entries(punishmentsByType).map(([title, punishmentsByUserId]) => {
-                return punishmentsByUserId[member.id] && buildPunishmentEmbed(punishmentsByUserId[member.id], member, title)
-            }).filter(i => i)
+            const embeds = Object.entries(punishmentsByType).map(([title, punishmentsByUserId]) => punishmentsByUserId[member.id] && buildPunishmentEmbed(punishmentsByUserId[member.id], member, title)).filter(i => i)
 
             // Disabling eslint await in loop error because we need the
             // messages to send in order, so the await is required
