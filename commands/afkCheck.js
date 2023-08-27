@@ -935,7 +935,13 @@ class afkCheck {
             ],
             ephemeral: true
         })
-        const collector = keyCountMsg.createMessageComponentCollector({ componentType: Discord.ComponentType.Button });
+        // This is a workaround for https://github.com/discordjs/discord.js/issues/7992
+        // The bug is that if you have buttons on an ephermeral message, you can't have a Collector
+        // on them unless you fetch the reply. We can't pass `fetchReply` when we make the reply
+        // because we need the Interaction to be able to delete it. So, we fetch the reply ourselves
+        // in order to make the collector.
+        const collector = (await keyCountMsg.interaction.fetchReply()).createMessageComponentCollector({ componentType: Discord.ComponentType.Button });
+
         const savePops = await new Promise(res => {
             collector.on('collect', async i => {
                 switch (i.customId) {
