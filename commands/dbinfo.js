@@ -1,5 +1,6 @@
 const Discord = require('discord.js')
 const { reconnect_dont_do_this } = require('../dbSetup.js')
+const { slashCommandJSON } = require('../utils.js')
 
 function peekMysql2Queue(q) {
     let i = 0
@@ -17,7 +18,13 @@ module.exports = {
     name: 'dbinfo',
     role: 'developer',
     description: 'Gets db stats',
+    args: [],
+    varargs: true,
+    getSlashCommandData(guild) {
+        return slashCommandJSON(this, guild)
+    },
     async execute(message, args, bot, db) {
+        db = db.getPoolInternal()
         const config = {
             closed: db._closed
         }
@@ -28,7 +35,7 @@ module.exports = {
         } else {
             const configKeys = ['waitForConnections', 'connectionLimit', 'maxIdle', 'idleTimeout', 'queueLimit']
             configKeys.forEach(k => {config[k] = db.config[k]})
-            await message.channel.send(`DB Config:\n\`\`\`\n${JSON.stringify(config, null, 2)}\`\`\``)
+            await message.reply({ content: `DB Config:\n\`\`\`\n${JSON.stringify(config, null, 2)}\`\`\``, ephemeral: true })
             const freeConnections = new Set(peekMysql2Queue(db._freeConnections).map(c => c.connectionId))
             const connectionInfo = peekMysql2Queue(db._allConnections).map(c => ({
                 lastActiveTime: `${c.lastActiveTime} (${new Date(c.lastActiveTime).toISOString()}; ${((new Date() - c.lastActiveTime) / 1000) / 60} minutes ago)`,
@@ -38,8 +45,8 @@ module.exports = {
             }))
             const attachment = new Discord.AttachmentBuilder(Buffer.from(JSON.stringify(connectionInfo, null, 2)), { name: 'log.txt' })
             connectionInfo.map(i => delete i.commands)
-            await message.channel.send({ content: `Live connections:\n\`\`\`\n${JSON.stringify(connectionInfo, null, 2)}\`\`\``, files: [attachment] })
-            if (freeConnections.size != 0) await message.channel.send(`Other free connections: ${freeConnections.values()}`)
+            await message.followUp({ content: `Live connections:\n\`\`\`\n${JSON.stringify(connectionInfo, null, 2)}\`\`\``, files: [attachment], ephemeral: true })
+            if (freeConnections.size != 0) await message.followUp({ content: `Other free connections: ${freeConnections.values()}`, ephemeral: true })
         }
     }
 }
