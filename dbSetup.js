@@ -24,6 +24,10 @@ class DbWrap {
         this.#channel = guild.channels.cache.get(channel_id)
     }
 
+    getPoolInternal() {
+        return this.#db
+    }
+
     query(query, params, cb) {
         let msg_fut
         let args
