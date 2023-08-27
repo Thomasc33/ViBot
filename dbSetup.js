@@ -3,6 +3,8 @@ const dbSchemas = require('./data/schemas.json')
 const mysql = require('mysql2')
 const Discord = require('discord.js')
 const loggingInfo = require('./data/loggingInfo.json')
+const metrics = require('./metrics.js')
+const { Point } = require('@influxdata/influxdb-client')
 
 let dbs = null
 const uniq_dbs = []
@@ -41,6 +43,12 @@ class DbWrap {
             if (cb) {
                 cb(...resp)
             }
+            if (Array.isArray(args[1])) {
+                console.log('wp')
+                metrics.writePoint(new Point('mysql_raw_querytimes')
+                    .intField(args[0], runtime)
+                    .tag('functiontype', 'sync'))
+            }
             const resp_string = JSON.stringify(resp.slice(0, 2), null, 2)
             if (resp_string.length > 1500) {
                 const attachment = new Discord.AttachmentBuilder(Buffer.from(resp_string), { name: 'query.txt' })
@@ -66,6 +74,12 @@ class DbWrap {
                 const start = new Date()
                 const rv = await db_promise.query(query, params, cb)
                 const runtime = new Date() - start
+                if (Array.isArray(params)) {
+                    console.log('wp2')
+                    metrics.writePoint(new Point('mysql_raw_querytimes')
+                        .intField(query, runtime)
+                        .tag('functiontype', 'async'))
+                }
                 const resp_string = JSON.stringify(rv[0], null, 2)
                 if (resp_string.length > 1500) {
                     const attachment = new Discord.AttachmentBuilder(Buffer.from(resp_string), { name: 'query.txt' })
