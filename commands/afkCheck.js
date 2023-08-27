@@ -365,10 +365,12 @@ class afkCheck {
         if (!this.raidStatusMessage) return
         let reactables = this.getReactables(this.phase)
         let components = reactables.concat(this.getPhaseControls(this.phase))
-        if (this.raidStatusMessage) await this.raidStatusMessage.edit({ embeds: [this.#genRaidStatusEmbed()], components: components })
-        if (this.raidCommandsMessage) await this.raidCommandsMessage.edit({ embeds: [this.#genRaidCommandsEmbed()] })
-        if (this.raidInfoMessage) await this.raidInfoMessage.edit({embeds: [this.#genRaidInfoEmbed()]})
-        if (this.raidChannelsMessage) await this.raidChannelsMessage.edit({ embeds: [this.#genRaidChannelsEmbed()] })
+        await Promise.all([
+            this.raidStatusMessage?.edit({ embeds: [this.#genRaidStatusEmbed()], components: components }),
+            this.raidCommandsMessage?.edit({ embeds: [this.#genRaidCommandsEmbed()] }),
+            this.raidInfoMessage?.edit({embeds: [this.#genRaidInfoEmbed()]}),
+            this.raidChannelsMessage?.edit({ embeds: [this.#genRaidChannelsEmbed()] })
+        ].filter(i => i))
     }
 
     #genEmbedFooter() {
@@ -476,15 +478,15 @@ class afkCheck {
     async sendInitialStatusMessage() {
         this.#afkTemplate.processBody(this.#channel)
         
-        this.raidStatusMessage = await this.#afkTemplate.raidStatusChannel.send({
+        const raidStatusMessageContents = {
             content: `${this.pingText}**${this.#afkTemplate.name}** ${this.flag ? ` (${this.flag})` : ''} by ${this.#leader} is starting inside of **${this.#guild.name}**${this.#channel ? ` in ${this.#channel}` : ``}`,
             embeds: [this.#afkTemplate.startDelay > 0 ? this.#genRaidStatusEmbed() : null]
-        })
-        for (let i in this.#afkTemplate.raidPartneredStatusChannels) this.#afkTemplate.raidPartneredStatusChannels[i].map(async channel => await channel.send({ content: `**${this.#afkTemplate.name}** is starting inside of **${this.#guild.name}**${this.#channel ? ` in ${this.#channel}` : ``}` }))
-        
-        let tempRaidStatusMessage = null
-        if (this.#afkTemplate.body[1].message) tempRaidStatusMessage = await this.#afkTemplate.raidStatusChannel.send({ content: `${this.#afkTemplate.body[1].message} in 5 seconds...` })
-        setTimeout(async () => { if (tempRaidStatusMessage) await tempRaidStatusMessage.delete() }, 5000)
+        };
+        [this.raidStatusMessage] = await Promise.all([
+            this.#afkTemplate.raidStatusChannel.send(raidStatusMessageContents),
+            this.#afkTemplate.body[1].message && this.#afkTemplate.raidStatusChannel.send({ content: `${this.#afkTemplate.body[1].message} in 5 seconds...` }).then(msg => setTimeout(async () => await msg.delete(), 5000)),
+            ...Object.values(this.#afkTemplate.raidPartneredStatusChannels).map(channel => channel.send({ content: `**${this.#afkTemplate.name}** is starting inside of **${this.#guild.name}**${this.#channel ? ` in ${this.#channel}` : ``}` }))
+        ])
 
         this.raidStatusInteractionHandler = new Discord.InteractionCollector(this.#bot, { message: this.raidStatusMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
         this.raidStatusInteractionHandler.on('collect', interaction => this.interactionHandler(interaction))
@@ -517,10 +519,15 @@ class afkCheck {
         const components = this.getPhaseControls()
         const embed = this.#genRaidCommandsEmbed()
         
-        if (this.raidCommandsMessage) this.raidCommandsMessage = await this.raidCommandsMessage.edit({ embeds: [this.#genRaidCommandsEmbed()], components: components})
-        else this.raidCommandsMessage = await this.#afkTemplate.raidCommandChannel.send({ embeds: [this.#genRaidCommandsEmbed()], components: components})
-        if (this.raidInfoMessage) this.raidInfoMessage = await this.raidInfoMessage.edit({embeds: [this.#genRaidInfoEmbed()]})
-        else this.raidInfoMessage = await this.#afkTemplate.raidInfoChannel.send({embeds: [this.#genRaidInfoEmbed()]})
+        const raidCommandsMessageContents = { embeds: [this.#genRaidCommandsEmbed()], components: components}
+        const raidInfoMessageContents = {embeds: [this.#genRaidInfoEmbed()]};
+        [
+            this.raidCommandsMessage,
+            this.raidInfoMessage
+        ] = await Promise.all([
+            this.raidCommandsMessage?.edit(raidCommandsMessageContents) || this.#afkTemplate.raidCommandChannel.send(raidCommandsMessageContents),
+            this.raidInfoMessage?.edit(raidInfoMessageContents) || this.#afkTemplate.raidInfoChannel.send(raidInfoMessageContents)
+        ])
         
         if (!this.raidCommandsInteractionHandler) {
             this.raidCommandsInteractionHandler = new Discord.InteractionCollector(this.#bot, { message: this.raidCommandsMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
@@ -531,8 +538,8 @@ class afkCheck {
     async sendChannelsMessage() {
         let components = this.getPhaseControls()
 
-        if (this.raidChannelsMessage) this.raidChannelsMessage = await this.raidChannelsMessage.edit({content: `${this.#message.member}`, embeds: [this.#genRaidChannelsEmbed()], components: components })
-        else this.raidChannelsMessage = await this.#afkTemplate.raidActiveChannel.send({content: `${this.#message.member}`, embeds: [this.#genRaidChannelsEmbed()], components: components })
+        const raidChannelsMessageContents = {content: `${this.#message.member}`, embeds: [this.#genRaidChannelsEmbed()], components: components }
+        this.raidChannelsMessage = await (this.raidChannelsMessage?.edit(raidChannelsMessageContents) || this.#afkTemplate.raidActiveChannel.send(raidChannelsMessageContents))
        
         if (!this.raidChannelsInteractionHandler) {
             this.raidChannelsInteractionHandler = new Discord.InteractionCollector(this.#bot, { message: this.raidChannelsMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
@@ -694,8 +701,10 @@ class afkCheck {
             }
             if (!this.earlySlotMembers.includes(interaction.member.id)) this.earlySlotMembers.push(interaction.member.id)
             if (buttonInfo.location && !this.earlyLocationMembers.includes(interaction.member.id)) this.earlyLocationMembers.push(interaction.member.id)
-            await this.raidCommandsMessage.edit({ embeds: [this.#genRaidCommandsEmbed()] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
-            await this.raidInfoMessage.edit({ embeds: [this.#genRaidInfoEmbed()] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
+            await Promise.all([
+                this.raidCommandsMessage.edit({ embeds: [this.#genRaidCommandsEmbed()] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild)),
+                this.raidInfoMessage.edit({ embeds: [this.#genRaidInfoEmbed()] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
+            ])
             return
         }
         else if (['abort', 'phase', 'cap', 'additional', 'end', 'miniboss'].includes(interaction.customId) || interaction.customId.startsWith('log ')) {
@@ -762,10 +771,12 @@ class afkCheck {
         this.aborted_by = this.#guild.members.cache.get(interaction.member.id)
 
         this.raidStatusMessage.reactions.removeAll()
-        await this.raidStatusMessage.edit({ content: null, embeds: [this.#genRaidStatusEmbed()], components: [] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
-        await this.raidCommandsMessage.edit({ embeds: [this.#genRaidCommandsEmbed()], components: []})
-        await this.raidInfoMessage.edit({ embeds: [this.#genRaidInfoEmbed()] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
-        await this.raidChannelsMessage.delete()
+        await Promise.all([
+            this.raidStatusMessage.edit({ content: null, embeds: [this.#genRaidStatusEmbed()], components: [] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild)),
+            this.raidCommandsMessage.edit({ embeds: [this.#genRaidCommandsEmbed()], components: []}),
+            this.raidInfoMessage.edit({ embeds: [this.#genRaidInfoEmbed()] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild)),
+            this.raidChannelsMessage.delete()
+        ])
         
         this.saveBotAfkCheck(true)
     }
@@ -1029,10 +1040,12 @@ class afkCheck {
 
         this.deleted_by = this.#guild.members.cache.get(interaction.member.id)
 
-        await this.raidStatusMessage.edit({ content: null, embeds: [this.#genRaidStatusEmbed()], components: [] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
-        await this.raidCommandsMessage.edit({ embeds: [this.#genRaidCommandsEmbed()], components: []})
-        await this.raidInfoMessage.edit({ embeds: [this.#genRaidInfoEmbed()] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
-        await this.raidChannelsMessage.delete()
+        await Promise.all([
+            this.raidStatusMessage.edit({ content: null, embeds: [this.#genRaidStatusEmbed()], components: [] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild)),
+            this.raidCommandsMessage.edit({ embeds: [this.#genRaidCommandsEmbed()], components: []}),
+            this.raidInfoMessage.edit({ embeds: [this.#genRaidInfoEmbed()] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild)),
+            this.raidChannelsMessage.delete()
+        ])
         this.saveBotAfkCheck(true)
     }
 
@@ -1360,9 +1373,11 @@ class afkCheck {
         const deleteAndLoggingComponents = this.addDeleteandLoggingButtons()
 
         this.raidStatusMessage.reactions.removeAll()
-        await this.raidStatusMessage.edit({ content: null, embeds: [this.#genRaidStatusEmbed()], components: reconnectComponents }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
-        await this.raidCommandsMessage.edit({ embeds: [this.#genRaidCommandsEmbed()], components: deleteAndLoggingComponents }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
-        await this.raidChannelsMessage.edit({ embeds: [this.#genRaidChannelsEmbed()], components: deleteAndLoggingComponents }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
+        await Promise.all([
+            this.raidStatusMessage.edit({ content: null, embeds: [this.#genRaidStatusEmbed()], components: reconnectComponents }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild)),
+            this.raidCommandsMessage.edit({ embeds: [this.#genRaidCommandsEmbed()], components: deleteAndLoggingComponents }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild)),
+            this.raidChannelsMessage.edit({ embeds: [this.#genRaidChannelsEmbed()], components: deleteAndLoggingComponents }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
+        ])
 
         if (this.#channel) this.#channel.members.forEach(m => this.members.push(m.id))
         else this.earlySlotMembers.forEach(id => this.members.push(id))
