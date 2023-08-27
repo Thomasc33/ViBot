@@ -899,6 +899,7 @@ class afkCheck {
         let logOption = buttonInfo.logOptions[interaction.customId.split(' ')[1]]
         let isModded = interaction.customId.split(' ')[1] == 'Modded'
         let choiceText = buttonInfo.emote ? `${buttonInfo.emote.text} **${buttonType} ${button}**` : `**${buttonType} ${button}**`
+        const baseMessage = interaction.message
 
         if (this.reactables[button].members.length == 0) {
             [member, interaction] = await this.#keyNameInputPrompt(interaction)
@@ -1004,7 +1005,7 @@ class afkCheck {
                     .setTitle(`${button} logged!`)
                     .setDescription(`${member} now has \`\`${parseInt(rows[0][option]) + parseInt(number)}\`\` (+\`${number}\`) ${choiceText} pops`)
                     .setFooter({ text: `${interaction.guild.name} • ${this.raidLeaderDisplayName}'s ${this.#afkTemplate.name}`, iconURL: interaction.guild.iconURL() })
-                await this.#afkTemplate.raidCommandChannel.send({ embeds: [embed] })
+                await baseMessage.reply({ embeds: [embed] })
             })
         }
         if (this.#botSettings.backend.points) {
