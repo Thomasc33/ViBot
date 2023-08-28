@@ -75,36 +75,38 @@ module.exports = {
             else usersNotFound.push(user)
         }
 
-        const punishmentsByType = {}
-        const memberPosition = message.member.roles.highest.position
-        if (memberPosition >= roleCache.get(roles[rolePermissions.punishmentsWarnings]).position && settings.backend.punishmentsWarnings) {
-            const [warnRows] = await db.promise().query('SELECT *, time as uTime FROM ?? WHERE id IN (?) AND guildid = ?', ['warns', members.map(member => member.id), message.guild.id])
-            punishmentsByType['Warnings'] = flattenOnId(warnRows)
-        }
-        if (memberPosition >= roleCache.get(roles[rolePermissions.punishmentsSuspensions]).position && settings.backend.punishmentsSuspensions) {
-            const [suspendRows] = await db.promise().query('SELECT *, false silent FROM ?? WHERE id IN (?) AND guildid = ?', ['suspensions', members.map(member => member.id), message.guild.id])
-            punishmentsByType['Suspensions'] = flattenOnId(suspendRows)
-        }
-        if (memberPosition >= roleCache.get(roles[rolePermissions.punishmentsMutes]).position && settings.backend.punishmentsMutes) {
-            const [muteRows] = await db.promise().query('SELECT *, false silent FROM ?? WHERE id IN (?) AND guildid = ?', ['mutes', members.map(member => member.id), message.guild.id])
-            punishmentsByType['Mutes'] = flattenOnId(muteRows)
-        }
+        if (members.length > 0) {
+            const punishmentsByType = {}
+            const memberPosition = message.member.roles.highest.position
+            if (memberPosition >= roleCache.get(roles[rolePermissions.punishmentsWarnings]).position && settings.backend.punishmentsWarnings) {
+                const [warnRows] = await db.promise().query('SELECT *, time as uTime FROM ?? WHERE id IN (?) AND guildid = ?', ['warns', members.map(member => member.id), message.guild.id])
+                punishmentsByType['Warnings'] = flattenOnId(warnRows)
+            }
+            if (memberPosition >= roleCache.get(roles[rolePermissions.punishmentsSuspensions]).position && settings.backend.punishmentsSuspensions) {
+                const [suspendRows] = await db.promise().query('SELECT *, false silent FROM ?? WHERE id IN (?) AND guildid = ?', ['suspensions', members.map(member => member.id), message.guild.id])
+                punishmentsByType['Suspensions'] = flattenOnId(suspendRows)
+            }
+            if (memberPosition >= roleCache.get(roles[rolePermissions.punishmentsMutes]).position && settings.backend.punishmentsMutes) {
+                const [muteRows] = await db.promise().query('SELECT *, false silent FROM ?? WHERE id IN (?) AND guildid = ?', ['mutes', members.map(member => member.id), message.guild.id])
+                punishmentsByType['Mutes'] = flattenOnId(muteRows)
+            }
 
-        for (const member of members) {
-            const embeds = Object.entries(punishmentsByType).map(([title, punishmentsByUserId]) => punishmentsByUserId[member.id] && buildPunishmentEmbed(punishmentsByUserId[member.id], member, title)).filter(i => i)
+            for (const member of members) {
+                const embeds = Object.entries(punishmentsByType).map(([title, punishmentsByUserId]) => punishmentsByUserId[member.id] && buildPunishmentEmbed(punishmentsByUserId[member.id], member, title)).filter(i => i)
 
-            // Disabling eslint await in loop error because we need the
-            // messages to send in order, so the await is required
-            if (embeds.length > 0) {
-                // eslint-disable-next-line no-await-in-loop
-                await message.reply({ embeds })
-            } else {
-                const embed = new Discord.EmbedBuilder()
-                    .setTitle('No punishments')
-                    .setDescription(`${member} has no punishments in this server.`)
-                    .setColor('#F04747')
-                // eslint-disable-next-line no-await-in-loop
-                await message.reply({ embeds: [embed] })
+                // Disabling eslint await in loop error because we need the
+                // messages to send in order, so the await is required
+                if (embeds.length > 0) {
+                    // eslint-disable-next-line no-await-in-loop
+                    await message.reply({ embeds })
+                } else {
+                    const embed = new Discord.EmbedBuilder()
+                        .setTitle('No punishments')
+                        .setDescription(`${member} has no punishments in this server.`)
+                        .setColor('#F04747')
+                    // eslint-disable-next-line no-await-in-loop
+                    await message.reply({ embeds: [embed] })
+                }
             }
         }
 
