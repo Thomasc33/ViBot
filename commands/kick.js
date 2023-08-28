@@ -63,7 +63,7 @@ module.exports = {
         embed.setDescription(`Are you sure you want to kick ${member.displayName}?`);
 
         message.reply({ embeds: [embed] }).then(async confirmation => {
-            if (await confirmation.confirm(message.author.id)) {
+            if (await confirmation.confirmButton(message.author.id)) {
                 const kickEmbed = new Discord.EmbedBuilder()
                     .setTitle('Member Kicked')
                     .setDescription(`You have been kicked from ${message.guild.name}`)
