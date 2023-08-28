@@ -1,6 +1,6 @@
 {
     "influxDB": {
-        "token": "ask-huntifer-if-you-need-one",
+        "token": "ask-huntifer-if-you-need-one-or-delete-this-section",
         "url": "https://admin.vibot.tech:8080",
         "bucket": "vibot-dev"
     },
