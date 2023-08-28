@@ -59,7 +59,6 @@ commands/points.js
 commands/poll.js
 commands/prunerushers.js
 commands/pull.js
-commands/punishments.js
 commands/purge.js
 commands/quota.js
 commands/reload.js
@@ -95,7 +94,6 @@ commands/vetBan.js
 commands/vetVerification.js
 commands/vibotChannels.js
 commands/vote.js
-commands/warn.js
 commands/warnRemove.js
 commands/warns.js
 jobs/runner.js

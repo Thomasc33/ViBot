@@ -364,6 +364,10 @@ module.exports = {
             try {
                 await channel.send({ embeds: embedListArray[i] })
             } catch (e) {
+                if (e.code === 50035) { // Embed size exceeds maximum size of 6000
+                    console.log(e) // Write errors to console instead of ErrorLogger to avoid spamming logs
+                    continue
+                }
                 ErrorLogger.log(e, bot, guild);
             }
         }

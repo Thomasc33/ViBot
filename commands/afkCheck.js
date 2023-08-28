@@ -365,10 +365,12 @@ class afkCheck {
         if (!this.raidStatusMessage) return
         let reactables = this.getReactables(this.phase)
         let components = reactables.concat(this.getPhaseControls(this.phase))
-        if (this.raidStatusMessage) await this.raidStatusMessage.edit({ embeds: [this.#genRaidStatusEmbed()], components: components })
-        if (this.raidCommandsMessage) await this.raidCommandsMessage.edit({ embeds: [this.#genRaidCommandsEmbed()] })
-        if (this.raidInfoMessage) await this.raidInfoMessage.edit({embeds: [this.#genRaidInfoEmbed()]})
-        if (this.raidChannelsMessage) await this.raidChannelsMessage.edit({ embeds: [this.#genRaidChannelsEmbed()] })
+        await Promise.all([
+            this.raidStatusMessage?.edit({ embeds: [this.#genRaidStatusEmbed()], components: components }),
+            this.raidCommandsMessage?.edit({ embeds: [this.#genRaidCommandsEmbed()] }),
+            this.raidInfoMessage?.edit({embeds: [this.#genRaidInfoEmbed()]}),
+            this.raidChannelsMessage?.edit({ embeds: [this.#genRaidChannelsEmbed()] })
+        ].filter(i => i))
     }
 
     #genEmbedFooter() {
@@ -476,15 +478,15 @@ class afkCheck {
     async sendInitialStatusMessage() {
         this.#afkTemplate.processBody(this.#channel)
         
-        this.raidStatusMessage = await this.#afkTemplate.raidStatusChannel.send({
+        const raidStatusMessageContents = {
             content: `${this.pingText}**${this.#afkTemplate.name}** ${this.flag ? ` (${this.flag})` : ''} by ${this.#leader} is starting inside of **${this.#guild.name}**${this.#channel ? ` in ${this.#channel}` : ``}`,
             embeds: [this.#afkTemplate.startDelay > 0 ? this.#genRaidStatusEmbed() : null]
-        })
-        for (let i in this.#afkTemplate.raidPartneredStatusChannels) this.#afkTemplate.raidPartneredStatusChannels[i].map(async channel => await channel.send({ content: `**${this.#afkTemplate.name}** is starting inside of **${this.#guild.name}**${this.#channel ? ` in ${this.#channel}` : ``}` }))
-        
-        let tempRaidStatusMessage = null
-        if (this.#afkTemplate.body[1].message) tempRaidStatusMessage = await this.#afkTemplate.raidStatusChannel.send({ content: `${this.#afkTemplate.body[1].message} in 5 seconds...` })
-        setTimeout(async () => { if (tempRaidStatusMessage) await tempRaidStatusMessage.delete() }, 5000)
+        };
+        [this.raidStatusMessage] = await Promise.all([
+            this.#afkTemplate.raidStatusChannel.send(raidStatusMessageContents),
+            this.#afkTemplate.body[1].message && this.#afkTemplate.raidStatusChannel.send({ content: `${this.#afkTemplate.body[1].message} in 5 seconds...` }).then(msg => setTimeout(async () => await msg.delete(), 5000)),
+            ...Object.values(this.#afkTemplate.raidPartneredStatusChannels).map(channel => channel.send({ content: `**${this.#afkTemplate.name}** is starting inside of **${this.#guild.name}**${this.#channel ? ` in ${this.#channel}` : ``}` }))
+        ])
 
         this.raidStatusInteractionHandler = new Discord.InteractionCollector(this.#bot, { message: this.raidStatusMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
         this.raidStatusInteractionHandler.on('collect', interaction => this.interactionHandler(interaction))
@@ -517,10 +519,15 @@ class afkCheck {
         const components = this.getPhaseControls()
         const embed = this.#genRaidCommandsEmbed()
         
-        if (this.raidCommandsMessage) this.raidCommandsMessage = await this.raidCommandsMessage.edit({ embeds: [this.#genRaidCommandsEmbed()], components: components})
-        else this.raidCommandsMessage = await this.#afkTemplate.raidCommandChannel.send({ embeds: [this.#genRaidCommandsEmbed()], components: components})
-        if (this.raidInfoMessage) this.raidInfoMessage = await this.raidInfoMessage.edit({embeds: [this.#genRaidInfoEmbed()]})
-        else this.raidInfoMessage = await this.#afkTemplate.raidInfoChannel.send({embeds: [this.#genRaidInfoEmbed()]})
+        const raidCommandsMessageContents = { embeds: [this.#genRaidCommandsEmbed()], components: components}
+        const raidInfoMessageContents = {embeds: [this.#genRaidInfoEmbed()]};
+        [
+            this.raidCommandsMessage,
+            this.raidInfoMessage
+        ] = await Promise.all([
+            this.raidCommandsMessage?.edit(raidCommandsMessageContents) || this.#afkTemplate.raidCommandChannel.send(raidCommandsMessageContents),
+            this.raidInfoMessage?.edit(raidInfoMessageContents) || this.#afkTemplate.raidInfoChannel.send(raidInfoMessageContents)
+        ])
         
         if (!this.raidCommandsInteractionHandler) {
             this.raidCommandsInteractionHandler = new Discord.InteractionCollector(this.#bot, { message: this.raidCommandsMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
@@ -531,8 +538,8 @@ class afkCheck {
     async sendChannelsMessage() {
         let components = this.getPhaseControls()
 
-        if (this.raidChannelsMessage) this.raidChannelsMessage = await this.raidChannelsMessage.edit({content: `${this.#message.member}`, embeds: [this.#genRaidChannelsEmbed()], components: components })
-        else this.raidChannelsMessage = await this.#afkTemplate.raidActiveChannel.send({content: `${this.#message.member}`, embeds: [this.#genRaidChannelsEmbed()], components: components })
+        const raidChannelsMessageContents = {content: `${this.#message.member}`, embeds: [this.#genRaidChannelsEmbed()], components: components }
+        this.raidChannelsMessage = await (this.raidChannelsMessage?.edit(raidChannelsMessageContents) || this.#afkTemplate.raidActiveChannel.send(raidChannelsMessageContents))
        
         if (!this.raidChannelsInteractionHandler) {
             this.raidChannelsInteractionHandler = new Discord.InteractionCollector(this.#bot, { message: this.raidChannelsMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
@@ -694,11 +701,13 @@ class afkCheck {
             }
             if (!this.earlySlotMembers.includes(interaction.member.id)) this.earlySlotMembers.push(interaction.member.id)
             if (buttonInfo.location && !this.earlyLocationMembers.includes(interaction.member.id)) this.earlyLocationMembers.push(interaction.member.id)
-            await this.raidCommandsMessage.edit({ embeds: [this.#genRaidCommandsEmbed()] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
-            await this.raidInfoMessage.edit({ embeds: [this.#genRaidInfoEmbed()] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
+            await Promise.all([
+                this.raidCommandsMessage.edit({ embeds: [this.#genRaidCommandsEmbed()] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild)),
+                this.raidInfoMessage.edit({ embeds: [this.#genRaidInfoEmbed()] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
+            ])
             return
         }
-        else if (['abort', 'phase', 'cap', 'additional', 'end', 'miniboss'].includes(interaction.customId) || interaction.customId.includes(`Log`)) {
+        else if (['abort', 'phase', 'cap', 'additional', 'end', 'miniboss'].includes(interaction.customId) || interaction.customId.startsWith('log ')) {
             if (this.#afkTemplate.minimumStaffRoles.some(roles => roles.every(role => interaction.member.roles.cache.has(role.id)))) return await this.processPhaseControl(interaction)
             else {
                 return await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You do not have the required Staff Role to use this button.`, null)], ephemeral: true })
@@ -731,7 +740,7 @@ class afkCheck {
                 await this.processPhaseMiniboss(interaction)
                 break
             default:
-                if (interaction.customId.includes('Log')) await this.processPhaseLog(interaction)
+                if (interaction.customId.startsWith('log ')) await this.processPhaseLog(interaction)
                 break
         }
     }
@@ -762,10 +771,12 @@ class afkCheck {
         this.aborted_by = this.#guild.members.cache.get(interaction.member.id)
 
         this.raidStatusMessage.reactions.removeAll()
-        await this.raidStatusMessage.edit({ content: null, embeds: [this.#genRaidStatusEmbed()], components: [] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
-        await this.raidCommandsMessage.edit({ embeds: [this.#genRaidCommandsEmbed()], components: []})
-        await this.raidInfoMessage.edit({ embeds: [this.#genRaidInfoEmbed()] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
-        await this.raidChannelsMessage.delete()
+        await Promise.all([
+            this.raidStatusMessage.edit({ content: null, embeds: [this.#genRaidStatusEmbed()], components: [] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild)),
+            this.raidCommandsMessage.edit({ embeds: [this.#genRaidCommandsEmbed()], components: []}),
+            this.raidInfoMessage.edit({ embeds: [this.#genRaidInfoEmbed()] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild)),
+            this.raidChannelsMessage.delete()
+        ])
         
         this.saveBotAfkCheck(true)
     }
@@ -837,68 +848,149 @@ class afkCheck {
             .setLabel('Log Additional Complete')
             .setStyle(Discord.ButtonStyle.Secondary)
         const cancelButton = new Discord.ButtonBuilder()
-        const {value: confirmValue, interaction: subInteraction} = await interaction.confirmPanel(text, null, confirmButton, cancelButton, 10000, true)
-        if (!subInteraction) return await interaction.editReply({ embeds: [extensions.createEmbed(interaction, `Timed out. You can dismiss this message.`, null)], components: [] })   
-        else if (!confirmValue) return await subInteraction.update({ embeds: [extensions.createEmbed(interaction, `Cancelled. You can dismiss this message.`, null)], components: [] })
-        else await subInteraction.update({ embeds: [extensions.createEmbed(interaction, `Successfully logged an additional complete to all members of the run. You can dismiss this message.`, null)], components: [] })
+        const {value: confirmValue, interaction: logCompleteInteraction} = await interaction.confirmPanel(text, null, confirmButton, cancelButton, 10000, true)
+        if (!logCompleteInteraction) return await interaction.editReply({ embeds: [extensions.createEmbed(interaction, `Timed out. You can dismiss this message.`, null)], components: [] })   
+        else if (!confirmValue) return await logCompleteInteraction.update({ embeds: [extensions.createEmbed(interaction, `Cancelled. You can dismiss this message.`, null)], components: [] })
+        else await logCompleteInteraction.update({ embeds: [extensions.createEmbed(interaction, `Successfully logged an additional complete to all members of the run. You can dismiss this message.`, null)], components: [] })
         this.logging = true
         this.completes++
         await this.raidChannelsMessage.edit({ embeds: [this.#genRaidChannelsEmbed()] })
         setTimeout(this.loggingAfk.bind(this), 60000)
     }
 
-    async processPhaseLog(interaction) {
-        const button = interaction.customId.substring(4)
+    #lookupGuildMember(name) {
+        return this.#guild.members.cache.get(name) || this.#guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(name.toLowerCase()))
+    }
+
+    async #keyNameInputPrompt(i) {
+        await i.showModal(
+            new Discord.ModalBuilder()
+                .setTitle("Whose key are you logging?")
+                .setCustomId('keynamemodal')
+                .addComponents(
+                    new Discord.ActionRowBuilder().addComponents(
+                        new Discord.TextInputBuilder()
+                            .setLabel('Key Name')
+                            .setCustomId('keyname')
+                            .setStyle(Discord.TextInputStyle.Short)
+                    )
+                )
+        )
+        let keyNameResp
+        try {
+            keyNameResp = await i.awaitModalSubmit({time: 600_000})
+        } catch(e) {
+            if (e.code == 'InteractionCollectorError') return [undefined, i]
+            throw e
+        }
+        const newMemberName = keyNameResp.fields.getField('keyname').value
+        const newMember = this.#lookupGuildMember(newMemberName)
+        if (!newMember) return [undefined, keyNameResp.reply({content: `Invalid username: ${newMemberName}`, ephemeral: true})]
+        return [newMember, keyNameResp]
+    }
+
+    async processPhaseLog(interaction, modded) {
+        const button = interaction.customId.split(' ')[2]
+        const buttonType = interaction.customId.split(' ')[1]
         const buttonInfo = this.#afkTemplate.buttons[button]
 
         let member = null
-        let number = null
-        let logOption = null
-        let isModded = false
-        let logBool = Object.keys(buttonInfo.logOptions).length > 1
-        let choiceText = buttonInfo.emote ? `${buttonInfo.emote.text} **${button}**` : `**${button}**`
+        let number = 1
+        let logOption = buttonInfo.logOptions[interaction.customId.split(' ')[1]]
+        let isModded = interaction.customId.split(' ')[1] == 'Modded'
+        let choiceText = buttonInfo.emote ? `${buttonInfo.emote.text} **${buttonType} ${button}**` : `**${buttonType} ${button}**`
 
-        const text1 = `Which member do you want to log ${choiceText} reacts for this run?\nChoose or input a username or id.`
-        const confirmMemberMenu = new Discord.StringSelectMenuBuilder()
-            .setPlaceholder(`Name of ${button}s`)
-        for (let i of this.reactables[button].members) confirmMemberMenu.addOptions({ label: this.#guild.members.cache.get(i).nickname, value: i })
-        const {value: confirmMemberValue, interaction: subInteractionMember} = await interaction.selectPanel(text1, null, confirmMemberMenu, 10000, true, true)
-        if (!member && confirmMemberValue) member = this.#guild.members.cache.get(confirmMemberValue)
-        if (!member && confirmMemberValue) member = this.#guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(confirmMemberValue.toLowerCase()))
-        if (!subInteractionMember) return await interaction.followUp({ embeds: [extensions.createEmbed(interaction, `Timed out. You can dismiss this message.`, null)], ephemeral: true })
-        else if (!member) return await subInteractionMember.update({ embeds: [extensions.createEmbed(interaction, `Cancelled or Invalid Member. You can dismiss this message.`, null)], components: [] })
-        else await subInteractionMember.update({ embeds: [extensions.createEmbed(interaction, `Successfully set the member to ${member}. You can dismiss this message.`, null)], components: [] })
+        if (this.reactables[button].members.length == 0) {
+            [member, interaction] = await this.#keyNameInputPrompt(interaction)
+            if (!member) return
+        } else if (this.reactables[button].members.length == 1) {
+            member = this.#guild.members.cache.get(this.reactables[button].members[0])
+        } else {
+            const text1 = `Which member do you want to log ${choiceText} reacts for this run?\nChoose or input a username or id.`
+            const confirmMemberMenu = new Discord.StringSelectMenuBuilder()
+                .setPlaceholder(`Name of ${button}s`)
+            for (let i of this.reactables[button].members) confirmMemberMenu.addOptions({ label: this.#guild.members.cache.get(i).nickname, value: i })
+            const {value: confirmMemberValue, interaction: logKeyInteraction} = await interaction.selectPanel(text1, null, confirmMemberMenu, 10000, true, true)
+            if (confirmMemberValue) member = this.#lookupGuildMember(confirmMemberValue)
+            if (!logKeyInteraction) return await interaction.followUp({ embeds: [extensions.createEmbed(interaction, `Timed out. You can dismiss this message.`, null)], ephemeral: true })
+            else if (!member) return await logKeyInteraction.update({ embeds: [extensions.createEmbed(interaction, `Cancelled or Invalid Member. You can dismiss this message.`, null)], components: [] })
+            interaction = logKeyInteraction
+        }
 
-        if (!(buttonInfo.type == AfkTemplate.TemplateButtonType.LOG_SINGLE)) {
-            const text2 = `How many ${choiceText} reacts do you want to log for this run?\nChoose or input a number.`
-            const confirmNumberMenu = new Discord.StringSelectMenuBuilder()
-                .setPlaceholder(`Number of ${button}s`)
-                .setOptions(
-                    { label: '1', value: '1' },
-                    { label: '2', value: '2' },
-                    { label: '3', value: '3' },
-                    { label: 'None', value: '0' },
-                )
-            const {value: confirmNumberValue, interaction: subInteractionNumber} = await interaction.selectPanel(text2, null, confirmNumberMenu, 10000, true, true)
-            number = Number.isInteger(parseInt(confirmNumberValue)) ? parseInt(confirmNumberValue) : null
-            if (!subInteractionNumber) return await interaction.followUp({ embeds: [extensions.createEmbed(interaction, `Timed out. You can dismiss this message.`, null)], ephemeral: true })   
-            else if (!number) return await subInteractionNumber.update({ embeds: [extensions.createEmbed(interaction, `Cancelled or Invalid Number. You can dismiss this message.`, null)], components: [] })
-            else await subInteractionNumber.update({ embeds: [extensions.createEmbed(interaction, `Successfully set the number to ${number}. You can dismiss this message.`, null)], components: [] })
-        } else number = 1
+        const keyCountMsg = await interaction.reply({
+            embeds: [
+                new Discord.EmbedBuilder()
+                    .setDescription(`Logging ${number} ${choiceText} for ${member}.`)
+                    .setFooter({ text: `${interaction.guild.name} • ${this.raidLeaderDisplayName}'s ${this.#afkTemplate.name}`, iconURL: interaction.guild.iconURL() })
+            ],
+            components: [
+                new Discord.ActionRowBuilder()
+                    .addComponents(
+                        new Discord.ButtonBuilder().setCustomId('incr').setLabel('+1').setStyle(Discord.ButtonStyle.Primary),
+                        new Discord.ButtonBuilder().setCustomId('save').setLabel('Save').setStyle(Discord.ButtonStyle.Success),
+                        new Discord.ButtonBuilder().setCustomId('cancel').setLabel('Cancel').setStyle(Discord.ButtonStyle.Danger),
+                        new Discord.ButtonBuilder().setCustomId('input').setLabel('Input Key Count').setStyle(Discord.ButtonStyle.Secondary),
+                        new Discord.ButtonBuilder().setCustomId('changeuser').setLabel('Change Key Popper').setStyle(Discord.ButtonStyle.Secondary)
+                    )
+            ],
+            ephemeral: true
+        })
+        // This is a workaround for https://github.com/discordjs/discord.js/issues/7992
+        // The bug is that if you have buttons on an ephermeral message, you can't have a Collector
+        // on them unless you fetch the reply. We can't pass `fetchReply` when we make the reply
+        // because we need the Interaction to be able to delete it. So, we fetch the reply ourselves
+        // in order to make the collector.
+        const collector = (await keyCountMsg.interaction.fetchReply()).createMessageComponentCollector({ componentType: Discord.ComponentType.Button });
 
-        if (logBool) {
-            const text3 = `How do you want ${choiceText} to be logged for this run?\nChoose or input an option.`
-            const confirmOptionMenu = new Discord.StringSelectMenuBuilder()
-                .setPlaceholder(`Option for ${button}s`)
-            for (let i in buttonInfo.logOptions) confirmOptionMenu.addOptions({ label: i, value: i })
-            const {value: confirmOptionValue, interaction: subInteractionOption} =  await interaction.selectPanel(text3, null, confirmOptionMenu, 10000, false, true)
-            isModded = confirmOptionValue == "Modded"
-            logOption = buttonInfo.logOptions[confirmOptionValue]
-            if (!subInteractionOption) return await interaction.followUp({ embeds: [extensions.createEmbed(interaction, `Timed out. You can dismiss this message.`, null)], ephemeral: true })   
-            else if (!logOption) return await subInteractionOption.update({ embeds: [extensions.createEmbed(interaction, `Cancelled or Invalid Option. You can dismiss this message.`, null)], components: [] })
-            else await subInteractionOption.update({ embeds: [extensions.createEmbed(interaction, `Successfully set the option to ${confirmOptionValue}. You can dismiss this message.`, null)], components: [] })
-        } else logOption = buttonInfo.logOptions[Object.keys(buttonInfo.logOptions)[0]]
-        
+        const savePops = await new Promise(res => {
+            collector.on('collect', async i => {
+                switch (i.customId) {
+                    case 'save': return res(true)
+                    case 'cancel': return res(false)
+                    case 'incr':
+                        number += 1
+                        break
+                    case 'changeuser':
+                        let newMember;
+                        [newMember, i] = await this.#keyNameInputPrompt(i)
+                        if (!newMember) return
+                        member = newMember
+                        break
+                    case 'input':
+                        await i.showModal(
+                            new Discord.ModalBuilder()
+                                .setTitle('How many keys would you like to log?')
+                                .setCustomId('keycountmodal')
+                                .addComponents(
+                                    new Discord.ActionRowBuilder().addComponents(
+                                        new Discord.TextInputBuilder()
+                                            .setLabel('Key Count')
+                                            .setCustomId('keycount')
+                                            .setStyle(Discord.TextInputStyle.Short)
+                                    )
+                                )
+                        )
+                        let keyCountResp
+                        try {
+                            keyCountResp = await i.awaitModalSubmit({time: 600_000})
+                        } catch(e) {
+                            if (e.code == 'InteractionCollectorError') return
+                            throw e
+                        }
+                        const newNumber = parseInt(keyCountResp.fields.getField('keycount').value)
+                        if (isNaN(newNumber) || newNumber < 0) return await keyCountResp.reply({content: `Invalid number: ${newNumber}`, ephemeral: true})
+                        number = newNumber
+                        i = keyCountResp
+                        break
+                }
+                return await i.update({ embeds: [extensions.createEmbed(interaction, `Logging ${number} ${choiceText} for ${member}.`, null)] })
+            });
+        })
+
+        collector.stop()
+        await keyCountMsg.delete()
+        if (!savePops) return
+
         for (let option of logOption.logName) {
             let keyTemplate = popCommand.findKey(this.#guild.id, option);
             if (keyTemplate) {
@@ -916,8 +1008,9 @@ class afkCheck {
                 let embed = new Discord.EmbedBuilder()
                     .setColor('#0000ff')
                     .setTitle(`${button} logged!`)
-                    .setDescription(`${member} now has \`\`${parseInt(rows[0][option]) + parseInt(number)}\`\` ${choiceText} pops`)
-                await this.#afkTemplate.raidCommandChannel.send({ embeds: [embed] })
+                    .setDescription(`${member} now has \`\`${parseInt(rows[0][option]) + parseInt(number)}\`\` (+\`${number}\`) ${choiceText} pops`)
+                    .setFooter({ text: `${interaction.guild.name} • ${this.raidLeaderDisplayName}'s ${this.#afkTemplate.name}`, iconURL: interaction.guild.iconURL() })
+                await (this.raidCommandsMessage?.reply({ embeds: [embed] }) || this.#afkTemplate.raidCommandChannel.send({ embeds: [embed] }))
             })
         }
         if (this.#botSettings.backend.points) {
@@ -928,7 +1021,6 @@ class afkCheck {
         }
         this.reactables[button].logged += number
         await this.raidChannelsMessage.edit({ embeds: [this.#genRaidChannelsEmbed()] })
-        await interaction.followUp({ embeds: [extensions.createEmbed(interaction, `Successfully logged ${number} ${choiceText} for ${member}. You can dismiss this message.`, null)], ephemeral: true })
     }
 
     async processPhaseEnd(interaction) {
@@ -954,10 +1046,12 @@ class afkCheck {
 
         this.deleted_by = this.#guild.members.cache.get(interaction.member.id)
 
-        await this.raidStatusMessage.edit({ content: null, embeds: [this.#genRaidStatusEmbed()], components: [] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
-        await this.raidCommandsMessage.edit({ embeds: [this.#genRaidCommandsEmbed()], components: []})
-        await this.raidInfoMessage.edit({ embeds: [this.#genRaidInfoEmbed()] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
-        await this.raidChannelsMessage.delete()
+        await Promise.all([
+            this.raidStatusMessage.edit({ content: null, embeds: [this.#genRaidStatusEmbed()], components: [] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild)),
+            this.raidCommandsMessage.edit({ embeds: [this.#genRaidCommandsEmbed()], components: []}),
+            this.raidInfoMessage.edit({ embeds: [this.#genRaidInfoEmbed()] }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild)),
+            this.raidChannelsMessage.delete()
+        ])
         this.saveBotAfkCheck(true)
     }
 
@@ -1285,9 +1379,11 @@ class afkCheck {
         const deleteAndLoggingComponents = this.addDeleteandLoggingButtons()
 
         this.raidStatusMessage.reactions.removeAll()
-        await this.raidStatusMessage.edit({ content: null, embeds: [this.#genRaidStatusEmbed()], components: reconnectComponents }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
-        await this.raidCommandsMessage.edit({ embeds: [this.#genRaidCommandsEmbed()], components: deleteAndLoggingComponents }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
-        await this.raidChannelsMessage.edit({ embeds: [this.#genRaidChannelsEmbed()], components: deleteAndLoggingComponents }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
+        await Promise.all([
+            this.raidStatusMessage.edit({ content: null, embeds: [this.#genRaidStatusEmbed()], components: reconnectComponents }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild)),
+            this.raidCommandsMessage.edit({ embeds: [this.#genRaidCommandsEmbed()], components: deleteAndLoggingComponents }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild)),
+            this.raidChannelsMessage.edit({ embeds: [this.#genRaidChannelsEmbed()], components: deleteAndLoggingComponents }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
+        ])
 
         if (this.#channel) this.#channel.members.forEach(m => this.members.push(m.id))
         else this.earlySlotMembers.forEach(id => this.members.push(id))
@@ -1418,12 +1514,16 @@ class afkCheck {
 
         for (let i in this.#afkTemplate.buttons) {
             if (this.#afkTemplate.buttons[i].type != AfkTemplate.TemplateButtonType.LOG && this.#afkTemplate.buttons[i].type != AfkTemplate.TemplateButtonType.LOG_SINGLE) continue
-            const phaseButton = new Discord.ButtonBuilder()
-            .setStyle(2)
-            .setCustomId(`Log ${i}`)
-            phaseButton.setLabel(`Log ${i}`)
-            if (this.#afkTemplate.buttons[i].emote) phaseButton.setEmoji(this.#afkTemplate.buttons[i].emote.id)
-            phaseActionRow.push(phaseButton)
+            const logOptions = Object.keys(this.#afkTemplate.buttons[i].logOptions)
+            const phaseButtons = logOptions.map(type => {
+                const phaseButton = new Discord.ButtonBuilder()
+                            .setStyle(2)
+                            .setCustomId(`log ${type} ${i}`)
+                            .setLabel(logOptions.length > 1 ? `Log ${type} ${i}` : `Log ${i}`)
+                if (this.#afkTemplate.buttons[i].emote) phaseButton.setEmoji(this.#afkTemplate.buttons[i].emote.id)
+                return phaseButton
+            })
+            phaseActionRow.push(...phaseButtons)
             counter ++
             if (counter == 5) {
                 counter = 0
