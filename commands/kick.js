@@ -40,14 +40,17 @@ module.exports = {
         const member = message.guild.findMember(args[0]);
         let failure = null;
 
-        if (!member) failure = 'member could not be found.';
+        const minRole = settings.rolePermissions.minimumStaffRoleNoKick;
+        if (!minRole) failure = '`minimumStaffRoleNoKick` is not configured for this server. Please have a developer or moderator assist before using this command.';
+
+        if (!failure && !member) failure = 'member could not be found.';
 
         const template = { ...templates.default, ...templates[message.guild.id] };
         template.presets = { ...templates.default.presets, ...template.presets };
 
         if (!failure && !member.kickable) failure = 'you do not have permissions to kick this member.';
 
-        if (!failure && member.roles.highest.position >= message.guild.roles.cache.get(settings.roles[template.minimumStaffRole]).position) failure = 'staff members cannot be kicked with this command.';
+        if (!failure && member.roles.highest.position >= message.guild.roles.cache.get(settings.roles[minRole]).position) failure = 'staff members cannot be kicked with this command.';
 
         if (failure) {
             embed.setDescription(`Failed to kick user ${member || args[0]}: ${failure}`);
@@ -58,7 +61,7 @@ module.exports = {
         args.shift();
         let reason = args.join(' ') || 'No reason given.';
 
-        if (reason && template.presets && template.presets[reason.toLowerCase()]) reason = template.presets[reason.toLowerCase()];
+        if (reason && template.presets[reason.toLowerCase()]) reason = template.presets[reason.toLowerCase()];
 
         embed.setDescription(`Are you sure you want to kick ${member.displayName}?`);
 
@@ -92,7 +95,7 @@ module.exports = {
                             .setDescription(`Successfully kicked ${kickedMember} (\`${kickedMember.displayName}\`).`)
                             .setTimestamp(Date.now());
 
-                        confirmation.edit({ embeds: [embed] });
+                        confirmation.edit({ embeds: [embed], components: [] });
                     })
                 }).catch(er => {
                     ErrorLogger.log(er, bot, message.guild);
@@ -103,7 +106,7 @@ module.exports = {
             } else {
                 embed.setDescription(`Attempt to kick member ${member} has been cancelled.`)
                     .setColor('White');
-                confirmation.edit({ embeds: [embed] });
+                confirmation.edit({ embeds: [embed], components: [] });
             }
         });
     }
