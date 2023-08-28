@@ -1,55 +1,110 @@
-const Discord = require('discord.js')
-const ErrorLogger = require('../lib/logError')
-const kickTemplates = require('../data/kickOptions.json')
+/* eslint-disable semi, func-name-matching, func-names */
+
+const Discord = require('discord.js');
+const ErrorLogger = require('../lib/logError');
+const templates = require('../data/kickOptions.json');
 
 module.exports = {
     name: 'kick',
     description: 'Kicks user from server and logs it',
-    args: '<id/mention> <reason>',
-    getNotes(guild, member, bot) {
-        if (!kickTemplates[guild.id]) return undefined
-        return `Available Templates: `.concat(Object.keys(kickTemplates[guild.id]).map(k => k).join(', '))
-    },
+    args: '<id/mention> [reason]',
     requiredArgs: 1,
     role: 'security',
-    execute(message, args, bot) {
-        let settings = bot.settings[message.guild.id]
-        if (args.length == 0) return;
-        var member = message.mentions.members.first()
-        if (!member) member = message.guild.members.cache.get(args[0]);
-        if (!member) { message.channel.send('User not found. Please try again'); return; }
-        if (member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.eventrl).position) return message.channel.send(`You may not kick other staff members (eo+)`);
-        let reason
-        if (args.length > 1) {
-            reason = ''
-            for (i = 1; i < args.length; i++) {
-                reason = reason.concat(args[i]) + ' ';
-            }
-        } else reason = false
-        if (reason && kickTemplates[message.guild.id] && kickTemplates[message.guild.id][reason.toLowerCase()]) reason = kickTemplates[message.guild.id][reason.toLowerCase()]
-        message.channel.send(`Are you sure you want to kick ${member.displayName}? Y/N`);
-        let collector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id === message.author.id, time: 10000 });
-        collector.on('collect', async m => {
-            if (m.author != message.author) return;
-            if (m.content.toLowerCase().charAt(0) == 'y') {
-                await message.channel.send(`Kicking now`);
-                await member.send(`You have been kicked from ${message.guild.name} for:\n${reason}`).catch(er => { })
-                await member.kick(reason).catch(er => { ErrorLogger.log(er, bot, message.guild); message.channel.send(`Could not kick because: \`${er.message}\``); return; })
-                let embed = new Discord.EmbedBuilder()
-                    .setTitle('User Kicked')
-                    .setDescription(member.toString())
-                    .addFields([
-                        { name: 'User', value: member.displayName, inline: true },
-                        { name: 'Kicked By', value: `<@!${m.author.id}>`, inline: true },
-                    ])
-                    .setTimestamp(Date.now());
+    /**
+     * @param {Discord.Guild} guild
+     * @param {Discord.GuildMember} member
+     * @param {Discord.Client} bot
+     */
+    getNotes: function GetKickNotes(guild) {
+        const template = { ...templates.default, ...templates[guild.id] };
+        template.presets = { ...templates.default.presets, ...template.presets };
+        if (template.presets) {
+            return `Available Templates (use template key as the reason): ${Object.keys(template.presets).join(', ')}`;
+        }
+    },
 
-                await message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });
-                if (reason) {
-                    await message.guild.channels.cache.get(settings.channels.modlogs).send(reason);
+    /**
+     * @param {Discord.Message} message
+     * @param {[string]} args
+     * @param {Discord.Client} bot
+     */
+    execute: async function ExecuteKickCommand(message, args, bot) {
+        const settings = bot.settings[message.guild.id];
+
+        const embed = new Discord.EmbedBuilder()
+            .setAuthor({ iconURL: message.member.displayAvatarURL(), name: message.member.nickname || message.author.displayName })
+            .setTitle('Kick User')
+            .setColor('Red');
+
+        /** @type {Discord.GuildMember} */
+        const member = message.guild.findMember(args[0]);
+        let failure = null;
+
+        if (!member) failure = 'member could not be found.';
+
+        const template = { ...templates.default, ...templates[message.guild.id] };
+        template.presets = { ...templates.default.presets, ...template.presets };
+
+        if (!failure && !member.kickable) failure = 'you do not have permissions to kick this member.';
+
+        if (!failure && member.roles.highest.position >= message.guild.roles.cache.get(settings.roles[template.minimumStaffRole]).position) failure = 'staff members cannot be kicked with this command.';
+
+        if (failure) {
+            embed.setDescription(`Failed to kick user ${member || args[0]}: ${failure}`);
+            message.reply({ embeds: [embed] });
+            return;
+        }
+
+        args.shift();
+        let reason = args.join(' ') || 'No reason given.';
+
+        if (reason && template.presets && template.presets[reason.toLowerCase()]) reason = template.presets[reason.toLowerCase()];
+
+        embed.setDescription(`Are you sure you want to kick ${member.displayName}?`);
+
+        message.reply({ embeds: [embed] }).then(async confirmation => {
+            if (await confirmation.confirm(message.author.id)) {
+                const kickEmbed = new Discord.EmbedBuilder()
+                    .setTitle('Member Kicked')
+                    .setDescription(`You have been kicked from ${message.guild.name}`)
+                    .addFields({ name: 'Reason', value: reason })
+                    .setColor('Red');
+
+                if (message.guild.vanityURLCode) {
+                    kickEmbed.addFields({ name: 'Server Link', value: `https://discord.gg/${message.guild.vanityURLCode}` });
                 }
-                await message.react("✅")
+
+                await member.send({ embeds: [kickEmbed] }).catch(() => {});
+
+                await member.kick(reason).then(kickedMember => {
+                    embed.setDescription(`${member}`)
+                        .addFields(
+                            { name: 'User', value: kickedMember.displayName, inline: true },
+                            { name: 'Kicked By', value: `${message.member}`, inline: true },
+                            { name: 'Reason', value: `\`\`\`${reason}\`\`\`` },
+                            { name: 'User Roles', value: kickedMember.roles.cache.map(r => r.toString()).join(' ') }
+                        )
+                        .setColor('Green')
+                        .setTimestamp(Date.now());
+
+                    message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] }).then(logMessage => {
+                        embed.setFields({ name: 'Log Link', value: logMessage.url })
+                            .setDescription(`Successfully kicked ${kickedMember} (\`${kickedMember.displayName}\`).`)
+                            .setTimestamp(Date.now());
+
+                        confirmation.edit({ embeds: [embed] });
+                    })
+                }).catch(er => {
+                    ErrorLogger.log(er, bot, message.guild);
+                    embed.setDescription(`Failed to kick user ${member}: \`${er.message}\``);
+                    confirmation.edit({ embeds: [embed] });
+                    failure = true;
+                });
+            } else {
+                embed.setDescription(`Attempt to kick member ${member} has been cancelled.`)
+                    .setColor('White');
+                confirmation.edit({ embeds: [embed] });
             }
-        })
+        });
     }
 }
