@@ -45,7 +45,7 @@ module.exports = {
                     embed.data.fields[1].value = `:white_check_mark: \n<@&${suspendedButVerifed.id}>`
                     embed.setColor('#ff0000')
                 }
-                if (member.roles.cache.has(suspendedRole.id)) {
+                if (suspendedRole && member.roles.cache.has(suspendedRole.id)) {
                     embed.data.fields[1].value = `:white_check_mark: \n<@&${suspendedRole.id}>`
                     embed.setColor('#ff0000')
                 }
