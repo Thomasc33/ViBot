@@ -92,10 +92,10 @@ async function setup_connections(bot) {
     const dbInfos = []
 
     Object.entries(dbSchemas).forEach(([guildId, dbConfig]) => {
-        if (!bot.guilds.cache.some((g) => g.id == guildId)) {
+        /*if (!bot.guilds.cache.some((g) => g.id == guildId)) {
             if (verbose) console.log(`Unused db configuration in schema.json for guild: ${guildId}`)
             return
-        }
+        }*/
         const dbInfo = {
             port: botSettings.defaultDbInfo.port || 3306,
             host: dbConfig.host || botSettings.defaultDbInfo.host,
