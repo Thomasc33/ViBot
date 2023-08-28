@@ -1010,7 +1010,7 @@ class afkCheck {
                     .setTitle(`${button} logged!`)
                     .setDescription(`${member} now has \`\`${parseInt(rows[0][option]) + parseInt(number)}\`\` (+\`${number}\`) ${choiceText} pops`)
                     .setFooter({ text: `${interaction.guild.name} • ${this.raidLeaderDisplayName}'s ${this.#afkTemplate.name}`, iconURL: interaction.guild.iconURL() })
-                await this.#afkTemplate.raidCommandChannel.send({ embeds: [embed] })
+                await (this.raidCommandsMessage?.reply({ embeds: [embed] }) || this.#afkTemplate.raidCommandChannel.send({ embeds: [embed] }))
             })
         }
         if (this.#botSettings.backend.points) {
