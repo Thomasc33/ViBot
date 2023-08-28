@@ -48,7 +48,7 @@ const modmail = ['sendMessage', 'forwardMessage', 'closeModmail', 'blacklistUser
 const supporter = ['supporterCooldownSeconds1', 'supporterCooldownSeconds2', 'supporterCooldownSeconds3', 'supporterCooldownSeconds4', 'supporterCooldownSeconds5', 'supporterCooldownSeconds6',
     'supporterUses1', 'supporterUses2', 'supporterUses3', 'supporterUses4', 'supporterUses5', 'supporterUses6', 
     'supporterLimit1', 'supporterLimit2', 'supporterLimit3', 'supporterLimit4', 'supporterLimit5', 'supporterLimit6']
-const rolePermissions = ['punishmentsWarnings', 'punishmentsSuspensions', 'punishmentsMutes']
+const rolePermissions = ['punishmentsWarnings', 'punishmentsSuspensions', 'punishmentsMutes', 'minimumStaffRoleNoKick']
 var commands = []
 var commandsRolePermissions = []
 

@@ -38,7 +38,7 @@ module.exports = {
         })
 
         let embedMessage = await message.channel.send({ embeds: [embed] })
-        if (await embedMessage.confirm(message.author.id)) {
+        if (await embedMessage.confirmButton(message.author.id)) {
             this.purgeRushers(message.guild.id, db, settings.numerical.prunerushersoffset)
             //Remove Rusher roles
             for (let rusher of inactiveRushers) {

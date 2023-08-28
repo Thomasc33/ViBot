@@ -151,7 +151,7 @@ const changeName = async (message, bot, settings, member, names, idx, altName, u
         const confirmEmbed = new Discord.EmbedBuilder().setDescription(`Are you sure you want to change ${member}'s name from \`${oldName || ' '}\` to \`${names[idx]}\`?`);
         const confirm = await message.channel.send({ embeds: [confirmEmbed] });
         try {
-            if (await confirm.confirm(message.author.id)) {
+            if (await confirm.confirmButton(message.author.id)) {
                 const oldNickname = member.nickname;
                 try {
                     const newName = userPrefix + names.join(' | ');
@@ -185,10 +185,10 @@ const changeName = async (message, bot, settings, member, names, idx, altName, u
                 message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });
                 confirm.react('✅')
                 confirmEmbed.setDescription(`Successfully changed name for ${member} from \`${oldName || ' '}\` to \`${names[idx]}\`.`)
-                confirm.edit({ embeds: [confirmEmbed] });
+                confirm.edit({ embeds: [confirmEmbed], components: [] });
             } else {
                 confirmEmbed.setDescription(`Change name cancelled for ${member}.`);
-                confirm.edit({ embeds: [confirmEmbed] });
+                confirm.edit({ embeds: [confirmEmbed], components: [] });
             }
             resolve();
         } catch (err) {
