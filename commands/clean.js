@@ -11,9 +11,7 @@ module.exports = {
         if (!vc) vc = await message.guild.channels.cache.get(message.member.voice.channelId)
         if (!vc) return await message.reply('The channel to clean was not found.')
 
-        let lounge = null
-        if (!lounge) lounge = message.guild.channels.cache.get(botSettings.voice.lounge)
-        if (!lounge) lounge = message.guild.channels.cache.get(botSettings.voice.afk)
+        const lounge = message.guild.channels.cache.get(botSettings.voice.lounge) || message.guild.channels.cache.get(botSettings.voice.afk)
         if (!lounge) return await message.reply('The lounge channel is not defined in the settings.')
 
         let cleaned = 0
