@@ -42,24 +42,24 @@ class DbWrap {
             msg_fut = this.#channel.send(`:alarm_clock: (${this.#pool_id}) Executing query \`${query}\` with params \`${params}\` ${cb ? 'CB' : ''}`)
         }
         const start = new Date()
-        return this.#db.query(...args, (...resp) => {
+        return this.#db.query(...args, (err, ...results) => {
             const runtime = new Date() - start
             if (cb) {
-                cb(...resp)
+                cb(err, ...results)
             }
             if (Array.isArray(args[1])) {
                 const point = new Point('mysql_raw_querytimes')
                     .intField(args[0], runtime)
                     .tag('functiontype', 'sync')
-                if (resp[0]) point.stringField('error', resp[0])
+                if (err) point.stringField('error', err)
                 metrics.writePoint(point)
             }
-            const resp_string = JSON.stringify(resp.slice(0, 2), null, 2)
-            if (resp_string.length > 1500) {
-                const attachment = new Discord.AttachmentBuilder(Buffer.from(resp_string), { name: 'query.txt' })
+            const results_string = JSON.stringify([err, ...results].slice(0, 2), null, 2)
+            if (results_string.length > 1500) {
+                const attachment = new Discord.AttachmentBuilder(Buffer.from(results_string), { name: 'query.txt' })
                 msg_fut.then((msg) => { msg.edit(msg.content.replace(':alarm_clock:', `:white_check_mark: (${runtime}ms)`)); msg.reply({ content: `Execution complete in ${runtime}ms.`, files: [attachment] }) })
             } else {
-                msg_fut.then((msg) => { msg.edit(msg.content.replace(':alarm_clock:', `:white_check_mark: (${runtime}ms)`)); msg.reply(`Execution complete in ${runtime}ms. Response:\n\`\`\`${resp_string}\`\`\``) })
+                msg_fut.then((msg) => { msg.edit(msg.content.replace(':alarm_clock:', `:white_check_mark: (${runtime}ms)`)); msg.reply(`Execution complete in ${runtime}ms. Response:\n\`\`\`${results_string}\`\`\``) })
             }
         })
     }
