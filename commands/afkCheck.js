@@ -723,7 +723,7 @@ class afkCheck {
             if (!this.earlySlotMembers.includes(interaction.member.id)) this.earlySlotMembers.push(interaction.member.id)
             if (buttonInfo.location && !this.earlyLocationMembers.includes(interaction.member.id)) this.earlyLocationMembers.push(interaction.member.id)
             await Promise.all([
-                this.raidCommandsMessage.edit(this.#genRaidCommands()), this.#bot, this.#guild)),
+                this.raidCommandsMessage.edit(this.#genRaidCommands(), this.#bot, this.#guild),
                 this.raidInfoMessage.edit(this.#genRaidInfo())
             ])
             return
@@ -1406,10 +1406,10 @@ class afkCheck {
         if (this.#channel) this.#channel.members.forEach(m => this.members.push(m.id))
         else this.earlySlotMembers.forEach(id => this.members.push(id))
 
-        if (members.length > 0) {
-            let [db_members] = await this.#db.promise().query('SELECT id FROM users WHERE id IN (?)', [members])
+        if (this.members.length > 0) {
+            let [db_members] = await this.#db.promise().query('SELECT id FROM users WHERE id IN (?)', [this.members])
             db_members = db_members.map(u => u.id)
-            const new_members = members.filter(u => !db_members.includes(u))
+            const new_members = this.members.filter(u => !db_members.includes(u))
             if (new_members.length > 0) await this.#db.promise().query('INSERT INTO users (id) VALUES (?)', [new_members])
         }
         
@@ -1418,7 +1418,7 @@ class afkCheck {
             for (let i in this.reactables) for (let memberID of this.reactables[i].members) {
                 switch (this.#afkTemplate.buttons[i].type) {
                     case AfkTemplate.TemplateButtonType.OPTION:
-                        if (this.miniBossGuessing.hasOwnProperty(memberID) && members.includes(memberID)) {
+                        if (this.miniBossGuessing.hasOwnProperty(memberID) && this.members.includes(memberID)) {
                             this.#db.query(`INSERT INTO miniBossEvent (userid, guildid, raidid, unixtimestamp, miniboss) VALUES ('${memberID}', '${this.#guild.id}', '${this.#raidID}', '${Date.now()}', '${this.miniBossGuessing[memberID]}')`)
                         }
                         break
