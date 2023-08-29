@@ -98,7 +98,7 @@ class afkCheck {
     #channel;
     #leader;
     #raidID;
-    #pointlog_mid;
+    #pointlogMid;
 
     constructor(afkTemplate, bot, db, message, location) {
         this.#bot = bot // bot
@@ -110,13 +110,14 @@ class afkCheck {
         this.#channel = null // channel of the afk
         this.#leader = message.member // leader of the afk
         this.#raidID = null // ID of the afk
-        this.#pointlog_mid = null
+        this.#pointlogMid = null
 
         this.members = [] // All members in the afk
         this.earlyLocationMembers = [] // All members with early location in the afk
         this.earlySlotMembers = [] // All members with early slots in the afk
         this.dragMembers = [] // All members currently in drag system in the afk
         this.reactables = Object.keys(afkTemplate.buttons).reduce((obj, key) => { obj[key] = { members: [], position: null, logged: 0 }; return obj }, {}) // All members of each reactable and position on embed
+        this.capButtons = Object.keys(this.#afkTemplate.buttons).filter(key => this.#afkTemplate.buttons[key].limit == 0)
         this.miniBossGuessing = {}
         this.miniBossGuessed = false
 
@@ -153,10 +154,6 @@ class afkCheck {
 
     #afkTitle() {
         return `${this.#raidLeaderDisplayName()}'s ${this.#afkTemplate.name}`
-    }
-
-    #capButtons() {
-        return Object.keys(this.#afkTemplate.buttons).filter(key => this.#afkTemplate.buttons[key].limit == 0)
     }
 
     #pingText() {
@@ -201,7 +198,7 @@ class afkCheck {
 
                 raidStatusMessage: this.raidStatusMessage,
                 raidCommandsMessage: this.raidCommandsMessage,
-                pointlog_mid: this.#pointlog_mid,
+                pointlogMid: this.#pointlogMid,
                 raidInfoMessage: this.raidInfoMessage,
                 raidChannelsMessage: this.raidChannelsMessage,
                 raidDragThreads: this.raidDragThreads,
@@ -246,7 +243,7 @@ class afkCheck {
         this.raidChannelsMessage = await this.#afkTemplate.raidActiveChannel.messages.fetch(storedAfkCheck.raidChannelsMessage.id)
         this.vcLounge = await this.#guild.channels.cache.get(this.#botSettings.voice.lounge)
 
-        this.#pointlog_mid = storedAfkCheck.pointlog_mid
+        this.#pointlogMid = storedAfkCheck.pointlogMid
 
         if (this.phase <= this.#afkTemplate.phases) this.start()
         else {
@@ -423,8 +420,8 @@ class afkCheck {
 
     #genRaidStatus() {
         let components = this.getReactables(this.phase).concat(this.getPhaseControls(this.phase))
-        if (this.ended_by) components = this.addReconnectButton()
         if (this.aborted_by || this.deleted_by) components = []
+        if (this.ended_by) components = this.addReconnectButton()
         return { embeds: [this.#genRaidStatusEmbed()], components }
     }
 
@@ -471,7 +468,7 @@ class afkCheck {
     #genRaidInfoEmbed() {
         const embed = this.#genRaidCommandsEmbed()
         if (this.ended_by) {
-            if (this.#pointlog_mid) embed.addFields({ name: 'Points Log MID', value: this.#pointlog_mid })
+            if (this.#pointlogMid) embed.addFields({ name: 'Points Log MID', value: this.#pointlogMid })
 
             let raiders_text = `Raiders`
             let raiders_value = `None!`
@@ -605,7 +602,7 @@ class afkCheck {
             if (disableStart < start && disableStart > this.phase) continue
             if (!(disableStart < start) && start > this.phase) continue
             if (end <= this.phase) continue
-            if (this.#capButtons().includes(i)) this.#afkTemplate.buttons[i].limit = this.#afkTemplate.cap
+            if (this.capButtons.includes(i)) this.#afkTemplate.buttons[i].limit = this.#afkTemplate.cap
             const reactableButton = new Discord.ButtonBuilder()
                 .setStyle(2)
                 .setCustomId(`${i}`)
@@ -726,8 +723,8 @@ class afkCheck {
             if (!this.earlySlotMembers.includes(interaction.member.id)) this.earlySlotMembers.push(interaction.member.id)
             if (buttonInfo.location && !this.earlyLocationMembers.includes(interaction.member.id)) this.earlyLocationMembers.push(interaction.member.id)
             await Promise.all([
-                this.raidCommandsMessage.edit(this.#genRaidCommands()).catch(er => ErrorLogger.log(er, this.#bot, this.#guild)),
-                this.raidInfoMessage.edit(this.#genRaidInfo()).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
+                this.raidCommandsMessage.edit(this.#genRaidCommands()), this.#bot, this.#guild)),
+                this.raidInfoMessage.edit(this.#genRaidInfo())
             ])
             return
         }
@@ -796,9 +793,9 @@ class afkCheck {
 
         this.raidStatusMessage.reactions.removeAll()
         await Promise.all([
-            this.raidStatusMessage.edit({ content: null, ...this.#genRaidStatus() }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild)),
+            this.raidStatusMessage.edit({ content: null, ...this.#genRaidStatus() }),
             this.raidCommandsMessage.edit(this.#genRaidCommands()),
-            this.raidInfoMessage.edit(this.#genRaidInfo()).catch(er => ErrorLogger.log(er, this.#bot, this.#guild)),
+            this.raidInfoMessage.edit(this.#genRaidInfo()),
             this.raidChannelsMessage.delete()
         ])
         
@@ -833,8 +830,8 @@ class afkCheck {
         ])
 
         setTimeout(async () => {
-            if (this.#afkTemplate.body[this.phase].vcState == AfkTemplate.TemplateVCState.OPEN && this.#channel) for (let minimumJoinRaiderRole of this.#afkTemplate.minimumJoinRaiderRoles) await this.#channel.permissionOverwrites.edit(minimumJoinRaiderRole.id, { Connect: true, ViewChannel: true }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
-            else if (this.#afkTemplate.body[this.phase].vcState == AfkTemplate.TemplateVCState.LOCKED && this.#channel) for (let minimumJoinRaiderRole of this.#afkTemplate.minimumJoinRaiderRoles) await this.#channel.permissionOverwrites.edit(minimumJoinRaiderRole.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
+            if (this.#afkTemplate.body[this.phase].vcState == AfkTemplate.TemplateVCState.OPEN && this.#channel) for (let minimumJoinRaiderRole of this.#afkTemplate.minimumJoinRaiderRoles) await this.#channel.permissionOverwrites.edit(minimumJoinRaiderRole.id, { Connect: true, ViewChannel: true })
+            else if (this.#afkTemplate.body[this.phase].vcState == AfkTemplate.TemplateVCState.LOCKED && this.#channel) for (let minimumJoinRaiderRole of this.#afkTemplate.minimumJoinRaiderRoles) await this.#channel.permissionOverwrites.edit(minimumJoinRaiderRole.id, { Connect: false, ViewChannel: true })
             await Promise.all([this.sendStatusMessage(), this.sendCommandsMessage(), this.sendChannelsMessage()])
             if (this.phase <= this.#afkTemplate.phases) {
                 let updatePanelTimer = setInterval((updatePanelTimer) => this.updatePanel(updatePanelTimer), 5000)
@@ -1071,9 +1068,9 @@ class afkCheck {
         this.deleted_by = this.#guild.members.cache.get(interaction.member.id)
 
         await Promise.all([
-            this.raidStatusMessage.edit({ content: null, ...this.#genRaidStatus() }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild)),
+            this.raidStatusMessage.edit({ content: null, ...this.#genRaidStatus() }),
             this.raidCommandsMessage.edit(this.#genRaidCommands()),
-            this.raidInfoMessage.edit(this.#genRaidInfo()).catch(er => ErrorLogger.log(er, this.#bot, this.#guild)),
+            this.raidInfoMessage.edit(this.#genRaidInfo()),
             this.raidChannelsMessage.delete()
         ])
         this.saveBotAfkCheck(true)
@@ -1382,8 +1379,8 @@ class afkCheck {
             }
             if (!this.earlySlotMembers.includes(memberID)) this.earlySlotMembers.push(memberID)
             if (buttonInfo.location && !this.earlyLocationMembers.includes(memberID)) this.earlyLocationMembers.push(memberID)
-            await this.raidCommandsMessage.edit(this.#genRaidCommands()).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
-            await this.raidInfoMessage.edit(this.#genRaidInfo()).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
+            await this.raidCommandsMessage.edit(this.#genRaidCommands())
+            await this.raidInfoMessage.edit(this.#genRaidInfo())
         }
     }
 
@@ -1401,14 +1398,13 @@ class afkCheck {
 
         this.raidStatusMessage.reactions.removeAll()
         await Promise.all([
-            (interaction?.message.id == this.raidStatusMessage   ? interaction.update(this.#genRaidStatus()) : this.raidStatusMessage.edit(this.#genRaidStatus())).catch(er => ErrorLogger.log(er, this.#bot, this.#guild)),
-            (interaction?.message.id == this.raidCommandsMessage ? interaction.update(this.#genRaidCommands()) : this.raidCommandsMessage.edit(this.#genRaidCommands())).catch(er => ErrorLogger.log(er, this.#bot, this.#guild)),
-            (interaction?.message.id == this.raidChannelsMessage ? interaction.update(this.#genRaidChannels()) : this.raidChannelsMessage.edit(this.#genRaidChannels())).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
+            (interaction?.message.id == this.raidStatusMessage   ? interaction.update(this.#genRaidStatus()) : this.raidStatusMessage.edit(this.#genRaidStatus())),
+            (interaction?.message.id == this.raidCommandsMessage ? interaction.update(this.#genRaidCommands()) : this.raidCommandsMessage.edit(this.#genRaidCommands())),
+            (interaction?.message.id == this.raidChannelsMessage ? interaction.update(this.#genRaidChannels()) : this.raidChannelsMessage.edit(this.#genRaidChannels()))
         ])
 
-        let members = []
-        if (this.#channel) this.#channel.members.forEach(m => members.push(m.id))
-        else this.earlySlotMembers.forEach(id => members.push(id))
+        if (this.#channel) this.#channel.members.forEach(m => this.members.push(m.id))
+        else this.earlySlotMembers.forEach(id => this.members.push(id))
 
         if (members.length > 0) {
             let [db_members] = await this.#db.promise().query('SELECT id FROM users WHERE id IN (?)', [members])
@@ -1435,9 +1431,9 @@ class afkCheck {
                         pointsLog.push({ uid: memberID, points: points, reason: `${i}`})
                 }
             }
-            this.#pointlog_mid = await pointLogger.pointLogging(pointsLog, this.#guild, this.#bot, this.#genEmbedBase())
+            this.#pointlogMid = await pointLogger.pointLogging(pointsLog, this.#guild, this.#bot, this.#genEmbedBase())
         }
-        await this.raidInfoMessage.edit(this.#genRaidInfo()).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
+        await this.raidInfoMessage.edit(this.#genRaidInfo())
         await this.#guild.channels.cache.get(this.#botSettings.channels.history).send({ embeds: [this.#genRaidInfoEmbed()] })
 
         this.logging = true
@@ -1448,17 +1444,17 @@ class afkCheck {
     }
 
     async loggingAfk() {
-        this.members = this.#channel && this.#channel.members.size != 0 ? this.#channel.members.map(m => m.id) : []
-        if (this.members.length > 0) {
+        let members = this.#channel && this.#channel.members.size != 0 ? this.#channel.members.map(m => m.id) : this.earlySlotMembers
+        if (members.length > 0) {
             await this.#db.promise().query('INSERT INTO completionruns (??) VALUES ?', [
                                       ['userid', 'guildid',      'unixtimestamp', 'amount', 'templateid',                 'raidid',     'parenttemplateid'],
-                     this.members.map(u => [u,        this.#guild.id, Date.now(),      1,        this.#afkTemplate.templateID, this.#raidID, this.#afkTemplate.parentTemplateID])
+                     members.map(u => [u,        this.#guild.id, Date.now(),      1,        this.#afkTemplate.templateID, this.#raidID, this.#afkTemplate.parentTemplateID])
             ])
             if (this.#afkTemplate.logName) {
-                await this.#db.promise().query('UPDATE users SET ?? = ?? + 1 WHERE id IN (?)', [this.#afkTemplate.logName, this.#afkTemplate.logName, [...this.members]])
+                await this.#db.promise().query('UPDATE users SET ?? = ?? + 1 WHERE id IN (?)', [this.#afkTemplate.logName, this.#afkTemplate.logName, members])
             }
         }
-        for (let u of this.members) {
+        for (let u of members) {
             if (this.#botSettings.backend.points) {
                 let points = this.#botSettings.points.perrun
                 if (this.#guild.members.cache.get(u).roles.cache.hasAny(...this.#afkTemplate.perkRoles.map(role => role.id))) points = points * this.#botSettings.points.supportermultiplier
