@@ -48,10 +48,11 @@ class DbWrap {
                 cb(...resp)
             }
             if (Array.isArray(args[1])) {
-                console.log('wp')
-                metrics.writePoint(new Point('mysql_raw_querytimes')
+                const point = new Point('mysql_raw_querytimes')
                     .intField(args[0], runtime)
-                    .tag('functiontype', 'sync'))
+                    .tag('functiontype', 'sync')
+                if (resp[0]) point.stringField('error', resp[0])
+                metrics.writePoint(point)
             }
             const resp_string = JSON.stringify(resp.slice(0, 2), null, 2)
             if (resp_string.length > 1500) {
@@ -76,21 +77,29 @@ class DbWrap {
                     msg_fut = channel.send(`:alarm_clock: (${pool_id}) Executing query \`${query}\` with params \`${params}\``)
                 }
                 const start = new Date()
-                const rv = await db_promise.query(query, params, cb)
+                let error = null;
+                let rv = null;
+                try {
+                    rv = await db_promise.query(query, params, cb)
+                } catch (e) {
+                    error = e
+                }
                 const runtime = new Date() - start
                 if (Array.isArray(params)) {
-                    console.log('wp2')
-                    metrics.writePoint(new Point('mysql_raw_querytimes')
+                    const point = new Point('mysql_raw_querytimes')
                         .intField(query, runtime)
-                        .tag('functiontype', 'async'))
+                        .tag('functiontype', 'async')
+                    if (error) point.stringField('error', error)
+                    metrics.writePoint(point)
                 }
                 const resp_string = JSON.stringify(rv[0], null, 2)
                 if (resp_string.length > 1500) {
                     const attachment = new Discord.AttachmentBuilder(Buffer.from(resp_string), { name: 'query.txt' })
-                    msg_fut.then((msg) => { msg.edit(msg.content.replace(':alarm_clock:', `:white_check_mark: (${runtime}ms)`)); msg.reply({ content: `Execution complet in ${runtime}ms.`, files: [attachment] }) })
+                    msg_fut.then((msg) => { msg.edit(msg.content.replace(':alarm_clock:', `${error ? ':x:' : ':white_check_mark:'} (${runtime}ms)`)); msg.reply({ content: `Execution complet in ${runtime}ms.`, files: [attachment] }) })
                 } else {
-                    msg_fut.then((msg) => { msg.edit(msg.content.replace(':alarm_clock:', `:white_check_mark: (${runtime}ms)`)); msg.reply(`Execution complete in ${runtime}ms. Response:\n\`\`\`${resp_string}\`\`\``) })
+                    msg_fut.then((msg) => { msg.edit(msg.content.replace(':alarm_clock:', `${error ? ':x:' : ':white_check_mark:'} (${runtime}ms)`)); msg.reply(`Execution complete in ${runtime}ms. Response:\n\`\`\`${resp_string}\`\`\``) })
                 }
+                if (error) throw error
                 return rv
             }
         }
