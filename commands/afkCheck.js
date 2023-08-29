@@ -27,7 +27,7 @@ module.exports = {
         if (afkTemplateNames.length == 0) return await message.channel.send('This afk template does not exist.')
         const afkTemplateName = afkTemplateNames.length == 1 ? afkTemplateNames[0] : await AfkTemplate.templateNamePrompt(message, afkTemplateNames)
 
-        const afkTemplate = await AfkTemplate.AfkTemplate.tryCreate(bot, bot.settings[message.guild.id], message, afkTemplateName)
+        const afkTemplate = await AfkTemplate.AfkTemplate.tryCreate(bot, message.guild, message.channel.id, afkTemplateName)
         if (afkTemplate instanceof AfkTemplate.AfkTemplateValidationError) {
             if (afkTemplate.invalidChannel()) await message.delete()
             await message.channel.send(afkTemplate.message())
@@ -75,7 +75,8 @@ module.exports = {
             const currentStoredAfkCheck = storedAfkChecks[raidID]
             const messageChannel = guild.channels.cache.get(currentStoredAfkCheck.message.channelId)
             const message = await messageChannel.messages.fetch(currentStoredAfkCheck.message.id)
-            bot.afkChecks[raidID] = new afkCheck(currentStoredAfkCheck.afkTemplate, bot, db, message, currentStoredAfkCheck.location)
+            const afkTemplate = new AfkTemplate.AfkTemplate(bot, guild, message.channel.id, currentStoredAfkCheck.afkTemplateName)
+            bot.afkChecks[raidID] = new afkCheck(afkTemplate, bot, db, message, currentStoredAfkCheck.location)
             await bot.afkChecks[raidID].loadBotAfkCheck(currentStoredAfkCheck)
         }
    }
@@ -169,7 +170,7 @@ class afkCheck {
         if (deleteCheck) delete this.#bot.afkChecks[this.#raidID]
         else {
             this.#bot.afkChecks[this.#raidID] = {
-                afkTemplate: this.#afkTemplate,
+                afkTemplateName: this.#afkTemplate.templateName,
                 message: this.#message,
                 guild: this.#guild,
                 channel: this.#channel,
@@ -204,17 +205,6 @@ class afkCheck {
     }
 
     async loadBotAfkCheck(storedAfkCheck) {
-        this.#afkTemplate = storedAfkCheck.afkTemplate
-        this.#afkTemplate.pingRoles = this.#afkTemplate.pingRoles.map(role => (role == '@here') ? '@here' : this.#guild.roles.cache.get(role.id))
-        this.#afkTemplate.perkRoles = this.#botSettings.lists.perkRoles.map(role => this.#guild.roles.cache.get(this.#botSettings.roles[role]))
-        this.#afkTemplate.minimumViewRaiderRoles = this.#afkTemplate.minimumViewRaiderRoles.map(role => this.#guild.roles.cache.get(role.id))
-        this.#afkTemplate.minimumJoinRaiderRoles = this.#afkTemplate.minimumJoinRaiderRoles.map(role => this.#guild.roles.cache.get(role.id))
-        this.#afkTemplate.minimumStaffRoles = this.#afkTemplate.minimumStaffRoles.map(roles => roles.map(role => this.#guild.roles.cache.get(role.id)))
-        this.#afkTemplate.raidInfoChannel = this.#guild.channels.cache.get(this.#afkTemplate.raidInfoChannel.id)
-        this.#afkTemplate.raidTemplateChannel = this.#guild.channels.cache.get(this.#afkTemplate.raidTemplateChannel.id)
-        this.#afkTemplate.raidStatusChannel = this.#guild.channels.cache.get(this.#afkTemplate.raidStatusChannel.id)
-        this.#afkTemplate.raidCommandChannel = this.#guild.channels.cache.get(this.#afkTemplate.raidCommandChannel.id)
-        this.#afkTemplate.raidActiveChannel = this.#guild.channels.cache.get(this.#afkTemplate.raidActiveChannel.id)
         this.#channel = storedAfkCheck.channel ? this.#guild.channels.cache.get(storedAfkCheck.channel.id) : null
         this.#raidID = storedAfkCheck.raidID
 

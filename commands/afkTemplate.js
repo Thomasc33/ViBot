@@ -98,8 +98,9 @@ class AfkTemplate {
     #bot;
     #botSettings;
     #guild;
-    #channel;
     #inherit;
+    #templateName;
+    #commandsChannelId
 
     /** Constructor for the AFK Template Class
      * @param {Discord.Client} bot The client which is running the bot
@@ -107,12 +108,13 @@ class AfkTemplate {
      * @param {Discord.Message} message The discord message in which the command was executed
      * @param {String} alias The string used to identify the AFK Template
      */
-    constructor(bot, botSettings, message, templateName) {
+    constructor(bot, guild, commandsChannelId, templateName) {
         this.#bot = bot
-        this.#botSettings = botSettings
-        this.#guild = message.guild
-        this.#channel = message.channel
+        this.#botSettings = bot.settings[guild.id]
+        this.#guild = guild
         this.#inherit = null
+        this.#templateName = templateName
+        this.#commandsChannelId = commandsChannelId
 
         // Build AFK template from JSON
         this.#template = JSON.parse(JSON.stringify(templates[this.#guild.id].children.filter(t => t.templateName == templateName)[0]))
@@ -129,15 +131,18 @@ class AfkTemplate {
         this.#processParameters()
     }
 
-    static async tryCreate(bot, botSettings, message, templateName) {
+    static async tryCreate(bot, guild, templateName) {
         try {
-            return new this(bot, bot.settings[message.guild.id], message, templateName)
+            return new this(bot, guild, templateName)
         } catch (e) {
             if (e instanceof AfkTemplateValidationError) return e
             throw e
         }
     }
 
+    get templateName() {
+        return this.#templateName
+    }
 
     // Function for populating child AFK Template parameters in an object from Parent AFK Template object
     #populateObjectInherit(template, parentTemplate) {
@@ -156,7 +161,7 @@ class AfkTemplate {
         let parentTemplate = null
         this.#template.inherits.forEach((parent) => {
             let currentParentTemplate = templates[this.#guild.id].parents[parent]
-            if (currentParentTemplate && currentParentTemplate.commandsChannel == this.#channel.id) {
+            if (currentParentTemplate && currentParentTemplate.commandsChannel == this.#commandsChannelId) {
                 parentTemplate = currentParentTemplate
                 this.#inherit = parent
             }
