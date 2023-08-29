@@ -47,9 +47,9 @@ class DbWrap {
             if (cb) {
                 cb(err, ...results)
             }
-            if (Array.isArray(args[1])) {
+            if (Array.isArray(params)) {
                 const point = new Point('mysql_raw_querytimes')
-                    .intField(args[0], runtime)
+                    .intField(query, runtime)
                     .tag('functiontype', 'sync')
                 if (err) point.stringField('error', err)
                 metrics.writePoint(point)
