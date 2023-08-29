@@ -54,7 +54,7 @@ class DbWrap {
                 if (err) point.stringField('error', err)
                 metrics.writePoint(point)
             }
-            const results_string = JSON.stringify([err, ...results].slice(0, 2), null, 2)
+            const results_string = JSON.stringify([err, results[0]], null, 2)
             if (results_string.length > 1500) {
                 const attachment = new Discord.AttachmentBuilder(Buffer.from(results_string), { name: 'query.txt' })
                 msg_fut.then((msg) => { msg.edit(msg.content.replace(':alarm_clock:', `:white_check_mark: (${runtime}ms)`)); msg.reply({ content: `Execution complete in ${runtime}ms.`, files: [attachment] }) })
