@@ -11,7 +11,6 @@ commands/changeLog.js
 commands/changename.js
 commands/characterList.js
 commands/check.js
-commands/clean.js
 commands/commands.js
 commands/commend.js
 commands/complete.js
