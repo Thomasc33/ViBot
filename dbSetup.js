@@ -95,7 +95,7 @@ class DbWrap {
                 const resp_string = JSON.stringify(rv[0], null, 2)
                 if (resp_string.length > 1500) {
                     const attachment = new Discord.AttachmentBuilder(Buffer.from(resp_string), { name: 'query.txt' })
-                    msg_fut.then((msg) => { msg.edit(msg.content.replace(':alarm_clock:', `${error ? ':x:' : ':white_check_mark:'} (${runtime}ms)`)); msg.reply({ content: `Execution complet in ${runtime}ms.`, files: [attachment] }) })
+                    msg_fut.then((msg) => { msg.edit(msg.content.replace(':alarm_clock:', `${error ? ':x:' : ':white_check_mark:'} (${runtime}ms)`)); msg.reply({ content: `Execution complete in ${runtime}ms.`, files: [attachment] }) })
                 } else {
                     msg_fut.then((msg) => { msg.edit(msg.content.replace(':alarm_clock:', `${error ? ':x:' : ':white_check_mark:'} (${runtime}ms)`)); msg.reply(`Execution complete in ${runtime}ms. Response:\n\`\`\`${resp_string}\`\`\``) })
                 }
