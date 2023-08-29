@@ -421,7 +421,7 @@ class afkCheck {
     #genRaidStatus() {
         let components = this.getReactables(this.phase).concat(this.getPhaseControls(this.phase))
         if (this.aborted_by || this.deleted_by) components = []
-        if (this.ended_by) components = this.addReconnectButton()
+        else if (this.ended_by) components = this.addReconnectButton()
         return { embeds: [this.#genRaidStatusEmbed()], components }
     }
 
@@ -461,7 +461,7 @@ class afkCheck {
     #genRaidCommands() {
         let components = this.getPhaseControls()
         if (this.aborted_by || this.deleted_by) components = []
-        if (this.ended_by) components = this.addDeleteandLoggingButtons()
+        else if (this.ended_by) components = this.addDeleteandLoggingButtons()
         return { embeds: [this.#genRaidCommandsEmbed()], components }
     }
 
