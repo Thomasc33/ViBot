@@ -149,9 +149,6 @@ async function setup(bot) {
         if (bot.settings[g.id].backend.vetverification) vetVerification.init(g, bot, db).catch(er => { ErrorLogger.log(er, bot, g); })
     })
 
-    // initialize channels from createchannel.js
-    require('./commands/createChannel').init(bot)
-
     // Initialize the bot's slash commands
     iterServers(bot, deployCommands)
 }
