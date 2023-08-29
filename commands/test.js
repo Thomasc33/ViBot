@@ -10,9 +10,7 @@ module.exports = {
     guildspecific: true,
     role: 'developer',
     async execute(message, args, bot, db) {
-        let members = await message.guild.members.fetch()
-        let memberDefault = await message.guild.members.cache
-        await message.reply(`${members.size}`)
-        await message.reply(`${memberDefault.size}`)
+        let repliedMessage = "Toast!"
+        await message.reply(repliedMessage)
     }
 }
