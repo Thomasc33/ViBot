@@ -132,14 +132,14 @@ module.exports = {
         const embed = new Discord.EmbedBuilder()
             .setColor('Red')
             .setAuthor({ iconURL: member.displayAvatarURL(), name: member.user.tag })
-            .setDescription(member.toString() + ' `' + member.nickname + '` has left the server')
+            .setDescription(`${member.toString()} \`${member.nickname}\` has left the server`)
             .setThumbnail(member.displayAvatarURL())
             .addFields(
                 { name: 'Highest Role', value: member.roles.highest.toString() },
-                { name: 'Roles', value: member.roles.cache.sort((a, b) => b.comparePositionTo(a)).map(r => r.toString()).join(',') }
+                { name: 'Roles', value: [...member.roles.cache.values()].sort((a, b) => b.comparePositionTo(a)).join(', ') }
             )
             .setTimestamp()
-            .setFooter({ text: 'ID: ' + member.id, iconURL: member.displayAvatarURL() })
+            .setFooter({ text: `ID: ${member.id}`, iconURL: member.displayAvatarURL() })
 
         await serverLeaveChannel.send({ embeds: [embed] }).catch(er => { ErrorLogger.log(er, bot, member.guild) })
     }
