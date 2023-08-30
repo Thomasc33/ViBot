@@ -41,7 +41,7 @@ module.exports = {
                 for (let i in rows) {
                     let row = rows[i]
                     if (row.guildid == message.guild.id) warningsServer.push(row)
-                    else if (row.guildid == partneredServer.id) warningsPartnered.push(row)
+                    else if (partneredServer && row.guildid == partneredServer.id) warningsPartnered.push(row)
                     else if (row.guildid == null) warningsNull.push(row)
                 }
                 if (warningsServer.length > 0) {
