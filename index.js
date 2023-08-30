@@ -6,7 +6,7 @@ require('./lib/extensions.js')
 // Import Internal Libraries
 const ErrorLogger = require('./lib/logError')
 const botSetup = require('./botSetup.js')
-const dbSetup = require('./dbSetup.js');
+const dbSetup = require('./dbSetup.js')
 const memberHandler = require('./memberHandler.js')
 const { logWrapper } = require('./metrics.js')
 const { handleReactionRow } = require('./redis.js')
@@ -17,14 +17,14 @@ const verification = require('./commands/verification')
 // Global Variables/Data
 const botSettings = require('./settings.json')
 const token = require('./data/botKey.json')
-const rootCas = require('ssl-root-cas').create();
-require('https').globalAgent.options.ca = rootCas;
+const rootCas = require('ssl-root-cas').create()
+require('https').globalAgent.options.ca = rootCas
 const { bot } = require('./botMeta.js')
 require('./botMeta.js').loadCommands()
 const serverWhiteList = require('./data/serverWhiteList.json')
-const { MessageManager } = require('./messageManager.js');
+const { MessageManager } = require('./messageManager.js')
 
-const messageManager = new MessageManager(bot, botSettings);
+const messageManager = new MessageManager(bot, botSettings)
 
 // Bot Event Handlers
 bot.on('messageCreate', logWrapper('message', async (logger, message) => {
@@ -33,11 +33,11 @@ bot.on('messageCreate', logWrapper('message', async (logger, message) => {
     if (message.author.bot) return logger('botAuthor')
 
     try {
-        return await messageManager.handleMessage(message);
+        return await messageManager.handleMessage(message)
     } catch (er) {
         ErrorLogger.log(er, bot, message.guild)
     }
-}));
+}))
 
 bot.on('interactionCreate', logWrapper('message', async (logger, interaction) => {
     // Validate the server is whitelisted
@@ -50,13 +50,13 @@ bot.on('interactionCreate', logWrapper('message', async (logger, interaction) =>
 }))
 
 bot.on('ready', async () => {
-    console.log(`Bot loaded: ${bot.user.username}`);
+    console.log(`Bot loaded: ${bot.user.username}`)
     bot.user.setActivity('vibot.tech')
     const vi = bot.users.cache.get(botSettings.developerId)
     vi.send('Halls Bot Starting Back Up')
 
     await botSetup.setup(bot)
-});
+})
 
 bot.on('guildMemberAdd', async (member) => {
     if (!dbSetup.guildHasDb(member.guild.id)) return
@@ -69,7 +69,7 @@ bot.on('guildMemberAdd', async (member) => {
 bot.on('guildMemberUpdate', async (oldMember, newMember) => {
     if (!dbSetup.guildHasDb(newMember.guild.id)) return
 
-    const settings = bot.settings[newMember.guild.id];
+    const settings = bot.settings[newMember.guild.id]
 
     if (oldMember.roles.cache.equals(newMember.roles.cache)) return
 
@@ -84,12 +84,14 @@ bot.on('guildMemberRemove', async (member) => {
     if (!dbSetup.guildHasDb(member.guild.id)) return
 
     await memberHandler.detectSuspensionEvasion(bot, member)
+
+    await memberHandler.logServerLeave(bot, member)
 })
 
 bot.on('messageReactionAdd', async (r, u) => {
     if (u.bot) return
     // modmail
-    if (r.message.partial) r.message = await r.message.fetch();
+    if (r.message.partial) r.message = await r.message.fetch()
     // spongemock
     if (r.emoji.id == '812959258638549022') {
         const content = [...r.message.content]
@@ -117,7 +119,7 @@ bot.on('typingStart', (c, u) => {
     }, 7500)
 })
 
-bot.login(token.key);
+bot.login(token.key)
 
 // ===========================================================================================================
 // Process Event Listening
@@ -125,26 +127,26 @@ bot.login(token.key);
 
 process.on('uncaughtException', err => {
     if (!err) return
-    ErrorLogger.log(err, bot);
+    ErrorLogger.log(err, bot)
     if (err.fatal) process.exit(1)
 })
 
 process.on('unhandledRejection', err => {
     if (err) {
-        if (err.message == 'Target user is not connected to voice.') return;
+        if (err.message == 'Target user is not connected to voice.') return
         if (err.message == 'Cannot send messages to this user') return
         if (err.message == 'Unknown Message') return
         if (err.message == 'Unknown Channel') return
         if (err.message == 'The user aborted a request.') return
     } else return
-    ErrorLogger.log(err, bot);
+    ErrorLogger.log(err, bot)
 })
 
 // Data Base Connectors (Global DB was here, now moved to bot ready listener)
 let tokenDB = mysql.createConnection(botSettings.tokenDBInfo)
 
 tokenDB.connect(err => {
-    if (err) ErrorLogger.log(err, bot);
+    if (err) ErrorLogger.log(err, bot)
     console.log('Connected to token database')
 })
 
