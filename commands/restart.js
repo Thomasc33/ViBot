@@ -31,7 +31,7 @@ module.exports = {
             Promises.push(new Promise((res, rej) => {
                 setInterval(checkActive, 5000)
                 function checkActive() {
-                    if (!bot.afkChecks[i].active) res()
+                    if (!bot.afkChecks[i]?.active) res()
                 }
             }))
         }
