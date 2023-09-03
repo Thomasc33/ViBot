@@ -189,8 +189,9 @@ class afkCheck {
                 earlyLocationMembers: this.earlyLocationMembers,
                 earlySlotMembers: this.earlySlotMembers,
                 reactables: this.reactables,
-                buttosn: this.buttons,
+                buttons: this.buttons,
                 
+                cap: this.cap,
                 time: Date.now(),
                 location: this.location,
                 phase: this.phase,
@@ -223,6 +224,7 @@ class afkCheck {
         this.reactables = storedAfkCheck.reactables
         this.buttons = storedAfkCheck.buttons
 
+        this.cap = storedAfkCheck.cap
         this.location = storedAfkCheck.location
         this.phase = storedAfkCheck.phase
         this.timer = new Date(storedAfkCheck.timer)
@@ -316,7 +318,7 @@ class afkCheck {
                 delete this.reactables[i]
             }
         }
-        this.#afkTemplate.updateButtonChoice(newButtonChoices)
+        for (let i in this.buttons) if (newButtonChoices.includes(i)) delete this.buttons[i]
     }
 
     async createThreads() {
@@ -455,7 +457,6 @@ class afkCheck {
         let components = this.getPhaseControls()
         if (this.aborted_by || this.deleted_by) components = []
         else if (this.ended_by) components = this.addDeleteandLoggingButtons()
-        console.log(require('util').inspect({ embeds: [this.#genRaidCommandsEmbed()], components }, {depth: null}))
         return { embeds: [this.#genRaidCommandsEmbed()], components }
     }
 
@@ -1522,7 +1523,6 @@ class afkCheck {
 
         for (let i in this.buttons) {
             if (this.buttons[i].type != AfkTemplate.TemplateButtonType.LOG && this.buttons[i].type != AfkTemplate.TemplateButtonType.LOG_SINGLE) continue
-            console.log(this.buttons[i])
             const logOptions = Object.keys(this.buttons[i].logOptions)
             const phaseButtons = logOptions.map(type => {
                 const phaseButton = new Discord.ButtonBuilder()

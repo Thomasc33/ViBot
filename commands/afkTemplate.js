@@ -519,10 +519,6 @@ class AfkTemplate {
         for (let i in this.reacts) this.reacts[i].emote = this.#bot.storedEmojis[this.reacts[i].emote]
     }
 
-    updateButtonChoice(choices) {
-        for (let i in this.buttons) if (choices.includes(i)) delete this.buttons[i]
-    }
-
     getButtonChoices() {
         let choices = []
         for (let i in this.buttons) if (this.buttons[i].choice != TemplateButtonChoice.NO_CHOICE) choices.push(i) 
