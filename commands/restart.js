@@ -1,7 +1,7 @@
 const fs = require('fs')
 const botStatus = require('./botstatus')
 const afkCheck = require('./afkCheck.js')
-
+const { EmbedBuilder } = require('discord.js');
 module.exports = {
     name: 'restart',
     description: 'Restarts the bot',
@@ -19,29 +19,31 @@ module.exports = {
         // Save channel object to file
         fs.writeFileSync('./data/restart_channel.json', JSON.stringify(d, null, 2));
 
-
-        if (args.length != 0 && args[0].toLowerCase() == 'force') process.exit()
+        if (args[0]?.toLowerCase() == 'force') process.exit()
         
-        let Promises = []
-
-        //afk checks
-        
-        const raidIDs = afkCheck.returnActiveRaidIDs(bot)
-        for (let i of raidIDs) {
-            Promises.push(new Promise((res, rej) => {
-                setInterval(checkActive, 5000)
-                function checkActive() {
-                    if (!bot.afkChecks[i]?.active) res()
-                }
-            }))
-        }
-
-        if (Promises.length == 0) process.exit()
-
         module.exports.restarting = true;
-        await message.channel.send('Restart Queued')
-        await botStatus.updateStatus(bot, 'Restart Pending', '#ff0000')
-        
-        await Promise.all(Promises).then(() => { process.exit() })
+
+        new Promise(async (resolve) => {
+            /** @type {afkCheck.afkCheck[]} */
+            const afks = Object.values(bot.afkModules);
+            if (!afks.some(afk => afk.active)) return resolve();
+            const fields = {};
+            afks.filter(afk => afk.active).forEach(afk => {
+                fields[afk.guild?.name] = (fields[afk.guild?.name] || '') + `${afk.raidStatusMessage?.url}\n`
+            })
+            await channel.send({ embeds: [
+                new EmbedBuilder()
+                    .setTitle('Restarting')
+                    .setDescription('Restart is waiting for the following afks')
+                    .setFields(Object.entries(fields).map(([name,value]) => ({ name, value })))
+            ]})
+            await botStatus.updateStatus(bot, 'Restart Pending', '#ff0000')
+            setInterval(() => {
+                if (!Object.values(bot.afkModules).some(afk => afk.active)) resolve();
+            }, 5000)
+        }).then(async () => {
+            await channel.send('Bot restarting now, please wait...').catch(() => {});
+            process.exit();
+        })
     }
 }

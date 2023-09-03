@@ -542,7 +542,7 @@ module.exports = { AfkTemplate, TemplateVCOptions, TemplateVCState, TemplateButt
                 let textShow = `There are currently \`${raidIDs.length}\` afk checks.`
                 let indexShow = 0
                 for (let raidID of raidIDs) {
-                    textShow += `\n\`\`${indexShow+1}.\`\` ${bot.afkChecks[raidID].afkTemplate.name} by ${bot.afkChecks[raidID].leader} at <t:${Math.floor(bot.afkChecks[raidID].time/1000)}:f> is ${bot.afkChecks[raidID].active ? 'active' : 'inactive'}`
+                    textShow += `\n\`\`${indexShow+1}.\`\` ${bot.afkChecks[raidID].afkTemplate.name} by ${bot.afkChecks[raidID].leader} at <t:${Math.floor(bot.afkChecks[raidID].time/1000)}:f> is ${bot.afkModules[raidID]?.active ? 'active' : 'inactive'}`
                     indexShow++
                 }
                 return await message.reply({ embeds: [createEmbed(message, textShow, null)] })
@@ -554,7 +554,7 @@ module.exports = { AfkTemplate, TemplateVCOptions, TemplateVCState, TemplateButt
                 let textDelete = `There are currently \`${raidIDs.length}\` afk checks.`
                 let indexDelete = 0
                 for (let raidID of raidIDs) {
-                    textDelete += `\n\`\`${indexDelete+1}.\`\` ${bot.afkChecks[raidID].afkTemplate.name} by ${bot.afkChecks[raidID].leader} at <t:${Math.floor(bot.afkChecks[raidID].time/1000)}:f> is ${bot.afkChecks[raidID].active ? 'active' : 'inactive'}`
+                    textDelete += `\n\`\`${indexDelete+1}.\`\` ${bot.afkChecks[raidID].afkTemplate.name} by ${bot.afkChecks[raidID].leader} at <t:${Math.floor(bot.afkChecks[raidID].time/1000)}:f> is ${bot.afkModules[raidID]?.active ? 'active' : 'inactive'}`
                     deleteMenu.addOptions({ label: `${indexDelete+1}. ${bot.afkChecks[raidID].afkTemplate.name} by ${bot.afkChecks[raidID].leader.displayName}`, value: raidID })
                     indexDelete++
                 }
@@ -563,10 +563,14 @@ module.exports = { AfkTemplate, TemplateVCOptions, TemplateVCState, TemplateButt
                 const {value: raidID, interaction: subInteraction} = await message.selectPanel(textDelete, null, deleteMenu, 30000, false, true)
                 if (!raidID) return
                 delete bot.afkChecks[raidID]
+                delete bot.afkModules[raidID]
                 fs.writeFileSync('./data/afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot, message.guild) })
                 return await message.reply({ embeds: [createEmbed(message, `Afk check \`${raidID}\` has been deleted.`, null)] })
             case 'reset':
-                for (let raidID of raidIDs) delete bot.afkChecks[raidID]
+                for (let raidID of raidIDs) {
+                    delete bot.afkChecks[raidID]
+                    delete bot.afkModules[raidID]
+                }
                 fs.writeFileSync('./data/afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot, message.guild) })
                 return await message.reply({ embeds: [createEmbed(message, `\`${raidIDs.length}\` afk checks have been reset.`, null)] })
         }

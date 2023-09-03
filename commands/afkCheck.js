@@ -70,6 +70,7 @@ module.exports = {
     },
     async loadBotAfkChecks(guild, bot, db) {
         const storedAfkChecks = require('../data/afkChecks.json')
+        const length = Object.keys(storedAfkChecks).length;
         for (let raidID in storedAfkChecks) {
             if (storedAfkChecks[raidID].guild.id != guild.id) continue
             const currentStoredAfkCheck = storedAfkChecks[raidID]
@@ -78,6 +79,7 @@ module.exports = {
             bot.afkChecks[raidID] = new afkCheck(currentStoredAfkCheck.afkTemplate, bot, db, message, currentStoredAfkCheck.location)
             await bot.afkChecks[raidID].loadBotAfkCheck(currentStoredAfkCheck)
         }
+        if (!process.title.includes('runner')) console.log(`Restored ${Object.keys(bot.afkModules).length}/${length} afk checks for ${guild.name}`);
    }
 }
 
@@ -148,6 +150,8 @@ class afkCheck {
         return !(this.ended_by || this.aborted_by || this.deleted_by)
     }
 
+    get guild() { return this.#guild }
+
     #raidLeaderDisplayName() {
         return this.#leader.displayName.replace(/[^a-z|]/gi, '').split('|')[0]
     }
@@ -163,6 +167,7 @@ class afkCheck {
     async start() {
         if (this.phase === 0) this.phase = 1
         this.timer = new Date(Date.now() + (this.#afkTemplate.body[this.phase].timeLimit * 1000))
+        this.#bot.afkModules[this.#raidID] = this
         await Promise.all([this.sendStatusMessage(), this.sendCommandsMessage(), this.sendChannelsMessage()])
         this.startTimers()
         this.saveBotAfkCheck()
@@ -173,7 +178,10 @@ class afkCheck {
     }
     
     saveBotAfkCheck(deleteCheck = false) {
-        if (deleteCheck) delete this.#bot.afkChecks[this.#raidID]
+        if (deleteCheck) {
+            delete this.#bot.afkChecks[this.#raidID]
+            delete this.#bot.afkModules[this.#raidID]
+        }
         else {
             this.#bot.afkChecks[this.#raidID] = {
                 afkTemplate: this.#afkTemplate,
@@ -204,7 +212,6 @@ class afkCheck {
                 raidDragThreads: this.raidDragThreads,
                 vcLounge: this.vcLounge
             }
-            this.#bot.afkModules[this.#raidID] = this
         }
         fs.writeFileSync('./data/afkChecks.json', JSON.stringify(this.#bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.#bot, this.#guild) })
     }
@@ -244,6 +251,7 @@ class afkCheck {
         this.vcLounge = await this.#guild.channels.cache.get(this.#botSettings.voice.lounge)
 
         this.#pointlogMid = storedAfkCheck.pointlogMid
+        this.#bot.afkModules[this.#raidID] = this
 
         if (this.phase <= this.#afkTemplate.phases) this.start()
         else {
