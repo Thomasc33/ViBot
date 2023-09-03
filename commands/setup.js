@@ -12,7 +12,8 @@ const roles = [
     'supporterTierOne', 'supporterTierTwo', 'supporterTierThree', 'supporterTierFour', 'supporterTierFive', 'supporterTierSix', 'unverified',
     'motmgTeam1', 'motmgTeam2', 'motmgTeam3', 'motmgTeam4', 'motmgTeam5', 'motmgTeam6', 'motmgTeam7', 'motmgTeam8', 'motmgTeam9', 'motmgTeam10',
     'motmgTeam11', 'motmgTeam12', 'motmgTeam13', 'motmgTeam14', 'motmgTeam15', 'motmgTeam16', 'motmgTeam17', 'motmgTeam18', 'motmgTeam19', 'motmgTeam20',
-    'motmgTeam21', 'motmgTeam22', 'motmgTeam23', 'motmgTeam24', 'motmgTeam25', 'motmgTeam26', 'motmgTeam27', 'motmgTeam28', 'motmgTeam29', 'motmgTeam30'
+    'motmgTeam21', 'motmgTeam22', 'motmgTeam23', 'motmgTeam24', 'motmgTeam25', 'motmgTeam26', 'motmgTeam27', 'motmgTeam28', 'motmgTeam29', 'motmgTeam30',
+    'minimumServerLeaveRole'
 ]
 const channels = ['modmail', 'verification', 'manualverification', 'vetverification', 'manualvetverification', 'verificationlog', 'accursedverification', 'modlogs', 'history', 'suspendlog',
     'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel',
@@ -34,8 +35,9 @@ const voiceprefixes = ['raidingprefix', 'vetprefix']
 const backend = ['modmail', 'verification', 'vetverification', 'points', 'supporter', 'roleassignment', 'realmeyestats', 'automod', 'characterparse', 'forwadedMessageThumbsUpAndDownReactions',
     'giveeventroleonverification', 'upgradedCheck', 'sendmissedquota',
     'onlyUpperStaffSuspendStaff', 'giveEventRoleOnDenial2',
-    'useUnverifiedRole', 'punishmentsWarnings', 'punishmentsSuspensions', 'punishmentsMutes', 'allowAdditionalCompletes', 'miniBossGuessing']
+    'useUnverifiedRole', 'punishmentsWarnings', 'punishmentsSuspensions', 'punishmentsMutes', 'allowAdditionalCompletes', 'miniBossGuessing', 'logServerLeave']
 const numerical = ['ticketlimit', 'supporterlimit', 'keyalertsage', 'waitnewkeyalert', 'prunerushersoffset',
+    'forwardedModmailMessage', 'motmgLeaderboard', 'serverLeaveChannel',
     `milestoneStartTimestamp`, 'timestamp1', 'timestamp2', 'timestamp3', 'timestamp4', 'timestamp5', 'timestamp6', 'timestamp7',
     `timestamp8`, 'timestamp9', 'timestamp10', 'timestamp11', 'timestamp12', 'timestamp13', 'timestamp14', 'timestamp15']
 const runreqs = ['weapon', 'ability', 'armor', 'ring']

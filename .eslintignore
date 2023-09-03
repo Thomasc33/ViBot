@@ -11,12 +11,10 @@ commands/changeLog.js
 commands/changename.js
 commands/characterList.js
 commands/check.js
-commands/clean.js
 commands/commands.js
 commands/commend.js
 commands/complete.js
 commands/crasherList.js
-commands/createChannel.js
 commands/currentweek.js
 commands/drag.js
 commands/echo.js
@@ -25,7 +23,6 @@ commands/eval.js
 commands/excuse.js
 commands/expelled.js
 commands/falseSuspensions.js
-commands/fixName.js
 commands/glape.js
 commands/getFeedback.js
 commands/headcount.js
@@ -51,7 +48,6 @@ commands/motmg.js
 commands/mute.js
 commands/mutes.js
 commands/noNicknames.js
-commands/oldAfkCheck.js
 commands/parsemembers.js
 commands/permaSuspend.js
 commands/points.js
