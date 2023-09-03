@@ -12,31 +12,38 @@ const roles = [
     'supporterTierOne', 'supporterTierTwo', 'supporterTierThree', 'supporterTierFour', 'supporterTierFive', 'supporterTierSix', 'unverified',
     'motmgTeam1', 'motmgTeam2', 'motmgTeam3', 'motmgTeam4', 'motmgTeam5', 'motmgTeam6', 'motmgTeam7', 'motmgTeam8', 'motmgTeam9', 'motmgTeam10',
     'motmgTeam11', 'motmgTeam12', 'motmgTeam13', 'motmgTeam14', 'motmgTeam15', 'motmgTeam16', 'motmgTeam17', 'motmgTeam18', 'motmgTeam19', 'motmgTeam20',
-    'motmgTeam21', 'motmgTeam22', 'motmgTeam23', 'motmgTeam24', 'motmgTeam25', 'motmgTeam26', 'motmgTeam27', 'motmgTeam28', 'motmgTeam29', 'motmgTeam30'
+    'motmgTeam21', 'motmgTeam22', 'motmgTeam23', 'motmgTeam24', 'motmgTeam25', 'motmgTeam26', 'motmgTeam27', 'motmgTeam28', 'motmgTeam29', 'motmgTeam30',
+    'minimumServerLeaveRole'
 ]
-const channels = ['modmail', 'verification', 'manualverification', 'vetverification', 'manualvetverification', 'verificationlog', 'accursedverification', 'activeverification', 'modlogs', 'history', 'suspendlog',
-    'viallog', 'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel', 'raidstatus', 'eventstatus',
-    'vetstatus', 'exaltstatus', 'raidcommands', 'eventcommands', 'vetcommands', 'accursedcommands', 'accursedstatus', 'raidingchannels', 'eventchannels', 'vetchannels', 'runlogs', 'dmcommands', 'veriactive', 'pointlogging',
+const channels = ['modmail', 'verification', 'manualverification', 'vetverification', 'manualvetverification', 'verificationlog', 'accursedverification', 'modlogs', 'history', 'suspendlog',
+    'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel',
+    'runlogs', 'dmcommands', 'veriactive', 'pointlogging',
     'veriattempts', 'modmailinfo', 'parsecurrentweek', 'pastparseweeks', 'roleassignment', 'botstatus', 'keyalerts', 'activitylog', 'raidingrules',
     'forwardedModmailMessage', 'motmgLeaderboard']
-const categories = ['raiding', 'veteran', 'event']
-const voice = ['raidingtemplate', 'eventtemplate', 'vettemplate', 'accursedtemplate','veteventtemplate', 'lounge', 'vetlounge', 'eventlounge', 'afk',
-    'raiding1', 'raiding2', 'raiding3', 'raiding4', 'raiding5', 'raiding6', 'raiding7', 'raiding8', 'raiding9',
-    'veteranraiding1', 'veteranraiding2', 'veteranraiding3', 'veteranraiding4', 'veteranraiding5', 'veteranraiding6', 'veteranraiding7', 'veteranraiding8', 'veteranraiding9',
-    'eventraiding1', 'eventraiding2', 'eventraiding3', 'eventraiding4', 'eventraiding5', 'eventraiding6', 'eventraiding7', 'eventraiding8', 'eventraiding9']
+const raiding = ['category1', 'templateChannel1', 'partneredStatusChannel1', 'statusChannel1', 'commandsChannel1', 'activeChannel1',
+    'category2', 'templateChannel2', 'partneredStatusChannel2', 'statusChannel2', 'commandsChannel2', 'activeChannel2',
+    'category3', 'templateChannel3', 'partneredStatusChannel3', 'statusChannel3', 'commandsChannel3', 'activeChannel3',
+    'category4', 'templateChannel4', 'partneredStatusChannel4', 'statusChannel4', 'commandsChannel4', 'activeChannel4',
+    'category5', 'templateChannel5', 'partneredStatusChannel5', 'statusChannel5', 'commandsChannel5', 'activeChannel5',
+    'category6', 'templateChannel6', 'partneredStatusChannel6', 'statusChannel6', 'commandsChannel6', 'activeChannel6',
+    'category7', 'templateChannel7', 'partneredStatusChannel7', 'statusChannel7', 'commandsChannel7', 'activeChannel7',
+    'category8', 'templateChannel8', 'partneredStatusChannel8', 'statusChannel8', 'commandsChannel8', 'activeChannel8',
+    'category9', 'templateChannel9', 'partneredStatusChannel9', 'statusChannel9', 'commandsChannel9', 'activeChannel9',
+    'category10', 'templateChannel10', 'partneredStatusChannel10', 'statusChannel10', 'commandsChannel10', 'activeChannel10']
+const voice = ['lounge', 'vetlounge', 'eventlounge', 'afk']
 const voiceprefixes = ['raidingprefix', 'vetprefix']
-const backend = ['modmail', 'currentweek', 'eventcurrentweek', 'parsecurrentweek', 'verification', 'vetverification', 'points', 'supporter', 'roleassignment', 'realmeyestats', 'automod', 'removekeyreacts', 'characterparse', 'forwadedMessageThumbsUpAndDownReactions',
-    'giveeventroleonverification', 'eventcurrentweekdisplaysalleventrl', 'upgradedCheck', 'raidResetMonthly', 'eventResetMonthly', 'parseResetMonthly', 'exaltedEvents', 'sendmissedquota',
-    'exaltsInRSA', 'allowAdvancedRuns', 'allowExaltedRuns', 'raidResetBiweekly', 'eventResetBiweekly', 'parseResetBiweekly', 'onlyUpperStaffSuspendStaff', 'giveEventRoleOnDenial2', 'disableEventsFromHeadcounts',
-    'useStaticVCForRaiding', 'useUnverifiedRole', 'punishmentsWarnings', 'punishmentsSuspensions', 'punishmentsMutes', 'allowAdditionalCompletes', 'miniBossGuessing']
-const numerical = ['afktime', 'eventafktime', 'topkey', 'bottomkey', 'ticketlimit', 'supporterlimit', 'keyalertsage', 'waitnewkeyalert', 'prunerushersoffset',
-    `toprune`, `bottomrune`,
+const backend = ['modmail', 'verification', 'vetverification', 'points', 'supporter', 'roleassignment', 'realmeyestats', 'automod', 'characterparse', 'forwadedMessageThumbsUpAndDownReactions',
+    'giveeventroleonverification', 'upgradedCheck', 'sendmissedquota',
+    'onlyUpperStaffSuspendStaff', 'giveEventRoleOnDenial2',
+    'useUnverifiedRole', 'punishmentsWarnings', 'punishmentsSuspensions', 'punishmentsMutes', 'allowAdditionalCompletes', 'miniBossGuessing', 'logServerLeave']
+const numerical = ['ticketlimit', 'supporterlimit', 'keyalertsage', 'waitnewkeyalert', 'prunerushersoffset',
+    'forwardedModmailMessage', 'motmgLeaderboard', 'serverLeaveChannel',
     `milestoneStartTimestamp`, 'timestamp1', 'timestamp2', 'timestamp3', 'timestamp4', 'timestamp5', 'timestamp6', 'timestamp7',
     `timestamp8`, 'timestamp9', 'timestamp10', 'timestamp11', 'timestamp12', 'timestamp13', 'timestamp14', 'timestamp15']
 const runreqs = ['weapon', 'ability', 'armor', 'ring']
 const autoveri = ['fame', 'stars', 'realmage', 'discordage', 'deathcount']
 const vetverireqs = ['maxed', 'meleemaxed', 'runs']
-const points = ['earlylocation', 'perrun', 'supportermultiplier', 'keypop', 'vialpop', 'rushing', 'brain', 'mystic', 'eventkey', 'cultlocation', 'voidlocation', 'fsvlocation', 'o3streaming',
+const points = ['earlylocation', 'perrun', 'supportermultiplier', 'keypop', 'vialpop', 'rushing', 'brain', 'mystic', 'eventkey', 'o3streaming',
     'o3trickster', 'o3puri', 'exaltkey', 'shattskey', 'fungalkey', 'nestkey', 'keymultiplier', 'runepop', 'incpop', 'steamworkkey',
     'moonlightkey', 'miniBossGuessingPoints']
 const lists = ['earlyLocation', 'runningEvents', 'warningRoles', 'perkRoles', 'discordRoles', 'commendRoles']
@@ -53,7 +60,7 @@ var commands = []
 var commandsRolePermissions = []
 
 const menus = ['roles', 'channels', 'voice', 'voiceprefixes', 'backend', 'numerical', 'runreqs', 'autoveri',
-'vetverireqs', 'points', 'commands', 'categories', 'lists', 'strings', 'quotapoints', 'modmail', 'commandsRolePermissions', 'supporter',
+'vetverireqs', 'points', 'commands', 'raiding', 'lists', 'strings', 'quotapoints', 'modmail', 'commandsRolePermissions', 'supporter',
 'rolePermissions']
 
 module.exports = {
@@ -99,7 +106,7 @@ module.exports = {
                         case '9': menu(vetverireqs, 'vetverireqs', 'int'); break;
                         case '10': menu(points, 'points', 'int'); break;
                         case '11': menu(commands, 'commands', 'boolean'); break;
-                        case '12': menu(categories, 'categories', 'string'); break;
+                        case '12': menu(raiding, 'raiding', 'string'); break;
                         case '13': menu(lists, 'lists', 'array'); break;
                         case '14': menu(strings, 'strings', 'string'); break;
                         case '15': menu(quotapoints, 'quotapoints', 'float'); break;
@@ -307,7 +314,7 @@ module.exports = {
                 vetverireqs: {},
                 points: {},
                 commands: {},
-                categories: {},
+                raiding: {},
                 lists: {},
                 strings: {},
                 quotapoints: {},
@@ -343,6 +350,9 @@ module.exports = {
                 if (vc) bot.settings[guild.id].voice[v] = vc.id
                 else bot.settings[guild.id].voice[v] = null
             }
+        }
+        for (let i in raiding) {
+            if (!bot.settings[guild.id].raiding[raiding[i]]) bot.settings[guild.id].raiding[raiding[i]] = null
         }
         for (let i in voiceprefixes) {
             let v = voiceprefixes[i]
@@ -399,9 +409,6 @@ module.exports = {
         }
         for (let key in bot.settings[guild.id].commandsRolePermissions) {
             if (!commands.includes(key)) { delete bot.settings[guild.id].commandsRolePermissions[key] }
-        }
-        for (let i of categories) {
-            if (!bot.settings[guild.id].categories[i]) bot.settings[guild.id].categories[i] = getDefaultCategoryName(i)
         }
         if (!bot.settings[guild.id].lists) bot.settings[guild.id].lists = {}
         for (let i of lists) {
@@ -494,11 +501,9 @@ function getDefaultChannelName(name) {
         case 'vetverification': return 'veteran-verification';
         case 'manualvetverification': return 'veri-pending-veterans';
         case 'verificationlog': return 'veri-log';
-        case 'activeverification': return 'veri-active';
         case 'modlogs': return 'mod-logs';
         case 'history': return 'history';
         case 'suspendlog': return 'suspend-log';
-        case 'viallog': return 'vial-logs';
         case 'rlfeedback': return 'customer-feedback';
         case 'currentweek': return 'currentweek';
         case 'eventcurrentweek': return 'e-currentweek';
@@ -508,15 +513,6 @@ function getDefaultChannelName(name) {
         case 'leaderchat': return 'leader-chat';
         case 'vetleaderchat': return 'veteran-rl-chat';
         case 'parsechannel': return 'crasher-list';
-        case 'raidstatus': return 'raid-status-announcements';
-        case 'eventstatus': return 'event-status-announcements';
-        case 'vetstatus': return 'veteran-status-announcements';
-        case 'raidcommands': return 'dylanbot-commands';
-        case 'eventcommands': return 'eventbot-commands';
-        case 'vetcommands': return 'veteran-bot-commands';
-        case 'raidingchannels': return 'active-channels';
-        case 'eventchannels': return 'active-channels-e';
-        case 'vetchannels': return 'active-channels-v';
         case 'runlogs': return 'dylanbot-info';
         case 'dmcommands': return 'history-reacts';
         case 'veriactive': return 'veri-active';
@@ -530,20 +526,15 @@ function getDefaultChannelName(name) {
         case 'keyalerts': return 'key-alerts';
         case 'activitylog': return 'activity-log';
         case 'raidingrules': return 'raiding-rules';
-        case 'exaltstatus': return 'exalt-status-announcements';
     }
 }
 
 function getDefaultVoiceName(name) {
     switch (name) {
-        case 'raidingtemplate': return 'Raiding Template';
-        case 'eventtemplate': return 'Event Raiding Template';
-        case 'vettemplate': return 'Vet Raiding Template';
         case 'lounge': return 'lounge';
         case 'vetlounge': return 'Veteran Lounge';
         case 'eventlounge': return 'Event Lounge';
         case 'afk': return 'afk'
-        case 'veteventtemplate': return 'Vet Event Template'
     }
 }
 
@@ -556,17 +547,11 @@ function getDefaultVoicePrefixName(name) {
 
 function getDefaultNumericalValue(name) {
     switch (name) {
-        case 'afktime': return 360;
-        case 'eventafktime': return 360;
-        case 'topkey': return 50;
-        case 'bottomkey': return 15;
         case 'ticketlimit': return 5;
         case 'supporterlimit': return 8;
         case 'keyalertsage': return 120;
         case 'waitnewkeyalert': return 30;
         case 'prunerushersoffset': return 90;
-        case 'topkey': return 45;
-        case 'bottomkey': return 15;
     }
 }
 
@@ -608,9 +593,6 @@ function getDefaultPointValue(name) {
         case 'brain': return 1;
         case 'mystic': return 1;
         case 'eventkey': return 2;
-        case 'cultlocation': return 20;
-        case 'voidlocation': return 25;
-        case 'fsvlocation': return 30;
         case 'o3streaming': return 5;
         case 'o3trickster': return 3;
         case 'o3puri': return 3;
@@ -623,14 +605,6 @@ function getDefaultPointValue(name) {
         case 'incpop': return 5;
         case 'steamworkkey': return 5;
         case 'moonlightkey': return 5;
-    }
-}
-
-function getDefaultCategoryName(name) {
-    switch (name) {
-        case 'raiding': return 'raiding';
-        case 'veteran': return 'veteran raiding'
-        case 'event': return 'events'
     }
 }
 
