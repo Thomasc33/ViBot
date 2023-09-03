@@ -69,17 +69,14 @@ module.exports = {
         return Object.keys(bot.afkChecks)
     },
     async loadBotAfkChecks(guild, bot, db) {
-        const storedAfkChecks = require('../data/afkChecks.json')
-        const length = Object.keys(storedAfkChecks).length;
-        for (let raidID in storedAfkChecks) {
-            if (storedAfkChecks[raidID].guild.id != guild.id) continue
-            const currentStoredAfkCheck = storedAfkChecks[raidID]
+        const storedAfkChecks = Object.values(require('../data/afkChecks.json')).filter(raid => raid.guild.id === guild.id);
+        for (const currentStoredAfkCheck of storedAfkChecks) {
             const messageChannel = guild.channels.cache.get(currentStoredAfkCheck.message.channelId)
             const message = await messageChannel.messages.fetch(currentStoredAfkCheck.message.id)
-            bot.afkChecks[raidID] = new afkCheck(currentStoredAfkCheck.afkTemplate, bot, db, message, currentStoredAfkCheck.location)
-            await bot.afkChecks[raidID].loadBotAfkCheck(currentStoredAfkCheck)
+            bot.afkChecks[currentStoredAfkCheck.raidID] = new afkCheck(currentStoredAfkCheck.afkTemplate, bot, db, message, currentStoredAfkCheck.location)
+            await bot.afkChecks[currentStoredAfkCheck.raidID].loadBotAfkCheck(currentStoredAfkCheck)
         }
-        if (!process.title.includes('runner')) console.log(`Restored ${Object.keys(bot.afkModules).length}/${length} afk checks for ${guild.name}`);
+        console.log(`Restored ${storedAfkChecks.length} afk checks for ${guild.name}`);
    }
 }
 
