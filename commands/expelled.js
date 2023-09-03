@@ -105,13 +105,13 @@ module.exports = {
             })
             const embed = new Discord.EmbedBuilder()
                 .setTitle('Expel Added')
-                .addFields([{ name: 'Moderator', value: `<@!${message.author.id}>`, inline: true }])
-                .addFields([{ name: 'Raider', value: id, inline: true }])
-                .addFields([{ name: 'Reason', value: `\`\`\`${reason.substring(1, reason.length - 1)}\`\`\`` }])
+                .addFields([{ name: 'Moderator', value: `<@!${message.author.id}>`, inline: true },
+                    { name: 'Raider', value: id, inline: true },
+                    { name: 'Reason', value: `\`\`\`${reason.substring(1, reason.length - 1)}\`\`\`` }])
                 .setFooter({ text: `${message.guild.name}`, iconURL: message.guild.iconURL() })
                 .setColor('Green')
                 .setTimestamp(Date.now())
-            message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] })
+            await message.guild.channels.cache.get(settings.channels.modlogs)?.send({ embeds: [embed] })
         }
     },
     async removeExpelled(message, bot, db) {
@@ -130,7 +130,7 @@ module.exports = {
             .addFields([{ name: 'Raider', value: id, inline: true }])
             .setColor('Green')
             .setTimestamp(Date.now())
-        message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] })
+        await message.guild.channels.cache.get(settings.channels.modlogs)?.send({ embeds: [embed] })
     }
 }
 
