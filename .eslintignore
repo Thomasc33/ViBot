@@ -21,7 +21,6 @@ commands/echo.js
 commands/emoji.js
 commands/eval.js
 commands/excuse.js
-commands/expelled.js
 commands/falseSuspensions.js
 commands/glape.js
 commands/getFeedback.js
