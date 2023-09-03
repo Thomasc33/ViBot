@@ -129,6 +129,7 @@ class AfkTemplate {
 
         // Populate all parameters used in AfkCheck
         this.#processParameters()
+        this.#processReacts()
     }
 
     static async tryCreate(bot, guild, commandsChannelId, templateName) {
@@ -412,18 +413,20 @@ class AfkTemplate {
     }
 
     processBody(channel) {
+        const body = JSON.parse(JSON.stringify(this.body))
         for (let i = 1; i <= this.#template.phases; i++) {
-            if (this.body[i].message) this.body[i].message = this.processMessages(channel, this.body[i].message)
-            if (!this.body[i].embed.description) this.body[i].embed.description = this.processBodyDescription(channel, i)
+            if (body[i].message) body[i].message = this.processMessages(channel, body[i].message)
+            if (!body[i].embed.description) body[i].embed.description = this.processBodyDescription(channel, i)
             else {
-                for (let j in this.body[i].embed.description) {
-                    if (!this.body[i].embed.description[j]) this.body[i].embed.description[j] = this.processBodyDescription(channel, i)
-                    else if (i != 0 && this.body[i].embed.description[j] == "") this.body[i].embed.description[j] = this.body[i-1].embed.description[j]
-                    else this.body[i].embed.description[j] = this.processMessages(channel, this.body[i].embed.description[j])
+                for (let j in body[i].embed.description) {
+                    if (!body[i].embed.description[j]) body[i].embed.description[j] = this.processBodyDescription(channel, i)
+                    else if (i != 0 && body[i].embed.description[j] == "") body[i].embed.description[j] = body[i-1].embed.description[j]
+                    else body[i].embed.description[j] = this.processMessages(channel, body[i].embed.description[j])
                 }
-                this.body[i].embed.description = this.body[i].embed.description.reduce((a, b) => a + b)
+                body[i].embed.description = body[i].embed.description.reduce((a, b) => a + b)
             }
         }
+        return body
     }
 
     processBodyHeadcount(channel) {
@@ -515,7 +518,7 @@ class AfkTemplate {
         return newMessage2
     }
 
-    processReacts() {
+    #processReacts() {
         for (let i in this.reacts) this.reacts[i].emote = this.#bot.storedEmojis[this.reacts[i].emote]
     }
 

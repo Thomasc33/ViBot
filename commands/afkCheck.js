@@ -100,6 +100,7 @@ class afkCheck {
     #leader;
     #raidID;
     #pointlogMid;
+    #body;
 
     constructor(afkTemplate, bot, db, message, location) {
         this.#bot = bot // bot
@@ -112,6 +113,7 @@ class afkCheck {
         this.#leader = message.member // leader of the afk
         this.#raidID = null // ID of the afk
         this.#pointlogMid = null
+        this.#body = null
 
         this.members = [] // All members in the afk
         this.earlyLocationMembers = [] // All members with early location in the afk
@@ -165,7 +167,7 @@ class afkCheck {
 
     async start() {
         if (this.phase === 0) this.phase = 1
-        this.timer = new Date(Date.now() + (this.#afkTemplate.body[this.phase].timeLimit * 1000))
+        this.timer = new Date(Date.now() + (this.#body[this.phase].timeLimit * 1000))
         await Promise.all([this.sendStatusMessage(), this.sendCommandsMessage(), this.sendChannelsMessage()])
         this.startTimers()
         this.saveBotAfkCheck()
@@ -270,7 +272,6 @@ class afkCheck {
     }
 
     async sendButtonChoices() {
-        this.#afkTemplate.processReacts()
         let buttonChoices = this.#afkTemplate.getButtonChoices()
         let newButtonChoices = []
         for (let i of buttonChoices) {
@@ -383,12 +384,12 @@ class afkCheck {
     #genEmbedBase() {
         return new Discord.EmbedBuilder()
             .setAuthor({ name: `AFK for ${this.#afkTemplate.name} by ${this.#raidLeaderDisplayName()}`, iconURL: this.#leader.user.avatarURL() })
-            .setColor(this.#afkTemplate.body[this.phase || 1].embed.color ? this.#afkTemplate.body[this.phase || 1].embed.color : '#ffffff')
+            .setColor(this.#body[this.phase || 1].embed.color ? this.#body[this.phase || 1].embed.color : '#ffffff')
             .setTimestamp(Date.now())
     }
 
     #genRaidStatusEmbed() {
-        const afkTemplateBody = this.#afkTemplate.body[this.phase || 1]
+        const afkTemplateBody = this.#body[this.phase || 1]
         const embed = this.#genEmbedBase()
 
         // This RNG might need to get fixed or it will change every time the embed is generated
@@ -499,7 +500,7 @@ class afkCheck {
     }
 
     async sendInitialStatusMessage() {
-        this.#afkTemplate.processBody(this.#channel)
+        this.#body = this.#afkTemplate.processBody(this.#channel)
         
         const raidStatusMessageContents = {
             content: `${this.#pingText()}**${this.#afkTemplate.name}** ${this.flag ? ` (${this.flag})` : ''} by ${this.#leader} is starting inside of **${this.#guild.name}**${this.#channel ? ` in ${this.#channel}` : ``}`,
@@ -507,7 +508,7 @@ class afkCheck {
         };
         [this.raidStatusMessage] = await Promise.all([
             this.#afkTemplate.raidStatusChannel.send(raidStatusMessageContents),
-            this.#afkTemplate.body[1].message && this.#afkTemplate.raidStatusChannel.send({ content: `${this.#afkTemplate.body[1].message} in 5 seconds...` }).then(msg => setTimeout(async () => await msg.delete(), 5000)),
+            this.#body[1].message && this.#afkTemplate.raidStatusChannel.send({ content: `${this.#body[1].message} in 5 seconds...` }).then(msg => setTimeout(async () => await msg.delete(), 5000)),
             ...Object.values(this.#afkTemplate.raidPartneredStatusChannels).map(channel => channel.send({ content: `**${this.#afkTemplate.name}** is starting inside of **${this.#guild.name}**${this.#channel ? ` in ${this.#channel}` : ``}` }))
         ])
 
@@ -567,7 +568,7 @@ class afkCheck {
         const components = []
         const phaseActionRow = new Discord.ActionRowBuilder().addComponents([
             new Discord.ButtonBuilder()
-                .setLabel(`✅ ${this.#afkTemplate.body[this.phase].nextPhaseButton ? `${this.#afkTemplate.body[this.phase].nextPhaseButton}` : `Phase ${this.phase}`}`)
+                .setLabel(`✅ ${this.#body[this.phase].nextPhaseButton ? `${this.#body[this.phase].nextPhaseButton}` : `Phase ${this.phase}`}`)
                 .setStyle(3)
                 .setCustomId(`phase`),
             new Discord.ButtonBuilder()
@@ -814,19 +815,19 @@ class afkCheck {
         if (this.phase >= this.#afkTemplate.phases) return this.postAfk(interaction)
 
         this.phase += 1
-        this.timer = new Date(Date.now() + (this.#afkTemplate.body[this.phase].timeLimit * 1000))
+        this.timer = new Date(Date.now() + (this.#body[this.phase].timeLimit * 1000))
         if (this.updatePanelTimer) clearInterval(this.updatePanelTimer)
         
         const [tempRaidStatusMessage] = await Promise.all([
-            this.#afkTemplate.body[this.phase].message && this.#afkTemplate.raidStatusChannel.send({ content: `${this.#afkTemplate.body[this.phase].message} in 5 seconds...` }),
+            this.#body[this.phase].message && this.#afkTemplate.raidStatusChannel.send({ content: `${this.#body[this.phase].message} in 5 seconds...` }),
             (interaction?.message.id == this.raidStatusMessage   ? interaction.editButtons({ disabled: true }) : this.raidStatusMessage.editButtons({ disabled: true })),
             (interaction?.message.id == this.raidCommandsMessage ? interaction.editButtons({ disabled: true }) : this.raidCommandsMessage.editButtons({ disabled: true })),
             (interaction?.message.id == this.raidChannelsMessage ? interaction.editButtons({ disabled: true }) : this.raidChannelsMessage.editButtons({ disabled: true }))
         ])
 
         setTimeout(async () => {
-            if (this.#afkTemplate.body[this.phase].vcState == AfkTemplate.TemplateVCState.OPEN && this.#channel) for (let minimumJoinRaiderRole of this.#afkTemplate.minimumJoinRaiderRoles) await this.#channel.permissionOverwrites.edit(minimumJoinRaiderRole.id, { Connect: true, ViewChannel: true })
-            else if (this.#afkTemplate.body[this.phase].vcState == AfkTemplate.TemplateVCState.LOCKED && this.#channel) for (let minimumJoinRaiderRole of this.#afkTemplate.minimumJoinRaiderRoles) await this.#channel.permissionOverwrites.edit(minimumJoinRaiderRole.id, { Connect: false, ViewChannel: true })
+            if (this.#body[this.phase].vcState == AfkTemplate.TemplateVCState.OPEN && this.#channel) for (let minimumJoinRaiderRole of this.#afkTemplate.minimumJoinRaiderRoles) await this.#channel.permissionOverwrites.edit(minimumJoinRaiderRole.id, { Connect: true, ViewChannel: true })
+            else if (this.#body[this.phase].vcState == AfkTemplate.TemplateVCState.LOCKED && this.#channel) for (let minimumJoinRaiderRole of this.#afkTemplate.minimumJoinRaiderRoles) await this.#channel.permissionOverwrites.edit(minimumJoinRaiderRole.id, { Connect: false, ViewChannel: true })
             await Promise.all([this.sendStatusMessage(), this.sendCommandsMessage(), this.sendChannelsMessage()])
             if (this.phase <= this.#afkTemplate.phases) {
                 let updatePanelTimer = setInterval((updatePanelTimer) => this.updatePanel(updatePanelTimer), 5000)
