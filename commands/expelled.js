@@ -89,7 +89,7 @@ module.exports = {
     async addExpelled(message, bot, db) {
         const id = message.options.getString('id')
         const settings = bot.settings[message.guild.id]
-        const reason = db.escape([message.options.getString('reason'), ...message.options.getVarargs()].join(' ')) ?? "'No reason provided.'"
+        const reason = db.escape([message.options.getString('reason'), ...message.options.getVarargs()].join(' ')) || "'No reason provided.'"
 
         const [rows] = await db.promise().query('SELECT reason, modid FROM veriblacklist WHERE id = ?', [id])
         if (rows.length) {
