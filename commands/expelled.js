@@ -56,12 +56,13 @@ module.exports = {
                 this.removeExpelled(message, bot, db)
                 break
             default:
-                return message.replyUserError('Invalid arguments: `<add/remove/list> [names/ids]`')
         }
     },
     async listAll(message, bot, db) {
         db.query('SELECT * FROM veriblacklist', async (err, rows) => {
-            if (err) ErrorLogger.log(err, bot, message.guild)
+            if (err) {
+                throw err
+            }
             const embed = new Discord.EmbedBuilder()
                 .setTitle('Expelled / Veriblacklisted users')
                 .setDescription('None!')
