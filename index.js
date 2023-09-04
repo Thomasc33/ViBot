@@ -3,6 +3,22 @@ const Discord = require('discord.js')
 const mysql = require('mysql2')
 require('./lib/extensions.js')
 
+// ------------------
+// Temporary Code
+// ------------------
+
+try {
+    let token = require('./data/botKey.json').key
+    let settings = require('./settings.json')
+    settings.key = token
+    require('fs').writeFileSync('./settings.json', JSON.stringify(settings, null, 4))
+    require('fs').unlinkSync('./data/botKey.json')
+} catch (_) { }
+
+// ------------------
+// End Temporary Code
+// ------------------
+
 // Import Internal Libraries
 const ErrorLogger = require('./lib/logError')
 const botSetup = require('./botSetup.js')
@@ -16,7 +32,6 @@ const verification = require('./commands/verification')
 
 // Global Variables/Data
 const botSettings = require('./settings.json')
-const token = require('./data/botKey.json')
 const rootCas = require('ssl-root-cas').create()
 require('https').globalAgent.options.ca = rootCas
 const { bot } = require('./botMeta.js')
@@ -119,7 +134,7 @@ bot.on('typingStart', (c, u) => {
     }, 7500)
 })
 
-bot.login(token.key)
+bot.login(botSettings.key)
 
 // ===========================================================================================================
 // Process Event Listening
