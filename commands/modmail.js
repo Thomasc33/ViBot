@@ -239,7 +239,6 @@ async function interactionHandler(interaction, settings, bot, db) {
                 await interaction.deferUpdate()
             } else { await interaction.message.edit({ components: [modmailOpenComponents]}); await confirmMessage.delete(); await interaction.deferUpdate() }
         })
-        
     } else {
         embed = new Discord.EmbedBuilder()
             .setDescription(`${interaction.member} Something went wrong when trying to handle your interaction\nPlease try again or contact any Upper Staff to get this sorted out.\nThank you for your patience!`)
