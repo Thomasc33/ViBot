@@ -56,7 +56,7 @@ const TemplateButtonChoice = {
 
 function resolveTemplateAlias(guildId, alias) {
     let selectedTemplates = templates[guildId].children.filter(t => t.aliases.includes(alias)) // Search for all matches of the alias across all guild-specific AFK Templates
-    if (selectedTemplates.length == 0) selectedTemplates = templates[guildId].children.filter(t => { for (let alias of t.aliases) if (alias.includes(alias)) return true }) // Search for all substring matches of the alias if direct matches were not found
+    if (selectedTemplates.length == 0) selectedTemplates = templates[guildId].children.filter(t => t.aliases.some(templateAlias => templateAlias.includes(alias))) // Search for all substring matches of the alias if direct matches were not found
     return selectedTemplates.map((t) => t.templateName)
 }
 
@@ -122,7 +122,7 @@ class AfkTemplate {
         // Validate that the template is OK to use
         this.#validateTemplateParameters() // Validate existence of AFK Template parameters
         if (!this.#template.enabled) throw new AfkTemplateValidationError(TemplateState.DISABLED, `This afk template is disabled.`)
-        if (!this.#template.commandsChannel) throw new AfkTemplateValidationError(TemplateState.INVALID_CHANNEL, `This afk template only runs in ${this.#template.inherits.map(parent => this.#guild.channels.cache.get(templates[this.#guild.id].parents[parent].commandsChannel)).join(', ')}.`)
+        if (!this.#template.commandsChannel) throw new AfkTemplateValidationError(TemplateState.INVALID_CHANNEL, `This afk template only runs in ${this.#template.inherits.map(parent => this.#guild.channels.cache.get(botSettings.raiding[templates[this.#guild.id].parents[parent].commandsChannel])).join(', ')}.`)
         this.#validateTemplateValues() // Validate values of AFK Template parameters
 
         // Populate all parameters used in AfkCheck
@@ -156,21 +156,21 @@ class AfkTemplate {
         let parentTemplate = null
         this.#template.inherits.forEach((parent) => {
             let currentParentTemplate = templates[this.#guild.id].parents[parent]
-            if (currentParentTemplate && currentParentTemplate.commandsChannel == this.#channel.id) {
+            if (currentParentTemplate && this.#botSettings.raiding[currentParentTemplate.commandsChannel] == this.#channel.id) {
                 parentTemplate = currentParentTemplate
                 this.#inherit = parent
             }
         })
         this.#populateObjectInherit(this.#template, parentTemplate)
+        if (parentTemplate) for (let i = 0; i <= this.#template.phases; i++) this.#populateObjectInherit(this.#template.body[i], parentTemplate.body[i])
         this.#template.minStaffRoles = this.#template.minStaffRoles[this.#inherit]
     }
 
     // Function for populating child Body Phase parameters from Body Default parameters
     #populateBodyInherit() {
-        let phases = Array.from({length: this.#template.phases},(_,k)=>k+1)
-        for (let i of phases) {
-            if (this.#template.body[i] == undefined) this.#template.body[i] = this.#template.body.default
-            else this.#populateObjectInherit(this.#template.body[i], this.#template.body.default)
+        for (let i = 0; i <= this.#template.phases; i++) {
+            if (this.#template.body[i] == undefined) this.#template.body[i] = this.#template.body[0]
+            else this.#populateObjectInherit(this.#template.body[i], this.#template.body[0])
         }
     }
 
@@ -203,9 +203,7 @@ class AfkTemplate {
         if (!Object.hasOwn(this.#template, 'phases')) properties.push('phases')
         if (!Object.hasOwn(this.#template, 'body')) properties.push('body')
         if (this.#template.body != null && typeof this.#template.body === 'object') {
-            let phases = Array.from({length: this.#template.phases},(_,k)=>k+1)
-            if (!Object.hasOwn(this.#template.body, 'default')) properties.push('body.default')
-            phases.map(k => { if(!Object.hasOwn(this.#template.body, `${k}`)) properties.push(`body.${k}`) })
+            for (let i = 0; i <= this.#template.phases; i++) if (!Object.hasOwn(this.#template.body, i)) properties.push(`body.${k}`)
             for (let i in this.#template.body) {
                 if (!Object.hasOwn(this.#template.body[i], 'vcState')) properties.push(`body.${i}.vcState`)
                 if (!Object.hasOwn(this.#template.body[i], 'nextPhaseButton')) properties.push(`body.${i}.nextPhaseButton`)
@@ -331,11 +329,13 @@ class AfkTemplate {
     }
 
     #validateTemplateCategory(category) {
-        return this.#guild.channels.cache.filter(c => c.type == Discord.ChannelType.GuildCategory).find(c => c.name.toLowerCase() === category)
+        if (!this.#botSettings.raiding[category]) return false
+        return this.#guild.channels.cache.filter(c => c.type == Discord.ChannelType.GuildCategory).find(c => c.name.toLowerCase() === this.#botSettings.raiding[category])
     }
 
     #validateTemplateChannel(channel, guild = this.#guild) {
-        return guild.channels.cache.get(channel)
+        if (!this.#botSettings.raiding[channel]) return false
+        return guild.channels.cache.get(this.#botSettings.raiding[channel])
     }
 
     #validateTemplateRole(role) {
@@ -383,17 +383,17 @@ class AfkTemplate {
         if (this.minimumStaffRoles == [] || this.minimumStaffRoles == [[]] && this.#botSettings.commandsRolePermissions["afk"]) this.minimumStaffRoles = [[this.#guild.roles.cache.get(this.#botSettings.roles[this.#botSettings.commandsRolePermissions["afk"]])]]
         if (this.minimumStaffRoles == [] || this.minimumStaffRoles == [[]]) this.minimumStaffRoles = [[this.#guild.roles.cache.get(this.#botSettings.roles[this.#bot.commands.get("afk").role])]]
         this.raidInfoChannel = this.#guild.channels.cache.get(this.#botSettings.channels.runlogs)
-        this.raidCategory = this.#guild.channels.cache.filter(c => c.type == Discord.ChannelType.GuildCategory).find(c => c.name.toLowerCase() === this.#template.category)
+        this.raidCategory = this.#guild.channels.cache.filter(c => c.type == Discord.ChannelType.GuildCategory).find(c => c.name.toLowerCase() === this.#botSettings.raiding[this.#template.category])
         this.raidPartneredStatusChannels = {}
         Object.keys(this.#template.partneredStatusChannels).forEach((guild) => this.raidPartneredStatusChannels[guild] = { channels: null }) 
         for (let i in this.#template.partneredStatusChannels) {
             let guild = this.#bot.guilds.cache.get(i)
-            this.raidPartneredStatusChannels[i] = this.#template.partneredStatusChannels[i].channels.map(channel => guild.channels.cache.get(channel))
+            this.raidPartneredStatusChannels[i] = this.#template.partneredStatusChannels[i].channels.map(channel => guild.channels.cache.get(this.#botSettings.raiding[channel]))
         }
-        this.raidTemplateChannel = this.#guild.channels.cache.get(this.#template.templateChannel)
-        this.raidStatusChannel = this.#guild.channels.cache.get(this.#template.statusChannel)
-        this.raidCommandChannel = this.#guild.channels.cache.get(this.#template.commandsChannel)
-        this.raidActiveChannel = this.#guild.channels.cache.get(this.#template.activeChannel)
+        this.raidTemplateChannel = this.#guild.channels.cache.get(this.#botSettings.raiding[this.#template.templateChannel])
+        this.raidStatusChannel = this.#guild.channels.cache.get(this.#botSettings.raiding[this.#template.statusChannel])
+        this.raidCommandChannel = this.#guild.channels.cache.get(this.#botSettings.raiding[this.#template.commandsChannel])
+        this.raidActiveChannel = this.#guild.channels.cache.get(this.#botSettings.raiding[this.#template.activeChannel])
         this.logName = this.#template.logName
         this.name = this.#template.name
         this.vcOptions = this.#template.vcOptions
@@ -409,8 +409,7 @@ class AfkTemplate {
     }
 
     processBody(channel) {
-        let phases = Array.from({length: this.#template.phases},(_,k)=>k+1)
-        for (let i of phases) {
+        for (let i = 1; i <= this.#template.phases; i++) {
             if (this.body[i].message) this.body[i].message = this.processMessages(channel, this.body[i].message)
             if (!this.body[i].embed.description) this.body[i].embed.description = this.processBodyDescription(channel, i)
             else {

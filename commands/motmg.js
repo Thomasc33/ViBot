@@ -19,7 +19,7 @@ module.exports = {
     guildSpecific: true,
     description: 'Manually updates the leaderboard channel',
     async execute(message, args, bot, db) {
-        await module.exports.sendMotmgLeaderboardChannelMessage(message.guild, bot, db)
+        await module.exports.sendMotmgLeaderboardChannelMessage(message.guild, bot, dbSetup.getDB(message.guild.id))
         await message.replySuccess()
     },
     Motmg,
@@ -28,12 +28,13 @@ module.exports = {
         const emojis = bot.storedEmojis
         const startUnixTimestamp = module.exports.getTimestamp(startWeek, settings)
         const endUnixTimestamp = module.exports.getTimestamp(endWeek, settings)
+        const guildID = guild.id
 
         const discordTimestampStart = `<t:${Math.floor(startUnixTimestamp / 1000)}:f>`
         const discordTimestampEnd = `<t:${Math.floor(endUnixTimestamp / 1000)}:f>`
         let template = module.exports.getMotmgLeaderboardTemplate(guild)
         const databaseColumn = template[dungeon].databaseColumn
-        const [rows,] = await db.promise().query('SELECT userid, amount FROM loggedusage WHERE guildid = ? AND logged = ? AND utime BETWEEN ? AND ?', [guild.id, databaseColumn, startUnixTimestamp, endUnixTimestamp])
+        const [rows,] = await db.promise().query('SELECT userid, amount FROM loggedusage WHERE guildid = ? AND logged = ? AND utime BETWEEN ? AND ?', [guildID, databaseColumn, startUnixTimestamp, endUnixTimestamp])
         const uniqueUsers = module.exports.getUniqueUsers(rows)
         var userPoints = module.exports.addAllUserPoints(uniqueUsers)
         userPoints = module.exports.accumulateAllUserPoints(rows, userPoints, uniqueUsers)
@@ -63,7 +64,7 @@ module.exports = {
             .setColor('#015c21')
         let embedIndex = 1
         for (let index in seperateFieldStrings) {
-            if (embedIndex >= 5) {
+            if (embedIndex >= 1) {
                 embeds.push(embed)
                 embed = new Discord.EmbedBuilder()
                     .setTitle('Leaderboard')
@@ -95,6 +96,8 @@ module.exports = {
                 return settings.numerical.timestamp3
             case 4:
                 return settings.numerical.timestamp4
+            case 5:
+                return settings.numerical.timestamp5
             default:
                 return settings.numerical.milestoneStartTimestamp
         }
@@ -102,6 +105,7 @@ module.exports = {
     async getLeaderboardEmbedTotal(guild, bot, db, startWeek, endWeek) {
         const settings = bot.settings[guild.id]
         const emojis = bot.storedEmojis
+        const guildID = guild.id
 
         const startUnixTimestamp = module.exports.getTimestamp(startWeek, settings)
         const endUnixTimestamp = module.exports.getTimestamp(endWeek, settings)
@@ -111,7 +115,7 @@ module.exports = {
 
         let template = module.exports.getMotmgLeaderboardTemplate(guild)
         let databaseColumns = Object.keys(template).map(key => template[key].databaseColumn)
-        const [rows,] = await db.promise().query('SELECT userid, logged, amount FROM loggedusage WHERE guildid = ? AND utime BETWEEN ? AND ?', [guild.id, startUnixTimestamp, endUnixTimestamp])
+        const [rows,] = await db.promise().query('SELECT userid, logged, amount FROM loggedusage WHERE guildid = ? AND utime BETWEEN ? AND ?', [guildID, startUnixTimestamp, endUnixTimestamp])
         var dungeonPoints = {}
         for (let i in rows) {
             let row = rows[i]
@@ -174,7 +178,7 @@ module.exports = {
             .setDescription(`These runs are between ${discordTimestampStart} and ${discordTimestampEnd}`)
         let embedIndex = 1
         for (let index in seperateFieldStrings) {
-            if (embedIndex >= 5) {
+            if (embedIndex >= 1) {
                 embeds.push(embed)
                 embed = new Discord.EmbedBuilder()
                     .setTitle('Leaderboard')
@@ -203,11 +207,13 @@ module.exports = {
         const discordTimestampStart = `<t:${Math.floor(startUnixTimestamp / 1000)}:f>`
         const discordTimestampEnd = `<t:${Math.floor(endUnixTimestamp / 1000)}:f>`
 
+        const guildID = guild.id
+
         let template = module.exports.getMotmgLeaderboardTemplate(guild)
         let databaseColumns = Object.keys(template).map(key => template[key].databaseColumn)
         let teamMembersIDs = await guild.findUsersWithRole(team).map(member => member.id)
         let teamRole = await guild.findRole(team)
-        const [rows,] = await db.promise().query('SELECT userid, logged, amount FROM loggedusage WHERE guildid = ? AND utime BETWEEN ? AND ?', [guild.id, startUnixTimestamp, endUnixTimestamp])
+        const [rows,] = await db.promise().query('SELECT userid, logged, amount FROM loggedusage WHERE guildid = ? AND utime BETWEEN ? AND ?', [guildID, startUnixTimestamp, endUnixTimestamp])
         var dungeonPoints = {}
         for (let i in rows) {
             let row = rows[i]
@@ -274,7 +280,7 @@ module.exports = {
             .setDescription(`These runs are between ${discordTimestampStart} and ${discordTimestampEnd}\nTeam: ${teamRole}`)
         let embedIndex = 1
         for (let index in seperateFieldStrings) {
-            if (embedIndex >= 5) {
+            if (embedIndex >= 1) {
                 embeds.push(embed)
                 embed = new Discord.EmbedBuilder()
                     .setTitle('Leaderboard')
@@ -306,24 +312,24 @@ module.exports = {
         let template = module.exports.getMotmgLeaderboardTemplate(guild)
         var embedList = []
         for (let row in template) {
-            let embeds = await module.exports.getLeaderboardEmbed(guild, bot, db, row, 0, 4)
+            let embeds = await module.exports.getLeaderboardEmbed(guild, bot, db, row, 0, 5)
             for (let i in embeds) {
                 embedList.push(embeds[i])
             }
         }
         for (let row in template) {
-            for (let i = 0; i < 5; i++) {
+            for (let i = 0; i < 6; i++) {
                 let embeds = await module.exports.getLeaderboardEmbed(guild, bot, db, row, i, i + 1)
                 for (let i in embeds) {
                     embedList.push(embeds[i])
                 }
             }
         }
-        let embeds = await module.exports.getLeaderboardEmbedTotal(guild, bot, db, 0, 4)
+        let embeds = await module.exports.getLeaderboardEmbedTotal(guild, bot, db, 0, 5)
         for (let i in embeds) {
             embedList.push(embeds[i])
         }
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 6; i++) {
             let embeds = await module.exports.getLeaderboardEmbedTotal(guild, bot, db, i, i + 1)
             for (let i in embeds) {
                 embedList.push(embeds[i])
@@ -331,13 +337,13 @@ module.exports = {
         }
         teams = module.exports.getTeams(guild, bot)
         for (let teamIndex in teams) {
-            let embeds = await module.exports.getLeaderboardEmbedTotalTeam(guild, bot, db, teams[teamIndex], 0, 4)
+            let embeds = await module.exports.getLeaderboardEmbedTotalTeam(guild, bot, db, teams[teamIndex], 0, 5)
             for (let i in embeds) {
                 embedList.push(embeds[i])
             }
         }
         for (let teamIndex in teams) {
-            for (let i = 0; i < 5; i++) {
+            for (let i = 0; i < 6; i++) {
                 let embeds = await module.exports.getLeaderboardEmbedTotalTeam(guild, bot, db, teams[teamIndex], i, i + 1)
                 for (let i in embeds) {
                     embedList.push(embeds[i])
@@ -358,6 +364,10 @@ module.exports = {
             try {
                 await channel.send({ embeds: embedListArray[i] })
             } catch (e) {
+                if (e.code === 50035) { // Embed size exceeds maximum size of 6000
+                    console.log(e) // Write errors to console instead of ErrorLogger to avoid spamming logs
+                    continue
+                }
                 ErrorLogger.log(e, bot, guild);
             }
         }

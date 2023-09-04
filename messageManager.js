@@ -132,7 +132,7 @@ class MessageManager {
             })
         }
 
-        if (!command) return await commandError('Command doesnt exist, check \`commands\` and try again', 'does not exist');
+        if (!command) return await commandError('Command doesnt exist, check `commands` and try again', 'does not exist');
         // Validate the command is enabled
         if (!this.#bot.settings[e.guild.id].commands[command.name]) return await commandError('This command is disabled', 'disabled');
         // Validate the command is not disabled during restart if a restart is pending
@@ -146,14 +146,13 @@ class MessageManager {
 
         if (command.cooldown) {
             if (this.#cooldowns.get(command.name)) {
-                if (Date.now() + command.cooldown * 1000 < Date.now()) this.#cooldowns.delete(command.name)
+                if (Date.now() + (command.cooldown * 1000) < Date.now()) this.#cooldowns.delete(command.name)
                 else return await commandError(null, 'cooldown')
             } else this.#cooldowns.set(command.name, Date.now())
             setTimeout(() => { this.#cooldowns.delete(command.name) }, command.cooldown * 1000)
         }
 
-        const point = genPoint('commandexecution', e)
-                            .tag('command', commandName)
+        const point = genPoint('commandexecution', e).tag('command', commandName)
         try {
             const db = getDB(e.guild.id)
             if (isInteraction && command.slashCommandExecute) {
@@ -169,11 +168,8 @@ class MessageManager {
                             }
                         })
                     } catch (err) {
-                        if (err instanceof LegacyParserError) {
-                            return e.replyUserError(err.message)
-                        } else {
-                            throw(err)
-                        }
+                        if (err instanceof LegacyParserError) return e.replyUserError(err.message)
+                        throw(err)
                     }
                 }
                 const start = Date.now()
@@ -188,7 +184,7 @@ class MessageManager {
             }
         } catch (er) {
             ErrorLogger.log(er, this.#bot, e.guild)
-            e.reply("Issue executing the command, check \`;commands\` and try again");
+            e.reply('Issue executing the command, check `;commands` and try again');
             point.stringField('error', er.name)
         } finally {
             writePoint(point)
@@ -253,6 +249,7 @@ class MessageManager {
         }
 
     }
+
     async #logCommand(guild, message) {
         if (!guild || !this.#bot.settings[guild.id]) return
         const logEmbed = new Discord.EmbedBuilder()
@@ -266,14 +263,13 @@ class MessageManager {
     }
 
     async #sendModMail(message) {
-        let cancelled = false
+        const guild = await this.getGuild(message)
+        if (!guild) return
         const confirmModMailEmbed = new Discord.EmbedBuilder()
             .setColor('#ff0000')
             .setTitle('Are you sure you want to message modmail?')
             .setFooter({ text: 'Spamming modmail with junk will result in being modmail blacklisted' })
             .setDescription(`\`\`\`${message.content}\`\`\``)
-        const guild = await this.getGuild(message).catch(er => cancelled = true )
-        if (cancelled) return
         await message.channel.send({ embeds: [confirmModMailEmbed] }).then(async confirmMessage => {
             if (await confirmMessage.confirmButton(message.author.id)) {
                 modmail.sendModMail(message, guild, this.#bot, getDB(guild.id))
@@ -325,39 +321,32 @@ class MessageManager {
      * @returns {Discord.Guild} guild
      */
     async getGuild(message) {
-        return new Promise(async (resolve, reject) => {
-            const guilds = []
-            const guildNames = []
-            this.#bot.guilds.cache.each(g => {
-                let settings = this.#bot.settings[g.id]
-                if (this.#bot.emojiServers.includes(g.id)) return
-                if (this.#bot.devServers.includes(g.id)) return
-                if (!g.members.cache.get(message.author.id)) return
-                if (!settings.backend.modmail) return
-                guilds.push(g)
-                guildNames.push(g.name)
-            })
-            if (guilds.length == 0) reject('We dont share any servers')
-            else if (guilds.length == 1) resolve(guilds[0])
-            else {
-                const guildSelectionEmbed = new Discord.EmbedBuilder()
-                    .setTitle('Please select a server')
-                    .setColor('#fefefe')
-                    .setDescription('Press Cancel if you don\'t wanna proceed')
-                const guildSelectionMessage = await message.channel.send({ embeds: [guildSelectionEmbed] })
-                const choice = await guildSelectionMessage.confirmList(guildNames, message.author.id);
-                if (!choice || choice == 'Cancelled') return guildSelectionMessage.delete();
-                guildSelectionMessage.delete();
-
-                function getGuildByName(guildName) {
-                    for (const i in guilds) {
-                        if (guilds[i].name == choice) return guilds[i]
-                    }
-                }
-
-                resolve(getGuildByName(choice));
-            }
+        const guilds = []
+        const guildNames = []
+        this.#bot.guilds.cache.each(g => {
+            const settings = this.#bot.settings[g.id]
+            if (this.#bot.emojiServers.includes(g.id)) return
+            if (this.#bot.devServers.includes(g.id)) return
+            if (!g.members.cache.get(message.author.id)) return
+            if (!settings.backend.modmail) return
+            guilds.push(g)
+            guildNames.push(g.name)
         })
+        if (guilds.length == 0) return false // We don't share servers
+        if (guilds.length == 1) return guilds[0]
+
+        const guildSelectionEmbed = new Discord.EmbedBuilder()
+            .setTitle('Please select a server')
+            .setColor('#fefefe')
+            .setDescription('Press Cancel if you don\'t wanna proceed')
+        const guildSelectionMessage = await message.channel.send({ embeds: [guildSelectionEmbed] })
+        const choice = await guildSelectionMessage.confirmList(guildNames, message.author.id);
+        guildSelectionMessage.delete();
+        if (!choice || choice == 'Cancelled') return false
+
+        for (const i in guilds) {
+            if (guilds[i].name == choice) return guilds[i]
+        }
     }
 
     /**

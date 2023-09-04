@@ -29,8 +29,8 @@ module.exports = {
         await client.connect();
     },
     async createReactionRow(message, commandName, callback, buttons, allowedUser, state) {
-        let opts = {valid_ids: JSON.stringify(buttons.components.map((c) => c.data.custom_id)), command: commandName, callback: callback, state: JSON.stringify(state)}
-        if (message instanceof Discord.InteractionResponse) opts = {token: message.interaction.token, whid: message.interaction.webhook.id, ...opts}
+        let opts = { valid_ids: JSON.stringify(buttons.components.map((c) => c.data.custom_id)), command: commandName, callback, state: JSON.stringify(state) }
+        if (message instanceof Discord.InteractionResponse) opts = { token: message.interaction.token, whid: message.interaction.webhook.id, ...opts }
         if (allowedUser) opts.allowedUser = allowedUser.id
         const key = 'messagebuttons:' + (await message.fetch()).id
         await client.multi().HSET(key, opts).EXPIRE(key, 86400 /* 1 day */).exec()

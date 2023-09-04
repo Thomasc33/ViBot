@@ -1,7 +1,6 @@
 const Discord = require('discord.js')
 const botSettings = require('../settings.json')
 const pointLogger = require('../lib/pointLogger')
-const adminUsers = ['277636691227836419', '258286481167220738', '190572077219184650', '120540036855889921']
 
 module.exports = {
     name: 'points',
@@ -16,8 +15,8 @@ module.exports = {
     getNotes(guild, member, bot) {
         let settings = member.client.settings[guild.id]
         if (!settings) return null
-        if (member.roles.highest.position >= member.guild.roles.cache.get(settings.roles.headrl).position || adminUsers.includes(member.id)) return 'EO+ <user> | HRL+ <add/remove> <user>'
-        if (member.roles.highest.position >= member.guild.roles.cache.get(settings.roles.eventrl).position || adminUsers.includes(member.id)) return '<user> to see someones points'
+        if (member.roles.highest.position >= member.guild.roles.cache.get(settings.roles.headrl).position || bot.adminUsers.includes(member.id)) return 'EO+ <user> | HRL+ <add/remove> <user>'
+        if (member.roles.highest.position >= member.guild.roles.cache.get(settings.roles.eventrl).position || bot.adminUsers.includes(member.id)) return '<user> to see someones points'
         else return null
     },
     dms: true,

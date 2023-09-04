@@ -206,7 +206,7 @@
             "id": "raiding",
             "name": "Raid Leader Quota",
             "roles": ["headrl", "rl", "almostrl"],
-            "quota": [0, 3, 3],
+            "quota": [2.5, 2.5, 2.5],
             "rollmax": [2, 2, 2],
             "noexcuses": true,
             "reset": "weekly",
@@ -218,7 +218,7 @@
                 { "column": "currentweekfailed", "name": "Failed Runs", "value": 0.5, "isRun": true },
                 { "column": "currentweekVeteranShattersLead", "name": "Veteran Runs", "value": 1, "isRun": true },
                 { "column": "currentweekMoonlightLead", "name": "Moonlight Runs", "value": 1, "isRun": true },
-                { "column": "currentweekAssists", "name": "Assists", "value": 0.5 },
+                { "column": "currentweekassists", "name": "Assists", "value": 0.5 },
                 { "column": "rollingQuota", "name": "Rolled Quota", "value": 1, "rolling": true }
             ]
         }, {

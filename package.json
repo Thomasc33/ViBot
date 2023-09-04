@@ -41,5 +41,9 @@
   "bugs": {
     "url": "https://github.com/Thomasc33/ViBot/issues"
   },
-  "homepage": "https://github.com/Thomasc33/ViBot#readme"
+  "homepage": "https://github.com/Thomasc33/ViBot#readme",
+  "devDependencies": {
+    "eslint": "^8.47.0",
+    "xo": "^0.56.0"
+  }
 }

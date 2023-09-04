@@ -123,15 +123,6 @@ module.exports = {
             parseStatusEmbed.data.fields[1].value = `Crasher Parse Completed. See Below. Beginning Character Parse`
             await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
 
-            if (raid) {
-                let id = raid.reactables.Key.members[0]
-                if (id) {
-                    let member = message.guild.members.cache.get(id)
-                    if (member) {
-                        message.channel.send(`/tell ${member.nickname} Can you kick the following people? **Don't copy paste names from kicklist. It may DC you**`)
-                    }
-                }
-            }
             //post in crasher-list
             let key = null
             if (raid.reactables.Key && raid.reactables.Key.members[0]) key = raid.reactables.Key.members[0]
