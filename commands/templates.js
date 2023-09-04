@@ -12,7 +12,7 @@ module.exports = {
         const templateEmbed = createEmbed(message, `The dungeons displayed are specific to this channel, ${message.channel} and your staff roles, ${message.member.roles.highest}.`, null)
         templateEmbed.setColor('#ff0000')
         templateEmbed.setTitle('Available Templates')
-        const parentTemplates = Object.keys(templates[message.guild.id].parents).filter(template => message.channel.id == templates[message.guild.id].parents[template].commandsChannel)
+        const parentTemplates = Object.keys(templates[message.guild.id].parents).filter(template => message.channel.id == botSettings.raiding[templates[message.guild.id].parents[template].commandsChannel])
         const parentTemplateValue = {}
         for (let template of templates[message.guild.id].children) {
             if (!template.enabled) continue
