@@ -8,8 +8,8 @@ require('./lib/extensions.js')
 // ------------------
 
 try {
-    let token = require('./data/botKey.json').key
-    let settings = require('./settings.json')
+    const token = require('./data/botKey.json').key
+    const settings = require('./settings.json')
     settings.key = token
     require('fs').writeFileSync('./settings.json', JSON.stringify(settings, null, 4))
     require('fs').unlinkSync('./data/botKey.json')
