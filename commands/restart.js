@@ -1,6 +1,6 @@
 const fs = require('fs')
 const botStatus = require('./botstatus')
-const afkCheck = require('./afkCheck.js')
+const { EmbedBuilder } = require('discord.js')
 
 module.exports = {
     name: 'restart',
@@ -9,39 +9,43 @@ module.exports = {
     restarting: false,
     allowedInRestart: true,
 
-    async execute(message, args, bot) {
+    async execute({ channel }, args, bot) {
         // Log channel the message was sent to
-        const channel = message.channel;
         const d = {
             guild: channel.guild.id,
             channel: channel.id
         }
         // Save channel object to file
-        fs.writeFileSync('./data/restart_channel.json', JSON.stringify(d, null, 2));
+        fs.writeFileSync('./data/restart_channel.json', JSON.stringify(d, null, 2))
 
+        module.exports.restarting = true
 
-        if (args.length != 0 && args[0].toLowerCase() == 'force') process.exit()
-        
-        let Promises = []
+        /** @type {afkCheck.afkCheck[]} */
+        const afks = Object.values(bot.afkModules).filter(afk => afk.active)
+        if (args[0]?.toLowerCase() == 'force' || !afks.length) process.exit()
 
-        //afk checks
-        
-        const raidIDs = afkCheck.returnActiveRaidIDs(bot)
-        for (let i of raidIDs) {
-            Promises.push(new Promise((res, rej) => {
-                setInterval(checkActive, 5000)
-                function checkActive() {
-                    if (!bot.afkChecks[i].active) res()
-                }
-            }))
-        }
+        const fields = afks.reduce((fields, afk) => {
+            const field = fields.find(field => field.name === afk.guild.name)
+            if (field) field.value += `\n${afk.raidStatusMessage.url}`
+            else fields.push({ name: afk.guild.name, value: afk.raidStatusMessage.url })
+            return fields
+        }, [])
 
-        if (Promises.length == 0) process.exit()
-
-        module.exports.restarting = true;
-        await message.channel.send('Restart Queued')
+        await channel.send({ embeds: [
+            new EmbedBuilder()
+                .setTitle('Restarting')
+                .setDescription(`Restart is waiting for ${afks.length} Afks:`)
+                .setFields(fields)
+        ] })
         await botStatus.updateStatus(bot, 'Restart Pending', '#ff0000')
-        
-        await Promise.all(Promises).then(() => { process.exit() })
+
+        new Promise((resolve) => {
+            setInterval(() => {
+                if (!Object.values(bot.afkModules).some(afk => afk.active)) resolve()
+            }, 5000)
+        }).then(async () => {
+            await channel.send('Bot restarting now, please wait...').catch(() => {})
+            process.exit()
+        })
     }
 }
