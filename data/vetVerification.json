@@ -10,21 +10,21 @@
         "exaltStats": ["life"]
     },
     "343704644712923138": {
-        "realmeyestring": ["Voids completed"],
-        "dbnames": ["voidRuns"],
+        "realmeyestring": ["Voids completed", "Shatters completed"],
+        "dbnames": ["voidRuns", "shattersRun"],
         "dbisvet": "isVet",
-        "lootInfo": "halls",
-        "boss": "Void",
+        "lootInfo": "halls/shatters",
+        "boss": "Void/Shatters",
         "webAppLink": false,
         "webdata": false,
         "exaltStats": ["mana", "defense", "speed"]
     },
     "701483950559985705": {
-        "realmeyestring": ["Voids completed"],
-        "dbnames": ["voidRuns"],
+        "realmeyestring": ["Voids completed", "Shatters completed"],
+        "dbnames": ["voidRuns", "shattersRun"],
         "dbisvet": "isVet",
-        "lootInfo": "halls",
-        "boss": "Void",
+        "lootInfo": "halls/shatters",
+        "boss": "Void/Shatters",
         "webAppLink": false,
         "webdata": false,
         "exaltStats": ["mana", "defense", "speed"]
