@@ -35,13 +35,11 @@ class Check {
 
         this.settings = this.bot.settings[this.guild.id]
 
-        this.verifiedRoles = this.getCachedRolesFromArray(this.settings.checkRoles.rolesVerified)
-        this.unverifiedRoles = this.getCachedRolesFromArray(this.settings.checkRoles.rolesUnverified)
-
         this.db = db
 
         this.embedColor = '#7fb0ff'
         this.defaultArrayJoiner = ' '
+        this.hasListenerEnded = false
 
         this.problems = []
         this.autoFixers = []
@@ -70,36 +68,27 @@ class Check {
         await this.panelUnverifiedWithNickname()
         await this.panelRemoveRolesFromRoleUsers()
         await this.panelAddRolesFromRoleUsers()
-        await this.panelAddAffiliate()
-        await this.panelRemoveAffiliate()
         await this.panelCheckOpenModmails()
         await this.panelCheckOpenVerifications()
         await this.panelCheckOpenVeteranVerifications()
         await this.panelFalseSuspensions()
     }
-    // Panels revolving nickname shit
+    // Panels revolving nickname stuff
     async panelDuplicateNickname() {
         const panelName = 'duplicateNicknames'
         if (!this.settings.checkPanels[panelName]) { return }
         const nicknames = {}
         await Promise.allSettled(this.guild.members.cache.map(async member => {
-            if (await this.isPanelRestricted(member, panelName)) { return }
-            if (!member.roles.cache.hasAny(...this.verifiedRoles.map(role => role.id))) { return }
-            const memberNicknames = member.nickname.toLowerCase().replace(/[^a-z|]/gi, '').split('|')
-            for (const nickname of memberNicknames) {
-                if (!nicknames.hasOwnProperty(nickname)) {
-                    nicknames[nickname] = []
-                }
-                nicknames[nickname].push(member.id)
-            }
+            if (await this.isPanelRestricted(member, panelName) || !member.roles.cache.hasAny(...this.getCachedRolesFromArray(this.settings.checkRoles.rolesVerified).map(role => role.id))) { return }
+            const memberNicknames = member.nickname?.toLowerCase().replace(/[^a-z|]/gi, '').split('|') || []
+            memberNicknames.forEach(nickname => (nicknames[nickname] = nicknames[nickname] || []).push(member.id))
         }))
-        const duplicateNicknames = Object.keys(nicknames).map(nickname => nickname).filter(nickname => nicknames[nickname].length > 1)
-        duplicateNicknames.map(nickname => {
+        const duplicateNicknames = Object.keys(nicknames).filter(nickname => nicknames[nickname].length > 1)
+        duplicateNicknames.forEach(nickname => {
+            const memberIDs = nicknames[nickname].map(memberID =>`<@!${memberID}>`).join(', ')
             const problemCategory = 'Duplicate Nicknames'
             const problem = {
-                text: `${nicknames[nickname].map(memberID =>
-                    `<@!${memberID}>`
-                ).join(', ')} All share \`${nickname}\``
+                text: `${memberIDs} All share \`${nickname}\``
             }
             this.addProblemToCategory(problemCategory, problem, ' ', this.settings.checkStrings.duplicateNicknames)
         })
@@ -110,7 +99,7 @@ class Check {
         this.guild.members.cache.forEach(async member => {
             if (await this.isPanelRestricted(member, panelName)) { return }
 
-            if (!member.roles.cache.hasAny(...this.verifiedRoles.map(role => role.id))) { return }
+            if (!member.roles.cache.hasAny(...this.getCachedRolesFromArray(this.settings.checkRoles.rolesVerified).map(role => role.id))) { return }
             if (member.nickname !== null && member.nickname !== '') { return }
             const problemCategory = 'Verified members without nickname'
             const problem = {
@@ -125,7 +114,7 @@ class Check {
         this.guild.members.cache.forEach(async member => {
             if (await this.isPanelRestricted(member, panelName)) { return }
 
-            if (!member.roles.cache.hasAny(...this.unverifiedRoles.map(role => role.id))) { return }
+            if (!member.roles.cache.hasAny(...this.getCachedRolesFromArray(this.settings.checkRoles.rolesUnverified).map(role => role.id))) { return }
             if (member.nickname !== null && member.nickname !== '') {
                 const problemCategory = 'Unverified members with nickname'
                 const problem = {
@@ -205,14 +194,6 @@ class Check {
                 }
             })
         }
-    }
-    // This panel is for adding AS or VAS to a person who is eligable
-    async panelAddAffiliate() {
-        // Currently empty. Will be released in later iterations
-    }
-    // This panel is for removing AS or VAS to a person who is not eligable
-    async panelRemoveAffiliate() {
-        // Currently empty. Will be released in later iterations
     }
 
     // -----        Panels involving Verifications and Modmails     -----
@@ -354,11 +335,12 @@ class Check {
     async interactionHandler() {
         await this.updateComponents()
         if (this.actionRowBuilder.components.length == 0) { return }
-        this.checkInteractionCollector = new Discord.InteractionCollector(this.bot, { message: this.checkMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button, time: 60000, idle: 30000 })
+        this.checkInteractionCollector = new Discord.InteractionCollector(this.bot, { message: this.checkMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
         this.checkInteractionCollector.on('collect', async (interaction) => await this.processInteractions(interaction))
-        setTimeout(this.interactionHandlerEnd.bind(this), Math.floor(10 * 60 * 1000))
+        setTimeout(() => this.interactionHandlerEnd(), Math.floor(10 * 60 * 1000));
     }
     async updateComponents() {
+        if (this.hasListenerEnded) { return }
         this.actionRowBuilder = new Discord.ActionRowBuilder()
         if (this.settings.checkPanels.buttonGuide && this.doesAnyProblemHaveGuide()) {
             this.actionRowBuilder.addComponents([
@@ -380,13 +362,12 @@ class Check {
         await this.checkMessage.edit({ components: [this.actionRowBuilder] })
     }
     async processInteractions(interaction) {
-        if (!interaction) { return }
-        if (!interaction.isButton()) { return }
+        if (!interaction || !interaction.isButton() || this.hasListenerEnded) { return }
         if (interaction.member.id != this.member.id) { return interaction.deferUpdate() }
         switch (interaction.customId) {
             case 'checkGuide': await this.processInteractionGuide(interaction); break;
             case 'checkAutoFixer': await this.processInteractionAutofix(interaction); break;
-            default: await this.processInteractionUnknown(interaction); break;
+            default: await this.processInteractionUnknown(interaction); break
         }
     }
     async checkGuideEmbed() {
@@ -420,6 +401,13 @@ class Check {
             .setColor(this.embedColor)
             .setFooter({ text: `${this.guild.name} • Check Auto Fixer`, iconURL: this.guild.iconURL() })
             .setTimestamp()
+        const channelModLogs = this.guild.channels.cache.get(this.settings.channels.modlogs)
+        if (!channelModLogs) {
+            let modRole = this.roleCache.get(this.settings.roles.moderator)
+            interactionEmbed.setDescription(`Error the mod logs channel is not defined${modRole ? `\nPlease contact ${modRole} to fix this` : ''}`)
+            await interaction.reply({ embeds: [interactionEmbed], ephemeral: true })
+            return
+        }
         await interaction.reply({ embeds: [interactionEmbed], ephemeral: true, fetchReply: true })
         if (this.autoFixers.length >= 5) {
             interactionEmbed.setDescription(`I encountered \`${autoFixProblems}\` problems to automatically fix\nThe auto fixer goes through the problems step by step\n\n**__Are you sure you want to go through with this?__**`)
@@ -429,9 +417,11 @@ class Check {
         }
 
         delete interactionEmbed.data.title
-        const channelModLogs = this.guild.channels.cache.get(this.settings.channels.modlogs)
 
         for (const index in this.autoFixers) {
+            console.log(true)
+            setTimeout(() => {}, 250)
+            console.log(true)
             const autoFixProblem = this.autoFixers[index]
             const position = parseInt(autoFixProblems) - parseInt(index)
 
@@ -455,7 +445,6 @@ class Check {
             await interaction.editReply({ embeds: [interactionEmbed]})
             const didConfirm = await interaction.confirmButton(interaction.member.id)
             if (!didConfirm) { continue }
-            if (!channelModLogs) { continue }
             if (roleToAdd && member.roles.cache.has(roleToAdd.id)) { continue }
             if (roleToRemove && !member.roles.cache.has(roleToRemove.id)) { continue }
             interactionEmbed.setDescription(`${member} \`${member.displayName}\``)
@@ -488,6 +477,7 @@ class Check {
         await interaction.reply({ embeds: [ interactionEmbed ]})
     }
     async interactionHandlerEnd() {
+        this.hasListenerEnded = true
         await this.checkMessage.edit({ components: [] })
         this.checkInteractionCollector.stop()
     }

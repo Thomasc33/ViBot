@@ -394,6 +394,7 @@ module.exports = {
                 else bot.settings[guild.id].voice[v] = null
             }
         }
+        if (!bot.settings[guild.id].hasOwnProperty('raiding')) { bot.settings[guild.id].raiding = {} }
         for (let i in raiding) {
             if (!bot.settings[guild.id].raiding[raiding[i]]) bot.settings[guild.id].raiding[raiding[i]] = null
         }
