@@ -1,337 +1,575 @@
+/* eslint-disable no-await-in-loop */
+/* eslint-disable guard-for-in */
 const Discord = require('discord.js')
-const FalseSuspends = require('./falseSuspensions')
-const ignores = require('../data/checkIgnores.json');
+
 module.exports = {
     name: 'check',
     role: 'security',
-    description: 'Performs several checks on stuff in the server',
+    description: 'Performs several checks on stuff in the server\nThe command is interactive with two buttons.',
     async execute(message, args, bot, db) {
-        const channel = message.channel;
-        const guild = channel.guild;
-        const settings = bot.settings[guild.id];
-        if (settings.backend.upgradedCheck) {
-            const temporaryKeyPoppers = [];
-            const duplicateNicknames = {};
-            const verifiedWithoutNickname = [];
-            const unverifiedWithNickname = [];
-            const eventBoiAndVerified = [];
-            const falseSuspensions = [];
-            const unansweredModmails = [];
-            const unansweredVerifications = [];
-            const unansweredVeteranVerifications = [];
-            const userWithNoRole = [];
-            const userWithUnverifiedAndRaider = [];
-
-            const suspends = await getSuspends(guild, db);
-
-            const embed = new Discord.EmbedBuilder()
-                .setAuthor({ name: `Check Report` });
-
-            let report = await channel.send({ embeds: [embed] })
-
-            function debounceEdit() {
-                if (!debounceEdit.timeout) {
-                    debounceEdit.timeout = setTimeout(() => {
-                        debounceEdit.timeout = null;
-                        report.edit({ embeds: [embed] });
-                    }, 750);
-                }
-            }
-
-            async function updateEmbed(title, array, join) {
-
-                embed.addFields({ name: title, value: 'None!' });
-                if (array.length == 0) {
-                    if (JSON.stringify(embed.toJSON()).length + title.length + 'None!'.length >= 6000) {
-                        embed.data.fields = [{
-                            name: title,
-                            value: 'None!'
-                        }];
-                        report = await channel.send({ embeds: [embed] });
-                    } else {
-                        debounceEdit();
-                    }
-                    return;
-                }
-                embed.data.fields[embed.data.fields.length - 1].value = '';
-                for (const item of array) {
-                    if (JSON.stringify(embed.toJSON()).length + item.length + join.length >= 6000) {
-                        debounceEdit();
-                        embed.data.fields = [{
-                            name: title,
-                            value: `${item}`
-                        }];
-                        report = await channel.send({ embeds: [embed] })
-                    } else if (embed.data.fields[embed.data.fields.length - 1].value.length + item.length + join.length >= 1024) {
-                        embed.data.fields[embed.data.fields.length - 1].value = embed.data.fields[embed.data.fields.length - 1].value.substring(join.length);
-                        embed.addFields({ name: title + " Continued", value: join + `${item}` });
-                    } else {
-                        embed.data.fields[embed.data.fields.length - 1].value += join + `${item}`;
-                    }
-                }
-                embed.data.fields[embed.data.fields.length - 1].value = embed.data.fields[embed.data.fields.length - 1].value.substring(join.length);
-                debounceEdit();
-            }
-
-            //duplicate nickname, temporary key popper, event raider + verified raider, unverified with nickname, false suspensions, some unverified role stuff
-            await new Promise(res => {
-                guild.members.cache.forEach(member => {
-                    if (ignores[guild.id] && ignores[guild.id].includes(member.id))
-                        return;
-                    //duplicate nickname
-                    if (member.nickname !== null && member.nickname !== '') {
-                        const nicks = member.nickname.toLowerCase().replace(/[^a-z|]/gi, '').split('|');
-                        for (const nick of nicks)
-                            duplicateNicknames[nick] = [...(duplicateNicknames[nick] || []), `<@!${member.id}>`];
-
-                    }
-                    if (settings) {
-                        //temporary key popper
-                        if (settings.roles.tempkey && member.roles.cache.has(settings.roles.tempkey))
-                            temporaryKeyPoppers.push(`<@!${member.id}>`);
-
-                        const isVerified = settings.roles.raider && member.roles.cache.has(settings.roles.raider);
-                        const isEBoy = settings.roles.eventraider && member.roles.cache.has(settings.roles.eventraider) && settings.backend.giveEventRoleOnDenial2;
-
-                        //event raider + verified raider
-                        if (settings.roles.eventraider && settings.roles.raider && isVerified && isEBoy)
-                            eventBoiAndVerified.push(`<@!${member.id}>`);
-
-                        //verified without nickname
-                        if ((isVerified || isEBoy) && (member.nickname === null || member.nickname === ''))
-                            verifiedWithoutNickname.push(`<@!${member.id}>`);
-
-                        //unverified with nickname
-                        if ((member.roles.cache.size < 2 || (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified))) && member.nickname !== null && member.nickname !== '')
-                            unverifiedWithNickname.push(`<@!${member.id}>`)
-
-                        //false suspensions
-                        if (settings.roles.tempsuspended && member.roles.cache.has(settings.roles.tempsuspended) && !suspends.includes(member.id))
-                            falseSuspensions.push(`<@!${member.id}>`)
-                        
-                        // User with no roles
-                        if (settings.backend.useUnverifiedRole && member.roles.cache.size == 1) {
-                            userWithNoRole.push(`<@!${member.id}>`)
-                        }
-
-                        // User with both Unverified AND raider
-                        if (settings.backend.useUnverifiedRole && (member.roles.cache.has(settings.roles.raider) || member.roles.highest.position > message.guild.roles.cache.get(settings.roles.raider).position) && member.roles.cache.has(settings.roles.unverified)) {
-                            userWithUnverifiedAndRaider.push(`<@!${member.id}>`)
-                        }
-                    }
-                });
-                res();
-            })
-            const dupeNameStrings = Object.entries(duplicateNicknames).map(dn => dn[1].length > 1 ? `\`${dn[0]}\`: ${dn[1].join('\\↔️')}` : null).filter(d => !!d);
-
-            updateEmbed(`Temporary Key Poppers`, temporaryKeyPoppers, ', ');
-            updateEmbed(`Both Verified Raider and Event Boi`, eventBoiAndVerified, ', ');
-            updateEmbed(`Duplicate Names`, dupeNameStrings, '\n');
-            updateEmbed(`No Nickname`, verifiedWithoutNickname, ', ');
-            updateEmbed(`Unverified With Nickname`, unverifiedWithNickname, ', ');
-            if (settings.backend.useUnverifiedRole) {
-                updateEmbed(`Users with no Roles`, userWithNoRole, ', ');
-                updateEmbed(`Users with BOTH Raider and Unverified`, userWithUnverifiedAndRaider, ', ');
-            }
-
-            //unanswered modmails
-            await new Promise(async res => {
-                if (!settings.channels.modmail)
-                    unansweredModmails.push(`Modmail is not configured for this server.`);
-                else {
-                    const modmail = guild.channels.cache.get(settings.channels.modmail);
-                    if (!modmail)
-                        unansweredModmails.push(`Could not find the modmail channel <#${settings.channels.modmail}>`);
-                    else {
-                        const messages = await modmail.messages.fetch({ limit: 100 })
-                        messages.each(async m => {
-                            if (m.components.length > 0 && m.author.bot)
-                                unansweredModmails.push(`[${m.nickname || 'Module'}](${m.url})`)
-                        })
-                    }
-                }
-                res();
-            });
-
-            updateEmbed(`Pending ModMail`, unansweredModmails, ', ');
-            //pending verifications
-            await new Promise(async res => {
-                if (!settings.channels.manualverification)
-                    unansweredVerifications.push(`Verifications are not configured for this server.`);
-                else {
-                    const veri = guild.channels.cache.get(settings.channels.manualverification);
-                    if (!veri)
-                        unansweredVerifications.push(`Could not find the verification channel <#${settings.channels.manualverification}>`);
-                    else {
-                        const messages = await veri.messages.fetch({ limit: 100 });
-                        messages.each(m => {
-                            if (m.reactions.cache.has('🔑'))
-                                unansweredVerifications.push(`[${m.embeds[0].author.name.split(' ').pop()}](${m.url})`)
-                        })
-                    }
-                }
-                res();
-            });
-
-            updateEmbed(`Pending Verifications`, unansweredVerifications, ', ');
-
-            //pending veteran verifications
-            await new Promise(async res => {
-                if (!settings.channels.manualverification)
-                    unansweredVeteranVerifications.push(`Verifications are not configured for this server.`);
-                else {
-                    const veri = guild.channels.cache.get(settings.channels.manualvetverification);
-                    if (!veri)
-                        unansweredVeteranVerifications.push(`Could not find the verification channel <#${settings.channels.manualvetverification}>`);
-                    else {
-                        const messages = await veri.messages.fetch({ limit: 100 });
-                        messages.each(m => {
-                            if (m.reactions.cache.has('🔑'))
-                                unansweredVeteranVerifications.push(`[${m.embeds[0].author.name.split(' ').pop()}](${m.url})`)
-                        })
-                    }
-                }
-                res();
-            });
-
-            updateEmbed(`Pending Veteran Verifications`, unansweredVeteranVerifications, ', ');
-            updateEmbed(`False Suspensions`, falseSuspensions, ', ');
-        } else {
-
-            let settings = bot.settings[message.guild.id]
-            let checkMessage = await message.channel.send('Checking information on the server. This may take a little bit.')
-            let checkEmbed = new Discord.EmbedBuilder()
-                .setTitle('Check Report')
-            //temporary keypopper
-            checkEmbed.addFields({ name: 'Temporary Key Poppers', value: 'None!' })
-            message.guild.members.cache.filter(u => u.roles.cache.has(settings.roles.tempkey)).each(m => {
-                if (checkEmbed.data.fields[0].value == 'None!') checkEmbed.data.fields[0].value = `<@!${m.id}>`
-                else checkEmbed.data.fields[0].value = checkEmbed.data.fields[0].value.concat(`, <@!${m.id}>`)
-            })
-            //people with same name
-            let dupesArray = []
-
-            let allMembers = message.guild.members.cache.filter(u => u.nickname && (u.roles.cache.has(settings.roles.raider) || (u.roles.cache.has(settings.roles.eventraider) && settings.backend.giveEventRoleOnDenial2))).map(m => m)
-            let allNames = message.guild.members.cache.filter(u => u.nickname && (u.roles.cache.has(settings.roles.raider) || (u.roles.cache.has(settings.roles.eventraider) && settings.backend.giveEventRoleOnDenial2))).map(m => m.nickname.toLowerCase().replace(/[^a-z|]/gi, "").split("|"))
-            allNames = allNames.flat()
-            let uniqueNames = [...new Set(allNames)]
-            for (var i in uniqueNames) {
-                allNames.splice(allNames.indexOf(uniqueNames[i]), 1)
-            }
-            allNames = [...new Set(allNames)]
-            for (var i in allNames) {
-                let dupes = allMembers.filter(m => m.nickname.toLowerCase().replace(/[^a-z|]/gi, "").split("|").includes(allNames[i]))
-                dupes = dupes.map(m => dupesArray.push(m.id))
-            }
-            dupesArray = dupesArray.filter((item, index) => dupesArray.indexOf(item) === index)
-            checkEmbed.addFields({ name: 'Duplicate Names', value: 'None!' })
-            for (let i in dupesArray) {
-                if (checkEmbed.data.fields[1].value == 'None!') checkEmbed.data.fields[1].value = `<@!${dupesArray[i]}>`
-                else checkEmbed.data.fields[1].value += `, <@!${dupesArray[i]}>`
-            }
-            //pending verifications
-            let veriPending = message.guild.channels.cache.get(settings.channels.manualverification)
-            checkEmbed.addFields({ name: 'Pending Verifications', value: 'None!' })
-            if (!veriPending) checkEmbed.data.fields[2].value = 'Error finding channel'
-            else {
-                let messages = await veriPending.messages.fetch({ limit: 100 })
-                messages.each(m => {
-                    if (m.reactions.cache.has('🔑')) {
-                        if (checkEmbed.data.fields[2].value == 'None!') checkEmbed.data.fields[2].value = `[Module](${m.url})`
-                        else checkEmbed.data.fields[2].value += `, [Module](${m.url})`
-                    }
-                })
-            }
-            //pending vet verification
-            let veriPendingVet = message.guild.channels.cache.get(settings.channels.manualvetverification)
-            checkEmbed.addFields({ name: 'Pending Veteran Verification', value: 'None!' })
-            if (!veriPendingVet) checkEmbed.data.fields[3].value = 'Error finding channel'
-            else {
-                let messages = await veriPendingVet.messages.fetch({ limit: 100 })
-                messages.each(m => {
-                    if (m.reactions.cache.has('🔑')) {
-                        if (checkEmbed.data.fields[3].value == 'None!') checkEmbed.data.fields[3].value = `[Module](${m.url})`
-                        else checkEmbed.data.fields[3].value += `, [Module](${m.url})`
-                    }
-                })
-            }
-            //pending mod mail
-            let modMailChannel = message.guild.channels.cache.get(settings.channels.modmail)
-            checkEmbed.addFields({ name: 'Pending ModMail', value: 'None!' })
-            if (!modMailChannel) checkEmbed.data.fields[4].value = 'Error finding channel'
-            else {
-                let messages = await modMailChannel.messages.fetch({ limit: 100 })
-                messages.each(m => {
-                    if (m.components.length > 0 && m.author.id == bot.user.id) {
-                        if (checkEmbed.data.fields[4].value == 'None!') checkEmbed.data.fields[4].value = `[Module](${m.url})`
-                        else checkEmbed.data.fields[4].value += `, [Module](${m.url})`
-                    }
-                })
-            }
-            //no nicknames
-            let nn = []
-            let noNickname = message.guild.members.cache.filter(m => m.nickname == null);
-            noNickname.each(user => {
-                if (user.roles.cache.has(settings.roles.raider) || (user.roles.cache.has(settings.roles.eventraider) && settings.backend.giveEventRoleOnDenial2)) {
-                    nn.push(user)
-                }
-            })
-            checkEmbed.addFields({ name: 'No Nicknames', value: 'None!' })
-            for (let i in nn) {
-                if (checkEmbed.data.fields[5].value == 'None!') checkEmbed.data.fields[5].value = `${nn[i]}`
-                else checkEmbed.data.fields[5].value += `, ${nn[i]}`
-            }
-            for (let i in checkEmbed.data.fields) {
-                if (checkEmbed.data.fields[i].value.length >= 1024) {
-                    let replacementEmbed = new Discord.EmbedBuilder()
-                        .setTitle(checkEmbed.data.fields[i].name)
-                        .setDescription('None!')
-                    checkEmbed.data.fields[i].value.split(', ').forEach(s => {
-                        fitStringIntoEmbed(replacementEmbed, s, message.channel)
-                    })
-                    message.channel.send({ embeds: [replacementEmbed] })
-                    checkEmbed.data.fields[i].value = 'See Below'
-                }
-            }
-            checkMessage.edit({ content: null, embeds: [checkEmbed] })
-            FalseSuspends.execute(message, args, bot, db)
-        }
+        const checkModule = new Check(message, args, bot, db)
+        await checkModule.sendProcessMessage()
+        await message.guild.members.fetch()
+        await checkModule.startProcess()
     }
 }
 
-function fitStringIntoEmbed(embed, string, channel) {
-    if (embed.data.description == 'None!') {
-        embed.setDescription(string)
-    } else if (embed.data.description.length + `, ${string}`.length >= 2048) {
-        if (!embed.data.fields) {
-            embed.addFields({ name: '-', value: string })
-        } else if (embed.data.fields[embed.data.fields.length - 1].value.length + `, ${string}`.length >= 1024) {
-            if (JSON.stringify(embed.toJSON()).length + `, ${string}`.length >= 6000) {
-                channel.send({ embeds: [embed] })
-                embed.setDescription('None!')
-                embed.data.fields = []
-            } else {
-                embed.addFields({ name: '-', value: string })
-            }
-        } else {
-            if (JSON.stringify(embed.toJSON()).length + `, ${string}`.length >= 6000) {
-                channel.send({ embeds: [embed] })
-                embed.setDescription('None!')
-                embed.data.fields = []
-            } else {
-                embed.data.fields[embed.data.fields.length - 1].value = embed.data.fields[embed.data.fields.length - 1].value.concat(`, ${string}`)
-            }
-        }
-    } else {
-        embed.setDescription(embed.data.description.concat(`, ${string}`))
-    }
-}
+class Check {
+    /**
+     * @param {Discord.Message} message
+     * @param {Array} args
+     * @param {Discord.Client} bot
+     * @param {import('mysql').Connection} db
+     */
 
-async function getSuspends(guild, db) {
-    return new Promise((res, rej) => {
-        db.query(`SELECT * FROM suspensions WHERE suspended = true AND guildid = '${guild.id}'`, (err, rows) => {
-            if (err) return rej(err)
-            res(rows.map(row => row.id));
+    constructor(message, args, bot, db) {
+        this.message = message
+        this.guild = message.guild
+        this.member = message.member
+
+        this.args = args
+
+        this.bot = bot
+        this.roleCache = this.guild.roles.cache
+
+        this.settings = this.bot.settings[this.guild.id]
+
+        this.db = db
+
+        this.embedColor = '#7fb0ff'
+        this.defaultArrayJoiner = ' '
+        this.hasListenerEnded = false
+
+        this.problems = []
+        this.autoFixers = []
+
+        this.processStartedUnixTimestamp = Date.now()
+        this.processStartedDiscordTimestamp = `<t:${Math.floor(this.processStartedUnixTimestamp / 1000)}:R>`
+    }
+
+    async sendProcessMessage() {
+        this.embed = new Discord.EmbedBuilder()
+            .setAuthor({ name: `${this.member.displayName}`, iconURL: this.member.user.avatarURL() })
+            .setFooter({ text: `${this.guild.name}`, iconURL: this.guild.iconURL() })
+            .setColor(this.embedColor)
+            .setDescription(`Hello! Please be patient while I go through this server.\nI started this ${this.processStartedDiscordTimestamp}`)
+        this.checkMessage = await this.message.reply({ embeds: [this.embed] })
+    }
+
+    async startProcess() {
+        await this.getPanels()
+        await this.updateMessage()
+    }
+
+    async getPanels() {
+        await this.panelDuplicateNickname()
+        await this.panelVerifiedWithoutNickname()
+        await this.panelUnverifiedWithNickname()
+        await this.panelRemoveRolesFromRoleUsers()
+        await this.panelAddRolesFromRoleUsers()
+        await this.panelCheckOpenModmails()
+        await this.panelCheckOpenVerifications()
+        await this.panelCheckOpenVeteranVerifications()
+        await this.panelFalseSuspensions()
+    }
+
+    // Panels revolving nickname stuff
+    async panelDuplicateNickname() {
+        const panelName = 'duplicateNicknames'
+        if (!this.settings.checkPanels[panelName]) { return }
+        const nicknames = {}
+        await Promise.allSettled(this.guild.members.cache.map(async member => {
+            if (await this.isPanelRestricted(member, panelName) || !member.roles.cache.hasAny(...this.getCachedRolesFromArray(this.settings.checkRoles.rolesVerified).map(role => role.id))) { return }
+            const memberNicknames = member.nickname?.toLowerCase().replace(/[^a-z|]/gi, '').split('|') || []
+            // eslint-disable-next-line no-return-assign
+            memberNicknames.forEach(nickname => (nicknames[nickname] = nicknames[nickname] || []).push(member.id))
+        }))
+        const duplicateNicknames = Object.keys(nicknames).filter(nickname => nicknames[nickname].length > 1)
+        duplicateNicknames.forEach(nickname => {
+            const memberIDs = nicknames[nickname].map(memberID => `<@!${memberID}>`).join(', ')
+            const problemCategory = 'Duplicate Nicknames'
+            const problem = {
+                text: `${memberIDs} All share \`${nickname}\``
+            }
+            this.addProblemToCategory(problemCategory, problem, ' ', this.settings.checkStrings.duplicateNicknames)
         })
-    })
+    }
+
+    async panelVerifiedWithoutNickname() {
+        const panelName = 'verifiedWithoutNickname'
+        if (!this.settings.checkPanels[panelName]) { return }
+        this.guild.members.cache.forEach(async member => {
+            if (await this.isPanelRestricted(member, panelName)) { return }
+
+            if (!member.roles.cache.hasAny(...this.getCachedRolesFromArray(this.settings.checkRoles.rolesVerified).map(role => role.id))) { return }
+            if (member.nickname !== null && member.nickname !== '') { return }
+            const problemCategory = 'Verified members without nickname'
+            const problem = {
+                text: `<@!${member.id}>`
+            }
+            this.addProblemToCategory(problemCategory, problem, ' ', this.settings.checkStrings.verifiedWithoutNickname)
+        })
+    }
+
+    async panelUnverifiedWithNickname() {
+        const panelName = 'unverifiedWithNickname'
+        if (!this.settings.checkPanels[panelName]) { return }
+        this.guild.members.cache.forEach(async member => {
+            if (await this.isPanelRestricted(member, panelName)) { return }
+
+            if (!member.roles.cache.hasAny(...this.getCachedRolesFromArray(this.settings.checkRoles.rolesUnverified).map(role => role.id))) { return }
+            if (member.nickname !== null && member.nickname !== '') {
+                const problemCategory = 'Unverified members with nickname'
+                const problem = {
+                    text: `<@!${member.id}>`
+                }
+                this.addProblemToCategory(problemCategory, problem, ' ', this.settings.checkStrings.unverifiedWithNickname)
+            }
+        })
+    }
+
+    // -----        Panels involving role shenanigans       -----
+    // This panel will remove X role from person with Y role. Can be used for many roles
+    async panelRemoveRolesFromRoleUsers() {
+        const panelName = 'removeRolesFromUserWithRole'
+        if (!this.settings.checkPanels[panelName]) { return }
+        const rolesToRemoveFrom = this.settings.removeRoleFromUserWithRoles
+        const rolesToRemoveFromFiltered = Object.keys(rolesToRemoveFrom).filter(role => rolesToRemoveFrom[role].length > 0)
+        if (rolesToRemoveFromFiltered.length == 0) { return }
+
+        for (const index in rolesToRemoveFromFiltered) {
+            const roleName = rolesToRemoveFromFiltered[index]
+            const role = this.roleCache.get(this.settings.roles[roleName])
+            this.guild.members.cache.forEach(async member => {
+                if (!member.roles.cache.has(role.id)) { return }
+                if (await this.isPanelRestricted(member, panelName)) { return }
+                for (const i in rolesToRemoveFrom[roleName]) {
+                    const problemRoleID = this.settings.roles[rolesToRemoveFrom[roleName][i]]
+                    if (!member.roles.cache.has(problemRoleID)) { continue }
+                    const problemRole = this.roleCache.get(problemRoleID)
+                    const problemRoleName = problemRole.name
+                    const problem = {
+                        text: member.toString()
+                    }
+                    const variables = {
+                        roleName: role.name,
+                        problemRoleName
+                    }
+                    const replacedString = this.replacePlaceholders(this.settings.checkStrings.removeRolesFromUserWithRole, variables)
+                    this.addProblemToCategory(`Members with ${role.name} should not have ${problemRoleName}`, problem, ', ', replacedString)
+                    const autoFixProblem = {
+                        userID: member.id,
+                        roleToRemove: problemRole.id
+                    }
+                    this.addAutoFixProblem(autoFixProblem)
+                }
+            })
+        }
+    }
+
+    // This panel will add X role to person with Y role. Can be used for many roles
+    async panelAddRolesFromRoleUsers() {
+        const panelName = 'addRolesToUsersWithRoles'
+        if (!this.settings.checkPanels[panelName]) { return }
+        const rolesToAdd = this.settings.addRolesToUsersWithRoles
+        const rolesToAddFiltered = Object.keys(rolesToAdd).filter(role => rolesToAdd[role].length > 0)
+        if (rolesToAddFiltered.length == 0) { return }
+
+        for (const index in rolesToAddFiltered) {
+            const roleName = rolesToAddFiltered[index]
+            const role = this.roleCache.get(this.settings.roles[roleName])
+            this.guild.members.cache.forEach(async member => {
+                if (!member.roles.cache.has(role.id)) { return }
+                if (await this.isPanelRestricted(member, panelName)) { return }
+                for (const i in rolesToAdd[roleName]) {
+                    const problemRoleID = this.settings.roles[rolesToAdd[roleName][i]]
+                    if (member.roles.cache.has(problemRoleID)) { continue }
+                    const problemRole = this.roleCache.get(problemRoleID)
+                    const problemRoleName = problemRole.name
+                    const problem = {
+                        text: member.toString()
+                    }
+                    this.addProblemToCategory(`Members with ${role.name} should have ${problemRoleName}`, problem, ', ', this.settings.checkStrings.addRolesToUsersWithRoles)
+                    const autoFixProblem = {
+                        userID: member.id,
+                        roleToAdd: problemRole.id
+                    }
+                    this.addAutoFixProblem(autoFixProblem)
+                }
+            })
+        }
+    }
+
+    // -----        Panels involving Verifications and Modmails     -----
+    // Modmails
+    async panelCheckOpenModmails() {
+        const panelName = 'openModmails'
+        if (!this.settings.checkPanels[panelName]) { return }
+        const modmailChannel = this.guild.channels.cache.get(this.settings.channels.modmail)
+        if (!modmailChannel) { return }
+        const modmailChannelMessages = await modmailChannel.messages.fetch({ limit: 100 })
+
+        await modmailChannelMessages.each(async modmailMessage => {
+            if (!modmailMessage.author.bot) { return }
+            if (modmailMessage.components.length == 0) { return }
+            const problem = {
+                text: `<t:${Math.floor(modmailMessage.createdTimestamp / 1000)}:R> ${modmailMessage.url}`
+            }
+            this.addProblemToCategory('Unopened Modmails', problem, '\n', this.settings.checkStrings.openModmails)
+        })
+    }
+
+    // Verifications
+    async panelCheckOpenVerifications() {
+        const panelName = 'openVerifications'
+        if (!this.settings.checkPanels[panelName]) { return }
+        const manualVerificationChannel = this.guild.channels.cache.get(this.settings.channels.manualverification)
+        if (!manualVerificationChannel) { return }
+        const manualVerificationChannelMessages = await manualVerificationChannel.messages.fetch({ limit: 100 })
+
+        await manualVerificationChannelMessages.each(async verificationMessage => {
+            if (!verificationMessage.author.bot) { return }
+            if (!verificationMessage.reactions.cache.has('🔑')) { return }
+            const problem = {
+                text: `<t:${Math.floor(verificationMessage.createdTimestamp / 1000)}:R> ${verificationMessage.url}`
+            }
+            this.addProblemToCategory('Unopened Verifications', problem, '\n', this.settings.checkStrings.openVerifications)
+        })
+    }
+
+    // Veteran Verifications
+    async panelCheckOpenVeteranVerifications() {
+        const panelName = 'openVeteranVerifications'
+        if (!this.settings.checkPanels[panelName]) { return }
+        const manualVeteranVerificationChannel = this.guild.channels.cache.get(this.settings.channels.manualvetverification)
+        if (!manualVeteranVerificationChannel) { return }
+        const manualVeteranVerificationChannelMessages = await manualVeteranVerificationChannel.messages.fetch({ limit: 100 })
+
+        await manualVeteranVerificationChannelMessages.each(async veteranVerificationMessage => {
+            if (!veteranVerificationMessage.author.bot) { return }
+            if (!veteranVerificationMessage.reactions.cache.has('🔑')) { return }
+            const problem = {
+                text: `<t:${Math.floor(veteranVerificationMessage.createdTimestamp / 1000)}:R> ${veteranVerificationMessage.url}`
+            }
+            this.addProblemToCategory('Unopened Veteran Verifications', problem, '\n', this.settings.checkStrings.openVeteranVerifications)
+        })
+    }
+
+    async panelFalseSuspensions() {
+        const panelName = 'falseSuspensions'
+        if (!this.settings.checkPanels[panelName]) { return }
+        const allSuspensions = await this.getSuspends()
+
+        const suspensionRoleNames = this.settings.checkRoles.falseSuspenionRoles
+        for (const index in suspensionRoleNames) {
+            const roleName = suspensionRoleNames[index]
+            const roleSuspension = this.roleCache.get(this.settings.roles[roleName])
+            roleSuspension.members.cache.forEach(async member => {
+                if (await this.isPanelRestricted(member, panelName)) { return }
+                if (!allSuspensions.includes(member.id)) { return }
+                const problemCategory = 'False Suspensions'
+                const problem = {
+                    text: `<@!${member.id}>`
+                }
+                this.addProblemToCategory(problemCategory, problem, ' ', this.settings.checkStrings.falseSuspenions)
+            })
+        }
+    }
+
+    async isPanelRestricted(member, panel) {
+        if (this.settings.checkUserExceptions[panel].includes(member.id)) { return true }
+        if (this.settings.checkUserExceptions.allPanelExceptions.includes(member.id)) { return true }
+        if (member.roles.cache.hasAny(...this.settings.checkRoleExceptions[panel].map(role => this.settings.roles[role]))) { return true }
+        if (member.roles.cache.hasAny(...this.settings.checkRoleExceptions.allPanelExceptions.map(role => this.settings.roles[role]))) { return true }
+        return false
+    }
+
+    async transformPanelsIntoFields() {}
+    embedBuilder() {
+        const embed = new Discord.EmbedBuilder()
+        embed.setColor(this.embedColor)
+        return embed
+    }
+
+    async updateMessage() {
+        this.embeds = []
+        let embed = this.embedBuilder()
+        if (this.problems.length == 0) {
+            embed.setDescription('No problems found')
+            this.embeds.push(embed)
+            this.embeds[0].setAuthor({ name: `${this.member.displayName}`, iconURL: this.member.user.avatarURL() })
+            this.embeds[this.embeds.length - 1].setFooter({ text: `${this.guild.name} • Check Report • ${this.problemLength()} problem${this.problemLength().length == 1 ? '' : 's'}`, iconURL: this.guild.iconURL() })
+            await this.checkMessage.edit({ embeds: this.embeds, components: [] })
+        }
+        let prettyStringsArray = []
+        let prettyString = ''
+        for (const problemCategory of this.problems) {
+            // eslint-disable-next-line no-prototype-builtins
+            if (!problemCategory.hasOwnProperty('problems')) { continue }
+            for (const problem of problemCategory.problems) {
+                prettyString = problem.text
+                if ((prettyString.length + prettyStringsArray.join(problemCategory.arrayJoiner ?? this.defaultArrayJoiner).length) >= 1024) {
+                    if (embed.data.fields?.length >= 3) {
+                        this.embeds.push(embed)
+                        embed = this.embedBuilder()
+                    }
+                    embed.addFields({
+                        name: problemCategory.category,
+                        value: prettyStringsArray.join(problemCategory.arrayJoiner ?? this.defaultArrayJoiner),
+                        inline: false
+                    })
+                    prettyStringsArray = []
+                }
+                prettyStringsArray.push(prettyString)
+            }
+            if (prettyStringsArray.length > 0) {
+                if (embed.data.fields?.length >= 3) {
+                    this.embeds.push(embed)
+                    embed = this.embedBuilder()
+                }
+                embed.addFields({
+                    name: problemCategory.category,
+                    value: prettyStringsArray.join(problemCategory.arrayJoiner ?? this.defaultArrayJoiner),
+                    inline: false
+                })
+                prettyStringsArray = []
+            }
+        }
+        this.embeds.push(embed)
+
+        this.embeds[0].setAuthor({ name: `${this.member.displayName}`, iconURL: this.member.user.avatarURL() })
+        this.embeds[this.embeds.length - 1].setFooter({ text: `${this.guild.name} • Check Report • ${this.problemLength()} problem${this.problemLength().length == 1 ? '' : 's'}`, iconURL: this.guild.iconURL() })
+        await this.checkMessage.edit({ embeds: this.embeds, components: [] })
+        if (this.problems.length > 0) { await this.interactionHandler() }
+    }
+
+    // autofixer - 🐕‍🦺 | guide - 🔍
+    async interactionHandler() {
+        await this.updateComponents()
+        if (this.actionRowBuilder.components.length == 0) { return }
+        this.checkInteractionCollector = new Discord.InteractionCollector(this.bot, { message: this.checkMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
+        this.checkInteractionCollector.on('collect', async (interaction) => await this.processInteractions(interaction))
+        setTimeout(() => this.interactionHandlerEnd(), Math.floor(10 * 60 * 1000))
+    }
+
+    async updateComponents() {
+        if (this.hasListenerEnded) { return }
+        this.actionRowBuilder = new Discord.ActionRowBuilder()
+        if (this.settings.checkPanels.buttonGuide && this.doesAnyProblemHaveGuide()) {
+            this.actionRowBuilder.addComponents([
+                new Discord.ButtonBuilder()
+                    .setLabel('🔍 Guide')
+                    .setStyle(1)
+                    .setCustomId('checkGuide')
+            ])
+        }
+        if (this.settings.checkPanels.buttonAutoFix && this.doesAnyProblemHave()) {
+            this.actionRowBuilder.addComponents([
+                new Discord.ButtonBuilder()
+                    .setLabel('🐕‍🦺 Auto Fixer')
+                    .setStyle(2)
+                    .setCustomId('checkAutoFixer')
+            ])
+        }
+        if (this.actionRowBuilder.components.length == 0) { return }
+        await this.checkMessage.edit({ components: [this.actionRowBuilder] })
+    }
+
+    async processInteractions(interaction) {
+        if (!interaction || !interaction.isButton() || this.hasListenerEnded) { return }
+        if (interaction.member.id != this.member.id) { return interaction.deferUpdate() }
+        switch (interaction.customId) {
+            case 'checkGuide': await this.processInteractionGuide(interaction); break
+            case 'checkAutoFixer': await this.processInteractionAutofix(interaction); break
+            default: await this.processInteractionUnknown(interaction); break
+        }
+    }
+
+    async checkGuideEmbed() {
+        return new Discord.EmbedBuilder()
+            .setTitle('Check Guide 🔍')
+            .setColor(this.embedColor)
+    }
+
+    async processInteractionGuide(interaction) {
+        const embeds = []
+        let interactionEmbed = await this.checkGuideEmbed()
+        interactionEmbed.setDescription('This guide was curated by the Officer team\nIf you have any questions, feel free to ask!')
+        for (const index in this.problems) {
+            const problemCategory = this.problems[index]
+            // eslint-disable-next-line no-prototype-builtins
+            if (!problemCategory.hasOwnProperty('guide')) { continue }
+            const prettyString = `\n### ${problemCategory.category}\n\`\`\`${problemCategory.guide}\`\`\``
+            if (interactionEmbed.data.description.length + prettyString.length >= 3500) {
+                embeds.push(interactionEmbed)
+                interactionEmbed = await this.checkGuideEmbed()
+                interactionEmbed.data.description = ''
+            }
+            interactionEmbed.data.description += prettyString
+        }
+        embeds.push(interactionEmbed)
+        embeds[embeds.length - 1].setFooter({ text: `${this.guild.name} • Check Guide`, iconURL: this.guild.iconURL() })
+        await interaction.reply({ embeds: [interactionEmbed], ephemeral: true })
+    }
+
+    async processInteractionAutofix(interaction) {
+        const autoFixProblems = parseInt(this.autoFixers.length)
+        const interactionEmbed = new Discord.EmbedBuilder()
+            .setTitle('Auto Fixer 🐕‍🦺')
+            .setColor(this.embedColor)
+            .setFooter({ text: `${this.guild.name} • Check Auto Fixer`, iconURL: this.guild.iconURL() })
+            .setTimestamp()
+        const channelModLogs = this.guild.channels.cache.get(this.settings.channels.modlogs)
+        if (!channelModLogs) {
+            const modRole = this.roleCache.get(this.settings.roles.moderator)
+            interactionEmbed.setDescription(`Error the mod logs channel is not defined${modRole ? `\nPlease contact ${modRole} to fix this` : ''}`)
+            await interaction.reply({ embeds: [interactionEmbed], ephemeral: true })
+            return
+        }
+        await interaction.reply({ embeds: [interactionEmbed], ephemeral: true, fetchReply: true })
+        if (this.autoFixers.length >= 5) {
+            interactionEmbed.setDescription(`I encountered \`${autoFixProblems}\` problems to automatically fix\nThe auto fixer goes through the problems step by step\n\n**__Are you sure you want to go through with this?__**`)
+            interaction.editReply({ embeds: [interactionEmbed] })
+            const didConfirm = await interaction.confirmButton(interaction.member.id)
+            if (!didConfirm) { return interaction.deleteReply() }
+        }
+
+        delete interactionEmbed.data.title
+
+        for (const index in this.autoFixers) {
+            const autoFixProblem = this.autoFixers[index]
+            const position = parseInt(autoFixProblems) - parseInt(index)
+
+            const member = this.guild.members.cache.get(autoFixProblem.userID)
+            const roleToRemove = this.roleCache.get(autoFixProblem.roleToRemove)
+            const roleToAdd = this.roleCache.get(autoFixProblem.roleToAdd)
+
+            interactionEmbed.spliceFields(0, 5)
+
+            if (member) {
+                interactionEmbed.setAuthor({ iconURL: member.displayAvatarURL(), name: `${member.displayName}` })
+                interactionEmbed.setThumbnail(member.displayAvatarURL())
+                interactionEmbed.setDescription(`There are \`${position}\` Autofixes left\n${member} \`${member.displayName}\``)
+                interactionEmbed.addFields({
+                    name: 'Current Roles',
+                    value: [...member.roles.cache.values()].sort((a, b) => b.comparePositionTo(a)).join(' '),
+                    inline: false })
+                if (roleToAdd) { interactionEmbed.addFields({ name: 'Action', value: `${roleToAdd} will be added to ${member}`, inline: true }) }
+                if (roleToRemove) { interactionEmbed.addFields({ name: 'Action', value: `${roleToRemove} will be removed from ${member}`, inline: true }) }
+            }
+            await interaction.editReply({ embeds: [interactionEmbed] })
+            const didConfirm = await interaction.confirmButton(interaction.member.id)
+            if (!didConfirm) { continue }
+            if (roleToAdd && member.roles.cache.has(roleToAdd.id)) { continue }
+            if (roleToRemove && !member.roles.cache.has(roleToRemove.id)) { continue }
+            interactionEmbed.setDescription(`${member} \`${member.displayName}\``)
+            if (roleToAdd) {
+                member.roles.add(roleToAdd.id)
+                interactionEmbed.data.fields[interactionEmbed.data.fields.length - 1] = { name: 'Action', value: `${roleToAdd} Has been added to ${member}`, inline: true }
+            }
+            if (roleToRemove) {
+                member.roles.remove(roleToRemove.id)
+                interactionEmbed.data.fields[interactionEmbed.data.fields.length - 1] = { name: 'Action', value: `${roleToRemove} Has been removed from ${member}`, inline: true }
+            }
+            interactionEmbed.addFields({ name: 'Moderator', value: `${interaction.member} \`${interaction.member.displayName}\``, inline: false })
+            await channelModLogs.send({ embeds: [interactionEmbed] })
+        }
+        this.autoFixers = []
+        await this.updateComponents()
+        delete interactionEmbed.data.author
+        delete interactionEmbed.data.fields
+        delete interactionEmbed.data.thumbnail
+        interactionEmbed.setTitle('Auto Fixer 🐕‍🦺')
+        interactionEmbed.setDescription('The auto-fixer has completed its task.')
+        await interaction.editReply({ embeds: [interactionEmbed], components: [] })
+    }
+
+    async processInteractionUnknown(interaction) {
+        const interactionEmbed = new Discord.EmbedBuilder()
+            .setTitle('Action Failed')
+            .setDescription('Hey. You really should not have recieved this error...\nPlease report this to the developers')
+            .setColor('#FF0000')
+            .setFooter({ text: `${this.guild.name} • Check Interaction Failed • ${interaction.customId}`, iconURL: this.guild.iconURL() })
+        await interaction.reply({ embeds: [interactionEmbed] })
+    }
+
+    async interactionHandlerEnd() {
+        this.hasListenerEnded = true
+        await this.checkMessage.edit({ components: [] })
+        this.checkInteractionCollector.stop()
+    }
+
+    addProblemToCategory(categoryName, problem, arrayJoiner, categoryGuide) {
+        let problemWasAdded = false
+        for (const index in this.problems) {
+            const existingProblem = this.problems[index]
+            if (categoryName == existingProblem.category) {
+                this.problems[index].problems.push(problem)
+                problemWasAdded = true
+            }
+        }
+        if (!problemWasAdded) {
+            const categoryProblem = {
+                category: categoryName ?? 'Unknown',
+                arrayJoiner: arrayJoiner ?? ' ',
+                problems: [problem]
+            }
+            if (categoryGuide) { categoryProblem.guide = categoryGuide }
+            this.problems.push(categoryProblem)
+        }
+    }
+
+    addAutoFixProblem(problem) {
+        this.autoFixers.push(problem)
+    }
+
+    getCachedRolesFromArray(array) {
+        return array.filter((role) => this.guild.roles.cache.get(this.settings.roles[role])).map(role => this.guild.roles.cache.get(this.settings.roles[role]))
+    }
+
+    problemLength() {
+        let sizeOfProblems = 0
+        // eslint-disable-next-line array-callback-return
+        this.problems.map(problemCategory => {
+            // eslint-disable-next-line no-unused-vars, array-callback-return
+            problemCategory.problems.map(problem => {
+                sizeOfProblems++
+            })
+        })
+        return sizeOfProblems
+    }
+
+    getAllProblems() {
+        const problems = []
+        // eslint-disable-next-line array-callback-return
+        this.problems.map(problemCategory => {
+            // eslint-disable-next-line array-callback-return
+            problemCategory.problems.map(problem => {
+                problems.push(problem)
+            })
+        })
+        return problems
+    }
+
+    doesAnyProblemHave() {
+        return this.autoFixers.length > 0
+    }
+
+    doesAnyProblemHaveGuide() {
+        for (const index in this.problems) {
+            const problem = this.problems[index]
+            // eslint-disable-next-line no-prototype-builtins
+            if (problem.hasOwnProperty('guide')) { return true }
+        }
+        return false
+    }
+
+    replacePlaceholders(stringInput, variables) {
+        return stringInput.replace(/\{([^}]+)\}/g, (match, key) => variables[key] || match)
+    }
+
+    async getSuspends() {
+        const [rows,] = await this.db.promise().query('SELECT * FROM suspensions WHERE suspended = true AND guildid = ?', [this.guild.id])
+        return rows.map(row => row.id)
+    }
 }

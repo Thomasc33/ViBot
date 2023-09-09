@@ -59,9 +59,22 @@ const rolePermissions = ['punishmentsWarnings', 'punishmentsSuspensions', 'punis
 var commands = []
 var commandsRolePermissions = []
 
+const checkPanels = ['duplicateNicknames', 'verifiedWithoutNickname', 'unverifiedWithNickname', 'removeRolesFromUserWithRole', 'userWithTwoRoles',
+            'addRolesToUsersWithRoles', 'userWithAtleastOneOf', 'openModmails', 'openVerifications',
+            'openVeteranVerifications', 'falseSuspensions', 'buttonGuide', 'buttonAutoFix']
+const checkRoles = ['rolesVerified', 'rolesUnverified', 'falseSuspenionRoles']
+const checkUserExceptions = checkPanels
+const checkRoleExceptions = checkPanels
+checkUserExceptions.push('allPanelExceptions')
+checkRoleExceptions.push('allPanelExceptions')
+const removeRoleFromUserWithRoles = roles
+const addRolesToUsersWithRoles = roles
+const checkStrings = checkPanels
+
 const menus = ['roles', 'channels', 'voice', 'voiceprefixes', 'backend', 'numerical', 'runreqs', 'autoveri',
-'vetverireqs', 'points', 'commands', 'raiding', 'lists', 'strings', 'quotapoints', 'modmail', 'commandsRolePermissions', 'supporter',
-'rolePermissions']
+'vetverireqs', 'points', 'commands', 'categories', 'lists', 'strings', 'quotapoints', 'modmail', 'commandsRolePermissions', 'supporter',
+'rolePermissions', 'checkPanels', 'checkRoles', 'checkUserExceptions', 'checkRoleExceptions', 'removeRoleFromUserWithRoles',
+'addRolesToUsersWithRoles', 'checkStrings']
 
 module.exports = {
     name: 'setup',
@@ -92,7 +105,9 @@ module.exports = {
                         mainMenu.stop()
                     } else message.channel.send('Invalid number recieved. Please try again')
                 } else {
-                    await m.delete()
+                    try {
+                        await m.delete()
+                    } catch (e) { console.log(e) }
                     mainMenu.stop()
                     switch (m.content) {
                         case '1': menu(roles, 'roles', 'string'); break;
@@ -114,6 +129,16 @@ module.exports = {
                         case '17': menu(commandsRolePermissions, 'commandsRolePermissions', 'string'); break;
                         case '18': menu(supporter, 'supporter', 'int'); break;
                         case '19': menu(rolePermissions, 'rolePermissions', 'string'); break;
+                        case '20': menu(checkPanels, 'checkPanels', 'boolean'); break;
+                        case '21': menu(checkRoles, 'checkRoles', 'array'); break;
+                        case '22': menu(checkUserExceptions, 'checkUserExceptions', 'array'); break;
+                        case '23': menu(checkRoleExceptions, 'checkRoleExceptions', 'array'); break;
+                        case '24': menu(removeRoleFromUserWithRoles, 'removeRoleFromUserWithRoles', 'array'); break;
+                        case '25': menu(addRolesToUsersWithRoles, 'addRolesToUsersWithRoles', 'array'); break;
+                        case '26': menu(checkStrings, 'checkStrings', 'string'); break;
+                        default:
+                            await setupMessage.delete()
+                            await message.react('❌')
                     }
                 }
                 /**
@@ -193,11 +218,15 @@ module.exports = {
                                         .spliceFields(0, 5)
                                     await setupMessage.edit({ embeds: [setupEmbed] })
                                     message.react('✅')
-                                    mes.delete()
+                                    try {
+                                        mes.delete()
+                                    } catch (e) { console.log(e) }
                                     menuMessageCollector.stop()
                                 }
                             })
-                            m.delete()
+                            try {
+                                await m.delete()
+                            } catch (e) { console.log(e) }
                         } else if (['array'].includes(type)) {
                             // Stop collector
                             menuCollector.stop()
@@ -212,6 +241,7 @@ module.exports = {
 
                             // Send
                             setupEmbed.setDescription(`\`\`\`coffeescript\nPlease select a value to REMOVE\n\nCurrent Values:\n${str}\`\`\`\nOr Say "add", "new", or "clear"`)
+                            setupEmbed.spliceFields(0, 10)
                             setupMessage.edit({ embeds: [setupEmbed] })
 
                             // Add reaction collector
@@ -229,7 +259,10 @@ module.exports = {
                                     newCollector.on('collect', async mes => {
                                         if (mes.content.toLowerCase() == 'cancel') {
                                             setupMessage.delete()
-                                            message.react('✅')
+                                            m.react('✅')
+                                            try {
+                                                await m.delete()
+                                            } catch (e) { console.log(e) }
                                             newCollector.stop()
                                         } else {
                                             change = `\`\`\`coffeescript\n${mes.content} added to ${arrayName}\`\`\``
@@ -280,7 +313,9 @@ module.exports = {
                                         .setFooter({ text: `Setup completed` })
                                     await setupMessage.edit({ embeds: [setupEmbed] })
                                     message.react('✅')
-                                    m.delete()
+                                    try {
+                                        await m.delete()
+                                    } catch (e) { console.log(e) }
                                 }
                             })
 
@@ -321,7 +356,15 @@ module.exports = {
                 modmail: {},
                 commandsRolePermissions: {},
                 supporter: {},
-                rolePermissions: {}
+                rolePermissions: {},
+                checkPanels: {},
+                checkRoles: {},
+                checkUserExceptions: {},
+                checkRoleExceptions: {},
+                removeRoleFromUserWithRoles: {},
+                addRolesToUsersWithRoles: {},
+                userWithTwoRoles: {},
+                userWithAtleastOneOf: {}
             }
         }
         for (let i of menus) {
@@ -351,6 +394,7 @@ module.exports = {
                 else bot.settings[guild.id].voice[v] = null
             }
         }
+        if (!bot.settings[guild.id].hasOwnProperty('raiding')) { bot.settings[guild.id].raiding = {} }
         for (let i in raiding) {
             if (!bot.settings[guild.id].raiding[raiding[i]]) bot.settings[guild.id].raiding[raiding[i]] = null
         }
@@ -437,6 +481,43 @@ module.exports = {
         for (let i of rolePermissions) {
             if (!bot.settings[guild.id].rolePermissions[i]) bot.settings[guild.id].rolePermissions[i] = null
         }
+
+        for (let i in checkPanels) {
+            if (!bot.settings[guild.id].checkPanels[checkPanels[i]]) {
+                bot.settings[guild.id].checkPanels[checkPanels[i]] = false
+            }
+        }
+
+        if (!bot.settings[guild.id].checkRoles) bot.settings[guild.id].checkRoles = {}
+        for (let i of checkRoles) {
+            if (!bot.settings[guild.id].checkRoles[i]) bot.settings[guild.id].checkRoles[i] = []
+        }
+
+        if (!bot.settings[guild.id].checkUserExceptions) bot.settings[guild.id].checkUserExceptions = {}
+        for (let i of checkUserExceptions) {
+            if (!bot.settings[guild.id].checkUserExceptions[i]) bot.settings[guild.id].checkUserExceptions[i] = []
+        }
+
+        if (!bot.settings[guild.id].checkRoleExceptions) bot.settings[guild.id].checkRoleExceptions = {}
+        for (let i of checkRoleExceptions) {
+            if (!bot.settings[guild.id].checkRoleExceptions[i]) bot.settings[guild.id].checkRoleExceptions[i] = []
+        }
+
+        if (!bot.settings[guild.id].removeRoleFromUserWithRoles) bot.settings[guild.id].removeRoleFromUserWithRoles = {}
+        for (let i of removeRoleFromUserWithRoles) {
+            if (!bot.settings[guild.id].removeRoleFromUserWithRoles[i]) bot.settings[guild.id].removeRoleFromUserWithRoles[i] = []
+        }
+
+        if (!bot.settings[guild.id].addRolesToUsersWithRoles) bot.settings[guild.id].addRolesToUsersWithRoles = {}
+        for (let i of addRolesToUsersWithRoles) {
+            if (!bot.settings[guild.id].addRolesToUsersWithRoles[i]) bot.settings[guild.id].addRolesToUsersWithRoles[i] = []
+        }
+
+        if (!bot.settings[guild.id].checkStrings) bot.settings[guild.id].checkStrings = {}
+        for (let i of checkStrings) {
+            if (!bot.settings[guild.id].checkStrings[i]) bot.settings[guild.id].checkStrings[i] = null
+        }
+
         fs.writeFileSync('./guildSettings.json', JSON.stringify(bot.settings, null, 4), err => message.channel.send(err.toString()))
     }
 }
