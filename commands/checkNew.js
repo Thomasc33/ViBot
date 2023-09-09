@@ -440,9 +440,6 @@ class Check {
         delete interactionEmbed.data.title
 
         for (const index in this.autoFixers) {
-            console.log(true)
-            setTimeout(() => {}, 250)
-            console.log(true)
             const autoFixProblem = this.autoFixers[index]
             const position = parseInt(autoFixProblems) - parseInt(index)
 
