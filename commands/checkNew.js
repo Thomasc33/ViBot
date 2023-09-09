@@ -56,7 +56,7 @@ class Check {
             .setFooter({ text: `${this.guild.name}`, iconURL: this.guild.iconURL() })
             .setColor(this.embedColor)
             .setDescription(`Hello! Please be patient while I go through this server.\nI started this ${this.processStartedDiscordTimestamp}`)
-        this.checkMessage = await this.message.reply({ embeds: [ this.embed ] })
+        this.checkMessage = await this.message.reply({ embeds: [this.embed] })
     }
 
     async startProcess() {
@@ -84,6 +84,7 @@ class Check {
         await Promise.allSettled(this.guild.members.cache.map(async member => {
             if (await this.isPanelRestricted(member, panelName) || !member.roles.cache.hasAny(...this.getCachedRolesFromArray(this.settings.checkRoles.rolesVerified).map(role => role.id))) { return }
             const memberNicknames = member.nickname?.toLowerCase().replace(/[^a-z|]/gi, '').split('|') || []
+            // eslint-disable-next-line no-return-assign
             memberNicknames.forEach(nickname => (nicknames[nickname] = nicknames[nickname] || []).push(member.id))
         }))
         const duplicateNicknames = Object.keys(nicknames).filter(nickname => nicknames[nickname].length > 1)
@@ -296,29 +297,21 @@ class Check {
     async updateMessage() {
         this.embeds = []
         let embed = this.embedBuilder()
-        if (this.problems.length > 0) {
-            let prettyStringsArray = []
-            let prettyString = ''
-            for (const problemCategory of this.problems) {
-                // eslint-disable-next-line no-prototype-builtins
-                if (!problemCategory.hasOwnProperty('problems')) { continue }
-                for (const problem of problemCategory.problems) {
-                    prettyString = problem.text
-                    if ((prettyString.length + prettyStringsArray.join(problemCategory.arrayJoiner ?? this.defaultArrayJoiner).length) >= 1024) {
-                        if (embed.data.fields?.length >= 3) {
-                            this.embeds.push(embed)
-                            embed = this.embedBuilder()
-                        }
-                        embed.addFields({
-                            name: problemCategory.category,
-                            value: prettyStringsArray.join(problemCategory.arrayJoiner ?? this.defaultArrayJoiner),
-                            inline: false
-                        })
-                        prettyStringsArray = []
-                    }
-                    prettyStringsArray.push(prettyString)
-                }
-                if (prettyStringsArray.length > 0) {
+        if (this.problems.length == 0) {
+            embed.setDescription('No problems found')
+            this.embeds.push(embed)
+            this.embeds[0].setAuthor({ name: `${this.member.displayName}`, iconURL: this.member.user.avatarURL() })
+            this.embeds[this.embeds.length - 1].setFooter({ text: `${this.guild.name} • Check Report • ${this.problemLength()} problem${this.problemLength().length == 1 ? '' : 's'}`, iconURL: this.guild.iconURL() })
+            await this.checkMessage.edit({ embeds: this.embeds, components: [] })
+        }
+        let prettyStringsArray = []
+        let prettyString = ''
+        for (const problemCategory of this.problems) {
+            // eslint-disable-next-line no-prototype-builtins
+            if (!problemCategory.hasOwnProperty('problems')) { continue }
+            for (const problem of problemCategory.problems) {
+                prettyString = problem.text
+                if ((prettyString.length + prettyStringsArray.join(problemCategory.arrayJoiner ?? this.defaultArrayJoiner).length) >= 1024) {
                     if (embed.data.fields?.length >= 3) {
                         this.embeds.push(embed)
                         embed = this.embedBuilder()
@@ -330,12 +323,23 @@ class Check {
                     })
                     prettyStringsArray = []
                 }
+                prettyStringsArray.push(prettyString)
             }
-            this.embeds.push(embed)
-        } else {
-            embed.setDescription('No problems found')
-            this.embeds.push(embed)
+            if (prettyStringsArray.length > 0) {
+                if (embed.data.fields?.length >= 3) {
+                    this.embeds.push(embed)
+                    embed = this.embedBuilder()
+                }
+                embed.addFields({
+                    name: problemCategory.category,
+                    value: prettyStringsArray.join(problemCategory.arrayJoiner ?? this.defaultArrayJoiner),
+                    inline: false
+                })
+                prettyStringsArray = []
+            }
         }
+        this.embeds.push(embed)
+
         this.embeds[0].setAuthor({ name: `${this.member.displayName}`, iconURL: this.member.user.avatarURL() })
         this.embeds[this.embeds.length - 1].setFooter({ text: `${this.guild.name} • Check Report • ${this.problemLength()} problem${this.problemLength().length == 1 ? '' : 's'}`, iconURL: this.guild.iconURL() })
         await this.checkMessage.edit({ embeds: this.embeds, components: [] })
@@ -348,7 +352,7 @@ class Check {
         if (this.actionRowBuilder.components.length == 0) { return }
         this.checkInteractionCollector = new Discord.InteractionCollector(this.bot, { message: this.checkMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
         this.checkInteractionCollector.on('collect', async (interaction) => await this.processInteractions(interaction))
-        setTimeout(() => this.interactionHandlerEnd(), Math.floor(10 * 60 * 1000));
+        setTimeout(() => this.interactionHandlerEnd(), Math.floor(10 * 60 * 1000))
     }
 
     async updateComponents() {
@@ -378,8 +382,8 @@ class Check {
         if (!interaction || !interaction.isButton() || this.hasListenerEnded) { return }
         if (interaction.member.id != this.member.id) { return interaction.deferUpdate() }
         switch (interaction.customId) {
-            case 'checkGuide': await this.processInteractionGuide(interaction); break;
-            case 'checkAutoFixer': await this.processInteractionAutofix(interaction); break;
+            case 'checkGuide': await this.processInteractionGuide(interaction); break
+            case 'checkAutoFixer': await this.processInteractionAutofix(interaction); break
             default: await this.processInteractionUnknown(interaction); break
         }
     }
@@ -428,7 +432,7 @@ class Check {
         await interaction.reply({ embeds: [interactionEmbed], ephemeral: true, fetchReply: true })
         if (this.autoFixers.length >= 5) {
             interactionEmbed.setDescription(`I encountered \`${autoFixProblems}\` problems to automatically fix\nThe auto fixer goes through the problems step by step\n\n**__Are you sure you want to go through with this?__**`)
-            interaction.editReply({ embeds: [interactionEmbed]})
+            interaction.editReply({ embeds: [interactionEmbed] })
             const didConfirm = await interaction.confirmButton(interaction.member.id)
             if (!didConfirm) { return interaction.deleteReply() }
         }
@@ -459,7 +463,7 @@ class Check {
                 if (roleToAdd) { interactionEmbed.addFields({ name: 'Action', value: `${roleToAdd} will be added to ${member}`, inline: true }) }
                 if (roleToRemove) { interactionEmbed.addFields({ name: 'Action', value: `${roleToRemove} will be removed from ${member}`, inline: true }) }
             }
-            await interaction.editReply({ embeds: [interactionEmbed]})
+            await interaction.editReply({ embeds: [interactionEmbed] })
             const didConfirm = await interaction.confirmButton(interaction.member.id)
             if (!didConfirm) { continue }
             if (roleToAdd && member.roles.cache.has(roleToAdd.id)) { continue }
@@ -492,7 +496,7 @@ class Check {
             .setDescription('Hey. You really should not have recieved this error...\nPlease report this to the developers')
             .setColor('#FF0000')
             .setFooter({ text: `${this.guild.name} • Check Interaction Failed • ${interaction.customId}`, iconURL: this.guild.iconURL() })
-        await interaction.reply({ embeds: [ interactionEmbed ]})
+        await interaction.reply({ embeds: [interactionEmbed] })
     }
 
     async interactionHandlerEnd() {
