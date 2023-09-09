@@ -62,15 +62,17 @@ class Check {
     }
 
     async getPanels() {
-        await this.panelDuplicateNickname()
-        await this.panelVerifiedWithoutNickname()
-        await this.panelUnverifiedWithNickname()
-        await this.panelRemoveRolesFromRoleUsers()
-        await this.panelAddRolesFromRoleUsers()
-        await this.panelCheckOpenModmails()
-        await this.panelCheckOpenVerifications()
-        await this.panelCheckOpenVeteranVerifications()
-        await this.panelFalseSuspensions()
+        await Promise.all([
+            this.panelDuplicateNickname(),
+            this.panelVerifiedWithoutNickname(),
+            this.panelUnverifiedWithNickname(),
+            this.panelRemoveRolesFromRoleUsers(),
+            this.panelAddRolesFromRoleUsers(),
+            this.panelCheckOpenModmails(),
+            this.panelCheckOpenVerifications(),
+            this.panelCheckOpenVeteranVerifications(),
+            this.panelFalseSuspensions()
+        ]);
     }
 
     // Panels revolving nickname stuff
@@ -264,7 +266,7 @@ class Check {
         for (const index in suspensionRoleNames) {
             const roleName = suspensionRoleNames[index]
             const roleSuspension = this.roleCache.get(this.settings.roles[roleName])
-            roleSuspension.members.cache.forEach(async member => {
+            roleSuspension.members.forEach(async member => {
                 if (await this.isPanelRestricted(member, panelName)) { return }
                 if (!allSuspensions.includes(member.id)) { return }
                 const problemCategory = 'False Suspensions'
