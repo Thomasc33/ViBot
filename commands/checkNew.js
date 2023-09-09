@@ -1,11 +1,13 @@
+/* eslint-disable no-await-in-loop */
+/* eslint-disable guard-for-in */
 const Discord = require('discord.js')
 
 module.exports = {
-    name: "newcheck",
+    name: 'newcheck',
     description: "the new Check command\nThis command runs through the server checking various areas for errors.\nYou'll have a interactive menu to help you",
-    role: "security",
+    role: 'security',
     alias: [
-        "nc"
+        'nc'
     ],
     async execute(message, args, bot, db) {
         const checkModule = new Check(message, args, bot, db)
@@ -23,7 +25,7 @@ class Check {
      * @param {import('mysql').Connection} db
      */
 
-    constructor (message, args, bot, db) {
+    constructor(message, args, bot, db) {
         this.message = message
         this.guild = message.guild
         this.member = message.member
@@ -73,6 +75,7 @@ class Check {
         await this.panelCheckOpenVeteranVerifications()
         await this.panelFalseSuspensions()
     }
+
     // Panels revolving nickname stuff
     async panelDuplicateNickname() {
         const panelName = 'duplicateNicknames'
@@ -85,7 +88,7 @@ class Check {
         }))
         const duplicateNicknames = Object.keys(nicknames).filter(nickname => nicknames[nickname].length > 1)
         duplicateNicknames.forEach(nickname => {
-            const memberIDs = nicknames[nickname].map(memberID =>`<@!${memberID}>`).join(', ')
+            const memberIDs = nicknames[nickname].map(memberID => `<@!${memberID}>`).join(', ')
             const problemCategory = 'Duplicate Nicknames'
             const problem = {
                 text: `${memberIDs} All share \`${nickname}\``
@@ -93,6 +96,7 @@ class Check {
             this.addProblemToCategory(problemCategory, problem, ' ', this.settings.checkStrings.duplicateNicknames)
         })
     }
+
     async panelVerifiedWithoutNickname() {
         const panelName = 'verifiedWithoutNickname'
         if (!this.settings.checkPanels[panelName]) { return }
@@ -108,6 +112,7 @@ class Check {
             this.addProblemToCategory(problemCategory, problem, ' ', this.settings.checkStrings.verifiedWithoutNickname)
         })
     }
+
     async panelUnverifiedWithNickname() {
         const panelName = 'unverifiedWithNickname'
         if (!this.settings.checkPanels[panelName]) { return }
@@ -148,11 +153,11 @@ class Check {
                     const problem = {
                         text: member.toString()
                     }
-                    let variables = {
+                    const variables = {
                         roleName: role.name,
-                        problemRoleName: problemRoleName
+                        problemRoleName
                     }
-                    let replacedString = this.replacePlaceholders(this.settings.checkStrings.removeRolesFromUserWithRole, variables)
+                    const replacedString = this.replacePlaceholders(this.settings.checkStrings.removeRolesFromUserWithRole, variables)
                     this.addProblemToCategory(`Members with ${role.name} should not have ${problemRoleName}`, problem, ', ', replacedString)
                     const autoFixProblem = {
                         userID: member.id,
@@ -163,6 +168,7 @@ class Check {
             })
         }
     }
+
     // This panel will add X role to person with Y role. Can be used for many roles
     async panelAddRolesFromRoleUsers() {
         const panelName = 'addRolesToUsersWithRoles'
@@ -209,11 +215,12 @@ class Check {
             if (!modmailMessage.author.bot) { return }
             if (modmailMessage.components.length == 0) { return }
             const problem = {
-                text: `<t:${Math.floor(modmailMessage.createdTimestamp / 1000)}:R> ${modmailMessage.url}`,
+                text: `<t:${Math.floor(modmailMessage.createdTimestamp / 1000)}:R> ${modmailMessage.url}`
             }
             this.addProblemToCategory('Unopened Modmails', problem, '\n', this.settings.checkStrings.openModmails)
         })
     }
+
     // Verifications
     async panelCheckOpenVerifications() {
         const panelName = 'openVerifications'
@@ -226,11 +233,12 @@ class Check {
             if (!verificationMessage.author.bot) { return }
             if (!verificationMessage.reactions.cache.has('🔑')) { return }
             const problem = {
-                text: `<t:${Math.floor(verificationMessage.createdTimestamp / 1000)}:R> ${verificationMessage.url}`,
+                text: `<t:${Math.floor(verificationMessage.createdTimestamp / 1000)}:R> ${verificationMessage.url}`
             }
             this.addProblemToCategory('Unopened Verifications', problem, '\n', this.settings.checkStrings.openVerifications)
         })
     }
+
     // Veteran Verifications
     async panelCheckOpenVeteranVerifications() {
         const panelName = 'openVeteranVerifications'
@@ -243,7 +251,7 @@ class Check {
             if (!veteranVerificationMessage.author.bot) { return }
             if (!veteranVerificationMessage.reactions.cache.has('🔑')) { return }
             const problem = {
-                text: `<t:${Math.floor(veteranVerificationMessage.createdTimestamp / 1000)}:R> ${veteranVerificationMessage.url}`,
+                text: `<t:${Math.floor(veteranVerificationMessage.createdTimestamp / 1000)}:R> ${veteranVerificationMessage.url}`
             }
             this.addProblemToCategory('Unopened Veteran Verifications', problem, '\n', this.settings.checkStrings.openVeteranVerifications)
         })
@@ -256,7 +264,7 @@ class Check {
 
         const suspensionRoleNames = this.settings.checkRoles.falseSuspenionRoles
         for (const index in suspensionRoleNames) {
-            const roleName = suspensionsRoleNames[index]
+            const roleName = suspensionRoleNames[index]
             const roleSuspension = this.roleCache.get(this.settings.roles[roleName])
             roleSuspension.members.cache.forEach(async member => {
                 if (await this.isPanelRestricted(member, panelName)) { return }
@@ -280,17 +288,19 @@ class Check {
 
     async transformPanelsIntoFields() {}
     embedBuilder() {
-        let embed = new Discord.EmbedBuilder()
+        const embed = new Discord.EmbedBuilder()
         embed.setColor(this.embedColor)
         return embed
     }
+
     async updateMessage() {
         this.embeds = []
         let embed = this.embedBuilder()
         if (this.problems.length > 0) {
             let prettyStringsArray = []
-            let prettyString = ``
+            let prettyString = ''
             for (const problemCategory of this.problems) {
+                // eslint-disable-next-line no-prototype-builtins
                 if (!problemCategory.hasOwnProperty('problems')) { continue }
                 for (const problem of problemCategory.problems) {
                     prettyString = problem.text
@@ -331,6 +341,7 @@ class Check {
         await this.checkMessage.edit({ embeds: this.embeds, components: [] })
         if (this.problems.length > 0) { await this.interactionHandler() }
     }
+
     // autofixer - 🐕‍🦺 | guide - 🔍
     async interactionHandler() {
         await this.updateComponents()
@@ -339,6 +350,7 @@ class Check {
         this.checkInteractionCollector.on('collect', async (interaction) => await this.processInteractions(interaction))
         setTimeout(() => this.interactionHandlerEnd(), Math.floor(10 * 60 * 1000));
     }
+
     async updateComponents() {
         if (this.hasListenerEnded) { return }
         this.actionRowBuilder = new Discord.ActionRowBuilder()
@@ -361,6 +373,7 @@ class Check {
         if (this.actionRowBuilder.components.length == 0) { return }
         await this.checkMessage.edit({ components: [this.actionRowBuilder] })
     }
+
     async processInteractions(interaction) {
         if (!interaction || !interaction.isButton() || this.hasListenerEnded) { return }
         if (interaction.member.id != this.member.id) { return interaction.deferUpdate() }
@@ -370,17 +383,20 @@ class Check {
             default: await this.processInteractionUnknown(interaction); break
         }
     }
+
     async checkGuideEmbed() {
         return new Discord.EmbedBuilder()
             .setTitle('Check Guide 🔍')
             .setColor(this.embedColor)
     }
+
     async processInteractionGuide(interaction) {
-        let embeds = []
+        const embeds = []
         let interactionEmbed = await this.checkGuideEmbed()
         interactionEmbed.setDescription('This guide was curated by the Officer team\nIf you have any questions, feel free to ask!')
         for (const index in this.problems) {
             const problemCategory = this.problems[index]
+            // eslint-disable-next-line no-prototype-builtins
             if (!problemCategory.hasOwnProperty('guide')) { continue }
             const prettyString = `\n### ${problemCategory.category}\n\`\`\`${problemCategory.guide}\`\`\``
             if (interactionEmbed.data.description.length + prettyString.length >= 3500) {
@@ -394,16 +410,17 @@ class Check {
         embeds[embeds.length - 1].setFooter({ text: `${this.guild.name} • Check Guide`, iconURL: this.guild.iconURL() })
         await interaction.reply({ embeds: [interactionEmbed], ephemeral: true })
     }
+
     async processInteractionAutofix(interaction) {
         const autoFixProblems = parseInt(this.autoFixers.length)
-        let interactionEmbed = new Discord.EmbedBuilder()
+        const interactionEmbed = new Discord.EmbedBuilder()
             .setTitle('Auto Fixer 🐕‍🦺')
             .setColor(this.embedColor)
             .setFooter({ text: `${this.guild.name} • Check Auto Fixer`, iconURL: this.guild.iconURL() })
             .setTimestamp()
         const channelModLogs = this.guild.channels.cache.get(this.settings.channels.modlogs)
         if (!channelModLogs) {
-            let modRole = this.roleCache.get(this.settings.roles.moderator)
+            const modRole = this.roleCache.get(this.settings.roles.moderator)
             interactionEmbed.setDescription(`Error the mod logs channel is not defined${modRole ? `\nPlease contact ${modRole} to fix this` : ''}`)
             await interaction.reply({ embeds: [interactionEmbed], ephemeral: true })
             return
@@ -412,7 +429,7 @@ class Check {
         if (this.autoFixers.length >= 5) {
             interactionEmbed.setDescription(`I encountered \`${autoFixProblems}\` problems to automatically fix\nThe auto fixer goes through the problems step by step\n\n**__Are you sure you want to go through with this?__**`)
             interaction.editReply({ embeds: [interactionEmbed]})
-            let didConfirm = await interaction.confirmButton(interaction.member.id)
+            const didConfirm = await interaction.confirmButton(interaction.member.id)
             if (!didConfirm) { return interaction.deleteReply() }
         }
 
@@ -468,14 +485,16 @@ class Check {
         interactionEmbed.setDescription('The auto-fixer has completed its task.')
         await interaction.editReply({ embeds: [interactionEmbed], components: [] })
     }
+
     async processInteractionUnknown(interaction) {
-        let interactionEmbed = new Discord.EmbedBuilder()
+        const interactionEmbed = new Discord.EmbedBuilder()
             .setTitle('Action Failed')
             .setDescription('Hey. You really should not have recieved this error...\nPlease report this to the developers')
             .setColor('#FF0000')
             .setFooter({ text: `${this.guild.name} • Check Interaction Failed • ${interaction.customId}`, iconURL: this.guild.iconURL() })
         await interaction.reply({ embeds: [ interactionEmbed ]})
     }
+
     async interactionHandlerEnd() {
         this.hasListenerEnded = true
         await this.checkMessage.edit({ components: [] })
@@ -492,7 +511,7 @@ class Check {
             }
         }
         if (!problemWasAdded) {
-            let categoryProblem = {
+            const categoryProblem = {
                 category: categoryName ?? 'Unknown',
                 arrayJoiner: arrayJoiner ?? ' ',
                 problems: [problem]
@@ -511,8 +530,10 @@ class Check {
     }
 
     problemLength() {
-        var sizeOfProblems = 0
+        let sizeOfProblems = 0
+        // eslint-disable-next-line array-callback-return
         this.problems.map(problemCategory => {
+            // eslint-disable-next-line no-unused-vars, array-callback-return
             problemCategory.problems.map(problem => {
                 sizeOfProblems++
             })
@@ -522,7 +543,9 @@ class Check {
 
     getAllProblems() {
         const problems = []
+        // eslint-disable-next-line array-callback-return
         this.problems.map(problemCategory => {
+            // eslint-disable-next-line array-callback-return
             problemCategory.problems.map(problem => {
                 problems.push(problem)
             })
@@ -537,6 +560,7 @@ class Check {
     doesAnyProblemHaveGuide() {
         for (const index in this.problems) {
             const problem = this.problems[index]
+            // eslint-disable-next-line no-prototype-builtins
             if (problem.hasOwnProperty('guide')) { return true }
         }
         return false
