@@ -300,6 +300,7 @@ class Check {
             this.embeds[0].setAuthor({ name: `${this.member.displayName}`, iconURL: this.member.user.avatarURL() })
             this.embeds[this.embeds.length - 1].setFooter({ text: `${this.guild.name} • Check Report • ${this.problemLength()} problem${this.problemLength().length == 1 ? '' : 's'}`, iconURL: this.guild.iconURL() })
             await this.checkMessage.edit({ embeds: this.embeds, components: [] })
+            return
         }
         let prettyStringsArray = []
         let prettyString = ''
