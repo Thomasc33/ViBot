@@ -19,7 +19,7 @@ const channels = ['modmail', 'verification', 'manualverification', 'vetverificat
     'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel',
     'runlogs', 'dmcommands', 'veriactive', 'pointlogging',
     'veriattempts', 'modmailinfo', 'parsecurrentweek', 'pastparseweeks', 'roleassignment', 'botstatus', 'keyalerts', 'activitylog', 'raidingrules',
-    'forwardedModmailMessage', 'motmgLeaderboard']
+    'forwardedModmailMessage', 'motmgLeaderboard', 'serverLeaveChannel']
 const raiding = ['category1', 'templateChannel1', 'partneredStatusChannel1', 'statusChannel1', 'commandsChannel1', 'activeChannel1',
     'category2', 'templateChannel2', 'partneredStatusChannel2', 'statusChannel2', 'commandsChannel2', 'activeChannel2',
     'category3', 'templateChannel3', 'partneredStatusChannel3', 'statusChannel3', 'commandsChannel3', 'activeChannel3',
@@ -37,8 +37,8 @@ const backend = ['modmail', 'verification', 'vetverification', 'points', 'suppor
     'onlyUpperStaffSuspendStaff', 'giveEventRoleOnDenial2',
     'useUnverifiedRole', 'punishmentsWarnings', 'punishmentsSuspensions', 'punishmentsMutes', 'allowAdditionalCompletes', 'miniBossGuessing', 'logServerLeave']
 const numerical = ['ticketlimit', 'supporterlimit', 'keyalertsage', 'waitnewkeyalert', 'prunerushersoffset',
-    'forwardedModmailMessage', 'motmgLeaderboard', 'serverLeaveChannel',
-    `milestoneStartTimestamp`, 'timestamp1', 'timestamp2', 'timestamp3', 'timestamp4', 'timestamp5', 'timestamp6', 'timestamp7',
+    'forwardedModmailMessage', 'motmgLeaderboard', `milestoneStartTimestamp`,
+    'timestamp1', 'timestamp2', 'timestamp3', 'timestamp4', 'timestamp5', 'timestamp6', 'timestamp7',
     `timestamp8`, 'timestamp9', 'timestamp10', 'timestamp11', 'timestamp12', 'timestamp13', 'timestamp14', 'timestamp15']
 const runreqs = ['weapon', 'ability', 'armor', 'ring']
 const autoveri = ['fame', 'stars', 'realmage', 'discordage', 'deathcount']

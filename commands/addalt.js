@@ -118,7 +118,7 @@ module.exports = {
                 expelEmbed.addFields([{ name: `${row.id}`, value: `Expelled by <@${row.modid}> in ${bot.guilds.cache.get(row.guildid).name || row.guildid}:\`\`\`${row.reason}\`\`\`` }]);
             }
 
-            await interaction.reply({ embeds: [expelEmbed] }).then(async confirmMessage => {
+            await interaction.reply({ embeds: [expelEmbed], fetchReply : true}).then(async confirmMessage => {
                 if (await confirmMessage.confirmButton(interaction.member.id)) {
                     expelEmbed.setTitle('Expels Successfully Removed')
                     expelEmbed.setDescription(`The following expels have been removed from the database tied to ${altName}.`);
@@ -130,7 +130,7 @@ module.exports = {
                     expelEmbed.setColor('#FF3300')
                     expelEmbed.spliceFields(0, expelEmbed.data.fields.length);
                 }
-                await interaction.editReply({ embeds: [expelEmbed] });
+                await interaction.editReply({ embeds: [expelEmbed], components: [] });
             });
         });
     },
