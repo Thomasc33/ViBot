@@ -59,8 +59,8 @@ const rolePermissions = ['punishmentsWarnings', 'punishmentsSuspensions', 'punis
 var commands = []
 var commandsRolePermissions = []
 
-const checkPanels = ['duplicateNicknames', 'verifiedWithoutNickname', 'unverifiedWithNickname', 'removeRolesFromUserWithRole', 'userWithTwoRoles',
-            'addRolesToUsersWithRoles', 'userWithAtleastOneOf', 'openModmails', 'openVerifications',
+const checkPanels = ['duplicateNicknames', 'verifiedWithoutNickname', 'unverifiedWithNickname', 'removeRolesFromUserWithRole',
+            'addRolesToUsersWithRoles', 'openModmails', 'openVerifications',
             'openVeteranVerifications', 'falseSuspensions', 'buttonGuide', 'buttonAutoFix']
 const checkRoles = ['rolesVerified', 'rolesUnverified', 'falseSuspenionRoles']
 const checkUserExceptions = checkPanels
@@ -72,7 +72,7 @@ const addRolesToUsersWithRoles = roles
 const checkStrings = checkPanels
 
 const menus = ['roles', 'channels', 'voice', 'voiceprefixes', 'backend', 'numerical', 'runreqs', 'autoveri',
-'vetverireqs', 'points', 'commands', 'categories', 'lists', 'strings', 'quotapoints', 'modmail', 'commandsRolePermissions', 'supporter',
+'vetverireqs', 'points', 'commands', 'raiding', 'lists', 'strings', 'quotapoints', 'modmail', 'commandsRolePermissions', 'supporter',
 'rolePermissions', 'checkPanels', 'checkRoles', 'checkUserExceptions', 'checkRoleExceptions', 'removeRoleFromUserWithRoles',
 'addRolesToUsersWithRoles', 'checkStrings']
 
