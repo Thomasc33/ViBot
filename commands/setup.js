@@ -59,8 +59,8 @@ const rolePermissions = ['punishmentsWarnings', 'punishmentsSuspensions', 'punis
 var commands = []
 var commandsRolePermissions = []
 
-const checkPanels = ['duplicateNicknames', 'verifiedWithoutNickname', 'unverifiedWithNickname', 'removeRolesFromUserWithRole',
-            'addRolesToUsersWithRoles', 'openModmails', 'openVerifications',
+const checkPanels = ['duplicateNicknames', 'verifiedWithoutNickname', 'unverifiedWithNickname', 'removeRolesFromUserWithRole', 'userWithTwoRoles',
+            'addRolesToUsersWithRoles', 'userWithAtleastOneOf', 'openModmails', 'openVerifications',
             'openVeteranVerifications', 'falseSuspensions', 'buttonGuide', 'buttonAutoFix']
 const checkRoles = ['rolesVerified', 'rolesUnverified', 'falseSuspenionRoles']
 const checkUserExceptions = checkPanels
