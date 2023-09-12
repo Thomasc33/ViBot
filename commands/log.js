@@ -33,6 +33,14 @@ module.exports = {
             count = args[args.length - 1]
             if (run.weight) count = count * run.weight
         }
+        let assistCount = count
+
+        // assists count
+        if (settings.backend.isLogAssistsCapped) {
+            if (assistCount > settings.numerical.logAssistsCap) {
+                assistCount = settings.numerical.logAssistsCap
+            }
+        }
 
         //confirm if needed
         let confirmed = false;
@@ -70,7 +78,7 @@ module.exports = {
                 promises.push(new Promise(res => {
                     if (m.id !== message.author.id) {
                         desc = desc + `<@!${m.id}> `
-                        db.query(`UPDATE users SET ${guildInfo.assist.main} = ${guildInfo.assist.main} + ${count}, ${guildInfo.assist.currentweek} = ${guildInfo.assist.currentweek} + ${count} WHERE id = ${m.id}`, (err, rows) => {
+                        db.query(`UPDATE users SET ${guildInfo.assist.main} = ${guildInfo.assist.main} + ${assistCount}, ${guildInfo.assist.currentweek} = ${guildInfo.assist.currentweek} + ${assistCount} WHERE id = ${m.id}`, (err, rows) => {
                             if (err) return res(null)
                             db.query(`SELECT ${guildInfo.assist.currentweek} FROM users WHERE id = '${m.id}'`, (err, rows) => {
                                 let s = `<@!${m.id}>${m.displayName ? ` \`${m.displayName}\`` : ''}. Current week: ${rows[0][guildInfo.assist.currentweek]} Assists`
