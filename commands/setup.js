@@ -3,7 +3,7 @@ const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
 const roles = [
     'admin', 'moderator', 'officer', 'headrl', 'headdev', 'assistantdev', 'vetrl', 'fsvrl', 'mrvrl', 'security', 'fullskip', 'developer', 'rl', 'almostrl',
-    'trialrl', 'headeventrl', 'eventrl', 'minimumStaffRole',
+    'trialrl', 'headeventrl', 'eventrl', 'minimumStaffRole', 'fameLeader',
     'rusher', 'lol', 'accursed', 'vetraider', 'vetraider2', 'vetraider3', 'vetraider4', 'vetraider5', 'raider', 'eventraider', 'muted',
     'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'keyjesus', 'moddedkey', 'topkey', 'bottomkey', 'cultping', 'voidping', 'shattsReact', 'hmShattsReact', 'fungalReact', 'nestReact',
     'fskipReact', 'fameReact', 'accursedReact', 'rcPing', 'o3Ping', 'eventBoi', 'veteventrl', 'lostboomer',
@@ -19,7 +19,7 @@ const channels = ['modmail', 'verification', 'manualverification', 'vetverificat
     'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel',
     'runlogs', 'dmcommands', 'veriactive', 'pointlogging',
     'veriattempts', 'modmailinfo', 'parsecurrentweek', 'pastparseweeks', 'roleassignment', 'botstatus', 'keyalerts', 'activitylog', 'raidingrules',
-    'forwardedModmailMessage', 'motmgLeaderboard']
+    'forwardedModmailMessage', 'motmgLeaderboard', 'fameLeaderCurrentWeek', 'fameLeaderPastWeeks']
 const raiding = ['category1', 'templateChannel1', 'partneredStatusChannel1', 'statusChannel1', 'commandsChannel1', 'activeChannel1',
     'category2', 'templateChannel2', 'partneredStatusChannel2', 'statusChannel2', 'commandsChannel2', 'activeChannel2',
     'category3', 'templateChannel3', 'partneredStatusChannel3', 'statusChannel3', 'commandsChannel3', 'activeChannel3',
@@ -35,11 +35,11 @@ const voiceprefixes = ['raidingprefix', 'vetprefix']
 const backend = ['modmail', 'verification', 'vetverification', 'points', 'supporter', 'roleassignment', 'realmeyestats', 'automod', 'characterparse', 'forwadedMessageThumbsUpAndDownReactions',
     'giveeventroleonverification', 'upgradedCheck', 'sendmissedquota',
     'onlyUpperStaffSuspendStaff', 'giveEventRoleOnDenial2',
-    'useUnverifiedRole', 'punishmentsWarnings', 'punishmentsSuspensions', 'punishmentsMutes', 'allowAdditionalCompletes', 'miniBossGuessing', 'logServerLeave']
+    'useUnverifiedRole', 'punishmentsWarnings', 'punishmentsSuspensions', 'punishmentsMutes', 'allowAdditionalCompletes', 'miniBossGuessing', 'logServerLeave', 'isLogAssistsCapped']
 const numerical = ['ticketlimit', 'supporterlimit', 'keyalertsage', 'waitnewkeyalert', 'prunerushersoffset',
     'forwardedModmailMessage', 'motmgLeaderboard', 'serverLeaveChannel',
     `milestoneStartTimestamp`, 'timestamp1', 'timestamp2', 'timestamp3', 'timestamp4', 'timestamp5', 'timestamp6', 'timestamp7',
-    `timestamp8`, 'timestamp9', 'timestamp10', 'timestamp11', 'timestamp12', 'timestamp13', 'timestamp14', 'timestamp15']
+    `timestamp8`, 'timestamp9', 'timestamp10', 'timestamp11', 'timestamp12', 'timestamp13', 'timestamp14', 'timestamp15', 'logAssistsCap']
 const runreqs = ['weapon', 'ability', 'armor', 'ring']
 const autoveri = ['fame', 'stars', 'realmage', 'discordage', 'deathcount']
 const vetverireqs = ['maxed', 'meleemaxed', 'runs']
