@@ -114,7 +114,7 @@
                 "currentweek": "parsecurrentweek",
                 "pastweeks": "pastparseweeks",
                 "values": [
-                    { "column": "currentweekparses", "emoji": ":mag", "name": "Parses", "value": 1 }
+                    { "column": "currentweekparses", "emoji": ":mag:", "name": "Parses", "value": 1 }
                 ]
             },
             {
