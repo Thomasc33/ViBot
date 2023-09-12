@@ -114,7 +114,21 @@
                 "currentweek": "parsecurrentweek",
                 "pastweeks": "pastparseweeks",
                 "values": [
-                    { "column": "currentweekparses", "name": "Parses", "value": 1 }
+                    { "column": "currentweekparses", "emoji": ":mag", "name": "Parses", "value": 1 }
+                ]
+            },
+            {
+                "id": "fameleader",
+                "name": "Fame Leader Quota",
+                "roles": ["fameLeader"],
+                "quota": [7],
+                "rollmax": [7],
+                "reset": "weekly",
+                "currentweek": "fameLeaderCurrentWeek",
+                "pastweeks": "fameLeaderPastWeeks",
+                "values": [
+                    { "column": "currentWeekFameMinutesLead", "emoji": "<:fame:1004064940379869285>", "name": "Fame Minutes Lead", "value": 1 },
+                    { "column": "fameRollingQuota", "emoji": ":hourglass:", "name": "Rolled Quota", "value": 1, "rolling": true }
                 ]
             }
         ]
