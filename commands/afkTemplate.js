@@ -122,7 +122,7 @@ class AfkTemplate {
         // Validate that the template is OK to use
         this.#validateTemplateParameters() // Validate existence of AFK Template parameters
         if (!this.#template.enabled) throw new AfkTemplateValidationError(TemplateState.DISABLED, `This afk template is disabled.`)
-        if (!this.#template.commandsChannel) throw new AfkTemplateValidationError(TemplateState.INVALID_CHANNEL, `This afk template only runs in ${this.#template.inherits.map(parent => this.#guild.channels.cache.get(templates[this.#guild.id].parents[parent].commandsChannel)).join(', ')}.`)
+        if (!this.#template.commandsChannel) throw new AfkTemplateValidationError(TemplateState.INVALID_CHANNEL, `This afk template only runs in ${this.#template.inherits.map(parent => this.#guild.channels.cache.get(botSettings.raiding[templates[this.#guild.id].parents[parent].commandsChannel])).join(', ')}.`)
         this.#validateTemplateValues() // Validate values of AFK Template parameters
 
         // Populate all parameters used in AfkCheck
@@ -156,7 +156,7 @@ class AfkTemplate {
         let parentTemplate = null
         this.#template.inherits.forEach((parent) => {
             let currentParentTemplate = templates[this.#guild.id].parents[parent]
-            if (currentParentTemplate && currentParentTemplate.commandsChannel == this.#channel.id) {
+            if (currentParentTemplate && this.#botSettings.raiding[currentParentTemplate.commandsChannel] == this.#channel.id) {
                 parentTemplate = currentParentTemplate
                 this.#inherit = parent
             }
@@ -329,11 +329,13 @@ class AfkTemplate {
     }
 
     #validateTemplateCategory(category) {
-        return this.#guild.channels.cache.filter(c => c.type == Discord.ChannelType.GuildCategory).find(c => c.name.toLowerCase() === category)
+        if (!this.#botSettings.raiding[category]) return false
+        return this.#guild.channels.cache.filter(c => c.type == Discord.ChannelType.GuildCategory).find(c => c.name.toLowerCase() === this.#botSettings.raiding[category])
     }
 
     #validateTemplateChannel(channel, guild = this.#guild) {
-        return guild.channels.cache.get(channel)
+        if (!this.#botSettings.raiding[channel]) return false
+        return guild.channels.cache.get(this.#botSettings.raiding[channel])
     }
 
     #validateTemplateRole(role) {
@@ -381,17 +383,17 @@ class AfkTemplate {
         if (this.minimumStaffRoles == [] || this.minimumStaffRoles == [[]] && this.#botSettings.commandsRolePermissions["afk"]) this.minimumStaffRoles = [[this.#guild.roles.cache.get(this.#botSettings.roles[this.#botSettings.commandsRolePermissions["afk"]])]]
         if (this.minimumStaffRoles == [] || this.minimumStaffRoles == [[]]) this.minimumStaffRoles = [[this.#guild.roles.cache.get(this.#botSettings.roles[this.#bot.commands.get("afk").role])]]
         this.raidInfoChannel = this.#guild.channels.cache.get(this.#botSettings.channels.runlogs)
-        this.raidCategory = this.#guild.channels.cache.filter(c => c.type == Discord.ChannelType.GuildCategory).find(c => c.name.toLowerCase() === this.#template.category)
+        this.raidCategory = this.#guild.channels.cache.filter(c => c.type == Discord.ChannelType.GuildCategory).find(c => c.name.toLowerCase() === this.#botSettings.raiding[this.#template.category])
         this.raidPartneredStatusChannels = {}
         Object.keys(this.#template.partneredStatusChannels).forEach((guild) => this.raidPartneredStatusChannels[guild] = { channels: null }) 
         for (let i in this.#template.partneredStatusChannels) {
             let guild = this.#bot.guilds.cache.get(i)
-            this.raidPartneredStatusChannels[i] = this.#template.partneredStatusChannels[i].channels.map(channel => guild.channels.cache.get(channel))
+            this.raidPartneredStatusChannels[i] = this.#template.partneredStatusChannels[i].channels.map(channel => guild.channels.cache.get(this.#botSettings.raiding[channel]))
         }
-        this.raidTemplateChannel = this.#guild.channels.cache.get(this.#template.templateChannel)
-        this.raidStatusChannel = this.#guild.channels.cache.get(this.#template.statusChannel)
-        this.raidCommandChannel = this.#guild.channels.cache.get(this.#template.commandsChannel)
-        this.raidActiveChannel = this.#guild.channels.cache.get(this.#template.activeChannel)
+        this.raidTemplateChannel = this.#guild.channels.cache.get(this.#botSettings.raiding[this.#template.templateChannel])
+        this.raidStatusChannel = this.#guild.channels.cache.get(this.#botSettings.raiding[this.#template.statusChannel])
+        this.raidCommandChannel = this.#guild.channels.cache.get(this.#botSettings.raiding[this.#template.commandsChannel])
+        this.raidActiveChannel = this.#guild.channels.cache.get(this.#botSettings.raiding[this.#template.activeChannel])
         this.logName = this.#template.logName
         this.name = this.#template.name
         this.vcOptions = this.#template.vcOptions
@@ -542,7 +544,7 @@ module.exports = { AfkTemplate, TemplateVCOptions, TemplateVCState, TemplateButt
                 let textShow = `There are currently \`${raidIDs.length}\` afk checks.`
                 let indexShow = 0
                 for (let raidID of raidIDs) {
-                    textShow += `\n\`\`${indexShow+1}.\`\` ${bot.afkChecks[raidID].afkTemplate.name} by ${bot.afkChecks[raidID].leader} at <t:${Math.floor(bot.afkChecks[raidID].time/1000)}:f> is ${bot.afkChecks[raidID].active ? 'active' : 'inactive'}`
+                    textShow += `\n\`\`${indexShow+1}.\`\` ${bot.afkChecks[raidID].afkTemplate.name} by ${bot.afkChecks[raidID].leader} at <t:${Math.floor(bot.afkChecks[raidID].time/1000)}:f> is ${bot.afkModules[raidID].active ? 'active' : 'inactive'}`
                     indexShow++
                 }
                 return await message.reply({ embeds: [createEmbed(message, textShow, null)] })
@@ -554,7 +556,7 @@ module.exports = { AfkTemplate, TemplateVCOptions, TemplateVCState, TemplateButt
                 let textDelete = `There are currently \`${raidIDs.length}\` afk checks.`
                 let indexDelete = 0
                 for (let raidID of raidIDs) {
-                    textDelete += `\n\`\`${indexDelete+1}.\`\` ${bot.afkChecks[raidID].afkTemplate.name} by ${bot.afkChecks[raidID].leader} at <t:${Math.floor(bot.afkChecks[raidID].time/1000)}:f> is ${bot.afkChecks[raidID].active ? 'active' : 'inactive'}`
+                    textDelete += `\n\`\`${indexDelete+1}.\`\` ${bot.afkChecks[raidID].afkTemplate.name} by ${bot.afkChecks[raidID].leader} at <t:${Math.floor(bot.afkChecks[raidID].time/1000)}:f> is ${bot.afkModules[raidID].active ? 'active' : 'inactive'}`
                     deleteMenu.addOptions({ label: `${indexDelete+1}. ${bot.afkChecks[raidID].afkTemplate.name} by ${bot.afkChecks[raidID].leader.displayName}`, value: raidID })
                     indexDelete++
                 }
@@ -563,10 +565,14 @@ module.exports = { AfkTemplate, TemplateVCOptions, TemplateVCState, TemplateButt
                 const {value: raidID, interaction: subInteraction} = await message.selectPanel(textDelete, null, deleteMenu, 30000, false, true)
                 if (!raidID) return
                 delete bot.afkChecks[raidID]
+                delete bot.afkModules[raidID]
                 fs.writeFileSync('./data/afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot, message.guild) })
                 return await message.reply({ embeds: [createEmbed(message, `Afk check \`${raidID}\` has been deleted.`, null)] })
             case 'reset':
-                for (let raidID of raidIDs) delete bot.afkChecks[raidID]
+                for (let raidID of raidIDs) {
+                    delete bot.afkChecks[raidID]
+                    delete bot.afkModules[raidID]
+                }
                 fs.writeFileSync('./data/afkChecks.json', JSON.stringify(bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, bot, message.guild) })
                 return await message.reply({ embeds: [createEmbed(message, `\`${raidIDs.length}\` afk checks have been reset.`, null)] })
         }

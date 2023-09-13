@@ -3,7 +3,7 @@ const vr_gamers = ['277636691227836419', '130850662522159104', '2582864811672207
 module.exports = {
     name: 'memes',
     alias: ['phd', 'xbox', 'cwinner', 'eury', 'nefiah', 'abysm', 'drunkdevil', 'shiba',
-    'rj', 'vr', 'pusbal', 'bantering', 'chevyo', 'ruler', 'shut', 'grizzell', 'raynulf'],
+    'rj', 'vr', 'pusbal', 'bantering', 'chevyo', 'ruler', 'shut', 'grizzell', 'raynulf', 'maxeff'],
     role: 'eventrl',
     async execute(message, args, bot) {
         const settings = bot.settings[message.guild.id]
@@ -72,6 +72,9 @@ module.exports = {
             case 'raynulf':
                 message.channel.send({ content: '<@147858187377311745>', files: ['https://cdn.discordapp.com/attachments/1127510518857465986/1138155209995079831/8327DED3-C27A-407A-AE1B-AC95ECBA815D.mov'] })
                     break
+            case 'maxeff':
+                message.channel.send({ content: 'Please know that Upper Max Eff staff have taken a firm stance on the matter. If staff in other discords knowingly call our loc and do not check if it is taken, they will be suspended, with repeated offenses leading to permanent expulsion from Max Eff. Just because it is a free rune event does not mean time and effort go into our runs. If people cannot respect our RLs time and effort organizing runs, and our potato tricksters speed clearing realms, and our damage pumpers, then they will not be welcome to our community. Thank you for your understanding.' })
+                break
         }
     }
 }

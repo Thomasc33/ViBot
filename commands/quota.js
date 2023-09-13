@@ -170,6 +170,7 @@ module.exports = {
                 const roles = quota.roles.map(r => channel.guild.roles.cache.get(settings.roles[r])?.id).filter(r => r);
                 var ignore = (guildQuotas.ignoreRolesDisplay || []).map(r => settings.roles[r]).filter(r => r);
                 if (quota.ignoreRolesDisplay) ignore = (quota.ignoreRolesDisplay || []).map(r => settings.roles[r]).filter(r => r);
+                let position = 1
                 for (const idx in rows) {
                     const user = rows[idx];
                     const member = channel.guild.members.cache.get(user.id);
@@ -177,11 +178,13 @@ module.exports = {
                         member.roles.cache.filter(r => ignore.includes(r.id)).size)
                         continue;
                     csvData += `${user.id},${member?.nickname},${user.unrolled},${user.total}\n`;
-                    let result = `**[${parseInt(idx) + 1}]** <@!${user.id}>:\nPoints: \`${user.total}\` (` +
-                        quota.values.map(v => `${v.emoji || v.name}: \`${user[v.column] || 0}\``).join(', ') + ')';
+                    let result = `\`${position.toString().padStart(3, ' ')}.\` <@!${user.id}>\n**Points** \`${user.total}\` (` +
+                        quota.values.filter(v => user[v.column] != 0).map(v => `${v.emoji || v.name} \`${user[v.column] || 0}\``).join(', ') + ')';
                     runCount += quota.values.map(v => v.isRun ? user[v.column] : 0).reduce((a, b) => a + b, 0);
                     fitStringIntoEmbed(embeds, embed, result);
+                    position++
                 }
+                fitStringIntoEmbed(embeds, embed, '\n');
                 rows = rows.map(r => r.id);
                 await channel.guild.members.cache.filter(m => m.roles.cache.filter(r => roles.includes(r.id)).size && !m.roles.cache.filter(r => ignore.includes(r.id)).size).each(m => {
                     if (!rows.includes(m.id)) {

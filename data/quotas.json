@@ -20,7 +20,9 @@
                     { "column": "currentweekShatters", "emoji": "<:forgottenking:1008068892071055512>", "name": "Shatters", "value": 2.5, "isRun": true },
                     { "column": "currentweekFungals", "emoji": "<:crystal:1008068893056696410>", "name": "Fungals", "value": 1, "isRun": true },
                     { "column": "currentweekNests", "emoji": "<:queenbee:1008068890791780433>", "name": "Nests", "value": 0.5, "isRun": true },
+                    { "column": "currentWeekAdvancedNestsLead", "emoji": "<:advancedNestBee:1150587338511102102>", "name": "Advanced Nests", "value": 0.5, "isRun": true },
                     { "column": "currentweekSteamwork", "emoji": "<:SteamworksBoss:1050156577920917574>", "name": "Steamworks", "value": 1, "isRun": true },
+                    { "column": "currentWeekAdvancedSteamworksLead", "emoji": "<:exaltedAdvancedSteamworks:1129901540082208788>", "name": "Advanced Steamworks", "value": 1, "isRun": true },
                     { "column": "currentweekMoonlight", "emoji": "<:MoonlightBoss:1090178399252783104>", "name": "Moonlight", "value": 1, "isRun": true },
                     { "column": "currentweekFullskipsLead", "emoji": "<:fullskipIcon:1127669464146657400>", "name": "Fullskips", "value": 1, "isRun": true },
                     { "column": "currentweekAssists", "emoji": ":handshake:", "name": "Assists", "value": 0.5 },
@@ -47,6 +49,20 @@
                 "values": [
                     { "column": "currentweekparses", "name": "Parses", "value": 1 }
                 ]
+            },
+            {
+                "id": "fameleader",
+                "name": "Fame Leader Quota",
+                "roles": ["fameLeader"],
+                "quota": [7],
+                "rollmax": [7],
+                "reset": "weekly",
+                "currentweek": "fameLeaderCurrentWeek",
+                "pastweeks": "fameLeaderPastWeeks",
+                "values": [
+                    { "column": "currentWeekFameMinutesLead", "emoji": "<:fame:1004064940379869285>", "name": "Fame Minutes Lead", "value": 1 },
+                    { "column": "fameRollingQuota", "emoji": ":hourglass:", "name": "Rolled Quota", "value": 1, "rolling": true }
+                ]
             }
         ]
     },
@@ -71,14 +87,15 @@
                     { "column": "currentweekShatters", "emoji": "<:forgottenking:1008068892071055512>", "name": "Shatters", "value": 2.5, "isRun": true },
                     { "column": "currentweekFungals", "emoji": "<:crystal:1008068893056696410>", "name": "Fungals", "value": 1, "isRun": true },
                     { "column": "currentweekNests", "emoji": "<:queenbee:1008068890791780433>", "name": "Nests", "value": 0.5, "isRun": true },
+                    { "column": "currentWeekAdvancedNestsLead", "emoji": "<:advancedNestBee:1150587338511102102>", "name": "Advanced Nests", "value": 0.5, "isRun": true },
                     { "column": "currentweekSteamwork", "emoji": "<:SteamworksBoss:1050156577920917574>", "name": "Steamworks", "value": 1, "isRun": true },
+                    { "column": "currentWeekAdvancedSteamworksLead", "emoji": "<:exaltedAdvancedSteamworks:1129901540082208788>", "name": "Advanced Steamworks", "value": 1, "isRun": true },
                     { "column": "currentweekMoonlight", "emoji": "<:MoonlightBoss:1090178399252783104>", "name": "Moonlight", "value": 1, "isRun": true },
                     { "column": "currentweekFullskipsLead", "emoji": "<:fullskipIcon:1127669464146657400>", "name": "Fullskips", "value": 1, "isRun": true },
                     { "column": "currentweekAssists", "emoji": ":handshake:", "name": "Assists", "value": 0.5 },
                     { "column": "currentweekFeedback", "emoji": "<:feedback:858920770806087710>", "name": "Feedback", "value": 1 },
                     { "column": "currentweekshattersFeedback", "emoji": "<:shattersFeedback:1071433377879707728>", "name": "Shatters Feedback", "value": 2 },
                     { "column": "rollingQuota", "emoji": ":hourglass:", "name": "Rolled Quota", "value": 1, "rolling": true }
-
                 ],
                 "voteInfo": {
                     "roles": ["almostrl"],
@@ -97,7 +114,21 @@
                 "currentweek": "parsecurrentweek",
                 "pastweeks": "pastparseweeks",
                 "values": [
-                    { "column": "currentweekparses", "name": "Parses", "value": 1 }
+                    { "column": "currentweekparses", "emoji": ":mag:", "name": "Parses", "value": 1 }
+                ]
+            },
+            {
+                "id": "fameleader",
+                "name": "Fame Leader Quota",
+                "roles": ["fameLeader"],
+                "quota": [7],
+                "rollmax": [7],
+                "reset": "weekly",
+                "currentweek": "fameLeaderCurrentWeek",
+                "pastweeks": "fameLeaderPastWeeks",
+                "values": [
+                    { "column": "currentWeekFameMinutesLead", "emoji": "<:fame:1004064940379869285>", "name": "Fame Minutes Lead", "value": 1 },
+                    { "column": "fameRollingQuota", "emoji": ":hourglass:", "name": "Rolled Quota", "value": 1, "rolling": true }
                 ]
             }
         ]
@@ -149,7 +180,22 @@
             "values": [
                 { "column": "currentweekEventso3", "name": "Events", "value": 1 }
             ]
-        }]
+        },
+        {
+            "id": "fameleader",
+            "name": "Fame Leader Quota",
+            "roles": ["fameLeader"],
+            "quota": [7],
+            "rollmax": [7],
+            "reset": "weekly",
+            "currentweek": "fameLeaderCurrentWeek",
+            "pastweeks": "fameLeaderPastWeeks",
+            "values": [
+                { "column": "currentWeekFameMinutesLead", "emoji": "<:fame:1004064940379869285>", "name": "Fame Minutes Lead", "value": 1 },
+                { "column": "fameRollingQuota", "emoji": ":hourglass:", "name": "Rolled Quota", "value": 1, "rolling": true }
+            ]
+        }
+    ]
     },
     "934611202787643412": {
         "totalUnexcused": "totalUnexcusedo3",

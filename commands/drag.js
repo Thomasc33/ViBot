@@ -55,6 +55,7 @@ module.exports = {
                 embed = updateEmbed(embed, toBeMoved, haveBeenMoved)
                 await messageDashboard.edit({ embeds: [embed], components: [] })
                 clearInterval(timer);
+                messageDashboardCollector.stop()
             }
             if (!interval) {
                 await endProcess()
