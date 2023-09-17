@@ -6387,13 +6387,7 @@
                 "minStaffRoles": {
                     "exalt": [
                         [
-                            "eventrl"
-                        ],
-                        [
-                            "almostrl"
-                        ],
-                        [
-                            "rl"
+                            "vetrl"
                         ],
                         [
                             "lostboomer"
@@ -26285,13 +26279,7 @@
                 "minStaffRoles": {
                     "exalt": [
                         [
-                            "eventrl"
-                        ],
-                        [
-                            "almostrl"
-                        ],
-                        [
-                            "rl"
+                            "vetrl"
                         ],
                         [
                             "lostboomer"
@@ -27052,13 +27040,7 @@
                 "minStaffRoles": {
                     "exalt": [
                         [
-                            "eventrl"
-                        ],
-                        [
-                            "almostrl"
-                        ],
-                        [
-                            "rl"
+                            "vetrl"
                         ],
                         [
                             "lostboomer"
@@ -31849,7 +31831,7 @@
                 "logName": "o3runs",
                 "vcOptions": 2,
                 "startDelay": null,
-                "cap": null,
+                "cap": 75,
                 "capButton": null,
                 "phases": 2,
                 "body": [
@@ -33092,7 +33074,7 @@
                 "logName": "o3runs",
                 "vcOptions": 0,
                 "startDelay": null,
-                "cap": null,
+                "cap": 75,
                 "capButton": null,
                 "phases": 2,
                 "body": [
@@ -36313,10 +36295,10 @@
                     "cultping"
                 ],
                 "aliases": [
-                    "fcOne",
+                    "fc",
                     "fcultOne",
-                    "fcOne1",
-                    "fcultOne1"
+                    "fc1",
+                    "fcult1"
                 ],
                 "logName": "cultRuns",
                 "vcOptions": 2,
@@ -40097,13 +40079,7 @@
                 "minStaffRoles": {
                     "exalt": [
                         [
-                            "eventrl"
-                        ],
-                        [
-                            "almostrl"
-                        ],
-                        [
-                            "rl"
+                            "vetrl"
                         ],
                         [
                             "lostboomer"
@@ -59995,13 +59971,7 @@
                 "minStaffRoles": {
                     "exalt": [
                         [
-                            "eventrl"
-                        ],
-                        [
-                            "almostrl"
-                        ],
-                        [
-                            "rl"
+                            "vetrl"
                         ],
                         [
                             "lostboomer"
@@ -60762,13 +60732,7 @@
                 "minStaffRoles": {
                     "exalt": [
                         [
-                            "eventrl"
-                        ],
-                        [
-                            "almostrl"
-                        ],
-                        [
-                            "rl"
+                            "vetrl"
                         ],
                         [
                             "lostboomer"
@@ -65559,7 +65523,7 @@
                 "logName": "o3runs",
                 "vcOptions": 2,
                 "startDelay": null,
-                "cap": null,
+                "cap": 75,
                 "capButton": null,
                 "phases": 2,
                 "body": [
@@ -66802,7 +66766,7 @@
                 "logName": "o3runs",
                 "vcOptions": 0,
                 "startDelay": null,
-                "cap": null,
+                "cap": 75,
                 "capButton": null,
                 "phases": 2,
                 "body": [
