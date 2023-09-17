@@ -12,13 +12,12 @@ const redisConnect = require('./redis.js').setup
 const botSettings = require('./settings.json')
 const ErrorLogger = require('./lib/logError')
 // Commands
-const emoji = require('./commands/emoji.js');
+const emoji = require('./commands/emoji.js')
 const globalSetup = require('./commands/setup')
 const afkCheck = require('./commands/afkCheck.js')
 const vibotChannels = require('./commands/vibotChannels')
 const vetVerification = require('./commands/vetVerification')
 const verification = require('./commands/verification')
-const motmg = require('./commands/motmg.js').Motmg
 // Specific Jobs
 const { UnbanVet, Unsuspend } = require('./jobs/unban.js')
 const { KeyAlert } = require('./jobs/keyAlert.js')
@@ -26,11 +25,11 @@ const { Mute } = require('./jobs/mute.js')
 const { BiWeeklyQuota, MonthlyQuota } = require('./jobs/quota.js')
 const { BotStatusUpdate } = require('./jobs/botstatus.js')
 const { iterServers } = require('./jobs/util.js')
-const dbSetup = require('./dbSetup.js');
+const dbSetup = require('./dbSetup.js')
 
 async function deployCommands(bot, guild) {
     // Organize commands
-    const slashCommands = bot.commands.filter(c => c.getSlashCommandData).map(c => c.getSlashCommandData(guild)).filter(c => c).flat();
+    const slashCommands = bot.commands.filter(c => c.getSlashCommandData).map(c => c.getSlashCommandData(guild)).filter(c => c).flat()
 
     // Deploy commands
     const rest = new Discord.REST({ version: '10' }).setToken(require('./settings.json').key)
@@ -57,21 +56,21 @@ function startAPI() {
             max: 10
         })
 
-        app.use(express.urlencoded({ extended: true }));
-        app.use(express.json());
+        app.use(express.urlencoded({ extended: true }))
+        app.use(express.json())
         app.use(cookieParser())
         app.use(cors())
         app.use('/api/', apiLimit)
         app.use('/api', require('./lib/API'))
 
         app.use((err, req, res, next) => {
-            if (err) return res.status(err.status).send({ status: err.status, message: err.message });
+            if (err) return res.status(err.status).send({ status: err.status, message: err.message })
 
-            const d = new Date();
-            const formatted_date = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
-            const log = `[${formatted_date}] ${req.method}:${req.url} ${res.statusCode}`;
-            console.log(log);
-            next();
+            const d = new Date()
+            const formattedDate = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`
+            const log = `[${formattedDate}] ${req.method}:${req.url} ${res.statusCode}`
+            console.log(log)
+            next()
         })
 
         const httpsServer = credentials.key && credentials.cert ? https.createServer(credentials, app) : http.createServer(app)
@@ -83,11 +82,11 @@ function startAPI() {
 async function setup(bot) {
     // Check to see if the bot was restarted and send message to channel that bot is back online
     try {
-        const restart_info = require('./data/restart_channel.json')
-        if (restart_info && restart_info.channel && restart_info.guild) {
-            const guild = bot.guilds.cache.get(restart_info.guild)
+        const restartInfo = require('./data/restart_channel.json')
+        if (restartInfo && restartInfo.channel && restartInfo.guild) {
+            const guild = bot.guilds.cache.get(restartInfo.guild)
             if (guild) {
-                const channel = guild.channels.cache.get(restart_info.channel)
+                const channel = guild.channels.cache.get(restartInfo.channel)
                 if (channel) {
                     channel.send("I'm back :flushed:")
                     fs.writeFileSync('./data/restart_channel.json', '{}')
@@ -108,7 +107,7 @@ async function setup(bot) {
     await redisConnect()
 
     // to hide dev server
-    if (bot.user.id == botSettings.prodBotId) bot.devServers.push('701483950559985705');
+    if (bot.user.id == botSettings.prodBotId) { bot.devServers.push('701483950559985705') }
 
     // generate default settings
     iterServers(bot, (bot, g) => globalSetup.autoSetup(g, bot))
@@ -126,7 +125,6 @@ async function setup(bot) {
     const biWeeklyQuotaJob = new BiWeeklyQuota(bot)
     const monthlyQuotaJob = new MonthlyQuota(bot)
     const botStatusUpdateJob = new BotStatusUpdate(bot)
-    const motmgJob = new motmg(bot)
 
     unbanVetJob.runAtInterval(120000)
     unsuspendJob.runAtInterval(60000)
@@ -136,8 +134,6 @@ async function setup(bot) {
     monthlyQuotaJob.schedule('0 0 1 * *')
     await botStatusUpdateJob.runOnce()
     botStatusUpdateJob.runAtInterval(30000)
-    await motmgJob.runOnce()
-    motmgJob.runAtInterval(900000)
 
     // initialize components (eg. modmail, verification)
     iterServers(bot, (bot, g) => {
@@ -145,8 +141,8 @@ async function setup(bot) {
         const db = dbSetup.getDB(g.id)
         afkCheck.loadBotAfkChecks(g, bot, db)
         // if (bot.settings[g.id].backend.modmail) modmail.init(g, bot, db).catch(er => { ErrorLogger.log(er, bot, g); })
-        if (bot.settings[g.id].backend.verification) verification.init(g, bot, db).catch(er => { ErrorLogger.log(er, bot, g); })
-        if (bot.settings[g.id].backend.vetverification) vetVerification.init(g, bot, db).catch(er => { ErrorLogger.log(er, bot, g); })
+        if (bot.settings[g.id].backend.verification) verification.init(g, bot, db).catch(er => { ErrorLogger.log(er, bot, g) })
+        if (bot.settings[g.id].backend.vetverification) vetVerification.init(g, bot, db).catch(er => { ErrorLogger.log(er, bot, g) })
     })
 
     // Initialize the bot's slash commands
