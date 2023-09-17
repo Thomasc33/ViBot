@@ -130,10 +130,11 @@ Promise.all(botSettings.config?.guildIds.map(guildId => {
         // Wait 1s before reading from cache
         settingsEventSource.addEventListener('message', m => {
             console.log(`Updated settings for ${guildId}`)
-            bot.settings[guildId] = JSON.parse(m.data);
+            const data = JSON.parse(m.data);
+            bot.settings[guildId] = data;
             bot.settingsTimestamp[guildId] = m.lastEventId;
-            res()
-            fs.writeFile(`data/guildSettings.${guildId}.cache.json`, m.data, () => {})
+            res();
+            fs.writeFile(`data/guildSettings.${guildId}.cache.json`, JSON.stringify({logId: m.lastEventId, ...m.data}), () => {});
         })
 
         // Read from cache
@@ -141,8 +142,11 @@ Promise.all(botSettings.config?.guildIds.map(guildId => {
             if (err) return
             fileReadTimeout = setTimeout(() => {
                 console.log(`Could not fetch settings for ${guildId} reading cache`)
-                bot.settings[guildId] = JSON.parse(fs.readFileSync(cacheFile))
-                res()
+                const data = JSON.parse(fs.readFileSync(cacheFile));
+                bot.settingsTimestamp[guildId] = data.logId;
+                delete data.logId;
+                bot.settings[guildId] = data;
+                res();
             }, 1000)
         })
     }).then(() => clearTimeout(fileReadTimeout))
