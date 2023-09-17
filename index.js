@@ -125,16 +125,16 @@ Promise.all(botSettings.config?.guildIds.map(guildId => {
     settingsEventSource.addEventListener('error', err => ErrorLogger.log(err, bot))
     settingsEventSource.addEventListener('open', () => console.log(`Settings SEE Socket opened for ${guildId}`))
     const cacheFile = `data/guildSettings.${guildId}.cache.json`
-    let fileReadTimeout;
+    let fileReadTimeout
     return new Promise(res => {
         // Wait 1s before reading from cache
         settingsEventSource.addEventListener('message', m => {
             console.log(`Updated settings for ${guildId}`)
-            const data = JSON.parse(m.data);
-            bot.settings[guildId] = data;
-            bot.settingsTimestamp[guildId] = m.lastEventId;
-            res();
-            fs.writeFile(`data/guildSettings.${guildId}.cache.json`, JSON.stringify({logId: m.lastEventId, ...m.data}), () => {});
+            const data = JSON.parse(m.data)
+            bot.settings[guildId] = data
+            bot.settingsTimestamp[guildId] = m.lastEventId
+            res()
+            fs.writeFile(`data/guildSettings.${guildId}.cache.json`, JSON.stringify({ logId: m.lastEventId, ...m.data }), () => {})
         })
 
         // Read from cache
@@ -142,17 +142,17 @@ Promise.all(botSettings.config?.guildIds.map(guildId => {
             if (err) return
             fileReadTimeout = setTimeout(() => {
                 console.log(`Could not fetch settings for ${guildId} reading cache`)
-                const data = JSON.parse(fs.readFileSync(cacheFile));
-                bot.settingsTimestamp[guildId] = data.logId;
-                delete data.logId;
-                bot.settings[guildId] = data;
-                res();
+                const data = JSON.parse(fs.readFileSync(cacheFile))
+                bot.settingsTimestamp[guildId] = data.logId
+                delete data.logId
+                bot.settings[guildId] = data
+                res()
             }, 1000)
         })
     }).then(() => clearTimeout(fileReadTimeout))
 }) ?? []).then(() => {
     bot.login(botSettings.key)
-});
+})
 
 // ===========================================================================================================
 // Process Event Listening
