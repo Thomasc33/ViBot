@@ -136,6 +136,16 @@
                 },
                 {
                     "name": null,
+                    "emoji": "oryxThree",
+                    "row": "oryxLead"
+                },
+                {
+                    "name": "Silent Oryx",
+                    "emoji": "oryx",
+                    "row": "silentOryxLead"
+                },
+                {
+                    "name": null,
                     "emoji": "forgottenking",
                     "row": "shattersLead"
                 },

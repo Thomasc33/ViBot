@@ -2,24 +2,24 @@ const fs = require('fs')
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
 const roles = [
-    'admin', 'moderator', 'officer', 'headrl', 'headdev', 'assistantdev', 'vetrl', 'fsvrl', 'mrvrl', 'security', 'fullskip', 'developer', 'rl', 'almostrl',
+    'admin', 'moderator', 'officer', 'headrl', 'headdev', 'assistantdev', 'vetrl', 'fsvrl', 'mrvrl', 'security',
+    'fullskip', 'developer', 'rl', 'almostrl',
     'trialrl', 'headeventrl', 'eventrl', 'minimumStaffRole', 'fameLeader',
     'rusher', 'lol', 'accursed', 'celestial', 'vetraider', 'vetraider2', 'vetraider3', 'vetraider4', 'vetraider5', 'raider', 'eventraider', 'muted',
     'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'keyjesus', 'moddedkey', 'topkey', 'bottomkey', 'cultping', 'voidping', 'shattsReact', 'hmShattsReact', 'fungalReact', 'nestReact',
     'fskipReact', 'fameReact', 'accursedReact', 'rcPing', 'o3Ping', 'eventBoi', 'veteventrl', 'lostboomer', 'forgotten',
     'priest', 'warden', 'vetaffiliate', 'affiliatestaff', `toprune`, `bottomrune`, 'helper', 'steamworksping', 'moonlightping', 'eventBoiPing', 'advancedSteamworksPing', 'advancedNestPing',
-    'almostShattersBanner', 'almostMoonlightBanner', 'hallsBanner', 'shattersBanner', 'fullskipBanner', 'hmShattersBanner', 'moonlightBanner', 'vetHallsBanner', 'vetShattersBanner', 'vetFullskipBanner', 'vetHmShattersBanner', 'vetMoonlightBanner',
-    'supporterTierOne', 'supporterTierTwo', 'supporterTierThree', 'supporterTierFour', 'supporterTierFive', 'supporterTierSix', 'unverified',
-    'motmgTeam1', 'motmgTeam2', 'motmgTeam3', 'motmgTeam4', 'motmgTeam5', 'motmgTeam6', 'motmgTeam7', 'motmgTeam8', 'motmgTeam9', 'motmgTeam10',
-    'motmgTeam11', 'motmgTeam12', 'motmgTeam13', 'motmgTeam14', 'motmgTeam15', 'motmgTeam16', 'motmgTeam17', 'motmgTeam18', 'motmgTeam19', 'motmgTeam20',
-    'motmgTeam21', 'motmgTeam22', 'motmgTeam23', 'motmgTeam24', 'motmgTeam25', 'motmgTeam26', 'motmgTeam27', 'motmgTeam28', 'motmgTeam29', 'motmgTeam30',
-    'minimumServerLeaveRole'
+    'almostShattersBanner', 'almostMoonlightBanner', 'almostOryxBanner', 'oryxBanner', 'veteranOryxBanner',
+    'almostHallsBanner', 'hallsBanner', 'shattersBanner', 'fullskipBanner', 'hmShattersBanner',
+    'moonlightBanner', 'vetHallsBanner', 'vetShattersBanner', 'vetFullskipBanner', 'vetHmShattersBanner',
+    'vetMoonlightBanner', 'trialHallsBanner', 'trialFullskipBanner', 'trialShattersBanner', 'trialOryxBanner',
+    'supporterTierOne', 'supporterTierTwo', 'supporterTierThree', 'supporterTierFour', 'supporterTierFive', 'supporterTierSix', 'unverified', 'minimumServerLeaveRole'
 ]
 const channels = ['modmail', 'verification', 'manualverification', 'vetverification', 'manualvetverification', 'verificationlog', 'accursedverification', 'modlogs', 'history', 'suspendlog',
     'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel',
     'runlogs', 'dmcommands', 'veriactive', 'pointlogging',
     'veriattempts', 'modmailinfo', 'parsecurrentweek', 'pastparseweeks', 'roleassignment', 'botstatus', 'keyalerts', 'activitylog', 'raidingrules',
-    'forwardedModmailMessage', 'motmgLeaderboard', 'fameLeaderCurrentWeek', 'fameLeaderPastWeeks']
+    'forwardedModmailMessage', 'fameLeaderCurrentWeek', 'fameLeaderPastWeeks']
 const raiding = ['category1', 'templateChannel1', 'partneredStatusChannel1', 'statusChannel1', 'commandsChannel1', 'activeChannel1',
     'category2', 'templateChannel2', 'partneredStatusChannel2', 'statusChannel2', 'commandsChannel2', 'activeChannel2',
     'category3', 'templateChannel3', 'partneredStatusChannel3', 'statusChannel3', 'commandsChannel3', 'activeChannel3',
@@ -37,7 +37,7 @@ const backend = ['modmail', 'verification', 'vetverification', 'points', 'suppor
     'onlyUpperStaffSuspendStaff', 'giveEventRoleOnDenial2',
     'useUnverifiedRole', 'punishmentsWarnings', 'punishmentsSuspensions', 'punishmentsMutes', 'allowAdditionalCompletes', 'miniBossGuessing', 'logServerLeave', 'isLogAssistsCapped']
 const numerical = ['ticketlimit', 'supporterlimit', 'keyalertsage', 'waitnewkeyalert', 'prunerushersoffset',
-    'forwardedModmailMessage', 'motmgLeaderboard', 'serverLeaveChannel',
+    'forwardedModmailMessage', 'serverLeaveChannel',
     `milestoneStartTimestamp`, 'timestamp1', 'timestamp2', 'timestamp3', 'timestamp4', 'timestamp5', 'timestamp6', 'timestamp7',
     `timestamp8`, 'timestamp9', 'timestamp10', 'timestamp11', 'timestamp12', 'timestamp13', 'timestamp14', 'timestamp15', 'logAssistsCap']
 const runreqs = ['weapon', 'ability', 'armor', 'ring']

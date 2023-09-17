@@ -30,6 +30,22 @@
                     ]
                 },
                 {
+                    "prettyName": "Oryx Leading",
+                    "emoji": "oryxThree",
+                    "embedColor": "#990000",
+                    "dbRows": [
+                        "oryxLead"
+                    ]
+                },
+                {
+                    "prettyName": "Silent Oryx Leading",
+                    "emoji": "oryx",
+                    "embedColor": "#990000",
+                    "dbRows": [
+                        "silentOryxLead"
+                    ]
+                },
+                {
                     "prettyName": "Shatters Lead",
                     "emoji": "forgottenking",
                     "embedColor": "#467606",

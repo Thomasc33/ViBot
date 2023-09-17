@@ -77,6 +77,12 @@
             "name": "Miscellaneous Dungeons",
             "emojiId": "723001215184535553",
             "emoji": "<:pcave:723001215184535553>"
+        },
+        {
+            "role": "o3Ping",
+            "name": "Oryx Sanctuary",
+            "emojiId": "831047591096745984",
+            "emoji": "<:oryxThree:831047591096745984>"
         }
     ],
     "708026927721480254": [
@@ -193,6 +199,12 @@
             "name": "Miscellaneous Dungeons",
             "emojiId": "723001215184535553",
             "emoji": "<:pcave:723001215184535553>"
+        },
+        {
+            "role": "o3Ping",
+            "name": "Oryx Sanctuary",
+            "emojiId": "831047591096745984",
+            "emoji": "<:oryxThree:831047591096745984>"
         }
     ]
 }

@@ -26,9 +26,29 @@
             "moonlightLead",
             "moonlightPops",
             "totalUnexcused",
-            "fullskipsLead"
+            "fullskipsLead",
+            "advancedNestsLead",
+            "advancedSteamworksLead",
+            "oryxLead",
+            "silentOryxLead"
         ],
         "currentweeks": [
+            {
+                "case": "oryxLead",
+                "currentWeekName": "currentWeekOryxLead"
+            },
+            {
+                "case": "silentOryxLead",
+                "currentWeekName": "currentWeekSilentOryxLead"
+            },
+            {
+                "case": "advancedNestsLead",
+                "currentWeekName": "currentWeekAdvancedNestsLead"
+            },
+            {
+                "case": "advancedSteamworksLead",
+                "currentWeekName": "currentWeekSteamworksLead"
+            },
             {
                 "case": "cultsLead",
                 "currentWeekName": "currentweekCult"
