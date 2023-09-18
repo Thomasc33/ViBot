@@ -26,7 +26,7 @@ module.exports = {
                 if (!minStaffRoles) continue
                 if (!minStaffRoles.some(roles => roles.every(role => role ? message.member.roles.cache.has(role.id) : false))) continue
                 const reacts = template.reacts ? Object.keys(template.reacts).filter(react => template.reacts[react].onHeadcount) : []
-                let newTemplate = `\n${reacts[0] ? `${bot.storedEmojis[template.reacts[reacts[0]].emote].text}| ` : ``}\`${template.aliases.reduce((a, b) => a.length <= b.length ? a : b).padEnd(3)}\` | **${template.name}**`
+                let newTemplate = `\n${reacts[0] ? `${bot.storedEmojis[template.reacts[reacts[0]].emote].text}| ` : ``}\`${template.aliases.reduce((a, b) => a.length <= b.length ? a : b).padEnd(2)}\` | **${template.name.toString().substring(0, 13)}**`
                 if (parentTemplateValue[inherit].value[parentTemplateValue[inherit].field].length + newTemplate.length > 1024) {
                     parentTemplateValue[inherit].field++
                     parentTemplateValue[inherit].value.push('')
@@ -37,7 +37,7 @@ module.exports = {
         for (let template of parentTemplates) {
             if (!parentTemplateValue[template]) continue
             if (parentTemplateValue[template].value.length == 1 && !parentTemplateValue[template].value[0]) continue
-            parentTemplateValue[template].value.forEach((value, index) => templateEmbed.addFields({ name: `**${template.charAt(0).toUpperCase() + template.slice(1)}${index ? ` Cont.` : ``}**`, value: value, inline: true }))
+            parentTemplateValue[template].value.forEach((value, index) => templateEmbed.addFields({ name: `**${template.charAt(0).toUpperCase() + template.slice(1)}**`, value: value, inline: true }))
         }
         message.channel.send({ embeds: [templateEmbed] })
         message.react('✅')
