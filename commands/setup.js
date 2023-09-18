@@ -1,6 +1,7 @@
 const fs = require('fs')
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
+const configWebsite = !!require('../settings.json').config
 const roles = [
     'admin', 'moderator', 'officer', 'headrl', 'headdev', 'assistantdev', 'vetrl', 'fsvrl', 'mrvrl', 'security',
     'fullskip', 'developer', 'rl', 'almostrl',
@@ -88,6 +89,7 @@ module.exports = {
      * @param {*} db
      */
     async execute(message, args, bot, db) {
+        if (configWebsite) return message.reply(`Current settings version: \`${bot.settingsTimestamp[message.guild.id]}\` (<t:${Buffer.from(bot.settingsTimestamp[message.guild.id], 'hex').readUInt32BE()}:R>)`)
         if (!commands) commands = Array.from(bot.commands.keys())
         if (args.length == 0) {
             let setupEmbed = new Discord.EmbedBuilder()

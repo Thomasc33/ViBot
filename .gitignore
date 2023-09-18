@@ -3,6 +3,7 @@ node_modules/
 settings.json
 guildSettings.json
 data/afkChecks.json
+data/guildSettings.*.cache.json
 createdChannels.json
 emojis.json
 data/emojis.json
