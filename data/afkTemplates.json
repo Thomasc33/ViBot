@@ -2998,7 +2998,7 @@
                         "lifetime": 69
                     },
                     "PrimalArcana": {
-                        "emote": "PrimalArcana",
+                        "emote": "primalArcana",
                         "onHeadcount": true,
                         "start": 1,
                         "lifetime": 69
@@ -31828,7 +31828,7 @@
                     "oryxthird",
                     "oryxthetird"
                 ],
-                "logName": "o3runs",
+                "logName": "oryxRuns",
                 "vcOptions": 2,
                 "startDelay": null,
                 "cap": 75,
@@ -31899,7 +31899,7 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "incPops"
+                                    "incantationPops"
                                 ],
                                 "points": "incpop",
                                 "multiplier": null
@@ -31926,7 +31926,7 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "shieldRunePops"
+                                    "runeShieldPops"
                                 ],
                                 "points": "runepop",
                                 "multiplier": null
@@ -31953,7 +31953,7 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "swordRunePops"
+                                    "runeSwordPops"
                                 ],
                                 "points": "runepop",
                                 "multiplier": null
@@ -31980,7 +31980,7 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "helmetRunePops"
+                                    "runeHelmetPops"
                                 ],
                                 "points": "runepop",
                                 "multiplier": null
@@ -32105,6 +32105,1634 @@
                 "reacts": {
                     "Oryx3": {
                         "emote": "oryxThree",
+                        "onHeadcount": true,
+                        "start": 1,
+                        "lifetime": 2
+                    }
+                }
+            },
+            {
+                "templateID": 289,
+                "inherits": [
+                    "veteran",
+                    "normal"
+                ],
+                "category": null,
+                "templateChannel": null,
+                "partneredStatusChannels": null,
+                "statusChannel": null,
+                "commandsChannel": null,
+                "activeChannel": null,
+                "enabled": true,
+                "minStaffRoles": {
+                    "normal": [
+                        [
+                            "eventrl"
+                        ],
+                        [
+                            "almostrl"
+                        ],
+                        [
+                            "rl"
+                        ],
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ]
+                    ],
+                    "veteran": [
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "vetaffiliate"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ],
+                        [
+                            "fameLeader"
+                        ]
+                    ]
+                },
+                "minViewRaiderRoles": null,
+                "minJoinRaiderRoles": null,
+                "name": "Oryxmania",
+                "templateName": "Oryxmania",
+                "pingRoles": [
+                    "here",
+                    "o3Ping"
+                ],
+                "aliases": [
+                    "om",
+                    "o3",
+                    "oryx3",
+                    "oryxthird",
+                    "oryxthetird",
+                    "oryxmania"
+                ],
+                "logName": "oryxRuns",
+                "vcOptions": 2,
+                "startDelay": null,
+                "cap": 75,
+                "capButton": null,
+                "phases": 2,
+                "body": [
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": null,
+                            "image": null,
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/701483951687991341/1151587542609707058/oryxmaniaBossPostExalted.png"
+                            ]
+                        }
+                    },
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": null,
+                            "image": null,
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/701483951687991341/1151587542609707058/oryxmaniaBossPostExalted.png"
+                            ]
+                        }
+                    },
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": null,
+                            "image": null,
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/701483951687991341/1151587542609707058/oryxmaniaBossPostExalted.png"
+                            ]
+                        }
+                    }
+                ],
+                "buttons": {
+                    "Key": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 2,
+                        "limit": 1,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "oryxmaniaKey",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": [
+                            "rl"
+                        ],
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "eventpops"
+                                ],
+                                "points": "keypop",
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Armor Break": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Ogmur",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Mystic": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Mystic",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Stasising** and a **Cursing** Orb {T6PlanefetterOrb} (T6) or {T7DimensiongateOrb} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Marble Seal": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "UTMarbleSeal",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Fungal Tome": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "tomeOfTheMushroomTribesFungal",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Trickster": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 3,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Trickster",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} (T6) or {T7PrismofReveries} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Tickets": {
+                        "type": 3,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 5,
+                        "points": -60,
+                        "displayName": true,
+                        "emote": "tickets",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    }
+                },
+                "reacts": {
+                    "Oryx3": {
+                        "emote": "oryxmaniaBossPostExalted",
+                        "onHeadcount": true,
+                        "start": 1,
+                        "lifetime": 2
+                    }
+                }
+            },
+            {
+                "templateID": 283,
+                "inherits": [
+                    "veteran",
+                    "normal"
+                ],
+                "category": null,
+                "templateChannel": null,
+                "partneredStatusChannels": null,
+                "statusChannel": null,
+                "commandsChannel": null,
+                "activeChannel": null,
+                "enabled": true,
+                "minStaffRoles": {
+                    "normal": [
+                        [
+                            "eventrl"
+                        ],
+                        [
+                            "almostrl"
+                        ],
+                        [
+                            "rl"
+                        ],
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ]
+                    ],
+                    "veteran": [
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "vetaffiliate"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ],
+                        [
+                            "fameLeader"
+                        ]
+                    ]
+                },
+                "minViewRaiderRoles": null,
+                "minJoinRaiderRoles": null,
+                "name": "Exa. Oryx 3",
+                "templateName": "Exalted Oryx 3",
+                "pingRoles": [
+                    "here",
+                    "o3Ping"
+                ],
+                "aliases": [
+                    "eo",
+                    "eo3",
+                    "eoryx3",
+                    "eoryxthird",
+                    "eoryxthetird",
+                    "exao",
+                    "exao3",
+                    "exaoryx3",
+                    "exaoryxthird",
+                    "exaoryxthetird",
+                    "weleadeo3now"
+                ],
+                "logName": "oryxRuns",
+                "vcOptions": 2,
+                "startDelay": null,
+                "cap": 75,
+                "capButton": null,
+                "phases": 2,
+                "body": [
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": [
+                                null,
+                                "### __Exalted Runs__\nThis is an **exalted** run, meaning there are extended requirements you **MUST **meet. You must be **both** 8/8 and follow the requirements sheet listed below.\nBasic raiding rules from [raidingrules] will still apply."
+                            ],
+                            "image": "hallsExaltedReqsImage",
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/1114574154021208186/1120045796314849319/DSVqdZo.png"
+                            ]
+                        }
+                    },
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": [
+                                null,
+                                "### __Exalted Runs__\nThis is an **exalted** run, meaning there are extended requirements you **MUST **meet. You must be **both** 8/8 and follow the requirements sheet listed below.\nBasic raiding rules from [raidingrules] will still apply."
+                            ],
+                            "image": "hallsExaltedReqsImage",
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/1114574154021208186/1120045796314849319/DSVqdZo.png"
+                            ]
+                        }
+                    },
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": [
+                                null,
+                                "### __Exalted Runs__\nThis is an **exalted** run, meaning there are extended requirements you **MUST **meet. You must be **both** 8/8 and follow the requirements sheet listed below.\nBasic raiding rules from [raidingrules] will still apply."
+                            ],
+                            "image": "hallsExaltedReqsImage",
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/1114574154021208186/1120045796314849319/DSVqdZo.png"
+                            ]
+                        }
+                    }
+                ],
+                "buttons": {
+                    "Winecellar Incantation": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "inc",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "incantationPops"
+                                ],
+                                "points": "incpop",
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Shield Rune": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "shieldRune",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "runeShieldPops"
+                                ],
+                                "points": "runepop",
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Sword Rune": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "swordRune",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "runeSwordPops"
+                                ],
+                                "points": "runepop",
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Helmet Rune": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "helmetRune",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "runeHelmetPops"
+                                ],
+                                "points": "runepop",
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Armor Break": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Ogmur",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Mystic": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Mystic",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Stasising** and a **Cursing** Orb {T6PlanefetterOrb} (T6) or {T7DimensiongateOrb} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Marble Seal": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "UTMarbleSeal",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Fungal Tome": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "tomeOfTheMushroomTribesFungal",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Trickster": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 3,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Trickster",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} (T6) or {T7PrismofReveries} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Tickets": {
+                        "type": 3,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 5,
+                        "points": -60,
+                        "displayName": true,
+                        "emote": "tickets",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    }
+                },
+                "reacts": {
+                    "Oryx3": {
+                        "emote": "oryxThree",
+                        "onHeadcount": true,
+                        "start": 1,
+                        "lifetime": 2
+                    }
+                }
+            },
+            {
+                "templateID": 286,
+                "inherits": [
+                    "veteran",
+                    "normal"
+                ],
+                "category": null,
+                "templateChannel": null,
+                "partneredStatusChannels": null,
+                "statusChannel": null,
+                "commandsChannel": null,
+                "activeChannel": null,
+                "enabled": true,
+                "minStaffRoles": {
+                    "normal": [
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ]
+                    ],
+                    "veteran": [
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "vetaffiliate"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ],
+                        [
+                            "fameLeader"
+                        ]
+                    ]
+                },
+                "minViewRaiderRoles": null,
+                "minJoinRaiderRoles": null,
+                "name": "VC-Less Exa. Oryx 3",
+                "templateName": "VC-Less Exalted Oryx 3",
+                "pingRoles": [
+                    "here",
+                    "o3Ping"
+                ],
+                "aliases": [
+                    "eo",
+                    "eo3",
+                    "eoryx3",
+                    "eoryxthird",
+                    "eoryxthetird",
+                    "exao",
+                    "exao3",
+                    "exaoryx3",
+                    "exaoryxthird",
+                    "exaoryxthetird",
+                    "weleadeo3now"
+                ],
+                "logName": "oryxRuns",
+                "vcOptions": 0,
+                "startDelay": null,
+                "cap": 75,
+                "capButton": null,
+                "phases": 2,
+                "body": [
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": [
+                                null,
+                                "### __Exalted Runs__\nThis is an **exalted** run, meaning there are extended requirements you **MUST **meet. You must be **both** 8/8 and follow the requirements sheet listed below.\nBasic raiding rules from [raidingrules] will still apply."
+                            ],
+                            "image": "hallsExaltedReqsImage",
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/1114574154021208186/1120045796314849319/DSVqdZo.png"
+                            ]
+                        }
+                    },
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": [
+                                null,
+                                "### __Exalted Runs__\nThis is an **exalted** run, meaning there are extended requirements you **MUST **meet. You must be **both** 8/8 and follow the requirements sheet listed below.\nBasic raiding rules from [raidingrules] will still apply."
+                            ],
+                            "image": "hallsExaltedReqsImage",
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/1114574154021208186/1120045796314849319/DSVqdZo.png"
+                            ]
+                        }
+                    },
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": [
+                                null,
+                                "### __Exalted Runs__\nThis is an **exalted** run, meaning there are extended requirements you **MUST **meet. You must be **both** 8/8 and follow the requirements sheet listed below.\nBasic raiding rules from [raidingrules] will still apply."
+                            ],
+                            "image": "hallsExaltedReqsImage",
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/1114574154021208186/1120045796314849319/DSVqdZo.png"
+                            ]
+                        }
+                    }
+                ],
+                "buttons": {
+                    "Join": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 0,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": null,
+                        "confirm": false,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": 1,
+                        "start": 2,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Winecellar Incantation": {
+                        "type": 1,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "inc",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "incantationPops"
+                                ],
+                                "points": "incpop",
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Shield Rune": {
+                        "type": 1,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "shieldRune",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "runeShieldPops"
+                                ],
+                                "points": "runepop",
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Sword Rune": {
+                        "type": 1,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "swordRune",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "runeSwordPops"
+                                ],
+                                "points": "runepop",
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Helmet Rune": {
+                        "type": 1,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "helmetRune",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "runeHelmetPops"
+                                ],
+                                "points": "runepop",
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Armor Break": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Ogmur",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Mystic": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Mystic",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Stasising** and a **Cursing** Orb {T6PlanefetterOrb} (T6) or {T7DimensiongateOrb} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Marble Seal": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "UTMarbleSeal",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Fungal Tome": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "tomeOfTheMushroomTribesFungal",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Trickster": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 3,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Trickster",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} (T6) or {T7PrismofReveries} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Tickets": {
+                        "type": 3,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 5,
+                        "points": -60,
+                        "displayName": true,
+                        "emote": "tickets",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    }
+                },
+                "reacts": {
+                    "Oryx3": {
+                        "emote": "oryxThree",
+                        "onHeadcount": true,
+                        "start": 1,
+                        "lifetime": 2
+                    }
+                }
+            },
+            {
+                "templateID": 287,
+                "inherits": [
+                    "veteran",
+                    "normal"
+                ],
+                "category": null,
+                "templateChannel": null,
+                "partneredStatusChannels": null,
+                "statusChannel": null,
+                "commandsChannel": null,
+                "activeChannel": null,
+                "enabled": true,
+                "minStaffRoles": {
+                    "normal": [
+                        [
+                            "eventrl"
+                        ],
+                        [
+                            "almostrl"
+                        ],
+                        [
+                            "rl"
+                        ],
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ]
+                    ],
+                    "veteran": [
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "vetaffiliate"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ],
+                        [
+                            "fameLeader"
+                        ]
+                    ]
+                },
+                "minViewRaiderRoles": null,
+                "minJoinRaiderRoles": null,
+                "name": "Exa. Oryxmania",
+                "templateName": "Exalted Oryxmania",
+                "pingRoles": [
+                    "here",
+                    "o3Ping"
+                ],
+                "aliases": [
+                    "eom",
+                    "eo3",
+                    "eoryx3",
+                    "eoryxthird",
+                    "eoryxthetird",
+                    "exao",
+                    "exao3",
+                    "exaoryx3",
+                    "exaoryxthird",
+                    "exaoryxthetird",
+                    "weleadeo3now"
+                ],
+                "logName": "oryxRuns",
+                "vcOptions": 2,
+                "startDelay": null,
+                "cap": 75,
+                "capButton": null,
+                "phases": 2,
+                "body": [
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": [
+                                null,
+                                "### __Exalted Runs__\nThis is an **exalted** run, meaning there are extended requirements you **MUST **meet. You must be **both** 8/8 and follow the requirements sheet listed below.\nBasic raiding rules from [raidingrules] will still apply."
+                            ],
+                            "image": "hallsExaltedReqsImage",
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/701483951687991341/1151587542609707058/oryxmaniaBossPostExalted.png"
+                            ]
+                        }
+                    },
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": [
+                                null,
+                                "### __Exalted Runs__\nThis is an **exalted** run, meaning there are extended requirements you **MUST **meet. You must be **both** 8/8 and follow the requirements sheet listed below.\nBasic raiding rules from [raidingrules] will still apply."
+                            ],
+                            "image": "hallsExaltedReqsImage",
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/701483951687991341/1151587542609707058/oryxmaniaBossPostExalted.png"
+                            ]
+                        }
+                    },
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": [
+                                null,
+                                "### __Exalted Runs__\nThis is an **exalted** run, meaning there are extended requirements you **MUST **meet. You must be **both** 8/8 and follow the requirements sheet listed below.\nBasic raiding rules from [raidingrules] will still apply."
+                            ],
+                            "image": "hallsExaltedReqsImage",
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/701483951687991341/1151587542609707058/oryxmaniaBossPostExalted.png"
+                            ]
+                        }
+                    }
+                ],
+                "buttons": {
+                    "Key": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 2,
+                        "limit": 1,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "oryxmaniaKey",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": [
+                            "rl"
+                        ],
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "eventpops"
+                                ],
+                                "points": "keypop",
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Armor Break": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Ogmur",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Mystic": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Mystic",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Stasising** and a **Cursing** Orb {T6PlanefetterOrb} (T6) or {T7DimensiongateOrb} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Marble Seal": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "UTMarbleSeal",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Fungal Tome": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "tomeOfTheMushroomTribesFungal",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Trickster": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 3,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Trickster",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} (T6) or {T7PrismofReveries} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Tickets": {
+                        "type": 3,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 5,
+                        "points": -60,
+                        "displayName": true,
+                        "emote": "tickets",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    }
+                },
+                "reacts": {
+                    "Oryx3": {
+                        "emote": "oryxmaniaBossPostExalted",
+                        "onHeadcount": true,
+                        "start": 1,
+                        "lifetime": 2
+                    }
+                }
+            },
+            {
+                "templateID": 288,
+                "inherits": [
+                    "veteran",
+                    "normal"
+                ],
+                "category": null,
+                "templateChannel": null,
+                "partneredStatusChannels": null,
+                "statusChannel": null,
+                "commandsChannel": null,
+                "activeChannel": null,
+                "enabled": true,
+                "minStaffRoles": {
+                    "normal": [
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ]
+                    ],
+                    "veteran": [
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "vetaffiliate"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ],
+                        [
+                            "fameLeader"
+                        ]
+                    ]
+                },
+                "minViewRaiderRoles": null,
+                "minJoinRaiderRoles": null,
+                "name": "VC-Less Exa. Oryxmania",
+                "templateName": "VC-Less Exalted Oryxmania",
+                "pingRoles": [
+                    "here",
+                    "o3Ping"
+                ],
+                "aliases": [
+                    "seom",
+                    "seo3",
+                    "seoryx3",
+                    "seoryxthird",
+                    "seoryxthetird",
+                    "sexao",
+                    "sexao3",
+                    "sexaoryx3",
+                    "sexaoryxthird",
+                    "sexaoryxthetird",
+                    "sweleadeo3now"
+                ],
+                "logName": "oryxRuns",
+                "vcOptions": 0,
+                "startDelay": null,
+                "cap": 75,
+                "capButton": null,
+                "phases": 2,
+                "body": [
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": [
+                                null,
+                                "### __Exalted Runs__\nThis is an **exalted** run, meaning there are extended requirements you **MUST **meet. You must be **both** 8/8 and follow the requirements sheet listed below.\nBasic raiding rules from [raidingrules] will still apply."
+                            ],
+                            "image": "hallsExaltedReqsImage",
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/701483951687991341/1151587542609707058/oryxmaniaBossPostExalted.png"
+                            ]
+                        }
+                    },
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": [
+                                null,
+                                "### __Exalted Runs__\nThis is an **exalted** run, meaning there are extended requirements you **MUST **meet. You must be **both** 8/8 and follow the requirements sheet listed below.\nBasic raiding rules from [raidingrules] will still apply."
+                            ],
+                            "image": "hallsExaltedReqsImage",
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/701483951687991341/1151587542609707058/oryxmaniaBossPostExalted.png"
+                            ]
+                        }
+                    },
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": [
+                                null,
+                                "### __Exalted Runs__\nThis is an **exalted** run, meaning there are extended requirements you **MUST **meet. You must be **both** 8/8 and follow the requirements sheet listed below.\nBasic raiding rules from [raidingrules] will still apply."
+                            ],
+                            "image": "hallsExaltedReqsImage",
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/701483951687991341/1151587542609707058/oryxmaniaBossPostExalted.png"
+                            ]
+                        }
+                    }
+                ],
+                "buttons": {
+                    "Join": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 0,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": null,
+                        "confirm": false,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": 1,
+                        "start": 2,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Key": {
+                        "type": 1,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 2,
+                        "limit": 1,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "oryxmaniaKey",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": [
+                            "rl"
+                        ],
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "eventpops"
+                                ],
+                                "points": "keypop",
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Armor Break": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Ogmur",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Mystic": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Mystic",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Stasising** and a **Cursing** Orb {T6PlanefetterOrb} (T6) or {T7DimensiongateOrb} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Marble Seal": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "UTMarbleSeal",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Fungal Tome": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "tomeOfTheMushroomTribesFungal",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Trickster": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 3,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Trickster",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} (T6) or {T7PrismofReveries} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Tickets": {
+                        "type": 3,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 5,
+                        "points": -60,
+                        "displayName": true,
+                        "emote": "tickets",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    }
+                },
+                "reacts": {
+                    "Oryx3": {
+                        "emote": "oryxmaniaBossPostExalted",
                         "onHeadcount": true,
                         "start": 1,
                         "lifetime": 2
@@ -33065,13 +34693,13 @@
                     "o3Ping"
                 ],
                 "aliases": [
-                    "vo",
-                    "vo3",
-                    "voryx3",
-                    "voryxthird",
-                    "voryxthetird"
+                    "so",
+                    "so3",
+                    "soryx3",
+                    "soryxthird",
+                    "soryxthetird"
                 ],
-                "logName": "o3runs",
+                "logName": "oryxRuns",
                 "vcOptions": 0,
                 "startDelay": null,
                 "cap": 75,
@@ -33164,7 +34792,7 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "incPops"
+                                    "incantationPops"
                                 ],
                                 "points": "incpop",
                                 "multiplier": null
@@ -33193,7 +34821,7 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "shieldRunePops"
+                                    "runeShieldPops"
                                 ],
                                 "points": "runepop",
                                 "multiplier": null
@@ -33222,7 +34850,7 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "swordRunePops"
+                                    "runeSwordPops"
                                 ],
                                 "points": "runepop",
                                 "multiplier": null
@@ -33251,7 +34879,7 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "helmetRunePops"
+                                    "runeHelmetPops"
                                 ],
                                 "points": "runepop",
                                 "multiplier": null
@@ -33388,6 +35016,303 @@
                 "reacts": {
                     "Oryx3": {
                         "emote": "oryxThree",
+                        "onHeadcount": true,
+                        "start": 1,
+                        "lifetime": 2
+                    }
+                }
+            },
+            {
+                "templateID": 279,
+                "inherits": [
+                    "veteran",
+                    "normal"
+                ],
+                "category": null,
+                "templateChannel": null,
+                "partneredStatusChannels": null,
+                "statusChannel": null,
+                "commandsChannel": null,
+                "activeChannel": null,
+                "enabled": true,
+                "minStaffRoles": {
+                    "normal": [
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ]
+                    ],
+                    "veteran": [
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "vetaffiliate"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ],
+                        [
+                            "fameLeader"
+                        ]
+                    ]
+                },
+                "minViewRaiderRoles": null,
+                "minJoinRaiderRoles": null,
+                "name": "VC-less Oryxmania",
+                "templateName": "VC-less Oryxmania",
+                "pingRoles": [
+                    "here",
+                    "o3Ping"
+                ],
+                "aliases": [
+                    "som",
+                    "so3",
+                    "soryx3",
+                    "soryxthird",
+                    "soryxthetird",
+                    "soryxmania"
+                ],
+                "logName": "oryxRuns",
+                "vcOptions": 0,
+                "startDelay": null,
+                "cap": 75,
+                "capButton": null,
+                "phases": 2,
+                "body": [
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": null,
+                            "image": null,
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/701483951687991341/1151587542609707058/oryxmaniaBossPostExalted.png"
+                            ]
+                        }
+                    },
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": null,
+                            "image": null,
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/701483951687991341/1151587542609707058/oryxmaniaBossPostExalted.png"
+                            ]
+                        }
+                    },
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": null,
+                            "image": null,
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/701483951687991341/1151587542609707058/oryxmaniaBossPostExalted.png"
+                            ]
+                        }
+                    }
+                ],
+                
+                "buttons": {
+                    "join": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 0,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": null,
+                        "confirm": false,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": 1,
+                        "start": 2,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Key": {
+                        "type": 1,
+                        "parent": [
+                            "join"
+                        ],
+                        "choice": 2,
+                        "limit": 1,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "oryxmaniaKey",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": [
+                            "rl"
+                        ],
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "eventpops"
+                                ],
+                                "points": "keypop",
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Armor Break": {
+                        "type": 0,
+                        "parent": [
+                            "join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Ogmur",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Mystic": {
+                        "type": 0,
+                        "parent": [
+                            "join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Mystic",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Stasising** and a **Cursing** Orb {T6PlanefetterOrb} (T6) or {T7DimensiongateOrb} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Marble Seal": {
+                        "type": 0,
+                        "parent": [
+                            "join"
+                        ],
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "UTMarbleSeal",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Fungal Tome": {
+                        "type": 0,
+                        "parent": [
+                            "join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "tomeOfTheMushroomTribesFungal",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Trickster": {
+                        "type": 0,
+                        "parent": [
+                            "join"
+                        ],
+                        "choice": 0,
+                        "limit": 3,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Trickster",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} (T6) or {T7PrismofReveries} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Tickets": {
+                        "type": 3,
+                        "parent": [
+                            "join"
+                        ],
+                        "choice": 0,
+                        "limit": 5,
+                        "points": -60,
+                        "displayName": true,
+                        "emote": "tickets",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    }
+                },
+                "reacts": {
+                    "Oryx3": {
+                        "emote": "oryxmaniaBossPostExalted",
                         "onHeadcount": true,
                         "start": 1,
                         "lifetime": 2
@@ -36690,7 +38615,7 @@
                         "lifetime": 69
                     },
                     "PrimalArcana": {
-                        "emote": "PrimalArcana",
+                        "emote": "primalArcana",
                         "onHeadcount": true,
                         "start": 1,
                         "lifetime": 69
@@ -65520,7 +67445,7 @@
                     "oryxthird",
                     "oryxthetird"
                 ],
-                "logName": "o3runs",
+                "logName": "oryxRuns",
                 "vcOptions": 2,
                 "startDelay": null,
                 "cap": 75,
@@ -65591,7 +67516,7 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "incPops"
+                                    "incantationPops"
                                 ],
                                 "points": "incpop",
                                 "multiplier": null
@@ -65618,7 +67543,7 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "shieldRunePops"
+                                    "runeShieldPops"
                                 ],
                                 "points": "runepop",
                                 "multiplier": null
@@ -65645,7 +67570,7 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "swordRunePops"
+                                    "runeSwordPops"
                                 ],
                                 "points": "runepop",
                                 "multiplier": null
@@ -65672,7 +67597,7 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "helmetRunePops"
+                                    "runeHelmetPops"
                                 ],
                                 "points": "runepop",
                                 "multiplier": null
@@ -65797,6 +67722,1634 @@
                 "reacts": {
                     "Oryx3": {
                         "emote": "oryxThree",
+                        "onHeadcount": true,
+                        "start": 1,
+                        "lifetime": 2
+                    }
+                }
+            },
+            {
+                "templateID": 289,
+                "inherits": [
+                    "veteran",
+                    "normal"
+                ],
+                "category": null,
+                "templateChannel": null,
+                "partneredStatusChannels": null,
+                "statusChannel": null,
+                "commandsChannel": null,
+                "activeChannel": null,
+                "enabled": true,
+                "minStaffRoles": {
+                    "normal": [
+                        [
+                            "eventrl"
+                        ],
+                        [
+                            "almostrl"
+                        ],
+                        [
+                            "rl"
+                        ],
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ]
+                    ],
+                    "veteran": [
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "vetaffiliate"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ],
+                        [
+                            "fameLeader"
+                        ]
+                    ]
+                },
+                "minViewRaiderRoles": null,
+                "minJoinRaiderRoles": null,
+                "name": "Oryxmania",
+                "templateName": "Oryxmania",
+                "pingRoles": [
+                    "here",
+                    "o3Ping"
+                ],
+                "aliases": [
+                    "om",
+                    "o3",
+                    "oryx3",
+                    "oryxthird",
+                    "oryxthetird",
+                    "oryxmania"
+                ],
+                "logName": "oryxRuns",
+                "vcOptions": 2,
+                "startDelay": null,
+                "cap": 75,
+                "capButton": null,
+                "phases": 2,
+                "body": [
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": null,
+                            "image": null,
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/701483951687991341/1151587542609707058/oryxmaniaBossPostExalted.png"
+                            ]
+                        }
+                    },
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": null,
+                            "image": null,
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/701483951687991341/1151587542609707058/oryxmaniaBossPostExalted.png"
+                            ]
+                        }
+                    },
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": null,
+                            "image": null,
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/701483951687991341/1151587542609707058/oryxmaniaBossPostExalted.png"
+                            ]
+                        }
+                    }
+                ],
+                "buttons": {
+                    "Key": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 2,
+                        "limit": 1,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "oryxmaniaKey",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": [
+                            "rl"
+                        ],
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "eventpops"
+                                ],
+                                "points": "keypop",
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Armor Break": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Ogmur",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Mystic": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Mystic",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Stasising** and a **Cursing** Orb {T6PlanefetterOrb} (T6) or {T7DimensiongateOrb} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Marble Seal": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "UTMarbleSeal",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Fungal Tome": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "tomeOfTheMushroomTribesFungal",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Trickster": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 3,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Trickster",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} (T6) or {T7PrismofReveries} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Tickets": {
+                        "type": 3,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 5,
+                        "points": -60,
+                        "displayName": true,
+                        "emote": "tickets",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    }
+                },
+                "reacts": {
+                    "Oryx3": {
+                        "emote": "oryxmaniaBossPostExalted",
+                        "onHeadcount": true,
+                        "start": 1,
+                        "lifetime": 2
+                    }
+                }
+            },
+            {
+                "templateID": 283,
+                "inherits": [
+                    "veteran",
+                    "normal"
+                ],
+                "category": null,
+                "templateChannel": null,
+                "partneredStatusChannels": null,
+                "statusChannel": null,
+                "commandsChannel": null,
+                "activeChannel": null,
+                "enabled": true,
+                "minStaffRoles": {
+                    "normal": [
+                        [
+                            "eventrl"
+                        ],
+                        [
+                            "almostrl"
+                        ],
+                        [
+                            "rl"
+                        ],
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ]
+                    ],
+                    "veteran": [
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "vetaffiliate"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ],
+                        [
+                            "fameLeader"
+                        ]
+                    ]
+                },
+                "minViewRaiderRoles": null,
+                "minJoinRaiderRoles": null,
+                "name": "Exa. Oryx 3",
+                "templateName": "Exalted Oryx 3",
+                "pingRoles": [
+                    "here",
+                    "o3Ping"
+                ],
+                "aliases": [
+                    "eo",
+                    "eo3",
+                    "eoryx3",
+                    "eoryxthird",
+                    "eoryxthetird",
+                    "exao",
+                    "exao3",
+                    "exaoryx3",
+                    "exaoryxthird",
+                    "exaoryxthetird",
+                    "weleadeo3now"
+                ],
+                "logName": "oryxRuns",
+                "vcOptions": 2,
+                "startDelay": null,
+                "cap": 75,
+                "capButton": null,
+                "phases": 2,
+                "body": [
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": [
+                                null,
+                                "### __Exalted Runs__\nThis is an **exalted** run, meaning there are extended requirements you **MUST **meet. You must be **both** 8/8 and follow the requirements sheet listed below.\nBasic raiding rules from [raidingrules] will still apply."
+                            ],
+                            "image": "hallsExaltedReqsImage",
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/1114574154021208186/1120045796314849319/DSVqdZo.png"
+                            ]
+                        }
+                    },
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": [
+                                null,
+                                "### __Exalted Runs__\nThis is an **exalted** run, meaning there are extended requirements you **MUST **meet. You must be **both** 8/8 and follow the requirements sheet listed below.\nBasic raiding rules from [raidingrules] will still apply."
+                            ],
+                            "image": "hallsExaltedReqsImage",
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/1114574154021208186/1120045796314849319/DSVqdZo.png"
+                            ]
+                        }
+                    },
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": [
+                                null,
+                                "### __Exalted Runs__\nThis is an **exalted** run, meaning there are extended requirements you **MUST **meet. You must be **both** 8/8 and follow the requirements sheet listed below.\nBasic raiding rules from [raidingrules] will still apply."
+                            ],
+                            "image": "hallsExaltedReqsImage",
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/1114574154021208186/1120045796314849319/DSVqdZo.png"
+                            ]
+                        }
+                    }
+                ],
+                "buttons": {
+                    "Winecellar Incantation": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "inc",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "incantationPops"
+                                ],
+                                "points": "incpop",
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Shield Rune": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "shieldRune",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "runeShieldPops"
+                                ],
+                                "points": "runepop",
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Sword Rune": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "swordRune",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "runeSwordPops"
+                                ],
+                                "points": "runepop",
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Helmet Rune": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "helmetRune",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "runeHelmetPops"
+                                ],
+                                "points": "runepop",
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Armor Break": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Ogmur",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Mystic": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Mystic",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Stasising** and a **Cursing** Orb {T6PlanefetterOrb} (T6) or {T7DimensiongateOrb} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Marble Seal": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "UTMarbleSeal",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Fungal Tome": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "tomeOfTheMushroomTribesFungal",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Trickster": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 3,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Trickster",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} (T6) or {T7PrismofReveries} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Tickets": {
+                        "type": 3,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 5,
+                        "points": -60,
+                        "displayName": true,
+                        "emote": "tickets",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    }
+                },
+                "reacts": {
+                    "Oryx3": {
+                        "emote": "oryxThree",
+                        "onHeadcount": true,
+                        "start": 1,
+                        "lifetime": 2
+                    }
+                }
+            },
+            {
+                "templateID": 286,
+                "inherits": [
+                    "veteran",
+                    "normal"
+                ],
+                "category": null,
+                "templateChannel": null,
+                "partneredStatusChannels": null,
+                "statusChannel": null,
+                "commandsChannel": null,
+                "activeChannel": null,
+                "enabled": true,
+                "minStaffRoles": {
+                    "normal": [
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ]
+                    ],
+                    "veteran": [
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "vetaffiliate"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ],
+                        [
+                            "fameLeader"
+                        ]
+                    ]
+                },
+                "minViewRaiderRoles": null,
+                "minJoinRaiderRoles": null,
+                "name": "VC-Less Exa. Oryx 3",
+                "templateName": "VC-Less Exalted Oryx 3",
+                "pingRoles": [
+                    "here",
+                    "o3Ping"
+                ],
+                "aliases": [
+                    "eo",
+                    "eo3",
+                    "eoryx3",
+                    "eoryxthird",
+                    "eoryxthetird",
+                    "exao",
+                    "exao3",
+                    "exaoryx3",
+                    "exaoryxthird",
+                    "exaoryxthetird",
+                    "weleadeo3now"
+                ],
+                "logName": "oryxRuns",
+                "vcOptions": 0,
+                "startDelay": null,
+                "cap": 75,
+                "capButton": null,
+                "phases": 2,
+                "body": [
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": [
+                                null,
+                                "### __Exalted Runs__\nThis is an **exalted** run, meaning there are extended requirements you **MUST **meet. You must be **both** 8/8 and follow the requirements sheet listed below.\nBasic raiding rules from [raidingrules] will still apply."
+                            ],
+                            "image": "hallsExaltedReqsImage",
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/1114574154021208186/1120045796314849319/DSVqdZo.png"
+                            ]
+                        }
+                    },
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": [
+                                null,
+                                "### __Exalted Runs__\nThis is an **exalted** run, meaning there are extended requirements you **MUST **meet. You must be **both** 8/8 and follow the requirements sheet listed below.\nBasic raiding rules from [raidingrules] will still apply."
+                            ],
+                            "image": "hallsExaltedReqsImage",
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/1114574154021208186/1120045796314849319/DSVqdZo.png"
+                            ]
+                        }
+                    },
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": [
+                                null,
+                                "### __Exalted Runs__\nThis is an **exalted** run, meaning there are extended requirements you **MUST **meet. You must be **both** 8/8 and follow the requirements sheet listed below.\nBasic raiding rules from [raidingrules] will still apply."
+                            ],
+                            "image": "hallsExaltedReqsImage",
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/1114574154021208186/1120045796314849319/DSVqdZo.png"
+                            ]
+                        }
+                    }
+                ],
+                "buttons": {
+                    "Join": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 0,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": null,
+                        "confirm": false,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": 1,
+                        "start": 2,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Winecellar Incantation": {
+                        "type": 1,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "inc",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "incantationPops"
+                                ],
+                                "points": "incpop",
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Shield Rune": {
+                        "type": 1,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "shieldRune",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "runeShieldPops"
+                                ],
+                                "points": "runepop",
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Sword Rune": {
+                        "type": 1,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "swordRune",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "runeSwordPops"
+                                ],
+                                "points": "runepop",
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Helmet Rune": {
+                        "type": 1,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "helmetRune",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "runeHelmetPops"
+                                ],
+                                "points": "runepop",
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Armor Break": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Ogmur",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Mystic": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Mystic",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Stasising** and a **Cursing** Orb {T6PlanefetterOrb} (T6) or {T7DimensiongateOrb} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Marble Seal": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "UTMarbleSeal",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Fungal Tome": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "tomeOfTheMushroomTribesFungal",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Trickster": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 3,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Trickster",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} (T6) or {T7PrismofReveries} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Tickets": {
+                        "type": 3,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 5,
+                        "points": -60,
+                        "displayName": true,
+                        "emote": "tickets",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    }
+                },
+                "reacts": {
+                    "Oryx3": {
+                        "emote": "oryxThree",
+                        "onHeadcount": true,
+                        "start": 1,
+                        "lifetime": 2
+                    }
+                }
+            },
+            {
+                "templateID": 287,
+                "inherits": [
+                    "veteran",
+                    "normal"
+                ],
+                "category": null,
+                "templateChannel": null,
+                "partneredStatusChannels": null,
+                "statusChannel": null,
+                "commandsChannel": null,
+                "activeChannel": null,
+                "enabled": true,
+                "minStaffRoles": {
+                    "normal": [
+                        [
+                            "eventrl"
+                        ],
+                        [
+                            "almostrl"
+                        ],
+                        [
+                            "rl"
+                        ],
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ]
+                    ],
+                    "veteran": [
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "vetaffiliate"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ],
+                        [
+                            "fameLeader"
+                        ]
+                    ]
+                },
+                "minViewRaiderRoles": null,
+                "minJoinRaiderRoles": null,
+                "name": "Exa. Oryxmania",
+                "templateName": "Exalted Oryxmania",
+                "pingRoles": [
+                    "here",
+                    "o3Ping"
+                ],
+                "aliases": [
+                    "eom",
+                    "eo3",
+                    "eoryx3",
+                    "eoryxthird",
+                    "eoryxthetird",
+                    "exao",
+                    "exao3",
+                    "exaoryx3",
+                    "exaoryxthird",
+                    "exaoryxthetird",
+                    "weleadeo3now"
+                ],
+                "logName": "oryxRuns",
+                "vcOptions": 2,
+                "startDelay": null,
+                "cap": 75,
+                "capButton": null,
+                "phases": 2,
+                "body": [
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": [
+                                null,
+                                "### __Exalted Runs__\nThis is an **exalted** run, meaning there are extended requirements you **MUST **meet. You must be **both** 8/8 and follow the requirements sheet listed below.\nBasic raiding rules from [raidingrules] will still apply."
+                            ],
+                            "image": "hallsExaltedReqsImage",
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/701483951687991341/1151587542609707058/oryxmaniaBossPostExalted.png"
+                            ]
+                        }
+                    },
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": [
+                                null,
+                                "### __Exalted Runs__\nThis is an **exalted** run, meaning there are extended requirements you **MUST **meet. You must be **both** 8/8 and follow the requirements sheet listed below.\nBasic raiding rules from [raidingrules] will still apply."
+                            ],
+                            "image": "hallsExaltedReqsImage",
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/701483951687991341/1151587542609707058/oryxmaniaBossPostExalted.png"
+                            ]
+                        }
+                    },
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": [
+                                null,
+                                "### __Exalted Runs__\nThis is an **exalted** run, meaning there are extended requirements you **MUST **meet. You must be **both** 8/8 and follow the requirements sheet listed below.\nBasic raiding rules from [raidingrules] will still apply."
+                            ],
+                            "image": "hallsExaltedReqsImage",
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/701483951687991341/1151587542609707058/oryxmaniaBossPostExalted.png"
+                            ]
+                        }
+                    }
+                ],
+                "buttons": {
+                    "Key": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 2,
+                        "limit": 1,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "oryxmaniaKey",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": [
+                            "rl"
+                        ],
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "eventpops"
+                                ],
+                                "points": "keypop",
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Armor Break": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Ogmur",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Mystic": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Mystic",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Stasising** and a **Cursing** Orb {T6PlanefetterOrb} (T6) or {T7DimensiongateOrb} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Marble Seal": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "UTMarbleSeal",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Fungal Tome": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "tomeOfTheMushroomTribesFungal",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Trickster": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 3,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Trickster",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} (T6) or {T7PrismofReveries} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Tickets": {
+                        "type": 3,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 5,
+                        "points": -60,
+                        "displayName": true,
+                        "emote": "tickets",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    }
+                },
+                "reacts": {
+                    "Oryx3": {
+                        "emote": "oryxmaniaBossPostExalted",
+                        "onHeadcount": true,
+                        "start": 1,
+                        "lifetime": 2
+                    }
+                }
+            },
+            {
+                "templateID": 288,
+                "inherits": [
+                    "veteran",
+                    "normal"
+                ],
+                "category": null,
+                "templateChannel": null,
+                "partneredStatusChannels": null,
+                "statusChannel": null,
+                "commandsChannel": null,
+                "activeChannel": null,
+                "enabled": true,
+                "minStaffRoles": {
+                    "normal": [
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ]
+                    ],
+                    "veteran": [
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "vetaffiliate"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ],
+                        [
+                            "fameLeader"
+                        ]
+                    ]
+                },
+                "minViewRaiderRoles": null,
+                "minJoinRaiderRoles": null,
+                "name": "VC-Less Exa. Oryxmania",
+                "templateName": "VC-Less Exalted Oryxmania",
+                "pingRoles": [
+                    "here",
+                    "o3Ping"
+                ],
+                "aliases": [
+                    "seom",
+                    "seo3",
+                    "seoryx3",
+                    "seoryxthird",
+                    "seoryxthetird",
+                    "sexao",
+                    "sexao3",
+                    "sexaoryx3",
+                    "sexaoryxthird",
+                    "sexaoryxthetird",
+                    "sweleadeo3now"
+                ],
+                "logName": "oryxRuns",
+                "vcOptions": 0,
+                "startDelay": null,
+                "cap": 75,
+                "capButton": null,
+                "phases": 2,
+                "body": [
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": [
+                                null,
+                                "### __Exalted Runs__\nThis is an **exalted** run, meaning there are extended requirements you **MUST **meet. You must be **both** 8/8 and follow the requirements sheet listed below.\nBasic raiding rules from [raidingrules] will still apply."
+                            ],
+                            "image": "hallsExaltedReqsImage",
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/701483951687991341/1151587542609707058/oryxmaniaBossPostExalted.png"
+                            ]
+                        }
+                    },
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": [
+                                null,
+                                "### __Exalted Runs__\nThis is an **exalted** run, meaning there are extended requirements you **MUST **meet. You must be **both** 8/8 and follow the requirements sheet listed below.\nBasic raiding rules from [raidingrules] will still apply."
+                            ],
+                            "image": "hallsExaltedReqsImage",
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/701483951687991341/1151587542609707058/oryxmaniaBossPostExalted.png"
+                            ]
+                        }
+                    },
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": [
+                                null,
+                                "### __Exalted Runs__\nThis is an **exalted** run, meaning there are extended requirements you **MUST **meet. You must be **both** 8/8 and follow the requirements sheet listed below.\nBasic raiding rules from [raidingrules] will still apply."
+                            ],
+                            "image": "hallsExaltedReqsImage",
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/701483951687991341/1151587542609707058/oryxmaniaBossPostExalted.png"
+                            ]
+                        }
+                    }
+                ],
+                "buttons": {
+                    "Join": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 0,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": null,
+                        "confirm": false,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": 1,
+                        "start": 2,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Key": {
+                        "type": 1,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 2,
+                        "limit": 1,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "oryxmaniaKey",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": [
+                            "rl"
+                        ],
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "eventpops"
+                                ],
+                                "points": "keypop",
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Armor Break": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Ogmur",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Mystic": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Mystic",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Stasising** and a **Cursing** Orb {T6PlanefetterOrb} (T6) or {T7DimensiongateOrb} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Marble Seal": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "UTMarbleSeal",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Fungal Tome": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "tomeOfTheMushroomTribesFungal",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Trickster": {
+                        "type": 0,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 3,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Trickster",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} (T6) or {T7PrismofReveries} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Tickets": {
+                        "type": 3,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": 5,
+                        "points": -60,
+                        "displayName": true,
+                        "emote": "tickets",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    }
+                },
+                "reacts": {
+                    "Oryx3": {
+                        "emote": "oryxmaniaBossPostExalted",
                         "onHeadcount": true,
                         "start": 1,
                         "lifetime": 2
@@ -66757,13 +70310,13 @@
                     "o3Ping"
                 ],
                 "aliases": [
-                    "vo",
-                    "vo3",
-                    "voryx3",
-                    "voryxthird",
-                    "voryxthetird"
+                    "so",
+                    "so3",
+                    "soryx3",
+                    "soryxthird",
+                    "soryxthetird"
                 ],
-                "logName": "o3runs",
+                "logName": "oryxRuns",
                 "vcOptions": 0,
                 "startDelay": null,
                 "cap": 75,
@@ -66856,7 +70409,7 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "incPops"
+                                    "incantationPops"
                                 ],
                                 "points": "incpop",
                                 "multiplier": null
@@ -66885,7 +70438,7 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "shieldRunePops"
+                                    "runeShieldPops"
                                 ],
                                 "points": "runepop",
                                 "multiplier": null
@@ -66914,7 +70467,7 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "swordRunePops"
+                                    "runeSwordPops"
                                 ],
                                 "points": "runepop",
                                 "multiplier": null
@@ -66943,7 +70496,7 @@
                         "logOptions": {
                             "Normal": {
                                 "logName": [
-                                    "helmetRunePops"
+                                    "runeHelmetPops"
                                 ],
                                 "points": "runepop",
                                 "multiplier": null
@@ -67080,6 +70633,303 @@
                 "reacts": {
                     "Oryx3": {
                         "emote": "oryxThree",
+                        "onHeadcount": true,
+                        "start": 1,
+                        "lifetime": 2
+                    }
+                }
+            },
+            {
+                "templateID": 279,
+                "inherits": [
+                    "veteran",
+                    "normal"
+                ],
+                "category": null,
+                "templateChannel": null,
+                "partneredStatusChannels": null,
+                "statusChannel": null,
+                "commandsChannel": null,
+                "activeChannel": null,
+                "enabled": true,
+                "minStaffRoles": {
+                    "normal": [
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ]
+                    ],
+                    "veteran": [
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "vetaffiliate"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ],
+                        [
+                            "fameLeader"
+                        ]
+                    ]
+                },
+                "minViewRaiderRoles": null,
+                "minJoinRaiderRoles": null,
+                "name": "VC-less Oryxmania",
+                "templateName": "VC-less Oryxmania",
+                "pingRoles": [
+                    "here",
+                    "o3Ping"
+                ],
+                "aliases": [
+                    "som",
+                    "so3",
+                    "soryx3",
+                    "soryxthird",
+                    "soryxthetird",
+                    "soryxmania"
+                ],
+                "logName": "oryxRuns",
+                "vcOptions": 0,
+                "startDelay": null,
+                "cap": 75,
+                "capButton": null,
+                "phases": 2,
+                "body": [
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": null,
+                            "image": null,
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/701483951687991341/1151587542609707058/oryxmaniaBossPostExalted.png"
+                            ]
+                        }
+                    },
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": null,
+                            "image": null,
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/701483951687991341/1151587542609707058/oryxmaniaBossPostExalted.png"
+                            ]
+                        }
+                    },
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#990000",
+                            "description": null,
+                            "image": null,
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/attachments/701483951687991341/1151587542609707058/oryxmaniaBossPostExalted.png"
+                            ]
+                        }
+                    }
+                ],
+                
+                "buttons": {
+                    "join": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 0,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": null,
+                        "confirm": false,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": 1,
+                        "start": 2,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Key": {
+                        "type": 1,
+                        "parent": [
+                            "join"
+                        ],
+                        "choice": 2,
+                        "limit": 1,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "oryxmaniaKey",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": [
+                            "rl"
+                        ],
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "eventpops"
+                                ],
+                                "points": "keypop",
+                                "multiplier": null
+                            }
+                        }
+                    },
+                    "Armor Break": {
+                        "type": 0,
+                        "parent": [
+                            "join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Ogmur",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Mystic": {
+                        "type": 0,
+                        "parent": [
+                            "join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Mystic",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Stasising** and a **Cursing** Orb {T6PlanefetterOrb} (T6) or {T7DimensiongateOrb} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Marble Seal": {
+                        "type": 0,
+                        "parent": [
+                            "join"
+                        ],
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "UTMarbleSeal",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Fungal Tome": {
+                        "type": 0,
+                        "parent": [
+                            "join"
+                        ],
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "tomeOfTheMushroomTribesFungal",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Trickster": {
+                        "type": 0,
+                        "parent": [
+                            "join"
+                        ],
+                        "choice": 0,
+                        "limit": 3,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "Trickster",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} (T6) or {T7PrismofReveries} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Tickets": {
+                        "type": 3,
+                        "parent": [
+                            "join"
+                        ],
+                        "choice": 0,
+                        "limit": 5,
+                        "points": -60,
+                        "displayName": true,
+                        "emote": "tickets",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    }
+                },
+                "reacts": {
+                    "Oryx3": {
+                        "emote": "oryxmaniaBossPostExalted",
                         "onHeadcount": true,
                         "start": 1,
                         "lifetime": 2
