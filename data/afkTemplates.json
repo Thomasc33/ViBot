@@ -2597,16 +2597,17 @@
                 "minViewRaiderRoles": null,
                 "minJoinRaiderRoles": null,
                 "name": "Fame Cult",
-                "templateName": "Fame Cult",
+                "templateName": "Fame Cult (Basic)",
                 "pingRoles": [
                     "here",
                     "cultping"
                 ],
                 "aliases": [
-                    "fc",
-                    "fcultOne",
-                    "fc1",
-                    "fcult1"
+                    "basicfamecult",
+                    "bfc",
+                    "bfcult",
+                    "bfamec",
+                    "bfcu"
                 ],
                 "logName": "cultRuns",
                 "vcOptions": 2,
@@ -2685,7 +2686,7 @@
                             }
                         }
                     },
-                    "PrimalArcana": {
+                    "Primal Arcana": {
                         "type": 0,
                         "parent": null,
                         "choice": 0,
@@ -2704,7 +2705,7 @@
                         "lifetime": 69,
                         "logOptions": null
                     },
-                    "CultSkull": {
+                    "Cult Skull": {
                         "type": 0,
                         "parent": null,
                         "choice": 0,
@@ -2742,11 +2743,30 @@
                         "lifetime": 69,
                         "logOptions": null
                     },
-                    "TierSevenSeal": {
+                    "Scholar Seal": {
                         "type": 0,
                         "parent": null,
                         "choice": 0,
-                        "limit": 3,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "UTScholarsSeal",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Scholar Seal** {UTScholarsSeal} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Tier Seven Seal": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
                         "points": 1,
                         "displayName": false,
                         "emote": "T7SealofInvocation",
@@ -2761,7 +2781,7 @@
                         "lifetime": 69,
                         "logOptions": null
                     },
-                    "CompetendTrickster": {
+                    "Competent Trickster": {
                         "type": 0,
                         "parent": null,
                         "choice": 0,
@@ -2780,7 +2800,7 @@
                         "lifetime": 69,
                         "logOptions": null
                     },
-                    "SamuraiMultitool": {
+                    "Expose": {
                         "type": 0,
                         "parent": null,
                         "choice": 0,
@@ -2799,7 +2819,7 @@
                         "lifetime": 69,
                         "logOptions": null
                     },
-                    "AetherMystic": {
+                    "Aether Mystic": {
                         "type": 0,
                         "parent": null,
                         "choice": 0,
@@ -2856,16 +2876,16 @@
                         "lifetime": 69,
                         "logOptions": null
                     },
-                    "GemEscuKnight": {
+                    "Gem Escu Knight": {
                         "type": 0,
                         "parent": null,
                         "choice": 0,
-                        "limit": 20,
+                        "limit": 0,
                         "points": 1,
                         "displayName": false,
                         "emote": "Knight",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": "**__REQUIRED__**\n- You must have a **Stunning** Shield {UTOryxsEscutcheon} available.\n- You must have a **Mana reducing** Accessory {TheTwilightGemstone} available.",
@@ -2879,12 +2899,12 @@
                         "type": 0,
                         "parent": null,
                         "choice": 0,
-                        "limit": 20,
+                        "limit": 0,
                         "points": 1,
                         "displayName": false,
                         "emote": "UTGenesisSpell",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": "**__REQUIRED__**\n- You must have a **Genesis Spell** {UTGenesisSpell} available.",
@@ -2894,16 +2914,16 @@
                         "lifetime": 69,
                         "logOptions": null
                     },
-                    "GemSorc": {
+                    "Gem Sorc": {
                         "type": 0,
                         "parent": null,
                         "choice": 0,
-                        "limit": 20,
+                        "limit": 0,
                         "points": 1,
                         "displayName": false,
                         "emote": "Sorcerer",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": "**__REQUIRED__**\n- You must have a **Mana reducing** Accessory {TheTwilightGemstone} available.",
@@ -2913,16 +2933,16 @@
                         "lifetime": 69,
                         "logOptions": null
                     },
-                    "GemVileHuntress": {
+                    "Gem Vile Huntress": {
                         "type": 0,
                         "parent": null,
                         "choice": 0,
-                        "limit": 1,
-                        "points": 20,
+                        "limit": 0,
+                        "points": 0,
                         "displayName": false,
                         "emote": "Huntress",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": "**__REQUIRED__**\n- You must have a **Cursing** Trap {UTTrapoftheVileSpirit} available.\n- You must have a **Mana reducing** Accessory {TheTwilightGemstone} available.",
@@ -2936,12 +2956,12 @@
                         "type": 0,
                         "parent": null,
                         "choice": 0,
-                        "limit": 20,
+                        "limit": 0,
                         "points": 1,
                         "displayName": false,
                         "emote": "peacekeeper",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": "**__REQUIRED__**\n- You must have a **Peacekeeper** {peacekeeper} available.",
@@ -2991,92 +3011,678 @@
                     }
                 },
                 "reacts": {
+                    "Cultist": {
+                        "emote": "cultist",
+                        "onHeadcount": true,
+                        "start": 1,
+                        "lifetime": 69
+                    }
+                }
+            },
+            {
+                "templateID": 290,
+                "inherits": [
+                    "veteran",
+                    "normal"
+                ],
+                "category": null,
+                "templateChannel": null,
+                "partneredStatusChannels": null,
+                "statusChannel": null,
+                "commandsChannel": null,
+                "activeChannel": null,
+                "enabled": true,
+                "minStaffRoles": {
+                    "normal": [
+                        [
+                            "almostHallsBanner"
+                        ],
+                        [
+                            "hallsBanner"
+                        ],
+                        [
+                            "vetHallsBanner"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ],
+                        [
+                            "fameLeader"
+                        ]
+                    ],
+                    "veteran": [
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "vetaffiliate"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ],
+                        [
+                            "fameLeader"
+                        ]
+                    ]
+                },
+                "minViewRaiderRoles": null,
+                "minJoinRaiderRoles": null,
+                "name": "Fame Cult",
+                "templateName": "Fame Cult (Restricted)",
+                "pingRoles": [
+                    "here",
+                    "cultping"
+                ],
+                "aliases": [
+                    "rfc",
+                    "rfamec",
+                    "rfcult",
+                    "rfamecu",
+                    "resfc",
+                    "restrictedfc"
+                ],
+                "logName": "cultRuns",
+                "vcOptions": 2,
+                "startDelay": null,
+                "cap": null,
+                "capButton": null,
+                "phases": 2,
+                "body": [
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#ff0000",
+                            "description": null,
+                            "image": null,
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/emojis/701491230332157972.png?v=1"
+                            ]
+                        }
+                    },
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    }
+                ],
+                "buttons": {
                     "Key": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 2,
+                        "limit": 3,
+                        "points": 0,
+                        "displayName": false,
                         "emote": "hallsK",
-                        "onHeadcount": true,
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": [
+                            "rl"
+                        ],
+                        "confirmationMessage": "**__REQUIRED__**\n- Your key must be a Grade C modified key with +100% Minion XP",
+                        "confirmationMedia": null,
+                        "disableStart": null,
                         "start": 1,
-                        "lifetime": 69
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Modded": {
+                                "logName": [
+                                    "keypops",
+                                    "moddedpops"
+                                ],
+                                "points": "keypop",
+                                "multiplier": "keymultiplier"
+                            }
+                        }
                     },
-                    "PrimalArcana": {
+                    "Primal Arcana": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
                         "emote": "primalArcana",
-                        "onHeadcount": true,
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Primal Arcana** {primalArcana} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
                         "start": 1,
-                        "lifetime": 69
-                    },
-                    "CultSkull": {
-                        "emote": "UTSkullofCorruptedSouls",
-                        "onHeadcount": true,
-                        "start": 1,
-                        "lifetime": 69
+                        "lifetime": 69,
+                        "logOptions": null
                     },
                     "Warrior": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
                         "emote": "Warrior",
-                        "onHeadcount": true,
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__ONE OF THESE IS REQUIRED__**\n- **T7 Helmet** {T7HelmoftheTribune}\n- **Visage** {vanguardsVisage}",
+                        "confirmationMedia": null,
+                        "disableStart": null,
                         "start": 1,
-                        "lifetime": 69
+                        "lifetime": 69,
+                        "logOptions": null
                     },
-                    "TierSevenSeal": {
+                    "Scholar Seal": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "UTScholarsSeal",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Scholar Seal** {UTScholarsSeal} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Tier Seven Seal": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
                         "emote": "T7SealofInvocation",
-                        "onHeadcount": true,
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **T7 Seal** {T7SealofInvocation} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
                         "start": 1,
-                        "lifetime": 69
+                        "lifetime": 69,
+                        "logOptions": null
                     },
-                    "CompetendTrickster": {
+                    "Competent Trickster": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
                         "emote": "T7PrismofReveries",
-                        "onHeadcount": true,
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T7PrismofReveries} available.\n- You must also know how to properly decoy a Fame Cult",
+                        "confirmationMedia": null,
+                        "disableStart": null,
                         "start": 1,
-                        "lifetime": 69
+                        "lifetime": 69,
+                        "logOptions": null
                     },
-                    "SamuraiMultitool": {
-                        "emote": "T7VirtuousWakizashi",
-                        "onHeadcount": true,
-                        "start": 1,
-                        "lifetime": 69
-                    },
-                    "AetherMystic": {
-                        "emote": "UTOrbofAether",
-                        "onHeadcount": true,
-                        "start": 1,
-                        "lifetime": 69
-                    },
-                    "Daze": {
-                        "emote": "UTQuiverofThunder",
-                        "onHeadcount": true,
-                        "start": 1,
-                        "lifetime": 69
-                    },
-                    "Wavecrest": {
-                        "emote": "UTWavecrestConcertina",
-                        "onHeadcount": true,
-                        "start": 1,
-                        "lifetime": 69
-                    },
-                    "GemEscuKnight": {
+                    "Gem Escu Knight": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 1,
+                        "displayName": false,
                         "emote": "Knight",
-                        "onHeadcount": true,
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Stunning** Shield {UTOryxsEscutcheon} available.\n- You must have a **Mana reducing** Accessory {TheTwilightGemstone} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
                         "start": 1,
-                        "lifetime": 69
+                        "lifetime": 69,
+                        "logOptions": null
                     },
                     "Genesis": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 0,
+                        "points": 1,
+                        "displayName": false,
                         "emote": "UTGenesisSpell",
-                        "onHeadcount": true,
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Genesis Spell** {UTGenesisSpell} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
                         "start": 1,
-                        "lifetime": 69
+                        "lifetime": 69,
+                        "logOptions": null
                     },
-                    "GemSorc": {
+                    "Gem Sorc": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 0,
+                        "points": 1,
+                        "displayName": false,
                         "emote": "Sorcerer",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Mana reducing** Accessory {TheTwilightGemstone} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Supporter": {
+                        "type": 2,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": null,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "NitroBooster",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Tickets": {
+                        "type": 3,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 5,
+                        "points": -30,
+                        "displayName": true,
+                        "emote": "tickets",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    }
+                },
+                "reacts": {
+                    "Cultist": {
+                        "emote": "cultist",
                         "onHeadcount": true,
                         "start": 1,
                         "lifetime": 69
+                    }
+                }
+            },
+            {
+                "templateID": 291,
+                "inherits": [
+                    "veteran",
+                    "normal"
+                ],
+                "category": null,
+                "templateChannel": null,
+                "partneredStatusChannels": null,
+                "statusChannel": null,
+                "commandsChannel": null,
+                "activeChannel": null,
+                "enabled": true,
+                "minStaffRoles": {
+                    "normal": [
+                        [
+                            "almostHallsBanner"
+                        ],
+                        [
+                            "hallsBanner"
+                        ],
+                        [
+                            "vetHallsBanner"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ],
+                        [
+                            "fameLeader"
+                        ]
+                    ],
+                    "veteran": [
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "vetaffiliate"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ],
+                        [
+                            "fameLeader"
+                        ]
+                    ]
+                },
+                "minViewRaiderRoles": null,
+                "minJoinRaiderRoles": null,
+                "name": "Fame Cult",
+                "templateName": "Fame Cult (Sorc)",
+                "pingRoles": [
+                    "here",
+                    "cultping"
+                ],
+                "aliases": [
+                    "sfc",
+                    "sorcfamecult",
+                    "sfamec",
+                    "sfcult",
+                    "sfamecu"
+                ],
+                "logName": "cultRuns",
+                "vcOptions": 2,
+                "startDelay": null,
+                "cap": null,
+                "capButton": null,
+                "phases": 2,
+                "body": [
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#ff0000",
+                            "description": null,
+                            "image": null,
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/emojis/701491230332157972.png?v=1"
+                            ]
+                        }
                     },
-                    "GemVileHuntress": {
-                        "emote": "Huntress",
-                        "onHeadcount": true,
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    }
+                ],
+                "buttons": {
+                    "Key": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 2,
+                        "limit": 3,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "hallsK",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": [
+                            "rl"
+                        ],
+                        "confirmationMessage": "**__REQUIRED__**\n- Your key must be a Grade C modified key with +100% Minion XP",
+                        "confirmationMedia": null,
+                        "disableStart": null,
                         "start": 1,
-                        "lifetime": 69
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Modded": {
+                                "logName": [
+                                    "keypops",
+                                    "moddedpops"
+                                ],
+                                "points": "keypop",
+                                "multiplier": "keymultiplier"
+                            }
+                        }
                     },
-                    "Peacekeeper": {
-                        "emote": "peacekeeper",
+                    "Primal Arcana": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "primalArcana",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Primal Arcana** {primalArcana} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Warrior": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Warrior",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__ONE OF THESE IS REQUIRED__**\n- **T7 Helmet** {T7HelmoftheTribune}\n- **Visage** {vanguardsVisage}",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Scholar Seal": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "UTScholarsSeal",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Scholar Seal** {UTScholarsSeal} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Tier Seven Seal": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "T7SealofInvocation",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **T7 Seal** {T7SealofInvocation} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Competent Trickster": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "T7PrismofReveries",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T7PrismofReveries} available.\n- You must also know how to properly decoy a Fame Cult",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Gem Escu Knight": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Knight",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Stunning** Shield {UTOryxsEscutcheon} available.\n- You must have a **Mana reducing** Accessory {TheTwilightGemstone} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Gem Sorc": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 0,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Sorcerer",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Mana reducing** Accessory {TheTwilightGemstone} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Supporter": {
+                        "type": 2,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": null,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "NitroBooster",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Tickets": {
+                        "type": 3,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 5,
+                        "points": -30,
+                        "displayName": true,
+                        "emote": "tickets",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    }
+                },
+                "reacts": {
+                    "Cultist": {
+                        "emote": "cultist",
                         "onHeadcount": true,
                         "start": 1,
                         "lifetime": 69
@@ -32082,6 +32688,25 @@
                         "lifetime": 69,
                         "logOptions": null
                     },
+                    "Supporter": {
+                        "type": 2,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": null,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "NitroBooster",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
                     "Tickets": {
                         "type": 3,
                         "parent": null,
@@ -32348,6 +32973,25 @@
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} (T6) or {T7PrismofReveries} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Supporter": {
+                        "type": 2,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": null,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "NitroBooster",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
                         "confirmationMedia": null,
                         "disableStart": null,
                         "start": 1,
@@ -32713,6 +33357,25 @@
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} (T6) or {T7PrismofReveries} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Supporter": {
+                        "type": 2,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": null,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "NitroBooster",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
                         "confirmationMedia": null,
                         "disableStart": null,
                         "start": 1,
@@ -33112,6 +33775,27 @@
                         "lifetime": 69,
                         "logOptions": null
                     },
+                    "Supporter": {
+                        "type": 2,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": null,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "NitroBooster",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
                     "Tickets": {
                         "type": 3,
                         "parent": [
@@ -33394,6 +34078,25 @@
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} (T6) or {T7PrismofReveries} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Supporter": {
+                        "type": 2,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": null,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "NitroBooster",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
                         "confirmationMedia": null,
                         "disableStart": null,
                         "start": 1,
@@ -33708,6 +34411,27 @@
                         "lifetime": 69,
                         "logOptions": null
                     },
+                    "Supporter": {
+                        "type": 2,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": null,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "NitroBooster",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
                     "Tickets": {
                         "type": 3,
                         "parent": [
@@ -33784,8 +34508,8 @@
                 },
                 "minViewRaiderRoles": null,
                 "minJoinRaiderRoles": null,
-                "name": "Fungal Cavern",
-                "templateName": "Fungal Cavern",
+                "name": "VC-Less Fungal Cavern",
+                "templateName": "VC-Less Fungal Cavern",
                 "pingRoles": [
                     "here",
                     "fungalReact"
@@ -34991,6 +35715,27 @@
                         "lifetime": 69,
                         "logOptions": null
                     },
+                    "Supporter": {
+                        "type": 2,
+                        "parent": [
+                            "join"
+                        ],
+                        "choice": 0,
+                        "limit": null,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "NitroBooster",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
                     "Tickets": {
                         "type": 3,
                         "parent": [
@@ -35282,6 +36027,27 @@
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} (T6) or {T7PrismofReveries} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Supporter": {
+                        "type": 2,
+                        "parent": [
+                            "join"
+                        ],
+                        "choice": 0,
+                        "limit": null,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "NitroBooster",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
                         "confirmationMedia": null,
                         "disableStart": null,
                         "start": 1,
@@ -38214,16 +38980,17 @@
                 "minViewRaiderRoles": null,
                 "minJoinRaiderRoles": null,
                 "name": "Fame Cult",
-                "templateName": "Fame Cult",
+                "templateName": "Fame Cult (Basic)",
                 "pingRoles": [
                     "here",
                     "cultping"
                 ],
                 "aliases": [
-                    "fc",
-                    "fcultOne",
-                    "fc1",
-                    "fcult1"
+                    "basicfamecult",
+                    "bfc",
+                    "bfcult",
+                    "bfamec",
+                    "bfcu"
                 ],
                 "logName": "cultRuns",
                 "vcOptions": 2,
@@ -38302,7 +39069,7 @@
                             }
                         }
                     },
-                    "PrimalArcana": {
+                    "Primal Arcana": {
                         "type": 0,
                         "parent": null,
                         "choice": 0,
@@ -38321,7 +39088,7 @@
                         "lifetime": 69,
                         "logOptions": null
                     },
-                    "CultSkull": {
+                    "Cult Skull": {
                         "type": 0,
                         "parent": null,
                         "choice": 0,
@@ -38359,11 +39126,30 @@
                         "lifetime": 69,
                         "logOptions": null
                     },
-                    "TierSevenSeal": {
+                    "Scholar Seal": {
                         "type": 0,
                         "parent": null,
                         "choice": 0,
-                        "limit": 3,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "UTScholarsSeal",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Scholar Seal** {UTScholarsSeal} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Tier Seven Seal": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
                         "points": 1,
                         "displayName": false,
                         "emote": "T7SealofInvocation",
@@ -38378,7 +39164,7 @@
                         "lifetime": 69,
                         "logOptions": null
                     },
-                    "CompetendTrickster": {
+                    "Competent Trickster": {
                         "type": 0,
                         "parent": null,
                         "choice": 0,
@@ -38397,7 +39183,7 @@
                         "lifetime": 69,
                         "logOptions": null
                     },
-                    "SamuraiMultitool": {
+                    "Expose": {
                         "type": 0,
                         "parent": null,
                         "choice": 0,
@@ -38416,7 +39202,7 @@
                         "lifetime": 69,
                         "logOptions": null
                     },
-                    "AetherMystic": {
+                    "Aether Mystic": {
                         "type": 0,
                         "parent": null,
                         "choice": 0,
@@ -38473,16 +39259,16 @@
                         "lifetime": 69,
                         "logOptions": null
                     },
-                    "GemEscuKnight": {
+                    "Gem Escu Knight": {
                         "type": 0,
                         "parent": null,
                         "choice": 0,
-                        "limit": 20,
+                        "limit": 0,
                         "points": 1,
                         "displayName": false,
                         "emote": "Knight",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": "**__REQUIRED__**\n- You must have a **Stunning** Shield {UTOryxsEscutcheon} available.\n- You must have a **Mana reducing** Accessory {TheTwilightGemstone} available.",
@@ -38496,12 +39282,12 @@
                         "type": 0,
                         "parent": null,
                         "choice": 0,
-                        "limit": 20,
+                        "limit": 0,
                         "points": 1,
                         "displayName": false,
                         "emote": "UTGenesisSpell",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": "**__REQUIRED__**\n- You must have a **Genesis Spell** {UTGenesisSpell} available.",
@@ -38511,16 +39297,16 @@
                         "lifetime": 69,
                         "logOptions": null
                     },
-                    "GemSorc": {
+                    "Gem Sorc": {
                         "type": 0,
                         "parent": null,
                         "choice": 0,
-                        "limit": 20,
+                        "limit": 0,
                         "points": 1,
                         "displayName": false,
                         "emote": "Sorcerer",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": "**__REQUIRED__**\n- You must have a **Mana reducing** Accessory {TheTwilightGemstone} available.",
@@ -38530,16 +39316,16 @@
                         "lifetime": 69,
                         "logOptions": null
                     },
-                    "GemVileHuntress": {
+                    "Gem Vile Huntress": {
                         "type": 0,
                         "parent": null,
                         "choice": 0,
-                        "limit": 1,
-                        "points": 20,
+                        "limit": 0,
+                        "points": 0,
                         "displayName": false,
                         "emote": "Huntress",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": "**__REQUIRED__**\n- You must have a **Cursing** Trap {UTTrapoftheVileSpirit} available.\n- You must have a **Mana reducing** Accessory {TheTwilightGemstone} available.",
@@ -38553,12 +39339,12 @@
                         "type": 0,
                         "parent": null,
                         "choice": 0,
-                        "limit": 20,
+                        "limit": 0,
                         "points": 1,
                         "displayName": false,
                         "emote": "peacekeeper",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": "**__REQUIRED__**\n- You must have a **Peacekeeper** {peacekeeper} available.",
@@ -38608,92 +39394,678 @@
                     }
                 },
                 "reacts": {
+                    "Cultist": {
+                        "emote": "cultist",
+                        "onHeadcount": true,
+                        "start": 1,
+                        "lifetime": 69
+                    }
+                }
+            },
+            {
+                "templateID": 290,
+                "inherits": [
+                    "veteran",
+                    "normal"
+                ],
+                "category": null,
+                "templateChannel": null,
+                "partneredStatusChannels": null,
+                "statusChannel": null,
+                "commandsChannel": null,
+                "activeChannel": null,
+                "enabled": true,
+                "minStaffRoles": {
+                    "normal": [
+                        [
+                            "almostHallsBanner"
+                        ],
+                        [
+                            "hallsBanner"
+                        ],
+                        [
+                            "vetHallsBanner"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ],
+                        [
+                            "fameLeader"
+                        ]
+                    ],
+                    "veteran": [
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "vetaffiliate"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ],
+                        [
+                            "fameLeader"
+                        ]
+                    ]
+                },
+                "minViewRaiderRoles": null,
+                "minJoinRaiderRoles": null,
+                "name": "Fame Cult",
+                "templateName": "Fame Cult (Restricted)",
+                "pingRoles": [
+                    "here",
+                    "cultping"
+                ],
+                "aliases": [
+                    "rfc",
+                    "rfamec",
+                    "rfcult",
+                    "rfamecu",
+                    "resfc",
+                    "restrictedfc"
+                ],
+                "logName": "cultRuns",
+                "vcOptions": 2,
+                "startDelay": null,
+                "cap": null,
+                "capButton": null,
+                "phases": 2,
+                "body": [
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#ff0000",
+                            "description": null,
+                            "image": null,
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/emojis/701491230332157972.png?v=1"
+                            ]
+                        }
+                    },
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    }
+                ],
+                "buttons": {
                     "Key": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 2,
+                        "limit": 3,
+                        "points": 0,
+                        "displayName": false,
                         "emote": "hallsK",
-                        "onHeadcount": true,
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": [
+                            "rl"
+                        ],
+                        "confirmationMessage": "**__REQUIRED__**\n- Your key must be a Grade C modified key with +100% Minion XP",
+                        "confirmationMedia": null,
+                        "disableStart": null,
                         "start": 1,
-                        "lifetime": 69
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Modded": {
+                                "logName": [
+                                    "keypops",
+                                    "moddedpops"
+                                ],
+                                "points": "keypop",
+                                "multiplier": "keymultiplier"
+                            }
+                        }
                     },
-                    "PrimalArcana": {
+                    "Primal Arcana": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
                         "emote": "primalArcana",
-                        "onHeadcount": true,
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Primal Arcana** {primalArcana} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
                         "start": 1,
-                        "lifetime": 69
-                    },
-                    "CultSkull": {
-                        "emote": "UTSkullofCorruptedSouls",
-                        "onHeadcount": true,
-                        "start": 1,
-                        "lifetime": 69
+                        "lifetime": 69,
+                        "logOptions": null
                     },
                     "Warrior": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
                         "emote": "Warrior",
-                        "onHeadcount": true,
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__ONE OF THESE IS REQUIRED__**\n- **T7 Helmet** {T7HelmoftheTribune}\n- **Visage** {vanguardsVisage}",
+                        "confirmationMedia": null,
+                        "disableStart": null,
                         "start": 1,
-                        "lifetime": 69
+                        "lifetime": 69,
+                        "logOptions": null
                     },
-                    "TierSevenSeal": {
+                    "Scholar Seal": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "UTScholarsSeal",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Scholar Seal** {UTScholarsSeal} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Tier Seven Seal": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
                         "emote": "T7SealofInvocation",
-                        "onHeadcount": true,
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **T7 Seal** {T7SealofInvocation} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
                         "start": 1,
-                        "lifetime": 69
+                        "lifetime": 69,
+                        "logOptions": null
                     },
-                    "CompetendTrickster": {
+                    "Competent Trickster": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
                         "emote": "T7PrismofReveries",
-                        "onHeadcount": true,
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T7PrismofReveries} available.\n- You must also know how to properly decoy a Fame Cult",
+                        "confirmationMedia": null,
+                        "disableStart": null,
                         "start": 1,
-                        "lifetime": 69
+                        "lifetime": 69,
+                        "logOptions": null
                     },
-                    "SamuraiMultitool": {
-                        "emote": "T7VirtuousWakizashi",
-                        "onHeadcount": true,
-                        "start": 1,
-                        "lifetime": 69
-                    },
-                    "AetherMystic": {
-                        "emote": "UTOrbofAether",
-                        "onHeadcount": true,
-                        "start": 1,
-                        "lifetime": 69
-                    },
-                    "Daze": {
-                        "emote": "UTQuiverofThunder",
-                        "onHeadcount": true,
-                        "start": 1,
-                        "lifetime": 69
-                    },
-                    "Wavecrest": {
-                        "emote": "UTWavecrestConcertina",
-                        "onHeadcount": true,
-                        "start": 1,
-                        "lifetime": 69
-                    },
-                    "GemEscuKnight": {
+                    "Gem Escu Knight": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 1,
+                        "displayName": false,
                         "emote": "Knight",
-                        "onHeadcount": true,
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Stunning** Shield {UTOryxsEscutcheon} available.\n- You must have a **Mana reducing** Accessory {TheTwilightGemstone} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
                         "start": 1,
-                        "lifetime": 69
+                        "lifetime": 69,
+                        "logOptions": null
                     },
                     "Genesis": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 0,
+                        "points": 1,
+                        "displayName": false,
                         "emote": "UTGenesisSpell",
-                        "onHeadcount": true,
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Genesis Spell** {UTGenesisSpell} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
                         "start": 1,
-                        "lifetime": 69
+                        "lifetime": 69,
+                        "logOptions": null
                     },
-                    "GemSorc": {
+                    "Gem Sorc": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 0,
+                        "points": 1,
+                        "displayName": false,
                         "emote": "Sorcerer",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Mana reducing** Accessory {TheTwilightGemstone} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Supporter": {
+                        "type": 2,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": null,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "NitroBooster",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Tickets": {
+                        "type": 3,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 5,
+                        "points": -30,
+                        "displayName": true,
+                        "emote": "tickets",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    }
+                },
+                "reacts": {
+                    "Cultist": {
+                        "emote": "cultist",
                         "onHeadcount": true,
                         "start": 1,
                         "lifetime": 69
+                    }
+                }
+            },
+            {
+                "templateID": 291,
+                "inherits": [
+                    "veteran",
+                    "normal"
+                ],
+                "category": null,
+                "templateChannel": null,
+                "partneredStatusChannels": null,
+                "statusChannel": null,
+                "commandsChannel": null,
+                "activeChannel": null,
+                "enabled": true,
+                "minStaffRoles": {
+                    "normal": [
+                        [
+                            "almostHallsBanner"
+                        ],
+                        [
+                            "hallsBanner"
+                        ],
+                        [
+                            "vetHallsBanner"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ],
+                        [
+                            "fameLeader"
+                        ]
+                    ],
+                    "veteran": [
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "vetaffiliate"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ],
+                        [
+                            "fameLeader"
+                        ]
+                    ]
+                },
+                "minViewRaiderRoles": null,
+                "minJoinRaiderRoles": null,
+                "name": "Fame Cult",
+                "templateName": "Fame Cult (Sorc)",
+                "pingRoles": [
+                    "here",
+                    "cultping"
+                ],
+                "aliases": [
+                    "sfc",
+                    "sorcfamecult",
+                    "sfamec",
+                    "sfcult",
+                    "sfamecu"
+                ],
+                "logName": "cultRuns",
+                "vcOptions": 2,
+                "startDelay": null,
+                "cap": null,
+                "capButton": null,
+                "phases": 2,
+                "body": [
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#ff0000",
+                            "description": null,
+                            "image": null,
+                            "thumbnail": [
+                                "https://cdn.discordapp.com/emojis/701491230332157972.png?v=1"
+                            ]
+                        }
                     },
-                    "GemVileHuntress": {
-                        "emote": "Huntress",
-                        "onHeadcount": true,
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    }
+                ],
+                "buttons": {
+                    "Key": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 2,
+                        "limit": 3,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "hallsK",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": [
+                            "rl"
+                        ],
+                        "confirmationMessage": "**__REQUIRED__**\n- Your key must be a Grade C modified key with +100% Minion XP",
+                        "confirmationMedia": null,
+                        "disableStart": null,
                         "start": 1,
-                        "lifetime": 69
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Modded": {
+                                "logName": [
+                                    "keypops",
+                                    "moddedpops"
+                                ],
+                                "points": "keypop",
+                                "multiplier": "keymultiplier"
+                            }
+                        }
                     },
-                    "Peacekeeper": {
-                        "emote": "peacekeeper",
+                    "Primal Arcana": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "primalArcana",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Primal Arcana** {primalArcana} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Warrior": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Warrior",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__ONE OF THESE IS REQUIRED__**\n- **T7 Helmet** {T7HelmoftheTribune}\n- **Visage** {vanguardsVisage}",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Scholar Seal": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "UTScholarsSeal",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Scholar Seal** {UTScholarsSeal} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Tier Seven Seal": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "T7SealofInvocation",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **T7 Seal** {T7SealofInvocation} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Competent Trickster": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "T7PrismofReveries",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T7PrismofReveries} available.\n- You must also know how to properly decoy a Fame Cult",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Gem Escu Knight": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Knight",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Stunning** Shield {UTOryxsEscutcheon} available.\n- You must have a **Mana reducing** Accessory {TheTwilightGemstone} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Gem Sorc": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 0,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Sorcerer",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Mana reducing** Accessory {TheTwilightGemstone} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Supporter": {
+                        "type": 2,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": null,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "NitroBooster",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Tickets": {
+                        "type": 3,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 5,
+                        "points": -30,
+                        "displayName": true,
+                        "emote": "tickets",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    }
+                },
+                "reacts": {
+                    "Cultist": {
+                        "emote": "cultist",
                         "onHeadcount": true,
                         "start": 1,
                         "lifetime": 69
@@ -67699,6 +69071,25 @@
                         "lifetime": 69,
                         "logOptions": null
                     },
+                    "Supporter": {
+                        "type": 2,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": null,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "NitroBooster",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
                     "Tickets": {
                         "type": 3,
                         "parent": null,
@@ -67965,6 +69356,25 @@
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} (T6) or {T7PrismofReveries} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Supporter": {
+                        "type": 2,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": null,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "NitroBooster",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
                         "confirmationMedia": null,
                         "disableStart": null,
                         "start": 1,
@@ -68330,6 +69740,25 @@
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} (T6) or {T7PrismofReveries} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Supporter": {
+                        "type": 2,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": null,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "NitroBooster",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
                         "confirmationMedia": null,
                         "disableStart": null,
                         "start": 1,
@@ -68729,6 +70158,27 @@
                         "lifetime": 69,
                         "logOptions": null
                     },
+                    "Supporter": {
+                        "type": 2,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": null,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "NitroBooster",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
                     "Tickets": {
                         "type": 3,
                         "parent": [
@@ -69011,6 +70461,25 @@
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} (T6) or {T7PrismofReveries} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Supporter": {
+                        "type": 2,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": null,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "NitroBooster",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
                         "confirmationMedia": null,
                         "disableStart": null,
                         "start": 1,
@@ -69325,6 +70794,27 @@
                         "lifetime": 69,
                         "logOptions": null
                     },
+                    "Supporter": {
+                        "type": 2,
+                        "parent": [
+                            "Join"
+                        ],
+                        "choice": 0,
+                        "limit": null,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "NitroBooster",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
                     "Tickets": {
                         "type": 3,
                         "parent": [
@@ -69401,8 +70891,8 @@
                 },
                 "minViewRaiderRoles": null,
                 "minJoinRaiderRoles": null,
-                "name": "Fungal Cavern",
-                "templateName": "Fungal Cavern",
+                "name": "VC-Less Fungal Cavern",
+                "templateName": "VC-Less Fungal Cavern",
                 "pingRoles": [
                     "here",
                     "fungalReact"
@@ -70608,6 +72098,27 @@
                         "lifetime": 69,
                         "logOptions": null
                     },
+                    "Supporter": {
+                        "type": 2,
+                        "parent": [
+                            "join"
+                        ],
+                        "choice": 0,
+                        "limit": null,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "NitroBooster",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
                     "Tickets": {
                         "type": 3,
                         "parent": [
@@ -70899,6 +72410,27 @@
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} (T6) or {T7PrismofReveries} (T7) available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Supporter": {
+                        "type": 2,
+                        "parent": [
+                            "join"
+                        ],
+                        "choice": 0,
+                        "limit": null,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "NitroBooster",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
                         "confirmationMedia": null,
                         "disableStart": null,
                         "start": 1,
