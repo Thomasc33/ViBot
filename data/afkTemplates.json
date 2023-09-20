@@ -6375,7 +6375,7 @@
                         "displayName": false,
                         "emote": "Curse",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": null,
@@ -6396,7 +6396,7 @@
                         "displayName": false,
                         "emote": "Ogmur",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": null,
@@ -6417,7 +6417,7 @@
                         "displayName": false,
                         "emote": "Expose",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": null,
@@ -6438,7 +6438,7 @@
                         "displayName": false,
                         "emote": "Knight",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": "**__REQUIRED__**\n- You must have a **Stunning** Shield {T6ColossusShield} available.",
@@ -6459,7 +6459,7 @@
                         "displayName": false,
                         "emote": "Slow",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": null,
@@ -6480,7 +6480,7 @@
                         "displayName": false,
                         "emote": "daze",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": null,
@@ -6501,7 +6501,7 @@
                         "displayName": false,
                         "emote": "UTMarbleSeal",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": null,
@@ -7152,7 +7152,7 @@
                         "displayName": false,
                         "emote": "Curse",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": null,
@@ -7173,7 +7173,7 @@
                         "displayName": false,
                         "emote": "Ogmur",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": null,
@@ -7194,7 +7194,7 @@
                         "displayName": false,
                         "emote": "Expose",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": null,
@@ -7215,7 +7215,7 @@
                         "displayName": false,
                         "emote": "Knight",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": "**__REQUIRED__**\n- You must have a **Stunning** Shield {T6ColossusShield} available.",
@@ -7236,7 +7236,7 @@
                         "displayName": false,
                         "emote": "Slow",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": null,
@@ -7257,7 +7257,7 @@
                         "displayName": false,
                         "emote": "daze",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": null,
@@ -7278,7 +7278,7 @@
                         "displayName": false,
                         "emote": "UTMarbleSeal",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": null,
@@ -28737,7 +28737,7 @@
                     "normal": [
                         [
                             "vetrl",
-                            "veteranHallsBanner"
+                            "vetHallsBanner"
                         ],
                         [
                             "vetrl",
@@ -29227,7 +29227,7 @@
                     "normal": [
                         [
                             "vetrl",
-                            "veteranHallsBanner"
+                            "vetHallsBanner"
                         ],
                         [
                             "vetrl",
@@ -65120,7 +65120,7 @@
                     "normal": [
                         [
                             "vetrl",
-                            "veteranHallsBanner"
+                            "vetHallsBanner"
                         ],
                         [
                             "vetrl",
@@ -65610,7 +65610,7 @@
                     "normal": [
                         [
                             "vetrl",
-                            "veteranHallsBanner"
+                            "vetHallsBanner"
                         ],
                         [
                             "vetrl",

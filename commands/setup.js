@@ -14,7 +14,8 @@ const roles = [
     'almostHallsBanner', 'hallsBanner', 'shattersBanner', 'fullskipBanner', 'hmShattersBanner',
     'moonlightBanner', 'vetHallsBanner', 'vetShattersBanner', 'vetFullskipBanner', 'vetHmShattersBanner',
     'vetMoonlightBanner', 'trialHallsBanner', 'trialFullskipBanner', 'trialShattersBanner', 'trialOryxBanner',
-    'supporterTierOne', 'supporterTierTwo', 'supporterTierThree', 'supporterTierFour', 'supporterTierFive', 'supporterTierSix', 'unverified', 'minimumServerLeaveRole'
+    'supporterTierOne', 'supporterTierTwo', 'supporterTierThree', 'supporterTierFour', 'supporterTierFive', 'supporterTierSix', 'unverified', 'minimumServerLeaveRole',
+    'fameTrickster'
 ]
 const channels = ['modmail', 'verification', 'manualverification', 'vetverification', 'manualvetverification', 'verificationlog', 'accursedverification', 'modlogs', 'history', 'suspendlog',
     'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel',
@@ -47,7 +48,7 @@ const vetverireqs = ['maxed', 'meleemaxed', 'runs']
 const points = ['earlylocation', 'perrun', 'supportermultiplier', 'keypop', 'vialpop', 'rushing', 'brain', 'mystic', 'eventkey', 'o3streaming',
     'o3trickster', 'o3puri', 'exaltkey', 'shattskey', 'fungalkey', 'nestkey', 'keymultiplier', 'runepop', 'incpop', 'steamworkkey',
     'moonlightkey', 'miniBossGuessingPoints']
-const lists = ['earlyLocation', 'runningEvents', 'warningRoles', 'perkRoles', 'discordRoles', 'commendRoles']
+const lists = ['earlyLocation', 'runningEvents', 'warningRoles', 'perkRoles', 'discordRoles', 'commendRoles', 'activityCheckAllowedChannels']
 const strings = ['hallsAccursedReqsImage', 'hallsAdvancedReqsImage', 'exaltsAdvancedReqsImage', 'hallsExaltedReqsImage', 'exaltsExaltedReqsImage', 'vetVerifyDeniedMessage']
 const quotapoints = ['voidLeading', 'cultLeading', 'shattersLeading', 'oryx3Leading', 'fungalLeading', 'nestLeading', 'steamworkLeading',
 'eventLeading', 'failedRun', 'feedback', 'feedbackOnFeedback', 'assist', 'parsing', 'rolledquota', 'rlWeeklyQuota', 'arlWeeklyQuota', 'securityWeeklyQuota', 'wardenWeeklyQuota',
