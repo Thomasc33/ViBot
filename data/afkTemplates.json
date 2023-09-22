@@ -11075,7 +11075,7 @@
                 "logName": "eventruns",
                 "vcOptions": 2,
                 "startDelay": null,
-                "cap": null,
+                "cap": 25,
                 "capButton": null,
                 "phases": 2,
                 "body": [
@@ -18670,7 +18670,7 @@
                 "logName": "eventruns",
                 "vcOptions": 2,
                 "startDelay": null,
-                "cap": null,
+                "cap": 25,
                 "capButton": null,
                 "phases": 2,
                 "body": [
@@ -47458,7 +47458,7 @@
                 "logName": "eventruns",
                 "vcOptions": 2,
                 "startDelay": null,
-                "cap": null,
+                "cap": 25,
                 "capButton": null,
                 "phases": 2,
                 "body": [
@@ -55053,7 +55053,7 @@
                 "logName": "eventruns",
                 "vcOptions": 2,
                 "startDelay": null,
-                "cap": null,
+                "cap": 25,
                 "capButton": null,
                 "phases": 2,
                 "body": [
@@ -81876,7 +81876,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Void",
                 "templateName": "Void",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "v",
                     "void",
@@ -82258,7 +82258,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Cult",
                 "templateName": "Cult",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "c",
                     "cult"
@@ -82625,7 +82625,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Nest",
                 "templateName": "Nest",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "n",
                     "nest"
@@ -82944,7 +82944,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Kogbold Steamworks",
                 "templateName": "Kogbold Steamworks",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "k",
                     "kog",
@@ -83319,7 +83319,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Fungal Cavern",
                 "templateName": "Fungal Cavern",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "fc",
                     "fungal"
@@ -83688,7 +83688,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "High Tech Terror",
                 "templateName": "High Tech Terror",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "htt",
                     "hight",
@@ -83967,7 +83967,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Secluded Thicket",
                 "templateName": "Secluded Thicket",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "thic",
                     "thick",
@@ -84248,7 +84248,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Lair of Shaitan",
                 "templateName": "Lair of Shaitan",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "shait",
                     "shaitan",
@@ -84527,7 +84527,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Cnidarian Reef",
                 "templateName": "Cnidarian Reef",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "reef",
                     "reefs",
@@ -84807,7 +84807,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Puppet Master’s Encore",
                 "templateName": "Puppet Master’s Encore",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "enc",
                     "encore",
@@ -84817,7 +84817,7 @@
                 "logName": null,
                 "vcOptions": 2,
                 "startDelay": null,
-                "cap": null,
+                "cap": 25,
                 "capButton": null,
                 "phases": 2,
                 "body": [
@@ -85085,7 +85085,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Untaris",
                 "templateName": "Untaris (Blue Alien)",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "alien",
                     "untaris",
@@ -85307,7 +85307,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Malogia",
                 "templateName": "Malogia (Red Alien)",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "alien",
                     "malogia",
@@ -85528,7 +85528,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Forax",
                 "templateName": "Forax (Green Alien)",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "alien",
                     "forax",
@@ -85749,7 +85749,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Katalund",
                 "templateName": "Katalund (Yellow Alien)",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "alien",
                     "katalund",
@@ -85951,7 +85951,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Random Aliens",
                 "templateName": "Random Aliens",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "alien",
                     "aliens",
@@ -86231,7 +86231,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Davy Jones Locker",
                 "templateName": "Davy Jones Locker",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "davy",
                     "davys",
@@ -86469,7 +86469,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Mountain Temple",
                 "templateName": "Mountain Temple",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "mt",
                     "mtemple",
@@ -86728,7 +86728,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Deadwater Docks",
                 "templateName": "Deadwater Docks",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "ddocks",
                     "deadwaterdocks"
@@ -87005,7 +87005,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Woodland Labyrinth",
                 "templateName": "Woodland Labyrinth",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "wlab",
                     "woodland",
@@ -87263,7 +87263,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Crawling Depths",
                 "templateName": "Crawling Depths",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "cdept",
                     "cdepth",
@@ -87525,7 +87525,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Ocean Trench",
                 "templateName": "Ocean Trench",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "ot",
                     "ocean",
@@ -87767,7 +87767,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Ice Cave",
                 "templateName": "Ice Cave",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "icec",
                     "icave",
@@ -87987,7 +87987,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Tomb of Ancients",
                 "templateName": "Tomb of Ancients",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "tomb",
                     "tombofancient",
@@ -88248,7 +88248,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Ice Tomb",
                 "templateName": "Ice Tomb",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "itomb",
                     "icet",
@@ -88489,7 +88489,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Lair of Draconis",
                 "templateName": "Lair of Draconis",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "lod",
                     "lairofd",
@@ -88693,7 +88693,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Candyland",
                 "templateName": "Candyland",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "cland",
                     "candyland",
@@ -88856,7 +88856,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Third Dimension",
                 "templateName": "Third Dimension",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "3d",
                     "third",
@@ -89117,7 +89117,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Sulfurous Wetlands",
                 "templateName": "Sulforous Wetlands",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "wet",
                     "wetl",
@@ -89341,7 +89341,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Parasite Chambers",
                 "templateName": "Parasite Chambers",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "para",
                     "pchambers",
@@ -89657,7 +89657,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Mad Lab",
                 "templateName": "Mad Lab",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "mlab",
                     "madlab"
@@ -89838,7 +89838,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Haunted Cemetery",
                 "templateName": "Haunted Cemetery",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "cem",
                     "hcem",
@@ -90022,7 +90022,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Cursed Library",
                 "templateName": "Cursed Library",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "lib",
                     "clib",
@@ -90206,7 +90206,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Manor of the Immortals",
                 "templateName": "Manor of the Immortals",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "manor",
                     "manorimmortals",
@@ -90388,7 +90388,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Sprite World",
                 "templateName": "Sprite World",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "sprite",
                     "spriteworld"
@@ -90569,7 +90569,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Snake Pit",
                 "templateName": "Snake Pit",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "snake",
                     "snakep",
@@ -90752,7 +90752,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Magic Woods",
                 "templateName": "Magic Woods",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "mw",
                     "mwood",
@@ -90935,7 +90935,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Undead Lair",
                 "templateName": "Undead Lair",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "udl",
                     "undeadl",
@@ -91117,7 +91117,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Abyss of Demons",
                 "templateName": "Abyss of Demons",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "abys",
                     "abyss",
@@ -91299,7 +91299,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Puppet Master’s Theatre",
                 "templateName": "Puppet Master’s Theatre",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "pup",
                     "puppetm",
@@ -91309,7 +91309,7 @@
                 "logName": null,
                 "vcOptions": 2,
                 "startDelay": null,
-                "cap": null,
+                "cap": 25,
                 "capButton": null,
                 "phases": 2,
                 "body": [
@@ -91482,7 +91482,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Toxic Sewers",
                 "templateName": "Toxic Sewers",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "sew",
                     "sews",
@@ -91668,7 +91668,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Ancient Ruins",
                 "templateName": "Ancient Ruins",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "ruin",
                     "ruins",
@@ -91851,7 +91851,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Cave of a Thousand Treasures",
                 "templateName": "Cave of a Thousand Treasures",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "tcave",
                     "treasures",
@@ -92033,7 +92033,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Pirate Cave",
                 "templateName": "Pirate Cave",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "pcave",
                     "piratecave"
@@ -92214,7 +92214,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Forest Maze",
                 "templateName": "Forest Maze",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "fmaze",
                     "forestmaze"
@@ -92395,7 +92395,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Spider Den",
                 "templateName": "Spider Den",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "sden",
                     "spiderden"
@@ -92576,7 +92576,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Forbidden Jungle",
                 "templateName": "Forbidden Jungle",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "fjungle",
                     "forbiddenjungle"
@@ -92757,7 +92757,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Hive",
                 "templateName": "Hive",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "hive"
                 ],
@@ -92937,7 +92937,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Machine",
                 "templateName": "Machine",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "machine"
                 ],
@@ -93155,7 +93155,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Mad God Mayhem",
                 "templateName": "Mad God Mayhem",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "mgm",
                     "mayhem",
@@ -93432,7 +93432,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Battle for the Nexus",
                 "templateName": "Battle for the Nexus",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "bnex",
                     "bnexus",
@@ -93766,7 +93766,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Belladonna's Garden",
                 "templateName": "Belladonna's Garden",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "bellas",
                     "bellas",
@@ -94063,7 +94063,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Rainbow Road",
                 "templateName": "Rainbow Road",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "rr",
                     "rainbowr",
@@ -94227,7 +94227,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Hidden Interregnum",
                 "templateName": "Hidden Interregnum",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "interregnum",
                     "inter",
@@ -94446,7 +94446,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "VC-less Oryx 3",
                 "templateName": "VC-less Oryx 3",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "vo",
                     "vo3",
@@ -94680,7 +94680,7 @@
                 "minJoinRaiderRoles": null,
                 "name": "Oryx 3",
                 "templateName": "Oryx 3",
-                "pingRoles": null,
+                "pingRoles": ["eventBoiPing"],
                 "aliases": [
                     "o",
                     "o3",
