@@ -74,7 +74,7 @@ const addRolesToUsersWithRoles = roles
 const checkStrings = checkPanels
 
 const menus = ['roles', 'channels', 'voice', 'voiceprefixes', 'backend', 'numerical', 'runreqs', 'autoveri',
-'vetverireqs', 'points', 'commands', 'categories', 'lists', 'strings', 'quotapoints', 'modmail', 'commandsRolePermissions', 'supporter',
+'vetverireqs', 'points', 'commands', 'raiding', 'lists', 'strings', 'quotapoints', 'modmail', 'commandsRolePermissions', 'supporter',
 'rolePermissions', 'checkPanels', 'checkRoles', 'checkUserExceptions', 'checkRoleExceptions', 'removeRoleFromUserWithRoles',
 'addRolesToUsersWithRoles', 'checkStrings']
 
