@@ -132,7 +132,7 @@ module.exports = {
         const embed = new Discord.EmbedBuilder()
             .setColor('Red')
             .setAuthor({ iconURL: member.displayAvatarURL(), name: member.user.tag })
-            .setDescription(`${member.toString()} \`${member.nickname}\` has left the server`)
+            .setDescription(`${member.toString()} \`${member.nickname ?? ''}\` has left the server`)
             .setThumbnail(member.displayAvatarURL())
             .addFields(
                 { name: 'Highest Role', value: member.roles.highest.toString() },
