@@ -121,7 +121,10 @@ bot.on('typingStart', (c, u) => {
 })
 
 Promise.all(botSettings.config?.guildIds.map(guildId => {
-    const settingsEventSource = new EventSource(`https://admin.vibot.tech:4001/guild/${guildId}/sse?key=${botSettings.config.key}`)
+    const sseUrl = new URL(botSettings.config.url)
+    sseUrl.pathname = `/guild/${guildId}/sse`
+    sseUrl.searchParams.append('key', botSettings.config.key)
+    const settingsEventSource = new EventSource(sseUrl.toString())
     settingsEventSource.addEventListener('error', err => ErrorLogger.log(err, bot))
     settingsEventSource.addEventListener('open', () => console.log(`Settings SEE Socket opened for ${guildId}`))
     const cacheFile = `data/guildSettings.${guildId}.cache.json`

@@ -14,6 +14,7 @@
     },
     "config": {
         "key": "DxT8HoV9SzzeuHa6AUQ0xlrWPTZM9zApxgtgG1JEfJCauzKRfRwZDKLcLJRG",
+        "url": "https://config.vibot.tech",
         "guildIds": [
             "701483950559985705",
             "934611202787643412"
