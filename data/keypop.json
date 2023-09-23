@@ -113,6 +113,50 @@
             "schema": "advancedNestPops",
             "name": "Advanced Nest",
             "modded": true
+        },
+        "shieldrune": {
+            "templateID": 31,
+            "alias": [
+                "sh",
+                "shield"
+            ],
+            "points": "runepop",
+            "schema": "runeShieldPops",
+            "name": "Shield Rune",
+            "modded": false
+        },
+        "swordrune": {
+            "templateID": 32,
+            "alias": [
+                "sw",
+                "sword"
+            ],
+            "points": "runepop",
+            "schema": "runeSwordPops",
+            "name": "Sword Rune",
+            "modded": false
+        },
+        "helmetrune": {
+            "templateID": 33,
+            "alias": [
+                "h",
+                "helm",
+                "helmet"
+            ],
+            "points": "runepop",
+            "schema": "runeHelmetPops",
+            "name": "Helmet Rune",
+            "modded": false
+        },
+        "inc": {
+            "templateID": 34,
+            "alias": [
+                "inc"
+            ],
+            "points": "incpop",
+            "schema": "incantationPops",
+            "name": "Incantation",
+            "modded": false
         }
     },
     "701483950559985705": {
@@ -216,6 +260,50 @@
             "schema": "advancedNestPops",
             "name": "Advanced Nest",
             "modded": true
+        },
+        "shieldrune": {
+            "templateID": 35,
+            "alias": [
+                "sh",
+                "shield"
+            ],
+            "points": "runepop",
+            "schema": "runeShieldPops",
+            "name": "Shield Rune",
+            "modded": false
+        },
+        "swordrune": {
+            "templateID": 36,
+            "alias": [
+                "sw",
+                "sword"
+            ],
+            "points": "runepop",
+            "schema": "runeSwordPops",
+            "name": "Sword Rune",
+            "modded": false
+        },
+        "helmetrune": {
+            "templateID": 37,
+            "alias": [
+                "h",
+                "helm",
+                "helmet"
+            ],
+            "points": "runepop",
+            "schema": "runeHelmetPops",
+            "name": "Helmet Rune",
+            "modded": false
+        },
+        "inc": {
+            "templateID": 38,
+            "alias": [
+                "inc"
+            ],
+            "points": "incpop",
+            "schema": "incantationPops",
+            "name": "Incantation",
+            "modded": false
         }
     },
     "451171819672698920": {

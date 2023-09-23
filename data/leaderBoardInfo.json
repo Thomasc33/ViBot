@@ -30,6 +30,22 @@
                     ]
                 },
                 {
+                    "prettyName": "Oryx Leading",
+                    "emoji": "oryxThree",
+                    "embedColor": "#990000",
+                    "dbRows": [
+                        "oryxLead"
+                    ]
+                },
+                {
+                    "prettyName": "Silent Oryx Leading",
+                    "emoji": "oryx",
+                    "embedColor": "#990000",
+                    "dbRows": [
+                        "silentOryxLead"
+                    ]
+                },
+                {
                     "prettyName": "Shatters Lead",
                     "emoji": "forgottenking",
                     "embedColor": "#467606",
@@ -54,11 +70,27 @@
                     ]
                 },
                 {
+                    "prettyName": "Advanced Nests Lead",
+                    "emoji": "advancedNestBee",
+                    "embedColor": "#469628",
+                    "dbRows": [
+                        "advancedNestsLead"
+                    ]
+                },
+                {
                     "prettyName": "Steamworks Lead",
                     "emoji": "SteamworksBoss",
                     "embedColor": "#3b3e46",
                     "dbRows": [
                         "steamworkLead"
+                    ]
+                },
+                {
+                    "prettyName": "Advanced Steamworks Lead",
+                    "emoji": "exaltedAdvancedSteamworks",
+                    "embedColor": "#3b3e46",
+                    "dbRows": [
+                        "advancedSteamworksLead"
                     ]
                 },
                 {
@@ -75,6 +107,14 @@
                     "embedColor": "#5e00a4",
                     "dbRows": [
                         "eventsLead"
+                    ]
+                },
+                {
+                    "prettyName": "Fame Minutes Lead",
+                    "emoji": "fame",
+                    "embedColor": "#ed8000",
+                    "dbRows": [
+                        "fameMinutesLead"
                     ]
                 },
                 {

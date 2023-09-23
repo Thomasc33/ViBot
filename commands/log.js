@@ -33,6 +33,14 @@ module.exports = {
             count = args[args.length - 1]
             if (run.weight) count = count * run.weight
         }
+        let assistCount = count
+
+        // assists count
+        if (settings.backend.isLogAssistsCapped) {
+            if (assistCount > settings.numerical.logAssistsCap) {
+                assistCount = settings.numerical.logAssistsCap
+            }
+        }
 
         //confirm if needed
         let confirmed = false;
@@ -51,7 +59,7 @@ module.exports = {
                     if (err) { res(null); return message.channel.send(`Error: ${err}`) }
                     if (rows.length < 1) { res(null); return message.channel.send('Current week stats could not be retrived. However, run was still logged') }
                     currentWeekEmbed.setDescription(`Run Logged for ${`<@!${message.author.id}>`}${message.member.displayName ? ` \`${message.member.displayName}\`` : ''}`)
-                        .addFields({ name: 'Current week:', value: run.toDisplay.map(c => ` \`${rows[0][c]}\` ${c.replace('currentweek', '').replace('rollingQuota', 'Rollover')}`).join('\n') })
+                        .addFields({ name: 'Current week:', value: run.toDisplay.map(c => ` \`${rows[0][c].toString().padStart(3, ' ')}\` ${c.replace('currentweek', '').replace('rollingQuota', 'Rollover').replace('currentWeek', '').replace('lead', '').replace('Lead', '')}`).join('\n') })
                         .setTimestamp()
                         .setColor(run.color)
                     if (run.icon) currentWeekEmbed.setThumbnail(run.icon)
@@ -70,7 +78,7 @@ module.exports = {
                 promises.push(new Promise(res => {
                     if (m.id !== message.author.id) {
                         desc = desc + `<@!${m.id}> `
-                        db.query(`UPDATE users SET ${guildInfo.assist.main} = ${guildInfo.assist.main} + ${count}, ${guildInfo.assist.currentweek} = ${guildInfo.assist.currentweek} + ${count} WHERE id = ${m.id}`, (err, rows) => {
+                        db.query(`UPDATE users SET ${guildInfo.assist.main} = ${guildInfo.assist.main} + ${assistCount}, ${guildInfo.assist.currentweek} = ${guildInfo.assist.currentweek} + ${assistCount} WHERE id = ${m.id}`, (err, rows) => {
                             if (err) return res(null)
                             db.query(`SELECT ${guildInfo.assist.currentweek} FROM users WHERE id = '${m.id}'`, (err, rows) => {
                                 let s = `<@!${m.id}>${m.displayName ? ` \`${m.displayName}\`` : ''}. Current week: ${rows[0][guildInfo.assist.currentweek]} Assists`

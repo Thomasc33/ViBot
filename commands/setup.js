@@ -1,25 +1,27 @@
 const fs = require('fs')
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
+const configWebsite = !!require('../settings.json').config
 const roles = [
-    'admin', 'moderator', 'officer', 'headrl', 'headdev', 'assistantdev', 'vetrl', 'fsvrl', 'mrvrl', 'security', 'fullskip', 'developer', 'rl', 'almostrl',
-    'trialrl', 'headeventrl', 'eventrl', 'minimumStaffRole',
-    'rusher', 'lol', 'accursed', 'vetraider', 'vetraider2', 'vetraider3', 'vetraider4', 'vetraider5', 'raider', 'eventraider', 'muted',
+    'admin', 'moderator', 'officer', 'headrl', 'headdev', 'assistantdev', 'vetrl', 'fsvrl', 'mrvrl', 'security',
+    'fullskip', 'developer', 'rl', 'almostrl',
+    'trialrl', 'headeventrl', 'eventrl', 'minimumStaffRole', 'fameLeader',
+    'rusher', 'lol', 'accursed', 'celestial', 'vetraider', 'vetraider2', 'vetraider3', 'vetraider4', 'vetraider5', 'raider', 'eventraider', 'muted',
     'tempsuspended', 'permasuspended', 'vetban', 'tempkey', 'keyjesus', 'moddedkey', 'topkey', 'bottomkey', 'cultping', 'voidping', 'shattsReact', 'hmShattsReact', 'fungalReact', 'nestReact',
-    'fskipReact', 'fameReact', 'accursedReact', 'rcPing', 'o3Ping', 'eventBoi', 'veteventrl', 'lostboomer',
+    'fskipReact', 'fameReact', 'accursedReact', 'rcPing', 'o3Ping', 'eventBoi', 'veteventrl', 'lostboomer', 'forgotten',
     'priest', 'warden', 'vetaffiliate', 'affiliatestaff', `toprune`, `bottomrune`, 'helper', 'steamworksping', 'moonlightping', 'eventBoiPing', 'advancedSteamworksPing', 'advancedNestPing',
-    'almostShattersBanner', 'almostMoonlightBanner', 'hallsBanner', 'shattersBanner', 'fullskipBanner', 'hmShattersBanner', 'moonlightBanner', 'vetHallsBanner', 'vetShattersBanner', 'vetFullskipBanner', 'vetHmShattersBanner', 'vetMoonlightBanner',
-    'supporterTierOne', 'supporterTierTwo', 'supporterTierThree', 'supporterTierFour', 'supporterTierFive', 'supporterTierSix', 'unverified',
-    'motmgTeam1', 'motmgTeam2', 'motmgTeam3', 'motmgTeam4', 'motmgTeam5', 'motmgTeam6', 'motmgTeam7', 'motmgTeam8', 'motmgTeam9', 'motmgTeam10',
-    'motmgTeam11', 'motmgTeam12', 'motmgTeam13', 'motmgTeam14', 'motmgTeam15', 'motmgTeam16', 'motmgTeam17', 'motmgTeam18', 'motmgTeam19', 'motmgTeam20',
-    'motmgTeam21', 'motmgTeam22', 'motmgTeam23', 'motmgTeam24', 'motmgTeam25', 'motmgTeam26', 'motmgTeam27', 'motmgTeam28', 'motmgTeam29', 'motmgTeam30',
-    'minimumServerLeaveRole'
+    'almostShattersBanner', 'almostMoonlightBanner', 'almostOryxBanner', 'oryxBanner', 'veteranOryxBanner',
+    'almostHallsBanner', 'hallsBanner', 'shattersBanner', 'fullskipBanner', 'hmShattersBanner',
+    'moonlightBanner', 'vetHallsBanner', 'vetShattersBanner', 'vetFullskipBanner', 'vetHmShattersBanner',
+    'vetMoonlightBanner', 'trialHallsBanner', 'trialFullskipBanner', 'trialShattersBanner', 'trialOryxBanner',
+    'supporterTierOne', 'supporterTierTwo', 'supporterTierThree', 'supporterTierFour', 'supporterTierFive', 'supporterTierSix', 'unverified', 'minimumServerLeaveRole',
+    'fameTrickster'
 ]
 const channels = ['modmail', 'verification', 'manualverification', 'vetverification', 'manualvetverification', 'verificationlog', 'accursedverification', 'modlogs', 'history', 'suspendlog',
     'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel',
     'runlogs', 'dmcommands', 'veriactive', 'pointlogging',
     'veriattempts', 'modmailinfo', 'parsecurrentweek', 'pastparseweeks', 'roleassignment', 'botstatus', 'keyalerts', 'activitylog', 'raidingrules',
-    'forwardedModmailMessage', 'motmgLeaderboard', 'serverLeaveChannel']
+    'forwardedModmailMessage', 'motmgLeaderboard', 'fameLeaderCurrentWeek', 'fameLeaderPastWeeks', 'serverLeaveChannel']
 const raiding = ['category1', 'templateChannel1', 'partneredStatusChannel1', 'statusChannel1', 'commandsChannel1', 'activeChannel1',
     'category2', 'templateChannel2', 'partneredStatusChannel2', 'statusChannel2', 'commandsChannel2', 'activeChannel2',
     'category3', 'templateChannel3', 'partneredStatusChannel3', 'statusChannel3', 'commandsChannel3', 'activeChannel3',
@@ -35,18 +37,18 @@ const voiceprefixes = ['raidingprefix', 'vetprefix']
 const backend = ['modmail', 'verification', 'vetverification', 'points', 'supporter', 'roleassignment', 'realmeyestats', 'automod', 'characterparse', 'forwadedMessageThumbsUpAndDownReactions',
     'giveeventroleonverification', 'upgradedCheck', 'sendmissedquota',
     'onlyUpperStaffSuspendStaff', 'giveEventRoleOnDenial2',
-    'useUnverifiedRole', 'punishmentsWarnings', 'punishmentsSuspensions', 'punishmentsMutes', 'allowAdditionalCompletes', 'miniBossGuessing', 'logServerLeave']
+    'useUnverifiedRole', 'punishmentsWarnings', 'punishmentsSuspensions', 'punishmentsMutes', 'allowAdditionalCompletes', 'miniBossGuessing', 'logServerLeave', 'isLogAssistsCapped']
 const numerical = ['ticketlimit', 'supporterlimit', 'keyalertsage', 'waitnewkeyalert', 'prunerushersoffset',
-    'forwardedModmailMessage', 'motmgLeaderboard', `milestoneStartTimestamp`,
+    'forwardedModmailMessage', 'motmgLeaderboard', 'milestoneStartTimestamp',
     'timestamp1', 'timestamp2', 'timestamp3', 'timestamp4', 'timestamp5', 'timestamp6', 'timestamp7',
-    `timestamp8`, 'timestamp9', 'timestamp10', 'timestamp11', 'timestamp12', 'timestamp13', 'timestamp14', 'timestamp15']
+    'timestamp8', 'timestamp9', 'timestamp10', 'timestamp11', 'timestamp12', 'timestamp13', 'timestamp14', 'timestamp15', 'logAssistsCap']
 const runreqs = ['weapon', 'ability', 'armor', 'ring']
 const autoveri = ['fame', 'stars', 'realmage', 'discordage', 'deathcount']
 const vetverireqs = ['maxed', 'meleemaxed', 'runs']
 const points = ['earlylocation', 'perrun', 'supportermultiplier', 'keypop', 'vialpop', 'rushing', 'brain', 'mystic', 'eventkey', 'o3streaming',
     'o3trickster', 'o3puri', 'exaltkey', 'shattskey', 'fungalkey', 'nestkey', 'keymultiplier', 'runepop', 'incpop', 'steamworkkey',
     'moonlightkey', 'miniBossGuessingPoints']
-const lists = ['earlyLocation', 'runningEvents', 'warningRoles', 'perkRoles', 'discordRoles', 'commendRoles']
+const lists = ['earlyLocation', 'runningEvents', 'warningRoles', 'perkRoles', 'discordRoles', 'commendRoles', 'activityCheckAllowedChannels']
 const strings = ['hallsAccursedReqsImage', 'hallsAdvancedReqsImage', 'exaltsAdvancedReqsImage', 'hallsExaltedReqsImage', 'exaltsExaltedReqsImage', 'vetVerifyDeniedMessage']
 const quotapoints = ['voidLeading', 'cultLeading', 'shattersLeading', 'oryx3Leading', 'fungalLeading', 'nestLeading', 'steamworkLeading',
 'eventLeading', 'failedRun', 'feedback', 'feedbackOnFeedback', 'assist', 'parsing', 'rolledquota', 'rlWeeklyQuota', 'arlWeeklyQuota', 'securityWeeklyQuota', 'wardenWeeklyQuota',
@@ -59,9 +61,22 @@ const rolePermissions = ['punishmentsWarnings', 'punishmentsSuspensions', 'punis
 var commands = []
 var commandsRolePermissions = []
 
+const checkPanels = ['duplicateNicknames', 'verifiedWithoutNickname', 'unverifiedWithNickname', 'removeRolesFromUserWithRole', 'userWithTwoRoles',
+            'addRolesToUsersWithRoles', 'userWithAtleastOneOf', 'openModmails', 'openVerifications',
+            'openVeteranVerifications', 'falseSuspensions', 'buttonGuide', 'buttonAutoFix']
+const checkRoles = ['rolesVerified', 'rolesUnverified', 'falseSuspenionRoles']
+const checkUserExceptions = checkPanels
+const checkRoleExceptions = checkPanels
+checkUserExceptions.push('allPanelExceptions')
+checkRoleExceptions.push('allPanelExceptions')
+const removeRoleFromUserWithRoles = roles
+const addRolesToUsersWithRoles = roles
+const checkStrings = checkPanels
+
 const menus = ['roles', 'channels', 'voice', 'voiceprefixes', 'backend', 'numerical', 'runreqs', 'autoveri',
 'vetverireqs', 'points', 'commands', 'raiding', 'lists', 'strings', 'quotapoints', 'modmail', 'commandsRolePermissions', 'supporter',
-'rolePermissions']
+'rolePermissions', 'checkPanels', 'checkRoles', 'checkUserExceptions', 'checkRoleExceptions', 'removeRoleFromUserWithRoles',
+'addRolesToUsersWithRoles', 'checkStrings']
 
 module.exports = {
     name: 'setup',
@@ -75,6 +90,7 @@ module.exports = {
      * @param {*} db
      */
     async execute(message, args, bot, db) {
+        if (configWebsite) return message.reply(`Current settings version: \`${bot.settingsTimestamp[message.guild.id]}\` (<t:${Buffer.from(bot.settingsTimestamp[message.guild.id], 'hex').readUInt32BE()}:R>)`)
         if (!commands) commands = Array.from(bot.commands.keys())
         if (args.length == 0) {
             let setupEmbed = new Discord.EmbedBuilder()
@@ -92,7 +108,9 @@ module.exports = {
                         mainMenu.stop()
                     } else message.channel.send('Invalid number recieved. Please try again')
                 } else {
-                    await m.delete()
+                    try {
+                        await m.delete()
+                    } catch (e) { console.log(e) }
                     mainMenu.stop()
                     switch (m.content) {
                         case '1': menu(roles, 'roles', 'string'); break;
@@ -114,6 +132,16 @@ module.exports = {
                         case '17': menu(commandsRolePermissions, 'commandsRolePermissions', 'string'); break;
                         case '18': menu(supporter, 'supporter', 'int'); break;
                         case '19': menu(rolePermissions, 'rolePermissions', 'string'); break;
+                        case '20': menu(checkPanels, 'checkPanels', 'boolean'); break;
+                        case '21': menu(checkRoles, 'checkRoles', 'array'); break;
+                        case '22': menu(checkUserExceptions, 'checkUserExceptions', 'array'); break;
+                        case '23': menu(checkRoleExceptions, 'checkRoleExceptions', 'array'); break;
+                        case '24': menu(removeRoleFromUserWithRoles, 'removeRoleFromUserWithRoles', 'array'); break;
+                        case '25': menu(addRolesToUsersWithRoles, 'addRolesToUsersWithRoles', 'array'); break;
+                        case '26': menu(checkStrings, 'checkStrings', 'string'); break;
+                        default:
+                            await setupMessage.delete()
+                            await message.react('❌')
                     }
                 }
                 /**
@@ -193,11 +221,15 @@ module.exports = {
                                         .spliceFields(0, 5)
                                     await setupMessage.edit({ embeds: [setupEmbed] })
                                     message.react('✅')
-                                    mes.delete()
+                                    try {
+                                        mes.delete()
+                                    } catch (e) { console.log(e) }
                                     menuMessageCollector.stop()
                                 }
                             })
-                            m.delete()
+                            try {
+                                await m.delete()
+                            } catch (e) { console.log(e) }
                         } else if (['array'].includes(type)) {
                             // Stop collector
                             menuCollector.stop()
@@ -212,6 +244,7 @@ module.exports = {
 
                             // Send
                             setupEmbed.setDescription(`\`\`\`coffeescript\nPlease select a value to REMOVE\n\nCurrent Values:\n${str}\`\`\`\nOr Say "add", "new", or "clear"`)
+                            setupEmbed.spliceFields(0, 10)
                             setupMessage.edit({ embeds: [setupEmbed] })
 
                             // Add reaction collector
@@ -229,7 +262,10 @@ module.exports = {
                                     newCollector.on('collect', async mes => {
                                         if (mes.content.toLowerCase() == 'cancel') {
                                             setupMessage.delete()
-                                            message.react('✅')
+                                            m.react('✅')
+                                            try {
+                                                await m.delete()
+                                            } catch (e) { console.log(e) }
                                             newCollector.stop()
                                         } else {
                                             change = `\`\`\`coffeescript\n${mes.content} added to ${arrayName}\`\`\``
@@ -280,7 +316,9 @@ module.exports = {
                                         .setFooter({ text: `Setup completed` })
                                     await setupMessage.edit({ embeds: [setupEmbed] })
                                     message.react('✅')
-                                    m.delete()
+                                    try {
+                                        await m.delete()
+                                    } catch (e) { console.log(e) }
                                 }
                             })
 
@@ -321,7 +359,15 @@ module.exports = {
                 modmail: {},
                 commandsRolePermissions: {},
                 supporter: {},
-                rolePermissions: {}
+                rolePermissions: {},
+                checkPanels: {},
+                checkRoles: {},
+                checkUserExceptions: {},
+                checkRoleExceptions: {},
+                removeRoleFromUserWithRoles: {},
+                addRolesToUsersWithRoles: {},
+                userWithTwoRoles: {},
+                userWithAtleastOneOf: {}
             }
         }
         for (let i of menus) {
@@ -351,6 +397,7 @@ module.exports = {
                 else bot.settings[guild.id].voice[v] = null
             }
         }
+        if (!bot.settings[guild.id].hasOwnProperty('raiding')) { bot.settings[guild.id].raiding = {} }
         for (let i in raiding) {
             if (!bot.settings[guild.id].raiding[raiding[i]]) bot.settings[guild.id].raiding[raiding[i]] = null
         }
@@ -437,6 +484,43 @@ module.exports = {
         for (let i of rolePermissions) {
             if (!bot.settings[guild.id].rolePermissions[i]) bot.settings[guild.id].rolePermissions[i] = null
         }
+
+        for (let i in checkPanels) {
+            if (!bot.settings[guild.id].checkPanels[checkPanels[i]]) {
+                bot.settings[guild.id].checkPanels[checkPanels[i]] = false
+            }
+        }
+
+        if (!bot.settings[guild.id].checkRoles) bot.settings[guild.id].checkRoles = {}
+        for (let i of checkRoles) {
+            if (!bot.settings[guild.id].checkRoles[i]) bot.settings[guild.id].checkRoles[i] = []
+        }
+
+        if (!bot.settings[guild.id].checkUserExceptions) bot.settings[guild.id].checkUserExceptions = {}
+        for (let i of checkUserExceptions) {
+            if (!bot.settings[guild.id].checkUserExceptions[i]) bot.settings[guild.id].checkUserExceptions[i] = []
+        }
+
+        if (!bot.settings[guild.id].checkRoleExceptions) bot.settings[guild.id].checkRoleExceptions = {}
+        for (let i of checkRoleExceptions) {
+            if (!bot.settings[guild.id].checkRoleExceptions[i]) bot.settings[guild.id].checkRoleExceptions[i] = []
+        }
+
+        if (!bot.settings[guild.id].removeRoleFromUserWithRoles) bot.settings[guild.id].removeRoleFromUserWithRoles = {}
+        for (let i of removeRoleFromUserWithRoles) {
+            if (!bot.settings[guild.id].removeRoleFromUserWithRoles[i]) bot.settings[guild.id].removeRoleFromUserWithRoles[i] = []
+        }
+
+        if (!bot.settings[guild.id].addRolesToUsersWithRoles) bot.settings[guild.id].addRolesToUsersWithRoles = {}
+        for (let i of addRolesToUsersWithRoles) {
+            if (!bot.settings[guild.id].addRolesToUsersWithRoles[i]) bot.settings[guild.id].addRolesToUsersWithRoles[i] = []
+        }
+
+        if (!bot.settings[guild.id].checkStrings) bot.settings[guild.id].checkStrings = {}
+        for (let i of checkStrings) {
+            if (!bot.settings[guild.id].checkStrings[i]) bot.settings[guild.id].checkStrings[i] = null
+        }
+
         fs.writeFileSync('./guildSettings.json', JSON.stringify(bot.settings, null, 4), err => message.channel.send(err.toString()))
     }
 }

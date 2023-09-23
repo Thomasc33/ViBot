@@ -6,7 +6,6 @@ const pointLogger = require('../lib/pointLogger')
 const extensions = require(`../lib/extensions`)
 const consumablePopTemplates = require(`../data/keypop.json`);
 const popCommand = require('./pop.js');
-const milestones = require('../data/milestone.json')
 
 module.exports = {
     name: 'afk',
@@ -1466,33 +1465,6 @@ class afkCheck {
                 this.#db.query('UPDATE users SET points = points + ? WHERE id = ?', [points, u], (err, rows) => {
                     if (err) return console.log('error logging points for run completes in ', this.#guild.id)
                 })
-            }
-            let [userRows,] = await this.#db.promise().query('SELECT * FROM completionruns WHERE userid = ? AND unixtimestamp > ?', [u, this.#botSettings.numerical.milestoneStartTimestamp])
-            for (let milestoneName of Object.keys(milestones[this.#guild.id])) {
-                let filteredUserRows = userRows.filter(row => milestones[this.#guild.id][milestoneName].templateIDs.includes(parseInt(row.templateid)))
-                let completed = filteredUserRows.length
-                let milestoneNumber = 0
-                let index = 0
-                while (completed >= milestoneNumber) {
-                    milestoneNumber += milestones[this.#guild.id][milestoneName].milestones[index].number
-                    if (completed != milestoneNumber) { continue }
-                    if (!this.#botSettings.backend.points) { continue }
-                    let isMilestoneRecurring = milestones[this.#guild.id][milestoneName].milestones[index].recurring
-                    let [hasGottenMilestone,] = await this.#db.promise().query('SELECT * FROM milestoneAchievements WHERE userid = ? AND guildid = ? AND milestoneName = ? AND milestoneIndex = ?', [
-                        u, this.#guild.id, milestoneName, index])
-                    if (hasGottenMilestone.length > 0 && !isMilestoneRecurring) { continue }
-                    this.#db.query('UPDATE users SET points = points + ? WHERE id = ?', [milestones[this.#guild.id][milestoneName].milestones[index].points, u], (err, rows) => {
-                        if (err) return console.log('error logging points for milestones in ', this.#guild.id)
-                    })
-                    this.#db.query('INSERT INTO milestoneAchievements (??) VALUES (?)', [
-                        ['userid', 'guildid', 'milestoneName', 'milestoneIndex'],
-                        [u, this.#guild.id, milestoneName, index]
-                    ], (err, rows) => {
-                        if (err) return console.log(`error inserting ${u} into milestoneAchievements.\nUser ID: ${u}\nGuild ID: ${this.#guild.id}\nMilestone Name: ${milestoneName}\nMilestone Index: ${index}`)
-                    })
-                    this.#guild.members.cache.get(u).send(`Congratulations! You have completed the ${milestones[this.#guild.id][milestoneName].milestones[index].number} ${milestoneName} milestone! You have been awarded ${milestones[this.#guild.id][milestoneName].milestones[index].points} points!`)
-                    if (!milestones[this.#guild.id][milestoneName].milestones[index].recurring) index++
-                }
             }
         }
         this.logging = false

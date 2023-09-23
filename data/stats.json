@@ -136,6 +136,16 @@
                 },
                 {
                     "name": null,
+                    "emoji": "oryxThree",
+                    "row": "oryxLead"
+                },
+                {
+                    "name": "Silent Oryx",
+                    "emoji": "oryx",
+                    "row": "silentOryxLead"
+                },
+                {
+                    "name": null,
                     "emoji": "forgottenking",
                     "row": "shattersLead"
                 },
@@ -151,8 +161,18 @@
                 },
                 {
                     "name": null,
+                    "emoji": "advancedNestBee",
+                    "row": "advancedNestsLead"
+                },
+                {
+                    "name": null,
                     "emoji": "SteamworksBoss",
                     "row": "steamworkLead"
+                },
+                {
+                    "name": null,
+                    "emoji": "exaltedAdvancedSteamworks",
+                    "row": "advancedSteamworksLead"
                 },
                 {
                     "name": null,
@@ -163,6 +183,12 @@
                     "name": "Minutes",
                     "emoji": "epicMysteryKey",
                     "row": "eventsLead",
+                    "multiply": 10
+                },
+                {
+                    "name": "Fame Minutes",
+                    "emoji": "fame",
+                    "row": "fameMinutesLead",
                     "multiply": 10
                 },
                 {
