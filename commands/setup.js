@@ -21,7 +21,9 @@ const channels = ['modmail', 'verification', 'manualverification', 'vetverificat
     'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel',
     'runlogs', 'dmcommands', 'veriactive', 'pointlogging',
     'veriattempts', 'modmailinfo', 'parsecurrentweek', 'pastparseweeks', 'roleassignment', 'botstatus', 'keyalerts', 'activitylog', 'raidingrules',
-    'forwardedModmailMessage', 'fameLeaderCurrentWeek', 'fameLeaderPastWeeks']
+    'forwardedModmailMessage', 'fameLeaderCurrentWeek', 'fameLeaderPastWeeks',
+'botCommands', 'raidingBotCommands', 'veteranBotCommands', 'adminBotCommands', 'officerBotCommands', 'headRaidLeaderBotCommands',
+'securityBotCommands']
 const raiding = ['category1', 'templateChannel1', 'partneredStatusChannel1', 'statusChannel1', 'commandsChannel1', 'activeChannel1',
     'category2', 'templateChannel2', 'partneredStatusChannel2', 'statusChannel2', 'commandsChannel2', 'activeChannel2',
     'category3', 'templateChannel3', 'partneredStatusChannel3', 'statusChannel3', 'commandsChannel3', 'activeChannel3',
