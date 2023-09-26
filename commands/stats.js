@@ -89,12 +89,12 @@ module.exports = {
             new Discord.ActionRowBuilder().addComponents([
                 new Discord.ButtonBuilder()
                     .setEmoji('⬅️')
-                    .setStyle(1)
+                    .setStyle(Discord.ButtonStyle.Secondary)
                     .setCustomId('minus')
                     .setLabel(filteredTemplates[previousIndex].name),
                 new Discord.ButtonBuilder()
                     .setEmoji('➡️')
-                    .setStyle(1)
+                    .setStyle(Discord.ButtonStyle.Secondary)
                     .setCustomId('plus')
                     .setLabel(filteredTemplates[nextIndex].name)
             ])
