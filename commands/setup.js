@@ -21,7 +21,7 @@ const channels = ['modmail', 'verification', 'manualverification', 'vetverificat
     'rlfeedback', 'currentweek', 'eventcurrentweek', 'pastweeks', 'eventpastweeks', 'leadinglog', 'leaderchat', 'vetleaderchat', 'parsechannel',
     'runlogs', 'dmcommands', 'veriactive', 'pointlogging',
     'veriattempts', 'modmailinfo', 'parsecurrentweek', 'pastparseweeks', 'roleassignment', 'botstatus', 'keyalerts', 'activitylog', 'raidingrules',
-    'forwardedModmailMessage', 'fameLeaderCurrentWeek', 'fameLeaderPastWeeks',
+    'forwardedModmailMessage', 'fameLeaderCurrentWeek', 'fameLeaderPastWeeks', 'serverLeaveChannel',
 'botCommands', 'raidingBotCommands', 'veteranBotCommands', 'adminBotCommands', 'officerBotCommands', 'headRaidLeaderBotCommands',
 'securityBotCommands']
 const raiding = ['category1', 'templateChannel1', 'partneredStatusChannel1', 'statusChannel1', 'commandsChannel1', 'activeChannel1',
@@ -41,9 +41,9 @@ const backend = ['modmail', 'verification', 'vetverification', 'points', 'suppor
     'onlyUpperStaffSuspendStaff', 'giveEventRoleOnDenial2',
     'useUnverifiedRole', 'punishmentsWarnings', 'punishmentsSuspensions', 'punishmentsMutes', 'allowAdditionalCompletes', 'miniBossGuessing', 'logServerLeave', 'isLogAssistsCapped']
 const numerical = ['ticketlimit', 'supporterlimit', 'keyalertsage', 'waitnewkeyalert', 'prunerushersoffset',
-    'forwardedModmailMessage', 'serverLeaveChannel',
-    `milestoneStartTimestamp`, 'timestamp1', 'timestamp2', 'timestamp3', 'timestamp4', 'timestamp5', 'timestamp6', 'timestamp7',
-    `timestamp8`, 'timestamp9', 'timestamp10', 'timestamp11', 'timestamp12', 'timestamp13', 'timestamp14', 'timestamp15', 'logAssistsCap']
+    'forwardedModmailMessage', 'motmgLeaderboard', 'milestoneStartTimestamp',
+    'timestamp1', 'timestamp2', 'timestamp3', 'timestamp4', 'timestamp5', 'timestamp6', 'timestamp7',
+    'timestamp8', 'timestamp9', 'timestamp10', 'timestamp11', 'timestamp12', 'timestamp13', 'timestamp14', 'timestamp15', 'logAssistsCap']
 const runreqs = ['weapon', 'ability', 'armor', 'ring']
 const autoveri = ['fame', 'stars', 'realmage', 'discordage', 'deathcount']
 const vetverireqs = ['maxed', 'meleemaxed', 'runs']
@@ -76,7 +76,7 @@ const addRolesToUsersWithRoles = roles
 const checkStrings = checkPanels
 
 const menus = ['roles', 'channels', 'voice', 'voiceprefixes', 'backend', 'numerical', 'runreqs', 'autoveri',
-'vetverireqs', 'points', 'commands', 'categories', 'lists', 'strings', 'quotapoints', 'modmail', 'commandsRolePermissions', 'supporter',
+'vetverireqs', 'points', 'commands', 'raiding', 'lists', 'strings', 'quotapoints', 'modmail', 'commandsRolePermissions', 'supporter',
 'rolePermissions', 'checkPanels', 'checkRoles', 'checkUserExceptions', 'checkRoleExceptions', 'removeRoleFromUserWithRoles',
 'addRolesToUsersWithRoles', 'checkStrings']
 

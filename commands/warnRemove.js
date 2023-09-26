@@ -55,7 +55,7 @@ module.exports = {
             let removeembed = new Discord.EmbedBuilder()
                 .setColor('#ff0000')
                 .setTitle('Warn Remove Information')
-                .setDescription(`The removed warning was issued <t:${(parseInt(removeWarning.time) / 1000).toFixed(0)}:R> \n\`\`\`${removeWarning.reason}\`\`\``)
+                .setDescription(`The warning removed from \`\`${member.nickname}\`\` | <@!${member.id}>  was issued <t:${(parseInt(removeWarning.time) / 1000).toFixed(0)}:R> \n\`\`\`${removeWarning.reason}\`\`\``)
                 .addFields([{ name: `Removed by`, value:`\`${message.guild.members.cache.get(message.author.id).nickname}\` | ${message.guild.members.cache.get(message.author.id)}`, inline: true },
                 { name: `Original warning issued by`, value: ` \`${message.guild.members.cache.get(removeWarning.modid).nickname}\` | <@${removeWarning.modid}>`, inline: true },
                 { name: `Reason for removal`, value: response, inline: false }])
