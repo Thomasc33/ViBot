@@ -55,6 +55,9 @@ module.exports = {
                     await interaction.update({ embeds: [embed], components: this.createComponents(filteredTemplates, currentIndex) })
                 }
             })
+            navigationInteractionHandler.on('end', async () => {
+                await statsMessage.edit({ components: [] })
+            })
         }
 
         await this.setEmbedFields(embed, filteredTemplates[currentIndex], storedEmojis, member)
