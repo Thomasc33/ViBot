@@ -41,15 +41,14 @@ module.exports = {
         let navigationComponents
         if (filteredTemplates.length > 1) {
             navigationComponents = this.createComponents(filteredTemplates, currentIndex)
-            const navigationInteractionHandler = new Discord.InteractionCollector(bot, { time: 30000, message: statsMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
+            const navigationInteractionHandler = new Discord.InteractionCollector(bot, { time: 300000, message: statsMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
             navigationInteractionHandler.on('collect', async interaction => {
                 if (interaction.user.id != message.author.id) return
                 if (interaction.customId == 'minus') {
                     currentIndex = currentIndex == 0 ? filteredTemplates.length - 1 : currentIndex - 1
                     await this.setEmbedFields(embed, filteredTemplates[currentIndex], storedEmojis, member)
                     await interaction.update({ embeds: [embed], components: this.createComponents(filteredTemplates, currentIndex) })
-                }
-                if (interaction.customId == 'plus') {
+                } else if (interaction.customId == 'plus') {
                     currentIndex = currentIndex == filteredTemplates.length - 1 ? 0 : currentIndex + 1
                     await this.setEmbedFields(embed, filteredTemplates[currentIndex], storedEmojis, member)
                     await interaction.update({ embeds: [embed], components: this.createComponents(filteredTemplates, currentIndex) })
