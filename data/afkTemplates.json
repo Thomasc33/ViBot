@@ -36379,6 +36379,325 @@
                         "lifetime": 2
                     }
                 }
+            },
+            {
+                "templateID": 292,
+                "inherits": [
+                    "veteranEvent",
+                    "event"
+                ],
+                "category": null,
+                "templateChannel": null,
+                "partneredStatusChannels": null,
+                "statusChannel": null,
+                "commandsChannel": null,
+                "activeChannel": null,
+                "enabled": true,
+                "minStaffRoles": {
+                    "event": [
+                        [
+                            "eventrl"
+                        ],
+                        [
+                            "almostrl"
+                        ],
+                        [
+                            "rl"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ]
+                    ],
+                    "veteranEvent": [
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "vetaffiliate"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ],
+                        [
+                            "fameLeader"
+                        ]
+                    ]
+                },
+                "minViewRaiderRoles": null,
+                "minJoinRaiderRoles": null,
+                "name": "The Tavern",
+                "templateName": "The Tavern",
+                "pingRoles": null,
+                "aliases": [
+                    "tt",
+                    "tavern",
+                    "thetavern",
+                    "ttavern",
+                    "thet"
+                ],
+                "logName": "eventruns",
+                "vcOptions": 2,
+                "startDelay": null,
+                "cap": null,
+                "capButton": null,
+                "phases": 2,
+                "body": [
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#804320",
+                            "description": null,
+                            "image": null,
+                            "thumbnail": [
+                                "https://i.imgur.com/pGzW8rR.png"
+                            ]
+                        }
+                    },
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    }
+                ],
+                "buttons": {
+                    "Key": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 3,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "tavernKey",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": [
+                            "eventrl"
+                        ],
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "eventpops"
+                                ],
+                                "points": "eventkey",
+                                "multiplier": null
+                            },
+                            "Modded": {
+                                "logName": [
+                                    "eventpops",
+                                    "moddedpops"
+                                ],
+                                "points": "eventkey",
+                                "multiplier": "keymultiplier"
+                            }
+                        }
+                    },
+                    "Rusher": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": "rushing",
+                        "displayName": true,
+                        "emote": "UTCloakofthePlanewalker",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Expose": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Expose",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Marble Seal": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "UTMarbleSeal",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Fungal Tome": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "tomeOfTheMushroomTribesFungal",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Trickster": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Trickster",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Daze": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "daze",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Supporter": {
+                        "type": 2,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": null,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "NitroBooster",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Tickets": {
+                        "type": 3,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 5,
+                        "points": -20,
+                        "displayName": true,
+                        "emote": "tickets",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    }
+                },
+                "reacts": {
+                    "ddock": {
+                        "emote": "tavernPortal",
+                        "onHeadcount": true,
+                        "start": 1,
+                        "lifetime": 2
+                    },
+                    "Warrior": {
+                        "emote": "Warrior",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Paladin": {
+                        "emote": "Paladin",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    }
+                }
             }
         ]
     },
@@ -42758,7 +43077,7 @@
                         "displayName": false,
                         "emote": "Curse",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": null,
@@ -42779,7 +43098,7 @@
                         "displayName": false,
                         "emote": "Ogmur",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": null,
@@ -42800,7 +43119,7 @@
                         "displayName": false,
                         "emote": "Expose",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": null,
@@ -42821,7 +43140,7 @@
                         "displayName": false,
                         "emote": "Knight",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": "**__REQUIRED__**\n- You must have a **Stunning** Shield {T6ColossusShield} available.",
@@ -42842,7 +43161,7 @@
                         "displayName": false,
                         "emote": "Slow",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": null,
@@ -42863,7 +43182,7 @@
                         "displayName": false,
                         "emote": "daze",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": null,
@@ -42884,7 +43203,7 @@
                         "displayName": false,
                         "emote": "UTMarbleSeal",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": null,
@@ -43535,7 +43854,7 @@
                         "displayName": false,
                         "emote": "Curse",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": null,
@@ -43556,7 +43875,7 @@
                         "displayName": false,
                         "emote": "Ogmur",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": null,
@@ -43577,7 +43896,7 @@
                         "displayName": false,
                         "emote": "Expose",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": null,
@@ -43598,7 +43917,7 @@
                         "displayName": false,
                         "emote": "Knight",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": "**__REQUIRED__**\n- You must have a **Stunning** Shield {T6ColossusShield} available.",
@@ -43619,7 +43938,7 @@
                         "displayName": false,
                         "emote": "Slow",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": null,
@@ -43640,7 +43959,7 @@
                         "displayName": false,
                         "emote": "daze",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": null,
@@ -43661,7 +43980,7 @@
                         "displayName": false,
                         "emote": "UTMarbleSeal",
                         "confirm": true,
-                        "location": false,
+                        "location": true,
                         "minRole": null,
                         "minStaffRoles": null,
                         "confirmationMessage": null,
@@ -72760,6 +73079,325 @@
                         "onHeadcount": true,
                         "start": 1,
                         "lifetime": 2
+                    }
+                }
+            },
+            {
+                "templateID": 292,
+                "inherits": [
+                    "veteranEvent",
+                    "event"
+                ],
+                "category": null,
+                "templateChannel": null,
+                "partneredStatusChannels": null,
+                "statusChannel": null,
+                "commandsChannel": null,
+                "activeChannel": null,
+                "enabled": true,
+                "minStaffRoles": {
+                    "event": [
+                        [
+                            "eventrl"
+                        ],
+                        [
+                            "almostrl"
+                        ],
+                        [
+                            "rl"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ]
+                    ],
+                    "veteranEvent": [
+                        [
+                            "vetrl"
+                        ],
+                        [
+                            "vetaffiliate"
+                        ],
+                        [
+                            "lostboomer"
+                        ],
+                        [
+                            "forgotten"
+                        ],
+                        [
+                            "fameLeader"
+                        ]
+                    ]
+                },
+                "minViewRaiderRoles": null,
+                "minJoinRaiderRoles": null,
+                "name": "The Tavern",
+                "templateName": "The Tavern",
+                "pingRoles": null,
+                "aliases": [
+                    "tt",
+                    "tavern",
+                    "thetavern",
+                    "ttavern",
+                    "thet"
+                ],
+                "logName": "eventruns",
+                "vcOptions": 2,
+                "startDelay": null,
+                "cap": null,
+                "capButton": null,
+                "phases": 2,
+                "body": [
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": "#804320",
+                            "description": null,
+                            "image": null,
+                            "thumbnail": [
+                                "https://i.imgur.com/pGzW8rR.png"
+                            ]
+                        }
+                    },
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    },
+                    {
+                        "vcState": null,
+                        "nextPhaseButton": null,
+                        "timeLimit": null,
+                        "message": null,
+                        "embed": {
+                            "color": null,
+                            "description": null,
+                            "image": null,
+                            "thumbnail": null
+                        }
+                    }
+                ],
+                "buttons": {
+                    "Key": {
+                        "type": 1,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 3,
+                        "points": 0,
+                        "displayName": false,
+                        "emote": "tavernKey",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": [
+                            "eventrl"
+                        ],
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": {
+                            "Normal": {
+                                "logName": [
+                                    "eventpops"
+                                ],
+                                "points": "eventkey",
+                                "multiplier": null
+                            },
+                            "Modded": {
+                                "logName": [
+                                    "eventpops",
+                                    "moddedpops"
+                                ],
+                                "points": "eventkey",
+                                "multiplier": "keymultiplier"
+                            }
+                        }
+                    },
+                    "Rusher": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": "rushing",
+                        "displayName": true,
+                        "emote": "UTCloakofthePlanewalker",
+                        "confirm": true,
+                        "location": true,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Expose": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Expose",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Marble Seal": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "UTMarbleSeal",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Fungal Tome": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "tomeOfTheMushroomTribesFungal",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Trickster": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 1,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "Trickster",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": "**__REQUIRED__**\n- You must have a **Decoying** Prism {T6PrismofApparitions} available.",
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Daze": {
+                        "type": 0,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 2,
+                        "points": 1,
+                        "displayName": false,
+                        "emote": "daze",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Supporter": {
+                        "type": 2,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": null,
+                        "points": 0,
+                        "displayName": true,
+                        "emote": "NitroBooster",
+                        "confirm": false,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    },
+                    "Tickets": {
+                        "type": 3,
+                        "parent": null,
+                        "choice": 0,
+                        "limit": 5,
+                        "points": -20,
+                        "displayName": true,
+                        "emote": "tickets",
+                        "confirm": true,
+                        "location": false,
+                        "minRole": null,
+                        "minStaffRoles": null,
+                        "confirmationMessage": null,
+                        "confirmationMedia": null,
+                        "disableStart": null,
+                        "start": 1,
+                        "lifetime": 69,
+                        "logOptions": null
+                    }
+                },
+                "reacts": {
+                    "ddock": {
+                        "emote": "tavernPortal",
+                        "onHeadcount": true,
+                        "start": 1,
+                        "lifetime": 2
+                    },
+                    "Warrior": {
+                        "emote": "Warrior",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
+                    },
+                    "Paladin": {
+                        "emote": "Paladin",
+                        "onHeadcount": false,
+                        "start": 1,
+                        "lifetime": 69
                     }
                 }
             }
