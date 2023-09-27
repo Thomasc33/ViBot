@@ -24,6 +24,8 @@ class Glape {
 
         this.timeoutMinutes = 5
         this.isGlapeInfected = false
+        this.pendingUpdate = false // true or false if an update is in-progress
+        this.queuedUpdate = null // null if there are no queued updates, true if there is an update but no interaction, and an Interaction if there is an interaction related update
         this.infectedGlapeBoss = {
             alive: false,
             health: 0,
@@ -80,7 +82,7 @@ class Glape {
 
     async startProcess() {
         await this.glapeEmbed()
-        await this.glapeButton()
+        this.glapeButton()
         await this.glapeSender()
     }
 
@@ -121,8 +123,7 @@ class Glape {
         return prettyString
     }
 
-    async updateGlapeField() {
-
+    async updateGlapeField(interaction = null) {
         if (!this.isGlapeInfected) {
             this.embed = new Discord.EmbedBuilder()
                 .setTitle('Glape Clicker!')
@@ -152,10 +153,39 @@ class Glape {
             })
         }
         this.embed.setFooter({ text: `Total Glapes ${this.totalGlapes()}, Glapes per second ${this.glapesPerSecond()}` })
-        await this.glapeMessage.edit({ embeds: [this.embed] })
+
+        if (!this.pendingUpdate) {
+            // If there are no updates pending, then immediately try to update the embed
+            // Use `update` if it's an embed, otherwise use `edit`
+            // Set the `pendingUpdate` flag to indicate that any new updates should be queued to avoid update races
+            this.pendingUpdate = true
+            const editPromise = interaction ? interaction.update({ embeds: [this.embed] }) : this.glapeMessage.edit({ embeds: [this.embed] })
+            editPromise.then(async () => {
+                // Once the edit is completed, unset the `pendingUpdate` flag 
+                this.pendingUpdate = false
+                // If there were updates queued, run the most recent one
+                if (this.queuedUpdate) {
+                    const queuedInteraction = this.queuedUpdate === true ? null : this.queuedUpdate
+                    this.queuedUpdate = null
+                    await this.updateGlapeField(queuedInteraction)
+                }
+            })
+        } else {
+            // There is already an update in-progress, add this update to the queue
+            // If there's a non-interaction queued, prioritize this
+            if (this.queuedUpdate === null || this.queuedUpdate === true) {
+                this.queuedUpdate = interaction || true
+            } else if (interaction) {
+                // When we delete an update from the queue we need to respond to it
+                this.queuedUpdate.deferUpdate()
+                this.queuedUpdate = interaction
+            }
+            // If `queuedUpdate` is an interaction and `interaction` is null no changes are needed
+            // That is why this if statement is not exhaustive
+        }
     }
 
-    async glapeButton() {
+    glapeButton() {
         this.button = new Discord.ActionRowBuilder().addComponents([
             new Discord.ButtonBuilder()
                 .setEmoji(this.glapeEmoji.id)
@@ -164,7 +194,7 @@ class Glape {
         ])
     }
 
-    async infectedGlapeButton() {
+    infectedGlapeButton() {
         return new Discord.ActionRowBuilder().addComponents([
             new Discord.ButtonBuilder()
                 .setEmoji(this.infectedGlapeEmoji.id)
@@ -173,7 +203,7 @@ class Glape {
         ])
     }
 
-    async goldenGlapeButton() {
+    goldenGlapeButton() {
         return new Discord.ActionRowBuilder().addComponents([
             new Discord.ButtonBuilder()
                 .setEmoji(this.goldenGlapeEmoji.id)
@@ -182,7 +212,7 @@ class Glape {
         ])
     }
 
-    async goldenGlapeEmbed() {
+    goldenGlapeEmbed() {
         return new Discord.EmbedBuilder()
             .setTitle('GOLDEN GLAPE')
             .setDescription(`Click on the ${this.goldenGlapeEmoji.text} to recieve many glapes`)
@@ -200,7 +230,7 @@ class Glape {
         this.isGlapeInfected = true
         await this.updateGlapeField()
         await this.glapeMessage.edit({ components: [
-            await this.infectedGlapeButton()
+            this.infectedGlapeButton()
         ]})
     }
 
@@ -255,8 +285,8 @@ class Glape {
     }
 
     async goldenGlapeSender() {
-        this.goldenEmbed = await this.goldenGlapeEmbed()
-        this.goldenButton = await this.goldenGlapeButton()
+        this.goldenEmbed = this.goldenGlapeEmbed()
+        this.goldenButton = this.goldenGlapeButton()
         this.goldenGlapeMessage = await this.channel.send({
             embeds: [this.goldenEmbed],
             components: [this.goldenButton]
@@ -274,11 +304,11 @@ class Glape {
         this.glapers[interaction.member.id] += this.glapeReward
         if (this.isGlapeInfected) {
             this.infectedGlapeBoss.health -= this.glapeReward
+            if (this.infectedGlapeBoss.health <= 0) {
+                await this.disinfectGlape()
+            }
         }
-        if (this.infectedGlapeBoss.health <= 0) {
-            await this.disinfectGlape()
-        }
-        interaction.deferUpdate()
+        this.updateGlapeField(interaction)
     }
 
     async goldenGlapeInteractionHandler(interaction, listener) {
@@ -292,14 +322,14 @@ class Glape {
 
         if (!this.glapers.hasOwnProperty(interaction.member.id)) { this.glapers[interaction.member.id] = 0 }
         this.glapers[interaction.member.id] += this.goldenGlapeReward
+        listener.stop()
+        await interaction.deferUpdate().then((m) => m.delete())
         if (this.isGlapeInfected) {
             this.infectedGlapeBoss.health -= this.goldenGlapeReward
         }
         if (this.infectedGlapeBoss.health <= 0) {
             await this.disinfectGlape()
         }
-        listener.stop()
-        interaction.message.delete()
     }
 
     totalGlapes() {
