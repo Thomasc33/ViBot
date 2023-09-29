@@ -2,8 +2,8 @@
 const Discord = require('discord.js')
 const statsTemplate = require('../data/stats.json')
 const { getDB } = require('../dbSetup.js')
-const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
-const { slashArg, slashCommandJSON } = require('../utils.js');
+const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType
+const { slashArg, slashCommandJSON } = require('../utils.js')
 
 module.exports = {
     name: 'stats',
@@ -31,14 +31,16 @@ module.exports = {
             .setDescription(`__**Stats for**__ ${member} ${member ? '`' + (member.nickname || member.tag) + '`' : ''}\n\nHold on... Processing`)
         const statsMessage = await message.reply({ embeds: [embed] })
 
-        const serverIndex = filteredTemplates.findIndex(template => template.id == message.guild.id)
-        let currentIndex = serverIndex
-        if (serverIndex < 0) {
+        const guildId = message.guild?.id
+        const serverIndex = guildId ? filteredTemplates.findIndex(template => template.id == guildId) : 0
+        if (serverIndex < 0 || filteredTemplates.length == 0) {
             embed.setDescription('This server does not have stats set up yet.')
             return await statsMessage.edit({ embeds: [embed] })
         }
+
         embed.setDescription(`__**Stats for**__ ${member} ${member ? '`' + (member.nickname || member.tag) + '`' : ''}`)
         let navigationComponents
+        let currentIndex = serverIndex
         if (filteredTemplates.length > 1) {
             navigationComponents = this.createComponents(filteredTemplates, currentIndex)
             const navigationInteractionHandler = new Discord.InteractionCollector(bot, { time: 300000, message: statsMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
