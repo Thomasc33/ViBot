@@ -1233,8 +1233,8 @@ class afkCheck {
         if (userRows.length == 0) return this.#db.promise().query('INSERT INTO users (id) VALUES (?)', [interaction.member.id])
         points = userRows[0].points
 
-        if (points < this.#botSettings.points.earlylocation) {
-            await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You do not have enough points.\nYou currently have ${emote} \`${points}\` points\n${buttonInfo.location ? `Early location` : `A guaranteed slot in the channel`} costs ${emote} \`${this.#botSettings.points.earlylocation}\``, null)], ephemeral: true })
+        if (points < buttonInfo.points * -1) {
+            await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You do not have enough points.\nYou currently have ${emote} \`${points}\` points\n${buttonInfo.location ? `Early location` : `A guaranteed slot in the channel`} costs ${emote} \`${buttonInfo.points * -1}\``, null)], ephemeral: true })
             return false
         }
 
@@ -1243,7 +1243,7 @@ class afkCheck {
             let descriptionEnd = `Press ✅ to confirm your reaction. Otherwise press ❌`
             let descriptionMiddle = ``
             if (buttonInfo.confirmationMessage) descriptionMiddle = `${buttonInfo.confirmationMessage}\n`
-            else descriptionMiddle = `You currently have ${emote} \`${points}\` points\n${buttonInfo.location ? `Early location` : `A guaranteed slot in the channel`} costs ${emote} \`${this.#botSettings.points.earlylocation}\`.\n`
+            else descriptionMiddle = `You currently have ${emote} \`${points}\` points\n${buttonInfo.location ? `Early location` : `A guaranteed slot in the channel`} costs ${emote} \`${buttonInfo.points * -1}\`.\n`
             const text = `${descriptionBeginning}${descriptionMiddle}${descriptionEnd}`
             const confirmButton = new Discord.ButtonBuilder()
                 .setLabel('✅ Confirm')
