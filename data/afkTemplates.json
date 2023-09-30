@@ -33713,7 +33713,7 @@
                 "logName": "oryxRuns",
                 "vcOptions": 2,
                 "startDelay": null,
-                "cap": 75,
+                "cap": 55,
                 "capButton": null,
                 "phases": 2,
                 "body": [
@@ -34809,7 +34809,7 @@
                 "logName": "oryxRuns",
                 "vcOptions": 2,
                 "startDelay": null,
-                "cap": 75,
+                "cap": 55,
                 "capButton": null,
                 "phases": 2,
                 "body": [
@@ -35105,7 +35105,7 @@
                 "logName": "oryxRuns",
                 "vcOptions": 0,
                 "startDelay": null,
-                "cap": 75,
+                "cap": 55,
                 "capButton": null,
                 "phases": 2,
                 "body": [
@@ -36735,7 +36735,7 @@
                 "logName": "oryxRuns",
                 "vcOptions": 0,
                 "startDelay": null,
-                "cap": 75,
+                "cap": 55,
                 "capButton": null,
                 "phases": 2,
                 "body": [
@@ -71321,7 +71321,7 @@
                 "logName": "oryxRuns",
                 "vcOptions": 2,
                 "startDelay": null,
-                "cap": 75,
+                "cap": 55,
                 "capButton": null,
                 "phases": 2,
                 "body": [
@@ -72417,7 +72417,7 @@
                 "logName": "oryxRuns",
                 "vcOptions": 2,
                 "startDelay": null,
-                "cap": 75,
+                "cap": 55,
                 "capButton": null,
                 "phases": 2,
                 "body": [
@@ -72713,7 +72713,7 @@
                 "logName": "oryxRuns",
                 "vcOptions": 0,
                 "startDelay": null,
-                "cap": 75,
+                "cap": 55,
                 "capButton": null,
                 "phases": 2,
                 "body": [
@@ -74343,7 +74343,7 @@
                 "logName": "oryxRuns",
                 "vcOptions": 0,
                 "startDelay": null,
-                "cap": 75,
+                "cap": 55,
                 "capButton": null,
                 "phases": 2,
                 "body": [
