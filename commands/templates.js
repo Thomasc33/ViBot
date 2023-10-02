@@ -5,6 +5,7 @@ const { createEmbed } = require('../lib/extensions.js')
 module.exports = {
     name: 'templates',
     description: 'Shows all current enabled afk run templates',
+    alias: ['template', 'events', 'event', 'exalt', 'exalts'],
     role: 'eventrl',
     args: '[exalts]',
     async execute(message, args, bot) {
