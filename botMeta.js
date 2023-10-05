@@ -1,6 +1,6 @@
 const Discord = require('discord.js')
 const fs = require('fs')
-
+const { rateLimitLogger } = require('./lib/rateLimitLogger')
 const bot = new Discord.Client({
     intents: [ // Discord moment
         Discord.GatewayIntentBits.Guilds,
@@ -28,6 +28,9 @@ const bot = new Discord.Client({
         Discord.Partials.Reaction
     ]
 })
+
+rateLimitLogger(bot)
+
 bot.commands = new Discord.Collection()
 bot.afkChecks = {}
 bot.afkModules = {}

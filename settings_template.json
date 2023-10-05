@@ -35,6 +35,10 @@
     "vibotDirectory": "C:/Users/Carrt/OneDrive/Desktop/ViBot",
     "openSslLocation": "C:/Program Files/OpenSSL-Win64/bin/openssl.exe",
     "botOwners": [],
+    "rateLimitLogger": {
+        "discord": false,
+        "console": false
+    },
     "dynamicDomainCredentials": {
         "username": null,
         "password": null
