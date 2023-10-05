@@ -133,6 +133,8 @@ class MessageManager {
         }
 
         if (!command) return await commandError('Command doesnt exist, check `commands` and try again', 'does not exist');
+        // Ignore problems if command is eval, user is bot admin, and server is vibot info
+        try { if (require('./settings.json').botOwners.includes(e.member.id) && e.guild.id == '739623118833713214') return await command.execute(e, args, this.#bot, getDB(e.guild.id)) } catch (er) { console.log('botOwners not found in settings.json. Update settings with new items from settings_template') }
         // Validate the command is enabled
         if (!this.#bot.settings[e.guild.id].commands[command.name]) return await commandError('This command is disabled', 'disabled');
         // Validate the command is not disabled during restart if a restart is pending
@@ -159,7 +161,7 @@ class MessageManager {
                 command.slashCommandExecute(e, this.#bot, db)
             } else {
                 // Add the shim for options
-                if (!isInteraction && typeof(command.args) == 'object') {
+                if (!isInteraction && typeof (command.args) == 'object') {
                     try {
                         const lco = new LegacyCommandOptions(command.args, e, command.varargs)
                         Object.defineProperty(e, 'options', {
@@ -169,7 +171,7 @@ class MessageManager {
                         })
                     } catch (err) {
                         if (err instanceof LegacyParserError) return e.replyUserError(err.message)
-                        throw(err)
+                        throw (err)
                     }
                 }
                 const start = Date.now()

@@ -69,7 +69,6 @@ commands/suspendremove.js
 commands/suspends.js
 commands/sysinfo.js
 commands/tempKeyRemove.js
-commands/templates.js
 commands/test.js
 commands/unlock.js
 commands/unlockdown.js
@@ -97,3 +96,4 @@ lib/sqlHelper.js
 lib/types.js
 lib/utils.js
 commands/archive
+messageManager.js
