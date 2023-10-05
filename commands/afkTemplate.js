@@ -66,7 +66,7 @@ async function resolveTemplateAlias(botSettings, member, guildId, commandChannel
     templateUrl.searchParams.append('key', settings.config.key)
     const templateNames = await fetch(templateUrl).then(f => f.json())
     console.log(templateNames)
-    return templateNames.map(t => t.templateName)
+    return templateNames
 }
 
 async function templateNamePrompt(message, templateNames) {
