@@ -104,7 +104,7 @@ module.exports = {
 
         if (quotas[message.guild.id]) {
             const runQuota = quotas[message.guild.id].quotas.filter(q => q.id == toUpdate)
-            if (runQuota)
+            if (runQuota.length)
                 quota.update(message.guild, db, bot, settings, quotas[message.guild.id], runQuota[0]);
         }
     }

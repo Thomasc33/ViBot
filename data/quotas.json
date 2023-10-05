@@ -9,6 +9,7 @@
                 "id": "raiding",
                 "name": "Raid Leader Quota",
                 "roles": ["rl", "almostrl"],
+                "rolesNoQuota": ["eventrl"],
                 "quota": [7, 7],
                 "rollmax": [7, 7],
                 "reset": "weekly",
@@ -75,10 +76,12 @@
         "consecutiveLeave": "consecutiveLeave",
         "ignoreRoles": ["officer", "moderator", "headrl", "admin"],
         "ignoreRolesDisplay": [],
+        "roleDisplay": [],
         "quotas": [{
                 "id": "raiding",
                 "name": "Raid Leader Quota",
-                "roles": ["rl", "almostrl", "eventrl"],
+                "roles": ["rl", "almostrl"],
+                "rolesNoQuota": ["eventrl"],
                 "quota": [7, 7],
                 "rollmax": [7, 7],
                 "reset": "weekly",
@@ -298,7 +301,7 @@
             "values": [
                 { "column": "currentweekparses", "name": "Parses", "value": 1 },
                 { "column": "currentweekverifications", "name": "Verifications", "value": 0.5 },
-                { "column": "currentweekvetVerifications", "name": "Veteran Verifications", "value": 0.333 }
+                { "column": "currentweekvetVerifications", "name": "Veteran Verifications", "value": 0.5 }
             ]
         }]
     }

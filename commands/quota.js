@@ -164,11 +164,12 @@ module.exports = {
             if (emojiList.length > 0) { fitStringIntoEmbed(embeds, embed, emojiList.join('\n') + '\n') }
             const combine = quota.values.map(v => `(${v.column}*${v.value})`).join(' + ') + ' as total';
             const unrolled = quota.values.filter(v => !v.rolling).map(v => `(${v.column}*${v.value})`).join(' + ') + ' as unrolled';
-            const query = db.query(`SELECT id, ` + quota.values.map(v => v.column).join(', ') + `, ${combine}, ${unrolled} FROM users WHERE ` + quota.values.map(v => `${v.column} != 0`).join(' OR ') + ` order by total desc`, async (err, rows) => {
+            db.query(`SELECT id, ` + quota.values.map(v => v.column).join(', ') + `, ${combine}, ${unrolled} FROM users WHERE ` + quota.values.map(v => `${v.column} != 0`).join(' OR ') + ` order by total desc`, async (err, rows) => {
                 if (err) return reject(err);
                 let runCount = 0;
                 const roles = quota.roles.map(r => channel.guild.roles.cache.get(settings.roles[r])?.id).filter(r => r);
-                var ignore = (guildQuotas.ignoreRolesDisplay || []).map(r => settings.roles[r]).filter(r => r);
+                if (quota.rolesNoQuota) roles.push(...quota.rolesNoQuota.map(r => channel.guild.roles.cache.get(settings.roles[r])?.id).filter(r => r))
+                let ignore = (guildQuotas.ignoreRolesDisplay || []).map(r => settings.roles[r]).filter(r => r);
                 if (quota.ignoreRolesDisplay) ignore = (quota.ignoreRolesDisplay || []).map(r => settings.roles[r]).filter(r => r);
                 let position = 1
                 for (const idx in rows) {
