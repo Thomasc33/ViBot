@@ -1,3 +1,6 @@
+// Increasing stack trace limit from default of 10 to hopefully be able to follow more error logs
+Error.stackTraceLimit = 16
+
 // Imports
 const Discord = require('discord.js')
 const mysql = require('mysql2')

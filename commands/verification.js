@@ -589,6 +589,8 @@ module.exports = {
                             message.guild.channels.cache.get(settings.channels.verificationlog).send({ embeds: [denyEmbed] })
                             //remove from watching embed
                             watching.splice(watching.indexOf(u.id), 1)
+                            //log verification for quota on denied
+                            this.manualVerifyLog(message, u.id, bot, db)
 
                             //train from ign
                             // TestAlt.trainFromIGN(ign, 1)

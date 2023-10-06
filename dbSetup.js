@@ -1,8 +1,6 @@
 const botSettings = require('./settings.json')
 const dbSchemas = require('./data/schemas.json')
 const mysql = require('mysql2')
-const Discord = require('discord.js')
-const loggingInfo = require('./data/loggingInfo.json')
 const metrics = require('./metrics.js')
 const { Point } = require('@influxdata/influxdb-client')
 
@@ -10,20 +8,12 @@ let dbs = null
 const uniq_dbs = []
 
 const verbose = !process.title.includes('runner')
-let pool_id = 0
 
 class DbWrap {
     #db
-    #channel
-    #pool_id
 
-    constructor(db, bot, schema) {
+    constructor(db) {
         this.#db = db
-        this.#pool_id = pool_id
-        pool_id += 1
-        const guild = bot.guilds.cache.get(loggingInfo.info.guildid)
-        const channel_id = loggingInfo.info[schema == 'testinghalls' ? 'channelTestSql' : 'channelSql']
-        this.#channel = guild.channels.cache.get(channel_id)
     }
 
     getPoolInternal() {
@@ -31,15 +21,12 @@ class DbWrap {
     }
 
     query(query, params, cb) {
-        let msg_fut
         let args
         if (!params || (!cb && typeof params == 'function')) {
             args = [query]
             cb = params
-            msg_fut = this.#channel.send(`:alarm_clock: (${this.#pool_id}) Executing query \`${query}\` ${cb ? 'CB' : ''}`)
         } else {
             args = [query, params]
-            msg_fut = this.#channel.send(`:alarm_clock: (${this.#pool_id}) Executing query \`${query}\` with params \`${params}\` ${cb ? 'CB' : ''}`)
         }
         const start = new Date()
         return this.#db.query(...args, (err, ...results) => {
@@ -54,33 +41,18 @@ class DbWrap {
                 if (err) point.stringField('error', err)
                 metrics.writePoint(point)
             }
-            const results_string = JSON.stringify([err, results[0]], null, 2)
-            if (results_string.length > 1500) {
-                const attachment = new Discord.AttachmentBuilder(Buffer.from(results_string), { name: 'query.txt' })
-                msg_fut.then((msg) => { msg.edit(msg.content.replace(':alarm_clock:', `:white_check_mark: (${runtime}ms)`)); msg.reply({ content: `Execution complete in ${runtime}ms.`, files: [attachment] }) })
-            } else {
-                msg_fut.then((msg) => { msg.edit(msg.content.replace(':alarm_clock:', `:white_check_mark: (${runtime}ms)`)); msg.reply(`Execution complete in ${runtime}ms. Response:\n\`\`\`${results_string}\`\`\``) })
-            }
         })
     }
 
     promise() {
-        const db_promise = this.#db.promise()
-        const channel = this.#channel
-        const pool_id = this.#pool_id
+        const dbPromise = this.#db.promise()
         return {
             async query(query, params, cb) {
-                let msg_fut
-                if (!params || (!cb && typeof params == 'function')) {
-                    msg_fut = channel.send(`:alarm_clock: (${pool_id}) Executing query \`${query}\``)
-                } else {
-                    msg_fut = channel.send(`:alarm_clock: (${pool_id}) Executing query \`${query}\` with params \`${params}\``)
-                }
                 const start = new Date()
-                let error = null;
-                let rv = null;
+                let error = null
+                let rv = null
                 try {
-                    rv = await db_promise.query(query, params, cb)
+                    rv = await dbPromise.query(query, params, cb)
                 } catch (e) {
                     error = e
                 }
@@ -92,13 +64,7 @@ class DbWrap {
                     if (error) point.stringField('error', error)
                     metrics.writePoint(point)
                 }
-                const resp_string = JSON.stringify(rv[0], null, 2)
-                if (resp_string.length > 1500) {
-                    const attachment = new Discord.AttachmentBuilder(Buffer.from(resp_string), { name: 'query.txt' })
-                    msg_fut.then((msg) => { msg.edit(msg.content.replace(':alarm_clock:', `${error ? ':x:' : ':white_check_mark:'} (${runtime}ms)`)); msg.reply({ content: `Execution complete in ${runtime}ms.`, files: [attachment] }) })
-                } else {
-                    msg_fut.then((msg) => { msg.edit(msg.content.replace(':alarm_clock:', `${error ? ':x:' : ':white_check_mark:'} (${runtime}ms)`)); msg.reply(`Execution complete in ${runtime}ms. Response:\n\`\`\`${resp_string}\`\`\``) })
-                }
+
                 if (error) throw error
                 return rv
             }
