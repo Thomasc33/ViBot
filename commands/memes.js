@@ -40,7 +40,7 @@ module.exports = {
                 message.channel.send({ files: ['https://media.discordapp.net/attachments/488881485366165515/795036389834096640/20210102_151014.jpg?width=811&height=1081'] })
                 break;
             case 'vr':
-                message.channel.send((vr_gamers.includes(message.author.id)) || (!(message.channel.permissionOverwrites.cache.get(settings.roles.raider) && message.channel.permissionOverwrites.cache.get(settings.roles.raider).allow.has(read_channel_bit_flag)) && (~~(Math.random() * 100) == 0)) ? `<@&${settings.roles.raider}>` : '@verified raider')
+                message.channel.send((vr_gamers.includes(message.author.id)) || (!(message.channel.permissionOverwrites.cache.get(settings.roles.raider) && message.channel.permissionOverwrites.cache.get(settings.roles.raider).allow.has(read_channel_bit_flag)) && !(message.channel.permissionOverwrites.cache.get(settings.roles.vetraider) && message.channel.permissionOverwrites.cache.get(settings.roles.vetraider).allow.has(read_channel_bit_flag)) && (~~(Math.random() * 100) == 0)) ? `<@&${settings.roles.raider}>` : '@verified raider')
                 break;
             case 'pusbal':
                 message.channel.send({ files: ['https://media.discordapp.net/attachments/488881485366165515/1033372031384817714/52ca3466-744e-4372-8211-175184521ecd.png'] })
