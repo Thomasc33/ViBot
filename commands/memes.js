@@ -1,9 +1,11 @@
-const vr_gamers = ['277636691227836419', '130850662522159104', '258286481167220738']
+const vr_gamers = ['277636691227836419', '130850662522159104', '258286481167220738', '145332599718543360']
+const Discord = require('discord.js')
+const read_channel_bit_flag = Discord.PermissionFlagsBits.ViewChannel
 
 module.exports = {
     name: 'memes',
     alias: ['phd', 'xbox', 'cwinner', 'eury', 'nefiah', 'abysm', 'drunkdevil', 'shiba',
-    'rj', 'vr', 'pusbal', 'bantering', 'chevyo', 'ruler', 'shut', 'grizzell', 'raynulf', 'maxeff'],
+        'rj', 'vr', 'pusbal', 'bantering', 'chevyo', 'ruler', 'shut', 'grizzell', 'raynulf', 'maxeff'],
     role: 'eventrl',
     async execute(message, args, bot) {
         const settings = bot.settings[message.guild.id]
@@ -38,7 +40,7 @@ module.exports = {
                 message.channel.send({ files: ['https://media.discordapp.net/attachments/488881485366165515/795036389834096640/20210102_151014.jpg?width=811&height=1081'] })
                 break;
             case 'vr':
-                message.channel.send(vr_gamers.includes(message.author.id) ? `<@&${settings.roles.raider}>` : '@verified raider')
+                message.channel.send((vr_gamers.includes(message.author.id)) || (!(message.channel.permissionOverwrites.cache.get(settings.roles.raider) && message.channel.permissionOverwrites.cache.get(settings.roles.raider).allow.has(read_channel_bit_flag)) && (~~(Math.random() * 100) == 0)) ? `<@&${settings.roles.raider}>` : '@verified raider')
                 break;
             case 'pusbal':
                 message.channel.send({ files: ['https://media.discordapp.net/attachments/488881485366165515/1033372031384817714/52ca3466-744e-4372-8211-175184521ecd.png'] })
@@ -71,7 +73,7 @@ module.exports = {
                 break;
             case 'raynulf':
                 message.channel.send({ content: '<@147858187377311745>', files: ['https://cdn.discordapp.com/attachments/1127510518857465986/1138155209995079831/8327DED3-C27A-407A-AE1B-AC95ECBA815D.mov'] })
-                    break
+                break
             case 'maxeff':
                 message.channel.send({ content: 'Please know that Upper Max Eff staff have taken a firm stance on the matter. If staff in other discords knowingly call our loc and do not check if it is taken, they will be suspended, with repeated offenses leading to permanent expulsion from Max Eff. Just because it is a free rune event does not mean time and effort go into our runs. If people cannot respect our RLs time and effort organizing runs, and our potato tricksters speed clearing realms, and our damage pumpers, then they will not be welcome to our community. Thank you for your understanding.' })
                 break
