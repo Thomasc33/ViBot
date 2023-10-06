@@ -136,6 +136,16 @@
                 },
                 {
                     "name": null,
+                    "emoji": "oryxThree",
+                    "row": "oryxLead"
+                },
+                {
+                    "name": "Silent Oryx",
+                    "emoji": "oryx",
+                    "row": "silentOryxLead"
+                },
+                {
+                    "name": null,
                     "emoji": "forgottenking",
                     "row": "shattersLead"
                 },
@@ -200,6 +210,17 @@
                     "name": null,
                     "emoji": "parse",
                     "row": "parses"
+                }
+            ]
+        },
+        {
+            "name": "Tickets",
+            "emoji": "twitterTickets",
+            "values": [
+                {
+                    "name": null,
+                    "emoji": "twitterTickets",
+                    "row": "points"
                 }
             ]
         }
@@ -279,6 +300,17 @@
                     "name": "Parses",
                     "emoji": "parse",
                     "row": "o3parses"
+                }
+            ]
+        },
+        {
+            "name": "Tickets",
+            "emoji": "twitterTickets",
+            "values": [
+                {
+                    "name": null,
+                    "emoji": "twitterTickets",
+                    "row": "points"
                 }
             ]
         }
@@ -387,23 +419,5 @@
                 }
             ]
         }
-    ]},
-    {
-        "name": "Miscellaneous Stats",
-        "id": "343704644712923138",
-        "emoji": "twitterSparkles",
-        "values": [
-            {
-                "name": "Tickets",
-                "emoji": "twitterTickets",
-                "values": [
-                    {
-                        "name": null,
-                        "emoji": "twitterTickets",
-                        "row": "points"
-                    }
-                ]
-            }
-        ]
-    }
+    ]}
 ]

@@ -11,8 +11,13 @@ module.exports = {
      * @param {Array} args 
      * @param {Discord.Client} bot 
      * @param {*} db 
-     * @returns 
+     * @returns
      */
+    getNotes(guild, member, bot) {
+        const settings = bot.settings[guild.id]
+        const roleCache = guild.roles.cache
+        return settings.lists.commendRoles.map(role => `${roleCache.get(settings.roles[role])} \`${role}\``).join('\n')
+    },
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         // If there are no settings available for this server, commendations wont work

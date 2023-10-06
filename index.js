@@ -1,23 +1,9 @@
 // Imports
 const Discord = require('discord.js')
 const mysql = require('mysql2')
+const EventSource = require('eventsource')
+const fs = require('fs')
 require('./lib/extensions.js')
-
-// ------------------
-// Temporary Code
-// ------------------
-
-try {
-    const token = require('./data/botKey.json').key
-    const settings = require('./settings.json')
-    settings.key = token
-    require('fs').writeFileSync('./settings.json', JSON.stringify(settings, null, 4))
-    require('fs').unlinkSync('./data/botKey.json')
-} catch (_) { }
-
-// ------------------
-// End Temporary Code
-// ------------------
 
 // Import Internal Libraries
 const ErrorLogger = require('./lib/logError')
@@ -34,8 +20,8 @@ const verification = require('./commands/verification')
 const botSettings = require('./settings.json')
 const rootCas = require('ssl-root-cas').create()
 require('https').globalAgent.options.ca = rootCas
-const { bot } = require('./botMeta.js')
-require('./botMeta.js').loadCommands()
+const { bot, loadCommands } = require('./botMeta.js')
+loadCommands()
 const serverWhiteList = require('./data/serverWhiteList.json')
 const { MessageManager } = require('./messageManager.js')
 
@@ -134,7 +120,42 @@ bot.on('typingStart', (c, u) => {
     }, 7500)
 })
 
-bot.login(botSettings.key)
+Promise.all(botSettings.config?.guildIds.map(guildId => {
+    const sseUrl = new URL(botSettings.config.url)
+    sseUrl.pathname = `/guild/${guildId}/sse`
+    sseUrl.searchParams.append('key', botSettings.config.key)
+    const settingsEventSource = new EventSource(sseUrl.toString())
+    settingsEventSource.addEventListener('error', err => ErrorLogger.log(err, bot))
+    settingsEventSource.addEventListener('open', () => console.log(`Settings SEE Socket opened for ${guildId}`))
+    const cacheFile = `data/guildSettings.${guildId}.cache.json`
+    let fileReadTimeout
+    return new Promise(res => {
+        // Wait 1s before reading from cache
+        settingsEventSource.addEventListener('message', m => {
+            console.log(`Updated settings for ${guildId}`)
+            const data = JSON.parse(m.data)
+            bot.settings[guildId] = data
+            bot.settingsTimestamp[guildId] = m.lastEventId
+            res()
+            fs.writeFile(`data/guildSettings.${guildId}.cache.json`, JSON.stringify({ logId: m.lastEventId, ...m.data }), () => {})
+        })
+
+        // Read from cache
+        fs.access(cacheFile, (err) => {
+            if (err) return
+            fileReadTimeout = setTimeout(() => {
+                console.log(`Could not fetch settings for ${guildId} reading cache`)
+                const data = JSON.parse(fs.readFileSync(cacheFile))
+                bot.settingsTimestamp[guildId] = data.logId
+                delete data.logId
+                bot.settings[guildId] = data
+                res()
+            }, 1000)
+        })
+    }).then(() => clearTimeout(fileReadTimeout))
+}) ?? []).then(() => {
+    bot.login(botSettings.key)
+})
 
 // ===========================================================================================================
 // Process Event Listening

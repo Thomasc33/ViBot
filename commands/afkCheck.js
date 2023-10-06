@@ -6,7 +6,6 @@ const pointLogger = require('../lib/pointLogger')
 const extensions = require(`../lib/extensions`)
 const consumablePopTemplates = require(`../data/keypop.json`);
 const popCommand = require('./pop.js');
-const milestones = require('../data/milestone.json')
 
 module.exports = {
     name: 'afk',
@@ -1234,8 +1233,8 @@ class afkCheck {
         if (userRows.length == 0) return this.#db.promise().query('INSERT INTO users (id) VALUES (?)', [interaction.member.id])
         points = userRows[0].points
 
-        if (points < this.#botSettings.points.earlylocation) {
-            await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You do not have enough points.\nYou currently have ${emote} \`${points}\` points\n${buttonInfo.location ? `Early location` : `A guaranteed slot in the channel`} costs ${emote} \`${this.#botSettings.points.earlylocation}\``, null)], ephemeral: true })
+        if (points < buttonInfo.points * -1) {
+            await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You do not have enough points.\nYou currently have ${emote} \`${points}\` points\n${buttonInfo.location ? `Early location` : `A guaranteed slot in the channel`} costs ${emote} \`${buttonInfo.points * -1}\``, null)], ephemeral: true })
             return false
         }
 
@@ -1244,7 +1243,7 @@ class afkCheck {
             let descriptionEnd = `Press ✅ to confirm your reaction. Otherwise press ❌`
             let descriptionMiddle = ``
             if (buttonInfo.confirmationMessage) descriptionMiddle = `${buttonInfo.confirmationMessage}\n`
-            else descriptionMiddle = `You currently have ${emote} \`${points}\` points\n${buttonInfo.location ? `Early location` : `A guaranteed slot in the channel`} costs ${emote} \`${this.#botSettings.points.earlylocation}\`.\n`
+            else descriptionMiddle = `You currently have ${emote} \`${points}\` points\n${buttonInfo.location ? `Early location` : `A guaranteed slot in the channel`} costs ${emote} \`${buttonInfo.points * -1}\`.\n`
             const text = `${descriptionBeginning}${descriptionMiddle}${descriptionEnd}`
             const confirmButton = new Discord.ButtonBuilder()
                 .setLabel('✅ Confirm')
@@ -1466,33 +1465,6 @@ class afkCheck {
                 this.#db.query('UPDATE users SET points = points + ? WHERE id = ?', [points, u], (err, rows) => {
                     if (err) return console.log('error logging points for run completes in ', this.#guild.id)
                 })
-            }
-            let [userRows,] = await this.#db.promise().query('SELECT * FROM completionruns WHERE userid = ? AND unixtimestamp > ?', [u, this.#botSettings.numerical.milestoneStartTimestamp])
-            for (let milestoneName of Object.keys(milestones[this.#guild.id])) {
-                let filteredUserRows = userRows.filter(row => milestones[this.#guild.id][milestoneName].templateIDs.includes(parseInt(row.templateid)))
-                let completed = filteredUserRows.length
-                let milestoneNumber = 0
-                let index = 0
-                while (completed >= milestoneNumber) {
-                    milestoneNumber += milestones[this.#guild.id][milestoneName].milestones[index].number
-                    if (completed != milestoneNumber) { continue }
-                    if (!this.#botSettings.backend.points) { continue }
-                    let isMilestoneRecurring = milestones[this.#guild.id][milestoneName].milestones[index].recurring
-                    let [hasGottenMilestone,] = await this.#db.promise().query('SELECT * FROM milestoneAchievements WHERE userid = ? AND guildid = ? AND milestoneName = ? AND milestoneIndex = ?', [
-                        u, this.#guild.id, milestoneName, index])
-                    if (hasGottenMilestone.length > 0 && !isMilestoneRecurring) { continue }
-                    this.#db.query('UPDATE users SET points = points + ? WHERE id = ?', [milestones[this.#guild.id][milestoneName].milestones[index].points, u], (err, rows) => {
-                        if (err) return console.log('error logging points for milestones in ', this.#guild.id)
-                    })
-                    this.#db.query('INSERT INTO milestoneAchievements (??) VALUES (?)', [
-                        ['userid', 'guildid', 'milestoneName', 'milestoneIndex'],
-                        [u, this.#guild.id, milestoneName, index]
-                    ], (err, rows) => {
-                        if (err) return console.log(`error inserting ${u} into milestoneAchievements.\nUser ID: ${u}\nGuild ID: ${this.#guild.id}\nMilestone Name: ${milestoneName}\nMilestone Index: ${index}`)
-                    })
-                    this.#guild.members.cache.get(u).send(`Congratulations! You have completed the ${milestones[this.#guild.id][milestoneName].milestones[index].number} ${milestoneName} milestone! You have been awarded ${milestones[this.#guild.id][milestoneName].milestones[index].points} points!`)
-                    if (!milestones[this.#guild.id][milestoneName].milestones[index].recurring) index++
-                }
             }
         }
         this.logging = false

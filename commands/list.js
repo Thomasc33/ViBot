@@ -63,7 +63,7 @@ module.exports = {
         }
         var memberList = Object.values(roleObjects).reduce((acc, array) => {
             return acc.filter(id => array.includes(id));
-          });
+        });
         let memberString = '';
         for (const member of memberList) {
             if (memberString.length < 950) memberString += `<@!${member}> `;

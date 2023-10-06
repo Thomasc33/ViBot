@@ -1,4 +1,3 @@
-commands/VetunBan.js
 commands/addPoints.js
 commands/addalt.js
 commands/afkCheck.js
@@ -38,12 +37,10 @@ commands/log.js
 commands/manualVerify.js
 commands/manualVetVerify.js
 commands/memes.js
-commands/milestone.js
 commands/modmail.js
 commands/modmailBlacklist.js
 commands/modmailClose.js
 commands/modmailRespond.js
-commands/motmg.js
 commands/mute.js
 commands/mutes.js
 commands/noNicknames.js
@@ -66,7 +63,6 @@ commands/script.js
 commands/seppuku.js
 commands/setStatus.js
 commands/setup.js
-commands/stats.js
 commands/status.js
 commands/suspend.js
 commands/suspendremove.js

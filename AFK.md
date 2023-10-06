@@ -1,6 +1,7 @@
 # AFK Documentation
 
-Orignally written by MrSauron
+Version 2.0
+Originally written by MrSauron
 
 ## Rationale
 
@@ -34,55 +35,68 @@ Orignally written by MrSauron
 
 Base parameters are parameters which are defined once per template, whether this be child template or parent template.
 
+- templateID/parentTemplateID
+  - Type: Number
+  - Required: Yes
+  - Examples:
+    - 1
+    - 32
+  - Template ID or Parent Template ID is a parameter which defines the unique number that identifies the template or parent template respectively. These increment independantly everytime a template or parent template is added.
+
 - inherits
   - Type: Array of Strings
-  - Required: No
+  - Required: Yes (if MinStaffRoles is defined)
   - Examples:
     - null
     - []
     - ["veteran"]
     - ["normal", "veteran"]
-  - Inherit is a parameter which defines the names of the parent templates from which to inherit from. The list can only contain one parent template per commands channel. The code will automatically take the first parent template which matches with the commands channel that the afk command was run from.
+  - Inherit is a parameter which defines the names of the parent templates from which to inherit from. The array can only contain one parent template per commands channel. The code will automatically take the first parent template which matches with the commands channel that the afk command was run from.
 
 - category
   - Type: String
   - Required: Yes (for VC)
   - Examples:
     - null
-    - "raiding"
-  - Category is a parameter which defines the case-insensitive name of the discord category or folder of channels where the afk voice channel (where applicable) should be displayed. 
+    - "category1"
+    - "category2"
+  - Category is a parameter which defines the setup raiding name which points to the case-insensitive name of the discord category or folder of channels where the afk voice channel (where applicable) should be displayed.
 
 - templateChannel
   - Type: String
   - Required: Yes (for VC)
   - Examples:
     - null
-    - "432995686678790144"
-  - Template Channel is a parameter which defines the discord channel id which the afk voice channel (where applicable) should use as a template when created.
+    - "templateChannel1"
+    - "templateChannel2"
+  - Template Channel is a parameter which defines the setup raiding name which points to the discord channel id which the afk voice channel (where applicable) should use as a template when created.
 
 - statusChannel
   - Type: String
   - Required: Yes
   - Examples:
     - null
-    - "432995686678790144"
-  - Status Channel is a parameter which defines the discord channel id which the afk announcement panel and interactable raider buttons/emotes should appear.
+    - "statusChannel1"
+    - "statusChannel2"
+  - Status Channel is a parameter which defines the setup raiding name which points to the discord channel id which the afk announcement panel and interactable raider buttons/emotes should appear.
 
 - commandsChannel
   - Type: String
   - Required: Yes
   - Examples:
     - null
-    - "432995686678790144"
-  - Commands Channel is a parameter which defines the discord channel id which the afk command can be run from and where the afk commands panel and dynamic raider info should appear.
+    - "commandsChannel1"
+    - "commandsChannel2"
+  - Commands Channel is a parameter which defines the setup raiding name which points to the discord channel id which the afk command can be run from and where the afk commands panel and dynamic raider info should appear.
 
 - activeChannel
   - Type: String
   - Required: Yes
   - Examples:
     - null
-    - "432995686678790144"
-  - Active Channel is a parameter which defines the discord channel id where the afk control panel should appear.
+    - "activeChannel1"
+    - "activeChannel2"
+  - Active Channel is a parameter which defines the setup raiding name which points to the discord channel id where the afk control panel should appear.
 
 - enabled
   - Type: Boolean
@@ -94,29 +108,35 @@ Base parameters are parameters which are defined once per template, whether this
   - Enabled is a parameter which defines whether the template is enabled or disabled.
 
 - minStaffRoles
-  - Type: List of Lists of Strings
+  - Type: Object
   - Required: No
-  - Examples:
-    - null
-    - [["almostrl"]]
-    - [["lostboomer"], ["rl", "hallsBanner"], ["almostrl", "hallsbanner’]]
-  - Minimum Staff Roles is a parameter which defines lists containing a list of setup role names which is the combination of staff roles needed to put up and interact with the afk control buttons. Only one list of lists needs to be met. If not defined, the default would be the command role permission. 
+  - The Minimum Staff Roles object defines a set of dictionary-based parameters which are defined once per template inside of minStaffRoles, whether this be child template or parent template. However, an indefinite number of objects (uniquely identified by name) can be defined. The object is a dictionary of inherits string names and the array of arrays of setup role names which is the combination of staff roles per inherit parent template needed to run the afk command and interact with the afk control panel.
+   
+  - fields:
+    - inherits string name
+    - Type: Array of Array of Strings
+    - Required: No
+    - Examples:
+      - null
+      - [["almostrl"]]
+      - [["lostboomer"], ["rl", "hallsBanner"], ["almostrl", "hallsbanner’]]
+    - This is a parameter which defines arrays containing an array of setup role names which is the combination of staff roles needed to put up and interact with the afk control buttons. Only one array of arrays needs to be met. If not defined, the default would be the command role permission. 
 
 - minViewRaiderRoles
-  - Type: List of Strings
+  - Type: Array of Strings
   - Required: Yes (for VC)
   - Examples:
     - null
     - ["raider"]
-  - Minimum View Raider Roles is a parameter which defines the list of setup role names to view the afk voice channel (where applicable).
+  - Minimum View Raider Roles is a parameter which defines the array of setup role names to view the afk voice channel (where applicable).
 
 - minJoinRaiderRoles
-  - Type: List of Strings
+  - Type: Array of Strings
   - Required: Yes (for VC)
   - Examples:
     - null
     - ["raider"]
-  - Minimum Join Raider Roles is a parameter which defines the list of setup role names to join the afk voice channel (where applicable).
+  - Minimum Join Raider Roles is a parameter which defines the array of setup role names to join the afk voice channel (where applicable).
 
 - name
   - Type: String
@@ -146,7 +166,7 @@ Base parameters are parameters which are defined once per template, whether this
     - []
     - ["here"]
     - ["here", "voidPing"]
-  - Ping Roles is a parameter which defines the names of the ping roles which is displayed on the message alongside the afk announcement panel. The list can only contain setup role names or "here" for @here.
+  - Ping Roles is a parameter which defines the names of the ping roles which is displayed on the message alongside the afk announcement panel. The array can only contain setup role names or "here" for @here.
 
 - aliases
   - Type: Array of Strings
@@ -208,7 +228,7 @@ Base parameters are parameters which are defined once per template, whether this
     - null
     - 1
     - 2
-  - Phases is a parameter which defines the number of phases in the afk. This is important for body, buttons and reacts as each of these can be customised to be changed, appear, or disappear on a per-phase basis.
+  - Phases is a parameter which defines the number of phases in the afk. This is important for body, buttons and reacts as each of these can be customised to be changed, appear, or disappear on a per-phase basis. The number of phases must be equal to the length of the body array + 1.
 
 - partneredStatusChannels
   - Type: Object
@@ -226,14 +246,14 @@ The name of each object needs to be a valid guild id which is used in conjunctio
         - []
         - ["432995686678790144"]
         - ["432995686678790144", "123995686678790789"]
-      - channels is a parameter which defines the ids of channels from which to ping. This list can contain an indefinite amount of channel ids which must be part of the guild found by the guild id under the name.
+      - channels is a parameter which defines the ids of channels from which to ping. This array can contain an indefinite amount of channel ids which must be part of the guild found by the guild id under the name.
 
 - body
-  - Type: Object
+  - Type: Array of Objects
   - Required: Yes
   - fields:
     - Name
-      - The name of each object needs to be a string with a number which corresponds to a phase limited by the total number of phases and is used in conjunction with the parameters in the object. One of these objects is "default" to define defaults on all phases which have undefined parameters.
+      - The position of each object determines which phase it corresponds to limited by the total number of phases + 1 and is used in conjunction with the parameters in the object. The first indice 0 is denoted the "default" object to define defaults on all phases which have undefined parameters. Each subsequent indice directly corresponds to the phase number.
     
     - vcState
       - Type: Number
@@ -329,7 +349,9 @@ The name of each object needs to be a valid guild id which is used in conjunctio
         - 2
         - 3
         - 4
-      - Type is a parameter which defines the type of the current button. This will affect the core functionality of the button. 0 is Normal, a standard react button. 1 is Log, which does everything a standard react does, except also add a manual logging button at the end of the afk. 2 is Supporter, which handles supporter roles at different tiers and limits them between afks based on time. 3 is Points, which uses the inbuilt points system to allow or deny raiders, taking away their points. 4 is Drag, which is a special button that allows raiders to send media and be allowed or denied into the afk.
+        - 5
+        - 6
+      - Type is a parameter which defines the type of the current button. This will affect the core functionality of the button. 0 is Normal, a standard react button. 1 is Log, which does everything a standard react does, except also add a manual logging button at the end of the afk. 2 is Supporter, which handles supporter roles at different tiers and limits them between afks based on time. 3 is Points, which uses the inbuilt points system to allow or deny raiders, taking away their points. 4 is Drag, which is a special button that allows raiders to send media and be allowed or denied into the afk. 5 is Option, which is a button specifically set up for MiniBoss Guessing with Osanc. 6 is Log Single, which does everything a log button does, except it no longer shows the option for number of items to log and always logs 1 of an item.
 
     - parent
       - Type: Array of Strings
@@ -415,13 +437,13 @@ The name of each object needs to be a valid guild id which is used in conjunctio
       - Min Role is a parameter which defines which defines the setup role name which is the minimum role to react the current button.
 
     - minStaffRoles
-      - Type: List of Lists of Strings
+      - Type: Array of Array of Strings
       - Required: No
       - Examples:
         - null
         - [["almostrl"]]
         - [["lostboomer"], ["rl", "hallsBanner"], ["almostrl", "hallsbanner’]]
-      - Minimum Staff Roles is a parameter which defines lists containing a list of setup role names which is the combination of staff roles needed to have the choice parameter apply for the current button. Only one list of lists needs to be met.
+      - Minimum Staff Roles is a parameter which defines an array containing an array of setup role names which is the combination of staff roles needed to have the choice parameter apply for the current button. Only one array of arrays needs to be met.
 
     - confirmationMessage
       - Type: String
