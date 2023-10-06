@@ -5502,7 +5502,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": null,
                             "description": null,
@@ -5882,7 +5882,6 @@
                         ]
                     ],
                     "veteran": [
-                        [
                             [
                                 "vetrl"
                             ],
@@ -5898,7 +5897,6 @@
                             [
                                 "fameLeader"
                             ]
-                        ]
                     ]
                 },
                 "minViewRaiderRoles": null,
@@ -6321,7 +6319,6 @@
                         ]
                     ],
                     "veteran": [
-                        [
                             [
                                 "vetrl"
                             ],
@@ -6337,7 +6334,6 @@
                             [
                                 "fameLeader"
                             ]
-                        ]
                     ]
                 },
                 "minViewRaiderRoles": null,
@@ -7202,7 +7198,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": null,
                             "description": null,
@@ -7979,7 +7975,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": null,
                             "description": null,
@@ -23722,14 +23718,13 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "description": [
-                            "This is a [trialrl] run...\n",
-                            null,
-                            "\n**Helping with directions = getting kick**"
-                        ],
                         "embed": {
                             "color": "#ff0000",
-                            "description": null,
+                            "description": [
+                                "This is a [trialrl] run...\n",
+                                null,
+                                "\n**Helping with directions = getting kick**"
+                            ],
                             "image": null,
                             "thumbnail": [
                                 "https://cdn.discordapp.com/emojis/701491230332157972.png?v=1"
@@ -25683,7 +25678,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": null,
                             "description": null,
@@ -26592,7 +26587,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": null,
                             "description": null,
@@ -27055,7 +27050,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": null,
                             "description": null,
@@ -27873,7 +27868,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": null,
                             "description": null,
@@ -28635,7 +28630,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": null,
                             "description": null,
@@ -29046,7 +29041,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": null,
                             "description": null,
@@ -29733,7 +29728,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": "#2f075c",
                             "description": null,
@@ -30229,7 +30224,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": "#2f075c",
                             "description": [
@@ -30687,7 +30682,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": "#ff0000",
                             "description": null,
@@ -31152,7 +31147,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": "#ff0000",
                             "description": [
@@ -31624,7 +31619,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": "#013220",
                             "description": null,
@@ -32042,7 +32037,6 @@
                         ]
                     ],
                     "veteran": [
-                        [
                             [
                                 "vetrl"
                             ],
@@ -32058,7 +32052,6 @@
                             [
                                 "fameLeader"
                             ]
-                        ]
                     ]
                 },
                 "minViewRaiderRoles": null,
@@ -32125,7 +32118,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": "#013220",
                             "description": [
@@ -32607,7 +32600,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": "#7a7a7a",
                             "description": null,
@@ -32992,7 +32985,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": "#7a7a7a",
                             "description": [
@@ -34426,7 +34419,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": "#990000",
                             "description": [
@@ -35147,7 +35140,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": "#990000",
                             "description": [
@@ -35459,7 +35452,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": "#0ba6ee",
                             "description": null,
@@ -35912,7 +35905,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": "#0ba6ee",
                             "description": [
@@ -36368,7 +36361,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": "#990000",
                             "description": null,
@@ -36771,7 +36764,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": "#990000",
                             "description": null,
@@ -37082,7 +37075,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": null,
                             "description": null,
@@ -43110,7 +43103,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": null,
                             "description": null,
@@ -43490,7 +43483,6 @@
                         ]
                     ],
                     "veteran": [
-                        [
                             [
                                 "vetrl"
                             ],
@@ -43506,7 +43498,6 @@
                             [
                                 "fameLeader"
                             ]
-                        ]
                     ]
                 },
                 "minViewRaiderRoles": null,
@@ -43929,7 +43920,6 @@
                         ]
                     ],
                     "veteran": [
-                        [
                             [
                                 "vetrl"
                             ],
@@ -43945,7 +43935,6 @@
                             [
                                 "fameLeader"
                             ]
-                        ]
                     ]
                 },
                 "minViewRaiderRoles": null,
@@ -44810,7 +44799,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": null,
                             "description": null,
@@ -45587,7 +45576,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": null,
                             "description": null,
@@ -61330,14 +61319,13 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "description": [
-                            "This is a [trialrl] run...\n",
-                            null,
-                            "\n**Helping with directions = getting kick**"
-                        ],
                         "embed": {
                             "color": "#ff0000",
-                            "description": null,
+                            "description": [
+                                "This is a [trialrl] run...\n",
+                                null,
+                                "\n**Helping with directions = getting kick**"
+                            ],
                             "image": null,
                             "thumbnail": [
                                 "https://cdn.discordapp.com/emojis/701491230332157972.png?v=1"
@@ -63291,7 +63279,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": null,
                             "description": null,
@@ -64200,7 +64188,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": null,
                             "description": null,
@@ -64663,7 +64651,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": null,
                             "description": null,
@@ -65481,7 +65469,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": null,
                             "description": null,
@@ -66243,7 +66231,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": null,
                             "description": null,
@@ -66654,7 +66642,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": null,
                             "description": null,
@@ -67341,7 +67329,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": "#2f075c",
                             "description": null,
@@ -67837,7 +67825,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": "#2f075c",
                             "description": [
@@ -68295,7 +68283,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": "#ff0000",
                             "description": null,
@@ -68760,7 +68748,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": "#ff0000",
                             "description": [
@@ -69232,7 +69220,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": "#013220",
                             "description": null,
@@ -69650,7 +69638,6 @@
                         ]
                     ],
                     "veteran": [
-                        [
                             [
                                 "vetrl"
                             ],
@@ -69666,7 +69653,6 @@
                             [
                                 "fameLeader"
                             ]
-                        ]
                     ]
                 },
                 "minViewRaiderRoles": null,
@@ -69733,7 +69719,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": "#013220",
                             "description": [
@@ -70215,7 +70201,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": "#7a7a7a",
                             "description": null,
@@ -70600,7 +70586,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": "#7a7a7a",
                             "description": [
@@ -72034,7 +72020,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": "#990000",
                             "description": [
@@ -72755,7 +72741,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": "#990000",
                             "description": [
@@ -73067,7 +73053,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": "#0ba6ee",
                             "description": null,
@@ -73520,7 +73506,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": "#0ba6ee",
                             "description": [
@@ -73976,7 +73962,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": "#990000",
                             "description": null,
@@ -74379,7 +74365,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": "#990000",
                             "description": null,
@@ -74690,7 +74676,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": null,
                             "description": null,
@@ -76933,7 +76919,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": null,
                             "description": null,
@@ -80208,7 +80194,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": null,
                             "description": null,
@@ -96943,7 +96929,7 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "message": null,
+                        "message": "The raid will be open",
                         "embed": {
                             "color": null,
                             "description": null,

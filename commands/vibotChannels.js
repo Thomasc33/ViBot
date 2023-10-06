@@ -138,12 +138,14 @@ module.exports = {
     },
 
     async addModmailUnlockButton(message, settings, bot, db) {
-        let components = new Discord.ActionRowBuilder()
-            .addComponents(new Discord.ButtonBuilder()
-                .setLabel('🔓 Unlock')
-                .setStyle(3)
-                .setCustomId('modmailUnlock'))
-        message = await message.edit({ components: [components] })
+        if (message.components[0].components[0]?.customId != 'modmailUnlock') {
+            let components = new Discord.ActionRowBuilder()
+                .addComponents(new Discord.ButtonBuilder()
+                    .setLabel('🔓 Unlock')
+                    .setStyle(3)
+                    .setCustomId('modmailUnlock'))
+            message = await message.edit({ components: [components] })
+        }
         modmailInteractionCollector = new Discord.InteractionCollector(bot, { message: message, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
         modmailInteractionCollector.on('collect', (interaction) => modmail.interactionHandler(interaction, settings, bot, db))
     },

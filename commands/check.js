@@ -568,6 +568,7 @@ class Check {
     }
 
     replacePlaceholders(stringInput, variables) {
+        if (!stringInput) return ''
         return stringInput.replace(/\{([^}]+)\}/g, (match, key) => variables[key] || match)
     }
 

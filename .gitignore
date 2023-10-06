@@ -8,4 +8,5 @@ createdChannels.json
 emojis.json
 data/emojis.json
 data/restart_channel.json
+debug.log
 .DS_Store

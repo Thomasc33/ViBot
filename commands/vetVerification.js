@@ -321,6 +321,7 @@ module.exports = {
                         embed.setColor('#ff0000')
                         embed.setFooter({ text: `Rejected by ${reactor.nickname}` })
                         await message.edit({ embeds: [embed] })
+                        manualVetVerifyLog(message, u.id, bot, db)
                         try {
                             if (settings.strings.vetVerifyDeniedMessage) {
                                 member.user.send(`${settings.strings.vetVerifyDeniedMessage}`)
