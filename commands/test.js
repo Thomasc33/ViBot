@@ -10,7 +10,8 @@ module.exports = {
     guildspecific: true,
     role: 'developer',
     async execute(message, args, bot, db) {
-        const repliedMessage = "Toast!"
+        let member = await message.guild.members.fetch(message.author.id).catch(e => ErrorLogger.log(e, bot));
+        const repliedMessage = `\`${member.nickname}\``
         await message.reply(repliedMessage)
     }
 }
