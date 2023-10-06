@@ -22,7 +22,7 @@ module.exports = {
      */
     async execute(message, args, bot, db) {
         let alias = args.shift().toLowerCase()
-        const afkTemplateNames = AfkTemplate.resolveTemplateAlias(message.guild.id, alias)
+        const afkTemplateNames = await AfkTemplate.resolveTemplateAlias(bot.settings[message.guild.id], message.member, message.guild.id, message.channel.id, alias)
         if (afkTemplateNames.length == 0) return await message.channel.send('This afk template does not exist.')
         const afkTemplateName = afkTemplateNames.length == 1 ? afkTemplateNames[0] : await AfkTemplate.templateNamePrompt(message, afkTemplateNames)
 
@@ -33,7 +33,6 @@ module.exports = {
             return
         }
 
-        if (!afkTemplate.minimumStaffRoles.some(roles => roles.every(role => message.member.roles.cache.has(role.id)))) return await message.channel.send({embeds: [extensions.createEmbed(message, `You do not have a suitable set of roles out of ${afkTemplate.minimumStaffRoles.reduce((a, b) => `${a}, ${b.join(' + ')}`)} to run ${afkTemplate.name}.`, null)] })
         let location = args.join(' ')
         if (location.length >= 1024) return await message.channel.send('Location must be below 1024 characters, try again')
         if (location == '') location = 'None'

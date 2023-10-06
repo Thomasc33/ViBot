@@ -5882,7 +5882,6 @@
                         ]
                     ],
                     "veteran": [
-                        [
                             [
                                 "vetrl"
                             ],
@@ -5898,7 +5897,6 @@
                             [
                                 "fameLeader"
                             ]
-                        ]
                     ]
                 },
                 "minViewRaiderRoles": null,
@@ -6321,7 +6319,6 @@
                         ]
                     ],
                     "veteran": [
-                        [
                             [
                                 "vetrl"
                             ],
@@ -6337,7 +6334,6 @@
                             [
                                 "fameLeader"
                             ]
-                        ]
                     ]
                 },
                 "minViewRaiderRoles": null,
@@ -23722,14 +23718,13 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "description": [
-                            "This is a [trialrl] run...\n",
-                            null,
-                            "\n**Helping with directions = getting kick**"
-                        ],
                         "embed": {
                             "color": "#ff0000",
-                            "description": null,
+                            "description": [
+                                "This is a [trialrl] run...\n",
+                                null,
+                                "\n**Helping with directions = getting kick**"
+                            ],
                             "image": null,
                             "thumbnail": [
                                 "https://cdn.discordapp.com/emojis/701491230332157972.png?v=1"
@@ -32042,7 +32037,6 @@
                         ]
                     ],
                     "veteran": [
-                        [
                             [
                                 "vetrl"
                             ],
@@ -32058,7 +32052,6 @@
                             [
                                 "fameLeader"
                             ]
-                        ]
                     ]
                 },
                 "minViewRaiderRoles": null,
@@ -43490,7 +43483,6 @@
                         ]
                     ],
                     "veteran": [
-                        [
                             [
                                 "vetrl"
                             ],
@@ -43506,7 +43498,6 @@
                             [
                                 "fameLeader"
                             ]
-                        ]
                     ]
                 },
                 "minViewRaiderRoles": null,
@@ -43929,7 +43920,6 @@
                         ]
                     ],
                     "veteran": [
-                        [
                             [
                                 "vetrl"
                             ],
@@ -43945,7 +43935,6 @@
                             [
                                 "fameLeader"
                             ]
-                        ]
                     ]
                 },
                 "minViewRaiderRoles": null,
@@ -61330,14 +61319,13 @@
                         "vcState": null,
                         "nextPhaseButton": null,
                         "timeLimit": null,
-                        "description": [
-                            "This is a [trialrl] run...\n",
-                            null,
-                            "\n**Helping with directions = getting kick**"
-                        ],
                         "embed": {
                             "color": "#ff0000",
-                            "description": null,
+                            "description": [
+                                "This is a [trialrl] run...\n",
+                                null,
+                                "\n**Helping with directions = getting kick**"
+                            ],
                             "image": null,
                             "thumbnail": [
                                 "https://cdn.discordapp.com/emojis/701491230332157972.png?v=1"
@@ -69650,7 +69638,6 @@
                         ]
                     ],
                     "veteran": [
-                        [
                             [
                                 "vetrl"
                             ],
@@ -69666,7 +69653,6 @@
                             [
                                 "fameLeader"
                             ]
-                        ]
                     ]
                 },
                 "minViewRaiderRoles": null,

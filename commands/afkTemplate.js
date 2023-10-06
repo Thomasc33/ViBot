@@ -1,6 +1,7 @@
 const fs = require('fs')
 const Discord = require('discord.js')
 const templates = require('../data/afkTemplates.json')
+const settings = require('../settings.json')
 const { createEmbed } = require('../lib/extensions.js')
 
 // Enum for the Error States in a Template
@@ -54,10 +55,18 @@ const TemplateButtonChoice = {
     'NUMBER_CHOICE_CUSTOM' : 3
 }
 
-function resolveTemplateAlias(guildId, alias) {
-    let selectedTemplates = templates[guildId].children.filter(t => t.aliases.includes(alias)) // Search for all matches of the alias across all guild-specific AFK Templates
-    if (selectedTemplates.length == 0) selectedTemplates = templates[guildId].children.filter(t => t.aliases.some(templateAlias => templateAlias.includes(alias))) // Search for all substring matches of the alias if direct matches were not found
-    return selectedTemplates.map((t) => t.templateName)
+function getRoleStrings(botSettings, member) {
+    return member.roles.cache.map(role => Object.entries(botSettings.roles).filter(([name, id]) => id == role.id).map(i => i[0])).flat()
+}
+
+async function resolveTemplateAlias(botSettings, member, guildId, commandChannel, alias) {
+    const templateUrl = new URL(settings.config.url)
+    templateUrl.pathname = `/api/${guildId}/template/${commandChannel}/alias/${alias}`
+    templateUrl.searchParams.append('roles', getRoleStrings(botSettings, member).join(','))
+    templateUrl.searchParams.append('key', settings.config.key)
+    const templateNames = await fetch(templateUrl).then(f => f.json())
+    console.log(templateNames)
+    return templateNames
 }
 
 async function templateNamePrompt(message, templateNames) {
@@ -107,22 +116,17 @@ class AfkTemplate {
      * @param {Discord.Message} message The discord message in which the command was executed
      * @param {String} alias The string used to identify the AFK Template
      */
-    constructor(bot, botSettings, message, templateName) {
+    constructor(bot, botSettings, message, template) {
         this.#bot = bot
         this.#botSettings = botSettings
         this.#guild = message.guild
         this.#channel = message.channel
         this.#inherit = null
-
-        // Build AFK template from JSON
-        this.#template = JSON.parse(JSON.stringify(templates[this.#guild.id].children.filter(t => t.templateName == templateName)[0]))
-        this.#populateTemplateInherit() // Populate child AFK Template parameters from Parent AFK Template
-        this.#populateBodyInherit() // Populate Body Phase parameters from Body Default parameters
+        this.#template = template
 
         // Validate that the template is OK to use
         this.#validateTemplateParameters() // Validate existence of AFK Template parameters
         if (!this.#template.enabled) throw new AfkTemplateValidationError(TemplateState.DISABLED, `This afk template is disabled.`)
-        if (!this.#template.commandsChannel) throw new AfkTemplateValidationError(TemplateState.INVALID_CHANNEL, `This afk template only runs in ${this.#template.inherits.map(parent => this.#guild.channels.cache.get(botSettings.raiding[templates[this.#guild.id].parents[parent].commandsChannel])).join(', ')}.`)
         this.#validateTemplateValues() // Validate values of AFK Template parameters
 
         // Populate all parameters used in AfkCheck
@@ -130,8 +134,13 @@ class AfkTemplate {
     }
 
     static async tryCreate(bot, botSettings, message, templateName) {
+        const templateUrl = new URL(settings.config.url)
+        templateUrl.pathname = `/api/${message.guild.id}/template/${message.channel.id}/template/${templateName}`
+        templateUrl.searchParams.append('roles', getRoleStrings(botSettings, message.member).join(','))
+        templateUrl.searchParams.append('key', settings.config.key)
+        const template = await fetch(templateUrl).then(f => f.json())
         try {
-            return new this(bot, bot.settings[message.guild.id], message, templateName)
+            return new this(bot, bot.settings[message.guild.id], message, template)
         } catch (e) {
             if (e instanceof AfkTemplateValidationError) return e
             throw e
@@ -151,33 +160,9 @@ class AfkTemplate {
         }
     }
 
-    // Function for populating child AFK Template from Parent AFK Template
-    #populateTemplateInherit() {
-        let parentTemplate = null
-        this.#template.inherits.forEach((parent) => {
-            let currentParentTemplate = templates[this.#guild.id].parents[parent]
-            if (currentParentTemplate && this.#botSettings.raiding[currentParentTemplate.commandsChannel] == this.#channel.id) {
-                parentTemplate = currentParentTemplate
-                this.#inherit = parent
-            }
-        })
-        this.#populateObjectInherit(this.#template, parentTemplate)
-        if (parentTemplate) for (let i = 0; i <= this.#template.phases; i++) this.#populateObjectInherit(this.#template.body[i], parentTemplate.body[i])
-        this.#template.minStaffRoles = this.#template.minStaffRoles[this.#inherit]
-    }
-
-    // Function for populating child Body Phase parameters from Body Default parameters
-    #populateBodyInherit() {
-        for (let i = 0; i <= this.#template.phases; i++) {
-            if (this.#template.body[i] == undefined) this.#template.body[i] = this.#template.body[0]
-            else this.#populateObjectInherit(this.#template.body[i], this.#template.body[0])
-        }
-    }
-
     // Function for validating the existence of AFK Template parameters
     #validateTemplateParameters() {
         let properties = []
-        if (!Object.hasOwn(this.#template, 'inherits')) properties.push('inherits')
         if (!Object.hasOwn(this.#template, 'category')) properties.push('category')
         if (!Object.hasOwn(this.#template, 'templateChannel')) properties.push('templateChannel')
         if (!Object.hasOwn(this.#template, 'partneredStatusChannels')) properties.push('partneredStatusChannels')
@@ -187,7 +172,6 @@ class AfkTemplate {
             }
         }
         if (!Object.hasOwn(this.#template, 'statusChannel')) properties.push('statusChannel')
-        if (!Object.hasOwn(this.#template, 'commandsChannel')) properties.push('commandsChannel')
         if (!Object.hasOwn(this.#template, 'activeChannel')) properties.push('activeChannel')
         if (!Object.hasOwn(this.#template, 'enabled')) properties.push('enabled')
         if (!Object.hasOwn(this.#template, 'minStaffRoles')) properties.push('minStaffRoles')
@@ -195,7 +179,6 @@ class AfkTemplate {
         if (!Object.hasOwn(this.#template, 'minJoinRaiderRoles')) properties.push('minJoinRaiderRoles')
         if (!Object.hasOwn(this.#template, 'name')) properties.push('name')
         if (!Object.hasOwn(this.#template, 'pingRoles')) properties.push('pingRoles')
-        if (!Object.hasOwn(this.#template, 'aliases')) properties.push('aliases')
         if (!Object.hasOwn(this.#template, 'logName')) properties.push('logName')
         if (!Object.hasOwn(this.#template, 'vcOptions')) properties.push('vcOptions')
         if (!Object.hasOwn(this.#template, 'cap')) properties.push('cap')
@@ -266,14 +249,12 @@ class AfkTemplate {
             if (!this.#validateTemplateGuild(i, this.#template.partneredStatusChannels[i].channels)) throw new AfkTemplateValidationError(TemplateState.INVALID_GUILD, `This afk template at Partnered Status Channels ${i} has an Invalid Channel/Guild.`)
         }
         if (!this.#validateTemplateChannel(this.#template.statusChannel)) throw new AfkTemplateValidationError(TemplateState.INVALID_CHANNEL, 'This afk template has an Invalid Status Channel.')
-        if (!this.#validateTemplateChannel(this.#template.commandsChannel)) throw new AfkTemplateValidationError(TemplateState.INVALID_CHANNEL, 'This afk template has an Invalid Commands Channel.')
         if (!this.#validateTemplateChannel(this.#template.activeChannel)) throw new AfkTemplateValidationError(TemplateState.INVALID_CHANNEL, 'This afk template has an Invalid Active Channel.')
         if (this.#template.minStaffRoles && this.#template.minStaffRoles.some(roles => roles.some(role => !this.#validateTemplateRole(role)))) throw new AfkTemplateValidationError(TemplateState.INVALID_ROLE, 'This afk template has an Invalid Minimum Staff Role.')
         if (this.#template.minViewRaiderRoles && this.#template.minViewRaiderRoles.some(role => !this.#validateTemplateRole(role))) throw new AfkTemplateValidationError(TemplateState.INVALID_ROLE, 'This afk template has an Invalid Minimum View Raider Role.')
         if (this.#template.minJoinRaiderRoles && this.#template.minJoinRaiderRoles.some(role => !this.#validateTemplateRole(role))) throw new AfkTemplateValidationError(TemplateState.INVALID_ROLE, 'This afk template has an Invalid Minimum Join Raider Role.')
         if (!this.#validateTemplateString(this.#template.name)) throw new AfkTemplateValidationError(TemplateState.INVALID_STRING, 'This afk template has an Invalid Name.')
         if (this.#template.pingRoles && this.#template.pingRoles.some(role => role != 'here' && !this.#validateTemplateRole(role))) throw new AfkTemplateValidationError(TemplateState.INVALID_ROLE, `This afk template has an Invalid Ping Role. ${this.#template.pingRoles.filter(role => role != 'here' && !this.#validateTemplateRole(role))}`)
-        if (this.#template.aliases.some(alias => !this.#validateTemplateString(alias))) throw new AfkTemplateValidationError(TemplateState.INVALID_STRING, 'This afk template has an Invalid Aliases.')
         if (!this.#validateTemplateNumber(this.#template.vcOptions, TemplateVCOptions)) throw new AfkTemplateValidationError(TemplateState.INVALID_NUMBER, 'This afk template has an Invalid VC Option.')
         if (this.#template.startDelay && !this.#validateTemplateNumber(this.#template.startDelay)) throw new AfkTemplateValidationError(TemplateState.INVALID_NUMBER, 'This afk template has an Invalid Start Delay.')
         if (!this.#validateTemplateNumber(this.#template.cap)) throw new AfkTemplateValidationError(TemplateState.INVALID_NUMBER, 'This afk template has an Invalid Cap.')
@@ -380,8 +361,6 @@ class AfkTemplate {
         this.minimumViewRaiderRoles = this.#template.minViewRaiderRoles.map(role => this.#guild.roles.cache.get(this.#botSettings.roles[role]))
         this.minimumJoinRaiderRoles = this.#template.minJoinRaiderRoles.map(role => this.#guild.roles.cache.get(this.#botSettings.roles[role]))
         this.minimumStaffRoles = this.#template.minStaffRoles.map(roles => roles.map(role => this.#guild.roles.cache.get(this.#botSettings.roles[role])))
-        if (this.minimumStaffRoles == [] || this.minimumStaffRoles == [[]] && this.#botSettings.commandsRolePermissions["afk"]) this.minimumStaffRoles = [[this.#guild.roles.cache.get(this.#botSettings.roles[this.#botSettings.commandsRolePermissions["afk"]])]]
-        if (this.minimumStaffRoles == [] || this.minimumStaffRoles == [[]]) this.minimumStaffRoles = [[this.#guild.roles.cache.get(this.#botSettings.roles[this.#bot.commands.get("afk").role])]]
         this.raidInfoChannel = this.#guild.channels.cache.get(this.#botSettings.channels.runlogs)
         this.raidCategory = this.#guild.channels.cache.filter(c => c.type == Discord.ChannelType.GuildCategory).find(c => c.name.toLowerCase() === this.#botSettings.raiding[this.#template.category])
         this.raidPartneredStatusChannels = {}
@@ -392,7 +371,7 @@ class AfkTemplate {
         }
         this.raidTemplateChannel = this.#guild.channels.cache.get(this.#botSettings.raiding[this.#template.templateChannel])
         this.raidStatusChannel = this.#guild.channels.cache.get(this.#botSettings.raiding[this.#template.statusChannel])
-        this.raidCommandChannel = this.#guild.channels.cache.get(this.#botSettings.raiding[this.#template.commandsChannel])
+        this.raidCommandChannel = this.#channel
         this.raidActiveChannel = this.#guild.channels.cache.get(this.#botSettings.raiding[this.#template.activeChannel])
         this.logName = this.#template.logName
         this.name = this.#template.name
