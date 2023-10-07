@@ -584,7 +584,7 @@ module.exports = {
                             //send to verilog
                             let denyEmbed = new Discord.EmbedBuilder()
                                 .setColor(`#ff0000`)
-                                .setDescription(`${member} \`${member.nickname}\` was denied by ${reactor} \`${reactor.nickname}\` using ${e}`)
+                                .setDescription(`${member} \`${member.displayName }\` was denied by ${reactor} \`${reactor.displayName }\` using ${e}`)
                                 .setTimestamp()
                             message.guild.channels.cache.get(settings.channels.verificationlog).send({ embeds: [denyEmbed] })
                             //remove from watching embed
