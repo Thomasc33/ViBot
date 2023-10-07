@@ -43,20 +43,21 @@ module.exports = {
         return mentions
     }
 }
+
+/**
+ * @param {import('discord.js').GuildTextBasedChannel} channel
+ * @param {number} limit
+ * @returns {import('discord.js').Message[]}
+ */
 async function getMessages(channel, limit) {
-    const sum_messages = []
-    let last_id
-    while (true) {
-        const options = { limit: 100 }
-        if (last_id) {
-            options.before = last_id
-        }
+    const sumMessages = []
+    const options = { limit: 100 }
+    while (sumMessages.length >= limit) {
+        // eslint-disable-next-line no-await-in-loop
         const messages = await channel.messages.fetch(options)
-        sum_messages.push(...messages.map(m => m))
-        last_id = messages.last().id
-        if (messages.size != 100 || sum_messages.length >= limit) {
-            break
-        }
+        sumMessages.push(...messages.map(m => m))
+        options.before = messages.last().id
+        if (messages.size != 100) break
     }
-    return sum_messages
+    return sumMessages
 }

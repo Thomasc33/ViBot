@@ -7,7 +7,7 @@ module.exports = {
     role: 'raider',
     dms: true,
     dmNeedsGuild: true,
-    async execute(message, args, bot, db) {
+    async execute(message) {
         message.channel.send('`;join` is now deprecated. Please use the reconnect button instead.')
     },
     async dmExecution(message, args, bot, db, guild) {
@@ -33,7 +33,18 @@ module.exports = {
             const joinEmbedMessage = await message.channel.send({ embeds: [runEmbed] })
             const runMessageCollector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id == message.author.id })
             runMessageCollector.on('collect', async m => {
-                if (m.content.replace(/[^0-9]/g, '') != m.content) {
+                if (m.content.replace(/[^0-9]/g, '') == m.content) {
+                    const runId = runsIn[parseInt(m.content) - 1]
+                    if (runId) {
+                        this.moveIn(guild.members.cache.get(message.author.id), runId, bot)
+                        joinEmbedMessage.delete()
+                        runMessageCollector.stop()
+                        message.react('✅')
+                    } else {
+                        const retryMessage = await message.channel.send(`\`${m.content}\` is not a valid number. Please try again or type \`cancel\` to cancel`)
+                        setTimeout(() => retryMessage.delete(), 5000)
+                    }
+                } else {
                     if (m.content == 'cancel') {
                         joinEmbedMessage.delete()
                         runMessageCollector.stop()
@@ -41,17 +52,6 @@ module.exports = {
                     }
                     const retryMessage = await message.channel.send(`\`${m.content}\` is not a valid number. Please try again or type \`cancel\` to cancel`)
                     setTimeout(() => retryMessage.delete(), 5000)
-                } else {
-                    const runId = runsIn[parseInt(m.content) - 1]
-                    if (!runId) {
-                        const retryMessage = await message.channel.send(`\`${m.content}\` is not a valid number. Please try again or type \`cancel\` to cancel`)
-                        setTimeout(() => retryMessage.delete(), 5000)
-                    } else {
-                        this.moveIn(guild.members.cache.get(message.author.id), runId, bot)
-                        joinEmbedMessage.delete()
-                        runMessageCollector.stop()
-                        message.react('✅')
-                    }
                 }
             })
         }
@@ -65,10 +65,10 @@ module.exports = {
             } else {
                 const splitChannelID = afkCheck.splitChannel
                 if (splitChannelID == 'na') {
-                    if (member.voice.channel) member.voice.setChannel(runID, 'joinrun').catch(er => member.send('Please connect to lounge and try again'))
+                    if (member.voice.channel) member.voice.setChannel(runId, 'joinrun').catch(er => member.send('Please connect to lounge and try again'))
                     else member.send('Please connect to lounge and try again')
                 } else {
-                    if (member.voice.channel) member.voice.setChannel(splitChannel, 'joinrun').catch(er => member.send('Please connect to lounge and try again'))
+                    if (member.voice.channel) member.voice.setChannel(splitChannelID, 'joinrun').catch(er => member.send('Please connect to lounge and try again'))
                     else member.send('Please connect to lounge and try again')
                 }
             }

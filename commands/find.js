@@ -25,10 +25,7 @@ module.exports = {
         for (const u of args) {
             let member = message.guild.members.cache.get(u)
             if (!member) member = message.guild.members.cache.filter(user => user.nickname !== null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(u.toLowerCase()))
-            if (!member) {
-                if (notFoundString == '') notFoundString = `${u}`
-                else notFoundString = notFoundString.concat(`, ${u}`)
-            } else {
+            if (member) {
                 expelled.push(member.user.id)
                 expelled.push(...(member.nickname || '').replace(/[^a-z|]/gi, '').split('|'))
 
@@ -53,6 +50,9 @@ module.exports = {
                     embed.data.fields[2].value = member.voice.channel.name
                 }
                 embeds.push(embed)
+            } else {
+                if (notFoundString == '') notFoundString = `${u}`
+                else notFoundString = notFoundString.concat(`, ${u}`)
             }
         }
         if (notFoundString != '') {

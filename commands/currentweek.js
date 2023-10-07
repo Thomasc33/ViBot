@@ -8,49 +8,37 @@ module.exports = {
     args: '[users]',
     alias: ['cw'],
     role: 'eventrl',
-    getNotes(guild, member, bot) {
+    getNotes(guild) {
         return `Types: ${logs[guild.id].main.map(log => log.key + ' (' + log.name + ')').join(', ')}`
     },
     async execute(message, args, bot, db) {
         // get member
-        const members = []
         if (args.length == 0) members.push(message.member)
-        for (const i in args) {
-            const member = message.guild.findMember(args[i])
-            if (!member) continue
-            members.push(member)
-        }
+
+        const members = args.map(arg => message.guild.findMember(arg)).filter(m => m)
         if (members.length == 0) return message.reply('Could not find any user')
 
-        if (!quotas.hasOwnProperty(message.guild.id)) return message.reply('Current week is not set up for this server')
-        members.map(async member => {
+        if (!Object.hasOwn(quotas, message.guild.id)) return message.reply('Current week is not set up for this server')
+        members.forEach(async member => {
             const rows = await returnRows(member, db)
             if (!rows) return
             const embed = new Discord.EmbedBuilder()
                 .setTitle('Current Week')
                 .setDescription(`${member} \`\`${member.displayName}\`\``)
                 .setColor('#FF0000')
-            await quotas[message.guild.id].quotas.map(quota => {
+            quotas[message.guild.id].quotas.forEach(quota => {
                 embed.addFields({
                     name: `${quota.name}`,
                     value: `(${quota.values.map(value => `${value.emoji ? `${value.emoji}` : `${value.name}`}: \`${rows[value.column]}\``).join(', ')})`,
                     inline: false
                 })
             })
-            await message.channel.send({ embeds: [embed] })
+            message.channel.send({ embeds: [embed] })
         })
     }
 }
 
 async function returnRows(member, db) {
-    return new Promise(async (res, rej) => {
-        db.query(`SELECT * FROM users WHERE id = '${member.id}'`, (err, rows) => {
-            if (err) return rej(err)
-            if (rows.length == 0) {
-                res(undefined)
-            } else {
-                res(rows[0])
-            }
-        })
-    })
+    const [rows] = db.promise().query('SELECT * FROM users WHERE id = ?', [member.id])
+    return rows[0]
 }

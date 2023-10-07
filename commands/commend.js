@@ -18,7 +18,7 @@ module.exports = {
         const roleCache = guild.roles.cache
         return settings.lists.commendRoles.map(role => `${roleCache.get(settings.roles[role])} \`${role}\``).join('\n')
     },
-    async execute(message, args, bot, db) {
+    async execute(message, args, bot) {
         const settings = bot.settings[message.guild.id]
         // If there are no settings available for this server, commendations wont work
         if (!settings) {

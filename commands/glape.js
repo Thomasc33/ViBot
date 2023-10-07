@@ -1,5 +1,4 @@
 const Discord = require('discord.js')
-const ErrorLogger = require('../lib/logError')
 const moment = require('moment')
 
 module.exports = {
@@ -7,7 +6,7 @@ module.exports = {
     role: 'moderator',
     guildSpecific: true,
     description: "If you know, you know.\nIf not, try me :)\nIf you don't know, the bot purges the entire server",
-    async execute(message, args, bot, db) {
+    async execute(message, args, bot) {
         const glapeModule = new Glape(message, bot)
         await glapeModule.startProcess()
     }
@@ -59,13 +58,14 @@ class Glape {
         const sortedGlapers = this.sortObject(this.glapers)
         const glapeStrings = []
         for (const i in sortedGlapers) {
+            if (!Object.hasOwn(sortedGlapers, i)) continue
             const glaper = sortedGlapers[i]
             let temporaryString = `\`${glaper.toString().padStart(4, ' ')}\` ${this.isGlapeInfected ? this.infectedGlapeEmoji.text : this.glapeEmoji.text} <@!${i}>`
-            if (this.specialGlapers.hasOwnProperty(i)) {
-                if (!this.isGlapeInfected) {
-                    temporaryString += ` ${this.specialGlapers[i].join(' ')}`
+            if (Object.hasOwn(this.specialGlapers, i)) {
+                if (this.isGlapeInfected) {
+                    temporaryString += ` ${this.specialGlapers[i].map(() => `${this.infectedGlapeEmoji.text}`).join(' ')}`
                 } else {
-                    temporaryString += ` ${this.specialGlapers[i].map(glape => `${this.infectedGlapeEmoji.text}`).join(' ')}`
+                    temporaryString += ` ${this.specialGlapers[i].join(' ')}`
                 }
             }
             if (temporaryString.length + glapeStrings.join('\n').length >= 1024) { break }
@@ -118,11 +118,22 @@ class Glape {
         prettyString += `\`${maxHealth.toString().padStart(4, ' ')}\` `
         prettyString += `${`${this.infectedGlapeEmoji.text}`.repeat(empty)}`
         prettyString += `${`${this.blackGlapeEmoji.text}`.repeat(filled)}`
-        prettyString += ` \`${health.toString().padStart(4, ' ')}\``        return prettyString
+        prettyString += ` \`${health.toString().padStart(4, ' ')}\``
+        return prettyString
     }
 
     async updateGlapeField(interaction = null) {
-        if (!this.isGlapeInfected) {
+        if (this.isGlapeInfected) {
+            this.embed = new Discord.EmbedBuilder()
+                .setTitle('Infected Glape...')
+                .setDescription(`You have until ${this.discordTimestamp} to get rid of as many ${this.infectedGlapeEmoji.text} as possible...`)
+                .setColor(this.infectedEmbedGlapeColor)
+            this.embed.setFields({
+                name: `${this.infectedGlapeEmoji.text} ${Object.keys(this.glapers).length} Anti-Glapers ${this.infectedGlapeEmoji.text}`,
+                value: this.glapeBossHealthString(),
+                inline: false
+            })
+        } else {
             this.embed = new Discord.EmbedBuilder()
                 .setTitle('Glape Clicker!')
                 .setDescription(`You have until ${this.discordTimestamp} to collect as many ${this.glapeEmoji.text} as possible!`)
@@ -139,20 +150,22 @@ class Glape {
                     inline: false
                 })
             }
-        } else {
-            this.embed = new Discord.EmbedBuilder()
-                .setTitle('Infected Glape...')
-                .setDescription(`You have until ${this.discordTimestamp} to get rid of as many ${this.infectedGlapeEmoji.text} as possible...`)
-                .setColor(this.infectedEmbedGlapeColor)
-            this.embed.setFields({
-                name: `${this.infectedGlapeEmoji.text} ${Object.keys(this.glapers).length} Anti-Glapers ${this.infectedGlapeEmoji.text}`,
-                value: this.glapeBossHealthString(),
-                inline: false
-            })
         }
         this.embed.setFooter({ text: `Total Glapes ${this.totalGlapes()}, Glapes per second ${this.glapesPerSecond()}` })
 
-        if (!this.pendingUpdate) {
+        if (this.pendingUpdate) {
+            // There is already an update in-progress, add this update to the queue
+            // If there's a non-interaction queued, prioritize this
+            if (this.queuedUpdate === null || this.queuedUpdate === true) {
+                this.queuedUpdate = interaction || true
+            } else if (interaction) {
+                // When we delete an update from the queue we need to respond to it
+                this.queuedUpdate.deferUpdate()
+                this.queuedUpdate = interaction
+            }
+            // If `queuedUpdate` is an interaction and `interaction` is null no changes are needed
+            // That is why this if statement is not exhaustive
+        } else {
             // If there are no updates pending, then immediately try to update the embed
             // Use `update` if it's an embed, otherwise use `edit`
             // Set the `pendingUpdate` flag to indicate that any new updates should be queued to avoid update races
@@ -168,18 +181,6 @@ class Glape {
                     await this.updateGlapeField(queuedInteraction)
                 }
             })
-        } else {
-            // There is already an update in-progress, add this update to the queue
-            // If there's a non-interaction queued, prioritize this
-            if (this.queuedUpdate === null || this.queuedUpdate === true) {
-                this.queuedUpdate = interaction || true
-            } else if (interaction) {
-                // When we delete an update from the queue we need to respond to it
-                this.queuedUpdate.deferUpdate()
-                this.queuedUpdate = interaction
-            }
-            // If `queuedUpdate` is an interaction and `interaction` is null no changes are needed
-            // That is why this if statement is not exhaustive
         }
     }
 
@@ -271,12 +272,12 @@ class Glape {
             clearInterval(glapeEmbedUpdaterInterval)
 
             this.glapeListener.stop()
-            if (!this.isGlapeInfected) {
-                await this.updateGlapeField()
-                this.embed.data.description = 'Thank you to all the Glapers!'
-            } else {
+            if (this.isGlapeInfected) {
                 await this.updateGlapeField()
                 this.embed.data.description = '.....You have lost, you were unable to beat the Glape Infection, it has consumed you!'
+            } else {
+                await this.updateGlapeField()
+                this.embed.data.description = 'Thank you to all the Glapers!'
             }
             this.glapeMessage.edit({ embeds: [this.embed], components: [] })
         }, this.timeoutMinutes * 60 * 1000)
@@ -298,7 +299,7 @@ class Glape {
         if (![this.glapeEmoji.id, this.infectedGlapeEmoji.id].includes(interaction.customId)) { return interaction.deferUpdate() }
         // Only valid button clicks, and glape clicks should pass through.
 
-        if (!this.glapers.hasOwnProperty(interaction.member.id)) { this.glapers[interaction.member.id] = 0 }
+        if (!Object.hasOwn(this.glapers, interaction.member.id)) { this.glapers[interaction.member.id] = 0 }
         this.glapers[interaction.member.id] += this.glapeReward
         if (this.isGlapeInfected) {
             this.infectedGlapeBoss.health -= this.glapeReward
@@ -312,13 +313,13 @@ class Glape {
     async goldenGlapeInteractionHandler(interaction, listener) {
         if (!interaction.isButton()) { return }
         if (!interaction.customId == this.goldenGlapeEmoji.id) { return interaction.deferUpdate() }
-        if (this.specialGlapers.hasOwnProperty(interaction.member.id)) {
+        if (Object.hasOwn(this.specialGlapers, interaction.member.id)) {
             this.specialGlapers[interaction.member.id].push(this.goldenGlapeEmoji.text)
         } else {
             this.specialGlapers[interaction.member.id] = [this.goldenGlapeEmoji.text]
         }
 
-        if (!this.glapers.hasOwnProperty(interaction.member.id)) { this.glapers[interaction.member.id] = 0 }
+        if (!Object.hasOwn(this.glapers, interaction.member.id)) { this.glapers[interaction.member.id] = 0 }
         this.glapers[interaction.member.id] += this.goldenGlapeReward
         listener.stop()
         await interaction.deferUpdate().then((m) => m.delete())
@@ -332,8 +333,8 @@ class Glape {
 
     totalGlapes() {
         let totalPoints = 0
-        for (const i in this.glapers) {
-            totalPoints += this.glapers[i]
+        for (const glaper of this.glapers) {
+            totalPoints += glaper
         }
         return totalPoints
     }

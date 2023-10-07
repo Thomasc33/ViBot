@@ -1,5 +1,4 @@
 const Discord = require('discord.js')
-const ErrorLogger = require('../lib/logError')
 const leaderBoardTypes = require('../data/leaderBoardInfo.json')
 
 module.exports = {
@@ -52,9 +51,9 @@ class Leaderboard {
 
         this.leaderboardJson = leaderBoardTypes
         this.guildHasValidTemplate = true
-        if (!this.leaderboardJson.hasOwnProperty(this.guild.id)) this.guildHasValidTemplate = false
+        if (!Object.hasOwn(this.leaderboardJson, this.guild.id)) this.guildHasValidTemplate = false
         this.leaderboardTemplates = this.leaderboardJson[this.guild.id]
-        if (typeof this.leaderboardTemplates != Array && this.leaderboardTemplates.hasOwnProperty('__REDIRECT')) { this.leaderboardTemplates = this.leaderboardJson[this.leaderboardJson[this.guild.id].__REDIRECT] }
+        if (typeof this.leaderboardTemplates != Array && Object.hasOwn(this.leaderboardTemplates, '__REDIRECT')) { this.leaderboardTemplates = this.leaderboardJson[this.leaderboardJson[this.guild.id].__REDIRECT] }
     }
 
     async startProcess() {
@@ -105,10 +104,9 @@ class Leaderboard {
         if (!this.templatePick || this.templatePick == 'Cancelled') { return this.stopProcess() }
         this.leaderboardMessage.edit({ components: [] })
 
-        for (const i in this.leaderboardTemplates) {
-            const category = this.leaderboardTemplates[i]
+        for (const category of this.leaderboardTemplates) {
             if (this.templatePick == this.bot.storedEmojis[category.emoji].id) {
-                this.template = this.leaderboardTemplates[i]
+                this.template = category
                 this.embedColor = this.template.embedColor
             }
         }
@@ -122,12 +120,14 @@ class Leaderboard {
         this.totalPoints = 0
         this.yourPosition = undefined
         for (const i in leaderboardRows) {
-            for (const dbRow of this.template.dbRows) { this.totalPoints += parseInt(leaderboardRows[i][dbRow]) }
-            if (leaderboardRows[i].id == this.member.id) { this.yourPosition = i}
+            if (!Object.hasOwn(leaderboardRows, i)) continue
+            for (const dbRow of this.template.dbRows) this.totalPoints += parseInt(leaderboardRows[i][dbRow])
+            if (leaderboardRows[i].id == this.member.id) this.yourPosition = i
         }
+        let prettyString
         for (let i = 0; i < this.leaderboardLimit; i++) {
             const position = i + 1
-            var prettyString = `\`${position.toString().padStart(5, ' ')}.\``
+            prettyString = `\`${position.toString().padStart(5, ' ')}.\``
             if (leaderboardRows.length >= position) {
                 let points = 0
                 for (const dbRow of this.template.dbRows) { points += parseInt(leaderboardRows[i][dbRow]) }
@@ -143,13 +143,14 @@ class Leaderboard {
         if (this.yourPosition != undefined) {
             this.yourPosition = parseInt(this.yourPosition) + 1
             for (const i in leaderboardRows) {
+                if (!Object.hasOwn(leaderboardRows, i)) continue
                 const position = parseInt(i) + 1
                 if (this.leaderboardLimit >= this.yourPosition) { break }
                 if (this.leaderboardLimit >= position) { continue }
                 if (position > (this.yourPosition + this.leaderboardLerpAbove)) { break }
                 if (position < (this.yourPosition - this.leaderboardLerpBelow)) { continue }
 
-                var prettyString = `\`${position.toString().padStart(5, ' ')}.\``
+                prettyString = `\`${position.toString().padStart(5, ' ')}.\``
                 if (leaderboardRows.length >= position) {
                     let points = 0
                     for (const dbRow of this.template.dbRows) { points += parseInt(leaderboardRows[i][dbRow]) }

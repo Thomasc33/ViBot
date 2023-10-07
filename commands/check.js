@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 const Discord = require('discord.js')
 
 module.exports = {
@@ -142,8 +143,8 @@ class Check {
             this.guild.members.cache.forEach(async member => {
                 if (!member.roles.cache.has(role.id)) { return }
                 if (await this.isPanelRestricted(member, panelName)) { return }
-                for (const problemRoleOpt of rolesToRemoveFrom[roleName]) {
-                    const problemRoleID = this.settings.roles[problemRoleOpt]
+                for (const roleToRemove of rolesToRemoveFrom[roleName]) {
+                    const problemRoleID = this.settings.roles[roleToRemove]
                     if (!member.roles.cache.has(problemRoleID)) { continue }
                     const problemRole = this.roleCache.get(problemRoleID)
                     const problemRoleName = problemRole.name
@@ -174,14 +175,13 @@ class Check {
         const rolesToAddFiltered = Object.keys(rolesToAdd).filter(role => rolesToAdd[role].length > 0)
         if (rolesToAddFiltered.length == 0) { return }
 
-        for (const index in rolesToAddFiltered) {
-            const roleName = rolesToAddFiltered[index]
+        for (const roleName of rolesToAddFiltered) {
             const role = this.roleCache.get(this.settings.roles[roleName])
             this.guild.members.cache.forEach(async member => {
                 if (!member.roles.cache.has(role.id)) { return }
                 if (await this.isPanelRestricted(member, panelName)) { return }
-                for (const i in rolesToAdd[roleName]) {
-                    const problemRoleID = this.settings.roles[rolesToAdd[roleName][i]]
+                for (const roleToAdd of rolesToAdd[roleName]) {
+                    const problemRoleID = this.settings.roles[roleToAdd]
                     if (member.roles.cache.has(problemRoleID)) { continue }
                     const problemRole = this.roleCache.get(problemRoleID)
                     const problemRoleName = problemRole.name
@@ -260,8 +260,7 @@ class Check {
         const allSuspensions = await this.getSuspends()
 
         const suspensionRoleNames = this.settings.checkRoles.falseSuspenionRoles
-        for (const index in suspensionRoleNames) {
-            const roleName = suspensionRoleNames[index]
+        for (const roleName of suspensionRoleNames) {
             const roleSuspension = this.roleCache.get(this.settings.roles[roleName])
             roleSuspension.members.forEach(async member => {
                 if (await this.isPanelRestricted(member, panelName)) { return }
@@ -395,10 +394,8 @@ class Check {
         const embeds = []
         let interactionEmbed = await this.checkGuideEmbed()
         interactionEmbed.setDescription('This guide was curated by the Officer team\nIf you have any questions, feel free to ask!')
-        for (const index in this.problems) {
-            const problemCategory = this.problems[index]
-            // eslint-disable-next-line no-prototype-builtins
-            if (!problemCategory.hasOwnProperty('guide')) { continue }
+        for (const problemCategory of this.problems) {
+            if (!Object.hasOwn(problemCategory, 'guide')) continue
             const prettyString = `\n### ${problemCategory.category}\n\`\`\`${problemCategory.guide}\`\`\``
             if (interactionEmbed.data.description.length + prettyString.length >= 3500) {
                 embeds.push(interactionEmbed)
@@ -435,8 +432,8 @@ class Check {
         }
 
         delete interactionEmbed.data.title
-
         for (const index in this.autoFixers) {
+            if (!Object.hasOwn(this.autoFixers, index)) continue
             const autoFixProblem = this.autoFixers[index]
             const position = parseInt(autoFixProblems) - parseInt(index)
 
@@ -458,8 +455,7 @@ class Check {
                 if (roleToRemove) { interactionEmbed.addFields({ name: 'Action', value: `${roleToRemove} will be removed from ${member}`, inline: true }) }
             }
             await interaction.editReply({ embeds: [interactionEmbed] })
-            const didConfirm = await interaction.confirmButton(interaction.member.id)
-            if (!didConfirm) { continue }
+            if (!await interaction.confirmButton(interaction.member.id)) continue
             if (roleToAdd && member.roles.cache.has(roleToAdd.id)) { continue }
             if (roleToRemove && !member.roles.cache.has(roleToRemove.id)) { continue }
             interactionEmbed.setDescription(`${member} \`${member.displayName}\``)
@@ -502,6 +498,8 @@ class Check {
     addProblemToCategory(categoryName, problem, arrayJoiner, categoryGuide) {
         let problemWasAdded = false
         for (const index in this.problems) {
+            if (!Object.hasOwn(this.problems, index)) continue
+
             const existingProblem = this.problems[index]
             if (categoryName == existingProblem.category) {
                 this.problems[index].problems.push(problem)
@@ -556,12 +554,7 @@ class Check {
     }
 
     doesAnyProblemHaveGuide() {
-        for (const index in this.problems) {
-            const problem = this.problems[index]
-            // eslint-disable-next-line no-prototype-builtins
-            if (problem.hasOwnProperty('guide')) { return true }
-        }
-        return false
+        return this.problems.some(problem => Object.hasOwn(problem, 'guide'))
     }
 
     replacePlaceholders(stringInput, variables) {

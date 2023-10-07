@@ -40,7 +40,7 @@ module.exports = {
                 message.channel.send('Option not found. Please try again')
         }
     },
-    send(channel, bot) {
+    send(channel) {
         if (!channel) return
         let crashers = 'None!'
         const guildCrashers = crasherList[channel.guild.id]
@@ -93,11 +93,11 @@ module.exports = {
                         { name: 'Added By:', value: `<@!${guildCrashers[i].addedBy}>` },
                         { name: 'Added:', value: d.toDateString() },
                     ])
+                // eslint-disable-next-line no-await-in-loop
                 await message.channel.send({ embeds: [embed] }).then(async confirmMessage => {
                     if (await confirmMessage.confirmButton(message.author.id)) {
                         delete crasherList[message.guild.id][i]
                         fs.writeFileSync('./data/crasherList.json', JSON.stringify(crasherList, null, 4), async (err) => {
-                            reactionCollector.stop()
                             const newEmbed = new Discord.EmbedBuilder()
                                 .setTitle('Confirm Action')
                                 .setColor('#00ff00')

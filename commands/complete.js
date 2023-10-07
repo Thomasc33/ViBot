@@ -9,13 +9,11 @@ module.exports = {
     guildSpecific: true,
     // alias: ['pm'],
     args: '<image>',
-    getNotes(guild, member, bot) {
+    getNotes() {
         return 'Image can either be a link, or an embeded image'
     },
     role: 'almostrl',
     async execute(message, args, bot, db) {
-        const settings = bot.settings[message.guild.id]
-
         const parseStatusEmbed = new Discord.EmbedBuilder()
             .setColor('#00ff00')
             .setTitle('Completion Parse Status')
@@ -33,9 +31,10 @@ module.exports = {
         }
         parseStatusEmbed.data.fields[1].value = 'Sending Image to Google'
         parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
+        let players
         try {
             const [result] = await client.textDetection(image)
-            var players = result.fullTextAnnotation
+            players = result.fullTextAnnotation
             players = players.text.replace(/[\n,]/g, ' ').split(/ +/)
             players.shift()
             players.shift()
@@ -48,7 +47,7 @@ module.exports = {
 
         const members = []
         for (const p of players) {
-            const player = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(p.toLowerCase()))
+            const player = message.guild.members.cache.filter(user => user.nickname).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(p.toLowerCase()))
             if (player) members.push(player)
         }
         if (!members.length) {
@@ -62,7 +61,7 @@ module.exports = {
         parseStatusEmbed.data.fields[1].value = 'Completed'
 
         const maxMembersPerField = 40
-        for (let i = 0; i < Math.ceil(members.length / maxMembersPerField); i++) parseStatusEmbed.data.fields.push({ name: 'Members', value: members.slice(i * maxMembersPerField, Math.min(i * maxMembersPerField + maxMembersPerField, members.length)).map(m => m.toString()).join(', ') })
+        for (let i = 0; i < Math.ceil(members.length / maxMembersPerField); i++) parseStatusEmbed.data.fields.push({ name: 'Members', value: members.slice(i * maxMembersPerField, Math.min((i * maxMembersPerField) + maxMembersPerField, members.length)).map(m => m.toString()).join(', ') })
 
         await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
     }

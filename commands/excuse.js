@@ -16,11 +16,11 @@ module.exports = {
     requiredArgs: 1,
     guildSpecific: true,
     async execute(message, args, bot, db) {
-        const settings = bot.settings[message.guild.id]
         const action = args.shift().toLowerCase()
         switch (action) {
             case 'list':
-                if (!args.length) {this.listAll(message, args, bot, db)} else {this.listUsers(message, args, bot, db)}
+                if (args.length) this.listUsers(message, args, bot, db)
+                else this.listAll(message, args, bot, db)
                 break
             case 'add':
                 this.addExcuse(message, args, bot, db)
@@ -80,13 +80,12 @@ module.exports = {
         const ignore = await this.getIgnore(message.guild.id, db)
         const embed = new Discord.EmbedBuilder()
             .setAuthor({ name: 'Ignore Current Week' })
-        if (!ignore) {
-            embed.setDescription('Current week is not currently ignored.')
-        } else {
+        if (ignore) {
             await db.promise().query(`DELETE FROM ignoreCurrentWeek WHERE guildId = '${message.guild.id}'`)
             embed.setDescription(`Current week has been unignored. It was previously ignored for the following reason: \`\`\`${ignore.reason}\`\`\``)
                 .setColor('#00FF00')
-        }
+        } else embed.setDescription('Current week is not currently ignored.')
+
         message.channel.send({ embeds: [embed] })
     },
     async listAll(message, args, bot, db) {
@@ -95,19 +94,21 @@ module.exports = {
             const embed = new Discord.EmbedBuilder()
                 .setTitle('Excused Staff')
                 .setDescription('None!')
-            for (const i in rows) {
-                fitStringIntoEmbed(embed, `<@${rows[i].id}>`, message.channel, ', ')
+            for (const row of rows) {
+                fitStringIntoEmbed(embed, `<@${row.id}>`, message.channel, ', ')
             }
             message.channel.send({ embeds: [embed] })
         })
     },
     async listUsers(message, args, bot, db) {
         const unfound = []
-        let members = args.map(a => {
+        /** @type {string[]} */
+        const members = args.map(a => {
             const member = message.guild.findMember(a)
             if (!member) unfound.push(a)
             return member
         }).filter(m => m).map(m => m.id)
+
         db.query(`SELECT * FROM excuses WHERE id IN (${members.map(a => "'" + a + "'").join(', ')}) AND guildid = '${message.guild.id}'`, async (err, rows) => {
             if (err) ErrorLogger.log(err, bot, message.guild)
             const embed = new Discord.EmbedBuilder()
@@ -115,8 +116,12 @@ module.exports = {
             if (!rows || !rows.length) {message.channel.send({ embeds: [embed.setDescription('None!')] })}
             const guild = bot.guilds.cache.get(message.guild.id)
             for (const row of rows) {
+                const listIdx = members.indexOf(row.id)
+                if (listIdx != -1) members.splice(listIdx, 1)
+
                 const member = guild.members.cache.get(row.id)
-                if (!member) {continue}
+                if (!member) continue
+
                 const modmember = guild.members.cache.get(row.modid)
                 embed.data.fields = []
                 embed.addFields([
@@ -127,7 +132,7 @@ module.exports = {
                 if (row.image) embed.setImage(row.image)
                 message.channel.send({ embeds: [embed] })
             }
-            rows.forEach(row => members = members.filter(m => m != row.id))
+
             if (members.length) {
                 message.channel.send({
                     embeds: [
@@ -168,15 +173,18 @@ module.exports = {
         if (!args.length) return message.channel.send('Please specify a user')
         const unfound = []
 
-        let members = args.map(a => {
+        const members = args.map(a => {
             const m = message.guild.findMember(a)
             if (!m) unfound.push(a)
             return m
         }).filter(m => m).map(m => m.id)
 
         db.query(`SELECT * FROM excuses WHERE id IN (${members.map(m => "'" + m + "'").join(', ')}) and guildid = '${message.guild.id}'`, (err, rows) => {
-            rows.forEach(row => members = members.filter(m => m != row.id))
-            db.query(`DELETE FROM excuses WHERE id IN (${rows.map(m => "'" + m.id + "'").join(', ')}) and guildid = '${message.guild.id}'`, (e, r) => {
+            for (const row of row) {
+                const idx = members.indexOf(row.id)
+                if (idx != -1) members.splice(idx, 1)
+            }
+            db.query(`DELETE FROM excuses WHERE id IN (${rows.map(m => "'" + m.id + "'").join(', ')}) and guildid = '${message.guild.id}'`, () => {
                 if (rows.length) {
                     message.channel.send({
                         embeds: [
@@ -212,21 +220,21 @@ module.exports = {
             const settings = bot.settings[guild.id]
             const guildQuota = quotas[guild.id]
             if (!guildQuota) return
-            const unmet_quotas = await this.getMissed(guild, bot, db, guildQuota, settings)
-            const excused = Object.values(unmet_quotas)
+            const unmetQuotas = await this.getMissed(guild, bot, db, guildQuota, settings)
+            const excused = Object.values(unmetQuotas)
                 .filter(u => u.leave || u.excuse || !u.quotas.length || u.met.length)
                 .map(l => `'${l.member.id}'`)
-            const leave = Object.values(unmet_quotas)
+            const leave = Object.values(unmetQuotas)
                 .filter(u => u.leave)
                 .map(u => `'${u.member.id}'`)
-            const unexcused = Object.values(unmet_quotas)
+            const unexcused = Object.values(unmetQuotas)
                 .map(u => `'${u.member.id}'`)
                 .filter(u => !excused.includes(u))
             const check = leave.length ? `id IN (${leave.join(', ')})` : 'false'
             await db.promise().query(`UPDATE users SET ${guildQuota.consecutiveLeave} = IF(${check}, ${guildQuota.consecutiveLeave} + 1, 0)`)
-            if (excused.length) {await new Promise(res => db.query(`UPDATE users SET ${guildQuota.consecutiveUnexcused} = 0 WHERE id IN (${excused.join(', ')})`, () => res()))}
-            if (unexcused.length) {await new Promise(res => db.query(`UPDATE users SET ${guildQuota.consecutiveUnexcused} = ${guildQuota.consecutiveUnexcused}+1, ${guildQuota.totalUnexcused} = ${guildQuota.totalUnexcused}+1 WHERE id IN (${unexcused.join(', ')})`, () => res()))}
-            await new Promise(res => db.query(`insert into archivedExcuses select *, current_date() as archivedOn from excuses where guildid = '${guild.id}'`, () => res()))
+            if (excused.length) await db.promise().query(`UPDATE users SET ${guildQuota.consecutiveUnexcused} = 0 WHERE id IN (${excused.join(', ')})`)
+            if (unexcused.length) await db.promise().query(`UPDATE users SET ${guildQuota.consecutiveUnexcused} = ${guildQuota.consecutiveUnexcused}+1, ${guildQuota.totalUnexcused} = ${guildQuota.totalUnexcused}+1 WHERE id IN (${unexcused.join(', ')})`)
+            await db.promise().query(`insert into archivedExcuses select *, current_date() as archivedOn from excuses where guildid = '${guild.id}'`)
         }
         db.query(`delete from excuses where guildid = '${guild.id}'`, e => {
             if (e) ErrorLogger.log(e, bot, guild)
@@ -241,153 +249,163 @@ module.exports = {
      * @param {*} settings
      * @returns {Promise<MemberQuota>}
      */
+    // eslint-disable-next-line complexity
     async getMissed(guild, bot, db, guildQuota, settings) {
-        return new Promise((res, rej) => {
-            const unmet = {}
-            db.query(`select u.*, e.reason as reason, e.image as image, e.modid as modid from users u left join excuses e on u.id = e.id where e.guildid is null or e.guildid = '${guild.id}'`, (err, rows) => {
-                if (err) ErrorLogger.log(err, bot, guild)
-                if (!rows || !rows.length) { return res({}) }
-                for (const row of rows) {
-                    const member = guild.members.cache.get(row.id)
-                    if (!member) continue
-                    for (const quota of guildQuota.quotas) {
-                        if (quota.noexcuses) continue
-                        const roles = quota.roles.map((role, i) => ({
-                            name: role,
-                            role: guild.roles.cache.get(settings.roles[role]),
-                            req: quota.quota[i]
-                        }))
-                        const ignore = (guildQuota.ignoreRoles || []).map(r => settings.roles[r]).filter(r => r)
-                        if (!member.roles.cache.filter(r => roles.map(ro => ro.role).includes(r)).size
-                            || member.roles.cache.filter(r => ignore.includes(r.id)).size) continue
-                        const requirement = roles.filter(role => { if (!role.role) console.log(role); return member.roles.cache.has(role.role.id) })
-                            .reduce((p, c) => p.role.position > c.role.position ? p : c, { role: { position: -Infinity } })
-                        if (!unmet[member.id]) {
-                            unmet[member.id] = {
-                                member,
-                                quotas: [],
-                                met: [],
-                                consecutive: parseInt(row[guildQuota.consecutiveUnexcused]) + 1,
-                                totalMissed: parseInt(row[guildQuota.totalUnexcused]),
-                                consecutiveLeave: parseInt(row[guildQuota.consecutiveLeave])
-                            }
-                        }
-                        let total = 0
-                        for (const type of quota.values) {
-                            total += (row[type.column] || 0) * type.value
-                        }
-                        if (quota.specialEvents) {
-                            for (const event of quota.specialEvents) {
-                                if (settings.lists.runningEvents.includes(event.name)) {
-                                    for (const type of event.values) {
-                                        total += (row[type.column] || 0) * type.value
-                                    }
-                                }
-                            }
-                        }
+        const unmet = {}
 
-                        if (total < requirement.req) {
-                            if (unmet[member.id].leave) continue
-                            if (settings.roles.lol && member.roles.cache.has(settings.roles.lol)) {
-                                unmet[member.id].leave = true
-                                unmet[member.id].excuse = {
-                                    modid: bot.user.id,
-                                    reason: `Had the <@&${settings.roles.lol}> role at reset.`
-                                }
-                            }
+        const [rows] = await db.promise().query(`select u.*, e.reason as reason, e.image as image, e.modid as modid from users u left join excuses e on u.id = e.id where e.guildid is null or e.guildid = '${guild.id}'`).catch(err => ErrorLogger.log(err, bot, guild))
+        if (!rows || !rows.length) return {}
+        for (const row of rows) {
+            const member = guild.members.cache.get(row.id)
+            if (!member) continue
+            for (const quota of guildQuota.quotas) {
+                if (quota.noexcuses) continue
+                const roles = quota.roles.map((role, i) => ({
+                    name: role,
+                    role: guild.roles.cache.get(settings.roles[role]),
+                    req: quota.quota[i]
+                }))
+                const ignore = (guildQuota.ignoreRoles || []).map(r => settings.roles[r]).filter(r => r)
+                if (!member.roles.cache.some(r => roles.some(ro => ro.role == r))
+                    || member.roles.cache.some(r => ignore.includes(r.id))) continue
 
-                            if (!unmet[member.id].excuse && row.modid) {
-                                unmet[member.id].excuse = {
-                                    modid: row.modid,
-                                    reason: row.reason,
-                                    image: row.image
-                                }
-                            }
-                            if (!unmet[member.id].update) {
-                                unmet[member.id].update = `('${row.id}', '${guild.id}', current_date())`
-                            }
-                            const issue = {
-                                name: quota.name,
-                                total,
-                                requirement,
-                                values: quota.values.map(v => ({ name: v.name, value: row[v.column] }))
-                            }
+                const requirement = roles.filter(role => member.roles.cache.has(role.role.id))
+                    .reduce((p, c) => p.role.position > c.role.position ? p : c, { role: { position: -Infinity } })
 
-                            if (quota.specialEvents) {
-                                for (const event of quota.specialEvents) {
-                                    if (settings.lists.runningEvents.includes(event.name)) {
-                                        issue.values = issue.values.concat(event.values.map(v => ({ name: v.name, value: row[v.column] })))
-                                    }
-                                }
-                            }
-                            unmet[member.id].quotas.push(issue)
-                        } else {
-                            unmet[member.id].met.push(quota)
-                        }
+                if (!unmet[member.id]) {
+                    unmet[member.id] = {
+                        member,
+                        quotas: [],
+                        met: [],
+                        consecutive: parseInt(row[guildQuota.consecutiveUnexcused]) + 1,
+                        totalMissed: parseInt(row[guildQuota.totalUnexcused]),
+                        consecutiveLeave: parseInt(row[guildQuota.consecutiveLeave])
                     }
                 }
-                res(unmet)
-            })
-        })
+                let total = 0
+                for (const type of quota.values) {
+                    total += (row[type.column] || 0) * type.value
+                }
+
+                const quotaEvents = quota.specialEvents ?? []
+
+                for (const event of quotaEvents) {
+                    if (!settings.lists.runningEvents.includes(event.name)) continue
+                    for (const type of event.values) {
+                        total += (row[type.column] || 0) * type.value
+                    }
+                }
+
+                if (total >= requirement.req) {
+                    unmet[member.id].met.push(quota)
+                    continue
+                }
+
+                if (unmet[member.id].leave) continue
+                if (settings.roles.lol && member.roles.cache.has(settings.roles.lol)) {
+                    unmet[member.id].leave = true
+                    unmet[member.id].excuse = {
+                        modid: bot.user.id,
+                        reason: `Had the <@&${settings.roles.lol}> role at reset.`
+                    }
+                }
+
+                if (!unmet[member.id].excuse && row.modid) {
+                    unmet[member.id].excuse = {
+                        modid: row.modid,
+                        reason: row.reason,
+                        image: row.image
+                    }
+                }
+                if (!unmet[member.id].update) {
+                    unmet[member.id].update = `('${row.id}', '${guild.id}', current_date())`
+                }
+                const issue = {
+                    name: quota.name,
+                    total,
+                    requirement,
+                    values: quota.values.map(v => ({ name: v.name, value: row[v.column] }))
+                }
+
+                for (const event of quotaEvents) {
+                    if (!settings.lists.runningEvents.includes(event.name)) continue
+                    issue.values = issue.values.concat(event.values.map(v => ({ name: v.name, value: row[v.column] })))
+                }
+
+                unmet[member.id].quotas.push(issue)
+            }
+        }
+        return unmet
     },
     async getEligible(guild, bot, db, guildQuota, settings) {
-        return new Promise((res, rej) => {
-            const votes = {}
-            for (const quota of guildQuota.quotas) {
-                if (!quota.voteInfo) continue
-                const roles = quota.voteInfo.roles.map(r => settings.roles[r]).map(r => guild.roles.cache.get(r)).filter(r => r)
-                if (!roles.length) continue
-                db.query(`select id, ${quota.voteInfo.runsDone.map(rd => rd.column).join(', ')}, ${quota.consecutiveHit} from users where ${quota.voteInfo.runsDone.map(rd => rd.column + ' >= ' + rd.count).join(' OR ')} ${quota.voteInfo.consecutive ? 'OR ' + quota.consecutiveHit + ' >= ' + quota.voteInfo.consecutive : ''}`, (err, rows) => {
-                    if (!rows || !rows.length) return res(votes)
-                    for (const row of rows) {
-                        if (!votes[row.id]) votes[row.id] = []
-                    }
-                })
+        const votes = {}
+        for (const quota of guildQuota.quotas) {
+            if (!quota.voteInfo) continue
+            const roles = quota.voteInfo.roles.map(r => settings.roles[r]).map(r => guild.roles.cache.get(r)).filter(r => r)
+            if (!roles.length) continue
+            // eslint-disable-next-line no-await-in-loop
+            const [rows] = await db.promise().query(`select id, ${quota.voteInfo.runsDone.map(rd => rd.column).join(', ')}, ${quota.consecutiveHit} from users where ${quota.voteInfo.runsDone.map(rd => rd.column + ' >= ' + rd.count).join(' OR ')} ${quota.voteInfo.consecutive ? 'OR ' + quota.consecutiveHit + ' >= ' + quota.voteInfo.consecutive : ''}`)
+            if (!rows || !rows.length) return votes
+            for (const row of rows) {
+                if (!votes[row.id]) votes[row.id] = []
             }
-        })
+        }
     },
-    async calculateMissed(guild, bot, db, channel, reset) {
+    async calculateMissed(guild, bot, db, channel) {
         const settings = bot.settings[guild.id]
         if (!settings || !settings.backend.sendmissedquota) return
+
         const activitylog = channel ? channel : guild.channels.cache.get(settings.channels.activitylog)
         if (!activitylog) return
+
         const guildQuota = quotas[guild.id]
         if (!guildQuota) return
-        const unmet_quotas = await this.getMissed(guild, bot, db, guildQuota, settings)
+
+        const unmetQuotas = await this.getMissed(guild, bot, db, guildQuota, settings)
         const unexcused = []
-        const keys = Object.values(unmet_quotas).filter(i => !i.leave && i.quotas.length)
+        const keys = Object.values(unmetQuotas).filter(i => !i.leave && i.quotas.length)
+
         const header = new Discord.EmbedBuilder()
             .setAuthor({ name: 'Weekly Quotas' })
             .setDescription(`${keys.length} members have missed quota this week.`)
             .setColor('#0000ff')
         activitylog.send({ embeds: [header] })
-        for (const id in unmet_quotas) {
-            const issues = unmet_quotas[id]
+
+        for (const id in unmetQuotas) {
+            if (!Object.hasOwn(unmetQuotas, id)) continue
+            const issues = unmetQuotas[id]
+
             if (!issues.quotas.length) continue
+
             const embed = new Discord.EmbedBuilder()
                 .setAuthor({ name: issues.member.nickname || issues.member.user.tag, iconURL: issues.member.user.displayAvatarURL() })
                 .setDescription(`Unmet Quota for ${issues.member}`)
                 .setColor('#ff0000')
+
             if (issues.leave) {
-                if (issues.consecutiveLeave < 2) {continue}
+                if (issues.consecutiveLeave < 2) continue
                 embed.addFields({ name: 'Consecutive Leave', value: `${issues.consecutiveLeave} weeks`, inline: true })
             }
+
             embed.addFields({ name: 'Total Unexcused', value: `${issues.totalMissed + (issues.excuse ? 0 : 1)}`, inline: true })
             embed.addFields({ name: 'Consecutive Unexcused', value: `${issues.excuse ? 0 : issues.consecutive}`, inline: true })
+
             for (const issue of issues.quotas) {
                 embed.addFields({ name: issue.name, value: `\`\`\`\nTotal: ${issue.total} | Required: ${issue.requirement.req} (${issue.requirement.role.name})\n${issue.values.map(v => v.name + ': ' + v.value).join(', ')}\`\`\`` })
             }
+
             if (issues.excuse) {
                 embed.addFields({ name: 'Excused By', value: `<@${issues.excuse.modid}>` })
                 embed.addFields({ name: 'Reason', value: `${issues.excuse.reason}` })
                 if (issues.excuse.image) {embed.setImage(issues.excuse.image)}
                 embed.setColor('#00ff00')
-            }
+            } else unexcused.push(id)
+
             if (issues.met.length) {
                 embed.addFields({ name: 'Met Quotas', value: issues.met.map(m => m.name).join(', ') })
-                if (!issues.excuse) {embed.setColor('#FFC100')}
+                if (!issues.excuse) embed.setColor('#FFC100')
             }
-            if (!issues.excuse) unexcused.push(id)
+
             try {
                 activitylog.send({ embeds: [embed] })
             } catch (e) { ErrorLogger.log(e, bot, guild) }

@@ -9,7 +9,7 @@ module.exports = {
     args: '(list/update/find) [emojis]',
     requiredArgs: 0,
     role: 'developer',
-    async execute(message, args, bot, db) {
+    async execute(message, args, bot) {
         let choice
         if (args.length == 0) { choice = 'update' } else choice = args[0].toLowerCase()
         args.shift()
@@ -26,11 +26,11 @@ module.exports = {
             case 'list':
                 await message.channel.send('Currently not setup. Please be patient as we set this up')
                 break
-            case 'find':
+            case 'find': {
                 const emojisNotFound = []
                 args.map(
                     async emoji => {
-                        if (bot.storedEmojis.hasOwnProperty(emoji)) {
+                        if (Object.hasOwn(bot.storedEmojis, emoji)) {
                             const storedEmoji = bot.storedEmojis[emoji]
                             emoji = await bot.emojis.cache.get(bot.storedEmojis[emoji].id)
                             const embed = new Discord.EmbedBuilder()
@@ -54,6 +54,8 @@ module.exports = {
                     await message.channel.send({ embeds: [notFoundEmbed] })
                 }
                 break
+            }
+            default:
         }
     },
     async update(bot) {
@@ -72,7 +74,7 @@ module.exports = {
                         guildname: guild.name,
                         animated: emoji.animated
                     }
-                    if (data.hasOwnProperty(emoji.name)) {
+                    if (Object.hasOwn(data, emoji.name)) {
                         duplicates[data[emoji.name].id] = data[emoji.name]
                         duplicates[emoji.id] = dataTransfer
                     }
