@@ -8,7 +8,7 @@ module.exports = {
     args: '<type> [mention for assists] (#)',
     requiredArgs: 1,
     role: 'eventrl',
-    getNotes(guild, member, bot) {
+    getNotes(guild) {
         return logs[guild.id] ? `Types: ${logs[guild.id].main.map(log => log.key + ' (' + log.name + ')').join(', ')}` : 'No loginfo for this server'
     },
     async execute(message, args, bot, db) {
@@ -51,7 +51,7 @@ module.exports = {
         // send query
         promises.push(new Promise(res => {
             db.query(`INSERT INTO loggedusage (logged, userid, guildid, utime, amount) VALUES ('${run.name}', '${message.member.id}', '${message.guild.id}', '${Date.now()}', '${count}')`)
-            db.query(`UPDATE users SET ${run.main} = ${run.main} + ${count}, ${run.currentweek} = ${run.currentweek} + ${count} WHERE id = '${message.author.id}'`, (err, rows) => {
+            db.query(`UPDATE users SET ${run.main} = ${run.main} + ${count}, ${run.currentweek} = ${run.currentweek} + ${count} WHERE id = '${message.author.id}'`, err => {
                 // return if any errors
                 if (err) { res(null); return message.channel.send(`Error: ${err}`) }
 
@@ -78,7 +78,7 @@ module.exports = {
                 promises.push(new Promise(res => {
                     if (m.id !== message.author.id) {
                         desc += `<@!${m.id}> `
-                        db.query(`UPDATE users SET ${guildInfo.assist.main} = ${guildInfo.assist.main} + ${assistCount}, ${guildInfo.assist.currentweek} = ${guildInfo.assist.currentweek} + ${assistCount} WHERE id = ${m.id}`, (err, rows) => {
+                        db.query(`UPDATE users SET ${guildInfo.assist.main} = ${guildInfo.assist.main} + ${assistCount}, ${guildInfo.assist.currentweek} = ${guildInfo.assist.currentweek} + ${assistCount} WHERE id = ${m.id}`, err => {
                             if (err) return res(null)
                             db.query(`SELECT ${guildInfo.assist.currentweek} FROM users WHERE id = '${m.id}'`, (err, rows) => {
                                 const s = `<@!${m.id}>${m.displayName ? ` \`${m.displayName}\`` : ''}. Current week: ${rows[0][guildInfo.assist.currentweek]} Assists`

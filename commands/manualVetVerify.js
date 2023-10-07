@@ -1,7 +1,7 @@
 const Discord = require('discord.js')
 const { manualVetVerifyLog } = require('../commands/vetVerification.js')
 const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType
-const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js')
+const { slashArg, slashCommandJSON } = require('../utils.js')
 
 module.exports = {
     name: 'manualvetverify',
@@ -22,7 +22,7 @@ module.exports = {
 
         let member = message.mentions.members.first()
         if (!member) member = message.guild.members.cache.get(args[0])
-        if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()))
+        if (!member) member = message.guild.members.cache.filter(user => user.nickname).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()))
         if (!member) return message.replyUserError('User not found')
         if (member.roles.cache.has(vetBanRole.id)) return message.replyUserError('User is vet banned')
 
@@ -32,7 +32,7 @@ module.exports = {
                 const split = key.split('vetraider')
                 return key != '' && value && split[0] == '' && (split[1] ? !isNaN(split[1]) : true) && !member.roles.cache.has(value)
             })
-            .map(([key, value]) => message.guild.roles.cache.get(value))
+            .map(([, value]) => message.guild.roles.cache.get(value))
 
         // check if there are vet roles to assign
         if (vetRoles.length == 0) {

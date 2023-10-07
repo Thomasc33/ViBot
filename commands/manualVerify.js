@@ -1,7 +1,7 @@
 const Discord = require('discord.js')
 const { manualVerifyLog } = require('../commands/verification.js')
 const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType
-const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js')
+const { slashArg, slashCommandJSON } = require('../utils.js')
 
 module.exports = {
     name: 'manualverify',

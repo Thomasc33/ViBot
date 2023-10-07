@@ -14,8 +14,7 @@ module.exports = {
      * @param {Discord.Client} bot
      */
     async execute(message, args, bot) {
-        const roles = args.join(' ').toLowerCase().split('|')
-        for (const i in roles) { roles[i] = roles[i].trim() }
+        const roles = args.join(' ').toLowerCase().split('|').map(r => r.trim())
         if (roles.length == 1) { module.exports.normalList(message, args, bot, roles[0]) } else module.exports.combinedList(message, args, bot, roles)
     },
     async normalList(message, args, bot, role) {
@@ -57,8 +56,8 @@ module.exports = {
     async combinedList(message, args, bot, roles) {
         roles = roles.map(role => message.guild.findRole(role))
         const roleObjects = {}
-        for (const i in roles) {
-            roleObjects[roles[i]] = message.guild.findUsersWithRole(roles[i].id).map(member => member.id)
+        for (const role of roles) {
+            roleObjects[role] = message.guild.findUsersWithRole(role.id).map(member => member.id)
         }
         const memberList = Object.values(roleObjects).reduce((acc, array) => acc.filter(id => array.includes(id)))
         let memberString = ''

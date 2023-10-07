@@ -6,10 +6,10 @@ module.exports = {
     alias: ['mmr'],
     role: 'security',
     args: '<id>',
-    async execute(message, args, bot, db) {
+    async execute(message, args, bot) {
         const settings = bot.settings[message.guild.id]
         if (!settings.backend.modmail) {
-            messsage.reply('Modmail is disabled in this server.')
+            message.reply('Modmail is disabled in this server.')
             return
         }
         if (message.channel.id !== settings.channels.modmail) return

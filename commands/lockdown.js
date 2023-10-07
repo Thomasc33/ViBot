@@ -5,7 +5,7 @@ module.exports = {
     description: 'Blocks verified raider from typing in a channel',
     role: 'headeventrl',
     args: 'None | <channel id>',
-    async execute(message, args, bot, db) {
+    async execute(message, args, bot) {
         let channel
         if (args.length == 0) channel = message.channel
         else channel = message.guild.channels.cache.get(args[0])

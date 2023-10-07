@@ -10,7 +10,7 @@ module.exports = {
             .setDescription(`Are you sure you want bot to leave ${guild.name}?`)
         const m = await message.channel.send({ embeds: [fancyEmbed] })
         const reactionCollector = new Discord.ReactionCollector(m, { filter: (r, u) => !u.bot })
-        reactionCollector.on('collect', async (r, u) => {
+        reactionCollector.on('collect', async r => {
             if (r.emoji.name == '✅') {
                 await m.delete()
                 guild.leave()

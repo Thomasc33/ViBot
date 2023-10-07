@@ -29,8 +29,8 @@ module.exports = {
                 locationMenu.addOptions({ label: `${index + 1}. ${bot.afkChecks[raidID].afkTemplate.name} by ${bot.afkChecks[raidID].leader}`, value: raidID })
                 index++
             }
-            const { value: locationValue, interaction: subInteraction } = await message.selectPanel(text, null, locationMenu, 30000, false, true)
-            raidID = locationValue
+            const { value } = await message.selectPanel(text, null, locationMenu, 30000, false, true)
+            raidID = value
         }
         bot.afkChecks[raidID].location = location
         bot.afkModules[raidID].updateLocation()

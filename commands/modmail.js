@@ -1,8 +1,6 @@
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
-const { init } = require('./vetVerification')
 const moment = require('moment')
-const watchedModMails = []
 
 module.exports = {
     name: 'modmail',
@@ -19,6 +17,7 @@ module.exports = {
                 case 'sendinfo':
                     this.sendInfo(message)
                     break
+                default:
             }
         }
     },
@@ -34,7 +33,7 @@ module.exports = {
             .setDescription(`<@!${message.author.id}> **sent the bot**\n${message.content}`)
             .setFooter({ text: `User ID: ${message.author.id} MSG ID: ${message.id}` })
             .setTimestamp()
-        modmailCloseComponents = new Discord.ActionRowBuilder()
+        const modmailCloseComponents = new Discord.ActionRowBuilder()
             .addComponents([
                 new Discord.ButtonBuilder()
                     .setLabel('🔓 Unlock')
@@ -44,11 +43,11 @@ module.exports = {
         const modMailChannel = guild.channels.cache.get(settings.channels.modmail)
         const embedMessage = await modMailChannel.send({ embeds: [embed], components: [modmailCloseComponents] }).catch(er => ErrorLogger.log(er, bot, message.guild))
 
-        modmailInteractionCollector = new Discord.InteractionCollector(bot, { message: embedMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
+        const modmailInteractionCollector = new Discord.InteractionCollector(bot, { message: embedMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
         modmailInteractionCollector.on('collect', (interaction) => interactionHandler(interaction, settings, bot, db))
         if (message.attachments.first()) modMailChannel.send(message.attachments.first().proxyURL)
     },
-    async init(guild, bot, db) {
+    async init(guild, bot) {
         guild.channels.cache.get(bot.settings[guild.id].channels.modmail).messages.fetch({ limit: 100 })
     }
 }
@@ -60,18 +59,18 @@ async function interactionHandler(interaction, settings, bot, db) {
         return
     }
 
-    failedEmbed = new Discord.EmbedBuilder()
+    const failedEmbed = new Discord.EmbedBuilder()
         .setFooter({ text: `Status: ${interaction.customId} MSG ID: ${interaction.message.id}` })
         .setDescription('Could not figure out what went wrong')
         .setColor('#FF0000')
 
-    confirmationEmbed = new Discord.EmbedBuilder()
+    const confirmationEmbed = new Discord.EmbedBuilder()
         .setTitle('Confirm Action')
         .setDescription('Are you sure you wanna perform this action?\n')
         .setFooter({ text: `${interaction.customId}` })
         .setColor('#FF0000')
 
-    modmailOpenComponents = new Discord.ActionRowBuilder()
+    const modmailOpenComponents = new Discord.ActionRowBuilder()
     if (settings.modmail.lockModmail) {
         modmailOpenComponents.addComponents([
             new Discord.ButtonBuilder()
@@ -119,7 +118,6 @@ async function interactionHandler(interaction, settings, bot, db) {
     const modmailMessage = interaction.message
     const { guild } = interaction
     const modmailChannel = guild.channels.cache.get(settings.channels.modmail)
-    const modmailMessageID = modmailMessage.embeds[0].data.footer.text.split(/ +/g)[5]
     const raider = guild.members.cache.get(modmailMessage.embeds[0].data.footer.text.split(/ +/g)[2])
     if (!raider) {
         embed.addFields({ name: `This modmail has been closed automatically <t:${moment().unix()}:R>`, value: 'The raider in this modmail is no longer in this server.\nI can no longer proceed with this modmail', inline: false })
@@ -133,14 +131,12 @@ async function interactionHandler(interaction, settings, bot, db) {
         if (!result) { failedEmbed.setDescription(`${raider} Has left this server and I can no longer continue with this modmail`); interaction.reply({ embeds: [failedEmbed] }); interaction.message.edit({ components: [] }) }
         return result
     }
-    const userModMailMessage = await directMessages.messages.fetch(modmailMessageID)
-    const security = interaction.member
 
     if (interaction.customId === 'modmailUnlock') {
         await interaction.message.edit({ embed: [interaction.message.embed], components: [modmailOpenComponents] })
         await interaction.deferUpdate()
     } else if (interaction.customId === 'modmailLock') {
-        modmailCloseComponents = new Discord.ActionRowBuilder()
+        const modmailCloseComponents = new Discord.ActionRowBuilder()
             .addComponents([
                 new Discord.ButtonBuilder()
                     .setLabel('🔓 Unlock')
@@ -249,17 +245,6 @@ async function interactionHandler(interaction, settings, bot, db) {
 }
 
 async function checkBlacklist(member, db) {
-    return new Promise(async (res, rej) => {
-        db.query(`SELECT * FROM modmailblacklist WHERE id = '${member.id}'`, (err, rows) => {
-            if (err) return rej(err)
-            if (rows.length == 0) {
-                res(false)
-            } else {
-                res(true)
-            }
-        })
-    })
+    const [rows] = db.promise().query(`SELECT * FROM modmailblacklist WHERE id = '${member.id}'`)
+    return rows.length == 0
 }
-
-const keyFilter = (r, u) => !u.bot && r.emoji.name === '🔑'
-const choiceFilter = (r, u) => !u.bot && (r.emoji.name === '📧' || r.emoji.name === '👀' || r.emoji.name === '🗑️' || r.emoji.name === '❌' || r.emoji.name === '🔨' || r.emoji.name === '🔒' /* temp, remove later */ || r.emoji.id === '752368122551337061')
