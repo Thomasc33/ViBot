@@ -13,6 +13,7 @@
         "ecmaVersion": "latest",
         "sourceType": "module"
     },
+    "plugins": [ "vibot-rules" ],
     "rules": {
         "indent": ["error", 4, { "SwitchCase": 1 }],
         "brace-style": ["error", "1tbs", { "allowSingleLine": true }],
@@ -47,6 +48,7 @@
         "capitalized-comments": "off",
         "quotes": ["error", "single", { "avoidEscape": true }],
         "operator-assignment": "warn",
-        "dot-notation": ["error", { "allowPattern": "^[A-Z].*" }]
+        "dot-notation": ["error", { "allowPattern": "^[A-Z].*" }],
+        "vibot-rules/no-template-strings-in-query": "error"
     }
 }
