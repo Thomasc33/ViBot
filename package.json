@@ -28,7 +28,9 @@
   },
   "scripts": {
     "test": ";ping",
-    "job": "node jobs/runner.js"
+    "job": "node jobs/runner.js",
+    "lint": "eslint --ext .js .",
+    "lint-errors": "eslint --ext .js --quiet ."
   },
   "repository": {
     "type": "git",
@@ -45,6 +47,7 @@
   "homepage": "https://github.com/Thomasc33/ViBot#readme",
   "devDependencies": {
     "eslint": "^8.49.0",
+    "eslint-plugin-vibot-rules": "file:eslint-plugin-vibot-rules",
     "xo": "^0.56.0"
   }
 }

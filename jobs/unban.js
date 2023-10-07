@@ -14,7 +14,7 @@ async function tryUnsuspend(bot, g, row, isVetBan) {
 
     if (!member) {
         if (!isVetBan) guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${row.id}> has been unsuspended automatically. However, they are not in the server`)
-        return await db.promise().query(`UPDATE ${isVetBan ? 'vetbans' : 'suspensions'} SET suspended = false WHERE id = '${row.id}'`)
+        return await db.promise().query('UPDATE ?? SET suspended = false WHERE id = ?', [isVetBan ? 'vetbans' : 'suspensions', row.id])
     }
 
     try {
@@ -56,7 +56,7 @@ async function tryUnsuspend(bot, g, row, isVetBan) {
         } catch (er) {
             guild.channels.cache.get(settings.channels.suspendlog).send(unsuspendPing)
         } finally {
-            await db.promise().query(`UPDATE ${isVetBan ? 'vetbans' : 'suspensions'} SET suspended = false WHERE id = '${row.id}'`)
+            await db.promise().query('UPDATE ?? SET suspended = false WHERE id = ?', [isVetBan ? 'vetbans' : 'suspensions', row.id])
         }
     } catch (er) {
         ErrorLogger.log(er, bot, g)
