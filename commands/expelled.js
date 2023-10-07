@@ -74,7 +74,7 @@ module.exports = {
     },
     async listUsers(message, bot, db) {
         db.query('SELECT * FROM veriblacklist WHERE id IN (?)',
-            [[message.options.getString('id'), ...message.options.getVarargs()].map(a => `'${a}'`).join(', ')],
+            [message.options.getString('id'), ...message.options.getVarargs()],
             async (err, rows) => {
                 if (err) ErrorLogger.log(err, bot, message.guild)
                 const embed = new Discord.EmbedBuilder()

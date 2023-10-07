@@ -14,7 +14,7 @@ module.exports = {
         for (let i = 0; i < args.length; i++) {
             reason = reason.concat(args[i]) + ' '
         }
-        const member = message.guild.members.cache.filter(user => user.nickname !== null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(raider.toLowerCase()))
+        const member = message.guild.findMember(raider)
         if (!member) return message.channel.send('User not found, please try again')
         if (!member.roles.cache.has(settings.roles.vetban)) return message.channel.send(`${member} is not vetbanned`)
         db.query('SELECT * FROM vetbans WHERE id = ? AND suspended = true', [member.id], async (err, rows) => {
@@ -28,7 +28,7 @@ module.exports = {
                 db.query('UPDATE vetbans SET suspended = false WHERE id = ?', [member.id])
                 const logMessage = await message.guild.channels.cache.get(settings.channels.suspendlog).messages.fetch(proofLogID)
                 if (logMessage) {
-                    const embed = logMessage.embeds.shift()
+                    const embed = new Discord.EmbedBuilder(logMessage.embeds.shift())
                     embed.setColor('#00ff00')
                         .setDescription(embed.data.description.concat('\nUn-vet-banned automatically'))
                         .setFooter({ text: 'Unsuspended at' })
