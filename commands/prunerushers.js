@@ -40,15 +40,9 @@ module.exports = {
         const embedMessage = await message.channel.send({ embeds: [embed] })
         if (await embedMessage.confirmButton(message.author.id)) {
             this.purgeRushers(message.guild.id, db, settings.numerical.prunerushersoffset)
-            // Remove Rusher roles
-            for (const rusher of inactiveRushers) {
-                await new Promise((res) => {
-                    setTimeout(async () => {
-                        await message.guild.members.cache.get(rusher.id).roles.remove(bot.settings[message.guild.id].roles.rusher)
-                        res()
-                    }, 1500)
-                })
-            }
+            const rusherRole = bot.settings[message.guild.id].roles.rusher
+            await Promise.all(inactiveRushers.map(rusher => message.guild.members.cache.get(rusher.id)?.roles?.remove(rusherRole)))
+
             embed.setFooter({ text: 'Purge Completed!' })
         } else {
             embed.setFooter({ text: 'Purge Canceled!' })

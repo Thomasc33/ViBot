@@ -15,7 +15,7 @@ module.exports = {
      * @param {Discord.Client} bott
      * @param {import('mysql').Connection} db
      */
-    async execute(message, args, bot, db) {
+    async execute(message) {
         if (!botOwners.includes(message.author.id)) return
 
         const embed = new Discord.EmbedBuilder({
@@ -35,8 +35,7 @@ module.exports = {
 
             gitpull.on('error', (err) => {
                 console.error(`Error running command: ${err}`)
-
-                desc += data + '\n'
+                desc += err.message + '\n'
                 embed.setDescription(desc + '```')
                 embed.setColor(0xFF0000)
                 m.edit({ embeds: [embed] })
@@ -44,14 +43,12 @@ module.exports = {
 
             gitpull.on('close', (code) => {
                 console.log(`Command exited with code ${code}`)
-
-                embed.setDescription(desc + '\n```' + '\nExited with code ' + code)
+                embed.setDescription(desc + '\n```\nExited with code ' + code)
                 m.edit({ embeds: [embed] })
             })
 
             gitpull.stdout.on('data', (data) => {
                 console.log(`Command output: ${data}`)
-
                 desc += data + '\n'
                 embed.setDescription(desc + '```')
                 m.edit({ embeds: [embed] })

@@ -12,7 +12,7 @@ module.exports = {
     getSlashCommandData(guild) {
         return slashCommandJSON(this, guild)
     },
-    async execute(message, args, bot) {
+    async execute(message, args) {
         const quantity = parseInt(args[0])
         if (quantity <= 0) return message.reply("I can't delete nothing!")
         if (quantity > 100) return message.reply('Max is 100 messages!')

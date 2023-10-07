@@ -1,26 +1,22 @@
 const Discord = require('discord.js')
-const botSettings = require('../settings.json')
-const ErrorLogger = require('../lib/logError')
 const pollInfo = require('../data/poll.json')
 
 module.exports = {
     name: 'poll',
     description: 'Puts a poll in a raid status channel',
-    args: '<\`c/v\` -or- \`us/eu\` -or- \`r/a\` -or- \`exalts\`> -or- \`fc/n\`',
+    args: '<`c/v` -or- `us/eu` -or- `r/a` -or- `exalts`> -or- `fc/n`',
     requiredArgs: 1,
     role: 'eventrl',
     async execute(message, args, bot) {
         const settings = bot.settings[message.guild.id]
         if (!settings) return message.channel.send('settings not setup')
-        if (!pollInfo.hasOwnProperty(message.guild.id)) {
+        if (!Object.hasOwn(pollInfo, message.guild.id)) {
             return message.channel.send('Polls are not set up for this server.')
         }
         const choice = args.join(' ')
         function getChoice(choice) {
             const polls = pollInfo[message.guild.id]
-            for (const i in polls) {
-                const poll = polls[i]
-
+            for (const poll of polls) {
                 if (choice.toLowerCase() == poll.name) return poll
                 if (poll.aliases.includes(choice.toLowerCase())) return poll
             }
