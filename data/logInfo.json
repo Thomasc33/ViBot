@@ -1314,7 +1314,7 @@
                     "o3currentweekSteamworks",
                     "o3currentweekMoonlight",
                     "currentweekAssistso3",
-                    "currentweeko3feedback",
+                    "currentweeko3Feedback",
                     "o3currentweekVoidFeedback",
                     "o3currentweekShattersFeedback",
                     "rollingQuotao3"
@@ -1376,7 +1376,7 @@
                     "o3currentweekSteamworks",
                     "o3currentweekMoonlight",
                     "currentweekAssistso3",
-                    "currentweeko3feedback",
+                    "currentweeko3Feedback",
                     "o3currentweekVoidFeedback",
                     "o3currentweekShattersFeedback",
                     "rollingQuotao3"
@@ -1437,7 +1437,7 @@
                     "o3currentweekSteamworks",
                     "o3currentweekMoonlight",
                     "currentweekAssistso3",
-                    "currentweeko3feedback",
+                    "currentweeko3Feedback",
                     "o3currentweekVoidFeedback",
                     "o3currentweekShattersFeedback",
                     "rollingQuotao3"
@@ -1498,7 +1498,7 @@
                     "o3currentweekSteamworks",
                     "o3currentweekMoonlight",
                     "currentweekAssistso3",
-                    "currentweeko3feedback",
+                    "currentweeko3Feedback",
                     "o3currentweekVoidFeedback",
                     "o3currentweekShattersFeedback",
                     "rollingQuotao3"
@@ -1560,7 +1560,7 @@
                     "o3currentweekSteamworks",
                     "o3currentweekMoonlight",
                     "currentweekAssistso3",
-                    "currentweeko3feedback",
+                    "currentweeko3Feedback",
                     "o3currentweekVoidFeedback",
                     "o3currentweekShattersFeedback",
                     "rollingQuotao3"
@@ -1621,7 +1621,7 @@
                     "o3currentweekSteamworks",
                     "o3currentweekMoonlight",
                     "currentweekAssistso3",
-                    "currentweeko3feedback",
+                    "currentweeko3Feedback",
                     "o3currentweekVoidFeedback",
                     "o3currentweekShattersFeedback",
                     "rollingQuotao3"
@@ -1682,7 +1682,7 @@
                     "o3currentweekSteamworks",
                     "o3currentweekMoonlight",
                     "currentweekAssistso3",
-                    "currentweeko3feedback",
+                    "currentweeko3Feedback",
                     "o3currentweekVoidFeedback",
                     "o3currentweekShattersFeedback",
                     "rollingQuotao3"
@@ -1744,7 +1744,7 @@
                     "o3currentweekSteamworks",
                     "o3currentweekMoonlight",
                     "currentweekAssistso3",
-                    "currentweeko3feedback",
+                    "currentweeko3Feedback",
                     "o3currentweekVoidFeedback",
                     "o3currentweekShattersFeedback",
                     "rollingQuotao3"
@@ -1806,7 +1806,7 @@
                     "o3currentweekSteamworks",
                     "o3currentweekMoonlight",
                     "currentweekAssistso3",
-                    "currentweeko3feedback",
+                    "currentweeko3Feedback",
                     "o3currentweekVoidFeedback",
                     "o3currentweekShattersFeedback",
                     "rollingQuotao3"
@@ -1867,7 +1867,7 @@
                     "o3currentweekSteamworks",
                     "o3currentweekMoonlight",
                     "currentweekAssistso3",
-                    "currentweeko3feedback",
+                    "currentweeko3Feedback",
                     "o3currentweekVoidFeedback",
                     "o3currentweekShattersFeedback",
                     "rollingQuotao3"
@@ -1954,7 +1954,7 @@
                 "allowAssists": false,
                 "confirm": false,
                 "main": "o3feedback",
-                "currentweek": "currentweeko3feedback",
+                "currentweek": "currentweeko3Feedback",
                 "color": "#8c00ff",
                 "icon": "https://cdn.discordapp.com/emojis/858920770806087710.png?v=1",
                 "desc": "`Feedback`",
@@ -1962,7 +1962,7 @@
                 "toDisplay": [
                     "currentweeko3",
                     "currentweekAssistso3",
-                    "currentweeko3feedback",
+                    "currentweeko3Feedback",
                     "o3currentweekShattersFeedback",
                     "o3currentweekVoidFeedback",
                     "rollingQuotao3"
@@ -1987,7 +1987,7 @@
                 "toDisplay": [
                     "currentweeko3",
                     "currentweekAssistso3",
-                    "currentweeko3feedback",
+                    "currentweeko3Feedback",
                     "o3currentweekShattersFeedback",
                     "o3currentweekVoidFeedback",
                     "rollingQuotao3"
@@ -2012,7 +2012,7 @@
                 "toDisplay": [
                     "currentweeko3",
                     "currentweekAssistso3",
-                    "currentweeko3feedback",
+                    "currentweeko3Feedback",
                     "o3currentweekShattersFeedback",
                     "o3currentweekVoidFeedback",
                     "rollingQuotao3"
@@ -2053,7 +2053,7 @@
                     "o3currentweekSteamworks",
                     "o3currentweekMoonlight",
                     "currentweekAssistso3",
-                    "currentweeko3feedback",
+                    "currentweeko3Feedback",
                     "o3currentweekVoidFeedback",
                     "o3currentweekShattersFeedback",
                     "rollingQuotao3"
@@ -2115,7 +2115,7 @@
                     "o3currentweekSteamworks",
                     "o3currentweekMoonlight",
                     "currentweekAssistso3",
-                    "currentweeko3feedback",
+                    "currentweeko3Feedback",
                     "o3currentweekVoidFeedback",
                     "o3currentweekShattersFeedback",
                     "rollingQuotao3"
@@ -2176,7 +2176,7 @@
                     "o3currentweekSteamworks",
                     "o3currentweekMoonlight",
                     "currentweekAssistso3",
-                    "currentweeko3feedback",
+                    "currentweeko3Feedback",
                     "o3currentweekVoidFeedback",
                     "o3currentweekShattersFeedback",
                     "rollingQuotao3"
@@ -2237,7 +2237,7 @@
                     "o3currentweekSteamworks",
                     "o3currentweekMoonlight",
                     "currentweekAssistso3",
-                    "currentweeko3feedback",
+                    "currentweeko3Feedback",
                     "o3currentweekVoidFeedback",
                     "o3currentweekShattersFeedback",
                     "rollingQuotao3"
@@ -2299,7 +2299,7 @@
                     "o3currentweekSteamworks",
                     "o3currentweekMoonlight",
                     "currentweekAssistso3",
-                    "currentweeko3feedback",
+                    "currentweeko3Feedback",
                     "o3currentweekVoidFeedback",
                     "o3currentweekShattersFeedback",
                     "rollingQuotao3"
@@ -2360,7 +2360,7 @@
                     "o3currentweekSteamworks",
                     "o3currentweekMoonlight",
                     "currentweekAssistso3",
-                    "currentweeko3feedback",
+                    "currentweeko3Feedback",
                     "o3currentweekVoidFeedback",
                     "o3currentweekShattersFeedback",
                     "rollingQuotao3"
@@ -2421,7 +2421,7 @@
                     "o3currentweekSteamworks",
                     "o3currentweekMoonlight",
                     "currentweekAssistso3",
-                    "currentweeko3feedback",
+                    "currentweeko3Feedback",
                     "o3currentweekVoidFeedback",
                     "o3currentweekShattersFeedback",
                     "rollingQuotao3"
@@ -2483,7 +2483,7 @@
                     "o3currentweekSteamworks",
                     "o3currentweekMoonlight",
                     "currentweekAssistso3",
-                    "currentweeko3feedback",
+                    "currentweeko3Feedback",
                     "o3currentweekVoidFeedback",
                     "o3currentweekShattersFeedback",
                     "rollingQuotao3"
@@ -2545,7 +2545,7 @@
                     "o3currentweekSteamworks",
                     "o3currentweekMoonlight",
                     "currentweekAssistso3",
-                    "currentweeko3feedback",
+                    "currentweeko3Feedback",
                     "o3currentweekVoidFeedback",
                     "o3currentweekShattersFeedback",
                     "rollingQuotao3"
@@ -2606,7 +2606,7 @@
                     "o3currentweekSteamworks",
                     "o3currentweekMoonlight",
                     "currentweekAssistso3",
-                    "currentweeko3feedback",
+                    "currentweeko3Feedback",
                     "o3currentweekVoidFeedback",
                     "o3currentweekShattersFeedback",
                     "rollingQuotao3"
@@ -2693,7 +2693,7 @@
                 "allowAssists": false,
                 "confirm": false,
                 "main": "o3feedback",
-                "currentweek": "currentweeko3feedback",
+                "currentweek": "currentweeko3Feedback",
                 "color": "#8c00ff",
                 "icon": "https://cdn.discordapp.com/emojis/858920770806087710.png?v=1",
                 "desc": "`Feedback`",
@@ -2701,7 +2701,7 @@
                 "toDisplay": [
                     "currentweeko3",
                     "currentweekAssistso3",
-                    "currentweeko3feedback",
+                    "currentweeko3Feedback",
                     "o3currentweekShattersFeedback",
                     "o3currentweekVoidFeedback",
                     "rollingQuotao3"
@@ -2726,7 +2726,7 @@
                 "toDisplay": [
                     "currentweeko3",
                     "currentweekAssistso3",
-                    "currentweeko3feedback",
+                    "currentweeko3Feedback",
                     "o3currentweekShattersFeedback",
                     "o3currentweekVoidFeedback",
                     "rollingQuotao3"
@@ -2751,7 +2751,7 @@
                 "toDisplay": [
                     "currentweeko3",
                     "currentweekAssistso3",
-                    "currentweeko3feedback",
+                    "currentweeko3Feedback",
                     "o3currentweekShattersFeedback",
                     "o3currentweekVoidFeedback",
                     "rollingQuotao3"
