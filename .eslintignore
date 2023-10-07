@@ -95,4 +95,3 @@ lib/sqlHelper.js
 lib/types.js
 lib/utils.js
 commands/archive
-messageManager.js
