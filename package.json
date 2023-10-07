@@ -28,7 +28,9 @@
   },
   "scripts": {
     "test": ";ping",
-    "job": "node jobs/runner.js"
+    "job": "node jobs/runner.js",
+    "lint": "eslint --ext .js .",
+    "lint-errors": "eslint --ext .js --quiet ."
   },
   "repository": {
     "type": "git",

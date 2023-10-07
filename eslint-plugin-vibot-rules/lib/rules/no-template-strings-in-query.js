@@ -15,7 +15,7 @@ module.exports = {
         return {
             CallExpression(node) {
 
-                if (node.callee.property?.name !== 'query') return
+                if (!node.callee.property || node.callee.property.name !== 'query') return
                 if (!node.arguments.length) return context.report({ node, messageId: 'invalidQueryArguments' })
 
                 const query = node.arguments[0]

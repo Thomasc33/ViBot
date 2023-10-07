@@ -17,7 +17,7 @@ module.exports = {
         const member = message.guild.members.cache.filter(user => user.nickname !== null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(raider.toLowerCase()))
         if (!member) return message.channel.send('User not found, please try again')
         if (!member.roles.cache.has(settings.roles.vetban)) return message.channel.send(`${member} is not vetbanned`)
-        db.query(`SELECT * FROM vetbans WHERE id = ${member.id} AND suspended = true`, async (err, rows) => {
+        db.query('SELECT * FROM vetbans WHERE id = ? AND suspended = true', [member.id], async (err, rows) => {
             if (err) { ErrorLogger.log(err, bot, message.guild) }
             // eslint-disable-next-line no-negated-condition
             if (rows.length != 0) {
@@ -25,7 +25,7 @@ module.exports = {
                 member.roles.remove(settings.roles.vetban)
                     .then(member.roles.add(settings.roles.vetraider))
                 if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) await member.roles.remove(settings.roles.unverified)
-                db.query(`UPDATE vetbans SET suspended = false WHERE id = '${member.id}'`)
+                db.query('UPDATE vetbans SET suspended = false WHERE id = ?', [member.id])
                 const logMessage = await message.guild.channels.cache.get(settings.channels.suspendlog).messages.fetch(proofLogID)
                 if (logMessage) {
                     const embed = logMessage.embeds.shift()

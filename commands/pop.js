@@ -118,16 +118,16 @@ module.exports = {
                 ismodded: moddedKey,
                 templateid: keyInfo.templateID
             }
-            db.query(`INSERT INTO consumablepops (${Object.keys(consumablepops).join(', ')}) VALUES (?, ?, ?, ?, ?, ?)`, Object.values(consumablepops), err => {
+            db.query('INSERT INTO consumablepops SET ?', consumablepops, err => {
                 if (err) throw err
                 if (err) return console.log(`${keyInfo.schema} missing from ${guild.name} ${guild.id}`)
             })
-            db.query(`UPDATE users SET ${keyInfo.schema} = ${keyInfo.schema} + ? WHERE id = ?`, [count, user.id], err => {
+            db.query('UPDATE users SET ?? = ?? + ? WHERE id = ?', [keyInfo.schema, keyInfo.schema, count, user.id], err => {
                 if (err) throw err
                 keyRoles.checkUser(user, bot, db)
             })
             if (moddedKey) {
-                db.query(`UPDATE users SET ${keyInfo.moddedSchema} = ${keyInfo.moddedSchema} + ? WHERE id = ?`, [count, user.id], err => {
+                db.query('UPDATE users SET ?? = ?? + ? WHERE id = ?', [keyInfo.moddedSchema, keyInfo.moddedSchema, count, user.id], err => {
                     if (err) throw err
                     keyRoles.checkUser(user, bot, db)
                 })
