@@ -1,9 +1,7 @@
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
 const dbInfo = require('../data/database.json')
-const botSettings = require('../settings.json')
 const data = require('../data/keyRoles.json')
-const guildSettings = require('../guildSettings.json');
 require(`../lib/extensions`)
 
 module.exports = {
@@ -12,7 +10,7 @@ module.exports = {
     role: 'security',
     args: 'None | <check> <user/all>',
     getNotes(guild, member, bot) {
-        const moderator = member.guild.roles.cache.get(guildSettings[guild.id].roles.moderator);
+        const moderator = member.guild.roles.cache.get(bot.settings[guild.id].roles.moderator);
         return moderator && member.can(moderator) ? `Additional ${moderator} Arguments: \`<check reset>\`. Reset all key popper roles for the server and apply roles. This may take some time so be careful.` : ``;
     },
     execute(message, args, bot, db) {
