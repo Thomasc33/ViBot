@@ -26,7 +26,7 @@ module.exports = {
                 .setTitle('Current Week')
                 .setDescription(`${member} \`\`${member.displayName}\`\``)
                 .setColor('#FF0000')
-            await quotas[message.guild.id].quotas.map(quota => {
+            quotas[message.guild.id].quotas.map(quota => {
                 const values = quota.values.map(value => `${value.emoji ? `${value.emoji}` : `${value.name}`}: \`${rows[value.column]}\``)
                 const chunks = values.reduce((result, substring) => {
                     if (!result.length || (`${result[result.length - 1]} , ${substring}`).length > 1024) {
