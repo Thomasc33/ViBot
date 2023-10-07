@@ -122,7 +122,7 @@ module.exports = {
     },
     async removeExpelled(message, bot, db) {
         const id = message.options.getString('id')
-        const reason = message.options.getString('reason') ? message.options.getString('reason') : "No reason provided."
+        const reason = [message.options.getString('reason'), ...message.options.getVarargs()].join(' ') 
         const settings = bot.settings[message.guild.id]
 
         // Check if user is blacklisted
@@ -141,7 +141,7 @@ module.exports = {
             .setTitle('Expel Removed')
             .addFields([{ name: 'Moderator', value: `<@!${message.author.id}>`, inline: true }])
             .addFields([{ name: 'Raider', value: id, inline: true }])
-            .addFields([{ name: 'Reason', value: `\`\`\`${reason}\`\`\`` }])
+            .addFields([{ name: 'Reason', value: `\`\`\`${reason ? reason : "No reason provided."}\`\`\`` }])
             .setColor('Green')
             .setTimestamp(Date.now())
         await message.guild.channels.cache.get(settings.channels.modlogs)?.send({ embeds: [embed] })
