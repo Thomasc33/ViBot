@@ -151,7 +151,7 @@
         "quotas": [{
             "id": "raiding",
             "name": "Raid Leader Quota",
-            "roles": ["rl", "eventrl"],
+            "roles": ["rl", "almostrl"],
             "quota": [4],
             "rollmax": [4],
             "reset": "weekly",
@@ -218,7 +218,7 @@
         "consecutiveUnexcused": "consecutiveUnexcusedo3",
         "consecutiveLeave": "consecutiveLeaveo3",
         "ignoreRoles": ["officer", "headrl", "moderator", "headeventrl"],
-        "ignoreRolesDisplay": ["officer", "headrl", "moderator", "headeventrl"],
+        "ignoreRolesDisplay": [],
         "quotas": [{
             "id": "raiding",
             "name": "Raid Leader Quota",
