@@ -1,111 +1,192 @@
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
 
+class DragHandler {
+    /** @type {{ [channel_id: string]: DragHandler }} */
+    static handlers = {}
+
+    /** @type {string[]} */
+    #unmoved = []
+    /** @type {string[]} */
+    #moved = []
+
+    /** @type {NodeJS.Timeout} */
+    #updateTimeout
+
+    /** @type {NodeJS.Timeout} */
+    #autoCancelTimeout
+
+    /** @type {Discord.Message} */
+    #message
+
+    /** @type {Discord.VoiceChannel} */
+    #voice
+
+    /** @type {Discord.Client} */
+    #bot
+
+    #lastUpdateTime = Date.now() + 600_000
+
+    /**
+     * @param {Discord.Client} bot
+     * @param {Discord.GuildChannel} channel
+     * @param {Discord.VoiceChannel} voice
+     */
+    constructor(bot, channel, voice) {
+        this.#bot = bot
+        this.#voice = voice
+        this.#init(channel)
+    }
+
+    /**
+     * @param {Discord.GuildChannel} channel
+     */
+    async #init(channel) {
+        this.#autoCancelTimeout = setTimeout(() => this.end(), 600_000)
+        this.#autoCancelTimeout.unref()
+
+        this.#message = await channel.send(this.content)
+
+        this.#message.collector = new Discord.InteractionCollector(this.#bot, {
+            message: this.#message,
+            interactionType: Discord.InteractionType.MessageComponent,
+            componentType: Discord.ComponentType.Button
+        })
+
+        this.#message.collector.on('collect', async interaction => {
+            if (!interaction.isButton()) { return }
+            if (interaction.customId === 'stop') {
+                this.end()
+                await interaction.deferUpdate()
+            }
+        })
+
+        this.#bot.on('channelDelete', channel => {
+            if (channel.id === this.#voice.id) this.end()
+        })
+
+        this.#updateTimeout = setTimeout(() => this.update(), 1000)
+        this.#updateTimeout.unref()
+    }
+
+    /**
+     * @param {Discord.GuildMember} member
+     */
+    addUser(member) {
+        if (this.#unmoved.includes(member.id)) return
+        if (this.#moved.includes(member.id)) this.#moved.splice(this.#moved.indexOf(member.id), 1)
+
+        this.#unmoved.push(member.id)
+
+        this.#autoCancelTimeout.refresh()
+        this.#lastUpdateTime = Date.now() + 600_000
+
+        this.#updateTimeout?.refresh()
+    }
+
+    get content() {
+        const embed = new Discord.EmbedBuilder()
+            .setTitle(`Drag for ${this.#voice.name}`)
+            .setColor('#00D166')
+            .setDescription(`<#${this.#voice.id}>`)
+            .addFields(
+                { name: 'Move Pending', value: this.#unmoved.length ? this.#unmoved.map(id => {
+                    const member = this.#voice.guild.members.cache.get(id)
+                    const q = member.voice?.channel?.guildId == this.#voice.guildId ? '' : '?'
+                    return `<@${id}>${q}`
+                }).join(', ') : 'None!' },
+                { name: 'Have Moved', value: this.#moved.length ? this.#moved.map(id => `<@${id}>`).join(', ') : 'None!' }
+            )
+            .setFooter({ text: '? = not in a VC • automatically ends at' })
+            .setTimestamp(new Date(this.#lastUpdateTime))
+
+        const data = { embeds: [embed], components: [] }
+
+        if (DragHandler.handlers[this.#voice.id]) {
+            const component = new Discord.ActionRowBuilder().addComponents([
+                new Discord.ButtonBuilder()
+                    .setLabel('Stop')
+                    .setStyle(Discord.ButtonStyle.Danger)
+                    .setCustomId('stop')
+            ])
+            data.components = [component]
+        } else {
+            embed.setDescription('This handler has been stopped.')
+            embed.setFooter({ text: 'ended at' })
+        }
+        return data
+    }
+
+    async update() {
+        if (this.#unmoved.length) {
+            for (const id of this.#unmoved) {
+                const member = this.#voice.guild.members.cache.get(id)
+                if (member.voice?.channel?.guildId == this.#voice.guildId) {
+                    member.voice.setChannel(this.#voice).then(() => {
+                        this.#unmoved.splice(this.#unmoved.indexOf(member.id), 1)
+                        this.#moved.push(member.id)
+                    }).catch(e => ErrorLogger.log(e, this.#bot, this.#voice.guild))
+                }
+            }
+
+            this.#updateTimeout.refresh()
+        }
+        this.#message.edit(this.content)
+    }
+
+    end() {
+        clearTimeout(this.#updateTimeout)
+        clearTimeout(this.#autoCancelTimeout)
+
+        this.#message.collector.stop()
+        delete DragHandler.handlers[this.#voice.id]
+
+        this.#message.edit(this.content)
+    }
+
+    get message() { return this.#message }
+}
+
 module.exports = {
     name: 'drag',
     description: 'Starts a process where it will drag all of the users mentioned to your current voice channel',
     role: 'eventrl',
     requiredArgs: 1,
     args: '[users/ids/mentions]',
-    async execute(message, args, bot, db) {
-        if (!message.member.voice) { return message.channel.send('You are not in any voice channel') }
-        const users = []
-        const toBeMoved = []
-        const haveBeenMoved = []
-        const usersCouldntFind = []
-        const minutes = 5
-        const intervalTicker = 5
-        let intervalCounter = minutes * 60
-        let interval = true
-        const memberVoice = message.member.voice
-        for (const i in args) {
-            const memberSearch = args[i]
-            let member = null
-            if (!member) member = message.guild.members.cache.get(memberSearch.replace(/\D+/gi, ''))
-            if (!member && /#\d{4}$/.test(memberSearch)) member = message.guild.members.cache.find(user => user.user.tag.toLowerCase() == memberSearch.toLowerCase())
-            if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.toLowerCase() == memberSearch || nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(memberSearch.toLowerCase()))
-            if (!member) usersCouldntFind.push(memberSearch)
-            else users.push(member)
-        }
-        for (const i in users) { toBeMoved.push(users[i]) }
-        embed = new Discord.EmbedBuilder()
-            .setColor('#00D166')
-            .addFields(
-                { name: 'Move Pending', value: 'Setting up please hold', inline: false },
-                { name: 'Have Been Moved', value: 'Setting up please hold', inline: false }
-            )
-            .setFooter({ text: "Press 'Stop' to stop the process" })
-        if (usersCouldntFind.length > 0) { embed.addFields({ name: 'Could not find', value: `${usersCouldntFind.map(user => user).join(', ')}`, inline: false })}
-        component = new Discord.ActionRowBuilder().addComponents([
-            new Discord.ButtonBuilder()
-                .setLabel('Stop')
-                .setStyle(4)
-                .setCustomId('stop')
-        ])
-        const messageDashboard = await message.channel.send({ embeds: [embed], components: [component] })
-        messageDashboardCollector = new Discord.InteractionCollector(bot, { message: messageDashboard, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
-        messageDashboardCollector.on('collect', interaction => interactionHandler(interaction))
+    /**
+     * @param {Discord.Message} message
+     * @param {string[]} args
+     * @param {Discord.Client} bot
+     * @param {*} db
+     */
+    async execute(message, args, bot) {
+        if (!message.member.voice?.channel) return message.channel.send('You are not in any voice channel')
 
-        timer = setInterval(async () => {
-            if (toBeMoved.length == 0) { interval = false }
-            async function endProcess() {
-                embed.setColor('#0099E1')
-                embed.setFooter({ text: 'Process has stopped at' })
-                embed.setTimestamp()
-                embed = updateEmbed(embed, toBeMoved, haveBeenMoved)
-                await messageDashboard.edit({ embeds: [embed], components: [] })
-                clearInterval(timer)
-                messageDashboardCollector.stop()
-            }
-            if (!interval) {
-                await endProcess()
-                return
-            }
-            const movedUsers = await moveUsersIn(toBeMoved, memberVoice, message.guild)
-            for (const i in toBeMoved) {
-                user = toBeMoved[i]
-                if (movedUsers.includes(user.id)) {
-                    toBeMoved.splice(i, 1)
-                    haveBeenMoved.push(user)
-                }
-            }
-            embed = updateEmbed(embed, toBeMoved, haveBeenMoved)
-            await messageDashboard.edit({ embeds: [embed] })
-            if (toBeMoved.length == 0) { interval = false }
-            if (!interval) {
-                await endProcess()
-                return
-            }
-            intervalCounter -= intervalTicker
-            if (intervalCounter <= 0) interval = false
-        }, intervalTicker * 1000)
+        const voice = message.member.voice.channel
 
-        async function interactionHandler(interaction) {
-            if (!interaction.isButton()) { return }
-            if (interaction.customId === 'stop') {
-                interval = false
-                await interaction.deferUpdate()
-            }
+        const members = []
+        const unfound = []
+        const invc = []
+
+        for (const search of args) {
+            const member = message.guild.findMember(search)
+            if (!member) unfound.push(search)
+            else if (member.voice?.channel?.id == voice.id) invc.push(member)
+            else members.push(member)
         }
 
-        async function moveUsersIn(users, voiceChannel, guild) {
-            const updatedUsers = []
-            const movedUsers = []
-            for (const i in users) { user = users[i]; updatedUsers.push(guild.members.cache.get(user.id)) }
-            for (const i in updatedUsers) {
-                member = updatedUsers[i]
-                if (member.voice) {
-                    let moved = true
-                    await member.voice.setChannel(voiceChannel.channelId).catch(er => { moved = false })
-                    if (moved) { movedUsers.push(member.id) }
-                }
-            }
-            return movedUsers
-        }
-        function updateEmbed(embed, userListToBeMoved, userListHaveBeenMoved) {
-            embed.data.fields[0].value = userListToBeMoved.length > 0 ? `${userListToBeMoved.map(user => user).join(', ')}` : 'None!'
-            embed.data.fields[1].value = userListHaveBeenMoved.length > 0 ? `${userListHaveBeenMoved.map(user => user).join(', ')}` : 'None!'
-            return embed
-        }
+        const embed = new Discord.EmbedBuilder()
+            .setTitle(`Drag for ${voice.name}`)
+            .setColor('Blurple')
+            .setDescription(`Dragging ${members.length} members.`)
+        if (DragHandler.handlers[voice.id]) embed.setDescription(`${embed.data.description} See [this embed](${DragHandler.handlers[voice.id].message.url}) for details`)
+        else DragHandler.handlers[voice.id] = new DragHandler(bot, message.channel, voice)
+
+        members.forEach(member => DragHandler.handlers[voice.id].addUser(member))
+
+        if (unfound.length) embed.addFields({ name: 'Not Found', value: unfound.map(search => `\`${search}\``).join(', ') })
+        if (invc.length) embed.addFields({ name: 'Already in VC', value: invc.map(m => `${m}`).join(', ') })
+
+        message.channel.send({ embeds: [embed] })
     }
 }

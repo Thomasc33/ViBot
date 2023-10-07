@@ -4,89 +4,73 @@ const read_channel_bit_flag = Discord.PermissionFlagsBits.ViewChannel
 
 module.exports = {
     name: 'memes',
-    alias: ['phd',
-        'xbox',
-        'cwinner',
-        'eury',
-        'nefiah',
-        'abysm',
-        'drunkdevil',
-        'shiba',
-        'rj',
-        'vr',
-        'pusbal',
-        'bantering',
-        'chevyo',
-        'ruler',
-        'shut',
-        'grizzell',
-        'raynulf',
-        'maxeff'],
+    alias: ['phd', 'xbox', 'cwinner', 'eury', 'nefiah', 'abysm', 'drunkdevil', 'shiba',
+        'rj', 'vr', 'pusbal', 'bantering', 'chevyo', 'ruler', 'shut', 'grizzell', 'raynulf', 'maxeff'],
     role: 'eventrl',
     async execute(message, args, bot) {
         const settings = bot.settings[message.guild.id]
         switch (message.content.split(/ +/)[0].replace(/[^a-z]/gi, '').toLowerCase()) {
             case 'phd':
                 message.channel.send({ files: ['https://cdn.discordapp.com/attachments/488881485366165515/733195330287304734/unknown.png'] })
-                break
+                break;
             case 'xbox':
-                message.channel.send('<@!222042597877612546> xbox turn off')
-                break
+                message.channel.send(`<@!222042597877612546> xbox turn off`)
+                break;
             case 'cwinner':
                 message.channel.send({ files: [cwinner[~~(cwinner.length * Math.random())]] })
-                break
+                break;
             case 'eury':
                 message.channel.send({ files: [eury[~~(eury.length * Math.random())]] })
-                break
+                break;
             case 'nefiah':
-                const ghost = await message.channel.send('Ghost pinged bitch <@!188081954728574976>')
+                let ghost = await message.channel.send(`Ghost pinged bitch <@!188081954728574976>`)
                 await ghost.delete()
                 message.delete()
-                break
+                break;
             case 'abysm':
                 message.channel.send({ files: ['https://cdn.discordapp.com/attachments/488881485366165515/733424455463993395/image0.png'] })
-                break
+                break;
             case 'drunkdevil':
                 message.channel.send({ files: ['https://cdn.discordapp.com/attachments/488881485366165515/733424511478923324/depositphotos_192384532-stock-photo-fun-giraffe-character-boat.png'] })
-                break
+                break;
             case 'shiba':
                 message.channel.send({ files: [shibas[~~(shibas.length * Math.random())]] })
-                break
+                break;
             case 'rj':
                 message.channel.send({ files: ['https://media.discordapp.net/attachments/488881485366165515/795036389834096640/20210102_151014.jpg?width=811&height=1081'] })
-                break
+                break;
             case 'vr':
-                message.channel.send((vr_gamers.includes(message.author.id)) || (!(message.channel.permissionOverwrites.cache.get(settings.roles.raider) && message.channel.permissionOverwrites.cache.get(settings.roles.raider).allow.has(read_channel_bit_flag)) && !(message.channel.permissionOverwrites.cache.get(settings.roles.vetraider) && message.channel.permissionOverwrites.cache.get(settings.roles.vetraider).allow.has(read_channel_bit_flag)) && (~~(Math.random() * 100) == 0)) ? `<@&${settings.roles.raider}>` : '@verified raider')
-                break
+                message.channel.send(vr_gamers.includes(message.author.id) ? `<@&${settings.roles.raider}>` : '@verified raider')
+                break;
             case 'pusbal':
                 message.channel.send({ files: ['https://media.discordapp.net/attachments/488881485366165515/1033372031384817714/52ca3466-744e-4372-8211-175184521ecd.png'] })
-                break
+                break;
             case 'bantering':
-                message.channel.send('Command is too big. Failed to process')
-                break
+                message.channel.send('Command is too big. Failed to process');
+                break;
             case 'chevyo':
-                message.channel.send('https://images-ext-2.discordapp.net/external/y4eQmXCyla2kGBKtkNxYpwBttqTmShOkaVTU_6I7y-s/https/media.tenor.com/3y2b_SLSDMEAAAPo/rotmg-rotmg-oryx3.mp4')
-                break
+                message.channel.send('https://images-ext-2.discordapp.net/external/y4eQmXCyla2kGBKtkNxYpwBttqTmShOkaVTU_6I7y-s/https/media.tenor.com/3y2b_SLSDMEAAAPo/rotmg-rotmg-oryx3.mp4');
+                break;
             case 'ruler':
-                message.channel.send('<@!164887742134616064> Happy Birthday!')
-                break
+                message.channel.send(`<@!164887742134616064> Happy Birthday!`);
+                break;
             case 'shut':
                 if (!['164887742134616064'].includes(message.member.id)) { return }
-                const ruler = message.guild.members.cache.get('164887742134616064')
-                const messages = await message.channel.messages.fetch({ limit: 100 })
+                let ruler = message.guild.members.cache.get('164887742134616064');
+                const messages = await message.channel.messages.fetch({ limit: 100 });
                 messages.forEach(async channelMessage => {
-                    if (channelMessage.author.bot) { return }
+                    if (channelMessage.author.bot) { return; }
                     if (
                         channelMessage.mentions.users.get(ruler.id)
                         || channelMessage.content.toLowerCase().startsWith(';ruler')
                     ) {
-                        await channelMessage.reply('Shut')
+                        await channelMessage.reply('Shut');
                     }
                 })
-                break
+                break;
             case 'grizzell':
                 message.channel.send({ content: '<@!340267639295180800>', files: ['https://images-ext-2.discordapp.net/external/q4b29Q5UiDUukhqTFxqPM1JfeNbZMx29DR8Qfv5ZjeM/https/media.tenor.com/2z4Gh-mYA2gAAAPo/rat-shower.mp4'] })
-                break
+                break;
             case 'raynulf':
                 message.channel.send({ content: '<@147858187377311745>', files: ['https://cdn.discordapp.com/attachments/1127510518857465986/1138155209995079831/8327DED3-C27A-407A-AE1B-AC95ECBA815D.mov'] })
                 break
