@@ -121,16 +121,21 @@ module.exports = {
     },
     async removeExpelled(message, bot, db) {
         const id = message.options.getString('id')
-        const reason = message.options.getString('reason');
+        const reason = db.escape([message.options.getString('reason'), ...message.options.getVarargs()].join(' ')) || "'No reason provided.'"
         const settings = bot.settings[message.guild.id]
 
-        // Execute Expel Remove SQL 
+        // Check if user is blacklisted
         db.query('SELECT * FROM veriblacklist WHERE id = ?', [id], (err, rows) => {
-            if (rows.length == 0) userError = `${id} is not blacklisted`
-            else db.query('DELETE FROM veriblacklist WHERE id = ?', [id])
+            if (rows.length == 0) message.replyUserError(`Error: \`${id}\` is not blacklisted`)
+
+            // Execute Expel Remove SQL 
+            else{
+                db.query('DELETE FROM veriblacklist WHERE id = ?', [id])
+                message.replySuccess('Done!')
+            }
         })
-        
-        message.replySuccess('Done!')
+
+        //Create Mod Log Panels & Send it
         const embed = new Discord.EmbedBuilder()
             .setTitle('Expel Removed')
             .addFields([{ name: 'Moderator', value: `<@!${message.author.id}>`, inline: true }])
