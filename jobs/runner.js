@@ -1,4 +1,4 @@
-const { bot } = require('../botMeta.js');
+const { bot } = require('../botMeta.js')
 const botSettings = require('../settings.json')
 const { setupBotDBs } = require('../botSetup.js')
 const dbSetup = require('../dbSetup.js')
@@ -13,22 +13,22 @@ const jobNameMap = {
     keyAlert: require('./keyAlert.js').KeyAlert,
     mute: require('./mute.js').Mute,
     biWeeklyQuota: quotaJobs.BiWeeklyQuota,
-    monthlyQuota: quotaJobs.MonthlyQuota,
+    monthlyQuota: quotaJobs.MonthlyQuota
 }
 
 const jobsToRun = {
     oneshot: [],
     interval: [],
-    cron: [],
+    cron: []
 }
 
 process.argv.slice(2).forEach(arg => {
     const argParts = arg.split(':')
     if (argParts.length > 2) throw new Error('Invalid argument ' + arg + '\nArguments must be of the form <jobName> (for run-once jobs) or <jobName>:<frequencyString> (for recurring jobs)')
-    const [jobName, freqString] = argParts;
+    const [jobName, freqString] = argParts
     const job = jobNameMap[jobName]
     if (!job) throw new Error('Invalid job name ' + jobName + '. Valid job names are: ', Object.keys(jobNameMap).join(', '))
-    job.cliRunnerJobName = jobName;
+    job.cliRunnerJobName = jobName
     if (!freqString) {
         jobsToRun.oneshot.push(job)
     } else if (freqString.match(/^\d+$/)) {
@@ -49,8 +49,8 @@ bot.on('ready', async () => {
     console.log('DB connecting complete')
     await Promise.all(jobsToRun.oneshot.map(async Job => {
         console.log('Running oneshot job ' + Job.cliRunnerJobName)
-        const jobExecutor = new Job(bot);
-        await jobExecutor.runOnce();
+        const jobExecutor = new Job(bot)
+        await jobExecutor.runOnce()
         console.log('Job ' + Job.cliRunnerJobName + ' complete')
     }))
     console.log('Launching interval jobs')
@@ -70,4 +70,4 @@ bot.on('ready', async () => {
     dbSetup.endAll()
 })
 
-bot.login(botSettings.key);
+bot.login(botSettings.key)

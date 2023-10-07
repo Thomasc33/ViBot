@@ -1,7 +1,7 @@
-const Discord = require('discord.js');
-const AfkTemplate = require('./afkTemplate.js');
-const afkCheck = require('./afkCheck');
-const { createEmbed } = require('../lib/extensions.js');
+const Discord = require('discord.js')
+const AfkTemplate = require('./afkTemplate.js')
+const afkCheck = require('./afkCheck')
+const { createEmbed } = require('../lib/extensions.js')
 
 module.exports = {
     name: 'headcount',
@@ -11,20 +11,20 @@ module.exports = {
     args: '<run type> (time) (time type s/m)',
     role: 'eventrl',
     async execute(message, args, bot) {
-        //settings
+        // settings
         const botSettings = bot.settings[message.guild.id]
-        let alias = args.shift().toLowerCase()
+        const alias = args.shift().toLowerCase()
         let time = 0
         if (args.length >= 2) {
             time = parseInt(args.shift())
             switch (args.shift().toLowerCase()) {
-                case 's': 
+                case 's':
                     break
-                case 'm': 
+                case 'm':
                     time *= 60
                     break
-                default: 
-                    return message.channel.send("Please enter a valid time type __**s**__econd, __**m**__inute)")
+                default:
+                    return message.channel.send('Please enter a valid time type __**s**__econd, __**m**__inute)')
             }
         }
 
@@ -46,14 +46,14 @@ module.exports = {
         raidStatusEmbed.setAuthor({ name: `Headcount for ${afkTemplate.name} by ${message.member.nickname}`, iconURL: message.member.user.avatarURL() })
         if (time != 0) {
             raidStatusEmbed.setFooter({ text: `${message.guild.name} • ${Math.floor(time / 60)} Minutes and ${time % 60} Seconds Remaining`, iconURL: message.guild.iconURL() })
-            raidStatusEmbed.setDescription(`**Abort <t:${Math.floor(Date.now()/1000)+time}:R>**\n${raidStatusEmbed.data.description}`)
+            raidStatusEmbed.setDescription(`**Abort <t:${Math.floor(Date.now() / 1000) + time}:R>**\n${raidStatusEmbed.data.description}`)
         }
-        if (afkTemplate.body[1].embed.thumbnail) raidStatusEmbed.setThumbnail(afkTemplate.body[1].embed.thumbnail[Math.floor(Math.random()*afkTemplate.body[1].embed.thumbnail.length)])
+        if (afkTemplate.body[1].embed.thumbnail) raidStatusEmbed.setThumbnail(afkTemplate.body[1].embed.thumbnail[Math.floor(Math.random() * afkTemplate.body[1].embed.thumbnail.length)])
         const raidStatusMessage = await afkTemplate.raidStatusChannel.send({ content: `${afkTemplate.pingRoles ? afkTemplate.pingRoles.join(' ') : ''}`, embeds: [raidStatusEmbed] })
-        for (let i in afkTemplate.reacts) {
+        for (const i in afkTemplate.reacts) {
             if (afkTemplate.reacts[i].onHeadcount && afkTemplate.reacts[i].emote) await raidStatusMessage.react(afkTemplate.reacts[i].emote.id)
         }
-        for (let i in afkTemplate.buttons) {
+        for (const i in afkTemplate.buttons) {
             if ((afkTemplate.buttons[i].type == AfkTemplate.TemplateButtonType.NORMAL || afkTemplate.buttons[i].type == AfkTemplate.TemplateButtonType.LOG || afkTemplate.buttons[i].type == AfkTemplate.TemplateButtonType.LOG_SINGLE) && afkTemplate.buttons[i].emote) await raidStatusMessage.react(afkTemplate.buttons[i].emote.id)
         }
 
@@ -62,7 +62,7 @@ module.exports = {
             if (time <= 0) {
                 clearInterval(this)
                 raidStatusEmbed.setImage(null)
-                raidStatusEmbed.setDescription(`This headcount has been aborted`)
+                raidStatusEmbed.setDescription('This headcount has been aborted')
                 raidStatusEmbed.setFooter({ text: `${message.guild.name} • Aborted`, iconURL: message.guild.iconURL() })
                 raidStatusMessage.edit({ embeds: [raidStatusEmbed] })
                 return

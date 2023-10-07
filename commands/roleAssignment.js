@@ -1,7 +1,7 @@
 const ErrorLogger = require('../lib/logError')
-const Discord = require('discord.js');
+const Discord = require('discord.js')
 
-//add this to settings eventually:registered:
+// add this to settings eventually:registered:
 const reacts = require('../data/roleAssignment.json')
 
 module.exports = {
@@ -10,92 +10,92 @@ module.exports = {
     args: 'send/init',
     role: 'moderator',
     async execute(message, args, bot, db) {
-        let settings = bot.settings[message.guild.id]
-        if (!settings || !settings.backend.roleassignment) return message.channel.send('roleassignment has been turned off in this server');
+        const settings = bot.settings[message.guild.id]
+        if (!settings || !settings.backend.roleassignment) return message.channel.send('roleassignment has been turned off in this server')
 
-        let guildReacts = reacts[message.guild.id]
+        const guildReacts = reacts[message.guild.id]
         if (!guildReacts) return message.channel.send('Reactions not setup for this guild')
 
-        //make embed
-        let embed = getEmbed(guildReacts)
+        // make embed
+        const embed = getEmbed(guildReacts)
 
-        //get channel
-        let channel = message.guild.channels.cache.get(settings.channels.roleassignment)
+        // get channel
+        const channel = message.guild.channels.cache.get(settings.channels.roleassignment)
         if (!channel) return message.channel.send('Could not find channel: ' + settings.channels.roleassignment)
 
-        //get arg
+        // get arg
         if (args.length == 0) return message.channel.send('Inavlid arguements: ``;roleassignment <send/init>``')
         switch (args[0].toLowerCase()) {
             case 'send':
 
-                let message = await channel.send({ embeds: [embed] })
+                const message = await channel.send({ embeds: [embed] })
 
                 setTimeout(async () => {
                     await addInteractionButtons(message, bot)
-                }, 1000);
+                }, 1000)
 
-                break;
+                break
         }
     }
 }
 
 async function addInteractionButtons(message, bot) {
-    if (!bot.settings[message.guild.id].backend.roleassignment) return;
-    let guildReacts = reacts[message.guild.id]
+    if (!bot.settings[message.guild.id].backend.roleassignment) return
+    const guildReacts = reacts[message.guild.id]
     if (!guildReacts) return
-    
+
     const giveAllRolesButton = new Discord.ButtonBuilder()
         .setCustomId('giveAllRoles')
         .setLabel('✅ Give All')
-        .setStyle(3);
+        .setStyle(3)
     const takeAllRolesButton = new Discord.ButtonBuilder()
         .setCustomId('takeAllRoles')
         .setLabel('❌ Take All')
-        .setStyle(4);
+        .setStyle(4)
 
-    let buttons = [];
+    let buttons = []
     buttons.push(giveAllRolesButton)
-    const actionRows = new Array;
-    for (let i in guildReacts) {
+    const actionRows = new Array()
+    for (const i in guildReacts) {
         reaction = guildReacts[i]
         const buttonToAdd = new Discord.ButtonBuilder()
             .setCustomId(reaction.emojiId)
             .setEmoji(reaction.emojiId)
-            .setStyle(Discord.ButtonStyle.Secondary);
-        buttons.push(buttonToAdd);
+            .setStyle(Discord.ButtonStyle.Secondary)
+        buttons.push(buttonToAdd)
         if (buttons.length >= 5) {
-            actionRows.push(new Discord.ActionRowBuilder().addComponents(buttons));
-            buttons = [];
+            actionRows.push(new Discord.ActionRowBuilder().addComponents(buttons))
+            buttons = []
         }
     }
     if (buttons.length == 5) {
-        actionRows.push(new Discord.ActionRowBuilder().addComponents(buttons));
-        actionRows.push(new Discord.ActionRowBuilder().addComponents(takeAllRolesButton));
+        actionRows.push(new Discord.ActionRowBuilder().addComponents(buttons))
+        actionRows.push(new Discord.ActionRowBuilder().addComponents(takeAllRolesButton))
     } else {
         buttons.push(takeAllRolesButton)
-        actionRows.push(new Discord.ActionRowBuilder().addComponents(buttons));
+        actionRows.push(new Discord.ActionRowBuilder().addComponents(buttons))
     }
-    
+
     message = await message.edit({ components: actionRows })
-    roleAssignmentInteractionCollector = new Discord.InteractionCollector(bot, { message: message, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
+    roleAssignmentInteractionCollector = new Discord.InteractionCollector(bot, { message, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
     roleAssignmentInteractionCollector.on('collect', (interaction) => interactionHandler(interaction, bot))
 }
 
 async function interactionHandler(interaction, bot) {
-    if (!bot.settings[interaction.guild.id].backend.roleassignment) return;
-    if (!interaction.isButton()) return;
+    if (!bot.settings[interaction.guild.id].backend.roleassignment) return
+    if (!interaction.isButton()) return
 
     failedEmbed = new Discord.EmbedBuilder()
         .setColor('#FF0000')
-        .setDescription(`Something went wrong, please try again or contact any Head Raid Leader+ to fix this`)
+        .setDescription('Something went wrong, please try again or contact any Head Raid Leader+ to fix this')
         .setFooter({ text: `${interaction.customId}` })
 
     settings = bot.settings[interaction.guild.id]
-    let guildReacts = reacts[interaction.guild.id]
+    const guildReacts = reacts[interaction.guild.id]
     if (!guildReacts) return await interaction.reply({ embeds: [failedEmbed], ephemeral: true })
 
-    if (interaction.customId === "giveAllRoles") {
-        for (let i in guildReacts) {
+    if (interaction.customId === 'giveAllRoles') {
+        for (const i in guildReacts) {
             reaction = guildReacts[i]
             role = interaction.guild.roles.cache.get(settings.roles[reaction.role])
             if (!interaction.member.roles.cache.has(role.id)) {
@@ -104,9 +104,8 @@ async function interactionHandler(interaction, bot) {
             }
         }
         await interaction.reply({ content: `You now have ${guildReacts.map(role => interaction.guild.roles.cache.get(settings.roles[role.role])).join(', ')}\nand will recieve pings for ${guildReacts.map(name => name.name).join(', ')}`, ephemeral: true })
-    }
-    else if (interaction.customId === "takeAllRoles") {
-        for (let i in guildReacts) {
+    } else if (interaction.customId === 'takeAllRoles') {
+        for (const i in guildReacts) {
             reaction = guildReacts[i]
             role = interaction.guild.roles.cache.get(settings.roles[reaction.role])
             if (interaction.member.roles.cache.has(role.id)) {
@@ -115,9 +114,8 @@ async function interactionHandler(interaction, bot) {
             }
         }
         await interaction.reply({ content: `You no longer have ${guildReacts.map(role => interaction.guild.roles.cache.get(settings.roles[role.role])).join(', ')}\nand will not recieve pings for ${guildReacts.map(name => name.name).join(', ')}`, ephemeral: true })
-    }
-    else {
-        for (let i in guildReacts) {
+    } else {
+        for (const i in guildReacts) {
             reaction = guildReacts[i]
             if (interaction.customId === reaction.emojiId) {
                 role = interaction.guild.roles.cache.get(settings.roles[reaction.role])
@@ -137,12 +135,12 @@ async function interactionHandler(interaction, bot) {
 }
 
 function getEmbed(guildReacts) {
-    let embed = new Discord.EmbedBuilder()
+    const embed = new Discord.EmbedBuilder()
         .setTitle('Assign Roles')
         .setColor('#6fa8dc')
         .setDescription('Press the buttons with one of the following emojis to get pinged for specific runs\nCan be disabled by pressing the same button after recieving your role')
-    for (let i of guildReacts) {
-        embed.addFields([{name: i.name, value: i.emoji, inline: true}])
+    for (const i of guildReacts) {
+        embed.addFields([{ name: i.name, value: i.emoji, inline: true }])
     }
     return embed
 }

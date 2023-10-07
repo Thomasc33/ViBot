@@ -27,7 +27,7 @@ class Leaderboard {
      * @param {import('mysql').Connection} db
      */
 
-    constructor (message, args, bot, db, guild) {
+    constructor(message, args, bot, db, guild) {
         this.message = message
         this.guild = guild
         this.member = this.message.member
@@ -54,8 +54,9 @@ class Leaderboard {
         this.guildHasValidTemplate = true
         if (!this.leaderboardJson.hasOwnProperty(this.guild.id)) this.guildHasValidTemplate = false
         this.leaderboardTemplates = this.leaderboardJson[this.guild.id]
-        if (typeof this.leaderboardTemplates != Array && this.leaderboardTemplates.hasOwnProperty('__REDIRECT')) { this.leaderboardTemplates = this.leaderboardJson[this.leaderboardJson[this.guild.id]['__REDIRECT']] }
+        if (typeof this.leaderboardTemplates != Array && this.leaderboardTemplates.hasOwnProperty('__REDIRECT')) { this.leaderboardTemplates = this.leaderboardJson[this.leaderboardJson[this.guild.id].__REDIRECT] }
     }
+
     async startProcess() {
         if (!this.guildHasValidTemplate) { return this.stopProcess() }
         const didCategoryStop = await this.embedGetCategory()
@@ -64,6 +65,7 @@ class Leaderboard {
         if (didTemplateStop) { return }
         await this.updateEmbed()
     }
+
     async stopProcess() {
         await this.leaderboardMessage.delete()
         await this.message.react('✅')
@@ -73,28 +75,29 @@ class Leaderboard {
     async embedGetGuild() {}
     async embedGetCategory() {
         this.embed = new Discord.EmbedBuilder()
-            .setAuthor({ url: this.member.avatarURL(), name: 'Choose category'})
+            .setAuthor({ url: this.member.avatarURL(), name: 'Choose category' })
             .setDescription(`${this.leaderboardTemplates.map(category => `${this.bot.storedEmojis[category.emoji].text} **${category.prettyName}**`).join('\n')}`)
             .setColor(this.embedColor)
-        this.leaderboardMessage = await this.message.reply({ embeds: [ this.embed ] })
+        this.leaderboardMessage = await this.message.reply({ embeds: [this.embed] })
         this.categoryPick = await this.leaderboardMessage.confirmListEmojis(
             this.leaderboardTemplates.map(category => this.bot.storedEmojis[category.emoji].id),
             this.member.id
         )
         if (!this.categoryPick || this.categoryPick == 'Cancelled') { return this.stopProcess() }
     }
+
     async embedGetCategoryTemplate() {
-        for (let category of this.leaderboardTemplates) {
+        for (const category of this.leaderboardTemplates) {
             if (this.categoryPick == this.bot.storedEmojis[category.emoji].id) {
                 this.embedColor = category.embedColor
                 this.leaderboardTemplates = category.templates
             }
         }
         this.embed = new Discord.EmbedBuilder()
-            .setAuthor({ url: this.member.avatarURL(), name: 'Choose category'})
+            .setAuthor({ url: this.member.avatarURL(), name: 'Choose category' })
             .setDescription(`${this.leaderboardTemplates.map(category => `${this.bot.storedEmojis[category.emoji].text} **${category.prettyName}**`).join('\n')}`)
             .setColor(this.embedColor)
-        this.leaderboardMessage = await this.leaderboardMessage.edit({ embeds: [ this.embed ] })
+        this.leaderboardMessage = await this.leaderboardMessage.edit({ embeds: [this.embed] })
         this.templatePick = await this.leaderboardMessage.confirmListEmojis(
             this.leaderboardTemplates.map(template => this.bot.storedEmojis[template.emoji].id),
             this.member.id
@@ -102,14 +105,15 @@ class Leaderboard {
         if (!this.templatePick || this.templatePick == 'Cancelled') { return this.stopProcess() }
         this.leaderboardMessage.edit({ components: [] })
 
-        for (let i in this.leaderboardTemplates) {
-            let category = this.leaderboardTemplates[i]
+        for (const i in this.leaderboardTemplates) {
+            const category = this.leaderboardTemplates[i]
             if (this.templatePick == this.bot.storedEmojis[category.emoji].id) {
                 this.template = this.leaderboardTemplates[i]
                 this.embedColor = this.template.embedColor
             }
         }
     }
+
     async updateEmbed() {
         const SQLQueryString = `SELECT * FROM users WHERE ${this.template.dbRows.map(n => `cast(${n} as unsigned)`).join(' + ')} > 0 ORDER BY ${this.template.dbRows.map(n => `cast(${n} as unsigned)`).join(' + ')} DESC`
         const [leaderboardRows,] = await this.db.promise().query(SQLQueryString)
@@ -117,16 +121,16 @@ class Leaderboard {
         const yourPositionPrettyStrings = []
         this.totalPoints = 0
         this.yourPosition = undefined
-        for (let i in leaderboardRows) {
-            for (let dbRow of this.template.dbRows) { this.totalPoints += parseInt(leaderboardRows[i][dbRow]) }
+        for (const i in leaderboardRows) {
+            for (const dbRow of this.template.dbRows) { this.totalPoints += parseInt(leaderboardRows[i][dbRow]) }
             if (leaderboardRows[i].id == this.member.id) { this.yourPosition = i}
         }
         for (let i = 0; i < this.leaderboardLimit; i++) {
-            let position = i + 1;
+            const position = i + 1
             var prettyString = `\`${position.toString().padStart(5, ' ')}.\``
             if (leaderboardRows.length >= position) {
                 let points = 0
-                for (let dbRow of this.template.dbRows) { points += parseInt(leaderboardRows[i][dbRow]) }
+                for (const dbRow of this.template.dbRows) { points += parseInt(leaderboardRows[i][dbRow]) }
                 prettyString += ` \`${points.toString().padStart(6, ' ')}\``
                 prettyString += ` \`${`${Math.round((points / this.totalPoints) * 100)}`.padStart(3, ' ')}%\``
                 prettyString += ` <@!${leaderboardRows[i].id}>`
@@ -138,8 +142,8 @@ class Leaderboard {
         }
         if (this.yourPosition != undefined) {
             this.yourPosition = parseInt(this.yourPosition) + 1
-            for (let i in leaderboardRows) {
-                let position = parseInt(i) + 1;
+            for (const i in leaderboardRows) {
+                const position = parseInt(i) + 1
                 if (this.leaderboardLimit >= this.yourPosition) { break }
                 if (this.leaderboardLimit >= position) { continue }
                 if (position > (this.yourPosition + this.leaderboardLerpAbove)) { break }
@@ -148,7 +152,7 @@ class Leaderboard {
                 var prettyString = `\`${position.toString().padStart(5, ' ')}.\``
                 if (leaderboardRows.length >= position) {
                     let points = 0
-                    for (let dbRow of this.template.dbRows) { points += parseInt(leaderboardRows[i][dbRow]) }
+                    for (const dbRow of this.template.dbRows) { points += parseInt(leaderboardRows[i][dbRow]) }
                     prettyString += ` \`${points.toString().padStart(6, ' ')}\``
                     prettyString += ` \`${`${Math.round((points / this.totalPoints) * 100)}`.padStart(3, ' ')}%\``
                     prettyString += ` <@!${leaderboardRows[i].id}>`
@@ -159,14 +163,14 @@ class Leaderboard {
                 yourPositionPrettyStrings.push(prettyString)
             }
         }
-        let emoji = this.bot.storedEmojis[this.template.emoji].text
-        let prettyName = this.template.prettyName
+        const emoji = this.bot.storedEmojis[this.template.emoji].text
+        const { prettyName } = this.template
         this.embeds = []
         this.embed = new Discord.EmbedBuilder()
             .setDescription(` = ${emoji} **${prettyName}** ${emoji} =\n${prettyStrings.join('\n')}`)
             .setColor(this.embedColor)
             .setFooter({ text: `Total ${prettyName} ${this.totalPoints}` })
-            this.embeds.push(this.embed)
+        this.embeds.push(this.embed)
         if (yourPositionPrettyStrings.length > 0) {
             this.yourPositionEmbed = new Discord.EmbedBuilder()
                 .setDescription(`${yourPositionPrettyStrings.join('\n')}`)

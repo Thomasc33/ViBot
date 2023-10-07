@@ -1,5 +1,3 @@
-/* eslint-disable no-await-in-loop */
-/* eslint-disable guard-for-in */
 const Discord = require('discord.js')
 
 module.exports = {
@@ -72,7 +70,7 @@ class Check {
             this.panelCheckOpenVerifications(),
             this.panelCheckOpenVeteranVerifications(),
             this.panelFalseSuspensions()
-        ]);
+        ])
     }
 
     // Panels revolving nickname stuff
@@ -139,14 +137,13 @@ class Check {
         const rolesToRemoveFromFiltered = Object.keys(rolesToRemoveFrom).filter(role => rolesToRemoveFrom[role].length > 0)
         if (rolesToRemoveFromFiltered.length == 0) { return }
 
-        for (const index in rolesToRemoveFromFiltered) {
-            const roleName = rolesToRemoveFromFiltered[index]
+        for (const roleName of rolesToRemoveFromFiltered) {
             const role = this.roleCache.get(this.settings.roles[roleName])
             this.guild.members.cache.forEach(async member => {
                 if (!member.roles.cache.has(role.id)) { return }
                 if (await this.isPanelRestricted(member, panelName)) { return }
-                for (const i in rolesToRemoveFrom[roleName]) {
-                    const problemRoleID = this.settings.roles[rolesToRemoveFrom[roleName][i]]
+                for (const problemRoleOpt of rolesToRemoveFrom[roleName]) {
+                    const problemRoleID = this.settings.roles[problemRoleOpt]
                     if (!member.roles.cache.has(problemRoleID)) { continue }
                     const problemRole = this.roleCache.get(problemRoleID)
                     const problemRoleName = problemRole.name

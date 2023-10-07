@@ -1,6 +1,6 @@
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
-const moment = require('moment');
+const moment = require('moment')
 module.exports = {
     name: 'suspends',
     description: 'Shows all suspends that the bot is currently tracking',
@@ -8,42 +8,40 @@ module.exports = {
     args: '<user>',
     alias: ['suspensions'],
     async execute(message, args, bot, db) {
-        let settings = bot.settings[message.guild.id]
+        const settings = bot.settings[message.guild.id]
         if (args.length > 0) {
             let member = message.mentions.members.first()
             if (!member) member = message.guild.members.cache.get(args[0])
-            if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
-            if (!member) return message.channel.send('User not found');
+            if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()))
+            if (!member) return message.channel.send('User not found')
 
-            let search = '';
-            if (message.member.roles.highest.position < message.guild.roles.cache.get(settings.roles.security).position)
-                search = ` AND guildid = '${message.guild.id}' AND (suspended = 1 OR perma = 1) ORDER BY uTime DESC LIMIT 0, 1`;
+            let search = ''
+            if (message.member.roles.highest.position < message.guild.roles.cache.get(settings.roles.security).position) {search = ` AND guildid = '${message.guild.id}' AND (suspended = 1 OR perma = 1) ORDER BY uTime DESC LIMIT 0, 1`}
             db.query(`SELECT * FROM suspensions WHERE id = '${member.id}'${search}`, async (err, rows) => {
                 if (!rows || rows.length == 0) return message.channel.send('User has no suspends logged under me')
                 if (err) ErrorLogger.log(err, bot, message.guild)
-                let embed = new Discord.EmbedBuilder()
+                const embed = new Discord.EmbedBuilder()
                     .setDescription('None!')
-                let i = 0;
-                for (let suspension of rows) {
-                    i++;
-                    let string = `__Suspension ${i} case for ${member}__\`${member.nickname}\` in ${bot.guilds.cache.get(suspension.guildid).name}\nReason: \`${suspension.reason.trim()}\`\nSuspended by: <@!${suspension.modid}> ${suspension.suspended ? 'Ends' : 'Ended'} <t:${(parseInt(suspension.uTime)/1000).toFixed(0)}:R> at <t:${(parseInt(suspension.uTime)/1000).toFixed(0)}:f>\n`;
+                let i = 0
+                for (const suspension of rows) {
+                    i++
+                    const string = `__Suspension ${i} case for ${member}__\`${member.nickname}\` in ${bot.guilds.cache.get(suspension.guildid).name}\nReason: \`${suspension.reason.trim()}\`\nSuspended by: <@!${suspension.modid}> ${suspension.suspended ? 'Ends' : 'Ended'} <t:${(parseInt(suspension.uTime) / 1000).toFixed(0)}:R> at <t:${(parseInt(suspension.uTime) / 1000).toFixed(0)}:f>\n`
                     fitStringIntoEmbed(embed, string, message.channel)
                 }
                 message.channel.send({ embeds: [embed] })
             })
-
         } else if (message.member.roles.cache.has(settings.roles.developer)) {
-            let embed = new Discord.EmbedBuilder()
+            const embed = new Discord.EmbedBuilder()
                 .setColor(message.guild.roles.cache.get(settings.roles.tempsuspended).hexColor)
                 .setTitle('Current Logged Suspensions')
                 .setDescription('None!')
-            db.query(`SELECT * FROM suspensions WHERE suspended = true`, (err, rows) => {
-                for (let i in rows) {
-                    let sus = rows[i]
-                    let guild = bot.guilds.cache.get(sus.guildid)
+            db.query('SELECT * FROM suspensions WHERE suspended = true', (err, rows) => {
+                for (const i in rows) {
+                    const sus = rows[i]
+                    const guild = bot.guilds.cache.get(sus.guildid)
                     if (!guild) continue
-                    let member = guild.members.cache.get(sus.id)
-                    let desc = (`__Suspension case for ${member}__\`${member.nickname}\`\nReason: \`${sus.reason.trim()}\`\nSuspended by: <@!${sus.modid}>\n`)
+                    const member = guild.members.cache.get(sus.id)
+                    const desc = (`__Suspension case for ${member}__\`${member.nickname}\`\nReason: \`${sus.reason.trim()}\`\nSuspended by: <@!${sus.modid}>\n`)
                     fitStringIntoEmbed(embed, desc, message.channel)
                 }
                 message.channel.send({ embeds: [embed] })

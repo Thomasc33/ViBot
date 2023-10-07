@@ -7,7 +7,6 @@ module.exports = {
     description: 'Adds the username of an alt to a user and logs it',
     slashCommandName: 'addalt',
     alias: ['aa'],
-    args: '<id/mention> <alt name> <image>',
     requiredArgs: 2,
     role: 'security',
     args: [

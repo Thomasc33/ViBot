@@ -1,5 +1,4 @@
 /* eslint-disable no-prototype-builtins */
-/* eslint-disable no-await-in-loop */
 const Discord = require('discord.js')
 
 module.exports = {
@@ -59,8 +58,9 @@ class ActivityCheck {
     }
 
     async filterMemberList() {
+        const [membersRows] = await this.db.promise().query('SELECT * FROM loggedusage WHERE userid in (?) AND guildid = ? AND uTime > UNIX_TIMESTAMP(curdate() - interval 3 month)', [this.memberList.map(m => m.id), this.guild.id])
         for (const member of this.memberList) {
-            const [rows,] = await this.db.promise().query('SELECT * FROM loggedusage WHERE userid = ? AND guildid = ? AND utime > UNIX_TIMESTAMP(curdate() - interval 3 month)', [member.id, this.guild.id])
+            const rows = membersRows.filter(row => row.userid == member.id)
             if (rows.length == 0) {
                 this.memberListWithNoRuns.push(member)
                 continue
@@ -81,12 +81,12 @@ class ActivityCheck {
     async filterStrings() {
         this.embeds = []
         this.embed = this.getDefaultEmbed()
-        await this.updateEmbed(`${this.embedHeader}\n${this.embedDescription}`)
+        this.updateEmbed(`${this.embedHeader}\n${this.embedDescription}`)
         this.embeds.push(this.embed)
         this.embed = this.getDefaultEmbed()
         if (this.memberListOfUsersWithRunsFormatted?.length > 0) {
             for (const string of this.memberListOfUsersWithRunsFormatted) {
-                await this.updateEmbed(`\n${string}`)
+                this.updateEmbed(`\n${string}`)
             }
             this.embeds.push(this.embed)
         }
@@ -94,21 +94,17 @@ class ActivityCheck {
             this.embed = this.getDefaultEmbed()
             await this.updateEmbed(`${this.embedNoRunsHeader}\n`)
             for (const member of this.memberListWithNoRuns) {
-                await this.updateEmbed(` ${member}`)
+                this.updateEmbed(` ${member}`)
             }
             this.embeds.push(this.embed)
         }
     }
 
-    async updateEmbed(string) {
-        if (!this.embed.data.hasOwnProperty('description')) {
-            this.embed.setDescription(string)
-            return
-        }
+    updateEmbed(string) {
+        if (!this.embed.data.hasOwnProperty('description')) return this.embed.setDescription(string)
         if (this.embed.data.description.length + string.length >= this.embedDescriptionMaxLimit) {
             this.embeds.push(this.embed)
-            this.embed = this.getDefaultEmbed()
-            this.embed.setDescription(string)
+            this.embed = this.getDefaultEmbed().setDescription(string)
             return
         }
         this.embed.setDescription(this.embed.data.description + string)

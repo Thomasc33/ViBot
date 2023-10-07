@@ -1,5 +1,5 @@
-const Discord = require('discord.js');
-const ErrorLogger = require('../lib/logError');
+const Discord = require('discord.js')
+const ErrorLogger = require('../lib/logError')
 const moment = require('moment')
 
 module.exports = {
@@ -18,40 +18,40 @@ module.exports = {
 
         const options = [
             {
-                "emoji": "🦍",
-                "animal": "Gorilla"
+                emoji: '🦍',
+                animal: 'Gorilla'
             },
             {
-                "emoji": "🐒",
-                "animal": "Monkey"
+                emoji: '🐒',
+                animal: 'Monkey'
             },
             {
-                "emoji": "🦊",
-                "animal": "Fox"
+                emoji: '🦊',
+                animal: 'Fox'
             },
             {
-                "emoji": "🐈",
-                "animal": "Cat"
+                emoji: '🐈',
+                animal: 'Cat'
             },
             {
-                "emoji": "🐎",
-                "animal": "Horse"
+                emoji: '🐎',
+                animal: 'Horse'
             }
         ]
-        const animal = Math.floor(Math.random() * options.length);
+        const animal = Math.floor(Math.random() * options.length)
 
-        let confirmEmbed = new Discord.EmbedBuilder()
+        const confirmEmbed = new Discord.EmbedBuilder()
             .setTitle('❌ WARNING ❌')
             .setDescription('**__By confirming you would run the script provided by Ben.__**\n\n*If you are unfamiliar with it or not prepared to proceed after this, I recommend declining and trying again when ready.\n**Once accepted there is no turning back***')
             .setColor('#FF0000')
         await message.channel.send({ embeds: [confirmEmbed] }).then(async confirmMessage => {
             if (await confirmMessage.confirmButton(message.author.id)) {
-                let secondConfirmEmbed = new Discord.EmbedBuilder()
+                const secondConfirmEmbed = new Discord.EmbedBuilder()
                     .setTitle('I lied 😘')
                     .setDescription('React with the animal that is bolded.\nJust for fun.')
                     .setColor('#DDA0A0')
                 secondConfirmEmbed.addFields({
-                    name: `🐩 Animals 🦄`,
+                    name: '🐩 Animals 🦄',
                     value: `${options.map(index => `${index.emoji} ${index.emoji == options[animal].emoji ? `**__${index.animal}__**` : `${index.animal}`}`).join('\n')}`,
                     inline: false
                 })
@@ -67,25 +67,25 @@ module.exports = {
                         await secondConfirmMessage.delete()
                         return
                     }
-                    let embed = new Discord.EmbedBuilder()
+                    const embed = new Discord.EmbedBuilder()
                         .setTitle('Started')
                         .setDescription(`Script started <t:${moment().unix()}:R>\n*Please wait patiently as I run through all users.\nThis may take some time\nSit back and relax. I will direct message you once this is done.*`)
                         .setColor('#FF0000')
-                    let statisticMessage = await message.channel.send({ embeds: [embed] })
+                    const statisticMessage = await message.channel.send({ embeds: [embed] })
                     let unverifiedUsers = 0
                     let verifiedUsers = 0
                     let suspendedUsers = 0
                     let alreadyUnverifiedUsers = 0
                     const allUnverifiedUsers = message.guild.members.cache.filter(member => {
-                        if (member.roles.cache.has(settings.roles.raider)) { verifiedUsers++; return false; }
-                        if (member.roles.cache.has(settings.roles.tempsuspended)) {suspendedUsers++; return false; }
-                        if (member.roles.cache.has(settings.roles.permasuspended)) {suspendedUsers++; return false; }
-                        if (member.roles.cache.has(settings.roles.unverified)) {alreadyUnverifiedUsers++; return false; }
-                        unverifiedUsers++;
+                        if (member.roles.cache.has(settings.roles.raider)) { verifiedUsers++; return false }
+                        if (member.roles.cache.has(settings.roles.tempsuspended)) {suspendedUsers++; return false }
+                        if (member.roles.cache.has(settings.roles.permasuspended)) {suspendedUsers++; return false }
+                        if (member.roles.cache.has(settings.roles.unverified)) {alreadyUnverifiedUsers++; return false }
+                        unverifiedUsers++
                         return true
                     })
                     const allUnverifiedUsersID = allUnverifiedUsers.map(member => member.id)
-                    for (let index in allUnverifiedUsersID) {
+                    for (const index in allUnverifiedUsersID) {
                         let member = allUnverifiedUsersID[index]
                         member = message.guild.members.cache.get(member)
                         try { await member.roles.add(settings.roles.unverified) } catch (e) { console.log(e) }

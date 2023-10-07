@@ -12,26 +12,26 @@ module.exports = {
         return logs[guild.id] ? `Types: ${logs[guild.id].main.map(log => log.key + ' (' + log.name + ')').join(', ')}` : 'No loginfo for this server'
     },
     async execute(message, args, bot, db) {
-        let settings = bot.settings[message.guild.id]
+        const settings = bot.settings[message.guild.id]
         let toUpdate = 0
-        var embed = new Discord.EmbedBuilder().setAuthor({ name: message.member.displayName, iconURL: message.author.avatarURL() || undefined })
-        let currentWeekEmbed = new Discord.EmbedBuilder()
-        let count = 1;
-        var desc = '`Successful` Run'
-        let promises = []
+        const embed = new Discord.EmbedBuilder().setAuthor({ name: message.member.displayName, iconURL: message.author.avatarURL() || undefined })
+        const currentWeekEmbed = new Discord.EmbedBuilder()
+        let count = 1
+        let desc = '`Successful` Run'
+        const promises = []
 
-        //get log info
-        let guildInfo = logs[message.guild.id]
+        // get log info
+        const guildInfo = logs[message.guild.id]
         if (!guildInfo) return message.channel.send('Logging isn\'t setup on this server yet')
-        let run = getRunInfo(guildInfo, args[0])
+        const run = getRunInfo(guildInfo, args[0])
         if (!run) return message.channel.send('Run Type not recognized\n' + this.getNotes(message.guild.id))
 
         /* RUN LOGGING LOGIC */
 
-        //count
+        // count
         if (args[args.length - 1].replace(/^\d{1,2}$/, '') == '') {
             count = args[args.length - 1]
-            if (run.weight) count = count * run.weight
+            if (run.weight) count *= run.weight
         }
         let assistCount = count
 
@@ -42,17 +42,17 @@ module.exports = {
             }
         }
 
-        //confirm if needed
-        let confirmed = false;
+        // confirm if needed
+        let confirmed = false
         if (run.confirm) confirmed = await confirm(run, message, count)
         else confirmed = true
         if (!confirmed) return
 
-        //send query
+        // send query
         promises.push(new Promise(res => {
-            db.query(`INSERT INTO loggedusage (logged, userid, guildid, utime, amount) VALUES ('${run.name}', '${message.member.id}', '${message.guild.id}', '${Date.now()}', '${count}')`);
+            db.query(`INSERT INTO loggedusage (logged, userid, guildid, utime, amount) VALUES ('${run.name}', '${message.member.id}', '${message.guild.id}', '${Date.now()}', '${count}')`)
             db.query(`UPDATE users SET ${run.main} = ${run.main} + ${count}, ${run.currentweek} = ${run.currentweek} + ${count} WHERE id = '${message.author.id}'`, (err, rows) => {
-                //return if any errors
+                // return if any errors
                 if (err) { res(null); return message.channel.send(`Error: ${err}`) }
 
                 db.query(`SELECT * FROM users WHERE id = '${message.author.id}'`, (err, rows) => {
@@ -71,20 +71,20 @@ module.exports = {
             })
         }))
 
-        //assists
+        // assists
         if (run.allowAssists && guildInfo.assist) {
-            desc = desc.concat(`\n`)
+            desc = desc.concat('\n')
             message.mentions.members.each(m => {
                 promises.push(new Promise(res => {
                     if (m.id !== message.author.id) {
-                        desc = desc + `<@!${m.id}> `
+                        desc += `<@!${m.id}> `
                         db.query(`UPDATE users SET ${guildInfo.assist.main} = ${guildInfo.assist.main} + ${assistCount}, ${guildInfo.assist.currentweek} = ${guildInfo.assist.currentweek} + ${assistCount} WHERE id = ${m.id}`, (err, rows) => {
                             if (err) return res(null)
                             db.query(`SELECT ${guildInfo.assist.currentweek} FROM users WHERE id = '${m.id}'`, (err, rows) => {
-                                let s = `<@!${m.id}>${m.displayName ? ` \`${m.displayName}\`` : ''}. Current week: ${rows[0][guildInfo.assist.currentweek]} Assists`
-                                if (currentWeekEmbed.data.fields.length == 1) currentWeekEmbed.addFields([{name: 'Assists', value: s}])
+                                const s = `<@!${m.id}>${m.displayName ? ` \`${m.displayName}\`` : ''}. Current week: ${rows[0][guildInfo.assist.currentweek]} Assists`
+                                if (currentWeekEmbed.data.fields.length == 1) currentWeekEmbed.addFields([{ name: 'Assists', value: s }])
                                 else if (currentWeekEmbed.data.fields[currentWeekEmbed.data.fields.length - 1].value.length + s.length <= 1024) currentWeekEmbed.data.fields[currentWeekEmbed.data.fields.length - 1].value = currentWeekEmbed.data.fields[currentWeekEmbed.data.fields.length - 1].value.concat(`\n${s}`)
-                                else currentWeekEmbed.addFields([{name: '** **', value: s}])
+                                else currentWeekEmbed.addFields([{ name: '** **', value: s }])
                                 res(null)
                             })
                         })
@@ -98,20 +98,18 @@ module.exports = {
         embed.setDescription(desc)
         if (currentWeekEmbed.data.description) message.channel.send({ embeds: [currentWeekEmbed] })
         const logChannel = message.guild.channels.cache.get(settings.channels.leadinglog)
-        if (logChannel)
-            logChannel.send({ embeds: [embed] })
+        if (logChannel) {logChannel.send({ embeds: [embed] })}
         if (!toUpdate) return
 
         if (quotas[message.guild.id]) {
             const runQuota = quotas[message.guild.id].quotas.filter(q => q.id == toUpdate)
-            if (runQuota.length)
-                quota.update(message.guild, db, bot, settings, quotas[message.guild.id], runQuota[0]);
+            if (runQuota.length) {quota.update(message.guild, db, bot, settings, quotas[message.guild.id], runQuota[0])}
         }
     }
 }
 
 async function confirm(runInfo, message, count) {
-    const multiplier = runInfo.multiply === null ? 1 : runInfo.multiply;
+    const multiplier = runInfo.multiply === null ? 1 : runInfo.multiply
     const confirmEmbed = new Discord.EmbedBuilder()
         .setColor(runInfo.color)
         .setTitle('Confirm')
@@ -130,8 +128,8 @@ async function confirm(runInfo, message, count) {
 }
 
 function getRunInfo(guildInfo, key) {
-    for (let i of guildInfo.main) {
-        if (key.toLowerCase() == i.key.toLowerCase()) return i;
+    for (const i of guildInfo.main) {
+        if (key.toLowerCase() == i.key.toLowerCase()) return i
         if (i.alias.includes(key.toLowerCase())) return i
     }
     return null

@@ -14,24 +14,24 @@ module.exports = {
         this.findChannel(message, bot, guild)
     },
     async findChannel(message, bot, guild) {
-        let runsIn = []
-        for (let i in bot.afkChecks) {
+        const runsIn = []
+        for (const i in bot.afkChecks) {
             if (bot.afkChecks[i].raiders && bot.afkChecks[i].earlyLocation && (bot.afkChecks[i].raiders.includes(message.author.id) || bot.afkChecks[i].earlyLocation.includes(message.author.id))) {
                 runsIn.push(i)
             }
         }
         if (runsIn.length == 0) { message.channel.send('I could not find any runs that you were a part of. If you were not in the voice channel when the afk check ended, you should leave the run before you get suspended.') } else if (runsIn.length == 1) { this.moveIn(guild.members.cache.get(message.author.id), runsIn[0], bot).catch(er => message.channel.send('Join lounge, then try this command again')) } else {
-            let runEmbed = new Discord.EmbedBuilder()
+            const runEmbed = new Discord.EmbedBuilder()
                 .setColor('#ff0000')
                 .setTitle('Which run are you trying to enter?')
-                .setFooter({ text: 'Please join lounge before selecting an option'})
+                .setFooter({ text: 'Please join lounge before selecting an option' })
                 .setDescription('None!')
-            for (let i in runsIn) {
+            for (const i in runsIn) {
                 if (!guild.channels.cache.get(runsIn[i])) continue
                 fitStringIntoEmbed(runEmbed, `**${parseInt(i) + 1}:** ${guild.channels.cache.get(runsIn[i]).name}\n*${Math.round((Date.now() - bot.afkChecks[runsIn[i]].time) / 60000)} minutes ago*\n`, message.channel)
             }
-            let joinEmbedMessage = await message.channel.send({ embeds: [runEmbed] })
-            let runMessageCollector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id == message.author.id})
+            const joinEmbedMessage = await message.channel.send({ embeds: [runEmbed] })
+            const runMessageCollector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id == message.author.id })
             runMessageCollector.on('collect', async m => {
                 if (m.content.replace(/[^0-9]/g, '') != m.content) {
                     if (m.content == 'cancel') {
@@ -39,12 +39,12 @@ module.exports = {
                         runMessageCollector.stop()
                         message.react('✅')
                     }
-                    let retryMessage = await message.channel.send(`\`${m.content}\` is not a valid number. Please try again or type \`cancel\` to cancel`)
+                    const retryMessage = await message.channel.send(`\`${m.content}\` is not a valid number. Please try again or type \`cancel\` to cancel`)
                     setTimeout(() => retryMessage.delete(), 5000)
                 } else {
-                    let runId = runsIn[parseInt(m.content) - 1]
+                    const runId = runsIn[parseInt(m.content) - 1]
                     if (!runId) {
-                        let retryMessage = await message.channel.send(`\`${m.content}\` is not a valid number. Please try again or type \`cancel\` to cancel`)
+                        const retryMessage = await message.channel.send(`\`${m.content}\` is not a valid number. Please try again or type \`cancel\` to cancel`)
                         setTimeout(() => retryMessage.delete(), 5000)
                     } else {
                         this.moveIn(guild.members.cache.get(message.author.id), runId, bot)
@@ -58,12 +58,12 @@ module.exports = {
     },
     async moveIn(member, runId, bot) {
         if (bot.afkChecks[runId].split) {
-            let afkCheck = bot.afkChecks[runId]
+            const afkCheck = bot.afkChecks[runId]
             if (afkCheck.mainGroup.includes(member.id)) {
                 if (member.voice.channel) member.voice.setChannel(runId, 'joinrun').catch(er => member.send('Please connect to lounge and try again'))
                 else member.send('Please connect to lounge and try again')
             } else {
-                let splitChannelID = afkCheck.splitChannel
+                const splitChannelID = afkCheck.splitChannel
                 if (splitChannelID == 'na') {
                     if (member.voice.channel) member.voice.setChannel(runID, 'joinrun').catch(er => member.send('Please connect to lounge and try again'))
                     else member.send('Please connect to lounge and try again')
@@ -76,7 +76,6 @@ module.exports = {
             if (member.voice.channel) member.voice.setChannel(runId, 'joinrun').catch(er => member.send('Please connect to lounge and try again'))
             else member.send('Please connect to lounge and try again')
         }
-
     }
 }
 

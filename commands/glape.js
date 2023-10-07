@@ -3,8 +3,8 @@ const ErrorLogger = require('../lib/logError')
 const moment = require('moment')
 
 module.exports = {
-    name: "glape",
-    role: "moderator",
+    name: 'glape',
+    role: 'moderator',
     guildSpecific: true,
     description: "If you know, you know.\nIf not, try me :)\nIf you don't know, the bot purges the entire server",
     async execute(message, args, bot, db) {
@@ -33,9 +33,9 @@ class Glape {
         }
 
         this.discordTimestamp = `<t:${moment().add(this.timeoutMinutes, 'minute').unix()}:R>`
-        this.embedColor = "#ac714e"
-        this.goldenEmbedGlapeColor = "#e1b641"
-        this.infectedEmbedGlapeColor = "#EE1111"
+        this.embedColor = '#ac714e'
+        this.goldenEmbedGlapeColor = '#e1b641'
+        this.infectedEmbedGlapeColor = '#EE1111'
         this.glapeEmoji = this.bot.storedEmojis.glapeEmoji
         this.goldenGlapeEmoji = this.bot.storedEmojis.goldenGlapeEmoji
         this.infectedGlapeEmoji = this.bot.storedEmojis.infectedGlapeEmoji
@@ -55,11 +55,11 @@ class Glape {
     }
 
     sortedGlapers() {
-        if (Object.keys(this.glapers).length == 0) { return "JOIN THE GLAPERS" }
+        if (Object.keys(this.glapers).length == 0) { return 'JOIN THE GLAPERS' }
         const sortedGlapers = this.sortObject(this.glapers)
         const glapeStrings = []
-        for (let i in sortedGlapers) {
-            let glaper = sortedGlapers[i]
+        for (const i in sortedGlapers) {
+            const glaper = sortedGlapers[i]
             let temporaryString = `\`${glaper.toString().padStart(4, ' ')}\` ${this.isGlapeInfected ? this.infectedGlapeEmoji.text : this.glapeEmoji.text} <@!${i}>`
             if (this.specialGlapers.hasOwnProperty(i)) {
                 if (!this.isGlapeInfected) {
@@ -77,7 +77,7 @@ class Glape {
     sortObject(object) {
         return Object.fromEntries(Object.entries(object).sort(
             (a, b) => b[1] - a[1]
-        ));
+        ))
     }
 
     async startProcess() {
@@ -97,18 +97,18 @@ class Glape {
     async addGlapeField() {
         this.embed.addFields({
             name: `${this.glapeEmoji.text} Glapers ${this.glapeEmoji.text}`,
-            value: `JOIN THE GLAPERS`,
+            value: 'JOIN THE GLAPERS',
             inline: false
         })
     }
 
     glapeBossHealthString() {
-        let prettyString = ``
-        let health = this.infectedGlapeBoss.health
-        let maxHealth = this.infectedGlapeBoss.maxHealth
+        let prettyString = ''
+        const { health } = this.infectedGlapeBoss
+        const { maxHealth } = this.infectedGlapeBoss
 
-        let kFactor = 15
-        let progress = 1 - (health / maxHealth)
+        const kFactor = 15
+        const progress = 1 - (health / maxHealth)
         let filled = Math.floor(progress * kFactor)
         let empty = kFactor - filled
 
@@ -118,9 +118,7 @@ class Glape {
         prettyString += `\`${maxHealth.toString().padStart(4, ' ')}\` `
         prettyString += `${`${this.infectedGlapeEmoji.text}`.repeat(empty)}`
         prettyString += `${`${this.blackGlapeEmoji.text}`.repeat(filled)}`
-        prettyString += ` \`${health.toString().padStart(4, ' ')}\``
-
-        return prettyString
+        prettyString += ` \`${health.toString().padStart(4, ' ')}\``        return prettyString
     }
 
     async updateGlapeField(interaction = null) {
@@ -161,7 +159,7 @@ class Glape {
             this.pendingUpdate = true
             const editPromise = interaction ? interaction.update({ embeds: [this.embed] }) : this.glapeMessage.edit({ embeds: [this.embed] })
             editPromise.then(async () => {
-                // Once the edit is completed, unset the `pendingUpdate` flag 
+                // Once the edit is completed, unset the `pendingUpdate` flag
                 this.pendingUpdate = false
                 // If there were updates queued, run the most recent one
                 if (this.queuedUpdate) {
@@ -231,7 +229,7 @@ class Glape {
         await this.updateGlapeField()
         await this.glapeMessage.edit({ components: [
             this.infectedGlapeButton()
-        ]})
+        ] })
     }
 
     async disinfectGlape() {
@@ -291,7 +289,7 @@ class Glape {
             embeds: [this.goldenEmbed],
             components: [this.goldenButton]
         })
-        let goldenGlapeListener = new Discord.InteractionCollector(this.bot, { message: this.goldenGlapeMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
+        const goldenGlapeListener = new Discord.InteractionCollector(this.bot, { message: this.goldenGlapeMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
         goldenGlapeListener.on('collect', async interaction => await this.goldenGlapeInteractionHandler(interaction, goldenGlapeListener, false))
     }
 
@@ -334,32 +332,32 @@ class Glape {
 
     totalGlapes() {
         let totalPoints = 0
-        for (let i in this.glapers) {
+        for (const i in this.glapers) {
             totalPoints += this.glapers[i]
         }
         return totalPoints
     }
 
     glapesPerSecond() {
-        let totalGlapes = this.totalGlapes()
+        const totalGlapes = this.totalGlapes()
         return this.roundTo(totalGlapes / (moment().unix() - this.momentStarted), 2)
     }
 
     roundTo(n, digits) {
-        var negative = false;
+        let negative = false
         if (digits === undefined) {
-            digits = 0;
+            digits = 0
         }
         if (n < 0) {
-            negative = true;
-            n = n * -1;
+            negative = true
+            n *= -1
         }
-        var multiplicator = Math.pow(10, digits);
-        n = parseFloat((n * multiplicator).toFixed(11));
-        n = (Math.round(n) / multiplicator).toFixed(digits);
+        const multiplicator = 10 ** digits
+        n = parseFloat((n * multiplicator).toFixed(11))
+        n = (Math.round(n) / multiplicator).toFixed(digits)
         if (negative) {
-            n = (n * -1).toFixed(digits);
+            n = (n * -1).toFixed(digits)
         }
-        return n;
+        return n
     }
-} 
+}

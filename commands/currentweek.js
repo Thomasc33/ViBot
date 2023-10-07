@@ -1,6 +1,6 @@
-const Discord = require('discord.js');
-const logs = require('../data/logInfo.json');
-const quotas = require('../data/quotas.json');
+const Discord = require('discord.js')
+const logs = require('../data/logInfo.json')
+const quotas = require('../data/quotas.json')
 
 module.exports = {
     name: 'currentweek',
@@ -12,11 +12,11 @@ module.exports = {
         return `Types: ${logs[guild.id].main.map(log => log.key + ' (' + log.name + ')').join(', ')}`
     },
     async execute(message, args, bot, db) {
-        //get member
-        let members = []
+        // get member
+        const members = []
         if (args.length == 0) members.push(message.member)
-        for (let i in args) {
-            let member = message.guild.findMember(args[i])
+        for (const i in args) {
+            const member = message.guild.findMember(args[i])
             if (!member) continue
             members.push(member)
         }
@@ -24,13 +24,13 @@ module.exports = {
 
         if (!quotas.hasOwnProperty(message.guild.id)) return message.reply('Current week is not set up for this server')
         members.map(async member => {
-            let rows = await returnRows(member, db)
+            const rows = await returnRows(member, db)
             if (!rows) return
-            let embed = new Discord.EmbedBuilder()
+            const embed = new Discord.EmbedBuilder()
                 .setTitle('Current Week')
                 .setDescription(`${member} \`\`${member.displayName}\`\``)
                 .setColor('#FF0000')
-             await quotas[message.guild.id].quotas.map(quota => {
+            await quotas[message.guild.id].quotas.map(quota => {
                 embed.addFields({
                     name: `${quota.name}`,
                     value: `(${quota.values.map(value => `${value.emoji ? `${value.emoji}` : `${value.name}`}: \`${rows[value.column]}\``).join(', ')})`,

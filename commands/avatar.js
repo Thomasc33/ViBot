@@ -1,12 +1,11 @@
 const Discord = require('discord.js')
-const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
-const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js')
+const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType
+const { slashArg, slashCommandJSON } = require('../utils.js')
 
 module.exports = {
     name: 'avatar',
     slashCommandName: 'avatar',
     description: 'Posts avatar of user provided',
-    args: '(user)',
     alias: ['ava'],
     role: 'eventrl',
     args: [
@@ -21,11 +20,11 @@ module.exports = {
         if (args.length == 0) member = message.member
         if (!member) member = message.mentions.members.first()
         if (!member) member = message.guild.members.cache.get(args[0])
-        if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
+        if (!member) member = message.guild.members.cache.filter(user => user.nickname).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()))
         if (!member) return message.replyUserError('User not found')
-        let embed = new Discord.EmbedBuilder()
+        const embed = new Discord.EmbedBuilder()
             .setColor('#fefefe')
-            .setDescription(`__**Avatar of**__ <@${member.id}> ${member ? '\`' + (member.nickname || member.user.tag) + '\`' : ''}`)
+            .setDescription(`__**Avatar of**__ <@${member.id}> ${member ? '`' + (member.nickname || member.user.tag) + '`' : ''}`)
             .setImage(member.user.avatarURL({ dynamic: true, size: 4096 }))
         message.reply({ embeds: [embed] })
     }

@@ -6,28 +6,28 @@ module.exports = {
     role: 'security',
     description: 'Begins russian roulette',
     async execute(message, args, bot) {
-        let settings = bot.settings[message.guild.id]
-        let embed = new Discord.EmbedBuilder()
+        const settings = bot.settings[message.guild.id]
+        const embed = new Discord.EmbedBuilder()
             .setColor('#ff0000')
             .setTitle('Russian Roulette')
             .setDescription(`Started by ${message.member}
             React with 🔫 to join`)
             .setFooter({ text: 'Time remaining 30 seconds' })
-        let embedMessage = await message.channel.send({ embeds: [embed] })
+        const embedMessage = await message.channel.send({ embeds: [embed] })
         embedMessage.react('🔫')
-        let reactors = []
-        let reactionCollector = new Discord.ReactionCollector(embedMessage, { filter: gunFilter })
+        const reactors = []
+        const reactionCollector = new Discord.ReactionCollector(embedMessage, { filter: gunFilter })
         reactionCollector.on('collect', (r, u) => {
             if (!reactors.includes(u)) reactors.push(u)
         })
         let time = 30
-        let timer = setInterval(update, 5000);
+        const timer = setInterval(update, 5000)
         message.delete()
         async function update() {
-            time = time - 5;
+            time -= 5
             if (time == 0) {
                 shoot()
-                return;
+                return
             }
             embed.setFooter({ text: `Time remaining ${time} seconds` })
             embedMessage.edit({ embeds: [embed] })
@@ -35,28 +35,27 @@ module.exports = {
         async function shoot() {
             clearInterval(timer)
             reactionCollector.stop()
-            if (reactors.length == 0) { return; }
-            let loser = getLoser(0)
+            if (reactors.length == 0) { return }
+            const loser = getLoser(0)
             function getLoser(rolls) {
                 if (rolls >= 10) return null
-                let i = Math.floor(Math.random() * reactors.length)
-                let loser = message.guild.members.cache.get(reactors[i].id)
-                if (loser == null) return;
+                const i = Math.floor(Math.random() * reactors.length)
+                const loser = message.guild.members.cache.get(reactors[i].id)
+                if (loser == null) return
                 if (loser.roles.cache.has(settings.roles.muted)) return getLoser(rolls + 1)
-                else return loser
+                return loser
             }
-            if (loser == null) return console.log(`rolled too many times`);
+            if (loser == null) return console.log('rolled too many times')
             embed.setDescription(`${embed.data.description}\nWinner: <@!${loser.id}> was shot to death!
             They have been muted for 1 minute`)
             embed.setFooter({ text: 'Game Over' })
             embedMessage.edit({ embeds: [embed] })
 
-            let member = message.guild.members.cache.get(loser.id)
+            const member = message.guild.members.cache.get(loser.id)
 
             member.roles.add(settings.roles.muted)
 
             setTimeout(() => { member.roles.remove(settings.roles.muted) }, 60000)
-
         }
     }
 }

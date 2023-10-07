@@ -1,6 +1,6 @@
-const Discord = require('discord.js');
-const fs = require('fs');
-const ErrorLogger = require('../lib/logError');
+const Discord = require('discord.js')
+const fs = require('fs')
+const ErrorLogger = require('../lib/logError')
 
 module.exports = {
     name: 'emoji',
@@ -10,10 +10,9 @@ module.exports = {
     requiredArgs: 0,
     role: 'developer',
     async execute(message, args, bot, db) {
-        var choice = undefined
-        if (args.length == 0) { choice = 'update' }
-        else choice = args[0].toLowerCase()
-        args.shift();
+        let choice
+        if (args.length == 0) { choice = 'update' } else choice = args[0].toLowerCase()
+        args.shift()
         switch (choice.toLowerCase()) {
             case 'update':
                 try {
@@ -23,18 +22,18 @@ module.exports = {
                     ErrorLogger.log(error, bot, message.guild)
                     await message.channel.send('Something failed. Failed to update')
                 }
-                break;
+                break
             case 'list':
                 await message.channel.send('Currently not setup. Please be patient as we set this up')
-                break;
+                break
             case 'find':
-                let emojisNotFound = [];
+                const emojisNotFound = []
                 args.map(
                     async emoji => {
                         if (bot.storedEmojis.hasOwnProperty(emoji)) {
-                            let storedEmoji = bot.storedEmojis[emoji]
+                            const storedEmoji = bot.storedEmojis[emoji]
                             emoji = await bot.emojis.cache.get(bot.storedEmojis[emoji].id)
-                            let embed = new Discord.EmbedBuilder()  
+                            const embed = new Discord.EmbedBuilder()
                                 .setTitle(emoji.name)
                                 .setDescription(Object.keys(storedEmoji).map(
                                     property => `${property}: ${storedEmoji[property]}`
@@ -46,25 +45,25 @@ module.exports = {
                             emojisNotFound.push(emoji)
                         }
                     }
-                );
+                )
                 if (emojisNotFound.length >= 1) {
-                    let notFoundEmbed = new Discord.EmbedBuilder()
+                    const notFoundEmbed = new Discord.EmbedBuilder()
                         .setTitle('Emojis Not Found')
                         .setDescription('*Keep in mind that searching the Emoji database requires it to be case sensitive*\n' + emojisNotFound.join(', '))
                         .setColor('#FFFF00')
                     await message.channel.send({ embeds: [notFoundEmbed] })
                 }
-                break;
+                break
         }
     },
     async update(bot) {
         try {
-            var data = {}
-            var duplicates = {}
+            const data = {}
+            const duplicates = {}
             bot.emojiServers.forEach(id => {
-                let guild = bot.guilds.cache.get(id)
+                const guild = bot.guilds.cache.get(id)
                 guild.emojis.cache.forEach(emoji => {
-                    let dataTransfer = {
+                    const dataTransfer = {
                         tag: `:${emoji.name}:${emoji.id}`,
                         name: emoji.name,
                         id: emoji.id,
