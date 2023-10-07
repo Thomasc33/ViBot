@@ -127,7 +127,7 @@ module.exports = {
                 keyRoles.checkUser(user, bot, db)
             })
             if (moddedKey) {
-                db.query('UPDATE users SET moddedPops = moddedPops + ? WHERE id = ?', [count, user.id], err => {
+                db.query(`UPDATE users SET ${keyInfo.moddedSchema} = ${keyInfo.moddedSchema} + ? WHERE id = ?`, [count, user.id], err => {
                     if (err) throw err
                     keyRoles.checkUser(user, bot, db)
                 })
