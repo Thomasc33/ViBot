@@ -1305,8 +1305,600 @@
                 "toUpdate": "raiding",
                 "toDisplay": [
                     "currentweeko3",
+                    "o3currentweekVoid",
+                    "o3currentweekCult",
+                    "o3currentweekShatters",
+                    "o3currentweekFungals",
+                    "o3currentweekNests",
+                    "o3currentWeekAdvancedNests",
+                    "o3currentweekSteamworks",
+                    "o3currentweekMoonlight",
                     "currentweekAssistso3",
-                    "currentweeko3Feedback",
+                    "currentweeko3feedback",
+                    "o3currentweekVoidFeedback",
+                    "o3currentweekShattersFeedback",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "so",
+                "name": "silento3",
+                "alias": [
+                    "silento3",
+                    "so3"
+                ],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": false,
+                "main": "o3silentO3sLead",
+                "currentweek": "o3silentCurrentweekO3",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/831047591096745984.png?v=1",
+                "desc": "`Oryx` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "o3silentCurrentweekO3",
+                    "o3silentCurrentweekVoid",
+                    "o3silentCurrentweekCult",
+                    "o3silentCurrentweekShatters",
+                    "o3silentCurrentweekFungals",
+                    "o3silentCurrentweekNests",
+                    "o3silentCurrentWeekAdvancedNests",
+                    "o3silentCurrentweekSteamworks",
+                    "o3silentCurrentWeekAdvancedSteamworks",
+                    "o3silentCurrentweekMoonlight",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "v",
+                "name": "void",
+                "alias": [
+                    "void"
+                ],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "o3voidsLead",
+                "currentweek": "o3currentweekVoid",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/701491230210523247.png?v=1",
+                "desc": "`Void` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweeko3",
+                    "o3currentweekVoid",
+                    "o3currentweekCult",
+                    "o3currentweekShatters",
+                    "o3currentweekFungals",
+                    "o3currentweekNests",
+                    "o3currentWeekAdvancedNests",
+                    "o3currentweekSteamworks",
+                    "o3currentweekMoonlight",
+                    "currentweekAssistso3",
+                    "currentweeko3feedback",
+                    "o3currentweekVoidFeedback",
+                    "o3currentweekShattersFeedback",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "sv",
+                "name": "silentvoid",
+                "alias": [
+                    "silentvoid"
+                ],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": false,
+                "main": "o3silentvoidsLead",
+                "currentweek": "o3silentCurrentweekVoid",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/701491230210523247.png?v=1",
+                "desc": "`Silent Void` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "o3silentCurrentweekO3",
+                    "o3silentCurrentweekVoid",
+                    "o3silentCurrentweekCult",
+                    "o3silentCurrentweekShatters",
+                    "o3silentCurrentweekFungals",
+                    "o3silentCurrentweekNests",
+                    "o3silentCurrentWeekAdvancedNests",
+                    "o3silentCurrentweekSteamworks",
+                    "o3silentCurrentWeekAdvancedSteamworks",
+                    "o3silentCurrentweekMoonlight",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "c",
+                "name": "cult",
+                "alias": [
+                    "cult"
+                ],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "o3cultsLead",
+                "currentweek": "o3currentweekCult",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/701491230332157972.png?v=1",
+                "desc": "`Cult` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweeko3",
+                    "o3currentweekVoid",
+                    "o3currentweekCult",
+                    "o3currentweekShatters",
+                    "o3currentweekFungals",
+                    "o3currentweekNests",
+                    "o3currentWeekAdvancedNests",
+                    "o3currentweekSteamworks",
+                    "o3currentweekMoonlight",
+                    "currentweekAssistso3",
+                    "currentweeko3feedback",
+                    "o3currentweekVoidFeedback",
+                    "o3currentweekShattersFeedback",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "sc",
+                "name": "silentcult",
+                "alias": [
+                    "silentcult"
+                ],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": false,
+                "main": "o3silentcultsLead",
+                "currentweek": "o3silentCurrentweekCult",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/701491230332157972.png?v=1",
+                "desc": "`Silent Cult` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "o3silentCurrentweekO3",
+                    "o3silentCurrentweekVoid",
+                    "o3silentCurrentweekCult",
+                    "o3silentCurrentweekShatters",
+                    "o3silentCurrentweekFungals",
+                    "o3silentCurrentweekNests",
+                    "o3silentCurrentWeekAdvancedNests",
+                    "o3silentCurrentweekSteamworks",
+                    "o3silentCurrentWeekAdvancedSteamworks",
+                    "o3silentCurrentweekMoonlight",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "s",
+                "name": "shatters",
+                "alias": [
+                    "shatters"
+                ],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "o3shattersLead",
+                "currentweek": "o3currentweekShatters",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/924899045154103296.webp",
+                "desc": "`Shatters` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweeko3",
+                    "o3currentweekVoid",
+                    "o3currentweekCult",
+                    "o3currentweekShatters",
+                    "o3currentweekFungals",
+                    "o3currentweekNests",
+                    "o3currentWeekAdvancedNests",
+                    "o3currentweekSteamworks",
+                    "o3currentweekMoonlight",
+                    "currentweekAssistso3",
+                    "currentweeko3feedback",
+                    "o3currentweekVoidFeedback",
+                    "o3currentweekShattersFeedback",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "ss",
+                "name": "silentshatters",
+                "alias": [
+                    "silentshatters",
+                    "ssh"
+                ],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": false,
+                "main": "o3silentshattersLead",
+                "currentweek": "o3silentCurrentweekShatters",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/924899045154103296.webp",
+                "desc": "`Silent Shatters` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "o3silentCurrentweekO3",
+                    "o3silentCurrentweekVoid",
+                    "o3silentCurrentweekCult",
+                    "o3silentCurrentweekShatters",
+                    "o3silentCurrentweekFungals",
+                    "o3silentCurrentweekNests",
+                    "o3silentCurrentWeekAdvancedNests",
+                    "o3silentCurrentweekSteamworks",
+                    "o3silentCurrentWeekAdvancedSteamworks",
+                    "o3silentCurrentweekMoonlight",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "fu",
+                "name": "fungal",
+                "alias": [
+                    "fungal"
+                ],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "o3fungalsLead",
+                "currentweek": "o3currentweekFungals",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/926313805888225342.webp",
+                "desc": "`Fungal` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweeko3",
+                    "o3currentweekVoid",
+                    "o3currentweekCult",
+                    "o3currentweekShatters",
+                    "o3currentweekFungals",
+                    "o3currentweekNests",
+                    "o3currentWeekAdvancedNests",
+                    "o3currentweekSteamworks",
+                    "o3currentweekMoonlight",
+                    "currentweekAssistso3",
+                    "currentweeko3feedback",
+                    "o3currentweekVoidFeedback",
+                    "o3currentweekShattersFeedback",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "sfu",
+                "name": "silentfungal",
+                "alias": [
+                    "silentfungal"
+                ],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": false,
+                "main": "o3silentfungalsLead",
+                "currentweek": "o3silentCurrentweekFungals",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/926313805888225342.webp",
+                "desc": "`Silent Fungal` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "o3silentCurrentweekO3",
+                    "o3silentCurrentweekVoid",
+                    "o3silentCurrentweekCult",
+                    "o3silentCurrentweekShatters",
+                    "o3silentCurrentweekFungals",
+                    "o3silentCurrentweekNests",
+                    "o3silentCurrentWeekAdvancedNests",
+                    "o3silentCurrentweekSteamworks",
+                    "o3silentCurrentWeekAdvancedSteamworks",
+                    "o3silentCurrentweekMoonlight",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "n",
+                "name": "nest",
+                "alias": [
+                    "nest"
+                ],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "o3nestsLead",
+                "currentweek": "o3currentweekNests",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/926313806567719032.webp",
+                "desc": "`Nest` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweeko3",
+                    "o3currentweekVoid",
+                    "o3currentweekCult",
+                    "o3currentweekShatters",
+                    "o3currentweekFungals",
+                    "o3currentweekNests",
+                    "o3currentWeekAdvancedNests",
+                    "o3currentweekSteamworks",
+                    "o3currentweekMoonlight",
+                    "currentweekAssistso3",
+                    "currentweeko3feedback",
+                    "o3currentweekVoidFeedback",
+                    "o3currentweekShattersFeedback",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "sn",
+                "name": "silentnest",
+                "alias": [
+                    "silentnest"
+                ],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": false,
+                "main": "o3silentnestsLead",
+                "currentweek": "o3silentCurrentweekNests",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/926313806567719032.webp",
+                "desc": "`Silent Nest` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "o3silentCurrentweekO3",
+                    "o3silentCurrentweekVoid",
+                    "o3silentCurrentweekCult",
+                    "o3silentCurrentweekShatters",
+                    "o3silentCurrentweekFungals",
+                    "o3silentCurrentweekNests",
+                    "o3silentCurrentWeekAdvancedNests",
+                    "o3silentCurrentweekSteamworks",
+                    "o3silentCurrentWeekAdvancedSteamworks",
+                    "o3silentCurrentweekMoonlight",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "an",
+                "name": "advancednest",
+                "alias": [
+                    "advancednest"
+                ],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "o3advancedNestsLead",
+                "currentweek": "o3currentWeekAdvancedNests",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/attachments/1114574154021208186/1141019469313998909/0R2f_8eCnjFL2V8MC8jnsXD1fLTcRJOmKN6uJrFfSVGB1udAdGeOIlFC0oaYchvVKKg6BpxjDlCJ02fK8PabFL0gcQ_hlw7a9mG_NFF5msR3itRQDnYiL75bmKXESvSNy_cz9s3fQdCucDMaFESSeA.png",
+                "desc": "`Advanced Nest` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweeko3",
+                    "o3currentweekVoid",
+                    "o3currentweekCult",
+                    "o3currentweekShatters",
+                    "o3currentweekFungals",
+                    "o3currentweekNests",
+                    "o3currentWeekAdvancedNests",
+                    "o3currentweekSteamworks",
+                    "o3currentweekMoonlight",
+                    "currentweekAssistso3",
+                    "currentweeko3feedback",
+                    "o3currentweekVoidFeedback",
+                    "o3currentweekShattersFeedback",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "san",
+                "name": "silentadvancednest",
+                "alias": [
+                    "silentadvancednest"
+                ],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": false,
+                "main": "o3silentadvancedNestsLead",
+                "currentweek": "o3silentCurrentWeekAdvancedNests",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/attachments/1114574154021208186/1141019469313998909/0R2f_8eCnjFL2V8MC8jnsXD1fLTcRJOmKN6uJrFfSVGB1udAdGeOIlFC0oaYchvVKKg6BpxjDlCJ02fK8PabFL0gcQ_hlw7a9mG_NFF5msR3itRQDnYiL75bmKXESvSNy_cz9s3fQdCucDMaFESSeA.png",
+                "desc": "`Silent Advanced Nest` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "o3silentCurrentweekO3",
+                    "o3silentCurrentweekVoid",
+                    "o3silentCurrentweekCult",
+                    "o3silentCurrentweekShatters",
+                    "o3silentCurrentweekFungals",
+                    "o3silentCurrentweekNests",
+                    "o3silentCurrentWeekAdvancedNests",
+                    "o3silentCurrentweekSteamworks",
+                    "o3silentCurrentWeekAdvancedSteamworks",
+                    "o3silentCurrentweekMoonlight",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "k",
+                "name": "kogboldsteamworks",
+                "alias": [
+                    "kogbold",
+                    "kogboldsteamworks"
+                ],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "o3steamworksLead",
+                "currentweek": "o3currentweekSteamworks",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/1050156577920917574.webp",
+                "desc": "`Kogbold Steamworks` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweeko3",
+                    "o3currentweekVoid",
+                    "o3currentweekCult",
+                    "o3currentweekShatters",
+                    "o3currentweekFungals",
+                    "o3currentweekNests",
+                    "o3currentWeekAdvancedNests",
+                    "o3currentweekSteamworks",
+                    "o3currentweekMoonlight",
+                    "currentweekAssistso3",
+                    "currentweeko3feedback",
+                    "o3currentweekVoidFeedback",
+                    "o3currentweekShattersFeedback",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "sk",
+                "name": "silentkogbold",
+                "alias": [
+                    "silentkogbold"
+                ],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": false,
+                "main": "o3silentadvancedNestsLead",
+                "currentweek": "o3silentCurrentWeekAdvancedNests",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/1050156577920917574.webp",
+                "desc": "`Silent Kogbold Steamworks` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "o3silentCurrentweekO3",
+                    "o3silentCurrentweekVoid",
+                    "o3silentCurrentweekCult",
+                    "o3silentCurrentweekShatters",
+                    "o3silentCurrentweekFungals",
+                    "o3silentCurrentweekNests",
+                    "o3silentCurrentWeekAdvancedNests",
+                    "o3silentCurrentweekSteamworks",
+                    "o3silentCurrentWeekAdvancedSteamworks",
+                    "o3silentCurrentweekMoonlight",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "ak",
+                "name": "advancedkogboldsteamworks",
+                "alias": [
+                    "advancedkogbold",
+                    "advancedkogboldsteamworks"
+                ],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "o3advancedSteamworksLead",
+                "currentweek": "o3currentWeekAdvancedSteamworks",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/1050156577920917574.webp",
+                "desc": "`Advanced Kogbold Steamworks` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweeko3",
+                    "o3currentweekVoid",
+                    "o3currentweekCult",
+                    "o3currentweekShatters",
+                    "o3currentweekFungals",
+                    "o3currentweekNests",
+                    "o3currentWeekAdvancedNests",
+                    "o3currentweekSteamworks",
+                    "o3currentweekMoonlight",
+                    "currentweekAssistso3",
+                    "currentweeko3feedback",
+                    "o3currentweekVoidFeedback",
+                    "o3currentweekShattersFeedback",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "sak",
+                "name": "silentadvancedkogbold",
+                "alias": [
+                    "silentadvancedkogbold"
+                ],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": false,
+                "main": "o3silentadvancedSteamworksLead",
+                "currentweek": "o3silentCurrentWeekAdvancedSteamworks",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/1050156577920917574.webp",
+                "desc": "`Silent Kogbold Steamworks` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "o3silentCurrentweekO3",
+                    "o3silentCurrentweekVoid",
+                    "o3silentCurrentweekCult",
+                    "o3silentCurrentweekShatters",
+                    "o3silentCurrentweekFungals",
+                    "o3silentCurrentweekNests",
+                    "o3silentCurrentWeekAdvancedNests",
+                    "o3silentCurrentweekSteamworks",
+                    "o3silentCurrentWeekAdvancedSteamworks",
+                    "o3silentCurrentweekMoonlight",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "m",
+                "name": "moonlight",
+                "alias": [
+                    "moonlight"
+                ],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "o3moonlightLead",
+                "currentweek": "o3currentweekMoonlight",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/1090178399252783104.webp",
+                "desc": "`Moonlight Village` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweeko3",
+                    "o3currentweekVoid",
+                    "o3currentweekCult",
+                    "o3currentweekShatters",
+                    "o3currentweekFungals",
+                    "o3currentweekNests",
+                    "o3currentWeekAdvancedNests",
+                    "o3currentweekSteamworks",
+                    "o3currentweekMoonlight",
+                    "currentweekAssistso3",
+                    "currentweeko3feedback",
+                    "o3currentweekVoidFeedback",
+                    "o3currentweekShattersFeedback",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "sm",
+                "name": "silentmoonlight",
+                "alias": [
+                    "silentmoonlight"
+                ],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": false,
+                "main": "o3silentmoonlightLead",
+                "currentweek": "o3silentCurrentweekMoonlight",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/1090178399252783104.webp",
+                "desc": "`Silent Moonlight Steamworks` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "o3silentCurrentweekO3",
+                    "o3silentCurrentweekVoid",
+                    "o3silentCurrentweekCult",
+                    "o3silentCurrentweekShatters",
+                    "o3silentCurrentweekFungals",
+                    "o3silentCurrentweekNests",
+                    "o3silentCurrentWeekAdvancedNests",
+                    "o3silentCurrentweekSteamworks",
+                    "o3silentCurrentWeekAdvancedSteamworks",
+                    "o3silentCurrentweekMoonlight",
                     "rollingQuotao3"
                 ]
             },
@@ -1352,16 +1944,17 @@
             },
             {
                 "key": "f",
-                "name": "feedback",
+                "name": "o3feedback",
                 "alias": [
                     "feedback",
-                    "fb"
+                    "fb",
+                    "o3fb"
                 ],
-                "multiply": 2,
+                "multiply": null,
                 "allowAssists": false,
                 "confirm": false,
                 "main": "o3feedback",
-                "currentweek": "currentweeko3Feedback",
+                "currentweek": "currentweeko3feedback",
                 "color": "#8c00ff",
                 "icon": "https://cdn.discordapp.com/emojis/858920770806087710.png?v=1",
                 "desc": "`Feedback`",
@@ -1369,7 +1962,59 @@
                 "toDisplay": [
                     "currentweeko3",
                     "currentweekAssistso3",
-                    "currentweeko3Feedback",
+                    "currentweeko3feedback",
+                    "o3currentweekShattersFeedback",
+                    "o3currentweekVoidFeedback",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "sf",
+                "name": "shattersfeedback",
+                "alias": [
+                    "shattersfeedback",
+                    "sfb"
+                ],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": false,
+                "main": "o3shattersFeedback",
+                "currentweek": "o3currentweekShattersFeedback",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/858920770806087710.png?v=1",
+                "desc": "`Feedback`",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweeko3",
+                    "currentweekAssistso3",
+                    "currentweeko3feedback",
+                    "o3currentweekShattersFeedback",
+                    "o3currentweekVoidFeedback",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "vf",
+                "name": "voidfeedback",
+                "alias": [
+                    "voidfeedback",
+                    "vfb"
+                ],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": false,
+                "main": "o3voidFeedback",
+                "currentweek": "o3currentweekVoidFeedback",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/858920770806087710.png?v=1",
+                "desc": "`Feedback`",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweeko3",
+                    "currentweekAssistso3",
+                    "currentweeko3feedback",
+                    "o3currentweekShattersFeedback",
+                    "o3currentweekVoidFeedback",
                     "rollingQuotao3"
                 ]
             }
@@ -1399,8 +2044,600 @@
                 "toUpdate": "raiding",
                 "toDisplay": [
                     "currentweeko3",
+                    "o3currentweekVoid",
+                    "o3currentweekCult",
+                    "o3currentweekShatters",
+                    "o3currentweekFungals",
+                    "o3currentweekNests",
+                    "o3currentWeekAdvancedNests",
+                    "o3currentweekSteamworks",
+                    "o3currentweekMoonlight",
                     "currentweekAssistso3",
-                    "currentweeko3Feedback",
+                    "currentweeko3feedback",
+                    "o3currentweekVoidFeedback",
+                    "o3currentweekShattersFeedback",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "so",
+                "name": "silento3",
+                "alias": [
+                    "silento3",
+                    "so3"
+                ],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": false,
+                "main": "o3silentO3sLead",
+                "currentweek": "o3silentCurrentweekO3",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/831047591096745984.png?v=1",
+                "desc": "`Oryx` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "o3silentCurrentweekO3",
+                    "o3silentCurrentweekVoid",
+                    "o3silentCurrentweekCult",
+                    "o3silentCurrentweekShatters",
+                    "o3silentCurrentweekFungals",
+                    "o3silentCurrentweekNests",
+                    "o3silentCurrentWeekAdvancedNests",
+                    "o3silentCurrentweekSteamworks",
+                    "o3silentCurrentWeekAdvancedSteamworks",
+                    "o3silentCurrentweekMoonlight",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "v",
+                "name": "void",
+                "alias": [
+                    "void"
+                ],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "o3voidsLead",
+                "currentweek": "o3currentweekVoid",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/701491230210523247.png?v=1",
+                "desc": "`Void` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweeko3",
+                    "o3currentweekVoid",
+                    "o3currentweekCult",
+                    "o3currentweekShatters",
+                    "o3currentweekFungals",
+                    "o3currentweekNests",
+                    "o3currentWeekAdvancedNests",
+                    "o3currentweekSteamworks",
+                    "o3currentweekMoonlight",
+                    "currentweekAssistso3",
+                    "currentweeko3feedback",
+                    "o3currentweekVoidFeedback",
+                    "o3currentweekShattersFeedback",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "sv",
+                "name": "silentvoid",
+                "alias": [
+                    "silentvoid"
+                ],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": false,
+                "main": "o3silentvoidsLead",
+                "currentweek": "o3silentCurrentweekVoid",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/701491230210523247.png?v=1",
+                "desc": "`Silent Void` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "o3silentCurrentweekO3",
+                    "o3silentCurrentweekVoid",
+                    "o3silentCurrentweekCult",
+                    "o3silentCurrentweekShatters",
+                    "o3silentCurrentweekFungals",
+                    "o3silentCurrentweekNests",
+                    "o3silentCurrentWeekAdvancedNests",
+                    "o3silentCurrentweekSteamworks",
+                    "o3silentCurrentWeekAdvancedSteamworks",
+                    "o3silentCurrentweekMoonlight",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "c",
+                "name": "cult",
+                "alias": [
+                    "cult"
+                ],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "o3cultsLead",
+                "currentweek": "o3currentweekCult",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/701491230332157972.png?v=1",
+                "desc": "`Cult` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweeko3",
+                    "o3currentweekVoid",
+                    "o3currentweekCult",
+                    "o3currentweekShatters",
+                    "o3currentweekFungals",
+                    "o3currentweekNests",
+                    "o3currentWeekAdvancedNests",
+                    "o3currentweekSteamworks",
+                    "o3currentweekMoonlight",
+                    "currentweekAssistso3",
+                    "currentweeko3feedback",
+                    "o3currentweekVoidFeedback",
+                    "o3currentweekShattersFeedback",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "sc",
+                "name": "silentcult",
+                "alias": [
+                    "silentcult"
+                ],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": false,
+                "main": "o3silentcultsLead",
+                "currentweek": "o3silentCurrentweekCult",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/701491230332157972.png?v=1",
+                "desc": "`Silent Cult` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "o3silentCurrentweekO3",
+                    "o3silentCurrentweekVoid",
+                    "o3silentCurrentweekCult",
+                    "o3silentCurrentweekShatters",
+                    "o3silentCurrentweekFungals",
+                    "o3silentCurrentweekNests",
+                    "o3silentCurrentWeekAdvancedNests",
+                    "o3silentCurrentweekSteamworks",
+                    "o3silentCurrentWeekAdvancedSteamworks",
+                    "o3silentCurrentweekMoonlight",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "s",
+                "name": "shatters",
+                "alias": [
+                    "shatters"
+                ],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "o3shattersLead",
+                "currentweek": "o3currentweekShatters",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/924899045154103296.webp",
+                "desc": "`Shatters` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweeko3",
+                    "o3currentweekVoid",
+                    "o3currentweekCult",
+                    "o3currentweekShatters",
+                    "o3currentweekFungals",
+                    "o3currentweekNests",
+                    "o3currentWeekAdvancedNests",
+                    "o3currentweekSteamworks",
+                    "o3currentweekMoonlight",
+                    "currentweekAssistso3",
+                    "currentweeko3feedback",
+                    "o3currentweekVoidFeedback",
+                    "o3currentweekShattersFeedback",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "ss",
+                "name": "silentshatters",
+                "alias": [
+                    "silentshatters",
+                    "ssh"
+                ],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": false,
+                "main": "o3silentshattersLead",
+                "currentweek": "o3silentCurrentweekShatters",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/924899045154103296.webp",
+                "desc": "`Silent Shatters` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "o3silentCurrentweekO3",
+                    "o3silentCurrentweekVoid",
+                    "o3silentCurrentweekCult",
+                    "o3silentCurrentweekShatters",
+                    "o3silentCurrentweekFungals",
+                    "o3silentCurrentweekNests",
+                    "o3silentCurrentWeekAdvancedNests",
+                    "o3silentCurrentweekSteamworks",
+                    "o3silentCurrentWeekAdvancedSteamworks",
+                    "o3silentCurrentweekMoonlight",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "fu",
+                "name": "fungal",
+                "alias": [
+                    "fungal"
+                ],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "o3fungalsLead",
+                "currentweek": "o3currentweekFungals",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/926313805888225342.webp",
+                "desc": "`Fungal` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweeko3",
+                    "o3currentweekVoid",
+                    "o3currentweekCult",
+                    "o3currentweekShatters",
+                    "o3currentweekFungals",
+                    "o3currentweekNests",
+                    "o3currentWeekAdvancedNests",
+                    "o3currentweekSteamworks",
+                    "o3currentweekMoonlight",
+                    "currentweekAssistso3",
+                    "currentweeko3feedback",
+                    "o3currentweekVoidFeedback",
+                    "o3currentweekShattersFeedback",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "sfu",
+                "name": "silentfungal",
+                "alias": [
+                    "silentfungal"
+                ],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": false,
+                "main": "o3silentfungalsLead",
+                "currentweek": "o3silentCurrentweekFungals",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/926313805888225342.webp",
+                "desc": "`Silent Fungal` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "o3silentCurrentweekO3",
+                    "o3silentCurrentweekVoid",
+                    "o3silentCurrentweekCult",
+                    "o3silentCurrentweekShatters",
+                    "o3silentCurrentweekFungals",
+                    "o3silentCurrentweekNests",
+                    "o3silentCurrentWeekAdvancedNests",
+                    "o3silentCurrentweekSteamworks",
+                    "o3silentCurrentWeekAdvancedSteamworks",
+                    "o3silentCurrentweekMoonlight",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "n",
+                "name": "nest",
+                "alias": [
+                    "nest"
+                ],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "o3nestsLead",
+                "currentweek": "o3currentweekNests",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/926313806567719032.webp",
+                "desc": "`Nest` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweeko3",
+                    "o3currentweekVoid",
+                    "o3currentweekCult",
+                    "o3currentweekShatters",
+                    "o3currentweekFungals",
+                    "o3currentweekNests",
+                    "o3currentWeekAdvancedNests",
+                    "o3currentweekSteamworks",
+                    "o3currentweekMoonlight",
+                    "currentweekAssistso3",
+                    "currentweeko3feedback",
+                    "o3currentweekVoidFeedback",
+                    "o3currentweekShattersFeedback",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "sn",
+                "name": "silentnest",
+                "alias": [
+                    "silentnest"
+                ],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": false,
+                "main": "o3silentnestsLead",
+                "currentweek": "o3silentCurrentweekNests",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/926313806567719032.webp",
+                "desc": "`Silent Nest` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "o3silentCurrentweekO3",
+                    "o3silentCurrentweekVoid",
+                    "o3silentCurrentweekCult",
+                    "o3silentCurrentweekShatters",
+                    "o3silentCurrentweekFungals",
+                    "o3silentCurrentweekNests",
+                    "o3silentCurrentWeekAdvancedNests",
+                    "o3silentCurrentweekSteamworks",
+                    "o3silentCurrentWeekAdvancedSteamworks",
+                    "o3silentCurrentweekMoonlight",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "an",
+                "name": "advancednest",
+                "alias": [
+                    "advancednest"
+                ],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "o3advancedNestsLead",
+                "currentweek": "o3currentWeekAdvancedNests",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/attachments/1114574154021208186/1141019469313998909/0R2f_8eCnjFL2V8MC8jnsXD1fLTcRJOmKN6uJrFfSVGB1udAdGeOIlFC0oaYchvVKKg6BpxjDlCJ02fK8PabFL0gcQ_hlw7a9mG_NFF5msR3itRQDnYiL75bmKXESvSNy_cz9s3fQdCucDMaFESSeA.png",
+                "desc": "`Advanced Nest` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweeko3",
+                    "o3currentweekVoid",
+                    "o3currentweekCult",
+                    "o3currentweekShatters",
+                    "o3currentweekFungals",
+                    "o3currentweekNests",
+                    "o3currentWeekAdvancedNests",
+                    "o3currentweekSteamworks",
+                    "o3currentweekMoonlight",
+                    "currentweekAssistso3",
+                    "currentweeko3feedback",
+                    "o3currentweekVoidFeedback",
+                    "o3currentweekShattersFeedback",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "san",
+                "name": "silentadvancednest",
+                "alias": [
+                    "silentadvancednest"
+                ],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": false,
+                "main": "o3silentadvancedNestsLead",
+                "currentweek": "o3silentCurrentWeekAdvancedNests",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/attachments/1114574154021208186/1141019469313998909/0R2f_8eCnjFL2V8MC8jnsXD1fLTcRJOmKN6uJrFfSVGB1udAdGeOIlFC0oaYchvVKKg6BpxjDlCJ02fK8PabFL0gcQ_hlw7a9mG_NFF5msR3itRQDnYiL75bmKXESvSNy_cz9s3fQdCucDMaFESSeA.png",
+                "desc": "`Silent Advanced Nest` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "o3silentCurrentweekO3",
+                    "o3silentCurrentweekVoid",
+                    "o3silentCurrentweekCult",
+                    "o3silentCurrentweekShatters",
+                    "o3silentCurrentweekFungals",
+                    "o3silentCurrentweekNests",
+                    "o3silentCurrentWeekAdvancedNests",
+                    "o3silentCurrentweekSteamworks",
+                    "o3silentCurrentWeekAdvancedSteamworks",
+                    "o3silentCurrentweekMoonlight",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "k",
+                "name": "kogboldsteamworks",
+                "alias": [
+                    "kogbold",
+                    "kogboldsteamworks"
+                ],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "o3steamworksLead",
+                "currentweek": "o3currentweekSteamworks",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/1050156577920917574.webp",
+                "desc": "`Kogbold Steamworks` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweeko3",
+                    "o3currentweekVoid",
+                    "o3currentweekCult",
+                    "o3currentweekShatters",
+                    "o3currentweekFungals",
+                    "o3currentweekNests",
+                    "o3currentWeekAdvancedNests",
+                    "o3currentweekSteamworks",
+                    "o3currentweekMoonlight",
+                    "currentweekAssistso3",
+                    "currentweeko3feedback",
+                    "o3currentweekVoidFeedback",
+                    "o3currentweekShattersFeedback",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "sk",
+                "name": "silentkogbold",
+                "alias": [
+                    "silentkogbold"
+                ],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": false,
+                "main": "o3silentadvancedNestsLead",
+                "currentweek": "o3silentCurrentWeekAdvancedNests",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/1050156577920917574.webp",
+                "desc": "`Silent Kogbold Steamworks` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "o3silentCurrentweekO3",
+                    "o3silentCurrentweekVoid",
+                    "o3silentCurrentweekCult",
+                    "o3silentCurrentweekShatters",
+                    "o3silentCurrentweekFungals",
+                    "o3silentCurrentweekNests",
+                    "o3silentCurrentWeekAdvancedNests",
+                    "o3silentCurrentweekSteamworks",
+                    "o3silentCurrentWeekAdvancedSteamworks",
+                    "o3silentCurrentweekMoonlight",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "ak",
+                "name": "advancedkogboldsteamworks",
+                "alias": [
+                    "advancedkogbold",
+                    "advancedkogboldsteamworks"
+                ],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "o3advancedSteamworksLead",
+                "currentweek": "o3currentWeekAdvancedSteamworks",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/1050156577920917574.webp",
+                "desc": "`Advanced Kogbold Steamworks` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweeko3",
+                    "o3currentweekVoid",
+                    "o3currentweekCult",
+                    "o3currentweekShatters",
+                    "o3currentweekFungals",
+                    "o3currentweekNests",
+                    "o3currentWeekAdvancedNests",
+                    "o3currentweekSteamworks",
+                    "o3currentweekMoonlight",
+                    "currentweekAssistso3",
+                    "currentweeko3feedback",
+                    "o3currentweekVoidFeedback",
+                    "o3currentweekShattersFeedback",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "sak",
+                "name": "silentadvancedkogbold",
+                "alias": [
+                    "silentadvancedkogbold"
+                ],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": false,
+                "main": "o3silentadvancedSteamworksLead",
+                "currentweek": "o3silentCurrentWeekAdvancedSteamworks",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/1050156577920917574.webp",
+                "desc": "`Silent Kogbold Steamworks` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "o3silentCurrentweekO3",
+                    "o3silentCurrentweekVoid",
+                    "o3silentCurrentweekCult",
+                    "o3silentCurrentweekShatters",
+                    "o3silentCurrentweekFungals",
+                    "o3silentCurrentweekNests",
+                    "o3silentCurrentWeekAdvancedNests",
+                    "o3silentCurrentweekSteamworks",
+                    "o3silentCurrentWeekAdvancedSteamworks",
+                    "o3silentCurrentweekMoonlight",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "m",
+                "name": "moonlight",
+                "alias": [
+                    "moonlight"
+                ],
+                "multiply": null,
+                "allowAssists": true,
+                "confirm": false,
+                "main": "o3moonlightLead",
+                "currentweek": "o3currentweekMoonlight",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/1090178399252783104.webp",
+                "desc": "`Moonlight Village` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweeko3",
+                    "o3currentweekVoid",
+                    "o3currentweekCult",
+                    "o3currentweekShatters",
+                    "o3currentweekFungals",
+                    "o3currentweekNests",
+                    "o3currentWeekAdvancedNests",
+                    "o3currentweekSteamworks",
+                    "o3currentweekMoonlight",
+                    "currentweekAssistso3",
+                    "currentweeko3feedback",
+                    "o3currentweekVoidFeedback",
+                    "o3currentweekShattersFeedback",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "sm",
+                "name": "silentmoonlight",
+                "alias": [
+                    "silentmoonlight"
+                ],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": false,
+                "main": "o3silentmoonlightLead",
+                "currentweek": "o3silentCurrentweekMoonlight",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/1090178399252783104.webp",
+                "desc": "`Silent Moonlight Steamworks` Run",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "o3silentCurrentweekO3",
+                    "o3silentCurrentweekVoid",
+                    "o3silentCurrentweekCult",
+                    "o3silentCurrentweekShatters",
+                    "o3silentCurrentweekFungals",
+                    "o3silentCurrentweekNests",
+                    "o3silentCurrentWeekAdvancedNests",
+                    "o3silentCurrentweekSteamworks",
+                    "o3silentCurrentWeekAdvancedSteamworks",
+                    "o3silentCurrentweekMoonlight",
                     "rollingQuotao3"
                 ]
             },
@@ -1446,16 +2683,17 @@
             },
             {
                 "key": "f",
-                "name": "feedback",
+                "name": "o3feedback",
                 "alias": [
                     "feedback",
-                    "fb"
+                    "fb",
+                    "o3fb"
                 ],
-                "multiply": 2,
+                "multiply": null,
                 "allowAssists": false,
                 "confirm": false,
                 "main": "o3feedback",
-                "currentweek": "currentweeko3Feedback",
+                "currentweek": "currentweeko3feedback",
                 "color": "#8c00ff",
                 "icon": "https://cdn.discordapp.com/emojis/858920770806087710.png?v=1",
                 "desc": "`Feedback`",
@@ -1463,7 +2701,59 @@
                 "toDisplay": [
                     "currentweeko3",
                     "currentweekAssistso3",
-                    "currentweeko3Feedback",
+                    "currentweeko3feedback",
+                    "o3currentweekShattersFeedback",
+                    "o3currentweekVoidFeedback",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "sf",
+                "name": "shattersfeedback",
+                "alias": [
+                    "shattersfeedback",
+                    "sfb"
+                ],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": false,
+                "main": "o3shattersFeedback",
+                "currentweek": "o3currentweekShattersFeedback",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/858920770806087710.png?v=1",
+                "desc": "`Feedback`",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweeko3",
+                    "currentweekAssistso3",
+                    "currentweeko3feedback",
+                    "o3currentweekShattersFeedback",
+                    "o3currentweekVoidFeedback",
+                    "rollingQuotao3"
+                ]
+            },
+            {
+                "key": "vf",
+                "name": "voidfeedback",
+                "alias": [
+                    "voidfeedback",
+                    "vfb"
+                ],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": false,
+                "main": "o3voidFeedback",
+                "currentweek": "o3currentweekVoidFeedback",
+                "color": "#8c00ff",
+                "icon": "https://cdn.discordapp.com/emojis/858920770806087710.png?v=1",
+                "desc": "`Feedback`",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweeko3",
+                    "currentweekAssistso3",
+                    "currentweeko3feedback",
+                    "o3currentweekShattersFeedback",
+                    "o3currentweekVoidFeedback",
                     "rollingQuotao3"
                 ]
             }

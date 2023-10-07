@@ -62,7 +62,6 @@ module.exports = {
         templateEmbed.setColor('#ff0000')
         templateEmbed.setTitle('Available Templates')
         for (let i = 0; i < templateValue[inherit].value.length; i++) {
-            console.log(templateValue[inherit].value[i])
             if (i != 0 && i % 2 == 0) templateEmbed.addFields({ name: '\u200b', value: '\u200b', inline: false })
             templateEmbed.addFields({ name: ' ', value: templateValue[inherit].value[i], inline: true })
         }
