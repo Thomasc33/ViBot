@@ -14,7 +14,6 @@ commands/commands.js
 commands/commend.js
 commands/complete.js
 commands/crasherList.js
-commands/currentweek.js
 commands/echo.js
 commands/emoji.js
 commands/eval.js
