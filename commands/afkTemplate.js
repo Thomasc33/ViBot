@@ -102,8 +102,8 @@ class AfkTemplate {
     #bot;
     #botSettings;
     #guild;
-    #channel;
     #inherit;
+    #templateName;
 
     /** Constructor for the AFK Template Class
      * @param {Discord.Client} bot The client which is running the bot
@@ -111,13 +111,13 @@ class AfkTemplate {
      * @param {Discord.Message} message The discord message in which the command was executed
      * @param {String} alias The string used to identify the AFK Template
      */
-    constructor(bot, botSettings, message, template) {
+    constructor(bot, guild, template) {
         this.#bot = bot
-        this.#botSettings = botSettings
-        this.#guild = message.guild
-        this.#channel = message.channel
+        this.#botSettings = bot.settings[guild.id]
+        this.#guild = guild
         this.#inherit = null
         this.#template = template
+        this.#templateName = template.templateName
 
         // Validate that the template is OK to use
         this.#validateTemplateParameters() // Validate existence of AFK Template parameters
@@ -126,8 +126,10 @@ class AfkTemplate {
 
         // Populate all parameters used in AfkCheck
         this.#processParameters()
+        this.#processReacts()
     }
 
+    // TODO: Need to be able to skip permission checks on reload
     static async tryCreate(bot, botSettings, message, templateName) {
         const templateUrl = new URL(settings.config.url)
         templateUrl.pathname = `/api/${message.guild.id}/template/${message.channel.id}/template/${templateName}`
@@ -135,13 +137,16 @@ class AfkTemplate {
         templateUrl.searchParams.append('key', settings.config.key)
         const template = await fetch(templateUrl).then(f => f.json())
         try {
-            return new this(bot, bot.settings[message.guild.id], message, template)
+            return new this(bot, message.guild, template)
         } catch (e) {
             if (e instanceof AfkTemplateValidationError) return e
             throw e
         }
     }
 
+    get templateName() {
+        return this.#templateName
+    }
 
     // Function for populating child AFK Template parameters in an object from Parent AFK Template object
     #populateObjectInherit(template, parentTemplate) {
@@ -366,7 +371,7 @@ class AfkTemplate {
         }
         this.raidTemplateChannel = this.#guild.channels.cache.get(this.#botSettings.raiding[this.#template.templateChannel])
         this.raidStatusChannel = this.#guild.channels.cache.get(this.#botSettings.raiding[this.#template.statusChannel])
-        this.raidCommandChannel = this.#channel
+        this.raidCommandChannel = this.#guild.channels.cache.get(this.#template.commandsChannel)
         this.raidActiveChannel = this.#guild.channels.cache.get(this.#botSettings.raiding[this.#template.activeChannel])
         this.logName = this.#template.logName
         this.name = this.#template.name
@@ -378,23 +383,25 @@ class AfkTemplate {
         this.body = this.#template.body
         this.buttons = this.#template.buttons
         this.reacts = this.#template.reacts
-        this.templateID = this.#template.templateID
+        this.templateID = this.#template.templateId
         this.parentTemplateID = this.#template.parentTemplateID
     }
 
     processBody(channel) {
+        const body = JSON.parse(JSON.stringify(this.body))
         for (let i = 1; i <= this.#template.phases; i++) {
-            if (this.body[i].message) this.body[i].message = this.processMessages(channel, this.body[i].message)
-            if (!this.body[i].embed.description) this.body[i].embed.description = this.processBodyDescription(channel, i)
+            if (body[i].message) body[i].message = this.processMessages(channel, body[i].message)
+            if (!body[i].embed.description) body[i].embed.description = this.processBodyDescription(channel, i)
             else {
-                for (let j in this.body[i].embed.description) {
-                    if (!this.body[i].embed.description[j]) this.body[i].embed.description[j] = this.processBodyDescription(channel, i)
-                    else if (i != 0 && this.body[i].embed.description[j] == "") this.body[i].embed.description[j] = this.body[i-1].embed.description[j]
-                    else this.body[i].embed.description[j] = this.processMessages(channel, this.body[i].embed.description[j])
+                for (let j in body[i].embed.description) {
+                    if (!body[i].embed.description[j]) body[i].embed.description[j] = this.processBodyDescription(channel, i)
+                    else if (i != 0 && body[i].embed.description[j] == "") body[i].embed.description[j] = body[i-1].embed.description[j]
+                    else body[i].embed.description[j] = this.processMessages(channel, body[i].embed.description[j])
                 }
-                this.body[i].embed.description = this.body[i].embed.description.reduce((a, b) => a + b)
+                body[i].embed.description = body[i].embed.description.reduce((a, b) => a + b)
             }
         }
+        return body
     }
 
     processBodyHeadcount(channel) {
@@ -446,21 +453,26 @@ class AfkTemplate {
     }
 
     processButtons(channel) {
-        for (let i in this.buttons) {
-            if (!this.buttons[i].points) this.buttons[i].points = 0
-            if (!Number.isInteger(this.buttons[i].points)) this.buttons[i].points = this.#botSettings.points[this.buttons[i].points]
-            if (!this.buttons[i].disableStart) this.buttons[i].disableStart = this.buttons[i].start
-            if (this.buttons[i].emote) this.buttons[i].emote = this.#bot.storedEmojis[this.buttons[i].emote]
-            if (this.buttons[i].minRole) this.buttons[i].minRole = this.#guild.roles.cache.get(this.#botSettings.roles[this.buttons[i].minRole])
-            if (this.buttons[i].minStaffRoles) this.buttons[i].minStaffRoles = this.buttons[i].minStaffRoles.map(role => this.#guild.roles.cache.get(this.#botSettings.roles[role]))
-            if (this.buttons[i].confirmationMessage) this.buttons[i].confirmationMessage = this.processMessages(channel, this.buttons[i].confirmationMessage)
-            for (let j in this.buttons[i].logOptions) {
-                if (!this.buttons[i].logOptions[j].points) this.buttons[i].logOptions[j].points = 0
-                if (!Number.isInteger(this.buttons[i].logOptions[j].points)) this.buttons[i].logOptions[j].points = this.#botSettings.points[this.buttons[i].logOptions[j].points]
-                if (!this.buttons[i].logOptions[j].multiplier) this.buttons[i].logOptions[j].multiplier = 1
-                if (!Number.isInteger(this.buttons[i].logOptions[j].multiplier)) this.buttons[i].logOptions[j].multiplier = this.#botSettings.points[this.buttons[i].logOptions[j].multiplier]
+        return Object.entries(this.#template.buttons).reduce((obj, [key, button]) => {
+            obj[key] = {
+                ...button,
+                points: typeof button.points == 'string' ? this.#botSettings.points[button.points] : button.points ?? 0,
+                disableStart: button.disableStart || button.start,
+                emote: this.#bot.storedEmojis[button.emote],
+                minRole: this.#guild.roles.cache.get(this.#botSettings.roles[button.minRole]),
+                minStaffRoles: button.minStaffRoles && button.minStaffRoles.map(role => this.#guild.roles.cache.get(this.#botSettings.roles[role])),
+                confirmationMessage: button.confirmationMessage && this.processMessages(channel, button.confirmationMessage),
+                logOptions: button.logOptions && Object.entries(button.logOptions).reduce((obj, [key, logOption]) => {
+                    obj[key] = {
+                        ...logOption,
+                        points: typeof logOption.points == 'string' ? this.#botSettings.points[logOption.points] : logOption.points ?? 0,
+                        multiplier: typeof logOption.multiplier == 'string' ? this.#botSettings.points[logOption.multiplier] : logOption.multiplier ?? 1,
+                    }
+                    return obj
+                }, {})
             }
-        }
+            return obj
+        }, {})
     }
 
     processMessages(channel, currentMessage) {
@@ -481,12 +493,8 @@ class AfkTemplate {
         return newMessage2
     }
 
-    processReacts() {
+    #processReacts() {
         for (let i in this.reacts) this.reacts[i].emote = this.#bot.storedEmojis[this.reacts[i].emote]
-    }
-
-    updateButtonChoice(choices) {
-        for (let i in this.buttons) if (choices.includes(i)) delete this.buttons[i]
     }
 
     getButtonChoices() {
