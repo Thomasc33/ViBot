@@ -141,13 +141,16 @@ class afkCheck {
         this.raidCommandsInteractionHandler = null // raid commands interaction handler
         this.raidChannelsMessage = null // raid channels message
         this.raidChannelsInteractionHandler = null // raid channels interaction handler
-        this.vcLounge = this.#guild.channels.cache.get(this.#botSettings.voice.lounge)
         this.raidDragThreads = {}
         Object.keys(afkTemplate.buttons).forEach((key) => { if (afkTemplate.buttons[key].type == AfkTemplate.TemplateButtonType.DRAG) this.raidDragThreads[key] = { thread: null, collector: null } })
     }
 
     get active() {
         return !(this.ended_by || this.aborted_by || this.deleted_by)
+    }
+
+    get vcLounge() {
+        return this.#guild.channels.cache.get(this.#botSettings.voice.lounge)
     }
 
     get guild() { return this.#guild }
@@ -213,7 +216,6 @@ class afkCheck {
                 raidInfoMessage: this.raidInfoMessage,
                 raidChannelsMessage: this.raidChannelsMessage,
                 raidDragThreads: this.raidDragThreads,
-                vcLounge: this.vcLounge
             }
         }
         fs.writeFileSync('./data/afkChecks.json', JSON.stringify(this.#bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.#bot, this.#guild) })
@@ -243,7 +245,6 @@ class afkCheck {
         this.raidCommandsMessage = await this.#afkTemplate.raidCommandChannel.messages.fetch(storedAfkCheck.raidCommandsMessage.id)
         this.raidInfoMessage = await this.#afkTemplate.raidInfoChannel.messages.fetch(storedAfkCheck.raidInfoMessage.id)
         this.raidChannelsMessage = await this.#afkTemplate.raidActiveChannel.messages.fetch(storedAfkCheck.raidChannelsMessage.id)
-        this.vcLounge = await this.#guild.channels.cache.get(this.#botSettings.voice.lounge)
 
         this.#pointlogMid = storedAfkCheck.pointlogMid
         this.#bot.afkModules[this.#raidID] = this
@@ -1389,9 +1390,11 @@ class afkCheck {
         if (this.moveInEarlysTimer) clearInterval(this.moveInEarlysTimer)
         if (this.updatePanelTimer) clearInterval(this.updatePanelTimer)
 
+        console.log("MOVE @ LONGE")
         if (this.#channel) {
+            console.log("LONGE", this.vcLounge)
             for (let minimumJoinRaiderRole of this.#afkTemplate.minimumJoinRaiderRoles) await this.#channel.permissionOverwrites.edit(minimumJoinRaiderRole.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
-            await this.#channel.setPosition(this.vcLounge.position + 1)
+            console.log(await this.#channel.setPosition(this.vcLounge.position + 1))
         }
 
         this.ended_by = interaction ? this.#guild.members.cache.get(interaction.member.id) : this.#guild.members.cache.get(this.#leader.id)
