@@ -21,6 +21,12 @@ const verification = require('./commands/verification')
 
 // Global Variables/Data
 const botSettings = require('./settings.json')
+
+if (!botSettings.botOwners) {
+    console.log('botOwners not found in settings.json. Update settings with new items from settings_template')
+    process.exit(-1)
+}
+
 const rootCas = require('ssl-root-cas').create()
 require('https').globalAgent.options.ca = rootCas
 const { bot, loadCommands } = require('./botMeta.js')

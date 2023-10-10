@@ -12,6 +12,7 @@ const modmail = require('./commands/modmail')
 const { argString } = require('./commands/commands.js')
 const { getDB } = require('./dbSetup.js')
 const { LegacyCommandOptions, LegacyParserError } = require('./utils.js')
+const { botOwners } = require('./settings.json')
 
 class MessageManager {
     #bot
@@ -199,10 +200,8 @@ class MessageManager {
         const command = this.#bot.commands.get(commandName) || this.#bot.commands.find(cmd => cmd.alias && cmd.alias.includes(commandName))
 
         // Ignore problems if command is eval, user is bot admin, and server is vibot info
-        try {
-            if (require('./settings.json').botOwners.includes(e.member.id) && e.guild.id == '739623118833713214') return await command.execute(e, args, this.#bot, getDB(e.guild.id))
-        } catch (er) {
-            console.log('botOwners not found in settings.json. Update settings with new items from settings_template')
+        if (botOwners.includes(e.member.id) && e.guild.id == '739623118833713214') {
+            return await command.execute(e, args, this.#bot, getDB(e.guild.id))
         }
 
         const validationResult = await this.#validateCommand(e, command, commandName, argCount)
