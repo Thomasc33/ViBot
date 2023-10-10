@@ -97,37 +97,44 @@ class MessageManager {
         )
     }
 
-    /**
-     * Handle logging and replying to command errors
-     * @param {Discord.Message | Discord.Interaction} e
-     * @param {string} commandName
-     * @param {string} userMsg
-     * @param {string?} logMsg
-     */
-    async #commandError(e, commandName, userMsg, logMsg) {
-        if (userMsg) await e.reply(userMsg)
-        logMessage('command', e, (p) => {
-            p.tag('command', commandName)
-            p.tag('errortype', logMsg || userMsg)
-            return p
-        })
-    }
-
     async #validateCommand(e, command, commandName, argCount) {
-        if (!command) return await this.#commandError(e, commandName, 'Command doesnt exist, check `commands` and try again', 'does not exist')
+        /**
+         * Handle logging and replying to command errors
+         * @param {string} userMsg
+         * @param {string?} logMsg
+         */
+        const commandError = async (userMsg, logMsg) => {
+            if (userMsg) await e.reply(userMsg)
+            logMessage('command', e, (p) => {
+                p.tag('command', commandName)
+                p.tag('errortype', logMsg || userMsg)
+                return p
+            })
+        }
+        if (!command) return await commandError('Command doesnt exist, check `commands` and try again', 'does not exist')
 
         // Validate the command is enabled
-        if (!this.#bot.settings[e.guild.id].commands[command.name]) return await this.#commandError(e, commandName, 'This command is disabled', 'disabled')
+        if (!this.#bot.settings[e.guild.id].commands[command.name]) return await commandError('This command is disabled', 'disabled')
 
         // Validate the command is not disabled during restart if a restart is pending
-        if (restarting.restarting && !command.allowedInRestart && !this.#bot.adminUsers.includes(e.member.id)) return await this.#commandError(e, commandName, 'Cannot execute command as a restart is pending', 'pending restart')
+        if (restarting.restarting && !command.allowedInRestart && !this.#bot.adminUsers.includes(e.member.id)) return await commandError('Cannot execute command as a restart is pending', 'pending restart')
 
         // Validate the user has permission to use the command
-        if (!e.guild.roles.cache.get(this.#bot.settings[e.guild.id].roles[command.role])) return await this.#commandError(e, commandName, 'Permissions not set up for this commands role', 'permissions not setup')
+        if (!e.guild.roles.cache.get(this.#bot.settings[e.guild.id].roles[command.role])) return await commandError('Permissions not set up for this commands role', 'permissions not setup')
 
-        if (!this.#commandPermitted(e.member, e.guild, command)) return await this.#commandError(e, commandName, 'You do not have permission to use this command', 'no permission')
+        if (!this.#commandPermitted(e.member, e.guild, command)) return await commandError('You do not have permission to use this command', 'no permission')
 
-        if (command.requiredArgs && command.requiredArgs > argCount) return await this.#commandError(e, commandName, `Command Entered incorrecty. \`${this.#botSettings.prefix}${command.name} ${argString(command.args)}\``, 'invalid syntax')
+        if (command.requiredArgs && command.requiredArgs > argCount) return await commandError(`Command Entered incorrecty. \`${this.#botSettings.prefix}${command.name} ${argString(command.args)}\``, 'invalid syntax')
+
+        if (command.cooldown) {
+            if (this.#cooldowns.get(command.name)) {
+                if (Date.now() + (command.cooldown * 1000) >= Date.now()) return await commandError(null, 'cooldown')
+                this.#cooldowns.delete(command.name)
+            } else {
+                this.#cooldowns.set(command.name, Date.now())
+            }
+            setTimeout(() => this.#cooldowns.delete(command.name), command.cooldown * 1000)
+        }
     }
 
     async #runCommand(e, isInteraction, command, commandName, args) {
@@ -206,14 +213,6 @@ class MessageManager {
 
         const validationResult = await this.#validateCommand(e, command, commandName, argCount)
         if (validationResult) return validationResult
-
-        if (command.cooldown) {
-            if (this.#cooldowns.get(command.name)) {
-                if (Date.now() + (command.cooldown * 1000) < Date.now()) this.#cooldowns.delete(command.name)
-                else return await this.#commandError(e, commandName, null, 'cooldown')
-            } else this.#cooldowns.set(command.name, Date.now())
-            setTimeout(() => { this.#cooldowns.delete(command.name) }, command.cooldown * 1000)
-        }
         return await this.#runCommand(e, isInteraction, command, commandName, args)
     }
 
