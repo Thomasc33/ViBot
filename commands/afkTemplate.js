@@ -1,8 +1,7 @@
 const fs = require('fs')
 const Discord = require('discord.js')
-const templates = require('../data/afkTemplates.json')
 const settings = require('../settings.json')
-const { createEmbed } = require('../lib/extensions.js')
+const { createEmbed, getRoleStrings } = require('../lib/extensions.js')
 
 // Enum for the Error States in a Template
 const TemplateState = { 
@@ -53,10 +52,6 @@ const TemplateButtonChoice = {
     'YES_NO_CHOICE': 1,
     'NUMBER_CHOICE_PRESET' : 2,
     'NUMBER_CHOICE_CUSTOM' : 3
-}
-
-function getRoleStrings(botSettings, member) {
-    return member.roles.cache.map(role => Object.entries(botSettings.roles).filter(([name, id]) => id == role.id).map(i => i[0])).flat()
 }
 
 async function resolveTemplateAlias(botSettings, member, guildId, commandChannel, alias) {
