@@ -179,9 +179,21 @@ class MessageManager {
     async handleCommand(e, isInteraction) {
         if (isInteraction && !this.#bot.settings[e.guild.id]) return
 
-        const args = e.getArgs?.() ?? e.content.slice(this.#prefix.length).split(/ +/gi)
-        const commandName = e.commandName ?? args.shift()
-        const argCount = e.options?.length ?? args.length
+        const getArgs = () => {
+            const result = {}
+            if (isInteraction) {
+                result.args = e.getArgs()
+                result.commandName = e.commandName
+                result.argCount = e.options.length
+            } else {
+                result.args = e.content.slice(this.#prefix.length).split(/ +/gi)
+                result.commandName = result.args.shift()
+                result.argCount = args.length
+            }
+            return result
+        }
+
+        const { args, commandName, argCount } = getArgs()
 
         // Get the command
         const command = this.#bot.commands.get(commandName) || this.#bot.commands.find(cmd => cmd.alias && cmd.alias.includes(commandName))
