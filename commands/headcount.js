@@ -39,22 +39,22 @@ module.exports = {
         }
 
         if (!afkTemplate.minimumStaffRoles.some(roles => roles.every(role => message.member.roles.cache.has(role.id)))) return await message.channel.send({ embeds: [createEmbed(message, `You do not have a suitable set of roles out of ${afkTemplate.minimumStaffRoles.reduce((a, b) => `${a}, ${b.join(' + ')}`)} to run ${afkTemplate.name}.`, null)] })
-        afkTemplate.processReacts()
-        afkTemplate.processButtons(null)
-        const raidStatusEmbed = createEmbed(message, afkTemplate.processBodyHeadcount(null), botSettings.strings[afkTemplate.body[1].embed.image] ? botSettings.strings[afkTemplate.body[1].embed.image] : afkTemplate.body[1].embed.image)
-        raidStatusEmbed.setColor(afkTemplate.body[1].embed.color ? afkTemplate.body[1].embed.color : '#ffffff')
+        const body = afkTemplate.processBody()
+        const raidStatusEmbed = createEmbed(message, afkTemplate.processBodyHeadcount(null), botSettings.strings[body[1].embed.image] ? botSettings.strings[body[1].embed.image] : body[1].embed.image)
+        raidStatusEmbed.setColor(body[1].embed.color ? body[1].embed.color : '#ffffff')
         raidStatusEmbed.setAuthor({ name: `Headcount for ${afkTemplate.name} by ${message.member.nickname}`, iconURL: message.member.user.avatarURL() })
         if (time != 0) {
             raidStatusEmbed.setFooter({ text: `${message.guild.name} • ${Math.floor(time / 60)} Minutes and ${time % 60} Seconds Remaining`, iconURL: message.guild.iconURL() })
             raidStatusEmbed.setDescription(`**Abort <t:${Math.floor(Date.now()/1000)+time}:R>**\n${raidStatusEmbed.data.description}`)
         }
-        if (afkTemplate.body[1].embed.thumbnail) raidStatusEmbed.setThumbnail(afkTemplate.body[1].embed.thumbnail[Math.floor(Math.random()*afkTemplate.body[1].embed.thumbnail.length)])
+        if (body[1].embed.thumbnail) raidStatusEmbed.setThumbnail(body[1].embed.thumbnail[Math.floor(Math.random()*body[1].embed.thumbnail.length)])
         const raidStatusMessage = await afkTemplate.raidStatusChannel.send({ content: `${afkTemplate.pingRoles ? afkTemplate.pingRoles.join(' ') : ''}`, embeds: [raidStatusEmbed] })
         for (let i in afkTemplate.reacts) {
             if (afkTemplate.reacts[i].onHeadcount && afkTemplate.reacts[i].emote) await raidStatusMessage.react(afkTemplate.reacts[i].emote.id)
         }
-        for (let i in afkTemplate.buttons) {
-            if ((afkTemplate.buttons[i].type == AfkTemplate.TemplateButtonType.NORMAL || afkTemplate.buttons[i].type == AfkTemplate.TemplateButtonType.LOG || afkTemplate.buttons[i].type == AfkTemplate.TemplateButtonType.LOG_SINGLE) && afkTemplate.buttons[i].emote) await raidStatusMessage.react(afkTemplate.buttons[i].emote.id)
+        const buttons = afkTemplate.processButtons()
+        for (let i in buttons) {
+            if ((buttons[i].type == AfkTemplate.TemplateButtonType.NORMAL || buttons[i].type == AfkTemplate.TemplateButtonType.LOG || buttons[i].type == AfkTemplate.TemplateButtonType.LOG_SINGLE) && buttons[i].emote) await raidStatusMessage.react(buttons[i].emote.id)
         }
 
         function updateHeadcount() {
