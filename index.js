@@ -140,7 +140,7 @@ Promise.all(botSettings.config?.guildIds.map(guildId => {
             bot.settings[guildId] = data
             bot.settingsTimestamp[guildId] = m.lastEventId
             res()
-            fs.writeFile(`data/guildSettings.${guildId}.cache.json`, JSON.stringify({ logId: m.lastEventId, ...m.data }), () => {})
+            fs.writeFile(`data/guildSettings.${guildId}.cache.json`, JSON.stringify({ logId: m.lastEventId, ...data }), () => {})
         })
 
         // Read from cache
