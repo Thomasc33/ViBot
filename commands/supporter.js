@@ -16,7 +16,7 @@ module.exports = {
     getSlashCommandData(guild) { return slashCommandJSON(this, guild) },
     async execute(message, args, bot, db) {
         const botSettings = bot.settings[message.guild.id]
-        if (message.member.roles.highest.position < message.guild.roles.cache.get(botSettings.roles.minimumSupporterCheckRole) && args.length > 0) return await message.reply({ embeds: [createEmbed(message, `You do not have the required role ${message.guild.roles.cache.get(botSettings.roles.minimumSupporterCheckRole)} to use this command.`, null)], ephemeral: true })
+        if ((message.member.roles.highest.position < message.guild.roles.cache.get(botSettings.roles.minimumSupporterCheckRole).position) && args.length > 0) return await message.reply({ embeds: [createEmbed(message, `You do not have the required role ${message.guild.roles.cache.get(botSettings.roles.minimumSupporterCheckRole)} to use this command.`, null)], ephemeral: true })
         const member = message.guild.findMember(args.join('')) || message.member
         const supporterRoles = botSettings.lists.perkRoles.map(role => message.guild.roles.cache.get(botSettings.roles[role]))
         const supporterError = []
@@ -36,7 +36,6 @@ module.exports = {
             useText += `\`${uses}\`\n`
         }
         if (supporterError.length > 0) return await message.reply({ embeds: [createEmbed(message, `The server has incorrectly defined one of the following Supporter Roles:\n${supporterRoles.join(', ')}`, null)], ephemeral: true })
-        if (member.roles.highest.position < message.guild.roles.cache.get(botSettings.roles.minimumSupporterCheckRole)) return await message.reply({ embeds: [createEmbed(message, `You do not have the required role ${message.guild.roles.cache.get(botSettings.roles.minimumSupporterCheckRole)} to use this command.`, null)], ephemeral: true })
 
         const embed = createEmbed(message, `Available Supporter Perks for ${member}\n`, null)
         embed.setAuthor({ name: member.displayName, iconURL: member.user.displayAvatarURL({ dynamic: true }) })
