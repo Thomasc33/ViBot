@@ -40,6 +40,7 @@ module.exports = {
         const embed = createEmbed(message, `Available Supporter Perks for ${member}\n`, null)
         embed.setAuthor({ name: member.displayName, iconURL: member.user.displayAvatarURL({ dynamic: true }) })
         embed.setTitle('Current Uses')
+        embed.setColor('#EB459E')
         if (!member.roles.cache.hasAny(...supporterRoles.map(role => role?.id))) {
             embed.data.description = `Supporter Perks are unavailable for ${member}\nAvailable Supporter Role information for this server`
             embed.addFields({ name: 'Supporter Roles', value: rolesText, inline: true },
