@@ -56,7 +56,7 @@ module.exports = {
         const lastUseCheck = Date.now() - (cooldown * 1000)
         const [rows,] = await db.promise().query('SELECT * FROM supporterusage WHERE guildid = ? AND userid = ? AND utime > ?', [message.guild.id, member.id, lastUseCheck])
         embed.setThumbnail(supporterRole?.iconURL({ dynamic: true }))
-        embed.setColor(supporterRole?.color)
+        embed.setColor(supporterRole?.color || '#EB459E')
         embed.addFields({ name: 'Supporter Role', value: `${supporterRole}`, inline: true },
             { name: 'Next Usage', value: `${rows.length >= uses ? `<t:${(((cooldown * 1000) + parseInt(rows[0].utime)) / 1000).toFixed(0)}:f>` : '**Now**'}`, inline: true },
             { name: 'Uses Left', value: `\`${uses - rows.length}/${uses}\`  ${(rows.length > 0) ? `(\`+1\` <t:${(((cooldown * 1000) + parseInt(rows[0].utime)) / 1000).toFixed(0)}:R>)` : ''}`, inline: true })
