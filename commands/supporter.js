@@ -13,6 +13,7 @@ module.exports = {
             description: 'Supporter to check usage for'
         })
     ],
+    guildSpecific: true,
     getSlashCommandData(guild) { return slashCommandJSON(this, guild) },
     async execute(message, args, bot, db) {
         const botSettings = bot.settings[message.guild.id]
