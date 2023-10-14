@@ -17,7 +17,7 @@ module.exports = {
     async execute(message, args, bot, db) {
         const botSettings = bot.settings[message.guild.id]
         if ((message.member.roles.highest.position < message.guild.roles.cache.get(botSettings.roles.minimumSupporterCheckRole).position) && args.length > 0) return await message.reply({ embeds: [createEmbed(message, `You do not have the required role ${message.guild.roles.cache.get(botSettings.roles.minimumSupporterCheckRole)} to use this command.`, null)], ephemeral: true })
-        const member = message.guild.findMember(args.join('')) || message.member
+        const member = message.options.getMember('user') || message.member
         const supporterRoles = botSettings.lists.perkRoles.map(role => message.guild.roles.cache.get(botSettings.roles[role]))
         const supporterError = []
 
@@ -28,12 +28,12 @@ module.exports = {
             const supporterNumber = role.supporterHierarchy(botSettings)
             const cooldown = botSettings.supporter[`supporterCooldownSeconds${supporterNumber}`]
             const uses = botSettings.supporter[`supporterUses${supporterNumber}`]
-            if (supporterNumber == 0) {supporterError.push(role); continue}
-            if (!botSettings.supporter[`supporterCooldownSeconds${supporterNumber}`]) {supporterError.push(role); continue}
-            if (!botSettings.supporter[`supporterUses${supporterNumber}`]) {supporterError.push(role); continue}
-            rolesText += `${role}\n`
-            cooldownText += (cooldown < 86400) ? ((cooldown < 3600) ? `\`${(cooldown / 60).toFixed(0)}\` Minutes\n` : `\`${(cooldown / 3600).toFixed(0)}\` Hours\n`) : `\`${(cooldown / 86400).toFixed(0)}\` Days\n`
-            useText += `\`${uses}\`\n`
+            if (supporterNumber == 0 || !botSettings.supporter[`supporterCooldownSeconds${supporterNumber}`] || !botSettings.supporter[`supporterUses${supporterNumber}`]) supporterError.push(role)
+            else {
+                rolesText += `${role}\n`
+                cooldownText += (cooldown < 86400) ? ((cooldown < 3600) ? `\`${(cooldown / 60).toFixed(0)}\` Minutes\n` : `\`${(cooldown / 3600).toFixed(0)}\` Hours\n`) : `\`${(cooldown / 86400).toFixed(0)}\` Days\n`
+                useText += `\`${uses}\`\n`
+            }
         }
         if (supporterError.length > 0) return await message.reply({ embeds: [createEmbed(message, `The server has incorrectly defined one of the following Supporter Roles:\n${supporterRoles.join(', ')}`, null)], ephemeral: true })
 
