@@ -526,7 +526,7 @@ module.exports = { AfkTemplate, TemplateVCOptions, TemplateVCState, TemplateButt
                 let textShow = `There are currently \`${raidIDs.length}\` afk checks.`
                 let indexShow = 0
                 for (let raidID of raidIDs) {
-                    textShow += `\n\`\`${indexShow+1}.\`\` ${bot.afkChecks[raidID].afkTemplate.name} by ${bot.afkChecks[raidID].leader} at <t:${Math.floor(bot.afkChecks[raidID].time/1000)}:f> is ${bot.afkModules[raidID].active ? 'active' : 'inactive'}`
+                    textShow += `\n\`\`${indexShow+1}.\`\` ${bot.afkChecks[raidID].afkTemplateName} by ${bot.afkChecks[raidID].leader} at <t:${Math.floor(bot.afkChecks[raidID].time/1000)}:f> is ${bot.afkModules[raidID]?.active ? 'active' : 'inactive'}`
                     indexShow++
                 }
                 return await message.reply({ embeds: [createEmbed(message, textShow, null)] })
@@ -538,8 +538,8 @@ module.exports = { AfkTemplate, TemplateVCOptions, TemplateVCState, TemplateButt
                 let textDelete = `There are currently \`${raidIDs.length}\` afk checks.`
                 let indexDelete = 0
                 for (let raidID of raidIDs) {
-                    textDelete += `\n\`\`${indexDelete+1}.\`\` ${bot.afkChecks[raidID].afkTemplate.name} by ${bot.afkChecks[raidID].leader} at <t:${Math.floor(bot.afkChecks[raidID].time/1000)}:f> is ${bot.afkModules[raidID].active ? 'active' : 'inactive'}`
-                    deleteMenu.addOptions({ label: `${indexDelete+1}. ${bot.afkChecks[raidID].afkTemplate.name} by ${bot.afkChecks[raidID].leader.displayName}`, value: raidID })
+                    textDelete += `\n\`\`${indexDelete+1}.\`\` ${bot.afkChecks[raidID].afkTemplateName} by ${bot.afkChecks[raidID].leader} at <t:${Math.floor(bot.afkChecks[raidID].time/1000)}:f> is ${bot.afkModules[raidID]?.active ? 'active' : 'inactive'}`
+                    deleteMenu.addOptions({ label: `${indexDelete+1}. ${bot.afkChecks[raidID].afkTemplateName} by ${bot.afkChecks[raidID].leader.displayName}`, value: raidID })
                     indexDelete++
                 }
 
