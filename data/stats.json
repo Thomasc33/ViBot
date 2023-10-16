@@ -64,6 +64,11 @@
                         "row": "vialStored"
                     },
                     {
+                        "name": "Used",
+                        "emoji": "VialOfPureDarkness",
+                        "row": "vialUsed"
+                    },
+                    {
                         "name": "Popped",
                         "emoji": "shieldRune",
                         "row": "runeShieldPops"
