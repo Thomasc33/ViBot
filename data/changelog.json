@@ -30,7 +30,10 @@
             "advancedNestsLead",
             "advancedSteamworksLead",
             "oryxLead",
-            "silentOryxLead"
+            "silentOryxLead",
+            "runeShieldPops",
+            "runeSwordPops",
+            "runeHelmetPops"
         ],
         "currentweeks": [
             {
@@ -137,7 +140,10 @@
             "moonlightLead",
             "moonlightPops",
             "totalUnexcused",
-            "fullskipsLead"
+            "fullskipsLead",
+            "swordRunePops",
+            "shieldRunePops",
+            "helmetRunePops"
         ],
         "currentweeks": [
             {
