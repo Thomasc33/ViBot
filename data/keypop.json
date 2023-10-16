@@ -110,31 +110,6 @@
             "modded": false,
             "moddedSchema": "moddedPops"
         },
-        "advancednest": {
-            "templateID": 30,
-            "alias": [
-                "an",
-                "anest",
-                "advnest"
-            ],
-            "points": "nestkey",
-            "schema": "advancedNestPops",
-            "name": "Advanced Nest",
-            "modded": true,
-            "moddedSchema": "moddedPops"
-        },
-        "shieldrune": {
-            "templateID": 31,
-            "alias": [
-                "sh",
-                "shield"
-            ],
-            "points": "runepop",
-            "schema": "runeShieldPops",
-            "name": "Shield Rune",
-            "modded": false,
-            "moddedSchema": "moddedPops"
-        },
         "swordrune": {
             "templateID": 32,
             "alias": [
@@ -157,6 +132,31 @@
             "points": "runepop",
             "schema": "runeHelmetPops",
             "name": "Helmet Rune",
+            "modded": false,
+            "moddedSchema": "moddedPops"
+        },
+        "advancednest": {
+            "templateID": 30,
+            "alias": [
+                "an",
+                "anest",
+                "advnest"
+            ],
+            "points": "nestkey",
+            "schema": "advancedNestPops",
+            "name": "Advanced Nest",
+            "modded": true,
+            "moddedSchema": "moddedPops"
+        },
+        "shieldrune": {
+            "templateID": 31,
+            "alias": [
+                "sh",
+                "shield"
+            ],
+            "points": "runepop",
+            "schema": "runeShieldPops",
+            "name": "Shield Rune",
             "modded": false,
             "moddedSchema": "moddedPops"
         },
