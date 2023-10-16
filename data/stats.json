@@ -67,6 +67,21 @@
                         "name": "Used",
                         "emoji": "VialOfPureDarkness",
                         "row": "vialUsed"
+                    },
+                    {
+                        "name": "Popped",
+                        "emoji": "helmetRune",
+                        "row": "runeHelmetPops"
+                    },
+                    {
+                        "name": "Popped",
+                        "emoji": "shieldRune",
+                        "row": "runeShieldPops"
+                    },
+                    {
+                        "name": "Popped",
+                        "emoji": "swordRune",
+                        "row": "runeSwordPops"
                     }
                 ]
             },
@@ -118,21 +133,6 @@
                         "name": null,
                         "emoji": "epicMysteryKey",
                         "row": "eventruns"
-                    },
-                    {
-                        "name": "Popped",
-                        "emoji": "helmetRune",
-                        "row": "runeHelmetPops"
-                    },
-                    {
-                        "name": "Popped",
-                        "emoji": "shieldRune",
-                        "row": "runeShieldPops"
-                    },
-                    {
-                        "name": "Popped",
-                        "emoji": "swordRune",
-                        "row": "runeSwordPops"
                     }
 
                 ]
