@@ -58,19 +58,6 @@
             "modded": true,
             "moddedSchema": "moddedPops"
         },
-        "advancednest": {
-            "templateID": 30,
-            "alias": [
-                "an",
-                "anest",
-                "advnest"
-            ],
-            "points": "nestkey",
-            "schema": "advancedNestPops",
-            "name": "Advanced Nest",
-            "modded": true,
-            "moddedSchema": "moddedPops"
-        },
         "steamwork": {
             "templateID": 6,
             "alias": [
@@ -121,6 +108,19 @@
             "schema": "vialUsed",
             "name": "Vial of Pure Darkness",
             "modded": false,
+            "moddedSchema": "moddedPops"
+        },
+        "advancednest": {
+            "templateID": 30,
+            "alias": [
+                "an",
+                "anest",
+                "advnest"
+            ],
+            "points": "nestkey",
+            "schema": "advancedNestPops",
+            "name": "Advanced Nest",
+            "modded": true,
             "moddedSchema": "moddedPops"
         },
         "swordrune": {
