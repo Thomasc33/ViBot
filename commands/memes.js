@@ -39,7 +39,7 @@ module.exports = {
             case 'rj':
                 message.channel.send({ files: ['https://media.discordapp.net/attachments/488881485366165515/795036389834096640/20210102_151014.jpg?width=811&height=1081'] })
                 break;
-            case 'vr':
+            case 'vrr':
                 message.channel.send(vr_gamers.includes(message.author.id) ? `<@&${settings.roles.raider}>` : '@verified raider')
                 break;
             case 'pusbal':
