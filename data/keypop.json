@@ -289,7 +289,7 @@
                 "shield"
             ],
             "points": "runepop",
-            "schema": "shieldRunePops",
+            "schema": "runeShieldPops",
             "name": "Shield Rune",
             "modded": false,
             "moddedSchema": "moddedPops"
@@ -301,7 +301,7 @@
                 "sword"
             ],
             "points": "runepop",
-            "schema": "swordRunePops",
+            "schema": "runeSwordPops",
             "name": "Sword Rune",
             "modded": false,
             "moddedSchema": "moddedPops"
@@ -314,7 +314,7 @@
                 "helmet"
             ],
             "points": "runepop",
-            "schema": "helmetRunePops",
+            "schema": "runeHelmetPops",
             "name": "Helmet Rune",
             "modded": false,
             "moddedSchema": "moddedPops"
