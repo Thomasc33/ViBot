@@ -5,7 +5,7 @@ const read_channel_bit_flag = Discord.PermissionFlagsBits.ViewChannel
 module.exports = {
     name: 'memes',
     alias: ['phd', 'xbox', 'cwinner', 'eury', 'nefiah', 'abysm', 'drunkdevil', 'shiba',
-        'rj', 'vr', 'pusbal', 'bantering', 'chevyo', 'ruler', 'shut', 'grizzell', 'raynulf', 'maxeff', 'sauron'],
+        'rj', 'vrr', 'pusbal', 'bantering', 'chevyo', 'ruler', 'shut', 'grizzell', 'raynulf', 'maxeff', 'sauron'],
     role: 'eventrl',
     async execute(message, args, bot) {
         const settings = bot.settings[message.guild.id]
