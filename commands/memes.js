@@ -5,7 +5,7 @@ const read_channel_bit_flag = Discord.PermissionFlagsBits.ViewChannel
 module.exports = {
     name: 'memes',
     alias: ['phd', 'xbox', 'cwinner', 'eury', 'nefiah', 'abysm', 'drunkdevil', 'shiba',
-        'rj', 'vrr', 'pusbal', 'bantering', 'chevyo', 'ruler', 'shut', 'grizzell', 'raynulf', 'maxeff', 'sauron'],
+        'rj', 'ver', 'pusbal', 'bantering', 'chevyo', 'ruler', 'shut', 'grizzell', 'raynulf', 'maxeff', 'sauron'],
     role: 'eventrl',
     async execute(message, args, bot) {
         const settings = bot.settings[message.guild.id]
@@ -39,7 +39,7 @@ module.exports = {
             case 'rj':
                 message.channel.send({ files: ['https://media.discordapp.net/attachments/488881485366165515/795036389834096640/20210102_151014.jpg?width=811&height=1081'] })
                 break;
-            case 'vrr':
+            case 'ver':
                 message.channel.send(vr_gamers.includes(message.author.id) ? `<@&${settings.roles.raider}>` : '@verified raider')
                 break;
             case 'pusbal':
