@@ -21,8 +21,6 @@ const verification = require('./commands/verification')
 
 // Global Variables/Data
 const botSettings = require('./settings.json')
-const rootCas = require('ssl-root-cas').create()
-require('https').globalAgent.options.ca = rootCas
 const { bot, loadCommands } = require('./botMeta.js')
 loadCommands()
 const serverWhiteList = require('./data/serverWhiteList.json')
