@@ -30,7 +30,10 @@
             "advancedNestsLead",
             "advancedSteamworksLead",
             "oryxLead",
-            "silentOryxLead"
+            "silentOryxLead",
+            "runeShieldPops",
+            "runeSwordPops",
+            "runeHelmetPops"
         ],
         "currentweeks": [
             {

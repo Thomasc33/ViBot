@@ -26,6 +26,10 @@ module.exports = {
             options: [
                 slashArg(SlashArgType.String, 'id', {
                     description: 'The id/name of the user whose expels you want to remove'
+                }),
+                slashArg(SlashArgType.String, 'reason', {
+                    required: false,
+                    description: 'The reason for removing the expel.'
                 })
             ]
         }),
@@ -36,7 +40,7 @@ module.exports = {
                     description: "The id/name of the user who you'd like to expel"
                 }),
                 slashArg(SlashArgType.String, 'reason', {
-                    description: 'The reason for adding the expel'
+                    description: 'The reason for adding the expel.'
                 })
             ]
         })
@@ -118,18 +122,26 @@ module.exports = {
     },
     async removeExpelled(message, bot, db) {
         const id = message.options.getString('id')
-        const settings = bot.settings[message.guild.id];
-        [message.options.getString('id'), ...message.options.getVarargs()].forEach((arg) => {
-            db.query('SELECT * FROM veriblacklist WHERE id = ?', [arg], (err, rows) => {
-                if (rows.length == 0) message.replyUserError(`${arg} is not blacklisted`)
-                else db.query('DELETE FROM veriblacklist WHERE id = ?', [arg])
-            })
+        const reason = [message.options.getString('reason'), ...message.options.getVarargs()].join(' ')
+        const settings = bot.settings[message.guild.id]
+
+        // Check if user is blacklisted
+        db.query('SELECT * FROM veriblacklist WHERE id = ?', [id], (err, rows) => {
+            if (rows.length == 0) message.replyUserError(`Error: \`${id}\` is not blacklisted`)
+
+            // Execute Expel Remove SQL
+            else {
+                db.query('DELETE FROM veriblacklist WHERE id = ?', [id])
+                message.replySuccess('Done!')
+            }
         })
-        message.replySuccess('Done!')
+
+        // Create Mod Log Panels & Send it
         const embed = new Discord.EmbedBuilder()
             .setTitle('Expel Removed')
             .addFields([{ name: 'Moderator', value: `<@!${message.author.id}>`, inline: true }])
             .addFields([{ name: 'Raider', value: id, inline: true }])
+            .addFields([{ name: 'Reason', value: `\`\`\`${reason ? reason : 'No reason provided.'}\`\`\`` }])
             .setColor('Green')
             .setTimestamp(Date.now())
         await message.guild.channels.cache.get(settings.channels.modlogs)?.send({ embeds: [embed] })
