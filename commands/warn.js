@@ -55,8 +55,8 @@ module.exports = {
             .setDescription(`__Moderator:__ <@!${message.author.id}> (${message.member.nickname})\n__Reason:__ ${reason}`)
         if (!silent) await member.send({ embeds: [warnEmbed] }).catch(() => {})
         setTimeout(async () => {
-            const [[{ total_warn_count }]] = await db.promise().query(`SELECT COUNT(*) as total_warn_count FROM warns WHERE id = '${member.user.id}'`)
-            const [[{ server_warn_count }]] = await db.promise().query(`SELECT COUNT(*) as server_warn_count FROM warns WHERE id = '${member.user.id}' and (guildid = '${message.guild.id}' OR guildid is null)`)
+            const [[{ total_warn_count }]] = await db.promise().query('SELECT COUNT(*) as total_warn_count FROM warns WHERE id = ?', [member.user.id])
+            const [[{ server_warn_count }]] = await db.promise().query('SELECT COUNT(*) as server_warn_count FROM warns WHERE id = ? and (guildid = ? OR guildid is null)', [member.user.id, message.guild.id])
             await message.reply(`${member.nickname}${silent ? ' silently' : ''} warned successfully. This is their \`${server_warn_count}\` warning for this server. And has a total of \`${total_warn_count}\` warnings`)
         }, 500)
     }

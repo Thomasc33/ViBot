@@ -9,12 +9,8 @@ module.exports = {
     guildspecific: true,
     role: 'developer',
     async execute(message, args, bot, db) {
-        if (!['258286481167220738', '290956326224396288'].includes(message.author.id)) return message.react('❌')
+        if (!['258286481167220738'].includes(message.author.id)) return message.react('❌')
         const settings = bot.settings[message.guild.id]
-
-        if (!settings.backend.useUnverifiedRole) {
-            return message.reply('`useUnverifiedRole` Is disabled inside of `backend`\nTo enable this\n`;setup` -> `backend` -> `useUnverifiedRole`')
-        }
 
         const options = [
             {
@@ -72,28 +68,22 @@ module.exports = {
                         .setDescription(`Script started <t:${moment().unix()}:R>\n*Please wait patiently as I run through all users.\nThis may take some time\nSit back and relax. I will direct message you once this is done.*`)
                         .setColor('#FF0000')
                     let statisticMessage = await message.channel.send({ embeds: [embed] })
-                    let unverifiedUsers = 0
-                    let verifiedUsers = 0
-                    let suspendedUsers = 0
-                    let alreadyUnverifiedUsers = 0
                     const allUnverifiedUsers = message.guild.members.cache.filter(member => {
-                        if (member.roles.cache.has(settings.roles.raider)) { verifiedUsers++; return false; }
-                        if (member.roles.cache.has(settings.roles.tempsuspended)) {suspendedUsers++; return false; }
-                        if (member.roles.cache.has(settings.roles.permasuspended)) {suspendedUsers++; return false; }
-                        if (member.roles.cache.has(settings.roles.unverified)) {alreadyUnverifiedUsers++; return false; }
-                        unverifiedUsers++;
-                        return true
+                        if (member.roles.cache.has(settings.roles.raider)) { return false }
+                        if (member.nickname !== null && member.nickname !== '') {
+                            return true
+                        }
                     })
                     const allUnverifiedUsersID = allUnverifiedUsers.map(member => member.id)
                     for (let index in allUnverifiedUsersID) {
                         let member = allUnverifiedUsersID[index]
                         member = message.guild.members.cache.get(member)
-                        try { await member.roles.add(settings.roles.unverified) } catch (e) { console.log(e) }
+                        try { await member.roles.add(settings.roles.raider) } catch (e) { console.log(e) }
                         await new Promise(resolve => setTimeout(resolve, 250))
                     }
 
                     embed.setTitle('Statistics')
-                    embed.setDescription(`*Comannd has finished running*\n\n**Unverified Users: \`\`${unverifiedUsers}\`\`\nVerified Users: \`\`${verifiedUsers}\`\`\nSuspended Users:** \`\`${suspendedUsers}\`\`\nAlready Unverified Users: \`\`${alreadyUnverifiedUsers}\`\``)
+                    embed.setDescription(`*Comannd has finished running*`)
                     embed.setColor('#FF0000')
                     await message.react('✅')
                     await message.author.send(`Hello ${message.author} I have completed the script\nYou may view some statistics here: ${statisticMessage.url}`)

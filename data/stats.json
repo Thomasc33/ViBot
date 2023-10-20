@@ -1,423 +1,603 @@
-[{
+[
+    {
         "name": "Lost Halls",
         "id": "343704644712923138",
         "emoji": "halls",
         "values": [
-        {
-            "name": "Keys Popped",
-            "emoji": "legendaryMysteryKey",
-            "values": [
-                {
-                    "name": null,
-                    "emoji": "hallsK",
-                    "row": "keypops"
-                },
-                {
-                    "name": null,
-                    "emoji": "shattersKey",
-                    "row": "shattersPops"
-                },
-                {
-                    "name": null,
-                    "emoji": "fungalK",
-                    "row": "fungalPops"
-                },
-                {
-                    "name": null,
-                    "emoji": "nestK",
-                    "row": "nestPops"
-                },
-                {
-                    "name": null,
-                    "emoji": "advancedNestKey",
-                    "row": "advancedNestPops"
-                },
-                {
-                    "name": null,
-                    "emoji": "steamworksKey",
-                    "row": "steamworkPops"
-                },
-                {
-                    "name": null,
-                    "emoji": "advancedSteamworksKey",
-                    "row": "advancedSteamworkPops"
-                },
-                {
-                    "name": null,
-                    "emoji": "mvK",
-                    "row": "moonlightPops"
-                },
-                {
-                    "name": null,
-                    "emoji": "epicMysteryKey",
-                    "row": "eventpops"
-                },
-                {
-                    "name": null,
-                    "emoji": "moddedKey",
-                    "row": "moddedPops"
-                },
-                {
-                    "name": "Dropped",
-                    "emoji": "VialOfPureDarkness",
-                    "row": "vialStored"
-                },
-                {
-                    "name": "Used",
-                    "emoji": "VialOfPureDarkness",
-                    "row": "vialUsed"
-                }
-            ]
-        },
-        {
-            "name": "Runs Done",
-            "emoji": "halls",
-            "values": [
-                {
-                    "name": null,
-                    "emoji": "cultist",
-                    "row": "cultRuns"
-                },
-                {
-                    "name": null,
-                    "emoji": "void",
-                    "row": "voidRuns"
-                },
-                {
-                    "name": null,
-                    "emoji": "forgottenking",
-                    "row": "shattersRuns"
-                },
-                {
-                    "name": null,
-                    "emoji": "crystal",
-                    "row": "fungalRuns"
-                },
-                {
-                    "name": null,
-                    "emoji": "queenbee",
-                    "row": "nestRuns"
-                },
-                {
-                    "name": null,
-                    "emoji": "SteamworksBoss",
-                    "row": "steamworkRuns"
-                },
-                {
-                    "name": null,
-                    "emoji": "MoonlightBoss",
-                    "row": "moonlightRuns"
-                },
-                {
-                    "name": null,
-                    "emoji": "epicMysteryKey",
-                    "row": "eventruns"
-                }
-            ]
-        },
-        {
-            "name": "Runs Led",
-            "emoji": "halls",
-            "values": [
-                {
-                    "name": null,
-                    "emoji": "cultist",
-                    "row": "cultsLead"
-                },
-                {
-                    "name": null,
-                    "emoji": "void",
-                    "row": "voidsLead"
-                },
-                {
-                    "name": null,
-                    "emoji": "fullskipIcon",
-                    "row": "fullskipsLead"
-                },
-                {
-                    "name": null,
-                    "emoji": "oryxThree",
-                    "row": "oryxLead"
-                },
-                {
-                    "name": "Silent Oryx",
-                    "emoji": "oryx",
-                    "row": "silentOryxLead"
-                },
-                {
-                    "name": null,
-                    "emoji": "forgottenking",
-                    "row": "shattersLead"
-                },
-                {
-                    "name": null,
-                    "emoji": "crystal",
-                    "row": "fungalsLead"
-                },
-                {
-                    "name": null,
-                    "emoji": "queenbee",
-                    "row": "nestsLead"
-                },
-                {
-                    "name": null,
-                    "emoji": "advancedNestBee",
-                    "row": "advancedNestsLead"
-                },
-                {
-                    "name": null,
-                    "emoji": "SteamworksBoss",
-                    "row": "steamworkLead"
-                },
-                {
-                    "name": null,
-                    "emoji": "exaltedAdvancedSteamworks",
-                    "row": "advancedSteamworksLead"
-                },
-                {
-                    "name": null,
-                    "emoji": "MoonlightBoss",
-                    "row": "moonlightLead"
-                },
-                {
-                    "name": "Minutes",
-                    "emoji": "epicMysteryKey",
-                    "row": "eventsLead",
-                    "multiply": 10
-                },
-                {
-                    "name": "Fame Minutes",
-                    "emoji": "fame",
-                    "row": "fameMinutesLead",
-                    "multiply": 10
-                },
-                {
-                    "name": null,
-                    "emoji": "feedback",
-                    "row": "feedback"
-                },
-                {
-                    "name": null,
-                    "emoji": "shattersFeedback",
-                    "row": "shattersFeedback"
-                },
-                {
-                    "name": null,
-                    "emoji": "twitterHandshake",
-                    "row": "assists"
-                },
-                {
-                    "name": null,
-                    "emoji": "parse",
-                    "row": "parses"
-                }
-            ]
-        },
-        {
-            "name": "Tickets",
-            "emoji": "twitterTickets",
-            "values": [
-                {
-                    "name": null,
-                    "emoji": "twitterTickets",
-                    "row": "points"
-                }
-            ]
-        }
-    ]},
+            {
+                "name": "Keys Popped",
+                "emoji": "legendaryMysteryKey",
+                "values": [
+                    {
+                        "name": null,
+                        "emoji": "hallsK",
+                        "row": "keypops"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "shattersKey",
+                        "row": "shattersPops"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "fungalK",
+                        "row": "fungalPops"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "nestK",
+                        "row": "nestPops"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "advancedNestKey",
+                        "row": "advancedNestPops"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "steamworksKey",
+                        "row": "steamworkPops"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "advancedSteamworksKey",
+                        "row": "advancedSteamworkPops"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "mvK",
+                        "row": "moonlightPops"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "epicMysteryKey",
+                        "row": "eventpops"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "moddedKey",
+                        "row": "moddedPops"
+                    },
+                    {
+                        "name": "Dropped",
+                        "emoji": "VialOfPureDarkness",
+                        "row": "vialStored"
+                    },
+                    {
+                        "name": "Used",
+                        "emoji": "VialOfPureDarkness",
+                        "row": "vialUsed"
+                    },
+                    {
+                        "name": "Popped",
+                        "emoji": "shieldRune",
+                        "row": "runeShieldPops"
+                    },
+                    {
+                        "name": "Popped",
+                        "emoji": "swordRune",
+                        "row": "runeSwordPops"
+                    },
+                    {
+                        "name": "Popped",
+                        "emoji": "helmetRune",
+                        "row": "runeHelmetPops"
+                    }
+                ]
+            },
+            {
+                "name": "Runs Done",
+                "emoji": "halls",
+                "values": [
+                    {
+                        "name": null,
+                        "emoji": "cultist",
+                        "row": "cultRuns"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "void",
+                        "row": "voidRuns"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "forgottenking",
+                        "row": "shattersRuns"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "crystal",
+                        "row": "fungalRuns"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "queenbee",
+                        "row": "nestRuns"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "SteamworksBoss",
+                        "row": "steamworkRuns"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "MoonlightBoss",
+                        "row": "moonlightRuns"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "oryxThree",
+                        "row": "oryxRuns"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "epicMysteryKey",
+                        "row": "eventruns"
+                    }
+                ]
+            },
+            {
+                "name": "Runs Led",
+                "emoji": "halls",
+                "values": [
+                    {
+                        "name": null,
+                        "emoji": "cultist",
+                        "row": "cultsLead"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "void",
+                        "row": "voidsLead"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "fullskipIcon",
+                        "row": "fullskipsLead"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "oryxThree",
+                        "row": "oryxLead"
+                    },
+                    {
+                        "name": "Silent Oryx",
+                        "emoji": "oryx",
+                        "row": "silentOryxLead"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "forgottenking",
+                        "row": "shattersLead"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "crystal",
+                        "row": "fungalsLead"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "queenbee",
+                        "row": "nestsLead"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "advancedNestBee",
+                        "row": "advancedNestsLead"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "SteamworksBoss",
+                        "row": "steamworkLead"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "exaltedAdvancedSteamworks",
+                        "row": "advancedSteamworksLead"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "MoonlightBoss",
+                        "row": "moonlightLead"
+                    },
+                    {
+                        "name": "Minutes",
+                        "emoji": "epicMysteryKey",
+                        "row": "eventsLead",
+                        "multiply": 10
+                    },
+                    {
+                        "name": "Fame Minutes",
+                        "emoji": "fame",
+                        "row": "fameMinutesLead",
+                        "multiply": 10
+                    },
+                    {
+                        "name": null,
+                        "emoji": "feedback",
+                        "row": "feedback"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "shattersFeedback",
+                        "row": "shattersFeedback"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "twitterHandshake",
+                        "row": "assists"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "parse",
+                        "row": "parses"
+                    }
+                ]
+            },
+            {
+                "name": "Tickets",
+                "emoji": "twitterTickets",
+                "values": [
+                    {
+                        "name": null,
+                        "emoji": "twitterTickets",
+                        "row": "points"
+                    }
+                ]
+            }
+        ]
+    },
     {
         "name": "Oryx Sanctuary",
         "id": "708026927721480254",
         "emoji": "oryxThree",
-        "values":[
-        {
-            "name": "Runs Done",
-            "emoji": "oryxThree",
-            "values": [
-                {
-                    "name": "Regular Runs",
-                    "emoji": "oryxThree",
-                    "row": "o3runs"
-                },
-                {
-                    "name": "Veteran Runs",
-                    "emoji": "oryxThree",
-                    "row": "o3vetruns"
-                },
-                {
-                    "name": "Completes",
-                    "emoji": "oryxThree",
-                    "row": "o3completes"
-                }
-            ]
-        },
-        {
-            "name": "Runes Popped",
-            "emoji": "o3portal",
-            "values": [
-                {
-                    "name": null,
-                    "emoji": "inc",
-                    "row": "incPops"
-                },
-                {
-                    "name": null,
-                    "emoji": "shieldRune",
-                    "row": "shieldRunePops"
-                },
-                {
-                    "name": null,
-                    "emoji": "swordRune",
-                    "row": "swordRunePops"
-                },
-                {
-                    "name": null,
-                    "emoji": "helmetRune",
-                    "row": "helmetRunePops"
-                }
-            ]
-        },
-        {
-            "name": "Runs Led",
-            "emoji": "oryxThree",
-            "values": [
-                {
-                    "name": "Regular Runs",
-                    "emoji": "oryxThree",
-                    "row": "o3leads"
-                },
-                {
-                    "name": "Veteran Runs",
-                    "emoji": "oryxThree",
-                    "row": "o3vetleads"
-                },
-                {
-                    "name": "Feedbacks",
-                    "emoji": "feedback",
-                    "row": "o3feedback"
-                },
-                {
-                    "name": "Parses",
-                    "emoji": "parse",
-                    "row": "o3parses"
-                }
-            ]
-        },
-        {
-            "name": "Tickets",
-            "emoji": "twitterTickets",
-            "values": [
-                {
-                    "name": null,
-                    "emoji": "twitterTickets",
-                    "row": "points"
-                }
-            ]
-        }
-    ]},
+        "values": [
+            {
+                "name": "Keys Popped",
+                "emoji": "o3portal",
+                "values": [
+                    {
+                        "name": null,
+                        "emoji": "inc",
+                        "row": "incPops"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "shieldRune",
+                        "row": "shieldRunePops"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "swordRune",
+                        "row": "swordRunePops"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "helmetRune",
+                        "row": "helmetRunePops"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "hallsK",
+                        "row": "o3hallsPops"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "VialOfPureDarkness",
+                        "row": "o3vialPops"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "shattersKey",
+                        "row": "o3shattersPops"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "fungalK",
+                        "row": "o3fungalPops"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "nestK",
+                        "row": "o3nestPops"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "advancedNestKey",
+                        "row": "o3advancedNestPops"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "steamworksKey",
+                        "row": "o3steamworkPops"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "advancedSteamworksKey",
+                        "row": "o3advancedSteamworksPops"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "mvK",
+                        "row": "o3moonlightPops"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "epicMysteryKey",
+                        "row": "o3eventPops"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "moddedKey",
+                        "row": "o3moddedPops"
+                    }
+                ]
+            },
+            {
+                "name": "Runs Done",
+                "emoji": "oryxThree",
+                "values": [
+                    {
+                        "name": "Regular Runs",
+                        "emoji": "oryxThree",
+                        "row": "o3runs"
+                    },
+                    {
+                        "name": "Veteran Runs",
+                        "emoji": "oryxThree",
+                        "row": "o3vetruns"
+                    },
+                    {
+                        "name": "Completes",
+                        "emoji": "oryxThree",
+                        "row": "o3completes"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "cultist",
+                        "row": "o3cultRuns"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "void",
+                        "row": "o3voidRuns"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "forgottenking",
+                        "row": "o3shattersRuns"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "crystal",
+                        "row": "o3fungalRuns"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "queenbee",
+                        "row": "o3nestRuns"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "advancedNestBee",
+                        "row": "o3advancedNestRuns"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "SteamworksBoss",
+                        "row": "o3steamworksRuns"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "exaltedAdvancedSteamworks",
+                        "row": "o3advancedSteamworksRuns"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "MoonlightBoss",
+                        "row": "o3moonlightRuns"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "epicMysteryKey",
+                        "row": "o3eventruns"
+                    }
+                ]
+            },
+            {
+                "name": "Runs Led",
+                "emoji": "oryxThree",
+                "values": [
+                    {
+                        "name": "Regular Runs",
+                        "emoji": "oryxThree",
+                        "row": "o3leads"
+                    },
+                    {
+                        "name": "Veteran Runs",
+                        "emoji": "oryxThree",
+                        "row": "o3vetleads"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "cultist",
+                        "row": "o3cultsLead"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "void",
+                        "row": "o3voidsLead"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "forgottenking",
+                        "row": "o3shattersLead"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "crystal",
+                        "row": "o3fungalsLead"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "queenbee",
+                        "row": "o3nestsLead"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "advancedNestBee",
+                        "row": "o3advancedNestsLead"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "SteamworksBoss",
+                        "row": "o3steamworksLead"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "exaltedAdvancedSteamworks",
+                        "row": "o3advancedSteamworksLead"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "MoonlightBoss",
+                        "row": "o3moonlightLead"
+                    },
+                    {
+                        "name": "Minutes",
+                        "emoji": "epicMysteryKey",
+                        "row": "o3eventsLead",
+                        "multiply": 10
+                    },
+                    {
+                        "name": "Feedbacks",
+                        "emoji": "feedback",
+                        "row": "o3feedback"
+                    },
+                    {
+                        "name": "Parses",
+                        "emoji": "parse",
+                        "row": "o3parses"
+                    }
+                ]
+            },
+            {
+                "name": "Tickets",
+                "emoji": "twitterTickets",
+                "values": [
+                    {
+                        "name": null,
+                        "emoji": "twitterTickets",
+                        "row": "points"
+                    }
+                ]
+            }
+        ]
+    },
     {
         "name": "Shatters",
         "id": "451171819672698920",
         "emoji": "theShattersPortal",
         "values": [
-        {
-            "name": "Keys Popped",
-            "emoji": "legendaryMysteryKey",
-            "values": [
-                {
-                    "name": null,
-                    "emoji": "shattersKey",
-                    "row": "shatterspops"
-                },
-                {
-                    "name": null,
-                    "emoji": "mvK",
-                    "row": "moonlightPops"
-                },
-                {
-                    "name": null,
-                    "emoji": "epicMysteryKey",
-                    "row": "eventpops"
-                }
-            ]
-        },
-        {
-            "name": "Runs Led",
-            "emoji": "theShattersPortal",
-            "values": [
-                {
-                    "name": "Regular",
-                    "emoji": "forgottenking",
-                    "row": "successruns"
-                },
-                {
-                    "name": "Veteran",
-                    "emoji": "forgottenking",
-                    "row": "veteranShattersLead"
-                },
-                {
-                    "name": "Hardmode",
-                    "emoji": "forgottenking",
-                    "row": "hardmodeLead"
-                },
-                {
-                    "name": "Failed",
-                    "emoji": "crossmark",
-                    "row": "failruns"
-                },
-                {
-                    "name": "Moonlights",
-                    "emoji": "MoonlightBoss",
-                    "row": "moonlightLead"
-                },
-                {
-                    "name": "Mutes",
-                    "emoji": "epicMysteryKey",
-                    "row": "eventslead",
-                    "multiply": 10
-                },
-                {
-                    "name": "Assists",
-                    "emoji": "twitterHandshake",
-                    "row": "assists"
-                },
-                {
-                    "name": "Legacy Assists",
-                    "emoji": "twitterHandshake",
-                    "row": "oldassists"
-                },
-                {
-                    "name": "Legacy Runs",
-                    "emoji": "forgottenking",
-                    "row": "oldsuccessruns"
-                }
-            ]
-        },
-        {
-            "name": "Runs Done",
-            "emoji": "theShattersPortal",
-            "values": [
-                {
-                    "name": null,
-                    "emoji": "forgottenking",
-                    "row": "runs"
-                },
-                {
-                    "name": null,
-                    "emoji": "mv",
-                    "row": "moonlightRuns"
-                },
-                {
-                    "name": null,
-                    "emoji": "epicMysteryKey",
-                    "row": "eventruns"
-                },
-                {
-                    "name": "Legacy",
-                    "emoji": "forgottenking",
-                    "row": "oldruns"
-                }
-            ]
-        }
-    ]}
+            {
+                "name": "Keys Popped",
+                "emoji": "legendaryMysteryKey",
+                "values": [
+                    {
+                        "name": null,
+                        "emoji": "shattersKey",
+                        "row": "shatterspops"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "mvK",
+                        "row": "moonlightPops"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "epicMysteryKey",
+                        "row": "eventpops"
+                    }
+                ]
+            },
+            {
+                "name": "Runs Led",
+                "emoji": "theShattersPortal",
+                "values": [
+                    {
+                        "name": "Regular",
+                        "emoji": "forgottenking",
+                        "row": "successruns"
+                    },
+                    {
+                        "name": "Veteran",
+                        "emoji": "forgottenking",
+                        "row": "veteranShattersLead"
+                    },
+                    {
+                        "name": "Hardmode",
+                        "emoji": "forgottenking",
+                        "row": "hardmodeLead"
+                    },
+                    {
+                        "name": "Failed",
+                        "emoji": "crossmark",
+                        "row": "failruns"
+                    },
+                    {
+                        "name": "Moonlights",
+                        "emoji": "MoonlightBoss",
+                        "row": "moonlightLead"
+                    },
+                    {
+                        "name": "Mutes",
+                        "emoji": "epicMysteryKey",
+                        "row": "eventslead",
+                        "multiply": 10
+                    },
+                    {
+                        "name": "Assists",
+                        "emoji": "twitterHandshake",
+                        "row": "assists"
+                    },
+                    {
+                        "name": "Legacy Assists",
+                        "emoji": "twitterHandshake",
+                        "row": "oldassists"
+                    },
+                    {
+                        "name": "Legacy Runs",
+                        "emoji": "forgottenking",
+                        "row": "oldsuccessruns"
+                    }
+                ]
+            },
+            {
+                "name": "Runs Done",
+                "emoji": "theShattersPortal",
+                "values": [
+                    {
+                        "name": null,
+                        "emoji": "forgottenking",
+                        "row": "runs"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "mv",
+                        "row": "moonlightRuns"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "epicMysteryKey",
+                        "row": "eventruns"
+                    },
+                    {
+                        "name": "Legacy",
+                        "emoji": "forgottenking",
+                        "row": "oldruns"
+                    }
+                ]
+            }
+        ]
+    }
 ]

@@ -8,7 +8,8 @@
             "points": "keypop",
             "schema": "keypops",
             "name": "Lost Halls",
-            "modded": true
+            "modded": true,
+            "moddedSchema": "moddedPops"
         },
         "event": {
             "templateID": 2,
@@ -18,7 +19,8 @@
             "points": "eventkey",
             "schema": "eventpops",
             "name": "Event Key",
-            "modded": true
+            "modded": true,
+            "moddedSchema": "moddedPops"
         },
         "shatters": {
             "templateID": 3,
@@ -29,7 +31,8 @@
             "points": "shattskey",
             "schema": "shattersPops",
             "name": "Shatters",
-            "modded": true
+            "modded": true,
+            "moddedSchema": "moddedPops"
         },
         "fungal": {
             "templateID": 4,
@@ -41,7 +44,8 @@
             "points": "fungalkey",
             "schema": "fungalPops",
             "name": "Fungal",
-            "modded": true
+            "modded": true,
+            "moddedSchema": "moddedPops"
         },
         "nest": {
             "templateID": 5,
@@ -51,7 +55,8 @@
             "points": "nestkey",
             "schema": "nestPops",
             "name": "Nest",
-            "modded": true
+            "modded": true,
+            "moddedSchema": "moddedPops"
         },
         "steamwork": {
             "templateID": 6,
@@ -64,7 +69,8 @@
             "points": "steamworkkey",
             "schema": "steamworkPops",
             "name": "Steamworks",
-            "modded": true
+            "modded": true,
+            "moddedSchema": "moddedPops"
         },
         "advancedsteamwork": {
             "templateID": 7,
@@ -77,7 +83,8 @@
             "points": "steamworkkey",
             "schema": "advancedSteamworkPops",
             "name": "Advanced Steamworks",
-            "modded": true
+            "modded": true,
+            "moddedSchema": "moddedPops"
         },
         "moonlight": {
             "templateID": 8,
@@ -100,7 +107,8 @@
             "points": "vialpop",
             "schema": "vialUsed",
             "name": "Vial of Pure Darkness",
-            "modded": false
+            "modded": false,
+            "moddedSchema": "moddedPops"
         },
         "advancednest": {
             "templateID": 30,
@@ -112,7 +120,8 @@
             "points": "nestkey",
             "schema": "advancedNestPops",
             "name": "Advanced Nest",
-            "modded": true
+            "modded": true,
+            "moddedSchema": "moddedPops"
         },
         "shieldrune": {
             "templateID": 31,
@@ -123,7 +132,8 @@
             "points": "runepop",
             "schema": "runeShieldPops",
             "name": "Shield Rune",
-            "modded": false
+            "modded": false,
+            "moddedSchema": "moddedPops"
         },
         "swordrune": {
             "templateID": 32,
@@ -134,7 +144,8 @@
             "points": "runepop",
             "schema": "runeSwordPops",
             "name": "Sword Rune",
-            "modded": false
+            "modded": false,
+            "moddedSchema": "moddedPops"
         },
         "helmetrune": {
             "templateID": 33,
@@ -146,7 +157,8 @@
             "points": "runepop",
             "schema": "runeHelmetPops",
             "name": "Helmet Rune",
-            "modded": false
+            "modded": false,
+            "moddedSchema": "moddedPops"
         },
         "inc": {
             "templateID": 34,
@@ -156,7 +168,8 @@
             "points": "incpop",
             "schema": "incantationPops",
             "name": "Incantation",
-            "modded": false
+            "modded": false,
+            "moddedSchema": "moddedPops"
         }
     },
     "701483950559985705": {
@@ -168,7 +181,8 @@
             "points": "keypop",
             "schema": "keypops",
             "name": "Lost Halls",
-            "modded": true
+            "modded": true,
+            "moddedSchema": "moddedPops"
         },
         "event": {
             "templateID": 11,
@@ -178,7 +192,8 @@
             "points": "eventkey",
             "schema": "eventpops",
             "name": "Event Key",
-            "modded": true
+            "modded": true,
+            "moddedSchema": "moddedPops"
         },
         "shatters": {
             "templateID": 12,
@@ -189,7 +204,8 @@
             "points": "shattskey",
             "schema": "shattersPops",
             "name": "Shatters",
-            "modded": true
+            "modded": true,
+            "moddedSchema": "moddedPops"
         },
         "fungal": {
             "templateID": 13,
@@ -201,7 +217,8 @@
             "points": "fungalkey",
             "schema": "fungalPops",
             "name": "Fungal",
-            "modded": true
+            "modded": true,
+            "moddedSchema": "moddedPops"
         },
         "nest": {
             "templateID": 14,
@@ -211,7 +228,8 @@
             "points": "nestkey",
             "schema": "nestPops",
             "name": "Nest",
-            "modded": true
+            "modded": true,
+            "moddedSchema": "moddedPops"
         },
         "steamwork": {
             "templateID": 15,
@@ -224,7 +242,8 @@
             "points": "steamworkkey",
             "schema": "steamworkPops",
             "name": "Steamworks",
-            "modded": true
+            "modded": true,
+            "moddedSchema": "moddedPops"
         },
         "moonlight": {
             "templateID": 16,
@@ -247,7 +266,8 @@
             "points": "vialpop",
             "schema": "vialUsed",
             "name": "Vial of Pure Darkness",
-            "modded": false
+            "modded": false,
+            "moddedSchema": "moddedPops"
         },
         "advancednest": {
             "templateID": 31,
@@ -259,7 +279,8 @@
             "points": "nestkey",
             "schema": "advancedNestPops",
             "name": "Advanced Nest",
-            "modded": true
+            "modded": true,
+            "moddedSchema": "moddedPops"
         },
         "shieldrune": {
             "templateID": 35,
@@ -270,7 +291,8 @@
             "points": "runepop",
             "schema": "runeShieldPops",
             "name": "Shield Rune",
-            "modded": false
+            "modded": false,
+            "moddedSchema": "moddedPops"
         },
         "swordrune": {
             "templateID": 36,
@@ -281,7 +303,8 @@
             "points": "runepop",
             "schema": "runeSwordPops",
             "name": "Sword Rune",
-            "modded": false
+            "modded": false,
+            "moddedSchema": "moddedPops"
         },
         "helmetrune": {
             "templateID": 37,
@@ -293,7 +316,8 @@
             "points": "runepop",
             "schema": "runeHelmetPops",
             "name": "Helmet Rune",
-            "modded": false
+            "modded": false,
+            "moddedSchema": "moddedPops"
         },
         "inc": {
             "templateID": 38,
@@ -303,7 +327,8 @@
             "points": "incpop",
             "schema": "incantationPops",
             "name": "Incantation",
-            "modded": false
+            "modded": false,
+            "moddedSchema": "moddedPops"
         }
     },
     "451171819672698920": {
@@ -315,7 +340,8 @@
             "points": "keypop",
             "schema": "shatterspops",
             "name": "Shatters",
-            "modded": true
+            "modded": true,
+            "moddedSchema": "moddedPops"
         },
         "moonlight": {
             "templateID": 19,
@@ -337,7 +363,8 @@
             "points": "eventkey",
             "schema": "eventpops",
             "name": "Event Key",
-            "modded": true
+            "modded": true,
+            "moddedSchema": "moddedPops"
         },
         "exaltation": {
             "templateID": 21,
@@ -347,7 +374,175 @@
             "points": "exaltkey",
             "schema": "eventpops",
             "name": "Exaltation Key",
-            "modded": true
+            "modded": true,
+            "moddedSchema": "moddedPops"
+        }
+    },
+    "708026927721480254": { 
+        "shieldrune": {
+            "templateID": 22,
+            "alias": [
+                "sh",
+                "shield"
+            ],
+            "points": "runepop",
+            "schema": "shieldRunePops",
+            "name": "Shield Rune",
+            "modded": false,
+            "moddedSchema": "o3moddedPops"
+        },
+        "swordrune": {
+            "templateID": 23,
+            "alias": [
+                "sw",
+                "sword"
+            ],
+            "points": "runepop",
+            "schema": "swordRunePops",
+            "name": "Sword Rune",
+            "modded": false,
+            "moddedSchema": "o3moddedPops"
+        },
+        "helmetrune": {
+            "templateID": 24,
+            "alias": [
+                "h",
+                "helm",
+                "helmet"
+            ],
+            "points": "runepop",
+            "schema": "helmetRunePops",
+            "name": "Helmet Rune",
+            "modded": false,
+            "moddedSchema": "o3moddedPops"
+        },
+        "inc": {
+            "templateID": 25,
+            "alias": [
+                "inc"
+            ],
+            "points": "incpop",
+            "schema": "incPops",
+            "name": "Incantation",
+            "modded": false,
+            "moddedSchema": "o3moddedPops"
+        },
+        "losthalls": {
+            "templateID": 25,
+            "alias": [
+                "lh"
+            ],
+            "points": "exaltkey",
+            "schema": "o3hallsPops",
+            "name": "Lost Halls",
+            "modded": true,
+            "moddedSchema": "o3moddedPops"
+        },
+        "vial": {
+            "templateID": 25,
+            "alias": [
+                "v"
+            ],
+            "points": "vialpop",
+            "schema": "o3vialPops",
+            "name": "Vial of Pure Darkness",
+            "modded": false,
+            "moddedSchema": "o3moddedPops"
+        },
+        "shatters": {
+            "templateID": 25,
+            "alias": [
+                "s",
+                "shatters"
+            ],
+            "points": "exaltkey",
+            "schema": "o3shattersPops",
+            "name": "Shatters",
+            "modded": true,
+            "moddedSchema": "o3moddedPops"
+        },
+        "fungal": {
+            "templateID": 25,
+            "alias": [
+                "f",
+                "fungal"
+            ],
+            "points": "exaltkey",
+            "schema": "o3fungalPops",
+            "name": "Fungal",
+            "modded": true,
+            "moddedSchema": "o3moddedPops"
+        },
+        "nest": {
+            "templateID": 25,
+            "alias": [
+                "n",
+                "nest"
+            ],
+            "points": "exaltkey",
+            "schema": "o3nestPops",
+            "name": "Nest",
+            "modded": true,
+            "moddedSchema": "o3moddedPops"
+        },
+        "advancednest": {
+            "templateID": 25,
+            "alias": [
+                "an",
+                "advancednest"
+            ],
+            "points": "exaltkey",
+            "schema": "o3advancedNestPops",
+            "name": "Advanced Nest",
+            "modded": true,
+            "moddedSchema": "o3moddedPops"
+        },
+        "steamworks": {
+            "templateID": 25,
+            "alias": [
+                "k",
+                "steamworks"
+            ],
+            "points": "exaltkey",
+            "schema": "o3steamworkPops",
+            "name": "Kogbold Steamworks",
+            "modded": true,
+            "moddedSchema": "o3moddedPops"
+        },
+        "advancedsteamworks": {
+            "templateID": 25,
+            "alias": [
+                "asw",
+                "advancedsteamworks"
+            ],
+            "points": "exaltkey",
+            "schema": "o3advancedSteamworksPops",
+            "name": "Advanced Kogbold Steamworks",
+            "modded": true,
+            "moddedSchema": "o3moddedPops"
+        },
+        "moonlight": {
+            "templateID": 25,
+            "alias": [
+                "m",
+                "moonlight"
+            ],
+            "points": "exaltkey",
+            "schema": "o3moonlightPops",
+            "name": "Moonlight Village",
+            "modded": true,
+            "moddedSchema": "o3moddedPops"
+        },
+        "event": {
+            "templateID": 2,
+            "alias": [
+                "e"
+            ],
+            "points": "eventkey",
+            "schema": "o3eventPops",
+            "name": "Event Key",
+            "modded": true,
+            "moddedSchema": "o3moddedPops"
         }
     },
     "934611202787643412": { 
@@ -360,7 +555,8 @@
             "points": "runepop",
             "schema": "shieldRunePops",
             "name": "Shield Rune",
-            "modded": false
+            "modded": false,
+            "moddedSchema": "o3moddedPops"
         },
         "swordrune": {
             "templateID": 23,
@@ -371,7 +567,8 @@
             "points": "runepop",
             "schema": "swordRunePops",
             "name": "Sword Rune",
-            "modded": false
+            "modded": false,
+            "moddedSchema": "o3moddedPops"
         },
         "helmetrune": {
             "templateID": 24,
@@ -383,7 +580,8 @@
             "points": "runepop",
             "schema": "helmetRunePops",
             "name": "Helmet Rune",
-            "modded": false
+            "modded": false,
+            "moddedSchema": "o3moddedPops"
         },
         "inc": {
             "templateID": 25,
@@ -393,53 +591,125 @@
             "points": "incpop",
             "schema": "incPops",
             "name": "Incantation",
-            "modded": false
-        }
-    },
-    "708026927721480254": { 
-        "shieldrune": {
-            "templateID": 26,
-            "alias": [
-                "sh",
-                "shield"
-            ],
-            "points": "runepop",
-            "schema": "shieldRunePops",
-            "name": "Shield Rune",
-            "modded": false
+            "modded": false,
+            "moddedSchema": "o3moddedPops"
         },
-        "swordrune": {
-            "templateID": 27,
+        "losthalls": {
+            "templateID": 25,
             "alias": [
-                "sw",
-                "sword"
+                "lh"
             ],
-            "points": "runepop",
-            "schema": "swordRunePops",
-            "name": "Sword Rune",
-            "modded": false
+            "points": "exaltkey",
+            "schema": "o3hallsPops",
+            "name": "Lost Halls",
+            "modded": true,
+            "moddedSchema": "o3moddedPops"
         },
-        "helmetrune": {
-            "templateID": 28,
+        "vial": {
+            "templateID": 25,
             "alias": [
-                "h",
-                "helm",
-                "helmet"
+                "v"
             ],
-            "points": "runepop",
-            "schema": "helmetRunePops",
-            "name": "Helmet Rune",
-            "modded": false
+            "points": "vialpop",
+            "schema": "o3vialPops",
+            "name": "Vial of Pure Darkness",
+            "modded": false,
+            "moddedSchema": "o3moddedPops"
         },
-        "inc": {
-            "templateID": 29,
+        "shatters": {
+            "templateID": 25,
             "alias": [
-                "inc"
+                "s",
+                "shatters"
             ],
-            "points": "incpop",
-            "schema": "incPops",
-            "name": "Incantation",
-            "modded": false
+            "points": "exaltkey",
+            "schema": "o3shattersPops",
+            "name": "Shatters",
+            "modded": true,
+            "moddedSchema": "o3moddedPops"
+        },
+        "fungal": {
+            "templateID": 25,
+            "alias": [
+                "f",
+                "fungal"
+            ],
+            "points": "exaltkey",
+            "schema": "o3fungalPops",
+            "name": "Fungal",
+            "modded": true,
+            "moddedSchema": "o3moddedPops"
+        },
+        "nest": {
+            "templateID": 25,
+            "alias": [
+                "n",
+                "nest"
+            ],
+            "points": "exaltkey",
+            "schema": "o3nestPops",
+            "name": "Nest",
+            "modded": true,
+            "moddedSchema": "o3moddedPops"
+        },
+        "advancednest": {
+            "templateID": 25,
+            "alias": [
+                "an",
+                "advancednest"
+            ],
+            "points": "exaltkey",
+            "schema": "o3advancedNestPops",
+            "name": "Advanced Nest",
+            "modded": true,
+            "moddedSchema": "o3moddedPops"
+        },
+        "steamworks": {
+            "templateID": 25,
+            "alias": [
+                "k",
+                "steamworks"
+            ],
+            "points": "exaltkey",
+            "schema": "o3steamworkPops",
+            "name": "Kogbold Steamworks",
+            "modded": true,
+            "moddedSchema": "o3moddedPops"
+        },
+        "advancedsteamworks": {
+            "templateID": 25,
+            "alias": [
+                "asw",
+                "advancedsteamworks"
+            ],
+            "points": "exaltkey",
+            "schema": "o3advancedSteamworksPops",
+            "name": "Advanced Kogbold Steamworks",
+            "modded": true,
+            "moddedSchema": "o3moddedPops"
+        },
+        "moonlight": {
+            "templateID": 25,
+            "alias": [
+                "m",
+                "moonlight"
+            ],
+            "points": "exaltkey",
+            "schema": "o3moonlightPops",
+            "name": "Moonlight Village",
+            "modded": true,
+            "moddedSchema": "o3moddedPops"
+        },
+        "event": {
+            "templateID": 2,
+            "alias": [
+                "e"
+            ],
+            "points": "eventkey",
+            "schema": "o3eventPops",
+            "name": "Event Key",
+            "modded": true,
+            "moddedSchema": "o3moddedPops"
         }
     }
 }

@@ -70,7 +70,7 @@ module.exports = {
         if (db) {
             [userRows] = await db.promise().query('SELECT * FROM users WHERE id = ?', [member.id])
             if (userRows.length == 0) {
-                await db.promise().query(`INSERT INTO users (id) VALUES (${member.id})`);
+                await db.promise().query('INSERT INTO users (id) VALUES (?)', [member.id]);
                 [userRows] = await db.promise().query('SELECT * FROM users WHERE id = ?', [member.id])
             }
         }

@@ -1,6 +1,6 @@
 const Discord = require('discord.js')
-const templates = require('../data/afkTemplates.json')
-const { createEmbed } = require('../lib/extensions.js')
+const { createEmbed, getRoleStrings } = require('../lib/extensions.js')
+const siteSettings = require('../settings.json').config
 
 module.exports = {
     name: 'templates',
@@ -10,19 +10,15 @@ module.exports = {
     args: '[exalts]',
     async execute(message, args, bot) {
         const botSettings = bot.settings[message.guild.id]
-        const parentTemplates = Object.keys(templates[message.guild.id].parents).filter(template => message.channel.id == botSettings.raiding[templates[message.guild.id].parents[template].commandsChannel])
+        const templatesUrl = new URL(siteSettings.url)
+        templatesUrl.pathname = `/api/${message.guild.id}/commandchannel/${message.channel.id}/templates`
+        templatesUrl.searchParams.append('roles', getRoleStrings(botSettings, message.member).join(','))
+        templatesUrl.searchParams.append('key', siteSettings.key)
+        const templates = await fetch(templatesUrl).then(f => f.json())
         const parentTemplateValue = {}
-        for (const template of templates[message.guild.id].children) {
-            if (!template.enabled) continue
-            for (const inherit of template.inherits) {
-                if (!parentTemplates.includes(inherit)) continue
+        for (const template of templates) {
+            for (const inherit of template.sectionNames) {
                 if (!parentTemplateValue[inherit]) parentTemplateValue[inherit] = { field: 0, line: 0, value: [''] }
-                const parentTemplate = templates[message.guild.id].parents[inherit]
-
-                let minStaffRoles = template.minStaffRoles[inherit] ? template.minStaffRoles[inherit].map(roles => roles.map(role => message.guild.roles.cache.get(botSettings.roles[role]))) : null
-                minStaffRoles = !minStaffRoles && parentTemplate.minStaffRoles[inherit] ? parentTemplate.minStaffRoles[inherit].map(roles => roles.map(role => message.guild.roles.cache.get(botSettings.roles[role]))) : minStaffRoles
-                if (!minStaffRoles) continue
-                if (!minStaffRoles.some(roles => roles.every(role => role ? message.member.roles.cache.has(role.id) : false))) continue
                 const reacts = template.reacts ? Object.keys(template.reacts).filter(react => template.reacts[react].onHeadcount) : []
                 const newTemplate = `\n${reacts[0] ? `${bot.storedEmojis[template.reacts[reacts[0]].emote].text}| ` : ''}\`${template.aliases.reduce((a, b) => a.length <= b.length ? a : b).padEnd(2)}\` | **${template.templateName.toString().substring(0, 20)}**`
                 if (parentTemplateValue[inherit].value[parentTemplateValue[inherit].field].length + newTemplate.length > 1024 || parentTemplateValue[inherit].line >= 15) {
@@ -62,7 +58,6 @@ module.exports = {
         templateEmbed.setColor('#ff0000')
         templateEmbed.setTitle('Available Templates')
         for (let i = 0; i < templateValue[inherit].value.length; i++) {
-            console.log(templateValue[inherit].value[i])
             if (i != 0 && i % 2 == 0) templateEmbed.addFields({ name: '\u200b', value: '\u200b', inline: false })
             templateEmbed.addFields({ name: ' ', value: templateValue[inherit].value[i], inline: true })
         }
