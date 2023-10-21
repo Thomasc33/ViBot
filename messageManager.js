@@ -103,6 +103,9 @@ class MessageManager {
      * @returns
      */
     async handleCommand(e, isInteraction) {
+        Object.defineProperty(e, 'isInteraction', {
+            get() { return isInteraction }
+        })
         if (isInteraction) {
             if (!this.#bot.settings[e.guild.id]) return
         }

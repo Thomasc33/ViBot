@@ -1,7 +1,8 @@
 const Discord = require('discord.js')
-const db = require('../data/changelog.json')
+const clConfig = require('../data/changelog.json')
 const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType
 const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js')
+const ErrorLogger = require('../lib/logError')
 
 module.exports = {
     name: 'changelog',
@@ -24,221 +25,151 @@ module.exports = {
     ],
     requiredArgs: 4,
     getNotes(guild) {
-        return getLogTypes(guild.id) ? getLogTypes(guild.id).toString() : `Not setup for guild ${guild.id}`
+        const types = clConfig[guild.id]?.logtypes.map(type => type + (clConfig[guild.id]?.currentweeks.find(cw => cw.case == type) ? '\\*' : '')).sort(a => a[a.length - 1] == '*' ? -1 : 1)
+        return { title: 'Available Logs', value: (types ? `${types.join(', ')}\n\n*\\* logs associated with quota*` : `Not setup for guild ${guild.id}`) }
     },
     getSlashCommandData(guild) {
         const json = slashCommandJSON(this, guild)
         // Magic regex!
         // Makes the log type names look pretty :3
-        if (db[guild.id]) json[0].options[2].choices = db[guild.id].logtypes.map((k) => ({ name: k.charAt(0).toUpperCase() + k.slice(1).replace(/[A-Z]|(?<=3).|o3|p(?=op)/g, (i) => ` ${i.toUpperCase()}`), value: k }))
+        if (clConfig[guild.id]) json[0].options[2].choices = clConfig[guild.id].logtypes.map((k) => ({ name: k?.deCamelCase(), value: k }))
         return json
     },
-    async execute(message, args, bot, db) {
-        if (args.length < 4) return
-        const logTypes = getLogTypes(message.guild.id)
-        const currentweek = getCurrentWeekTypes(message.guild.id) || []
-        if (!logTypes) return message.channel.send('No stored log types')
 
-        // args 0
-        const member = message.guild.findMember(args[0])
-        if (!member) return message.channel.send('User not found')
-
-        // args 1
-        const operator = args[1].charAt(0).toLowerCase()
-        if (operator != 'a' && operator != 'r' && operator != 's') return message.channel.send(`\`${args[1]}\` not recognized. Please try \`add, remove, or set\``)
-
-        // args 2
-        const logType = args[2].toLowerCase()
-        const logIndex = logTypes.findIndex(e => logType == e.toLowerCase())
-        if (logIndex == -1) return message.channel.send(`\`${args[2]}\` not recognized. Check out \`;commands changelog\` for a list of log types`)
-
-        // args 3
-        const count = parseInt(args[3])
-        if (!count) return message.channel.send(`${args[3]} is not a valid number`)
-        if (count < 0) return message.channel.send('Cannot change logs to a negative number')
-
-        // change logs
-        let query = `UPDATE users SET ${logTypes[logIndex]} = `
-        switch (operator) {
-            case 'a':
-                query += `${logTypes[logIndex]} + ${count} `
-                break
-            case 'r':
-                query += `${logTypes[logIndex]} - ${count} `
-                break
-            case 's':
-            default:
-                query += `${count} `
-                break
-        }
-        query += `WHERE id = '${member.id}'`
-
-        // confirm
-        const confirmEmbed = new Discord.EmbedBuilder()
-            .setTitle('Confirm Action')
-            .setDescription(`${args[1]} ${count} ${logTypes[logIndex]} to ${member}`)
-        await message.channel.send({ embeds: [confirmEmbed] }).then(async confirmMessage => {
-            if (await confirmMessage.confirmButton(message.author.id)) {
-                if (operator != 's') {
-                    for (const i of currentweek) {
-                        if (i.case == logTypes[logIndex]) {
-                            const currentWeekConfirmEmbed = new Discord.EmbedBuilder()
-                                .setTitle('Confirm Action')
-                                .setDescription('Do you also want to add/remove this from currentweek?')
-                            // eslint-disable-next-line no-await-in-loop
-                            await message.channel.send({ embeds: [currentWeekConfirmEmbed] }).then(async confirmMessageWeek => {
-                                if (await confirmMessageWeek.confirmButton(message.author.id)) {
-                                    let currentWeekQuery = 'UPDATE users SET '
-                                    const { currentWeekName } = i
-                                    if (operator == 'a') currentWeekQuery += `${currentWeekName} = ${currentWeekName} + ${count} `
-                                    else currentWeekQuery += `${currentWeekName} = ${currentWeekName} - ${count} `
-                                    currentWeekQuery += `WHERE id = '${member.id}'`
-                                    db.query(currentWeekQuery, err => {
-                                        if (err) message.channel.send(`\`${err}\``)
-                                    })
-                                    confirmMessageWeek.delete()
-                                    sendQuery()
-                                } else {
-                                    confirmMessageWeek.delete()
-                                    sendQuery()
-                                }
-                            })
-                            break
-                        }
-                    }
-                    sendQuery()
-                }
-                await confirmMessage.delete()
-            } else {
-                await confirmMessage.delete()
-                message.react('✅')
-            }
-        })
-
-        function sendQuery() {
-            db.query(query, err => {
-                if (err) message.channel.send(`\`${err}\``)
-                message.react('✅')
-            })
-        }
-    },
-    async slashCommandExecute(interaction, bot, db) {
-        const logTypes = getLogTypes(interaction.guild.id)
-        const currentweek = getCurrentWeekTypes(interaction.guild.id) || []
-        if (!logTypes) return interaction.replyUserError('No stored log types')
-
-        // args 0
+    /**
+     * @param {Discord.Message | Discord.CommandInteraction} interaction
+     * @param {string[]} args
+     * @param {Discord.Client} bot
+     * @param {*} db
+     * @param {Discord.GuildMember} member
+     * @param {'add' | 'remove' | 'set'} op
+     * @param {keyof clConfig[member.guildId]["logtypes"]} logType
+     * @param {number} count
+     */
+    // eslint-disable-next-line complexity
+    async processChangeLog(interaction, bot, db) {
         const member = interaction.options.getMember('user')
-        if (!member) return interaction.replyUserError('User not found')
 
-        // args 1
-        const operator = interaction.options.getString('operator').charAt(0).toLowerCase()
-        if (operator != 'a' && operator != 'r' && operator != 's') return interaction.replyUserError(`\`${interaction.options.getString('operator')}\` not recognized. Please try \`add, remove, or set\``)
+        async function printError(err) {
+            ErrorLogger.log(err, bot, member.guild)
+            const reply = await interaction.fetchReply()
 
-        // args 2
-        const logType = interaction.options.getString('type').toLowerCase()
-        const logIndex = logTypes.findIndex(e => logType == e.toLowerCase())
-        if (logIndex == -1) return interaction.replyUserError(`\`${interaction.options.getString('type')}\` not recognized. Check out \`;commands changelog\` for a list of log types`)
+            const errEmbed = new Discord.EmbedBuilder()
+                .setTitle('Changelog Error')
+                .setAuthor({ name: interaction.member.displayName, iconURL: member.displayAvatarURL() })
+                .setColor('Red')
+                .setDescription(`Could not perform changelog for ${member}`)
+                .addFields({ name: 'Reason', value: `${err}` })
 
-        // args 3
+            if (reply) interaction.editReply({ embeds: [errEmbed], components: [] })
+            else interaction.reply({ embeds: [errEmbed], ephemeral: true, allowedMentions: { repliedUser: false } })
+        }
+
+        const modlogs = interaction.guild.channels.cache.get(bot.settings[interaction.member.guild.id]?.channels.modlogs)
+
+        if (!modlogs) return printError(`Mod-logs channel not setup for guild ${member.guild.name}`)
+        if (!clConfig[interaction.member.guild.id]) return printError(`Changelog not setup for guild ${member.guild.name}`)
+
+        const operator = interaction.options.getString('operator')?.deCamelCase()
+        const op = operator.charAt(0).toLowerCase()
+
         const count = interaction.options.getInteger('number')
-        if (!count) return interaction.replyUserError(`${interaction.options.getInteger('number')} is not a valid number`)
-        if (count < 0) return interaction.replyUserError('Cannot change logs to a negative number')
+        const change = count * (op == 'r' ? -1 : 1)
 
-        // change logs
-        const queryArgs = { count, column: logTypes[logIndex], id: member.id }
+        const logTypeRequest = interaction.options.getString('type').toLowerCase()
+        const logIndex = clConfig[member.guild.id].logtypes.findIndex(e => logTypeRequest == e.toLowerCase())
+        const logType = clConfig[member.guild.id].logtypes[logIndex]
+        if (!logType) return printError(`\`${logTypeRequest}\` is not a valid log name. Check \`;commands changelog\` for valid logs.`)
+
+        const { currentWeekName: currentweek } = clConfig[member.guild.id].currentweeks.find(week => week.case == logType) || {}
+
         // confirm
         const confirmEmbed = new Discord.EmbedBuilder()
-            .setTitle('Confirm Action')
-            .setDescription(`${interaction.options.getString('operator')} ${count} ${logTypes[logIndex]} to ${member}`)
-        const interactionRow = new Discord.ActionRowBuilder()
-            .addComponents(
-                new Discord.ButtonBuilder()
-                    .setCustomId('confirm')
-                    .setLabel('Confirm')
-                    .setStyle('Success'),
-                new Discord.ButtonBuilder()
-                    .setCustomId('cancel')
-                    .setLabel('Cancel')
-                    .setStyle('Danger')
+            .setAuthor({ name: interaction.member.displayName, iconURL: member.displayAvatarURL() })
+            .setTitle('Confirm Changelog')
+            .setColor('Blue')
+            .setDescription(`Attempting to update ${member}`)
+            .addFields(
+                { name: 'Action', value: operator, inline: true },
+                { name: 'Log', value: `${logType?.deCamelCase()}`, inline: true },
+                { name: 'Change', value: `${count}`, inline: true },
+                { name: 'Member', value: `${member}`, inline: true }
             )
-        const mes = await interaction.reply({ embeds: [confirmEmbed], ephemeral: true, components: [interactionRow], fetchReply: true })
-        const filter = (i) => i.user.id == interaction.user.id && (i.customId == 'confirm' || i.customId == 'cancel')
-        const col = mes.createMessageComponentCollector({ filter, time: 10000, max: 1 })
-        col.on('collect', async confirmationInteraction => {
-            col.stop()
-            if (confirmationInteraction.customId == 'confirm') {
-                if (operator == 's') send(confirmationInteraction)
-                else {
-                    const weeks = currentweek.filter(w => w.case == logTypes[logIndex])
-                    weeks.forEach(async week => {
-                        const currentWeekConfirmEmbed = new Discord.EmbedBuilder()
-                            .setTitle('Update Current Week?')
-                            .setDescription('Do you also want to add/remove this from currentweek?')
-                        const cwInteractionRow = new Discord.ActionRowBuilder()
-                            .addComponents(
-                                new Discord.ButtonBuilder()
-                                    .setCustomId('confirm')
-                                    .setLabel('Yes')
-                                    .setStyle('Success'),
-                                new Discord.ButtonBuilder()
-                                    .setCustomId('cancel')
-                                    .setLabel('No')
-                                    .setStyle('Danger')
-                            )
-                        await confirmationInteraction.update({ embeds: [currentWeekConfirmEmbed], components: [cwInteractionRow] })
-                        const currentWeekCol = mes.createMessageComponentCollector({ filter, time: 10000, max: 1 })
-                        currentWeekCol.on('collect', async i2 => {
-                            currentWeekCol.stop()
-                            if (i2.customId == 'confirm') {
-                                await db.promise().query('UPDATE users SET ?? = ?? + ? where id = ?', [week.currentWeekName, week.currentWeekName, operator == 'a' ? count : -count, member.id]).then(() => send(i2), (err) => {
-                                    console.log(err)
-                                    currentWeekConfirmEmbed.setDescription('Error updating currentweek')
-                                    i2.reply({ embeds: [currentWeekConfirmEmbed], components: [], ephemeral: true })
-                                })
-                            } else send(i2)
-                        })
-                    })
-                    if (weeks.length) send(confirmationInteraction)
-                }
-            } else {
-                confirmEmbed.setDescription('Action cancelled')
-                confirmationInteraction.update({ embeds: [confirmEmbed], components: [] })
-            }
-        })
-        function send(interaction) {
-            const queryText = operator == 's'   ? 'UPDATE users SET ?? = ? WHERE id = ?'            : 'UPDATE users SET ?? = ?? + ? WHERE id = ?'
-            const queryParams = operator == 's' ? [queryArgs.column, queryArgs.count, queryArgs.id] : [queryArgs.column, queryArgs.column, operator == 'a' ? queryArgs.count : -queryArgs.count, queryArgs.id]
-            db.query(queryText, queryParams, err => {
-                if (err) {
-                    console.log(err)
-                    confirmEmbed.setDescription('Error updating logs')
-                    interaction.update({ embeds: [confirmEmbed], components: [] })
-                } else {
-                    confirmEmbed.setDescription('Logs updated')
-                    interaction.update({ embeds: [confirmEmbed], components: [] })
-                }
-            })
+            .setTimestamp(new Date())
+
+        await interaction.reply({ embeds: [confirmEmbed], ephemeral: true, allowedMentions: { repliedUser: false } })
+
+        /** @type {Discord.Message} */
+        const changelogConfirmed = await interaction.confirmReply()
+
+        if (currentweek) {
+            confirmEmbed.addFields({ name: 'Changing Total', value: changelogConfirmed ? '✅' : '❌' })
+                .setDescription(`Do you also want to update ${currentweek?.deCamelCase()}`)
+                .setTitle('Confirm Changelog - Currentweek')
+                .setColor('Purple')
         }
-    }
 
+        const currentweekConfirmed = currentweek && await interaction.editReply({ embeds: [confirmEmbed], components: [] }).then(() => interaction.confirmReply())
+
+        let confirmedSet = op != 's'
+        if (op == 's' && (currentweekConfirmed || changelogConfirmed)) {
+            const text = [changelogConfirmed && logType, currentweekConfirmed && currentweek].filter(i => i).map(i => `\`${i?.deCamelCase()}\``).join(' and ')
+            confirmEmbed.setTitle('Attempt to Set')
+                .setDescription(`Are you **SURE** you want to **SET** ${text} to ${change} instead of adding or removing?`)
+                .setColor('DarkOrange')
+                .setFields()
+            confirmedSet = await interaction.editReply({ embeds: [confirmEmbed], components: [] }).then(() => interaction.confirmReply())
+        }
+        if (!confirmedSet || (!changelogConfirmed && !currentweekConfirmed)) {
+            confirmEmbed.setTitle('Changelog Cancelled')
+                .setColor('Red')
+                .setDescription(`Cancelled changelog for ${member}`)
+                .setFields()
+            return interaction.editReply({ embeds: [confirmEmbed], components: [] })
+        }
+        try {
+            const [oldLogs] = await getUserLogs(db, logType, currentweek, member)
+            if (changelogConfirmed) await updateUserLogs(db, op, change, logType, member)
+            if (currentweekConfirmed) await updateUserLogs(db, op, change, currentweek, member)
+            const [newLogs] = await getUserLogs(db, logType, currentweek, member)
+
+            const embed = new Discord.EmbedBuilder()
+                .setColor('Green')
+                .setTitle('Changelog')
+                .setAuthor({ name: member.displayName, iconURL: member.displayAvatarURL() })
+                .setDescription('Changelog performed')
+                .addFields(
+                    { name: 'Member', value: `${member}\n\`${member.displayName}\``, inline: true },
+                    { name: 'Mod', value: `${interaction.member}\n\`${interaction.member.displayName}\``, inline: true },
+                    { name: 'Action', value: `${operator} ${count}`, inline: true },
+                    { name: 'Log', value: `\`${logType?.deCamelCase()}\` ${changelogConfirmed ? '✅' : '❌'}\nOld Value: \`${oldLogs[0][logType]}\`\nNew Value: \`${newLogs[0][logType]}\``, inline: true }
+                )
+                .setTimestamp(new Date())
+
+            if (currentweek) embed.addFields({ name: 'Quota', value: `\`${currentweek?.deCamelCase()}\` ${currentweekConfirmed ? '✅' : '❌'}\nOld Value: \`${oldLogs[0][currentweek]}\`\nNew Value: \`${newLogs[0][currentweek]}\``, inline: true })
+
+            modlogs.send({ embeds: [embed] })
+            interaction.editReply({ embeds: [embed], components: [] })
+        } catch (err) { printError(err) }
+    },
+    /**
+     * @param {Discord.Message} message
+     * @param {string[]} args
+     * @param {Discord.Client} bot
+     * @param {*} db
+     */
+    async execute(message, args, bot, db) { await this.processChangeLog(message, bot, db) },
+    async slashCommandExecute(interaction, bot, db) { await this.processChangeLog(interaction, bot, db) }
 }
 
-function getLogTypes(guildid) {
-    return db[guildid] ? db[guildid].logtypes : null
+async function getUserLogs(db, logType, currentweek, member) {
+    return currentweek
+        ? await db.promise().query('SELECT ??, ?? FROM users WHERE id = ?', [logType, currentweek, member.id])
+        : await db.promise().query('SELECT ?? FROM users WHERE id = ?', [logType, member.id])
 }
 
-/**
- * @typedef {{
- *  case: string,
- *  currentWeekName: string
- * }} CurrentWeekItem
- */
-
-/**
- * @param {Discord.Snowflake} guildid
- * @returns {CurrentWeekItem[]?}
- */
-function getCurrentWeekTypes(guildid) {
-    return db[guildid] ? db[guildid].currentweeks : null
+async function updateUserLogs(db, op, change, logType, member) {
+    return op == 's'
+        ? await db.promise().query('UPDATE users SET ?? = ? WHERE id = ?', [logType, change, member.id])
+        : await db.promise().query('UPDATE users SET ?? = ?? + ? WHERE id = ?', [logType, logType, change, member.id])
 }

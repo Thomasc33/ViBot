@@ -2,6 +2,8 @@
     "verbose": true,
     "ignore": [
         "guildSettings.json",
-        "afkChecks.json"
+        "data/guildSettings.*.cache.json",
+        "data/emojis.json",
+        "data/afkChecks.json"
     ]
 }
