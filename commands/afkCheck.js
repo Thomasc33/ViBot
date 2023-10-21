@@ -912,7 +912,7 @@ class afkCheck {
     }
 
     async processPhaseLog(interaction, modded) {
-        const button = interaction.customId.split(' ')[2]
+        const button = interaction.customId.split(' ').slice(2).join(' ')
         const buttonType = interaction.customId.split(' ')[1]
         const buttonInfo = this.buttons[button]
 
