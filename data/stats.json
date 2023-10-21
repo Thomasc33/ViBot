@@ -1,6 +1,6 @@
 [
     {
-        "name": "Lost Halls",
+        "name": "Lost Halls Discord",
         "id": "343704644712923138",
         "emoji": "halls",
         "values": [
@@ -248,7 +248,7 @@
         ]
     },
     {
-        "name": "Oryx Sanctuary",
+        "name": "Oryx Sanctuary Discord",
         "id": "708026927721480254",
         "emoji": "oryxThree",
         "values": [
@@ -495,7 +495,7 @@
         ]
     },
     {
-        "name": "Shatters",
+        "name": "Shatters Discord",
         "id": "451171819672698920",
         "emoji": "theShattersPortal",
         "values": [
