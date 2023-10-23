@@ -236,6 +236,30 @@
                     "dbRows": [
                         "vialUsed"
                     ]
+                },
+                {
+                    "prettyName": "Helmet Runes Popped",
+                    "emoji": "helmetRune",
+                    "embedColor": "#d6471c",
+                    "dbRows": [
+                        "runeHelmetPops"
+                    ]
+                },
+                {
+                    "prettyName": "Shield Runes Popped",
+                    "emoji": "shieldRune",
+                    "embedColor": "#d6471c",
+                    "dbRows": [
+                        "runeShieldPops"
+                    ]
+                },
+                {
+                    "prettyName": "Sword Runes Popped",
+                    "emoji": "swordRune",
+                    "embedColor": "#d6471c",
+                    "dbRows": [
+                        "runeSwordPops"
+                    ]
                 }
             ]
         },
