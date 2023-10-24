@@ -95,33 +95,39 @@ module.exports = {
                     return await confirmMessage.delete()
                 }
             })
-        } else if (args[0] == 'modmail'){
-            const fs = require('fs')
-            const modmail_channel = message.guild.channels.cache.get('525683068745547776')
-            let messages = await getMessages(modmail_channel, 100000)
-            
-            const mm_and_res = messages.reduce((acc, {author, embeds}) => {
-                if (author.id !== '589996847083290629' || embeds.length !== 1) return acc
-            
-                const [embed] = embeds
-                const {description, fields} = embed.data || {}
-            
-                // Ensure modmail embeds
-                if (!fields || fields.length !== 1 || !description || !/\*\*sent the bot\*\*/.test(description)) return acc
-            
-                const [field] = fields
-            
-                // Filter for only modmails that got a response
-                if (!/Response by/.test(field.name) || !field.value || field.value.length === 0) return acc
-            
-                const mm = description.replace(/<@!\d+?>/g, '').replace(' **sent the bot**\n', '').replace('\t', '')
-                const r = field.value.replace('\t', '')
-            
-                acc.push([mm, r])
-                return acc
-            }, [])
+        } else if (args[0] == 'modmail') {
+            message.react('✅')
+            try {
+                const fs = require('fs')
+                const modmail_channel = message.guild.channels.cache.get('525683068745547776')
+                let messages = await getMessages(modmail_channel, 100000)
 
-            fs.writeFileSync('data/modmail.csv', mm_and_res.map(e => e.join('\t')).join('\n'))
+                const mm_and_res = messages.reduce((acc, { author, embeds }) => {
+                    if (author.id !== '589996847083290629' || embeds.length !== 1) return acc
+
+                    const [embed] = embeds
+                    const { description, fields } = embed.data || {}
+
+                    // Ensure modmail embeds
+                    if (!fields || fields.length !== 1 || !description || !/\*\*sent the bot\*\*/.test(description)) return acc
+
+                    const [field] = fields
+
+                    // Filter for only modmails that got a response
+                    if (!/Response by/.test(field.name) || !field.value || field.value.length === 0) return acc
+
+                    const mm = description.replace(/<@!\d+?>/g, '').replace(' **sent the bot**\n', '').replace('\t', '')
+                    const r = field.value.replace('\t', '')
+
+                    acc.push([mm, r])
+                    return acc
+                }, [])
+
+                fs.writeFileSync('data/modmail.csv', mm_and_res.map(e => e.join('\t')).join('\n'))
+            } catch (er) {
+                message.reply('Error occured')
+                console.log(er)
+            }
         }
     }
 }
