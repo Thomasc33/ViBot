@@ -5,7 +5,7 @@ const read_channel_bit_flag = Discord.PermissionFlagsBits.ViewChannel
 module.exports = {
     name: 'memes',
     alias: ['phd', 'xbox', 'cwinner', 'eury', 'nefiah', 'abysm', 'drunkdevil', 'shiba',
-        'rj', 'ver', 'pusbal', 'bantering', 'chevyo', 'ruler', 'shut', 'grizzell', 'raynulf', 'maxeff', 'sauron'],
+        'rj', 'ver', 'pusbal', 'bantering', 'chevyo', 'ruler', 'shut', 'grizzell', 'raynulf', 'maxeff', 'sauron', 'kiklu'],
     role: 'eventrl',
     async execute(message, args, bot) {
         const settings = bot.settings[message.guild.id]
@@ -77,9 +77,12 @@ module.exports = {
             case 'maxeff':
                 message.channel.send({ content: 'Please know that Upper Max Eff staff have taken a firm stance on the matter. If staff in other discords knowingly call our loc and do not check if it is taken, they will be suspended, with repeated offenses leading to permanent expulsion from Max Eff. Just because it is a free rune event does not mean time and effort go into our runs. If people cannot respect our RLs time and effort organizing runs, and our potato tricksters speed clearing realms, and our damage pumpers, then they will not be welcome to our community. Thank you for your understanding.' })
                 break
-                case 'sauron':
-                    message.channel.send({ content: 'I very vividly remember being in a vc with <@258286481167220738> and <@190572077219184650> and Ben telling Sauron it was very unlikely that he would ever get Head Dev. Glad you proved him wrong Sauron' })
-                    break
+            case 'sauron':
+                message.channel.send({ content: 'I very vividly remember being in a vc with <@258286481167220738> and <@190572077219184650> and Ben telling Sauron it was very unlikely that he would ever get Head Dev. Glad you proved him wrong Sauron' })
+                break
+            case 'kiklu':
+                message.channel.send({ content: '<@299927554192834561>', files: ['https://cdn.discordapp.com/attachments/1115988244920815659/1167187749158268979/most_sane_polish_league_player.mp4?ex=654d374c&is=653ac24c&hm=b634047c52faff8c6d3be8ad787bddf7afb704a682b90a81739963b139694298&'] })
+                break
         }
     }
 }
