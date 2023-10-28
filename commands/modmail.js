@@ -3,6 +3,7 @@ const ErrorLogger = require('../lib/logError')
 const { init } = require('./vetVerification');
 const moment = require('moment')
 var watchedModMails = []
+const axios = require('axios')
 
 module.exports = {
     name: 'modmail',
@@ -64,13 +65,13 @@ async function interactionHandler(interaction, settings, bot, db) {
         .setFooter({ text: `Status: ${interaction.customId} MSG ID: ${interaction.message.id}` })
         .setDescription(`Could not figure out what went wrong`)
         .setColor('#FF0000')
-    
+
     confirmationEmbed = new Discord.EmbedBuilder()
         .setTitle(`Confirm Action`)
         .setDescription(`Are you sure you wanna perform this action?\n`)
         .setFooter({ text: `${interaction.customId}` })
         .setColor('#FF0000')
-    
+
     modmailOpenComponents = new Discord.ActionRowBuilder()
     if (settings.modmail.lockModmail) {
         modmailOpenComponents.addComponents([
@@ -86,6 +87,14 @@ async function interactionHandler(interaction, settings, bot, db) {
                 .setLabel('✉️ Send Message')
                 .setStyle(3)
                 .setCustomId('modmailSend')
+        ])
+    }
+    if (settings.modmail.modmailGPT || true) { // remove the true thing
+        modmailOpenComponents.addComponents([
+            new Discord.ButtonBuilder()
+                .setLabel('🤖 Generate Response')
+                .setStyle(2)
+                .setCustomId('modmailGPT')
         ])
     }
     if (settings.modmail.forwardMessage) {
@@ -113,6 +122,25 @@ async function interactionHandler(interaction, settings, bot, db) {
         ])
     }
 
+    // Split row if open components is > 5
+    if (modmailOpenComponents.components.length > 5) {
+        // Split the components into two rows
+        const splitComponents = modmailOpenComponents.components.reduce((acc, component, index) => {
+            if (index < 5) {
+                acc[0].push(component);
+            } else {
+                acc[1].push(component);
+            }
+            return acc;
+        }, [[], []]);
+
+        // Create the two rows
+        modmailOpenComponents = [
+            new Discord.ActionRowBuilder().addComponents(splitComponents[0]),
+            new Discord.ActionRowBuilder().addComponents(splitComponents[1])
+        ];
+    } else modmailOpenComponents = [modmailOpenComponents]
+
     let embed = new Discord.EmbedBuilder()
     embed.data = interaction.message.embeds[0].data
 
@@ -137,7 +165,7 @@ async function interactionHandler(interaction, settings, bot, db) {
     let security = interaction.member
 
     if (interaction.customId === "modmailUnlock") {
-        await interaction.message.edit({ embed: [interaction.message.embed], components: [modmailOpenComponents] })
+        await interaction.message.edit({ embed: [interaction.message.embed], components: [...modmailOpenComponents] })
         await interaction.deferUpdate()
     } else if (interaction.customId === "modmailLock") {
         modmailCloseComponents = new Discord.ActionRowBuilder()
@@ -186,7 +214,7 @@ async function interactionHandler(interaction, settings, bot, db) {
                     await interaction.message.edit({ embeds: [embed], components: [] })
                 } else {
                     await tempResponseMessage.delete()
-                    await interaction.message.edit({ components: [modmailOpenComponents] })
+                    await interaction.message.edit({ components: [...modmailOpenComponents] })
                 }
             })
         })
@@ -216,7 +244,7 @@ async function interactionHandler(interaction, settings, bot, db) {
                         .setFooter({ text: `${interaction.customId}` })
                     await interaction.reply({ embeds: [embed] })
                 }
-            } else { await interaction.message.edit({ components: [modmailOpenComponents]}); await confirmMessage.delete(); await interaction.deferUpdate() }
+            } else { await interaction.message.edit({ components: [...modmailOpenComponents] }); await confirmMessage.delete(); await interaction.deferUpdate() }
         })
     } else if (interaction.customId === "modmailClose") {
         confirmationEmbed.setDescription(`This will close the modmail permenantly.\nIf you wish to send a message after closing, use the \`\`;mmr\`\` command to send a message to this modmail`)
@@ -226,7 +254,7 @@ async function interactionHandler(interaction, settings, bot, db) {
                 embed.addFields([{ name: `${interaction.member.nickname} has closed this modmail <t:${moment().unix()}:R>`, value: `This modmail has been closed` }])
                 await interaction.message.edit({ embeds: [embed], components: [] })
                 await interaction.deferUpdate()
-            } else { await interaction.message.edit({ components: [modmailOpenComponents]}); await confirmMessage.delete(); await interaction.deferUpdate() }
+            } else { await interaction.message.edit({ components: [...modmailOpenComponents] }); await confirmMessage.delete(); await interaction.deferUpdate() }
         })
     } else if (interaction.customId === "modmailBlacklist") {
         confirmationEmbed.setDescription(`This will blacklist ${raider} and they can no longer send in any future modmails`)
@@ -237,9 +265,57 @@ async function interactionHandler(interaction, settings, bot, db) {
                 embed.addFields([{ name: `${interaction.member.nickname} has blacklisted ${raider.nickname} <t:${moment().unix()}:R>`, value: `${raider} has been blacklisted by ${interaction.member}` }])
                 await interaction.message.edit({ embeds: [embed], components: [] })
                 await interaction.deferUpdate()
-            } else { await interaction.message.edit({ components: [modmailOpenComponents]}); await confirmMessage.delete(); await interaction.deferUpdate() }
+            } else { await interaction.message.edit({ components: [...modmailOpenComponents] }); await confirmMessage.delete(); await interaction.deferUpdate() }
         })
-    } else {
+    } else if (interaction.customId === "modmailGPT") {
+        // Get the original modmail
+        let originalModmail = embed.data.description.replace(/<@!\d+?>/g, '').replace(' **sent the bot**\n', '').replace('\t', '');
+
+        // Send modmail to flask API
+        axios.post('http://127.0.0.1:5000/modmail', { modmail: originalModmail })
+            .then(async function (response) {
+                // Respond to interaction
+                await interaction.deferUpdate()
+
+                // Get the generated text from the Flask API
+                let generatedText = response.data.response; // Assuming Flask responds with a key named "response"
+
+                // Ask for User Confirmation
+                let approvalEmbed = new Discord.EmbedBuilder()
+                    .setTitle("Generated Response")
+                    .setDescription(`Generated text: ${generatedText}`);
+
+
+                let tempResponseMessage = await modmailChannel.send({ embeds: [approvalEmbed] });
+
+                if (await tempResponseMessage.confirmButton(interaction.member.id)) {
+                    // Check if the user is still in the server
+                    if (!checkInServer) {
+                        await tempResponseMessage.delete();
+                        failedEmbed.setDescription(`${raider} Has left this server and I can no longer continue with this modmail`);
+                        await interaction.reply({ embeds: [failedEmbed] });
+                        await interaction.message.edit({ components: [] });
+                        return;
+                    }
+
+                    await directMessages.send(generatedText);
+                    await tempResponseMessage.delete();
+
+                    embed.addFields([{ name: `Generated Response Approved by ${interaction.member.nickname} <t:${moment().unix()}:R>:`, value: generatedText }]);
+                    await interaction.message.edit({ embeds: [embed], components: [] });
+
+                } else {
+                    // User rejected the generated response
+                    await tempResponseMessage.delete();
+                    await interaction.message.edit({ components: [...modmailOpenComponents] });
+                }
+            })
+            .catch(function (error) {
+                // Handle any errors from the Flask API
+                console.log("Error from Flask API: ", error);
+            });
+    }
+    else {
         embed = new Discord.EmbedBuilder()
             .setDescription(`${interaction.member} Something went wrong when trying to handle your interaction\nPlease try again or contact any Upper Staff to get this sorted out.\nThank you for your patience!`)
             .setColor('#FF0000')

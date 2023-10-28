@@ -143,4 +143,7 @@ async function setup(bot) {
     iterServers(bot, deployCommands)
 }
 
+const launchFlask = require('./ml/spawnFlask.js')
+launchFlask()
+
 module.exports = { setup }

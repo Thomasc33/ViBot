@@ -384,7 +384,7 @@ class AfkTemplate {
         this.buttons = this.#template.buttons
         this.reacts = this.#template.reacts
         this.templateID = this.#template.templateId
-        this.parentTemplateID = this.#template.parentTemplateID
+        this.parentTemplateID = this.#template.parentTemplateId
     }
 
     processBody(channel) {
