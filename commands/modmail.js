@@ -272,12 +272,12 @@ async function interactionHandler(interaction, settings, bot, db) {
         // Get the original modmail
         let originalModmail = embed.data.description.replace(/<@!\d+?>/g, '').replace(' **sent the bot**\n', '').replace('\t', '');
 
+        // Respond to interaction
+        await interaction.deferReply()
+
         // Send modmail to flask API
         axios.post(modmailGPTurl, { modmail: originalModmail })
             .then(async function (response) {
-                // Respond to interaction
-                await interaction.deferUpdate()
-
                 // Get the generated text from the Flask API
                 let generatedText = response.data.response; // Assuming Flask responds with a key named "response"
 
