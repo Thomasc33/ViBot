@@ -4,6 +4,7 @@ const { init } = require('./vetVerification');
 const moment = require('moment')
 var watchedModMails = []
 const axios = require('axios')
+const modmailGPTurl = require('../settings.json').modmailGPTurl
 
 module.exports = {
     name: 'modmail',
@@ -272,7 +273,7 @@ async function interactionHandler(interaction, settings, bot, db) {
         let originalModmail = embed.data.description.replace(/<@!\d+?>/g, '').replace(' **sent the bot**\n', '').replace('\t', '');
 
         // Send modmail to flask API
-        axios.post('http://127.0.0.1:5000/modmail', { modmail: originalModmail })
+        axios.post(modmailGPTurl, { modmail: originalModmail })
             .then(async function (response) {
                 // Respond to interaction
                 await interaction.deferUpdate()
