@@ -38,15 +38,9 @@ module.exports = {
 
     /**
      * @param {Discord.Message | Discord.CommandInteraction} interaction
-     * @param {string[]} args
      * @param {Discord.Client} bot
      * @param {*} db
-     * @param {Discord.GuildMember} member
-     * @param {'add' | 'remove' | 'set'} op
-     * @param {keyof clConfig[member.guildId]["logtypes"]} logType
-     * @param {number} count
      */
-    // eslint-disable-next-line complexity
     async processChangeLog(interaction, bot, db) {
         const member = interaction.options.getMember('user')
 
@@ -74,7 +68,6 @@ module.exports = {
         const op = operator.charAt(0).toLowerCase()
 
         const count = interaction.options.getInteger('number')
-        const change = count * (op == 'r' ? -1 : 1)
 
         const logTypeRequest = interaction.options.getString('type').toLowerCase()
         const logIndex = clConfig[member.guild.id].logtypes.findIndex(e => logTypeRequest == e.toLowerCase())
@@ -111,46 +104,61 @@ module.exports = {
 
         const currentweekConfirmed = currentweek && await interaction.editReply({ embeds: [confirmEmbed], components: [] }).then(() => interaction.confirmReply())
 
+        const hasChanges = currentweekConfirmed || changelogConfirmed
+
         let confirmedSet = op != 's'
-        if (op == 's' && (currentweekConfirmed || changelogConfirmed)) {
-            const text = [changelogConfirmed && logType, currentweekConfirmed && currentweek].filter(i => i).map(i => `\`${i?.deCamelCase()}\``).join(' and ')
+        if (hasChanges && op == 's') {
+            const text = []
+            if (changelogConfirmed) text.push(`\`${logType.deCamelCase()}\``)
+            if (currentweekConfirmed) text.push(`\`${currentweek.deCamelCase()}\``)
             confirmEmbed.setTitle('Attempt to Set')
-                .setDescription(`Are you **SURE** you want to **SET** ${text} to ${change} instead of adding or removing?`)
+                .setDescription(`Are you **SURE** you want to **SET** ${text.join(' and ')} to ${count} instead of adding or removing?`)
                 .setColor('DarkOrange')
                 .setFields()
             confirmedSet = await interaction.editReply({ embeds: [confirmEmbed], components: [] }).then(() => interaction.confirmReply())
         }
-        if (!confirmedSet || (!changelogConfirmed && !currentweekConfirmed)) {
+
+        if (!confirmedSet || !hasChanges) {
             confirmEmbed.setTitle('Changelog Cancelled')
                 .setColor('Red')
                 .setDescription(`Cancelled changelog for ${member}`)
                 .setFields()
             return interaction.editReply({ embeds: [confirmEmbed], components: [] })
         }
-        try {
-            const [oldLogs] = await getUserLogs(db, logType, currentweek, member)
-            if (changelogConfirmed) await updateUserLogs(db, op, change, logType, member)
-            if (currentweekConfirmed) await updateUserLogs(db, op, change, currentweek, member)
-            const [newLogs] = await getUserLogs(db, logType, currentweek, member)
+        async function getUserLogs() {
+            return currentweek
+                ? await db.promise().query('SELECT ??, ?? FROM users WHERE id = ?', [logType, currentweek, member.id])
+                : await db.promise().query('SELECT ?? FROM users WHERE id = ?', [logType, member.id])
+        }
 
-            const embed = new Discord.EmbedBuilder()
-                .setColor('Green')
-                .setTitle('Changelog')
-                .setAuthor({ name: member.displayName, iconURL: member.displayAvatarURL() })
-                .setDescription('Changelog performed')
-                .addFields(
-                    { name: 'Member', value: `${member}\n\`${member.displayName}\``, inline: true },
-                    { name: 'Mod', value: `${interaction.member}\n\`${interaction.member.displayName}\``, inline: true },
-                    { name: 'Action', value: `${operator} ${count}`, inline: true },
-                    { name: 'Log', value: `\`${logType?.deCamelCase()}\` ${changelogConfirmed ? '✅' : '❌'}\nOld Value: \`${oldLogs[0][logType]}\`\nNew Value: \`${newLogs[0][logType]}\``, inline: true }
-                )
-                .setTimestamp(new Date())
+        async function updateUserLogs(logType) {
+            return op == 's'
+                ? await db.promise().query('UPDATE users SET ?? = ? WHERE id = ?', [logType, count, member.id])
+                : await db.promise().query('UPDATE users SET ?? = GREATEST(CAST(?? AS SIGNED) + ?, 0) WHERE id = ?', [logType, logType, op == 'r' ? -count : count, member.id])
+        }
 
-            if (currentweek) embed.addFields({ name: 'Quota', value: `\`${currentweek?.deCamelCase()}\` ${currentweekConfirmed ? '✅' : '❌'}\nOld Value: \`${oldLogs[0][currentweek]}\`\nNew Value: \`${newLogs[0][currentweek]}\``, inline: true })
+        const [oldLogs] = await getUserLogs()
+        if (changelogConfirmed) await updateUserLogs(logType)
+        if (currentweekConfirmed) await updateUserLogs(currentweek)
+        const [newLogs] = await getUserLogs()
 
-            modlogs.send({ embeds: [embed] })
-            interaction.editReply({ embeds: [embed], components: [] })
-        } catch (err) { printError(err) }
+        const embed = new Discord.EmbedBuilder()
+            .setColor('Green')
+            .setTitle('Changelog')
+            .setAuthor({ name: member.displayName, iconURL: member.displayAvatarURL() })
+            .setDescription('Changelog performed')
+            .addFields(
+                { name: 'Member', value: `${member}\n\`${member.displayName}\``, inline: true },
+                { name: 'Mod', value: `${interaction.member}\n\`${interaction.member.displayName}\``, inline: true },
+                { name: 'Action', value: `${operator} ${count}`, inline: true },
+                { name: 'Log', value: `\`${logType?.deCamelCase()}\` ${changelogConfirmed ? '✅' : '❌'}\nOld Value: \`${oldLogs[0][logType]}\`\nNew Value: \`${newLogs[0][logType]}\``, inline: true }
+            )
+            .setTimestamp(new Date())
+
+        if (currentweek) embed.addFields({ name: 'Quota', value: `\`${currentweek?.deCamelCase()}\` ${currentweekConfirmed ? '✅' : '❌'}\nOld Value: \`${oldLogs[0][currentweek]}\`\nNew Value: \`${newLogs[0][currentweek]}\``, inline: true })
+
+        modlogs.send({ embeds: [embed] })
+        interaction.editReply({ embeds: [embed], components: [] })
     },
     /**
      * @param {Discord.Message} message
@@ -160,16 +168,4 @@ module.exports = {
      */
     async execute(message, args, bot, db) { await this.processChangeLog(message, bot, db) },
     async slashCommandExecute(interaction, bot, db) { await this.processChangeLog(interaction, bot, db) }
-}
-
-async function getUserLogs(db, logType, currentweek, member) {
-    return currentweek
-        ? await db.promise().query('SELECT ??, ?? FROM users WHERE id = ?', [logType, currentweek, member.id])
-        : await db.promise().query('SELECT ?? FROM users WHERE id = ?', [logType, member.id])
-}
-
-async function updateUserLogs(db, op, change, logType, member) {
-    return op == 's'
-        ? await db.promise().query('UPDATE users SET ?? = ? WHERE id = ?', [logType, change, member.id])
-        : await db.promise().query('UPDATE users SET ?? = ?? + ? WHERE id = ?', [logType, logType, change, member.id])
 }
