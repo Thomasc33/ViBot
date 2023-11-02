@@ -32,7 +32,7 @@ module.exports = {
         const json = slashCommandJSON(this, guild)
         // Magic regex!
         // Makes the log type names look pretty :3
-        if (clConfig[guild.id]) json[0].options[2].choices = clConfig[guild.id].logtypes.map((k) => ({ name: k?.deCamelCase(), value: k }))
+        if (clConfig[guild.id]?.logtypes.length <= 25) json[0].options[2].choices = clConfig[guild.id].logtypes.map((k) => ({ name: k?.deCamelCase(), value: k }))
         return json
     },
 
