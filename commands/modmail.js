@@ -273,7 +273,7 @@ async function interactionHandler(interaction, settings, bot, db) {
         let originalModmail = embed.data.description.replace(/<@!\d+?>/g, '').replace(' **sent the bot**\n', '').replace('\t', '');
 
         // Respond to interaction
-        await interaction.deferReply()
+        let resp = await interaction.deferReply()
 
         // Send modmail to flask API
         axios.post(modmailGPTurl, { modmail: originalModmail })
@@ -287,7 +287,7 @@ async function interactionHandler(interaction, settings, bot, db) {
                     .setDescription(`Generated text: ${generatedText}`);
 
 
-                let tempResponseMessage = await modmailChannel.send({ embeds: [approvalEmbed] });
+                let tempResponseMessage = await resp.edit({ embeds: [approvalEmbed] });
 
                 if (await tempResponseMessage.confirmButton(interaction.member.id)) {
                     // Check if the user is still in the server
