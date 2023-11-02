@@ -1,4 +1,3 @@
-const botSettings = require('../settings.json')
 const ErrorLogger = require('../lib/logError')
 const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType
 const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js')
@@ -7,7 +6,6 @@ module.exports = {
     name: 'addpoints',
     slashCommandName: 'addpoints',
     description: 'Add points to a user',
-    alias: ['stream', 'priest', 'trickster'],
     guildSpecific: true,
     role: 'security',
     args: [
@@ -31,18 +29,18 @@ module.exports = {
     async execute(message, args, bot, db) {
         const settings = bot.settings[message.guild.id]
         if (!settings?.backend.points) return message.channel.send('This server does not have points functionality enabled')
-        const command = message.content.substring(botSettings.prefix.length, message.content.length).split(/ +/)[0].toLowerCase()
-        const type = command == this.name ? args.shift() : command
 
-        const member = message.guild.findMember(args[0])
-        if (!member) return message.channel.send(`${args[0]} not found`)
-        let points = 0
-        switch (type) {
-            case 'stream': points = settings.points.o3streaming; break
-            case 'priest': points = settings.points.o3puri; break
-            case 'trickster': points = settings.points.o3trickster; break
-            default: return message.reply(`${type} not recognized`)
-        }
+        const type = message.options.getString('type').toLowerCase()
+        const member = message.options.getMember('user')
+
+        const points = {
+            stream: settings.points.o3streaming,
+            priest: settings.points.o3puri,
+            trickster: settings.points.o3trickster
+        }[type]
+
+        if (!points) return message.reply(`${type} not recognized`)
+
         db.query('UPDATE users SET points = points + ? WHERE id = ?', [points, member.id], err => {
             if (err) {
                 message.replyInternalError('Error adding points.')
