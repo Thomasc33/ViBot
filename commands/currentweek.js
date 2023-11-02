@@ -19,9 +19,10 @@ module.exports = {
 
         if (!Object.hasOwn(quotas, message.guild.id)) return message.reply('Current week is not set up for this server')
         const [rows] = await db.promise().query('SELECT * FROM users WHERE id in (?)', [members.map(m => m.id)])
-        for (const member of members) {
-            const row = rows.find(r => r.id == member.id)
-            if (!row) continue
+
+        for (const row of rows) {
+            const member = members.find(m => m.id == row.id)
+
             const embed = new Discord.EmbedBuilder()
                 .setTitle('Current Week')
                 .setDescription(`${member} \`\`${member.displayName}\`\``)
