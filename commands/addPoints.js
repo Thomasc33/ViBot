@@ -30,7 +30,7 @@ module.exports = {
     },
     async execute(message, args, bot, db) {
         const settings = bot.settings[message.guild.id]
-        if (!settings?.backend?.points) return message.channel.send('This server does not have points functionality enabled')
+        if (!settings?.backend.points) return message.channel.send('This server does not have points functionality enabled')
         const command = message.content.substring(botSettings.prefix.length, message.content.length).split(/ +/)[0].toLowerCase()
         const type = command == this.name ? args.shift() : command
 
