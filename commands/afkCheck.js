@@ -1176,6 +1176,7 @@ class afkCheck {
         }
         if (interaction.member.roles.highest.position >= interaction.guild.roles.cache.get(this.#botSettings.roles.trialrl).position) {
             await interaction.reply({ embeds: [extensions.createEmbed(interaction, `The location for this run has been set to \`${this.location}\``, null)], ephemeral: true })
+            if (!this.earlySlotMembers.includes(interaction.member.id)) this.earlySlotMembers.push(interaction.member.id)
             return false
         }
         for (let i of this.#botSettings.lists.earlyLocation) { //custom early location roles
