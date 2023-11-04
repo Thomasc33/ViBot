@@ -121,8 +121,6 @@ class Headcount {
         headcount.panelMessage = await commandChannel.messages.fetch(hc.panelId)
         headcount.#keyNotifiers = hc.notifiers
         headcount.template = await AfkTemplate.AfkTemplate.tryCreate(bot, bot.settings[guild.id], headcount.message, hc.templateName)
-        headcount.template.processReacts()
-        headcount.template.processButtons(null)
         headcount.#key = headcount.template.buttons[hc.keyName]
         headcount.#time = new Date(hc.time)
         headcount.settings = bot.settings[guild.id]
@@ -227,7 +225,7 @@ class Headcount {
 
     #startKeyCollector() {
         this.statusMessage.reactionCollector = this.statusMessage.createReactionCollector({
-            filter: (reaction, user) => !user.bot && reaction.emoji.name == this.#key.emote.name,
+            filter: (reaction, user) => !user.bot && reaction.emoji.name == this.#key.emote,
             time: this.#time.getTime() - Date.now()
         })
 
