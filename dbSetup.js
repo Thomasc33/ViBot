@@ -129,9 +129,7 @@ module.exports = {
     init,
     reconnect_dont_do_this,
     getDB(guildId) {
-        if (dbs === null) throw new Error("Can't get DB before initialization")
-
-        return dbs[guildId]
+        if (dbs === null) throw new Error("Can't get DB before initialization")        return dbs[guildId]
     },
     guildSchema(guildId) {
         return dbSchemas[guildId].schema

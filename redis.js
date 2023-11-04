@@ -22,11 +22,11 @@ class MockMessage {
 
 module.exports = {
     async setup() {
-        client = createClient(botSettings.redis);
+        client = createClient(botSettings.redis)
 
-        client.on('error', err => console.log('Redis Client Error: ', err));
+        client.on('error', err => console.log('Redis Client Error: ', err))
 
-        await client.connect();
+        await client.connect()
     },
     async createReactionRow(message, commandName, callback, buttons, allowedUser, state) {
         let opts = { valid_ids: JSON.stringify(buttons.components.map((c) => c.data.custom_id)), command: commandName, callback, state: JSON.stringify(state) }
