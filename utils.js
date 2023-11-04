@@ -100,9 +100,9 @@ class LegacyCommandOptions {
         return this.subcommand
     }
 
-    #optTypeMatch(expected_type, k) {
-        return this.#opts.find((opt) => opt.name == k)?.type == expected_type
-           || (this.getSubcommand() && this.#opts.find((opt) => opt.name == this.getSubcommand()).options.find((opt) => opt.name == k)?.type == expected_type)
+    #optTypeMatch(expectedType, k) {
+        return this.#opts.find((opt) => opt.name == k)?.type == expectedType
+           || (this.getSubcommand() && this.#opts.find((opt) => opt.name == this.getSubcommand()).options.find((opt) => opt.name == k)?.type == expectedType)
     }
 
     #processType(type, value) {
@@ -154,6 +154,7 @@ module.exports = {
             name,
             type: 1,
             description: obj.description,
+            // eslint-disable-next-line camelcase
             guild_id: guild.id, /* Not currently necessary bc we use the per-guild command creation endpoint, but just in case */
             options: obj.args
         }]

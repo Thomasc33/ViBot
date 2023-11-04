@@ -29,14 +29,17 @@ module.exports = {
         await client.connect()
     },
     async createReactionRow(message, commandName, callback, buttons, allowedUser, state) {
+        // eslint-disable-next-line camelcase
         let opts = { valid_ids: JSON.stringify(buttons.components.map((c) => c.data.custom_id)), command: commandName, callback, state: JSON.stringify(state) }
         if (message instanceof Discord.InteractionResponse) opts = { token: message.interaction.token, whid: message.interaction.webhook.id, ...opts }
         if (allowedUser) opts.allowedUser = allowedUser.id
         const key = 'messagebuttons:' + (await message.fetch()).id
+        // eslint-disable-next-line new-cap
         await client.multi().HSET(key, opts).EXPIRE(key, 86400 /* 1 day */).exec()
     },
     async handleReactionRow(bot, interaction) {
         if (!(interaction instanceof Discord.ButtonInteraction)) return false
+        // eslint-disable-next-line new-cap
         const data = await client.HGETALL('messagebuttons:' + interaction.message.id)
         if (!data.command || !data.callback) return false
         if (data.allowedUser && data.allowedUser != interaction.user.id) return false

@@ -23,7 +23,7 @@
         "no-unused-vars": ["error", { "argsIgnorePattern": "er" }],
 
         "no-return-assign": "warn",
-        "no-negated-condition": "warn",
+        "no-negated-condition": "off",
 
         "max-statements-per-line": "off",
         "semi": ["warn", "never"],
