@@ -122,7 +122,7 @@ async function reconnect_dont_do_this(bot) {
     const old_conns = Object.values(dbs)
     await setup_connections(bot)
     console.log(old_conns)
-    old_conns.forEach(pool => pool._closed && pool.end(() => {}))
+    old_conns.forEach(pool => pool._closed && pool.end(() => { }))
 }
 
 module.exports = {

@@ -1,8 +1,7 @@
 const fs = require('fs')
 const Discord = require('discord.js')
-const templates = require('../data/afkTemplates.json')
 const settings = require('../settings.json')
-const { createEmbed } = require('../lib/extensions.js')
+const { createEmbed, getRoleStrings } = require('../lib/extensions.js')
 
 // Enum for the Error States in a Template
 const TemplateState = { 
@@ -55,10 +54,6 @@ const TemplateButtonChoice = {
     'NUMBER_CHOICE_CUSTOM' : 3
 }
 
-function getRoleStrings(botSettings, member) {
-    return member.roles.cache.map(role => Object.entries(botSettings.roles).filter(([name, id]) => id == role.id).map(i => i[0])).flat()
-}
-
 async function resolveTemplateAlias(botSettings, member, guildId, commandChannel, alias) {
     const templateUrl = new URL(settings.config.url)
     templateUrl.pathname = `/api/${guildId}/template/${commandChannel}/alias/${alias}`
@@ -107,8 +102,8 @@ class AfkTemplate {
     #bot;
     #botSettings;
     #guild;
-    #channel;
     #inherit;
+    #templateName;
 
     /** Constructor for the AFK Template Class
      * @param {Discord.Client} bot The client which is running the bot
@@ -116,13 +111,13 @@ class AfkTemplate {
      * @param {Discord.Message} message The discord message in which the command was executed
      * @param {String} alias The string used to identify the AFK Template
      */
-    constructor(bot, botSettings, message, template) {
+    constructor(bot, guild, template) {
         this.#bot = bot
-        this.#botSettings = botSettings
-        this.#guild = message.guild
-        this.#channel = message.channel
+        this.#botSettings = bot.settings[guild.id]
+        this.#guild = guild
         this.#inherit = null
         this.#template = template
+        this.#templateName = template.templateName
 
         // Validate that the template is OK to use
         this.#validateTemplateParameters() // Validate existence of AFK Template parameters
@@ -131,8 +126,10 @@ class AfkTemplate {
 
         // Populate all parameters used in AfkCheck
         this.#processParameters()
+        this.#processReacts()
     }
 
+    // TODO: Need to be able to skip permission checks on reload
     static async tryCreate(bot, botSettings, message, templateName) {
         const templateUrl = new URL(settings.config.url)
         templateUrl.pathname = `/api/${message.guild.id}/template/${message.channel.id}/template/${templateName}`
@@ -140,13 +137,16 @@ class AfkTemplate {
         templateUrl.searchParams.append('key', settings.config.key)
         const template = await fetch(templateUrl).then(f => f.json())
         try {
-            return new this(bot, bot.settings[message.guild.id], message, template)
+            return new this(bot, message.guild, template)
         } catch (e) {
             if (e instanceof AfkTemplateValidationError) return e
             throw e
         }
     }
 
+    get templateName() {
+        return this.#templateName
+    }
 
     // Function for populating child AFK Template parameters in an object from Parent AFK Template object
     #populateObjectInherit(template, parentTemplate) {
@@ -371,7 +371,7 @@ class AfkTemplate {
         }
         this.raidTemplateChannel = this.#guild.channels.cache.get(this.#botSettings.raiding[this.#template.templateChannel])
         this.raidStatusChannel = this.#guild.channels.cache.get(this.#botSettings.raiding[this.#template.statusChannel])
-        this.raidCommandChannel = this.#channel
+        this.raidCommandChannel = this.#guild.channels.cache.get(this.#template.commandsChannel)
         this.raidActiveChannel = this.#guild.channels.cache.get(this.#botSettings.raiding[this.#template.activeChannel])
         this.logName = this.#template.logName
         this.name = this.#template.name
@@ -383,23 +383,25 @@ class AfkTemplate {
         this.body = this.#template.body
         this.buttons = this.#template.buttons
         this.reacts = this.#template.reacts
-        this.templateID = this.#template.templateID
-        this.parentTemplateID = this.#template.parentTemplateID
+        this.templateID = this.#template.templateId
+        this.parentTemplateID = this.#template.parentTemplateId
     }
 
     processBody(channel) {
+        const body = JSON.parse(JSON.stringify(this.body))
         for (let i = 1; i <= this.#template.phases; i++) {
-            if (this.body[i].message) this.body[i].message = this.processMessages(channel, this.body[i].message)
-            if (!this.body[i].embed.description) this.body[i].embed.description = this.processBodyDescription(channel, i)
+            if (body[i].message) body[i].message = this.processMessages(channel, body[i].message)
+            if (!body[i].embed.description) body[i].embed.description = this.processBodyDescription(channel, i)
             else {
-                for (let j in this.body[i].embed.description) {
-                    if (!this.body[i].embed.description[j]) this.body[i].embed.description[j] = this.processBodyDescription(channel, i)
-                    else if (i != 0 && this.body[i].embed.description[j] == "") this.body[i].embed.description[j] = this.body[i-1].embed.description[j]
-                    else this.body[i].embed.description[j] = this.processMessages(channel, this.body[i].embed.description[j])
+                for (let j in body[i].embed.description) {
+                    if (!body[i].embed.description[j]) body[i].embed.description[j] = this.processBodyDescription(channel, i)
+                    else if (i != 0 && body[i].embed.description[j] == "") body[i].embed.description[j] = body[i-1].embed.description[j]
+                    else body[i].embed.description[j] = this.processMessages(channel, body[i].embed.description[j])
                 }
-                this.body[i].embed.description = this.body[i].embed.description.reduce((a, b) => a + b)
+                body[i].embed.description = body[i].embed.description.reduce((a, b) => a + b)
             }
         }
+        return body
     }
 
     processBodyHeadcount(channel) {
@@ -425,9 +427,9 @@ class AfkTemplate {
             let start = this.buttons[j].start
             let end = start + this.buttons[j].lifetime
             if (i < this.buttons[j].start && i >= end ) continue
-            if (this.buttons[j].type == TemplateButtonType.NORMAL && this.buttons[j].emote) emotes.push(this.buttons[j].emote.text)
-            if (this.buttons[j].type == TemplateButtonType.LOG || this.buttons[j].type == TemplateButtonType.LOG_SINGLE) description += `If you have a **${j}**, react with ${this.buttons[j].emote ? this.buttons[j].emote.text : "the button"}\n`
-            if (this.buttons[j].type == TemplateButtonType.SUPPORTER) supporter = this.buttons[j].emote.text
+            if (this.buttons[j].type == TemplateButtonType.NORMAL && this.buttons[j].emote) emotes.push(this.#bot.storedEmojis[this.buttons[j].emote].text)
+            if (this.buttons[j].type == TemplateButtonType.LOG || this.buttons[j].type == TemplateButtonType.LOG_SINGLE) description += `If you have a **${j}**, react with ${this.buttons[j].emote ? this.#bot.storedEmojis[this.buttons[j].emote].text : "the button"}\n`
+            if (this.buttons[j].type == TemplateButtonType.SUPPORTER) supporter = this.#bot.storedEmojis[this.buttons[j].emote].text
         }
         if (emotes.length > 0) description += `If you have an early react, react with ${emotes.join(" ")}\n`
         if (supporter) description += `If you are a ${this.perkRoles.join("")}, react with ${supporter}\n`
@@ -442,8 +444,8 @@ class AfkTemplate {
             if (this.reacts[i].onHeadcount && this.reacts[i].emote) reactEmotes.push(this.reacts[i].emote.text)
         }
         for (let i in this.buttons) {
-            if (this.buttons[i].type == TemplateButtonType.NORMAL && this.buttons[i].emote) buttonEmotes.push(this.buttons[i].emote.text)
-            if ((this.buttons[i].type == TemplateButtonType.LOG || this.buttons[i].type == TemplateButtonType.LOG_SINGLE) && this.buttons[i].emote) description += `If you plan on bringing a **${i}**, react with ${this.buttons[i].emote.text}\n`
+            if (this.buttons[i].type == TemplateButtonType.NORMAL && this.buttons[i].emote) buttonEmotes.push(this.#bot.storedEmojis[this.buttons[i].emote].text)
+            if ((this.buttons[i].type == TemplateButtonType.LOG || this.buttons[i].type == TemplateButtonType.LOG_SINGLE) && this.buttons[i].emote) description += `If you plan on bringing a **${i}**, react with ${this.#bot.storedEmojis[this.buttons[i].emote].text}\n`
         }
         if (reactEmotes.length > 0) description += `If you plan on coming, react with ${reactEmotes.join(" ")}\n`
         if (buttonEmotes.length > 0) description += `If you plan on bringing an early react, react with ${buttonEmotes.join(" ")}\n`
@@ -451,21 +453,26 @@ class AfkTemplate {
     }
 
     processButtons(channel) {
-        for (let i in this.buttons) {
-            if (!this.buttons[i].points) this.buttons[i].points = 0
-            if (!Number.isInteger(this.buttons[i].points)) this.buttons[i].points = this.#botSettings.points[this.buttons[i].points]
-            if (!this.buttons[i].disableStart) this.buttons[i].disableStart = this.buttons[i].start
-            if (this.buttons[i].emote) this.buttons[i].emote = this.#bot.storedEmojis[this.buttons[i].emote]
-            if (this.buttons[i].minRole) this.buttons[i].minRole = this.#guild.roles.cache.get(this.#botSettings.roles[this.buttons[i].minRole])
-            if (this.buttons[i].minStaffRoles) this.buttons[i].minStaffRoles = this.buttons[i].minStaffRoles.map(role => this.#guild.roles.cache.get(this.#botSettings.roles[role]))
-            if (this.buttons[i].confirmationMessage) this.buttons[i].confirmationMessage = this.processMessages(channel, this.buttons[i].confirmationMessage)
-            for (let j in this.buttons[i].logOptions) {
-                if (!this.buttons[i].logOptions[j].points) this.buttons[i].logOptions[j].points = 0
-                if (!Number.isInteger(this.buttons[i].logOptions[j].points)) this.buttons[i].logOptions[j].points = this.#botSettings.points[this.buttons[i].logOptions[j].points]
-                if (!this.buttons[i].logOptions[j].multiplier) this.buttons[i].logOptions[j].multiplier = 1
-                if (!Number.isInteger(this.buttons[i].logOptions[j].multiplier)) this.buttons[i].logOptions[j].multiplier = this.#botSettings.points[this.buttons[i].logOptions[j].multiplier]
+        return Object.entries(this.#template.buttons).reduce((obj, [key, button]) => {
+            obj[key] = {
+                ...button,
+                points: typeof button.points == 'string' ? this.#botSettings.points[button.points] : button.points ?? 0,
+                disableStart: button.disableStart || button.start,
+                emote: this.#bot.storedEmojis[button.emote],
+                minRole: this.#guild.roles.cache.get(this.#botSettings.roles[button.minRole]),
+                minStaffRoles: button.minStaffRoles && button.minStaffRoles.map(role => this.#guild.roles.cache.get(this.#botSettings.roles[role])),
+                confirmationMessage: button.confirmationMessage && this.processMessages(channel, button.confirmationMessage),
+                logOptions: button.logOptions && Object.entries(button.logOptions).reduce((obj, [key, logOption]) => {
+                    obj[key] = {
+                        ...logOption,
+                        points: typeof logOption.points == 'string' ? this.#botSettings.points[logOption.points] : logOption.points ?? 0,
+                        multiplier: typeof logOption.multiplier == 'string' ? this.#botSettings.points[logOption.multiplier] : logOption.multiplier ?? 1,
+                    }
+                    return obj
+                }, {})
             }
-        }
+            return obj
+        }, {})
     }
 
     processMessages(channel, currentMessage) {
@@ -486,12 +493,8 @@ class AfkTemplate {
         return newMessage2
     }
 
-    processReacts() {
+    #processReacts() {
         for (let i in this.reacts) this.reacts[i].emote = this.#bot.storedEmojis[this.reacts[i].emote]
-    }
-
-    updateButtonChoice(choices) {
-        for (let i in this.buttons) if (choices.includes(i)) delete this.buttons[i]
     }
 
     getButtonChoices() {
@@ -527,7 +530,7 @@ module.exports = { AfkTemplate, TemplateVCOptions, TemplateVCState, TemplateButt
                 let textShow = `There are currently \`${raidIDs.length}\` afk checks.`
                 let indexShow = 0
                 for (let raidID of raidIDs) {
-                    textShow += `\n\`\`${indexShow+1}.\`\` ${bot.afkChecks[raidID].afkTemplate.name} by ${bot.afkChecks[raidID].leader} at <t:${Math.floor(bot.afkChecks[raidID].time/1000)}:f> is ${bot.afkModules[raidID].active ? 'active' : 'inactive'}`
+                    textShow += `\n\`\`${indexShow+1}.\`\` ${bot.afkChecks[raidID].afkTemplateName} by ${bot.afkChecks[raidID].leader} at <t:${Math.floor(bot.afkChecks[raidID].time/1000)}:f> is ${bot.afkModules[raidID]?.active ? 'active' : 'inactive'}`
                     indexShow++
                 }
                 return await message.reply({ embeds: [createEmbed(message, textShow, null)] })
@@ -539,8 +542,8 @@ module.exports = { AfkTemplate, TemplateVCOptions, TemplateVCState, TemplateButt
                 let textDelete = `There are currently \`${raidIDs.length}\` afk checks.`
                 let indexDelete = 0
                 for (let raidID of raidIDs) {
-                    textDelete += `\n\`\`${indexDelete+1}.\`\` ${bot.afkChecks[raidID].afkTemplate.name} by ${bot.afkChecks[raidID].leader} at <t:${Math.floor(bot.afkChecks[raidID].time/1000)}:f> is ${bot.afkModules[raidID].active ? 'active' : 'inactive'}`
-                    deleteMenu.addOptions({ label: `${indexDelete+1}. ${bot.afkChecks[raidID].afkTemplate.name} by ${bot.afkChecks[raidID].leader.displayName}`, value: raidID })
+                    textDelete += `\n\`\`${indexDelete+1}.\`\` ${bot.afkChecks[raidID].afkTemplateName} by ${bot.afkChecks[raidID].leader} at <t:${Math.floor(bot.afkChecks[raidID].time/1000)}:f> is ${bot.afkModules[raidID]?.active ? 'active' : 'inactive'}`
+                    deleteMenu.addOptions({ label: `${indexDelete+1}. ${bot.afkChecks[raidID].afkTemplateName} by ${bot.afkChecks[raidID].leader.displayName}`, value: raidID })
                     indexDelete++
                 }
 

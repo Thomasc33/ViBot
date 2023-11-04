@@ -4,7 +4,6 @@ const cookieParser = require('cookie-parser')
 const rateLimit = require('express-rate-limit')
 const app = express()
 const cors = require('cors')
-const https = require('https')
 const http = require('http')
 const Discord = require('discord.js')
 const redisConnect = require('./redis.js').setup
@@ -46,11 +45,6 @@ async function deployCommands(bot, guild) {
 function startAPI() {
     if (botSettings.api) {
         console.log('api starting')
-        const credentials = {}
-        try {
-            credentials.key = fs.readFileSync('/etc/letsencrypt/live/a.vibot.tech/privkey.pem', 'utf8')
-            credentials.cert = fs.readFileSync('/etc/letsencrypt/live/a.vibot.tech/cert.pem', 'utf8')
-        } catch (e) { }
 
         const apiLimit = rateLimit({
             windowMs: 1 * 10 * 1000,
@@ -74,9 +68,9 @@ function startAPI() {
             next()
         })
 
-        const httpsServer = credentials.key && credentials.cert ? https.createServer(credentials, app) : http.createServer(app)
+        const server = http.createServer(app)
         const port = botSettings.apiPort
-        httpsServer.listen(port)
+        server.listen(port)
     }
 }
 
@@ -151,5 +145,8 @@ async function setup(bot) {
 
     await Headcount.load(bot)
 }
+
+const launchFlask = require('./ml/spawnFlask.js')
+launchFlask()
 
 module.exports = { setup }

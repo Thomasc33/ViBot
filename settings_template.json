@@ -34,6 +34,7 @@
     "earlyLocationCooldown": 7200000,
     "vibotDirectory": "C:/Users/Carrt/OneDrive/Desktop/ViBot",
     "openSslLocation": "C:/Program Files/OpenSSL-Win64/bin/openssl.exe",
+    "modmailGPTurl": "http://127.0.0.1:5001/modmail",
     "botOwners": [],
     "rateLimitLogger": {
         "discord": false,
