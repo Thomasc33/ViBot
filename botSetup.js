@@ -26,6 +26,7 @@ const { BiWeeklyQuota, MonthlyQuota } = require('./jobs/quota.js')
 const { BotStatusUpdate } = require('./jobs/botstatus.js')
 const { iterServers } = require('./jobs/util.js')
 const dbSetup = require('./dbSetup.js')
+const { Headcount } = require('./commands/headcount.js')
 
 async function deployCommands(bot, guild) {
     // Organize commands
@@ -147,6 +148,8 @@ async function setup(bot) {
 
     // Initialize the bot's slash commands
     iterServers(bot, deployCommands)
+
+    await Headcount.load(bot)
 }
 
 module.exports = { setup }

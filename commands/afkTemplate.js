@@ -499,6 +499,10 @@ class AfkTemplate {
         for (let i in this.buttons) if (this.buttons[i].choice != TemplateButtonChoice.NO_CHOICE) choices.push(i) 
         return choices
     }
+
+    getRandomThumbnail() {
+        return this.body[1].embed.thumbnail?.[Math.floor(Math.random() * this.body[1].embed.thumbnail.length)]
+    }
 }
 
 module.exports = { AfkTemplate, TemplateVCOptions, TemplateVCState, TemplateButtonType, TemplateButtonChoice, templateNamePrompt, AfkTemplateValidationError, resolveTemplateAlias,
