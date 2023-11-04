@@ -19,7 +19,6 @@ module.exports = {
         if (!member.roles.cache.has(settings.roles.vetban)) return message.channel.send(`${member} is not vetbanned`)
         db.query('SELECT * FROM vetbans WHERE id = ? AND suspended = true', [member.id], async (err, rows) => {
             if (err) { ErrorLogger.log(err, bot, message.guild) }
-            // eslint-disable-next-line no-negated-condition
             if (rows.length != 0) {
                 const proofLogID = rows[0].logmessage
                 member.roles.remove(settings.roles.vetban)

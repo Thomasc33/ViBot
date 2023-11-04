@@ -4,6 +4,7 @@ const { init } = require('./vetVerification');
 const moment = require('moment')
 var watchedModMails = []
 const axios = require('axios')
+const modmailGPTurl = require('../settings.json').modmailGPTurl
 
 module.exports = {
     name: 'modmail',
@@ -271,12 +272,12 @@ async function interactionHandler(interaction, settings, bot, db) {
         // Get the original modmail
         let originalModmail = embed.data.description.replace(/<@!\d+?>/g, '').replace(' **sent the bot**\n', '').replace('\t', '');
 
-        // Send modmail to flask API
-        axios.post('http://127.0.0.1:5000/modmail', { modmail: originalModmail })
-            .then(async function (response) {
-                // Respond to interaction
-                await interaction.deferUpdate()
+        // Respond to interaction
+        let resp = await interaction.deferReply()
 
+        // Send modmail to flask API
+        axios.post(modmailGPTurl, { modmail: originalModmail })
+            .then(async function (response) {
                 // Get the generated text from the Flask API
                 let generatedText = response.data.response; // Assuming Flask responds with a key named "response"
 
@@ -286,7 +287,7 @@ async function interactionHandler(interaction, settings, bot, db) {
                     .setDescription(`Generated text: ${generatedText}`);
 
 
-                let tempResponseMessage = await modmailChannel.send({ embeds: [approvalEmbed] });
+                let tempResponseMessage = await resp.edit({ embeds: [approvalEmbed] });
 
                 if (await tempResponseMessage.confirmButton(interaction.member.id)) {
                     // Check if the user is still in the server

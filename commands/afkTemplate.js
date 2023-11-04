@@ -384,7 +384,7 @@ class AfkTemplate {
         this.buttons = this.#template.buttons
         this.reacts = this.#template.reacts
         this.templateID = this.#template.templateId
-        this.parentTemplateID = this.#template.parentTemplateID
+        this.parentTemplateID = this.#template.parentTemplateId
     }
 
     processBody(channel) {
@@ -427,9 +427,9 @@ class AfkTemplate {
             let start = this.buttons[j].start
             let end = start + this.buttons[j].lifetime
             if (i < this.buttons[j].start && i >= end ) continue
-            if (this.buttons[j].type == TemplateButtonType.NORMAL && this.buttons[j].emote) emotes.push(this.buttons[j].emote.text)
-            if (this.buttons[j].type == TemplateButtonType.LOG || this.buttons[j].type == TemplateButtonType.LOG_SINGLE) description += `If you have a **${j}**, react with ${this.buttons[j].emote ? this.buttons[j].emote.text : "the button"}\n`
-            if (this.buttons[j].type == TemplateButtonType.SUPPORTER) supporter = this.buttons[j].emote.text
+            if (this.buttons[j].type == TemplateButtonType.NORMAL && this.buttons[j].emote) emotes.push(this.#bot.storedEmojis[this.buttons[j].emote].text)
+            if (this.buttons[j].type == TemplateButtonType.LOG || this.buttons[j].type == TemplateButtonType.LOG_SINGLE) description += `If you have a **${j}**, react with ${this.buttons[j].emote ? this.#bot.storedEmojis[this.buttons[j].emote].text : "the button"}\n`
+            if (this.buttons[j].type == TemplateButtonType.SUPPORTER) supporter = this.#bot.storedEmojis[this.buttons[j].emote].text
         }
         if (emotes.length > 0) description += `If you have an early react, react with ${emotes.join(" ")}\n`
         if (supporter) description += `If you are a ${this.perkRoles.join("")}, react with ${supporter}\n`
@@ -444,8 +444,8 @@ class AfkTemplate {
             if (this.reacts[i].onHeadcount && this.reacts[i].emote) reactEmotes.push(this.reacts[i].emote.text)
         }
         for (let i in this.buttons) {
-            if (this.buttons[i].type == TemplateButtonType.NORMAL && this.buttons[i].emote) buttonEmotes.push(this.buttons[i].emote.text)
-            if ((this.buttons[i].type == TemplateButtonType.LOG || this.buttons[i].type == TemplateButtonType.LOG_SINGLE) && this.buttons[i].emote) description += `If you plan on bringing a **${i}**, react with ${this.buttons[i].emote.text}\n`
+            if (this.buttons[i].type == TemplateButtonType.NORMAL && this.buttons[i].emote) buttonEmotes.push(this.#bot.storedEmojis[this.buttons[i].emote].text)
+            if ((this.buttons[i].type == TemplateButtonType.LOG || this.buttons[i].type == TemplateButtonType.LOG_SINGLE) && this.buttons[i].emote) description += `If you plan on bringing a **${i}**, react with ${this.#bot.storedEmojis[this.buttons[i].emote].text}\n`
         }
         if (reactEmotes.length > 0) description += `If you plan on coming, react with ${reactEmotes.join(" ")}\n`
         if (buttonEmotes.length > 0) description += `If you plan on bringing an early react, react with ${buttonEmotes.join(" ")}\n`
