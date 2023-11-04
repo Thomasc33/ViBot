@@ -19,14 +19,17 @@ module.exports = {
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         const vetBanRole = message.guild.roles.cache.get(settings.roles.vetban)
+        const suspendedRole = message.guild.roles.cache.get(settings.roles.permasuspended)
+        const sbvRole = message.guild.roles.cache.get(settings.roles.tempsuspended)
 
         var member = message.mentions.members.first()
         if (!member) member = message.guild.members.cache.get(args[0]);
         if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
         if (!member) return message.replyUserError("User not found")
         if (member.roles.cache.has(vetBanRole.id)) return message.replyUserError("User is vet banned")
+        if ((suspendedRole && member.roles.cache.has(suspendedRole.id)) || member.roles.cache.has(sbvRole.id)) return message.replyUserError("User is suspended")
 
-        // get all vet roles that arent null and that the raider doesn't have already
+        // Get all vet roles that aren't null and that the raider doesn't have already
         const vetRoles = Object.entries(settings.roles)
             .filter(([key, value]) => {
                 let split = key.split('vetraider')
@@ -34,16 +37,16 @@ module.exports = {
             })
             .map(([key, value]) => message.guild.roles.cache.get(value))
 
-        // check if there are vet roles to assign
+        // Check if there are vet roles to assign
         if (vetRoles.length == 0) {
             return message.reply(`Raider has all available veteran roles. If this is not the case, please contact a Moderator/Admin to set up veteran roles.`)
         } else if (vetRoles.length == 1) {
-            // get the only vet role and assign it to the raider
+            // Get the only vet role and assign it to the raider
             let vetRaiderRole = vetRoles[0]
             return module.exports.addRole(bot, db, member, message, vetRaiderRole)
         } 
 
-        // shows all vet roles that can be assigned if there are multiple
+        // Shows all vet roles that can be assigned if there are multiple
         let choiceEmbed = new Discord.EmbedBuilder()
             .setDescription(`Please select the veteran role to give to ${member}`);
         
