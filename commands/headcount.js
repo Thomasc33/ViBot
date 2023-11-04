@@ -191,7 +191,7 @@ class Headcount {
                 case AfkTemplate.TemplateButtonType.LOG:
                 case AfkTemplate.TemplateButtonType.LOG_SINGLE:
                     // eslint-disable-next-line no-await-in-loop
-                    if (button.emote) await this.statusMessage.react(button.emote.id)
+                    if (button.emote && this.bot.storedEmojis[button.emote]) await this.statusMessage.react(this.bot.storedEmojis[button.emote]?.id)
                     break
                 default:
             }
@@ -428,9 +428,6 @@ module.exports = {
             return
         }
 
-        afkTemplate.processReacts()
-        afkTemplate.processButtons(null)
-
         if (await confirmNewHeadcount(message, afkTemplate)) Headcount.active.push(new Headcount(message, message.member, bot, afkTemplateName, afkTemplate, new Date(Date.now() + parseTime(args))))
     },
     Headcount
@@ -445,7 +442,7 @@ function parseTime(args) {
     const major = parseInt(args.shift())
     if (isNaN(major)) return 900_000
     switch (args.shift()[0].toLowerCase()) {
-        case 's': return major * 1000
-        case 'm': default: return major * 60 * 1000
+        case 's': return Math.max(30, major) * 1000
+        case 'm': default: return Math.min(major, 60) * 60 * 1000
     }
 }
