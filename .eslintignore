@@ -19,6 +19,7 @@ commands/excuse.js
 commands/falseSuspensions.js
 commands/glape.js
 commands/getFeedback.js
+commands/headcount.js
 commands/id.js
 commands/joinRun.js
 commands/keyRoles.js
