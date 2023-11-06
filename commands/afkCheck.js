@@ -46,19 +46,6 @@ module.exports = {
         if (afkTemplate.startDelay > 0) setTimeout(() => afkModule.start(), afkTemplate.startDelay*1000)
         else afkModule.start()
     },
-    /**
-     * 
-     * @param {import('./headcount.js').Headcount} headcount 
-     */
-    async convertHeadcount(headcount, location) {
-        const template = await AfkTemplate.AfkTemplate.tryCreate(headcount.bot, headcount.settings, headcount.panelMessage, headcount.templateName)
-        const afkModule = new afkCheck(template, headcount.bot, require('../dbSetup').getDB(headcount.member.guild.id), headcount.panelMessage, location)
-        await afkModule.createChannel()
-        await afkModule.sendButtonChoices()
-        await afkModule.sendInitialStatusMessage(headcount.statusMessage)
-        await afkModule.createThreads()
-        setTimeout(() => afkModule.start(headcount.panelMessage), (template.startDelay || 0) * 1000)
-    },
     returnRaidIDsbyMemberID(bot, memberID) {
         return Object.keys(bot.afkChecks).filter(raidID => bot.afkChecks[raidID].leader == memberID)
     },
@@ -94,6 +81,13 @@ module.exports = {
 }
 
 class afkCheck {
+    /**
+     * @param {AfkTemplate.AfkTemplate} afkTemplate
+     * @param {Discord.Client} bot
+     * @param {import('mysql').Connection} db
+     * @param {Discord.Message} message
+     * @param {String} location
+     */
     #bot;
     #botSettings;
     #db;
@@ -106,16 +100,6 @@ class afkCheck {
     #pointlogMid;
     #body = null;
 
-    get templateName() { return this.#afkTemplate.name }
-    get leader() { return this.#leader }
-    
-    /**
-     * @param {AfkTemplate.AfkTemplate} afkTemplate
-     * @param {Discord.Client} bot
-     * @param {import('mysql').Connection} db
-     * @param {Discord.Message} message
-     * @param {String} location
-     */
     constructor(afkTemplate, bot, db, message, location) {
         this.#bot = bot // bot
         this.#botSettings = bot.settings[message.guild.id] // bot settings
@@ -183,11 +167,11 @@ class afkCheck {
         return this.#afkTemplate.pingRoles ? `${this.#afkTemplate.pingRoles.join(' ')}, ` : ``
     }
 
-    async start(hcPanel) {
+    async start() {
         if (this.phase === 0) this.phase = 1
         this.timer = new Date(Date.now() + (this.#body[this.phase].timeLimit * 1000))
         this.#bot.afkModules[this.#raidID] = this
-        await Promise.all([this.sendStatusMessage(), this.sendCommandsMessage(hcPanel), this.sendChannelsMessage()])
+        await Promise.all([this.sendStatusMessage(), this.sendCommandsMessage(), this.sendChannelsMessage()])
         this.startTimers()
         this.saveBotAfkCheck()
     }
@@ -520,16 +504,15 @@ class afkCheck {
         return { content: `${this.#leader}`, embeds: [this.#genRaidChannelsEmbed()], components }
     }
 
-    async sendInitialStatusMessage(hcStatus) {
+    async sendInitialStatusMessage() {
         this.#body = this.#afkTemplate.processBody(this.#channel)
         
         const raidStatusMessageContents = {
             content: `${this.#pingText()}**${this.#afkTemplate.name}** ${this.flag ? ` (${this.flag})` : ''} by ${this.#leader} is starting inside of **${this.#guild.name}**${this.#channel ? ` in ${this.#channel}` : ``}`,
             embeds: [this.#afkTemplate.startDelay > 0 ? this.#genRaidStatusEmbed() : null]
         };
-
         [this.raidStatusMessage] = await Promise.all([
-            hcStatus?.reply(raidStatusMessageContents) || this.#afkTemplate.raidStatusChannel.send(raidStatusMessageContents),
+            this.#afkTemplate.raidStatusChannel.send(raidStatusMessageContents),
             this.#body[1].message && this.#afkTemplate.raidStatusChannel.send({ content: `${this.#body[1].message} in 5 seconds...` }).then(msg => setTimeout(async () => await msg.delete(), 5000)),
             ...Object.values(this.#afkTemplate.raidPartneredStatusChannels).map(channel => channel.send({ content: `**${this.#afkTemplate.name}** is starting inside of **${this.#guild.name}**${this.#channel ? ` in ${this.#channel}` : ``}` }))
         ])
@@ -559,14 +542,14 @@ class afkCheck {
         }
     }
 
-    async sendCommandsMessage(hcPanel) {
+    async sendCommandsMessage() {
         const raidCommandsMessageContents = this.#genRaidCommands()
         const raidInfoMessageContents = this.#genRaidInfo();
         [
             this.raidCommandsMessage,
             this.raidInfoMessage
         ] = await Promise.all([
-            this.raidCommandsMessage?.edit(raidCommandsMessageContents) || hcPanel?.reply(raidCommandsMessageContents) || this.#afkTemplate.raidCommandChannel.send(raidCommandsMessageContents),
+            this.raidCommandsMessage?.edit(raidCommandsMessageContents) || this.#afkTemplate.raidCommandChannel.send(raidCommandsMessageContents),
             this.raidInfoMessage?.edit(raidInfoMessageContents) || this.#afkTemplate.raidInfoChannel.send(raidInfoMessageContents)
         ])
         
