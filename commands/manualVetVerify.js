@@ -27,7 +27,7 @@ module.exports = {
         if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
         if (!member) return message.replyUserError("User not found")
         if (member.roles.cache.has(vetBanRole.id)) return message.replyUserError("User is vet banned")
-        if ((suspendedRole && member.roles.cache.has(suspendedRole.id)) || member.roles.cache.has(sbvRole.id)) return message.replyUserError("User is suspended")
+        if ((settings.roles.permasuspended && member.roles.cache.has(settings.roles.permasuspended)) || (settings.roles.tempsuspended && member.roles.cache.has(settings.roles.tempsuspended))) return message.replyUserError("User is suspended")
 
         // Get all vet roles that aren't null and that the raider doesn't have already
         const vetRoles = Object.entries(settings.roles)
