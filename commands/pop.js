@@ -142,12 +142,10 @@ module.exports = {
         // Add Points to Database
         if (settings.backend.points && keyInfo.points) {
             let points = settings.points[keyInfo.points] * count
-            if (user.roles.cache.hasAny(...settings.lists.perkRoles.map(role => settings.roles[role]))) points = points * settings.points.supportermultiplier
-            if (moddedKey) points = points * settings.points.keymultiplier
+            if (user.roles.cache.hasAny(...settings.lists.perkRoles.map(role => settings.roles[role]))) points *= settings.points.supportermultiplier
+            if (moddedKey) points *= settings.points.keymultiplier
             db.query('UPDATE users SET points = points + ? WHERE id = ?', [points, user.id])
-        }
-
-        // Delete Confirmation Message
+        }        // Delete Confirmation Message
         return confirmMessage.delete()
     },
     findKey(guildid, key) {

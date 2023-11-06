@@ -32,9 +32,9 @@ module.exports = {
 
         // check if person being warned is staff
         if (bot.settings[message.guild.id].backend.onlyUpperStaffWarnStaff) {
-            const lowest_staff_role = bot.settings[message.guild.id].roles.lol
-            if (lowest_staff_role) {
-                if (member.roles.highest.comparePositionTo(lowest_staff_role) >= 0) {
+            const lowestStaffRole = bot.settings[message.guild.id].roles.lol
+            if (lowestStaffRole) {
+                if (member.roles.highest.comparePositionTo(lowestStaffRole) >= 0) {
                     // the warn should only happen if message.member is like an admin or something
                     const warningRoles = settings.lists.warningRoles.length ? settings.lists.warningRoles : ['moderator', 'headrl', 'headeventrl', 'officer', 'developer']
                     const warningIds = warningRoles.map(m => settings.roles[m])
@@ -55,9 +55,9 @@ module.exports = {
             .setDescription(`__Moderator:__ <@!${message.author.id}> (${message.member.nickname})\n__Reason:__ ${reason}`)
         if (!silent) await member.send({ embeds: [warnEmbed] }).catch(() => {})
         setTimeout(async () => {
-            const [[{ total_warn_count }]] = await db.promise().query('SELECT COUNT(*) as total_warn_count FROM warns WHERE id = ?', [member.user.id])
-            const [[{ server_warn_count }]] = await db.promise().query('SELECT COUNT(*) as server_warn_count FROM warns WHERE id = ? and (guildid = ? OR guildid is null)', [member.user.id, message.guild.id])
-            await message.reply(`${member.nickname}${silent ? ' silently' : ''} warned successfully. This is their \`${server_warn_count}\` warning for this server. And has a total of \`${total_warn_count}\` warnings`)
+            const [[{ totalWarnCount }]] = await db.promise().query('SELECT COUNT(*) as totalWarnCount FROM warns WHERE id = ?', [member.user.id])
+            const [[{ serverWarnCount }]] = await db.promise().query('SELECT COUNT(*) as serverWarnCount FROM warns WHERE id = ? and (guildid = ? OR guildid is null)', [member.user.id, message.guild.id])
+            await message.reply(`${member.nickname}${silent ? ' silently' : ''} warned successfully. This is their \`${serverWarnCount}\` warning for this server. And has a total of \`${totalWarnCount}\` warnings`)
         }, 500)
     }
 }
