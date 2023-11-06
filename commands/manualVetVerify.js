@@ -19,7 +19,6 @@ module.exports = {
     async execute(message, args, bot, db) {
         let settings = bot.settings[message.guild.id]
         const vetBanRole = message.guild.roles.cache.get(settings.roles.vetban)
-        const suspendedRole = message.guild.roles.cache.get(settings.roles.permasuspended)
 
         var member = message.mentions.members.first()
         if (!member) member = message.guild.members.cache.get(args[0]);
