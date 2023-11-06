@@ -50,7 +50,10 @@ module.exports = {
                 .setFooter({ text: '<Required> (Optional) [Item1, Item2, Item3]' });
             if (command.alias) commandPanel.addFields({ name: 'Aliases', value: command.alias.map(a => a).join(', ') })
             if (command.args) commandPanel.addFields({ name: 'Args', value: this.argString(command.args) })
-            if (command.getNotes && command.getNotes(message.guild, message.member, bot)) commandPanel.addFields({ name: 'Special Notes', value: command.getNotes(message.guild, message.member, bot) })
+            if (command.getNotes) {
+                const notes = command.getNotes(message.guild, message.member, bot)
+                if (notes) commandPanel.addFields({ name: notes.title ?? 'Special Notes', value: notes.value ?? notes })
+            }
 
             var roleOverride
             var minimumRole

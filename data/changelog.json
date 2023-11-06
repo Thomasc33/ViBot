@@ -1,6 +1,7 @@
 {
     "343704644712923138": {
         "logtypes": [
+            "points",
             "keypops",
             "eventpops",
             "cultsLead",
@@ -116,6 +117,7 @@
     },
     "701483950559985705": {
         "logtypes": [
+            "points",
             "keypops",
             "eventpops",
             "cultsLead",
@@ -203,6 +205,7 @@
     },
     "708026927721480254": {
         "logtypes": [
+            "points",
             "eventpops",
             "o3eventsLead",
             "o3parses",

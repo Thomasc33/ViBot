@@ -5,7 +5,6 @@ commands/avatar.js
 commands/botstatus.js
 commands/bruh.js
 commands/bugreport.js
-commands/changeLog.js
 commands/changename.js
 commands/characterList.js
 commands/check.js
