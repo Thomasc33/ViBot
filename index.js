@@ -21,8 +21,6 @@ const verification = require('./commands/verification')
 
 // Global Variables/Data
 const botSettings = require('./settings.json')
-const rootCas = require('ssl-root-cas').create()
-require('https').globalAgent.options.ca = rootCas
 const { bot, loadCommands } = require('./botMeta.js')
 loadCommands()
 const serverWhiteList = require('./data/serverWhiteList.json')
@@ -140,7 +138,7 @@ Promise.all(botSettings.config?.guildIds.map(guildId => {
             bot.settings[guildId] = data
             bot.settingsTimestamp[guildId] = m.lastEventId
             res()
-            fs.writeFile(`data/guildSettings.${guildId}.cache.json`, JSON.stringify({ logId: m.lastEventId, ...m.data }), () => {})
+            fs.writeFile(`data/guildSettings.${guildId}.cache.json`, JSON.stringify({ logId: m.lastEventId, ...data }), () => {})
         })
 
         // Read from cache

@@ -50,20 +50,20 @@ bot.devServers = ['739623118833713214']
 bot.storedEmojis = moduleIsAvailable('./data/emojis.json') ? require('./data/emojis.json') : {}
 
 function loadCommands() {
-    const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+    const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'))
     for (const file of commandFiles) {
-        const command = require(`./commands/${file}`);
-        bot.commands.set(command.name, command);
+        const command = require(`./commands/${file}`)
+        bot.commands.set(command.name, command)
     }
 }
 
 function moduleIsAvailable(path) {
     try {
-        require.resolve(path);
+        require.resolve(path)
         require(path)
-        return true;
+        return true
     } catch (e) {
-        return false;
+        return false
     }
 }
 

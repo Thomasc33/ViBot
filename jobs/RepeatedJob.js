@@ -37,15 +37,15 @@ class RepeatedJob {
 
         clearInterval(this.#intervalId)
         this.#intervalId = null
-        this.#intervalPromiseResolver();
-        return true;
+        this.#intervalPromiseResolver()
+        return true
     }
 
     schedule(cronString) {
         if (this.#cronJob !== null) return false
 
         this.#cronJob = cron.job(cronString, () => this.runOnce(), null, true, 'America/New_York', null, false)
-        return true;
+        return true
     }
 
     endSchedule() {
@@ -53,7 +53,7 @@ class RepeatedJob {
 
         this.#cronJob.stop()
         this.#cronJob = null
-        return true;
+        return true
     }
 }
 

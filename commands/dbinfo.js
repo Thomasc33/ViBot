@@ -1,5 +1,5 @@
 const Discord = require('discord.js')
-const { reconnect_dont_do_this } = require('../dbSetup.js')
+const { reconnectDontDoThis } = require('../dbSetup.js')
 const { slashCommandJSON } = require('../utils.js')
 
 function peekMysql2Queue(q) {
@@ -29,7 +29,7 @@ module.exports = {
             closed: db._closed
         }
         if (args.join(' ') == 'commit crimes') {
-            await reconnect_dont_do_this(bot)
+            await reconnectDontDoThis(bot)
             await message.channel.send('oh shit')
             await new Promise(res => { setTimeout(() => { message.channel.send("you REALLY shouldn't have done that").then(() => res()) }, 2000) })
         } else {
