@@ -145,7 +145,7 @@ module.exports = {
             if (user.roles.cache.hasAny(...settings.lists.perkRoles.map(role => settings.roles[role]))) points *= settings.points.supportermultiplier
             if (moddedKey) points *= settings.points.keymultiplier
             db.query('UPDATE users SET points = points + ? WHERE id = ?', [points, user.id])
-        }        // Delete Confirmation Message
+        }        // Delete Confirmation Message
         return confirmMessage.delete()
     },
     findKey(guildid, key) {
