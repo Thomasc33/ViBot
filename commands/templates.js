@@ -31,11 +31,13 @@ module.exports = {
             }
         }
         const parentTemplateKeys = Object.keys(parentTemplateValue)
-        let navigationComponents
         let currentIndex = 0
+
+        const sendData = { embeds: [this.createEmbed(parentTemplateValue, parentTemplateKeys[currentIndex], message)] }
+        if (parentTemplateKeys.length > 1) sendData.components = this.createComponents(parentTemplateKeys, currentIndex)
+        const templateMessage = await message.channel.send(sendData)
+
         if (parentTemplateKeys.length > 1) {
-            navigationComponents = this.createComponents(parentTemplateKeys, currentIndex)
-            const templateMessage = await message.channel.send({ embeds: [this.createEmbed(parentTemplateValue, parentTemplateKeys[currentIndex], message)], components: navigationComponents })
             const navigationInteractionHandler = new Discord.InteractionCollector(bot, { time: 300000, message: templateMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
             navigationInteractionHandler.on('collect', async interaction => {
                 if (interaction.user.id != message.author.id) return
