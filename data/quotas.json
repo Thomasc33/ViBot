@@ -77,7 +77,25 @@
         "ignoreRoles": ["officer", "moderator", "headrl", "admin"],
         "ignoreRolesDisplay": [],
         "roleDisplay": [],
-        "quotas": [{
+        "quotas": [
+            {
+                "id": "accursed",
+                "name": "Accursed Leader Quota",
+                "roles": ["accursedLeader"],
+                "quota": [5],
+                "rollmax": [0],
+                "reset": "biweekly",
+                "currentweek": "hardmodeShattersCurrentWeek",
+                "pastweeks": "hardmodeShattersPastWeeks",
+                "values": [{ 
+                    "column": "currentWeekHardmodeShattersLead", 
+                    "emoji": "<:theShatteredQueen:1156690518701527161>", 
+                    "name": "Hardmode Shatters", 
+                    "value": 1, 
+                    "isRun": true 
+                }]
+            },
+            {
                 "id": "raiding",
                 "name": "Raid Leader Quota",
                 "roles": ["rl", "almostrl"],
