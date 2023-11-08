@@ -29,7 +29,6 @@ commands/list.js
 commands/location.js
 commands/lock.js
 commands/lockdown.js
-commands/log.js
 commands/manualVerify.js
 commands/manualVetVerify.js
 commands/memes.js
