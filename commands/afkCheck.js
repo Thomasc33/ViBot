@@ -1410,6 +1410,22 @@ class afkCheck {
         if (this.#channel) this.#channel.members.forEach(m => this.members.push(m.id))
         else this.earlySlotMembers.forEach(id => this.members.push(id))
 
+        if (this.#botSettings.backend.giveLocationToEarlyVConStart){
+            const lateLocationMembers = this.earlySlotMembers.filter(u => !this.earlyLocationMembers.includes(u))
+            for (let i of lateLocationMembers) {
+                let member = this.#guild.members.cache.get(i)
+                const earlyLocEmbed = new Discord.EmbedBuilder()
+                .setColor('Green')
+                .setTitle(`Early location info`)
+                .addFields([{name: `The location of ${this.#channel.name} is` , value: `\`${this.location}\``},
+                    {name: `Raid leader info: `, value:`\`${this.#raidLeaderDisplayName()}\` | ${this.#leader}`},
+                    {name: `Link to channel:`, value: `${this.#channel}`}],
+                    {name: `If you get disconnected, join`, value: `${this.lounge} and press reconnect`})
+                .setTimestamp(Date.now());
+                await member.user.send({ embeds: [earlyLocEmbed] })    
+            }                
+        }
+
         if (this.members.length > 0) {
             let [db_members] = await this.#db.promise().query('SELECT id FROM users WHERE id IN (?)', [this.members])
             db_members = db_members.map(u => u.id)
