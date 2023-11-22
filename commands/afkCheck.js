@@ -1416,6 +1416,7 @@ class afkCheck {
             const dmMembers = [...new Set(lateLocationMembers.concat(hearingImpairedMembers))]
             for (const i of dmMembers) {
                 let member = this.#guild.members.cache.get(i)
+                if (member.voice.channel?.id != this.#channel.id) continue
                 const earlyLocEmbed = new Discord.EmbedBuilder()
                 .setColor('Green')
                 .setTitle(`Early location info`)
