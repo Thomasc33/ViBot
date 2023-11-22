@@ -1412,7 +1412,9 @@ class afkCheck {
 
         if (this.#botSettings.backend.giveLocationToEarlyVConStart){
             const lateLocationMembers = this.earlySlotMembers.filter(u => !this.earlyLocationMembers.includes(u))
-            for (let i of lateLocationMembers) {
+            const hearingImpairedMembers = this.#botSettings.lists.hearingImpairedMembers
+            let dmMembers = [...new Set(lateLocationMembers.concat(hearingImpairedMembers))]
+            for (let i of dmMembers) {
                 let member = this.#guild.members.cache.get(i)
                 const earlyLocEmbed = new Discord.EmbedBuilder()
                 .setColor('Green')
