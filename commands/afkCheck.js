@@ -1410,7 +1410,7 @@ class afkCheck {
         if (this.#channel) this.#channel.members.forEach(m => this.members.push(m.id))
         else this.earlySlotMembers.forEach(id => this.members.push(id))
 
-        if (this.#botSettings.backend.giveLocationToEarlyVConStart){
+        if (this.#channel && this.#botSettings.backend.giveLocationToEarlyVConStart){
             const lateLocationMembers = this.earlySlotMembers.filter(u => !this.earlyLocationMembers.includes(u))
             const hearingImpairedMembers = this.#botSettings.lists.hearingImpairedMembers
             const dmMembers = [...new Set(lateLocationMembers.concat(hearingImpairedMembers))]
