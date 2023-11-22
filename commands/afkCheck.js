@@ -1414,17 +1414,17 @@ class afkCheck {
             const lateLocationMembers = this.earlySlotMembers.filter(u => !this.earlyLocationMembers.includes(u))
             const hearingImpairedMembers = this.#botSettings.lists.hearingImpairedMembers
             const dmMembers = [...new Set(lateLocationMembers.concat(hearingImpairedMembers))]
+            const earlyLocEmbed = new Discord.EmbedBuilder()
+            .setColor('Green')
+            .setTitle(`Early location info`)
+            .addFields([{name: `The location of ${this.#channel.name} is` , value: `\`${this.location}\``},
+                {name: `Raid leader info: `, value:`\`${this.#raidLeaderDisplayName()}\` | ${this.#leader}`},
+                {name: `Link to channel:`, value: `${this.#channel}`}],
+                {name: `If you get disconnected, join`, value: `${this.lounge} and press reconnect`})
+            .setTimestamp(Date.now());
             for (const i of dmMembers) {
                 let member = this.#guild.members.cache.get(i)
                 if (member.voice.channel?.id != this.#channel.id) continue
-                const earlyLocEmbed = new Discord.EmbedBuilder()
-                .setColor('Green')
-                .setTitle(`Early location info`)
-                .addFields([{name: `The location of ${this.#channel.name} is` , value: `\`${this.location}\``},
-                    {name: `Raid leader info: `, value:`\`${this.#raidLeaderDisplayName()}\` | ${this.#leader}`},
-                    {name: `Link to channel:`, value: `${this.#channel}`}],
-                    {name: `If you get disconnected, join`, value: `${this.lounge} and press reconnect`})
-                .setTimestamp(Date.now());
                 await member.user.send({ embeds: [earlyLocEmbed] })    
             }                
         }
