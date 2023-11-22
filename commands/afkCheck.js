@@ -1424,7 +1424,7 @@ class afkCheck {
             .setTimestamp(Date.now());
             for (const i of dmMembers) {
                 let member = this.#guild.members.cache.get(i)
-                if (member.voice.channel?.id != this.#channel.id) continue
+                if (member?.voice.channel?.id != this.#channel.id) continue
                 await member.user.send({ embeds: [earlyLocEmbed] })    
             }                
         }
