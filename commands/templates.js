@@ -16,11 +16,11 @@ module.exports = {
         templatesUrl.searchParams.append('key', siteSettings.key)
         const templates = await fetch(templatesUrl).then(f => f.json())
         const parentTemplateValue = {}
-        for (const template of templates) {
-            for (const inherit of template.sectionNames) {
+        for (let i = 0; i < templates.length; i++) {
+            for (const inherit of templates[i].sectionNames) {
                 if (!parentTemplateValue[inherit]) parentTemplateValue[inherit] = { field: 0, line: 0, value: [''] }
-                const reacts = template.reacts ? Object.keys(template.reacts).filter(react => template.reacts[react].onHeadcount) : []
-                const newTemplate = `\n${reacts[0] ? `${bot.storedEmojis[template.reacts[reacts[0]].emote].text}| ` : ''}\`${template.aliases.reduce((a, b) => a.length <= b.length ? a : b).padEnd(2)}\` | **${template.templateName.toString().substring(0, 20)}**`
+                const reacts = templates[i].reacts ? Object.keys(templates[i].reacts).filter(react => templates[i].reacts[react].onHeadcount) : []
+                const newTemplate = `\n${reacts[0] ? `${bot.storedEmojis[templates[i].reacts[reacts[0]].emote].text}| ` : ''}\`${templates[i].aliases.reduce((a, b) => a.length <= b.length ? a : b).padEnd(2)}\` | **${templates[i].templateName.toString().substring(0, 20)}**`
                 if (parentTemplateValue[inherit].value[parentTemplateValue[inherit].field].length + newTemplate.length > 1024 || parentTemplateValue[inherit].line >= 15) {
                     parentTemplateValue[inherit].field++
                     parentTemplateValue[inherit].line = 0
@@ -56,10 +56,12 @@ module.exports = {
         await message.react('✅')
     },
     createEmbed(templateValue, inherit, message) {
-        const templateEmbed = createEmbed(message, `The dungeons displayed are specific to this channel, ${message.channel} and your staff roles, ${message.member.roles.highest}.\n\nThis page displays all the available templates in the \`${inherit.charAt(0).toUpperCase() + inherit.slice(1)}\` Category.`, null)
+        const headerMsg = `The dungeons displayed are specific to this channel, ${message.channel} and your staff roles, ${message.member.roles.highest}`
+        const categoryMsg = inherit ? `This page displays all the available templates in the \`${inherit.charAt(0).toUpperCase() + inherit.slice(1)}\` Category.` : ''
+        const templateEmbed = createEmbed(message, `${headerMsg}\n\n${categoryMsg}`, null)
         templateEmbed.setColor('#ff0000')
         templateEmbed.setTitle('Available Templates')
-        for (let i = 0; i < templateValue[inherit].value.length; i++) {
+        for (let i = 0; i < templateValue[inherit]?.value.length; i++) {
             if (i != 0 && i % 2 == 0) templateEmbed.addFields({ name: '\u200b', value: '\u200b', inline: false })
             templateEmbed.addFields({ name: ' ', value: templateValue[inherit].value[i], inline: true })
         }
