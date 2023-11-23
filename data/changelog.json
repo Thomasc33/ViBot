@@ -18,48 +18,33 @@
             "exaltsLead",
             "exaltFeedback",
             "shattersLead",
+            "hardmodeShattersLead",
             "fungalsLead",
             "nestsLead",
+            "advancedNestsLead",
+            "advancedNestPops",
             "steamworkRuns",
             "steamworkLead",
             "steamworkPops",
+            "advancedSteamworksLead",
+            "advancedSteamworkPops",
             "moonlightRuns",
             "moonlightLead",
             "moonlightPops",
             "totalUnexcused",
             "fullskipsLead",
-            "advancedNestsLead",
-            "advancedSteamworksLead",
             "oryxLead",
             "silentOryxLead",
             "runeShieldPops",
             "runeSwordPops",
-            "runeHelmetPops"
+            "runeHelmetPops",
+            "incantationPops",
+            "fameMinutesLead"
         ],
         "currentweeks": [
             {
-                "case": "oryxLead",
-                "currentWeekName": "currentWeekOryxLead"
-            },
-            {
-                "case": "silentOryxLead",
-                "currentWeekName": "currentWeekSilentOryxLead"
-            },
-            {
-                "case": "advancedNestsLead",
-                "currentWeekName": "currentWeekAdvancedNestsLead"
-            },
-            {
-                "case": "advancedSteamworksLead",
-                "currentWeekName": "currentWeekSteamworksLead"
-            },
-            {
                 "case": "cultsLead",
                 "currentWeekName": "currentweekCult"
-            },
-            {
-                "case": "shattersFeedback",
-                "currentWeekName": "currentweekshattersFeedback"
             },
             {
                 "case": "voidsLead",
@@ -78,6 +63,10 @@
                 "currentWeekName": "currentweekFeedback"
             },
             {
+                "case": "shattersFeedback",
+                "currentWeekName": "currentweekshattersFeedback"
+            },
+            {
                 "case": "eventsLead",
                 "currentWeekName": "currentweekEvents"
             },
@@ -94,6 +83,10 @@
                 "currentWeekName": "currentweekShatters"
             },
             {
+                "case": "hardmodeShattersLead",
+                "currentWeekName": "currentWeekHardmodeShattersLead"
+            },
+            {
                 "case": "fungalsLead",
                 "currentWeekName": "currentweekFungals"
             },
@@ -102,8 +95,16 @@
                 "currentWeekName": "currentweekNests"
             },
             {
+                "case": "advancedNestsLead",
+                "currentWeekName": "currentWeekAdvancedNestsLead"
+            },
+            {
                 "case": "steamworkLead",
                 "currentWeekName": "currentweekSteamwork"
+            },
+            {
+                "case": "advancedSteamworksLead",
+                "currentWeekName": "currentWeekAdvancedSteamworksLead"
             },
             {
                 "case": "moonlightLead",
@@ -112,6 +113,18 @@
             {
                 "case": "fullskipsLead",
                 "currentWeekName": "currentweekFullskipsLead"
+            },
+            {
+                "case": "oryxLead",
+                "currentWeekName": "currentWeekOryxLead"
+            },
+            {
+                "case": "silentOryxLead",
+                "currentWeekName": "currentWeekSilentOryxLead"
+            },
+            {
+                "case": "fameMinutesLead",
+                "currentWeekName": "currentWeekFameMinutesLead"
             }
         ]
     },
@@ -130,19 +143,32 @@
             "eventsLead",
             "parses",
             "feedback",
+            "shattersFeedback",
             "exaltsLead",
             "exaltFeedback",
             "shattersLead",
+            "hardmodeShattersLead",
             "fungalsLead",
             "nestsLead",
+            "advancedNestsLead",
+            "advancedNestPops",
             "steamworkRuns",
             "steamworkLead",
             "steamworkPops",
+            "advancedSteamworksLead",
+            "advancedSteamworkPops",
             "moonlightRuns",
             "moonlightLead",
             "moonlightPops",
             "totalUnexcused",
-            "fullskipsLead"
+            "fullskipsLead",
+            "oryxLead",
+            "silentOryxLead",
+            "runeShieldPops",
+            "runeSwordPops",
+            "runeHelmetPops",
+            "incantationPops",
+            "fameMinutesLead"
         ],
         "currentweeks": [
             {
@@ -166,6 +192,10 @@
                 "currentWeekName": "currentweekFeedback"
             },
             {
+                "case": "shattersFeedback",
+                "currentWeekName": "currentweekshattersFeedback"
+            },
+            {
                 "case": "eventsLead",
                 "currentWeekName": "currentweekEvents"
             },
@@ -182,6 +212,10 @@
                 "currentWeekName": "currentweekShatters"
             },
             {
+                "case": "hardmodeShattersLead",
+                "currentWeekName": "currentWeekHardmodeShattersLead"
+            },
+            {
                 "case": "fungalsLead",
                 "currentWeekName": "currentweekFungals"
             },
@@ -190,8 +224,16 @@
                 "currentWeekName": "currentweekNests"
             },
             {
+                "case": "advancedNestsLead",
+                "currentWeekName": "currentWeekAdvancedNestsLead"
+            },
+            {
                 "case": "steamworkLead",
                 "currentWeekName": "currentweekSteamwork"
+            },
+            {
+                "case": "advancedSteamworksLead",
+                "currentWeekName": "currentWeekAdvancedSteamworksLead"
             },
             {
                 "case": "moonlightLead",
@@ -200,6 +242,18 @@
             {
                 "case": "fullskipsLead",
                 "currentWeekName": "currentweekFullskipsLead"
+            },
+            {
+                "case": "oryxLead",
+                "currentWeekName": "currentWeekOryxLead"
+            },
+            {
+                "case": "silentOryxLead",
+                "currentWeekName": "currentWeekSilentOryxLead"
+            },
+            {
+                "case": "fameMinutesLead",
+                "currentWeekName": "currentWeekFameMinutesLead"
             }
         ]
     },
