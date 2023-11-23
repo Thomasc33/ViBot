@@ -25,12 +25,14 @@ module.exports = {
             let text = `Which active run would you like to change location for?.\n If no response is received, the command will use the default run at \`\`${1}.\`\`.`
             let index = 0
             for (let raidID of raidIDs) {
-                text += `\n\`\`${index+1}.\`\` ${bot.afkChecks[raidID].afkTemplate.name} by ${bot.afkChecks[raidID].leader} at <t:${Math.floor(bot.afkChecks[raidID].time/1000)}:f>`
-                locationMenu.addOptions({ label: `${index+1}. ${bot.afkChecks[raidID].afkTemplate.name} by ${bot.afkChecks[raidID].leader}`, value: raidID })
+                const label = `${bot.afkChecks[raidID].afkTemplateName} by ${bot.afkChecks[raidID]?.leader.nickname ?? bot.afkChecks[raidID]?.leader.user.id}`
+                text += `\n\`\`${index+1}.\`\` ${label} at <t:${Math.floor(bot.afkChecks[raidID].time/1000)}:f>`
+                locationMenu.addOptions({ label: `${index+1}. ${label}`, value: raidID })
                 index++
             }
             const {value: locationValue, interaction: subInteraction} = await message.selectPanel(text, null, locationMenu, 30000, false, true)
             raidID = locationValue
+            if (!raidID) return await message.reply('You must specify the raid to change a location.')
         }
         bot.afkChecks[raidID].location = location
         bot.afkModules[raidID].updateLocation()
