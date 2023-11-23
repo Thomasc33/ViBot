@@ -245,8 +245,22 @@
             "modded": true,
             "moddedSchema": "moddedPops"
         },
-        "moonlight": {
+        "advancedsteamwork": {
             "templateID": 16,
+            "alias": [
+                "ak",
+                "asteam",
+                "asteamworks",
+                "akogbold"
+            ],
+            "points": "steamworkkey",
+            "schema": "advancedSteamworkPops",
+            "name": "Advanced Steamworks",
+            "modded": true,
+            "moddedSchema": "moddedPops"
+        },
+        "moonlight": {
+            "templateID": 17,
             "alias": [
                 "mv",
                 "moonv",
@@ -258,7 +272,7 @@
             "name": "Moonlight Village"
         },
         "vial": {
-            "templateID": 17,
+            "templateID": 18,
             "alias": [
                 "v",
                 "vial"
