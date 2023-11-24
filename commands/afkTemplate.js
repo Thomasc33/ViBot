@@ -55,7 +55,7 @@ const TemplateButtonChoice = {
 }
 
 // Enum for Button Colors in AFK Templates
-const TemplateButtonColor = {
+const TemplateButtonColors = {
     'BLURPLE': 1,
     'GREY': 2,
     'GREEN': 3,
