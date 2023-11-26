@@ -3,7 +3,6 @@ const ErrorLogger = require('../lib/logError')
 const afkCheck = require('./afkCheck.js')
 const realmEyeScrape = require('../lib/realmEyeScrape');
 const charStats = require('../data/charStats.json')
-const botSettings = require('../settings.json')
 const ParseCurrentWeek = require('../data/currentweekInfo.json').parsecurrentweek
 const quota = require('./quota')
 const quotas = require('../data/quotas.json')

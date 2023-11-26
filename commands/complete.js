@@ -1,7 +1,5 @@
 const Discord = require('discord.js');
-const vision = require('@google-cloud/vision');
-const botSettings = require('../settings.json')
-const client = new vision.ImageAnnotatorClient(botSettings.gcloudOptions);
+const { createWorker } = require('tesseract.js');
 
 module.exports = {
     name: 'complete',
@@ -34,9 +32,10 @@ module.exports = {
         parseStatusEmbed.data.fields[1].value = 'Sending Image to Google'
         parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
         try {
-            const [result] = await client.textDetection(image);
-            var players = result.fullTextAnnotation;
-            players = players.text.replace(/[\n,]/g, " ").split(/ +/)
+            const worker = await createWorker('eng')      
+            const { data: { text } } = await worker.recognize(image)
+            await worker.terminate()
+            var players = text.replace(/[\n,]/g, " ").split(/ +/)
             players.shift()
             players.shift()
             players.shift()
