@@ -29,7 +29,7 @@ module.exports = {
             await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
             return;
         }
-        parseStatusEmbed.data.fields[1].value = 'Sending Image to Google'
+        parseStatusEmbed.data.fields[1].value = 'Reading image'
         parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
         try {
             const worker = await createWorker('eng')      
