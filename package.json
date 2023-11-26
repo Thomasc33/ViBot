@@ -1,6 +1,6 @@
 {
   "name": "vibot",
-  "version": "8.2.1",
+  "version": "8.3.0",
   "description": "ViBot",
   "main": "index.js",
   "dependencies": {
@@ -23,7 +23,8 @@
     "path": "^0.12.7",
     "pem": "^1.14.8",
     "redis": "^4.6.11",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "tesseract.js": "^5.0.3"
   },
   "scripts": {
     "test": ";ping",

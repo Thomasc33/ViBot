@@ -1,15 +1,13 @@
 const Discord = require('discord.js');
 const ErrorLogger = require('../lib/logError')
 const afkCheck = require('./afkCheck.js')
-const vision = require('@google-cloud/vision');
 const realmEyeScrape = require('../lib/realmEyeScrape');
 const charStats = require('../data/charStats.json')
 const botSettings = require('../settings.json')
 const ParseCurrentWeek = require('../data/currentweekInfo.json').parsecurrentweek
 const quota = require('./quota')
 const quotas = require('../data/quotas.json')
-const client = new vision.ImageAnnotatorClient(botSettings.gcloudOptions);
-
+const { createWorker } = require('tesseract.js');
 
 module.exports = {
     name: 'parsemembers',
@@ -45,12 +43,13 @@ module.exports = {
             await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
             return;
         }
-        parseStatusEmbed.data.fields[1].value = 'Sending Image to Google'
+        parseStatusEmbed.data.fields[1].value = 'Reading image'
         parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
         try {
-            const [result] = await client.textDetection(image);
-            var players = result.fullTextAnnotation;
-            players = players.text.replace(/[\n,]/g, " ").split(/ +/)
+            const worker = await createWorker('eng')      
+            const { data: { text } } = await worker.recognize(image)
+            await worker.terminate()
+            var players = text.replace(/[\n,]/g, " ").split(/ +/)
             players.shift()
             players.shift()
             players.shift()
