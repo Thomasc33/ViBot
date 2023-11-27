@@ -10,3 +10,4 @@ data/emojis.json
 data/restart_channel.json
 debug.log
 .DS_Store
+ml/save/
