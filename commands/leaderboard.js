@@ -27,7 +27,7 @@ class Leaderboard {
      * @param {import('mysql').Connection} db
      */
 
-    constructor (message, args, bot, db, guild) {
+    constructor(message, args, bot, db, guild) {
         this.message = message
         this.guild = guild
         this.member = this.message.member
@@ -70,19 +70,20 @@ class Leaderboard {
         return true
     }
 
-    async embedGetGuild() {}
+    async embedGetGuild() { }
     async embedGetCategory() {
         this.embed = new Discord.EmbedBuilder()
-            .setAuthor({ url: this.member.avatarURL(), name: 'Choose category'})
+            .setAuthor({ url: this.member.avatarURL(), name: 'Choose category' })
             .setDescription(`${this.leaderboardTemplates.map(category => `${this.bot.storedEmojis[category.emoji].text} **${category.prettyName}**`).join('\n')}`)
             .setColor(this.embedColor)
-        this.leaderboardMessage = await this.message.reply({ embeds: [ this.embed ] })
+        this.leaderboardMessage = await this.message.reply({ embeds: [this.embed] })
         this.categoryPick = await this.leaderboardMessage.confirmListEmojis(
             this.leaderboardTemplates.map(category => this.bot.storedEmojis[category.emoji].id),
             this.member.id
-        )
+        ).catch(() => 'Cancelled')
         if (!this.categoryPick || this.categoryPick == 'Cancelled') { return this.stopProcess() }
     }
+    
     async embedGetCategoryTemplate() {
         for (let category of this.leaderboardTemplates) {
             if (this.categoryPick == this.bot.storedEmojis[category.emoji].id) {
@@ -91,14 +92,14 @@ class Leaderboard {
             }
         }
         this.embed = new Discord.EmbedBuilder()
-            .setAuthor({ url: this.member.avatarURL(), name: 'Choose category'})
+            .setAuthor({ url: this.member.avatarURL(), name: 'Choose category' })
             .setDescription(`${this.leaderboardTemplates.map(category => `${this.bot.storedEmojis[category.emoji].text} **${category.prettyName}**`).join('\n')}`)
             .setColor(this.embedColor)
-        this.leaderboardMessage = await this.leaderboardMessage.edit({ embeds: [ this.embed ] })
+        this.leaderboardMessage = await this.leaderboardMessage.edit({ embeds: [this.embed] })
         this.templatePick = await this.leaderboardMessage.confirmListEmojis(
             this.leaderboardTemplates.map(template => this.bot.storedEmojis[template.emoji].id),
             this.member.id
-        )
+        ).catch(() => 'Cancelled')
         if (!this.templatePick || this.templatePick == 'Cancelled') { return this.stopProcess() }
         this.leaderboardMessage.edit({ components: [] })
 
@@ -110,6 +111,7 @@ class Leaderboard {
             }
         }
     }
+
     async updateEmbed() {
         const SQLQueryString = `SELECT * FROM users WHERE ${this.template.dbRows.map(n => `cast(${n} as unsigned)`).join(' + ')} > 0 ORDER BY ${this.template.dbRows.map(n => `cast(${n} as unsigned)`).join(' + ')} DESC`
         const [leaderboardRows,] = await this.db.promise().query(SQLQueryString)
@@ -119,7 +121,7 @@ class Leaderboard {
         this.yourPosition = undefined
         for (let i in leaderboardRows) {
             for (let dbRow of this.template.dbRows) { this.totalPoints += parseInt(leaderboardRows[i][dbRow]) }
-            if (leaderboardRows[i].id == this.member.id) { this.yourPosition = i}
+            if (leaderboardRows[i].id == this.member.id) { this.yourPosition = i }
         }
         for (let i = 0; i < this.leaderboardLimit; i++) {
             let position = i + 1;
@@ -166,7 +168,7 @@ class Leaderboard {
             .setDescription(` = ${emoji} **${prettyName}** ${emoji} =\n${prettyStrings.join('\n')}`)
             .setColor(this.embedColor)
             .setFooter({ text: `Total ${prettyName} ${this.totalPoints}` })
-            this.embeds.push(this.embed)
+        this.embeds.push(this.embed)
         if (yourPositionPrettyStrings.length > 0) {
             this.yourPositionEmbed = new Discord.EmbedBuilder()
                 .setDescription(`${yourPositionPrettyStrings.join('\n')}`)
