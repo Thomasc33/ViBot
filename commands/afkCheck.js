@@ -26,8 +26,13 @@ module.exports = {
         if (afkTemplateNames.length == 0) return await message.channel.send('This afk template does not exist.')
         const afkTemplateName = afkTemplateNames.length == 1 ? afkTemplateNames[0] : await AfkTemplate.templateNamePrompt(message, afkTemplateNames)
 
-        const afkTemplate = await AfkTemplate.AfkTemplate.tryCreate(bot, bot.settings[message.guild.id], message, afkTemplateName)
-        if (afkTemplate instanceof AfkTemplate.AfkTemplateValidationError) {
+        const afkTemplate = await AfkTemplate.AfkTemplate.tryCreate(bot, bot.settings[message.guild.id], message, afkTemplateName).catch(e => {
+            if (e instanceof AfkTemplateValidationError) return e
+            if (e instanceof TypeError && e.code == 'ECONNREFUSED') message.reply('Unable to fetch templates. Ping dev and/or retry in a minute.')
+            throw e
+        })
+
+        if (afkTemplate instanceof AfkTemplateValidationError) {
             if (afkTemplate.invalidChannel()) await message.delete()
             await message.channel.send(afkTemplate.message())
             return
@@ -1391,9 +1396,7 @@ class afkCheck {
         if (this.moveInEarlysTimer) clearInterval(this.moveInEarlysTimer)
         if (this.updatePanelTimer) clearInterval(this.updatePanelTimer)
 
-        console.log("MOVE @ LONGE")
         if (this.#channel) {
-            console.log("LONGE", this.vcLounge)
             for (let minimumJoinRaiderRole of this.#afkTemplate.minimumJoinRaiderRoles) await this.#channel.permissionOverwrites.edit(minimumJoinRaiderRole.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
             console.log(await this.#channel.setPosition(this.vcLounge.position + 1))
         }

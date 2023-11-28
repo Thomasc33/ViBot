@@ -32,7 +32,12 @@ module.exports = {
         if (afkTemplateNames.length == 0) return await message.channel.send('This afk template does not exist.')
         const afkTemplateName = afkTemplateNames.length == 1 ? afkTemplateNames[0] : await AfkTemplate.templateNamePrompt(message, afkTemplateNames)
 
-        const afkTemplate = await AfkTemplate.AfkTemplate.tryCreate(bot, bot.settings[message.guild.id], message, afkTemplateName)
+        const afkTemplate = await AfkTemplate.AfkTemplate.tryCreate(bot, bot.settings[message.guild.id], message, afkTemplateName).catch(e => {
+            if (e instanceof AfkTemplate.AfkTemplateValidationError) return e
+            if (e instanceof TypeError && e.code == 'ECONNREFUSED') message.reply('Unable to fetch templates. Ping dev and/or retry in a minute.')
+            throw e
+        })
+
         if (afkTemplate instanceof AfkTemplate.AfkTemplateValidationError) {
             await message.channel.send(afkTemplate.message())
             return

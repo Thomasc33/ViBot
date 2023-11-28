@@ -136,12 +136,7 @@ class AfkTemplate {
         templateUrl.searchParams.append('roles', getRoleStrings(botSettings, message.member).join(','))
         templateUrl.searchParams.append('key', settings.config.key)
         const template = await fetch(templateUrl).then(f => f.json())
-        try {
-            return new this(bot, message.guild, template)
-        } catch (e) {
-            if (e instanceof AfkTemplateValidationError) return e
-            throw e
-        }
+        return new this(bot, message.guild, template)
     }
 
     get templateName() {
