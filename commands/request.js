@@ -47,7 +47,7 @@ module.exports = {
             .setPlaceholder(`Reacts`)
             .setMinValues(1)
             .setMaxValues(1)
-        Object.keys(raid.afkTemplate.buttons).forEach((key) => { if (raid.afkTemplate.buttons[key].type == AfkTemplate.TemplateButtonType.NORMAL || raid.afkTemplate.buttons[key].type == AfkTemplate.TemplateButtonType.LOG || raid.afkTemplate.buttons[key].type == AfkTemplate.TemplateButtonType.LOG_SINGLE) reactsMenu.addOptions({ label: `${key}`, value: `${key}` }) })
+        Object.keys(raid.buttons).forEach((key) => { if (raid.buttons[key].type == AfkTemplate.TemplateButtonType.NORMAL || raid.buttons[key].type == AfkTemplate.TemplateButtonType.LOG || raid.buttons[key].type == AfkTemplate.TemplateButtonType.LOG_SINGLE) reactsMenu.addOptions({ label: `${key}`, value: `${key}` }) })
         const {value: reactsValue, interaction: subInteractionReacts} = await message.selectPanel(text, null, reactsMenu, 30000, false, true)
         if (!reactsValue) return
 

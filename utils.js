@@ -108,26 +108,15 @@ class LegacyCommandOptions {
     #processType(type, value) {
         switch (type) {
             case SlashArgType.User: {
-                let member = this.#message.guild.members.cache.get(value)
-                if (value.match(/^\d{10,}$/)) member = this.#message.guild.members.fetch(value)
-                if (!member) member = this.#message.mentions.members.first()
-                if (!member) member = this.#message.guild.members.cache.filter(user => user.nickname !== null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(value.toLowerCase()))
-                if (member) this.#users.push(member)
+                const member = this.#message.guild.findMember(value)
                 if (!member) throw new LegacyParserError(`User \`${value}\` not found`)
+                this.#users.push(member)
                 return member
             }
-            case SlashArgType.String: {
-                return value
-            }
-            case SlashArgType.Integer: {
-                return parseInt(value)
-            }
-            case SlashArgType.Attachment: {
-                return this.#attachments.shift()
-            }
-            default: {
-                throw new Error('Unhandled type')
-            }
+            case SlashArgType.String: return value
+            case SlashArgType.Integer: return parseInt(value)
+            case SlashArgType.Attachment: return this.#attachments.shift()
+            default: throw new Error('Unhandled type')
         }
     }
 }

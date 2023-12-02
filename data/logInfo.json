@@ -159,6 +159,16 @@
                     "hmshatts",
                     "hmshatters"
                 ],
+                "additionalLogs": [
+                    {
+                        "roles": [["accursedLeader"]],
+                        "name": "accursedHardmodeShatters",
+                        "currentweek": "currentweekAccursedHardmodeShattersLead",
+                        "toDisplay": ["currentweekAccursedHardmodeShattersLead"],
+                        "overwriteDisplay": true,
+                        "toUpdate": "accursed"
+                    }
+                ],
                 "multiply": null,
                 "allowAssists": true,
                 "confirm": true,
@@ -801,6 +811,16 @@
                     "hmshatt",
                     "hmshatts",
                     "hmshatters"
+                ],
+                "additionalLogs": [
+                    {
+                        "roles": [["accursedLeader"]],
+                        "name": "accursedHardmodeShatters",
+                        "currentweek": "currentweekAccursedHardmodeShattersLead",
+                        "toDisplay": ["currentweekAccursedHardmodeShattersLead"],
+                        "overwriteDisplay": true,
+                        "toUpdate": "accursed"
+                    }
                 ],
                 "multiply": null,
                 "allowAssists": true,

@@ -5,6 +5,8 @@ const botSettings = require('./settings.json')
 
 let client
 
+/* The MockMessage class is a JavaScript class that represents a message in a webhook interaction and
+provides methods for deleting and editing the message. */
 class MockMessage {
     constructor(webhook, interaction) {
         this.webhook = webhook
@@ -21,6 +23,7 @@ class MockMessage {
 }
 
 module.exports = {
+    /* The `async setup()` function is responsible for setting up the Redis client connection. */
     async setup() {
         client = createClient(botSettings.redis)
 
