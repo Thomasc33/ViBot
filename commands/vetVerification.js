@@ -28,12 +28,13 @@ module.exports = {
     },
     async createMessage(message, bot, db) {
         let settings = bot.settings[message.guild.id]
+        const dungeon = dungeons[message.guild.id];
         let vetVeriChannel = message.guild.channels.cache.get(settings.channels.vetverification)
         if (!vetVeriChannel) return message.channel.send(`Vet Verification channel not found`)
         let vetVeriEmbed = new Discord.EmbedBuilder()
             .setTitle(`Veteran Verification for ${message.guild.name}`)
             .addFields([{ name: 'How to', value: 'React with the :white_check_mark: to get the role.\nMake sure to make your graveyard and character list public on realmeye before reacting\nAlso run the command ;stats to see your current run total.' }])
-            .addFields([{ name: 'Requirements', value: `${(settings.vetverireqs.maxed) ? `-${settings.vetverireqs.maxed} 8/8 Characters\n` : ''}${(settings.vetverireqs.meleemaxed) ? `-${settings.vetverireqs.meleemaxed} 8/8 Melee Characters\n` : ''}${(settings.vetverireqs.runs) ? `-${settings.vetverireqs.runs} Completed Runs\n` : ''}` }])
+            .addFields([{ name: 'Requirements', value: `${(settings.vetverireqs.maxed) ? `-${settings.vetverireqs.maxed} 8/8 Characters\n` : ''}${(settings.vetverireqs.meleemaxed) ? `-${settings.vetverireqs.meleemaxed} 8/8 Melee Characters\n` : ''}${(settings.vetverireqs.runs) ? `-${settings.vetverireqs.runs} Completed ${dungeon.boss} Runs \n` : ''}` }])
         embedMessage = await vetVeriChannel.send({ embeds: [vetVeriEmbed] })
         embedMessage.react('✅')
         this.init(message.guild, bot, db)
