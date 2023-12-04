@@ -14,13 +14,11 @@ const PageConfigurations = {
 }
 
 const Buttons = {
-    'FIRST' : 'FIRST',
-    'PREVIOUS' : 'PREVIOUS',
     'SWITCH_RANK' : 'SWITCH_RANK',
-    'NEXT' : 'NEXT',
-    'LAST' : 'LAST',
     'DROPDOWN' : 'DROPDOWN'
 }
+
+embedHistory = new Map();
 
 module.exports = {
     name: 'list',
@@ -35,24 +33,23 @@ module.exports = {
      * @param {Discord.Client} bot
      */
     async execute(message, args, bot) {
-        let exportFile = args[args.length - 1].toLowerCase() == 'export';
+        let exportFile = args[args.length - 1].toLowerCase().trim() == 'export';
         if (exportFile) args = args.slice(0, args.length - 1);
-        console.log(args);
         let roles = args.join(' ').toLowerCase().split('|');
         for (let i in roles) { roles[i] = roles[i].trim(); }
-        // handle export still in roles
+        
         if (roles.length == 1) { 
             if (exportFile) {
-                module.exports.exportFileSingle(message, args, bot, roles[0]);
+                module.exports.exportFileSingle(message, roles[0]);
             } else {
-                module.exports.normalList(message, args, bot, roles[0]);
+                module.exports.normalList(message, bot, roles[0]);
             }
         } else if (exportFile) {
-            module.exports.exportFileMultiple(message, args, bot, roles);
+            module.exports.exportFileMulti(message, roles);
         } else module.exports.combinedList(message, args, bot, roles);
     },
 
-    async exportFileSingle (message, args, bot, role) {
+    async exportFileSingle (message, role) {
         let guildRole = message.guild.findRole(role)
         if (!guildRole) return message.channel.send(`No role found for: \`${role}\``)	
         const d = { highest: message.guild.findUsersWithRoleAsHighest(guildRole.id), higher: message.guild.findUsersWithRoleNotAsHighest(guildRole.id) }
@@ -67,46 +64,70 @@ module.exports = {
             higherCSV = higherCSV + member + ','
         }
         let higherFile = Buffer.from(higherCSV.slice(0, -1), 'utf-8');
-        message.channel.send({
-            files: [{
-                attachment: highestFile,
-                name: role + '-as-highest-role'
-            },
-            {
-                attachment: higherFile,
-                name: 'has-higher-role-than-' + role
-            }],
+        date = new Date();
+        date = '-' + date.toLocaleString('default', { month: 'short' }) + '-' + date.getDate();
+        files = []
+        if (highestCSV.length > 0) files.push({ 
+            attachment: highestFile,
+            name: 'users-with-' + role + '-as-highest-role' + date
+        })
+        if (higherCSV.length > 0) files.push({
+            attachment: higherFile,
+            name: 'users-with-a-higher-role-than-' + role + date
         });
+        message.channel.send({files});
     },
 
-    async normalList(message, args, bot, role) {
-        // const existingEmbed = message.client.activeEmbeds.get(message.author.id);
+    async exportFileMulti (message, roles) {
+        let name = '';
+        for (let i in roles) {
+            name = name + '-' + roles[i];
+        }
 
-        // // If an active embed exists, close it
-        // if (existingEmbed) {
-        //     try {
-        //         await existingEmbed.message.edit({ components: [] });
-        //     } catch (error) {
-        //         console.error('Error closing active embed:', error);
-        //     }
-        // }
+        foundRoles = roles.map(role => message.guild.findRole(role))
+        var roleObjects = {}
+        for (let i in roles) {
+            if (!foundRoles[i]) return message.channel.send(`No role found for: \`${roles[i]}\``);
+            roleObjects[foundRoles[i]] = message.guild.findUsersWithRole(foundRoles[i].id).map(member => member.id)
+        }
+        var memberList = Object.values(roleObjects).reduce((acc, array) => {
+            return acc.filter(id => array.includes(id));
+        });
+        
+        let memberListCSV = ''
+        for (const member of memberList) {
+            memberListCSV = memberListCSV + member + ','
+        }
+        let memberListFile = Buffer.from(memberListCSV.slice(0, -1), 'utf-8');
+        date = new Date();
+        date = '-' + date.toLocaleString('default', { month: 'short' }) + '-' + date.getDate();
+        if (memberListCSV.length > 0) {
+            message.channel.send({
+                files: [{
+                    attachment: memberListFile,
+                    name: 'users-with' + name + date
+                }]
+            });
+        }
+    },
+
+    async normalList(message, bot, role) {
         // Search for role in guild
-        let guildRole = message.guild.findRole(role)
-        if (!guildRole) return message.channel.send(`No role found for: \`${role}\``)	
-        const memberList = message.guild.roles.cache.get(guildRole.id).members.map(member => member);	
-        const d = { highest: message.guild.findUsersWithRoleAsHighest(guildRole.id), higher: message.guild.findUsersWithRoleNotAsHighest(guildRole.id) }
+        let guildRole = message.guild.findRole(role);
+        if (!guildRole) return message.channel.send(`No role found for: \`${role}\``);
+        let userLists = { highest: message.guild.findUsersWithRoleAsHighest(guildRole.id), higher: message.guild.findUsersWithRoleNotAsHighest(guildRole.id) }
         // FOR TESTING
-        // d.higher = d.higher + d.higher + d.higher;
-        // d.highest = d.highest + d.highest + d.highest;
+        userLists.higher = userLists.higher + userLists.higher + userLists.higher;
+        userLists.highest = userLists.highest + userLists.highest + userLists.highest;
 
 
         // List of users where given role is highest position
         let highestString = '';
         let highestStringPages = [];
-        for (const member of d.highest) {
+        for (const member of userLists.highest) {
             if (highestString.length < 950) {
                 highestString += `${member} `;
-                if (member == d.highest[d.highest.length - 1]) {
+                if (member == userLists.highest[userLists.highest.length - 1]) {
                     highestStringPages.push(highestString);
                 }
             }
@@ -118,10 +139,10 @@ module.exports = {
         // List of users with a higher position role
         let higherString = '';
         let higherStringPages = [];
-        for (const member of d.higher) {
+        for (const member of userLists.higher) {
             if (higherString.length < 950) {
                 higherString += `${member} `;
-                if (member == d.higher[d.higher.length - 1]) higherStringPages.push(higherString); 
+                if (member == userLists.higher[userLists.higher.length - 1]) higherStringPages.push(higherString); 
             } 
             else {
                 higherStringPages.push(higherString);
@@ -136,69 +157,45 @@ module.exports = {
 
         // setting starting page
         let pageConfig = PageConfigurations['NEITHER']
-        if (d.highest.length > 0) {
-            if (d.higher.length > 0) pageConfig = PageConfigurations['BOTH'];
+        if (userLists.highest.length > 0) {
+            if (userLists.higher.length > 0) pageConfig = PageConfigurations['BOTH'];
             else pageConfig = PageConfigurations['HIGHEST_ONLY'];
         }
-        else if (d.higher.length > 0) pageConfig = PageConfigurations['HIGHER_ONLY'];
+        else if (userLists.higher.length > 0) pageConfig = PageConfigurations['HIGHER_ONLY'];
 
         let lastRank = pageConfig == PageConfigurations['HIGHER_ONLY'] ? ranks['HIGHER'] : ranks['HIGHEST'];
-
+        
+        // setting timestamp
+        let time = Date.now();
+        
         // info to send to embed creator
-        const embedInfo = {pageConfig: pageConfig, higherStringPages: higherStringPages, highestStringPages: highestStringPages, d: d, memberList: memberList, guildRole: guildRole}
+        let embedInfo = {pageConfig: pageConfig, higherStringPages: higherStringPages, highestStringPages: highestStringPages, userLists: userLists, guildRole: guildRole, time: time}
         let currentPage = 0;
-        const navigationInteractionHandler = new Discord.InteractionCollector(bot, { time: 300000 })
+        const row = this.createComponents(0, pagesDict[lastRank].length, pageConfig, this.getOppositeRank(lastRank));
+        const sendData = { embeds: [this.createEmbed(embedInfo, 0, lastRank)], components: row };
+        const listMessage = await message.channel.send(sendData);
+        const navigationInteractionHandler = new Discord.InteractionCollector(bot, { time: 300000, message: listMessage })
         navigationInteractionHandler.on('collect', async interaction => {
             if (interaction.user.id != message.author.id) return
             if (interaction.customId == Buttons['SWITCH_RANK']) {
                 currentPage = 0;
                 lastRank = this.getOppositeRank(lastRank);
-            } else if (interaction.customId == Buttons['NEXT']) {
-                currentPage++;
-            } else if (interaction.customId == Buttons['PREVIOUS']) {
-                currentPage--;
-            } else if (interaction.customId == Buttons['LAST']) {
-                currentPage = pagesDict[lastRank].length - 1;
-            } else if (interaction.customId == Buttons['FIRST']) {
-                currentPage = 0;
+                await interaction.update({ embeds: [this.createEmbed(embedInfo, currentPage, lastRank)], components: this.createComponents(currentPage, pagesDict[lastRank].length, pageConfig, this.getOppositeRank(lastRank)) });
             } else if (interaction.customId == Buttons['DROPDOWN']) {
                 currentPage = parseInt(interaction.values[0]);
+                await interaction.update({ embeds: [this.createEmbed(embedInfo, currentPage, lastRank)], components: this.createComponents(currentPage, pagesDict[lastRank].length, pageConfig, this.getOppositeRank(lastRank)) });
             }
-            if (interaction.customId in Buttons) await interaction.update({ embeds: [this.createEmbed(embedInfo, currentPage, lastRank)], components: this.createComponents(currentPage, pagesDict[lastRank].length, pageConfig, this.getOppositeRank(lastRank)) })
+            navigationInteractionHandler.resetTimer();
         })
         navigationInteractionHandler.on('end', async () => {
-            await message.edit({ components: [] })
+            await listMessage.edit({ embeds: [], components: [] });
         })
-        
-        const row = this.createComponents(0, pagesDict[lastRank].length, pageConfig, this.getOppositeRank(lastRank));
-        message.channel.send({ embeds: [this.createEmbed(embedInfo, 0, lastRank)], components: row }).catch(err => ErrorLogger.log(err, bot, message.guild));
     },
 
     createComponents(pageNumber, pages, pageConfig=PageConfigurations['NEITHER'], rank=ranks['HIGHEST'] ) {
         let rowBuilder = new Discord.ActionRowBuilder();
         let dropdownRow = new Discord.ActionRowBuilder();
 
-        if (pages > 1) {
-            // first page
-            let first = new Discord.ButtonBuilder()
-                .setEmoji('⏮️')
-                .setStyle(Discord.ButtonStyle.Secondary)
-                .setCustomId(Buttons['FIRST'])
-            if (pageNumber == 0) {
-                first.setDisabled(true);
-            }
-            // rowBuilder.addComponents([first]);
-
-            // previous page
-            let previous = new Discord.ButtonBuilder()
-                .setEmoji('⬅️')
-                .setStyle(Discord.ButtonStyle.Secondary)
-                .setCustomId(Buttons['PREVIOUS'])
-            if (pageNumber == 0) {
-                previous.setDisabled(true);
-            }
-            // rowBuilder.addComponents([previous]);
-        }
         // higher vs highest button
         if (pageConfig == PageConfigurations['BOTH']) {
             let rankButton = new Discord.ButtonBuilder()
@@ -215,72 +212,63 @@ module.exports = {
             
             rowBuilder.addComponents([rankButton])
         }
-        if (pages > 1) {
-            // next page
-            let next = new Discord.ButtonBuilder()
-                .setEmoji('➡️')
-                .setStyle(Discord.ButtonStyle.Secondary)
-                .setCustomId(Buttons['NEXT'])
-            if (pageNumber >= pages - 1 ) {
-                next.setDisabled(true);
-            }
-            // rowBuilder.addComponents([next]);
-
-            // last page
-            let last = new Discord.ButtonBuilder()
-                .setEmoji('⏭️')
-                .setStyle(Discord.ButtonStyle.Secondary)
-                .setCustomId(Buttons['LAST'])
-            if (pageNumber >= pages - 1 ) {
-                last.setDisabled(true);
-            }
-            // rowBuilder.addComponents([last]);
             
             // dropdown
-            let dropdown = new StringSelectMenuBuilder({
-                custom_id: Buttons['DROPDOWN'],
-                placeholder: 'Page: ' + (pageNumber + 1),
-            });
-
-            // pages before currentPage
-            for (let i = Math.max(0, pageNumber - 10); i < pageNumber; i++) {
-                dropdown.addOptions(new StringSelectMenuOptionBuilder()
-					.setLabel(i + 1 + '')
-					.setValue(i + ''));
-            }
+            if (pages > 1) {
+                let dropdown = new StringSelectMenuBuilder({
+                    custom_id: Buttons['DROPDOWN'],
+                    placeholder: 'Page: ' + (pageNumber + 1),
+                });
             
-            // pages after currentPage
-            for (let i = pageNumber; i < Math.min(pageNumber + 11, pages); i++) {
-                let option = new StringSelectMenuOptionBuilder()
-                .setLabel(i + 1 + '')
-                .setValue(i + '');
-                if (i == pageNumber) option.setDefault(true);
-                dropdown.addOptions(option);
+                // first page
+                dropdown.addOptions(new StringSelectMenuOptionBuilder()
+                .setLabel('First Page (1)')
+                .setValue(0 + ''));
+
+                // pages before currentPage
+                for (let i = Math.max(1, pageNumber - 10); i < pageNumber; i++) {
+                    dropdown.addOptions(new StringSelectMenuOptionBuilder()
+                        .setLabel(i + 1 + '')
+                        .setValue(i + ''));
+                }
+
+                // pages after currentPage
+                for (let i = pageNumber; i < Math.min(pageNumber + 11, pages - 1); i++) {
+                    let option = new StringSelectMenuOptionBuilder()
+                    .setLabel(i + 1 + '')
+                    .setValue(i + '');
+                    if (i == pageNumber) option.setDefault(true);
+                    if (i != 0) dropdown.addOptions(option);
+                }
+
+                // last page
+                dropdown.addOptions(new StringSelectMenuOptionBuilder()
+                .setLabel('Last Page (' + pages + ')')
+                .setValue(pages - 1 + ''));
+                dropdownRow.addComponents(dropdown);
             }
-            dropdownRow.addComponents(dropdown);
-        }
         let rows = [];
-        if (rowBuilder.components.length > 0) rows.push(rowBuilder);
         if (dropdownRow.components.length > 0) rows.push(dropdownRow);
+        if (rowBuilder.components.length > 0) rows.push(rowBuilder);
         return rows;
     },
     
     createEmbed(embedInfo, pageNumber, rank) {
-        console.log(embedInfo.d.highest.length + embedInfo.d.higher.length);
         const pages = rank == ranks['HIGHER'] ? embedInfo.higherStringPages.length : embedInfo.highestStringPages.length;
+        const totalMemberCount = embedInfo.userLists.higher.length + embedInfo.userLists.highest.length;
         const embed = new Discord.EmbedBuilder()
         .setColor(embedInfo.guildRole.hexColor)
         .setTitle(`Role Info for ${embedInfo.guildRole.name}`)
         .setDescription(`**Role:** ${embedInfo.guildRole} | **Role Color:** \`${embedInfo.guildRole.hexColor}\` | Page ${pageNumber + 1} of ${pages}`)
-        .setFooter({ text: `There are ${embedInfo.memberList.length} members in the ${embedInfo.guildRole.name} role` })
-        .setTimestamp();
+        .setFooter({ text: `There are ${totalMemberCount} members in the ${embedInfo.guildRole.name} role` })
+        .setTimestamp(embedInfo.time);
         if (rank == ranks['HIGHEST']) {
             embed.addFields(
-                { name: `${embedInfo.d.highest.length} members with \`${embedInfo.guildRole.name}\` as their highest role`, value: embedInfo.d.highest.length > 0 ? embedInfo.highestStringPages[pageNumber] : 'None' })
+                { name: `${embedInfo.userLists.highest.length} members with \`${embedInfo.guildRole.name}\` as their highest role`, value: embedInfo.userLists.highest.length > 0 ? embedInfo.highestStringPages[pageNumber] : 'None' })
         }
         else {
             embed.addFields(
-                { name: `${embedInfo.d.higher.length} members with a higher role than \`${embedInfo.guildRole.name}\``, value: embedInfo.d.higher.length > 0 ? embedInfo.higherStringPages[pageNumber] : 'None' })
+                { name: `${embedInfo.userLists.higher.length} members with a higher role than \`${embedInfo.guildRole.name}\``, value: embedInfo.userLists.higher.length > 0 ? embedInfo.higherStringPages[pageNumber] : 'None' })
         }
         return embed
     },
@@ -289,17 +277,17 @@ module.exports = {
         return rank == ranks['HIGHER'] ? ranks['HIGHEST'] : ranks['HIGHER'];
     },
 
-    async combinedList(message, args, bot, roles) {
-        roles = roles.map(role => message.guild.findRole(role))
+    async combinedList(message, bot, roles) {
+        foundRoles = roles.map(role => message.guild.findRole(role))
         var roleObjects = {}
         for (let i in roles) {
-            roleObjects[roles[i]] = message.guild.findUsersWithRole(roles[i].id).map(member => member.id)
+            if (!foundRoles[i]) return message.channel.send(`No role found for: \`${roles[i]}\``)
+            roleObjects[foundRoles[i]] = message.guild.findUsersWithRole(foundRoles[i].id).map(member => member.id);
         }
         var memberList = Object.values(roleObjects).reduce((acc, array) => {
             return acc.filter(id => array.includes(id));
         });
-        // FOR TESTING
-        memberList = memberList+memberList+memberList+memberList;
+
         let memberString = '';
         let memberStringPages = []
         for (const member of memberList) {
@@ -314,48 +302,42 @@ module.exports = {
                 memberString = '';
             }
         }
-
+        let time = Date.now();
         let currentPage = 0;
         let embed = new Discord.EmbedBuilder()
                 .setTitle('Combined List')
-                .setDescription(`**Roles: ${roles.map(role => role).join(' | ')}** | Page ${currentPage + 1} of ${memberStringPages.length}`)
-                .setColor(roles[0].hexColor)
+                .setDescription(`**Roles: ${foundRoles.map(role => role).join(' | ')}** | Page ${currentPage + 1} of ${memberStringPages.length}`)
+                .setColor(foundRoles[0].hexColor)
+                .setTimestamp(time);
             embed.addFields({
                 name: 'These users have all of the roles combined',
                 value: memberStringPages[currentPage]
             })
-            embed.setFooter({ text: `There are ${memberList.length} users who have all of the roles combined` })
-        const navigationInteractionHandler = new Discord.InteractionCollector(bot, { time: 300000 })
+            embed.setFooter({ text: `There are ${memberList.length} users who have all of the roles combined` });
+        
+        const row = this.createComponents(0, memberStringPages.length);
+        const listMessage = await message.channel.send({ embeds: [embed], components: row });
+        const navigationInteractionHandler = new Discord.InteractionCollector(bot, { time: 300000, message: listMessage })
         navigationInteractionHandler.on('collect', async interaction => {
             if (interaction.user.id != message.author.id) return
-            if (interaction.customId == Buttons['NEXT']) {
-                currentPage++;
-            } else if (interaction.customId == Buttons['PREVIOUS']) {
-                currentPage--;
-            } else if (interaction.customId == Buttons['LAST']) {
-                currentPage = memberStringPages.length - 1;
-            } else if (interaction.customId == Buttons['FIRST']) {
-                currentPage = 0;
-            } else if (interaction.customId == Buttons['DROPDOWN']) {
+            if (interaction.customId == Buttons['DROPDOWN']) {
                 currentPage = parseInt(interaction.values[0]);
             }
             embed = new Discord.EmbedBuilder()
                 .setTitle('Combined List')
                 .setDescription(`**Roles: ${roles.map(role => role).join(' | ')}** | Page ${currentPage + 1} of ${memberStringPages.length}`)
                 .setColor(roles[0].hexColor)
+                .setTimestamp(time);
+                
             embed.addFields({
                 name: 'These users have all of the roles combined',
                 value: memberStringPages[currentPage]
             })
             if (interaction.customId in Buttons) await interaction.update({ embeds: [embed], components: this.createComponents(currentPage, memberStringPages.length) })
+            navigationInteractionHandler.resetTimer();
         })
         navigationInteractionHandler.on('end', async () => {
-            await message.edit({ components: [] })
+            await listMessage.edit({ components: [] })
         })
-        
-        const row = this.createComponents(0, memberStringPages.length);
-        message.channel.send({ embeds: [embed], components: row }).catch(err => ErrorLogger.log(err, bot, message.guild));
-
-
     }
 }
