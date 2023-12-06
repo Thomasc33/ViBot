@@ -471,7 +471,7 @@ class AfkTemplate {
                 minRole: this.#guild.roles.cache.get(this.#botSettings.roles[button.minRole]),
                 minStaffRoles: button.minStaffRoles && button.minStaffRoles.map(role => this.#guild.roles.cache.get(this.#botSettings.roles[role])),
                 confirmationMessage: button.confirmationMessage && this.processMessages(channel, button.confirmationMessage),
-                color: TemplateButtonColors[button.color] || TemplateButtonColors['GREY'],
+                color: TemplateButtonColors[button.color || 'GREY'],
                 logOptions: button.logOptions && Object.entries(button.logOptions).reduce((obj, [key, logOption]) => {
                     obj[key] = {
                         ...logOption,
