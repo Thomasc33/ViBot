@@ -247,7 +247,7 @@ module.exports = {
             dropdown.addOptions(new StringSelectMenuOptionBuilder()
                 .setLabel('Last Page (' + pages + ')')
                 .setValue(String(pages - 1)))
-                
+
             dropdownRow.addComponents(dropdown)
         }
         const rows = []
