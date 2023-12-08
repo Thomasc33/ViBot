@@ -196,7 +196,7 @@ module.exports = {
     },
 
     createComponents(pageNumber, pages, pageConfig = PageConfigurations.NEITHER, rank = ranks.HIGHEST) {
-        const rowBuilder = new Discord.ActionRowBuilder()
+        const buttonRow = new Discord.ActionRowBuilder()
         const dropdownRow = new Discord.ActionRowBuilder()
 
         // higher vs highest button
@@ -212,7 +212,7 @@ module.exports = {
                 rankButton.setEmoji('➖')
             }
 
-            rowBuilder.addComponents([rankButton])
+            buttonRow.addComponents([rankButton])
         }
 
         // dropdown
@@ -247,11 +247,12 @@ module.exports = {
             dropdown.addOptions(new StringSelectMenuOptionBuilder()
                 .setLabel('Last Page (' + pages + ')')
                 .setValue(String(pages - 1)))
+                
             dropdownRow.addComponents(dropdown)
         }
         const rows = []
         if (dropdownRow.components.length > 0) rows.push(dropdownRow)
-        if (rowBuilder.components.length > 0) rows.push(rowBuilder)
+        if (buttonRow.components.length > 0) rows.push(buttonRow)
         return rows
     },
 
