@@ -58,28 +58,31 @@ module.exports = {
         if (!guildRole) return message.channel.send(`No role found for: \`${role}\``)
         const userLists = { highest: message.guild.findUsersWithRoleAsHighest(guildRole.id), higher: message.guild.findUsersWithRoleNotAsHighest(guildRole.id) }
         let highestCSV = ''
-        for (const member of userLists.highest) {
+        userLists.highest.forEach((member, index) => {
             highestCSV = highestCSV + member + ','
-        }
+            if (((index + 1) % 3) == 0) highestCSV += '\n'
+        })
         const highestFile = Buffer.from(highestCSV.slice(0, -1), 'utf-8')
 
         let higherCSV = ''
-        for (const member of userLists.higher) {
+        userLists.higher.forEach((member, index) => {
             higherCSV = higherCSV + member + ','
-        }
+            if (((index + 1) % 3) == 0) higherCSV += '\n'
+        })
         const higherFile = Buffer.from(higherCSV.slice(0, -1), 'utf-8')
-        const date = '-' + (new Date()).toLocaleString('default', { month: 'short' }) + '-' + (new Date()).getDate()
+        let date = new Date()
+        date = '-' + date.toLocaleString('default', { month: 'short' }) + '-' + date.getDate() + '-' + date.getFullYear()
         const files = []
         if (highestCSV.length > 0) {
             files.push({
                 attachment: highestFile,
-                name: 'users-with-' + role + '-as-highest-role' + date
+                name: `users-with-${role}-as-highest-role${date}.csv`
             })
         }
         if (higherCSV.length > 0) {
             files.push({
                 attachment: higherFile,
-                name: 'users-with-a-higher-role-than-' + role + date
+                name: `users-with-a-higher-role-than-${role}-date.csv`
             })
         }
         return message.channel.send({ files })
@@ -90,7 +93,6 @@ module.exports = {
         roles.forEach((role) => {
             name += '-' + role
         })
-
         const foundRoles = roles.map(role => message.guild.findRole(role))
         const roleObjects = {}
         for (let index = 0; index < roles.length; index++) {
@@ -100,16 +102,18 @@ module.exports = {
         const memberList = Object.values(roleObjects).reduce((acc, array) => acc.filter(id => array.includes(id)))
 
         let memberListCSV = ''
-        for (const member of memberList) {
+        memberList.forEach((member, index) => {
             memberListCSV = memberListCSV + member + ','
-        }
+            if (((index + 1) % 3) == 0) memberListCSV += '\n'
+        })
         const memberListFile = Buffer.from(memberListCSV.slice(0, -1), 'utf-8')
-        const date = '-' + (new Date()).toLocaleString('default', { month: 'short' }) + '-' + (new Date()).getDate()
+        let date = new Date()
+        date = '-' + date.toLocaleString('default', { month: 'short' }) + '-' + date.getDate() + '-' + date.getFullYear()
         if (memberListCSV.length > 0) {
             return message.channel.send({
                 files: [{
                     attachment: memberListFile,
-                    name: 'users-with' + name + date
+                    name: `users-with-${name}-${date}.csv`
                 }]
             })
         }
