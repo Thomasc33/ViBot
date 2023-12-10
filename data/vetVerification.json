@@ -10,24 +10,24 @@
         "exaltStats": ["life"]
     },
     "343704644712923138": {
-        "realmeyestring": ["Voids completed"],
-        "dbnames": ["voidRuns"],
+        "realmeyestring": ["Voids completed", "Shatters completed"],
+        "dbnames": ["voidRuns", "shattersRun", "oryxRuns"],
         "dbisvet": "isVet",
-        "lootInfo": "halls",
-        "boss": "Void",
+        "lootInfo": "halls/shatters/o3",
+        "boss": "Combined Void, Shatters and Oryx 3",
         "webAppLink": false,
         "webdata": false,
-        "exaltStats": ["mana", "defense", "speed"]
+        "exaltStats": ["mana", "defense", "speed", "health", "attack"]
     },
     "701483950559985705": {
-        "realmeyestring": ["Voids completed"],
-        "dbnames": ["voidRuns"],
+        "realmeyestring": ["Voids completed", "Shatters completed"],
+        "dbnames": ["voidRuns", "shattersRun", "oryxRuns"],
         "dbisvet": "isVet",
-        "lootInfo": "halls",
-        "boss": "Void",
+        "lootInfo": "halls/shatters/o3",
+        "boss": "Combined Void, Shatters and Oryx 3",
         "webAppLink": false,
         "webdata": false,
-        "exaltStats": ["mana", "defense", "speed"]
+        "exaltStats": ["mana", "defense", "speed", "health", "attack"]
     },
     "451171819672698920": {
         "realmeyestring": ["Shatters completed"],

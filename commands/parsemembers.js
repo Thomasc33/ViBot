@@ -102,6 +102,16 @@ module.exports = {
                     alts.push(`<@!${voiceUsers[i].id}>`);
                 }
             }
+
+            // Check the names more thoroughly
+            let normalizedNames = crashers.map(normalizeName);
+            let normalizedAlts = alts.map(normalizeName);
+            let matchedCrashers = reassembleAndCheckNames(normalizedNames, normalizedAlts);
+
+            // Remove the names that were matched
+            crashers = filterNames(crashers, matchedCrashers);
+            alts = filterNames(alts, matchedCrashers);
+
             var crashersS = ' ',
                 altsS = ' ',
                 movedS = ' ',
@@ -313,4 +323,50 @@ async function postInCrasherList(embed, channel, parser, key) {
         m = await channel.send({ embeds: [embed] })
     }
     setTimeout(() => { m.delete() }, 600000)
+}
+
+// Normalization function as defined earlier
+function normalizeName(name) {
+    return name.toLowerCase().replace(/\s/g, '').replace(/i/g, 'l');
+}
+
+// Function to reassemble and check split names
+function reassembleAndCheckNames(splitNames, voiceChannelNames) {
+    let matchedNamesMap = new Map();
+
+    for (let i = 0; i < splitNames.length; i++) {
+        let currentName = splitNames[i];
+        let originalComponents = [splitNames[i]];
+
+        // Check the name as is
+        if (voiceChannelNames.includes(normalizeName(currentName))) {
+            matchedNamesMap.set(currentName, originalComponents);
+            continue;
+        }
+
+        // Try combining with the next name(s)
+        for (let j = i + 1; j < splitNames.length; j++) {
+            currentName += splitNames[j];
+            originalComponents.push(splitNames[j]);
+
+            if (voiceChannelNames.includes(normalizeName(currentName))) {
+                matchedNamesMap.set(currentName, originalComponents);
+                i = j; // Skip the next names as they are part of the current one
+                break;
+            }
+        }
+    }
+
+    return matchedNamesMap;
+}
+
+function filterNames(namesArray, matchedMap) {
+    return namesArray.filter(name => {
+        for (let [matchedName, originalNames] of matchedMap.entries()) {
+            if (originalNames.includes(name)) {
+                return false; // Exclude this name as it's part of a matched set
+            }
+        }
+        return true; // Include this name as it's not part of any matched set
+    });
 }
