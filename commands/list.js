@@ -59,15 +59,17 @@ module.exports = {
         const userLists = { highest: message.guild.findUsersWithRoleAsHighest(guildRole.id), higher: message.guild.findUsersWithRoleNotAsHighest(guildRole.id) }
         let highestCSV = ''
         userLists.highest.forEach((member, index) => {
-            highestCSV = highestCSV + member + ','
+            highestCSV += member
             if (((index + 1) % 3) == 0) highestCSV += '\n'
+            else highestCSV += ','
         })
         const highestFile = Buffer.from(highestCSV.slice(0, -1), 'utf-8')
 
         let higherCSV = ''
         userLists.higher.forEach((member, index) => {
-            higherCSV = higherCSV + member + ','
+            higherCSV += member
             if (((index + 1) % 3) == 0) higherCSV += '\n'
+            else higherCSV += ','
         })
         const higherFile = Buffer.from(higherCSV.slice(0, -1), 'utf-8')
         let date = new Date()
@@ -103,8 +105,9 @@ module.exports = {
 
         let memberListCSV = ''
         memberList.forEach((member, index) => {
-            memberListCSV = memberListCSV + member + ','
+            memberListCSV += member
             if (((index + 1) % 3) == 0) memberListCSV += '\n'
+            else memberListCSV += ','
         })
         const memberListFile = Buffer.from(memberListCSV.slice(0, -1), 'utf-8')
         let date = new Date()
