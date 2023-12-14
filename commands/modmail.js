@@ -179,6 +179,7 @@ async function interactionHandler(interaction, settings, bot, db) {
         await interaction.message.edit({ embed: [interaction.message.embed], components: [modmailCloseComponents] })
         await interaction.deferUpdate()
     } else if (interaction.customId === "modmailSend") {
+        await interaction.deferUpdate()
         let originalModmail = embed.data.description;
         // originalModmail = originalModmail.substring(originalModmail.indexOf(':') + 3, originalModmail.length - 1)
 
