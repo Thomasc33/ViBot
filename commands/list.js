@@ -35,12 +35,10 @@ module.exports = {
      * @param {Discord.Client} bot
      */
     async execute(message, args, bot) {
-        const exportFile = args[args.length - 1].toLowerCase().trim() == 'export'
+        const exportFile = args[args.length - 1].toLowerCase() == 'export'
         if (exportFile) args = args.slice(0, args.length - 1)
         const roles = args.join(' ').toLowerCase().split('|')
-        roles.forEach((role, index, arr) => {
-            arr[index] = role.trim()
-        })
+        roles.map(role => role.trim())
 
         if (roles.length == 1) {
             if (exportFile) {
@@ -57,19 +55,15 @@ module.exports = {
         const guildRole = message.guild.findRole(role)
         if (!guildRole) return message.channel.send(`No role found for: \`${role}\``)
         const userLists = { highest: message.guild.findUsersWithRoleAsHighest(guildRole.id), higher: message.guild.findUsersWithRoleNotAsHighest(guildRole.id) }
-        let highestCSV = ''
-        userLists.highest.forEach((member, index) => {
-            highestCSV += member
-            if (((index + 1) % 3) == 0) highestCSV += '\n'
-            else highestCSV += ','
+        let highestCSV = 'ID,Display Name,Username\n'
+        userLists.highest.forEach((member) => {
+            highestCSV += `${member.id},${member.displayName},${member.user.username}\n`
         })
         const highestFile = Buffer.from(highestCSV.slice(0, -1), 'utf-8')
 
-        let higherCSV = ''
-        userLists.higher.forEach((member, index) => {
-            higherCSV += member
-            if (((index + 1) % 3) == 0) higherCSV += '\n'
-            else higherCSV += ','
+        let higherCSV = 'ID,Display Name,Username\n'
+        userLists.higher.forEach((member) => {
+            higherCSV += `${member.id},${member.displayName},${member.user.username}\n`
         })
         const higherFile = Buffer.from(higherCSV.slice(0, -1), 'utf-8')
         let date = new Date()
@@ -84,30 +78,25 @@ module.exports = {
         if (higherCSV.length > 0) {
             files.push({
                 attachment: higherFile,
-                name: `users-with-a-higher-role-than-${role}-date.csv`
+                name: `users-with-a-higher-role-than-${role}-${date}.csv`
             })
         }
         return message.channel.send({ files })
     },
 
     async exportFileMulti(message, roles) {
-        let name = ''
-        roles.forEach((role) => {
-            name += '-' + role
-        })
+        const name = roles.map(role => `-${role}`).join('')
         const foundRoles = roles.map(role => message.guild.findRole(role))
         const roleObjects = {}
         for (let index = 0; index < roles.length; index++) {
-            if (!foundRoles[index]) message.channel.send(`No role found for: \`${roles[index]}\``)
-            roleObjects[foundRoles[index]] = message.guild.findUsersWithRole(foundRoles[index].id).map(member => member.id)
+            if (!foundRoles[index]) return message.channel.send(`No role found for: \`${roles[index]}\``)
+            roleObjects[foundRoles[index]] = message.guild.findUsersWithRole(foundRoles[index].id)
         }
-        const memberList = Object.values(roleObjects).reduce((acc, array) => acc.filter(id => array.includes(id)))
+        const memberList = Object.values(roleObjects).reduce((acc, array) => acc.filter(member => array.includes(member)))
 
-        let memberListCSV = ''
-        memberList.forEach((member, index) => {
-            memberListCSV += member
-            if (((index + 1) % 3) == 0) memberListCSV += '\n'
-            else memberListCSV += ','
+        let memberListCSV = 'ID,Display Name,Username\n'
+        memberList.forEach((member) => {
+            memberListCSV += `${member.id},${member.displayName},${member.user.username}\n`
         })
         const memberListFile = Buffer.from(memberListCSV.slice(0, -1), 'utf-8')
         let date = new Date()
@@ -116,7 +105,7 @@ module.exports = {
             return message.channel.send({
                 files: [{
                     attachment: memberListFile,
-                    name: `users-with-${name}-${date}.csv`
+                    name: `users-with${name}${date}.csv`
                 }]
             })
         }
