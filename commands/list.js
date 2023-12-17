@@ -37,8 +37,7 @@ module.exports = {
     async execute(message, args, bot) {
         const exportFile = args[args.length - 1].toLowerCase() == 'export'
         if (exportFile) args = args.slice(0, args.length - 1)
-        const roles = args.join(' ').toLowerCase().split('|')
-        roles.map(role => role.trim())
+        const roles = args.join(' ').toLowerCase().split('|').map(role => role.trim())
 
         if (roles.length == 1) {
             if (exportFile) {
