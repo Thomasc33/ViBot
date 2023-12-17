@@ -86,9 +86,10 @@ module.exports = {
     async exportFileMulti(message, roles) {
         const name = roles.map(role => `-${role}`).join('')
         const foundRoles = roles.map(role => message.guild.findRole(role))
+        const unknownRoles = foundRoles.map((role, index) => role === null ? `\`${roles[index]}\`` : undefined).filter(role => role !== undefined)
+        if (unknownRoles.length > 0) return message.channel.send(`No roles found for: ${unknownRoles.join(', ')}`)
         const roleObjects = {}
         for (let index = 0; index < roles.length; index++) {
-            if (!foundRoles[index]) return message.channel.send(`No role found for: \`${roles[index]}\``)
             roleObjects[foundRoles[index]] = message.guild.findUsersWithRole(foundRoles[index].id)
         }
         const memberList = Object.values(roleObjects).reduce((acc, array) => acc.filter(member => array.includes(member)))
@@ -268,9 +269,10 @@ module.exports = {
 
     async combinedList(message, bot, roles) {
         const foundRoles = roles.map(role => message.guild.findRole(role))
+        const unknownRoles = foundRoles.map((role, index) => role === null ? `\`${roles[index]}\`` : undefined).filter(role => role !== undefined)
+        if (unknownRoles.length > 0) return message.channel.send(`No roles found for: ${unknownRoles.join(', ')}`)
         const roleObjects = {}
         for (let index = 0; index < roles.length; index++) {
-            if (!foundRoles[index]) return message.channel.send(`No role found for: \`${roles[index]}\``)
             roleObjects[foundRoles[index]] = message.guild.findUsersWithRole(foundRoles[index].id).map(member => member.id)
         }
         const memberList = Object.values(roleObjects).reduce((acc, array) => acc.filter(id => array.includes(id)))
