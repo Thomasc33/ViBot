@@ -179,10 +179,9 @@ async function interactionHandler(interaction, settings, bot, db) {
         await interaction.message.edit({ embed: [interaction.message.embed], components: [modmailCloseComponents] })
         await interaction.deferUpdate()
     } else if (interaction.customId === "modmailSend") {
-        await interaction.deferUpdate()
+        await interaction.reply({ content: "Type in the channel to send a message", ephemeral: true })
         let originalModmail = embed.data.description;
         // originalModmail = originalModmail.substring(originalModmail.indexOf(':') + 3, originalModmail.length - 1)
-
         let embedResponse = new Discord.EmbedBuilder()
             .setDescription(`__How would you like to respond to ${raider}'s [message](${modmailMessage.url})__\n${originalModmail}`)
         let tempResponseMessage = await modmailChannel.send({ embeds: [embedResponse] })
@@ -190,30 +189,33 @@ async function interactionHandler(interaction, settings, bot, db) {
         let responseMessageCollector = new Discord.MessageCollector(modmailChannel, { filter: messageToBeSent => messageToBeSent.author.id === interaction.member.id })
         responseMessageCollector.on('collect', async function (message) {
             let responseMessage = message.content.trim()
-            if (responseMessage == '') return await interaction.reply({ content: 'Invalid response. Please provide text. If you attached an image, please copy the URL and send that', ephemeral: true })
+            if (responseMessage == '') return await interaction.editReply({ content: 'Invalid response. Please provide text. If you attached an image, please copy the URL and send that', ephemeral: true })
             responseMessageCollector.stop()
             await message.delete()
             if (!checkInServer) {
                 await tempResponseMessage.delete()
                 failedEmbed.setDescription(`${raider} Has left this server and I can no longer continue with this modmail`)
-                await interaction.reply({ embeds: [failedEmbed] }); interaction.message.edit({ components: [] })
-                await interaction.message.edit({ components: [] })
+                await interaction.editReply({ embeds: [failedEmbed] }); interaction.message.edit({ components: [] })
+                await interaction.message.editReply({ components: [] })
                 return
             }
+            await interaction.editReply({ content: "Select an option below", ephemeral: true })
             embedResponse.setDescription(`__Are you sure you want to respond with the following?__\n${responseMessage}`)
             await tempResponseMessage.edit({ embeds: [embedResponse] }).then(async confirmMessage => {
                 if (await confirmMessage.confirmButton(interaction.member.id)) {
                     if (!checkInServer) {
                         await tempResponseMessage.delete()
                         failedEmbed.setDescription(`${raider} Has left this server and I can no longer continue with this modmail`)
-                        await interaction.reply({ embeds: [failedEmbed] }); interaction.message.edit({ components: [] })
+                        await interaction.editReply({ embeds: [failedEmbed] }); interaction.message.edit({ components: [] })
                         await interaction.message.edit({ components: [] })
                         return
                     }
+                    await interaction.editReply({ content: "Message sending...", ephemeral: true })
                     await directMessages.send(responseMessage)
                     await tempResponseMessage.delete()
                     embed.addFields([{ name: `Response by ${interaction.member.nickname} <t:${moment().unix()}:R>:`, value: responseMessage }])
                     await interaction.message.edit({ embeds: [embed], components: [] })
+                    await interaction.editReply({ content: "Message sent!", ephemeral: true })
                 } else {
                     await tempResponseMessage.delete()
                     await interaction.message.edit({ components: [...modmailOpenComponents] })
