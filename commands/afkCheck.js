@@ -1391,11 +1391,9 @@ class afkCheck {
         if (this.moveInEarlysTimer) clearInterval(this.moveInEarlysTimer)
         if (this.updatePanelTimer) clearInterval(this.updatePanelTimer)
 
-        console.log("MOVE @ LONGE")
         if (this.#channel) {
-            console.log("LONGE", this.vcLounge)
             for (let minimumJoinRaiderRole of this.#afkTemplate.minimumJoinRaiderRoles) await this.#channel.permissionOverwrites.edit(minimumJoinRaiderRole.id, { Connect: false, ViewChannel: true }).catch(er => ErrorLogger.log(er, this.#bot, this.#guild))
-            console.log(await this.#channel.setPosition(this.vcLounge.position + 1))
+            await this.#channel.setPosition(this.vcLounge.position + 1)
         }
 
         this.ended_by = interaction ? this.#guild.members.cache.get(interaction.member.id) : this.#guild.members.cache.get(this.#leader.id)
