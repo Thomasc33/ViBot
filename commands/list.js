@@ -24,7 +24,7 @@ const Buttons = {
 
 module.exports = {
     name: 'list',
-    description: 'Displays a list of all users with the specified role. Can input multiple roles separated by "|". Adding "export" after the role(s) will output lists of discord IDs of the users that the embed would otherwise display',
+    description: 'Displays a list of all users with the specified role. Can input multiple roles separated by "|". Adding "export" after the role(s) will output list(s) of discord IDs of the users that the embed would otherwise display',
     role: 'security',
     args: '<role name/ID>',
     requiredArgs: 1,
