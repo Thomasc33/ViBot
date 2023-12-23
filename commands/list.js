@@ -24,7 +24,7 @@ const Buttons = {
 
 module.exports = {
     name: 'list',
-    description: 'Displays a list of all users with the specified role.',
+    description: 'Displays a list of all users with the specified role. Can input multiple roles separated by "|". Adding "export" after the role(s) will output csv files with data that the embed would otherwise display',
     role: 'security',
     args: '<role name/ID>',
     requiredArgs: 1,
@@ -47,37 +47,26 @@ module.exports = {
             }
         } else if (exportFile) {
             module.exports.exportFileMulti(message, roles)
-        } else module.exports.combinedList(message, bot, roles)
+        } else {
+            module.exports.combinedList(message, bot, roles)
+        }
     },
 
     async exportFileSingle(message, role) {
         const guildRole = message.guild.findRole(role)
         if (!guildRole) return message.channel.send(`No role found for: \`${role}\``)
         const userLists = { highest: message.guild.findUsersWithRoleAsHighest(guildRole.id), higher: message.guild.findUsersWithRoleNotAsHighest(guildRole.id) }
-        let highestCSV = 'ID,Display Name,Username\n'
-        userLists.highest.forEach((member) => {
-            highestCSV += `${member.id},${member.displayName},${member.user.username}\n`
-        })
-        const highestFile = Buffer.from(highestCSV.slice(0, -1), 'utf-8')
-
-        let higherCSV = 'ID,Display Name,Username\n'
-        userLists.higher.forEach((member) => {
-            higherCSV += `${member.id},${member.displayName},${member.user.username}\n`
-        })
-        const higherFile = Buffer.from(higherCSV.slice(0, -1), 'utf-8')
-        let date = new Date()
-        date = '-' + date.toLocaleString('default', { month: 'short' }) + '-' + date.getDate() + '-' + date.getFullYear()
         const files = []
-        if (highestCSV.length > 0) {
+        if (userLists.highest.length > 0) {
             files.push({
-                attachment: highestFile,
-                name: `users-with-${role}-as-highest-role${date}.csv`
+                attachment: Buffer.from(userLists.highest.map(member => member.id).join(','), 'utf-8'),
+                name: `users-with-${role}-as-highest-role${this.getDateString()}.csv`
             })
         }
-        if (higherCSV.length > 0) {
+        if (userLists.higher.length > 0) {
             files.push({
-                attachment: higherFile,
-                name: `users-with-a-higher-role-than-${role}-${date}.csv`
+                attachment: Buffer.from(userLists.higher.map(member => member.id).join(','), 'utf-8'),
+                name: `users-with-a-higher-role-than-${role}${this.getDateString()}.csv`
             })
         }
         return message.channel.send({ files })
@@ -85,27 +74,25 @@ module.exports = {
 
     async exportFileMulti(message, roles) {
         const name = roles.map(role => `-${role}`).join('')
-        const foundRoles = roles.map(role => message.guild.findRole(role))
-        const unknownRoles = foundRoles.map((role, index) => role === null ? `\`${roles[index]}\`` : undefined).filter(role => role !== undefined)
+        const foundRoles = []
+        const unknownRoles = []
+        let roleCheck = null
+        roles.forEach((role) => {
+            roleCheck = message.guild.findRole(role)
+            if (roleCheck === null) unknownRoles.push(role)
+            else foundRoles.push(roleCheck)
+        })
         if (unknownRoles.length > 0) return message.channel.send(`No roles found for: ${unknownRoles.join(', ')}`)
         const roleObjects = {}
         for (let index = 0; index < roles.length; index++) {
             roleObjects[foundRoles[index]] = message.guild.findUsersWithRole(foundRoles[index].id)
         }
         const memberList = Object.values(roleObjects).reduce((acc, array) => acc.filter(member => array.includes(member)))
-
-        let memberListCSV = 'ID,Display Name,Username\n'
-        memberList.forEach((member) => {
-            memberListCSV += `${member.id},${member.displayName},${member.user.username}\n`
-        })
-        const memberListFile = Buffer.from(memberListCSV.slice(0, -1), 'utf-8')
-        let date = new Date()
-        date = '-' + date.toLocaleString('default', { month: 'short' }) + '-' + date.getDate() + '-' + date.getFullYear()
-        if (memberListCSV.length > 0) {
+        if (memberList.length > 0) {
             return message.channel.send({
                 files: [{
-                    attachment: memberListFile,
-                    name: `users-with${name}${date}.csv`
+                    attachment: Buffer.from(memberList.map(member => member.id).join(','), 'utf-8'),
+                    name: `users-with${name}${this.getDateString()}.csv`
                 }]
             })
         }
@@ -268,8 +255,14 @@ module.exports = {
     },
 
     async combinedList(message, bot, roles) {
-        const foundRoles = roles.map(role => message.guild.findRole(role))
-        const unknownRoles = foundRoles.map((role, index) => role === null ? `\`${roles[index]}\`` : undefined).filter(role => role !== undefined)
+        const foundRoles = []
+        const unknownRoles = []
+        let roleCheck = null
+        roles.forEach((role) => {
+            roleCheck = message.guild.findRole(role)
+            if (roleCheck === null) unknownRoles.push(role)
+            else foundRoles.push(roleCheck)
+        })
         if (unknownRoles.length > 0) return message.channel.send(`No roles found for: ${unknownRoles.join(', ')}`)
         const roleObjects = {}
         for (let index = 0; index < roles.length; index++) {
@@ -327,5 +320,10 @@ module.exports = {
         navigationInteractionHandler.on('end', async () => {
             await listMessage.edit({ components: [] })
         })
+    },
+
+    getDateString() {
+        const date = new Date()
+        return '-' + date.toLocaleString('default', { month: 'short' }) + '-' + date.getDate() + '-' + date.getFullYear()
     }
 }
