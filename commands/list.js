@@ -22,11 +22,14 @@ const Buttons = {
     DROPDOWN: 'DROPDOWN'
 }
 
+// Constant for length of string embed per page
+const EMBED_STRING_MAX = 950
+
 module.exports = {
     name: 'list',
     description: 'Displays a list of all users with the specified role. Can input multiple roles separated by "|". Adding "export" after the role(s) will output list(s) of discord IDs of the users that the embed would otherwise display',
     role: 'security',
-    args: '<role name/ID>',
+    args: '<role name/ID> <export>',
     requiredArgs: 1,
     alias: ['roleinfo', 'ri'],
     /**
@@ -55,17 +58,17 @@ module.exports = {
     async exportFileSingle(message, role) {
         const guildRole = message.guild.findRole(role)
         if (!guildRole) return message.channel.send(`No role found for: \`${role}\``)
-        const userLists = { highest: message.guild.findUsersWithRoleAsHighest(guildRole.id), higher: message.guild.findUsersWithRoleNotAsHighest(guildRole.id) }
+        const userIdLists = { highest: message.guild.findUsersWithRoleAsHighest(guildRole.id).map(member => member.id), higher: message.guild.findUsersWithRoleNotAsHighest(guildRole.id).map(member => member.id) }
         const files = []
-        if (userLists.highest.length > 0) {
+        if (userIdLists.highest.length > 0) {
             files.push({
-                attachment: Buffer.from(userLists.highest.map(member => member.id).join(','), 'utf-8'),
+                attachment: Buffer.from(userIdLists.highest.join(','), 'utf-8'),
                 name: `users-with-${role}-as-highest-role${this.getDateString()}.csv`
             })
         }
-        if (userLists.higher.length > 0) {
+        if (userIdLists.higher.length > 0) {
             files.push({
-                attachment: Buffer.from(userLists.higher.map(member => member.id).join(','), 'utf-8'),
+                attachment: Buffer.from(userIdLists.higher.join(','), 'utf-8'),
                 name: `users-with-a-higher-role-than-${role}${this.getDateString()}.csv`
             })
         }
@@ -83,15 +86,13 @@ module.exports = {
             else foundRoles.push(roleCheck)
         })
         if (unknownRoles.length > 0) return message.channel.send(`No roles found for: ${unknownRoles.join(', ')}`)
-        const roleObjects = {}
-        for (let index = 0; index < roles.length; index++) {
-            roleObjects[foundRoles[index]] = message.guild.findUsersWithRole(foundRoles[index].id)
-        }
-        const memberList = Object.values(roleObjects).reduce((acc, array) => acc.filter(member => array.includes(member)))
+        const memberList = message.guild.members.cache
+            .filter(member => foundRoles.every(role => member.roles.cache.has(role.id)))
+            .map(member => member.id)
         if (memberList.length > 0) {
             return message.channel.send({
                 files: [{
-                    attachment: Buffer.from(memberList.map(member => member.id).join(','), 'utf-8'),
+                    attachment: Buffer.from(memberList.join(','), 'utf-8'),
                     name: `users-with${name}${this.getDateString()}.csv`
                 }]
             })
@@ -103,34 +104,13 @@ module.exports = {
         // Search for role in guild
         const guildRole = message.guild.findRole(role)
         if (!guildRole) return message.channel.send(`No role found for: \`${role}\``)
-        const userLists = { highest: message.guild.findUsersWithRoleAsHighest(guildRole.id), higher: message.guild.findUsersWithRoleNotAsHighest(guildRole.id) }
+        const userIdLists = { highest: message.guild.findUsersWithRoleAsHighest(guildRole.id).map(member => member.id), higher: message.guild.findUsersWithRoleNotAsHighest(guildRole.id).map(member => member.id) }
 
         // Array with pages of users where given role is highest position
-        const highestStringPages = []
-        let highestString = ''
-        for (const member of userLists.highest) {
-            if (highestString.length < 950) {
-                highestString += `${member} `
-                if (member == userLists.highest[userLists.highest.length - 1]) {
-                    highestStringPages.push(highestString)
-                }
-            } else {
-                highestStringPages.push(highestString)
-                highestString = ''
-            }
-        }
+        const highestStringPages = this.getMemberPageArray(userIdLists.highest)
+
         // Array with pages of users with a higher position role
-        const higherStringPages = []
-        let higherString = ''
-        for (const member of userLists.higher) {
-            if (higherString.length < 950) {
-                higherString += `${member} `
-                if (member == userLists.higher[userLists.higher.length - 1]) higherStringPages.push(higherString)
-            } else {
-                higherStringPages.push(higherString)
-                higherString = ''
-            }
-        }
+        const higherStringPages = this.getMemberPageArray(userIdLists.higher)
 
         // dict to acces page arrays via rank enum
         const pagesDict = {
@@ -140,17 +120,17 @@ module.exports = {
 
         // setting starting page + page config
         let pageConfig = PageConfigurations.NEITHER
-        if (userLists.highest.length > 0) {
-            if (userLists.higher.length > 0) pageConfig = PageConfigurations.BOTH
+        if (userIdLists.highest.length > 0) {
+            if (userIdLists.higher.length > 0) pageConfig = PageConfigurations.BOTH
             else pageConfig = PageConfigurations.HIGHEST_ONLY
-        } else if (userLists.higher.length > 0) pageConfig = PageConfigurations.HIGHER_ONLY
+        } else if (userIdLists.higher.length > 0) pageConfig = PageConfigurations.HIGHER_ONLY
         let currentRank = pageConfig == PageConfigurations.HIGHER_ONLY ? ranks.HIGHER : ranks.HIGHEST
 
         // setting timestamp
         const time = Date.now()
 
         // info to send to embed creator
-        const embedInfo = { pageConfig, higherStringPages, highestStringPages, userLists, guildRole, time }
+        const embedInfo = { pageConfig, higherStringPages, highestStringPages, userLists: userIdLists, guildRole, time }
 
         let currentPage = 0
         const row = this.createComponents(0, pagesDict[currentRank].length, pageConfig, 1 - currentRank)
@@ -264,26 +244,15 @@ module.exports = {
             else foundRoles.push(roleCheck)
         })
         if (unknownRoles.length > 0) return message.channel.send(`No roles found for: ${unknownRoles.join(', ')}`)
-        const roleObjects = {}
-        for (let index = 0; index < roles.length; index++) {
-            roleObjects[foundRoles[index]] = message.guild.findUsersWithRole(foundRoles[index].id).map(member => member.id)
-        }
-        const memberList = Object.values(roleObjects).reduce((acc, array) => acc.filter(id => array.includes(id)))
 
-        let memberString = ''
-        const memberStringPages = []
-        for (const member of memberList) {
-            if (memberString.length < 950) {
-                memberString += `<@!${member}> `
-                if (member == memberList[memberList.length - 1]) {
-                    memberStringPages.push(memberString)
-                }
-            } else {
-                memberStringPages.push(memberString)
-                memberString = ''
-            }
-        }
-        if (memberStringPages.length < 1) return message.channel.send('No users found with all roles')
+        // filters all members to those who have every role in foundRoles and returns their ids
+        const memberIdList = message.guild.members.cache
+            .filter(member => foundRoles.every(role => member.roles.cache.has(role.id)))
+            .map(member => member.id)
+
+        const memberStringPages = this.getMemberPageArray(memberIdList)
+        if (memberIdList.length < 1) return message.channel.send('No users found with all roles')
+
         const time = Date.now()
         let currentPage = 0
         let embed = new Discord.EmbedBuilder()
@@ -295,7 +264,7 @@ module.exports = {
             name: 'These users have all of the roles combined',
             value: memberStringPages[currentPage]
         })
-        embed.setFooter({ text: `There are ${memberList.length} users who have all of the roles combined` })
+        embed.setFooter({ text: `There are ${memberIdList.length} users who have all of the roles combined` })
 
         const row = this.createComponents(0, memberStringPages.length)
         const listMessage = await message.channel.send({ embeds: [embed], components: row })
@@ -320,6 +289,24 @@ module.exports = {
         navigationInteractionHandler.on('end', async () => {
             await listMessage.edit({ components: [] })
         })
+    },
+
+    // takes a list of IDs and returns an array of pages
+    getMemberPageArray(memberList) {
+        let memberString = ''
+        const memberStringPages = []
+        for (const member of memberList) {
+            if (memberString.length < EMBED_STRING_MAX) {
+                memberString += `<@!${member}> `
+                if (member == memberList[memberList.length - 1]) {
+                    memberStringPages.push(memberString)
+                }
+            } else {
+                memberStringPages.push(memberString)
+                memberString = ''
+            }
+        }
+        return memberStringPages
     },
 
     getDateString() {
