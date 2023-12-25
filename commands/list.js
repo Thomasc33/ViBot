@@ -249,7 +249,7 @@ module.exports = {
         const memberIdList = message.guild.members.cache
             .filter(member => foundRoles.every(role => member.roles.cache.has(role.id)))
             .map(member => member.id)
-
+        
         const memberStringPages = this.getMemberPageArray(memberIdList)
         if (memberIdList.length < 1) return message.channel.send('No users found with all roles')
 
@@ -284,6 +284,7 @@ module.exports = {
                 name: 'These users have all of the roles combined',
                 value: memberStringPages[currentPage]
             })
+            await interaction.update({ embeds: [embed], components: this.createComponents(currentPage, memberStringPages.length) })
             navigationInteractionHandler.resetTimer()
         })
         navigationInteractionHandler.on('end', async () => {
