@@ -235,9 +235,11 @@ class afkCheck {
         this.cap = storedAfkCheck.cap
         this.location = storedAfkCheck.location
         this.phase = storedAfkCheck.phase
+        this.vcOptions = storedAfkCheck.vcOptions
         this.timer = new Date(storedAfkCheck.timer)
         this.completes = storedAfkCheck.completes
-        this.ended_by = storedAfkCheck.ended_by == null ? null : this.#guild.members.cache.get(storedAfkCheck.ended_by.id)
+
+        this.ended_by = storedAfkCheck.ended_by ?? this.#guild.members.cache.get(storedAfkCheck.ended_by.userId)
         this.deleted_by = storedAfkCheck.deleted_by == null ? null : this.#guild.members.cache.get(storedAfkCheck.deleted_by.id)
         this.aborted_by = storedAfkCheck.aborted_by == null ? null : this.#guild.members.cache.get(storedAfkCheck.aborted_by.id)
 
@@ -248,6 +250,8 @@ class afkCheck {
 
         this.#pointlogMid = storedAfkCheck.pointlogMid
         this.#bot.afkModules[this.#raidID] = this
+
+
 
         if (this.phase <= this.#afkTemplate.phases) this.start()
         else {
