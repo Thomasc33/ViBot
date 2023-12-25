@@ -235,7 +235,6 @@ class afkCheck {
         this.cap = storedAfkCheck.cap
         this.location = storedAfkCheck.location
         this.phase = storedAfkCheck.phase
-        this.vcOptions = storedAfkCheck.vcOptions
         this.timer = new Date(storedAfkCheck.timer)
         this.completes = storedAfkCheck.completes
 
@@ -826,7 +825,7 @@ class afkCheck {
         this.phase += 1
         this.timer = new Date(Date.now() + (this.#body[this.phase].timeLimit * 1000))
         if (this.updatePanelTimer) clearInterval(this.updatePanelTimer)
-        
+
         const [tempRaidStatusMessage] = await Promise.all([
             this.#body[this.phase].message && this.#afkTemplate.raidStatusChannel.send({ content: `${this.#body[this.phase].message} in 5 seconds...` }),
             (interaction?.message.id == this.raidStatusMessage   ? interaction.editButtons({ disabled: true }) : this.raidStatusMessage.editButtons({ disabled: true })),
