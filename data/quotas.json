@@ -48,6 +48,7 @@
                     { "column": "currentweekAssists", "emoji": ":handshake:", "name": "Assists", "value": 0.5 },
                     { "column": "currentweekFeedback", "emoji": "<:feedback:858920770806087710>", "name": "Feedback", "value": 1 },
                     { "column": "currentweekshattersFeedback", "emoji": "<:shattersFeedback:1071433377879707728>", "name": "Shatters Feedback", "value": 2 },
+                    { "column": "currentweekOryxFeedback", "emoji": "<:oryxFeedback:1189018214949208195>", "name": "Oryx Feedback", "value": 2 },
                     { "column": "rollingQuota", "emoji": ":hourglass:", "name": "Rolled Quota", "value": 1, "rolling": true }
                 ],
                 "voteInfo": {
@@ -138,6 +139,7 @@
                     { "column": "currentweekAssists", "emoji": ":handshake:", "name": "Assists", "value": 0.5 },
                     { "column": "currentweekFeedback", "emoji": "<:feedback:858920770806087710>", "name": "Feedback", "value": 1 },
                     { "column": "currentweekshattersFeedback", "emoji": "<:shattersFeedback:1071433377879707728>", "name": "Shatters Feedback", "value": 2 },
+                    { "column": "currentweekOryxFeedback", "emoji": "<:oryxFeedback:1189018214949208195>", "name": "Oryx Feedback", "value": 2 },
                     { "column": "rollingQuota", "emoji": ":hourglass:", "name": "Rolled Quota", "value": 1, "rolling": true }
                 ],
                 "voteInfo": {
