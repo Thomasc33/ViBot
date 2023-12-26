@@ -88,7 +88,9 @@ module.exports = {
         if (guildQuota) {
             toUpdate.forEach(update => {
                 const runQuota = guildQuota.quotas.filter(q => q.id == update)
-                if (runQuota.length) quota.update(message.guild, db, bot, settings, guildQuota, runQuota)
+                if (runQuota.length) {
+                    quota.update(message.guild, db, bot, settings, guildQuota, runQuota[0])
+                }
             })
         }
     }

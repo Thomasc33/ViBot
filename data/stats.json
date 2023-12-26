@@ -224,6 +224,11 @@
                     },
                     {
                         "name": null,
+                        "emoji": "oryxFeedback",
+                        "row": "oryxFeedback"
+                    },
+                    {
+                        "name": null,
                         "emoji": "twitterHandshake",
                         "row": "assists"
                     },

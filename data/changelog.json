@@ -39,12 +39,18 @@
             "runeSwordPops",
             "runeHelmetPops",
             "incantationPops",
-            "fameMinutesLead"
+            "fameMinutesLead",
+            "oryxFeedback",
+            "currentweekOryxFeedback"
         ],
         "currentweeks": [
             {
                 "case": "cultsLead",
                 "currentWeekName": "currentweekCult"
+            },
+            {
+                "case": "oryxFeedback",
+                "currentWeekName": "currentweekOryxFeedback"
             },
             {
                 "case": "voidsLead",
@@ -168,12 +174,18 @@
             "runeSwordPops",
             "runeHelmetPops",
             "incantationPops",
-            "fameMinutesLead"
+            "fameMinutesLead",
+            "oryxFeedback",
+            "currentweekOryxFeedback"
         ],
         "currentweeks": [
             {
                 "case": "cultsLead",
                 "currentWeekName": "currentweekCult"
+            },
+            {
+                "case": "oryxFeedback",
+                "currentWeekName": "currentweekOryxFeedback"
             },
             {
                 "case": "voidsLead",
