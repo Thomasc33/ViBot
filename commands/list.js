@@ -284,6 +284,7 @@ module.exports = {
                 name: 'These users have all of the roles combined',
                 value: memberStringPages[currentPage]
             })
+            await interaction.update({ embeds: [embed], components: this.createComponents(currentPage, memberStringPages.length) })
             navigationInteractionHandler.resetTimer()
         })
         navigationInteractionHandler.on('end', async () => {
