@@ -6,6 +6,7 @@ const pointLogger = require('../lib/pointLogger')
 const extensions = require(`../lib/extensions`)
 const consumablePopTemplates = require(`../data/keypop.json`);
 const popCommand = require('./pop.js');
+const { guildMemberToJSON } = require('../lib/utils.js');
 
 module.exports = {
     name: 'afk',
@@ -206,7 +207,7 @@ class afkCheck {
                 phase: this.phase,
                 timer: this.timer.getTime(),
                 completes: this.completes,
-                ended_by: this.ended_by,
+                ended_by: this.ended_by == null ? null : guildMemberToJSON(this.ended_by),
                 aborted_by: this.aborted_by,
                 deleted_by: this.deleted_by,
 
@@ -237,7 +238,7 @@ class afkCheck {
         this.phase = storedAfkCheck.phase
         this.timer = new Date(storedAfkCheck.timer)
         this.completes = storedAfkCheck.completes
-        this.ended_by = storedAfkCheck.ended_by == null ? null : this.#guild.members.cache.get(storedAfkCheck.ended_by.id ?? storedAfkCheck.ended_by.userId)
+        this.ended_by = storedAfkCheck.ended_by == null ? null : this.#guild.members.cache.get(storedAfkCheck.ended_by.id)
         this.deleted_by = storedAfkCheck.deleted_by == null ? null : this.#guild.members.cache.get(storedAfkCheck.deleted_by.id)
         this.aborted_by = storedAfkCheck.aborted_by == null ? null : this.#guild.members.cache.get(storedAfkCheck.aborted_by.id)
 
@@ -366,7 +367,7 @@ class afkCheck {
         if (this.singleUseHotfixStopTimersDontUseThisAnywhereElse) return clearInterval(timer)
         const secondsRemaining = this.#timerSecondsRemaining()
         if (secondsRemaining <= 0) return this.processPhaseNext()
-        if (!this.raidStatusMessage) return
+        if (!this.raidStatusMessage || this.ended_by) return
         let reactables = this.getReactables(this.phase)
         let components = reactables.concat(this.getPhaseControls(this.phase))
         await Promise.all([
