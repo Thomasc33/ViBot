@@ -6,7 +6,7 @@ const pointLogger = require('../lib/pointLogger')
 const extensions = require(`../lib/extensions`)
 const consumablePopTemplates = require(`../data/keypop.json`);
 const popCommand = require('./pop.js');
-const { guildMemberToJSON } = require('../lib/utils.js');
+
 
 module.exports = {
     name: 'afk',
@@ -207,7 +207,7 @@ class afkCheck {
                 phase: this.phase,
                 timer: this.timer.getTime(),
                 completes: this.completes,
-                ended_by: this.ended_by == null ? null : guildMemberToJSON(this.ended_by),
+                ended_by_id: this.ended_by == null ? null : this.ended_by.id,
                 aborted_by: this.aborted_by,
                 deleted_by: this.deleted_by,
 
@@ -238,7 +238,7 @@ class afkCheck {
         this.phase = storedAfkCheck.phase
         this.timer = new Date(storedAfkCheck.timer)
         this.completes = storedAfkCheck.completes
-        this.ended_by = storedAfkCheck.ended_by == null ? null : this.#guild.members.cache.get(storedAfkCheck.ended_by.id)
+        this.ended_by = storedAfkCheck.ended_by_id == null ? null : this.#guild.members.cache.get(storedAfkCheck.ended_by_id)
         this.deleted_by = storedAfkCheck.deleted_by == null ? null : this.#guild.members.cache.get(storedAfkCheck.deleted_by.id)
         this.aborted_by = storedAfkCheck.aborted_by == null ? null : this.#guild.members.cache.get(storedAfkCheck.aborted_by.id)
 
