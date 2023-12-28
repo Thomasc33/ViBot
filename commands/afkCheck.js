@@ -207,7 +207,7 @@ class afkCheck {
                 phase: this.phase,
                 timer: this.timer.getTime(),
                 completes: this.completes,
-                ended_by_id: this.ended_by == null ? null : this.ended_by.id,
+                ended_by_id: this.ended_by?.id,
                 aborted_by: this.aborted_by,
                 deleted_by: this.deleted_by,
 
