@@ -22,6 +22,11 @@ module.exports = {
 
         /** @type {afkCheck.afkCheck[]} */
         const afks = Object.values(bot.afkModules).filter(afk => afk.active)
+
+        for (const afk of afks) {
+            afk.saveBotAfkCheck()
+        }
+
         if (args[0]?.toLowerCase() == 'force' || !afks.length) process.exit()
 
         const fields = afks.reduce((fields, afk) => {
