@@ -347,8 +347,10 @@ class afkCheck {
 
     startTimers() {
         if (this.#channel) this.moveInEarlysTimer = setInterval(() => this.moveInEarlys(), 10000)
-        let updatePanelTimer = setInterval((updatePanelTimer) => this.updatePanel(updatePanelTimer), 5000)
-        this.updatePanelTimer = updatePanelTimer
+        if (!this.ended_by){
+            let updatePanelTimer = setInterval((updatePanelTimer) => this.updatePanel(updatePanelTimer), 5000)
+            this.updatePanelTimer = updatePanelTimer
+        }
     }
 
     async moveInEarlys() {
@@ -367,7 +369,7 @@ class afkCheck {
         if (this.singleUseHotfixStopTimersDontUseThisAnywhereElse) return clearInterval(timer)
         const secondsRemaining = this.#timerSecondsRemaining()
         if (secondsRemaining <= 0) return this.processPhaseNext()
-        if (!this.raidStatusMessage || this.ended_by) return
+        if (!this.raidStatusMessage) return
         let reactables = this.getReactables(this.phase)
         let components = reactables.concat(this.getPhaseControls(this.phase))
         await Promise.all([
