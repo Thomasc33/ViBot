@@ -1,6 +1,6 @@
 const Discord = require('discord.js')
-const { createEmbed, getRoleStrings } = require('../lib/extensions.js')
-const siteSettings = require('../settings.json').config
+const { createEmbed } = require('../lib/extensions.js')
+const { resolveTemplateList, AfkTemplateValidationError } = require('./afkTemplate.js')
 
 module.exports = {
     name: 'templates',
@@ -10,11 +10,10 @@ module.exports = {
     args: '[exalts]',
     async execute(message, args, bot) {
         const botSettings = bot.settings[message.guild.id]
-        const templatesUrl = new URL(siteSettings.url)
-        templatesUrl.pathname = `/api/${message.guild.id}/commandchannel/${message.channel.id}/templates`
-        templatesUrl.searchParams.append('roles', getRoleStrings(botSettings, message.member).join(','))
-        templatesUrl.searchParams.append('key', siteSettings.key)
-        const templates = await fetch(templatesUrl).then(f => f.json())
+
+        const templates = await resolveTemplateList(botSettings, message.member, message.guild.id, message.channel.id)
+        if (templates instanceof AfkTemplateValidationError) return await message.channel.send(templates.message())
+
         const parentTemplateValue = {}
         for (let i = 0; i < templates.length; i++) {
             for (const inherit of templates[i].sectionNames) {
