@@ -11,7 +11,7 @@
     },
     "343704644712923138": {
         "realmeyestring": ["Voids completed", "Shatters completed"],
-        "dbnames": ["voidRuns", "shattersRun", "oryxRuns"],
+        "dbnames": ["voidRuns", "shattersRuns", "oryxRuns"],
         "dbisvet": "isVet",
         "lootInfo": "halls/shatters/o3",
         "boss": "Combined Void, Shatters and Oryx 3",
@@ -21,7 +21,7 @@
     },
     "701483950559985705": {
         "realmeyestring": ["Voids completed", "Shatters completed"],
-        "dbnames": ["voidRuns", "shattersRun", "oryxRuns"],
+        "dbnames": ["voidRuns", "shattersRuns", "oryxRuns"],
         "dbisvet": "isVet",
         "lootInfo": "halls/shatters/o3",
         "boss": "Combined Void, Shatters and Oryx 3",
