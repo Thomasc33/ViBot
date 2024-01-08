@@ -179,7 +179,7 @@ async function interactionHandler(interaction, settings, bot, db) {
         await interaction.message.edit({ embed: [interaction.message.embed], components: [modmailCloseComponents] })
         await interaction.deferUpdate()
     } else if (interaction.customId === "modmailSend") {
-        await interaction.update({ content: " ", components: [] })
+        await interaction.update({ content: "Type in the channel to send a message", components: [] })
         let originalModmail = embed.data.description;
         let embedResponse = new Discord.EmbedBuilder()
             .setDescription(`__How would you like to respond to ${raider}'s [message](${modmailMessage.url})__\n${originalModmail}`)
