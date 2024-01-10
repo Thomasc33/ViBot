@@ -22,8 +22,11 @@ module.exports = {
      */
     async execute(message, args, bot, db) {
         let alias = args.shift().toLowerCase()
+
         const afkTemplateNames = await AfkTemplate.resolveTemplateAlias(bot.settings[message.guild.id], message.member, message.guild.id, message.channel.id, alias)
+        if (afkTemplateNames instanceof AfkTemplate.AfkTemplateValidationError) return message.channel.send(afkTemplateNames.message())
         if (afkTemplateNames.length == 0) return await message.channel.send('This afk template does not exist.')
+
         const afkTemplateName = afkTemplateNames.length == 1 ? afkTemplateNames[0] : await AfkTemplate.templateNamePrompt(message, afkTemplateNames)
 
         const afkTemplate = await AfkTemplate.AfkTemplate.tryCreate(bot, bot.settings[message.guild.id], message, afkTemplateName)
@@ -73,6 +76,10 @@ module.exports = {
             const message = await messageChannel.messages.fetch(currentStoredAfkCheck.message.id)
             const afkTemplateName = currentStoredAfkCheck.afkTemplateName
             const afkTemplate = await AfkTemplate.AfkTemplate.tryCreate(bot, bot.settings[message.guild.id], message, afkTemplateName)
+            if (afkTemplate instanceof AfkTemplate.AfkTemplateValidationError) {
+                console.log(afkTemplate.message())
+                continue
+            }
             bot.afkChecks[currentStoredAfkCheck.raidID] = new afkCheck(afkTemplate, bot, db, message, currentStoredAfkCheck.location)
             await bot.afkChecks[currentStoredAfkCheck.raidID].loadBotAfkCheck(currentStoredAfkCheck)
         }
