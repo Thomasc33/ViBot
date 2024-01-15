@@ -55,12 +55,7 @@ const TemplateButtonChoice = {
 }
 
 // Enum for Button Colors in AFK Templates
-const TemplateButtonColors = {
-    'BLURPLE': 1,
-    'GREY': 2,
-    'GREEN': 3,
-    'RED': 4
-}
+const TemplateButtonColors = [1,2,3,4]
 
 async function resolveTemplateAlias(botSettings, member, guildId, commandChannel, alias) {
     const templateUrl = new URL(settings.config.url)
@@ -296,7 +291,7 @@ class AfkTemplate {
             if (this.#template.buttons[i].disableStart && !this.#validateTemplateNumber(this.#template.buttons[i].disableStart)) throw new AfkTemplateValidationError(TemplateState.INVALID_NUMBER, `This afk template at Button ${i} has an Invalid Disable Start.`)
             if (!this.#validateTemplateNumber(this.#template.buttons[i].start)) throw new AfkTemplateValidationError(TemplateState.INVALID_NUMBER, `This afk template at Button ${i} has an Invalid Start.`)
             if (!this.#validateTemplateNumber(this.#template.buttons[i].lifetime)) throw new AfkTemplateValidationError(TemplateState.INVALID_NUMBER, `This afk template at Button ${i} has an Invalid Lifetime.`)
-            if (this.#template.buttons[i].color && !this.#validateTemplateString(this.#template.buttons[i].color, TemplateButtonColors)) throw new AfkTemplateValidationError(TemplateState.INVALID_, `This afk template at Button ${i} has an Invalid Color`)
+            if (this.#template.buttons[i].color && !this.#validateTemplateNumber(this.#template.buttons[i].color, TemplateButtonColors)) throw new AfkTemplateValidationError(TemplateState.INVALID_, `This afk template at Button ${i} has an Invalid Color`)
             if (this.#template.buttons[i].logOptions != null) for (let j in this.#template.buttons[i].logOptions) {
                 if (this.#template.buttons[i].logOptions[j].points && !(this.#validateTemplateNumber(this.#template.buttons[i].logOptions[j].points) || this.#validateTemplatePoints(this.#template.buttons[i].logOptions[j].points))) throw new AfkTemplateValidationError(TemplateState.INVALID_NUMBER, `This afk template at Button ${i} at Log Option ${j} has an Invalid Points.`)
                 if (this.#template.buttons[i].logOptions[j].multiplier && !(this.#validateTemplateNumber(this.#template.buttons[i].logOptions[j].multiplier) || this.#validateTemplatePoints(this.#template.buttons[i].logOptions[j].multiplier))) throw new AfkTemplateValidationError(TemplateState.INVALID_NUMBER, `This afk template at Button ${i} at Log Option ${j} has an Invalid Multiplier.`)
@@ -471,7 +466,7 @@ class AfkTemplate {
                 minRole: this.#guild.roles.cache.get(this.#botSettings.roles[button.minRole]),
                 minStaffRoles: button.minStaffRoles && button.minStaffRoles.map(role => this.#guild.roles.cache.get(this.#botSettings.roles[role])),
                 confirmationMessage: button.confirmationMessage && this.processMessages(channel, button.confirmationMessage),
-                color: TemplateButtonColors[button.color || 'GREY'],
+                color: button.color in TemplateButtonColors ? button.color : Discord.ButtonStyle.Secondary,
                 logOptions: button.logOptions && Object.entries(button.logOptions).reduce((obj, [key, logOption]) => {
                     obj[key] = {
                         ...logOption,
