@@ -612,7 +612,7 @@ class afkCheck {
             if (end <= this.phase) continue
             if (this.capButtons.includes(i)) this.buttons[i].limit = this.cap
             const reactableButton = new Discord.ButtonBuilder()
-                .setStyle(2)
+                .setStyle(this.buttons[i].color)
                 .setCustomId(`${i}`)
             let label = `${this.buttons[i].displayName ? `${i} ` : ``}${this.buttons[i].limit ? ` ${this.reactables[i].members.length}/${this.buttons[i].limit}` : ``}`
             reactableButton.setLabel(label)
