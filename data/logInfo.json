@@ -34,6 +34,7 @@
                     "currentweekAssists",
                     "currentweekFeedback",
                     "currentweekshattersFeedback",
+                    "currentweekOryxFeedback",
                     "rollingQuota"
                 ],
                 "logVet": true,
@@ -72,6 +73,7 @@
                     "currentweekAssists",
                     "currentweekFeedback",
                     "currentweekshattersFeedback",
+                    "currentweekOryxFeedback",
                     "rollingQuota"
                 ],
                 "logVet": true
@@ -109,6 +111,7 @@
                     "currentweekAssists",
                     "currentweekFeedback",
                     "currentweekshattersFeedback",
+                    "currentweekOryxFeedback",
                     "rollingQuota"
                 ],
                 "logVet": true
@@ -147,6 +150,7 @@
                     "currentweekAssists",
                     "currentweekFeedback",
                     "currentweekshattersFeedback",
+                    "currentweekOryxFeedback",
                     "rollingQuota"
                 ],
                 "logVet": true
@@ -196,6 +200,7 @@
                     "currentweekAssists",
                     "currentweekFeedback",
                     "currentweekshattersFeedback",
+                    "currentweekOryxFeedback",
                     "rollingQuota"
                 ],
                 "logVet": true
@@ -234,6 +239,7 @@
                     "currentweekAssists",
                     "currentweekFeedback",
                     "currentweekshattersFeedback",
+                    "currentweekOryxFeedback",
                     "rollingQuota"
                 ],
                 "logVet": true
@@ -272,6 +278,46 @@
                     "currentweekAssists",
                     "currentweekFeedback",
                     "currentweekshattersFeedback",
+                    "currentweekOryxFeedback",
+                    "rollingQuota"
+                ],
+                "logVet": true
+            },
+            {
+                "key": "of",
+                "name": "oryx feedback",
+                "alias": [
+                    "ofeedback",
+                    "ofb"
+                ],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": true,
+                "confirmSuffix": "oryx feedbacks",
+                "main": "oryxFeedback",
+                "currentweek": "currentweekOryxFeedback",
+                "color": "#990000",
+                "icon": "https://media.discordapp.net/attachments/1114574154021208186/1189019181421690960/information-gb78b31705_640-1920w.png?ex=659ca367&is=658a2e67&hm=a712c7be02c1638b070f19d888f60ad94cfffcb17747cd0930fa9d5ec68ffd1b&=&format=webp&quality=lossless",
+                "desc": "`Oryx Feedback`",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweekCult",
+                    "currentweekVoid",
+                    "currentweekShatters",
+                    "currentWeekHardmodeShattersLead",
+                    "currentweekFungals",
+                    "currentweekNests",
+                    "currentWeekAdvancedNestsLead",
+                    "currentweekSteamwork",
+                    "currentWeekAdvancedSteamworksLead",
+                    "currentweekMoonlight",
+                    "currentweekFullskipsLead",
+                    "currentWeekOryxLead",
+                    "currentWeekSilentOryxLead",
+                    "currentweekAssists",
+                    "currentweekFeedback",
+                    "currentweekshattersFeedback",
+                    "currentweekOryxFeedback",
                     "rollingQuota"
                 ],
                 "logVet": true
@@ -309,6 +355,7 @@
                     "currentweekAssists",
                     "currentweekFeedback",
                     "currentweekshattersFeedback",
+                    "currentweekOryxFeedback",
                     "rollingQuota"
                 ],
                 "logVet": true
@@ -349,6 +396,7 @@
                     "currentweekAssists",
                     "currentweekFeedback",
                     "currentweekshattersFeedback",
+                    "currentweekOryxFeedback",
                     "rollingQuota"
                 ],
                 "logVet": true
@@ -389,6 +437,7 @@
                     "currentweekAssists",
                     "currentweekFeedback",
                     "currentweekshattersFeedback",
+                    "currentweekOryxFeedback",
                     "rollingQuota"
                 ],
                 "logVet": true
@@ -687,6 +736,7 @@
                     "currentweekAssists",
                     "currentweekFeedback",
                     "currentweekshattersFeedback",
+                    "currentweekOryxFeedback",
                     "rollingQuota"
                 ],
                 "logVet": true,
@@ -725,6 +775,7 @@
                     "currentweekAssists",
                     "currentweekFeedback",
                     "currentweekshattersFeedback",
+                    "currentweekOryxFeedback",
                     "rollingQuota"
                 ],
                 "logVet": true
@@ -762,6 +813,7 @@
                     "currentweekAssists",
                     "currentweekFeedback",
                     "currentweekshattersFeedback",
+                    "currentweekOryxFeedback",
                     "rollingQuota"
                 ],
                 "logVet": true
@@ -800,6 +852,7 @@
                     "currentweekAssists",
                     "currentweekFeedback",
                     "currentweekshattersFeedback",
+                    "currentweekOryxFeedback",
                     "rollingQuota"
                 ],
                 "logVet": true
@@ -849,6 +902,7 @@
                     "currentweekAssists",
                     "currentweekFeedback",
                     "currentweekshattersFeedback",
+                    "currentweekOryxFeedback",
                     "rollingQuota"
                 ],
                 "logVet": true
@@ -887,6 +941,7 @@
                     "currentweekAssists",
                     "currentweekFeedback",
                     "currentweekshattersFeedback",
+                    "currentweekOryxFeedback",
                     "rollingQuota"
                 ],
                 "logVet": true
@@ -925,6 +980,46 @@
                     "currentweekAssists",
                     "currentweekFeedback",
                     "currentweekshattersFeedback",
+                    "currentweekOryxFeedback",
+                    "rollingQuota"
+                ],
+                "logVet": true
+            },
+            {
+                "key": "of",
+                "name": "oryx feedback",
+                "alias": [
+                    "ofeedback",
+                    "ofb"
+                ],
+                "multiply": null,
+                "allowAssists": false,
+                "confirm": true,
+                "confirmSuffix": "oryx feedbacks",
+                "main": "oryxFeedback",
+                "currentweek": "currentweekOryxFeedback",
+                "color": "#990000",
+                "icon": "https://media.discordapp.net/attachments/1114574154021208186/1189019181421690960/information-gb78b31705_640-1920w.png?ex=659ca367&is=658a2e67&hm=a712c7be02c1638b070f19d888f60ad94cfffcb17747cd0930fa9d5ec68ffd1b&=&format=webp&quality=lossless",
+                "desc": "`Oryx Feedback`",
+                "toUpdate": "raiding",
+                "toDisplay": [
+                    "currentweekCult",
+                    "currentweekVoid",
+                    "currentweekShatters",
+                    "currentWeekHardmodeShattersLead",
+                    "currentweekFungals",
+                    "currentweekNests",
+                    "currentWeekAdvancedNestsLead",
+                    "currentweekSteamwork",
+                    "currentWeekAdvancedSteamworksLead",
+                    "currentweekMoonlight",
+                    "currentweekFullskipsLead",
+                    "currentWeekOryxLead",
+                    "currentWeekSilentOryxLead",
+                    "currentweekAssists",
+                    "currentweekFeedback",
+                    "currentweekshattersFeedback",
+                    "currentweekOryxFeedback",
                     "rollingQuota"
                 ],
                 "logVet": true
@@ -962,6 +1057,7 @@
                     "currentweekAssists",
                     "currentweekFeedback",
                     "currentweekshattersFeedback",
+                    "currentweekOryxFeedback",
                     "rollingQuota"
                 ],
                 "logVet": true
@@ -1002,6 +1098,7 @@
                     "currentweekAssists",
                     "currentweekFeedback",
                     "currentweekshattersFeedback",
+                    "currentweekOryxFeedback",
                     "rollingQuota"
                 ],
                 "logVet": true
@@ -1042,6 +1139,7 @@
                     "currentweekAssists",
                     "currentweekFeedback",
                     "currentweekshattersFeedback",
+                    "currentweekOryxFeedback",
                     "rollingQuota"
                 ],
                 "logVet": true

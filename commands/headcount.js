@@ -29,9 +29,10 @@ module.exports = {
         }
 
         const afkTemplateNames = await AfkTemplate.resolveTemplateAlias(botSettings, message.member, message.guild.id, message.channel.id, alias)
+        if (afkTemplateNames instanceof AfkTemplate.AfkTemplateValidationError) return await message.channel.send(afkTemplateNames.message())
         if (afkTemplateNames.length == 0) return await message.channel.send('This afk template does not exist.')
-        const afkTemplateName = afkTemplateNames.length == 1 ? afkTemplateNames[0] : await AfkTemplate.templateNamePrompt(message, afkTemplateNames)
 
+        const afkTemplateName = afkTemplateNames.length == 1 ? afkTemplateNames[0] : await AfkTemplate.templateNamePrompt(message, afkTemplateNames)
         const afkTemplate = await AfkTemplate.AfkTemplate.tryCreate(bot, bot.settings[message.guild.id], message, afkTemplateName)
         if (afkTemplate instanceof AfkTemplate.AfkTemplateValidationError) {
             await message.channel.send(afkTemplate.message())

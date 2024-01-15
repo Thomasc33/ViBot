@@ -52,7 +52,7 @@ class DbWrap {
                 let error = null
                 let rv = null
                 try {
-                    rv = await dbPromise.query(query, params, cb)
+                    rv = await dbPromise.query(query, params, cb).catch(() => {})
                 } catch (e) {
                     error = e
                 }
