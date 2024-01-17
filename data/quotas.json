@@ -91,7 +91,7 @@
         "totalUnexcused": "totalUnexcused",
         "consecutiveUnexcused": "consecutiveUnexcused",
         "consecutiveLeave": "consecutiveLeave",
-        "ignoreRoles": ["officer", "moderator", "headrl", "admin"],
+        "ignoreRoles": ["officer", "moderator", "headrl", "admin", "headdev"],
         "ignoreRolesDisplay": [],
         "roleDisplay": [],
         "quotas": [
