@@ -10,15 +10,31 @@ module.exports = {
     role: 'security',
     args: '<Message ID 1> <Message ID 2> ... <Message ID N>',
     async execute(message, args, bot, db) {
-        // Obtaining all relevant information from the #raidbot-info embed.
+        if (args.length < 2) {
+            message.reply('Incorrect usage. Please provide at least two Message IDs.');
+            return;
+        }
+
+        //Creates a list of links to all input raids.
         const targetChannelID = '701483952233250866';
-        const allRaidsRaiders = [];
-        let allRaidsDescriptions = '';
+        const guildID = message.guild.id;
+        const channelID = targetChannelID;
+        let allRaidsLinks = [];
         for (let i = 0; i < args.length; i++) {
-            const targetChannel = message.guild.channels.cache.get(targetChannelID); // Makes a targetChannel object using the id
-            const fetchedMessage = await targetChannel.messages.fetch(args[i]); // Assigns fetchedMessage to the message corresponding to message id given in the first argument
-            const afkEmbedFields = fetchedMessage.embeds[0].fields; // fetchedMessage.embeds[0] takes first element from list of embeds, then we select fields.
-            const raidersField = afkEmbedFields.find(item => item.name === 'Raiders'); // Selects the object in the list with key "Raiders".
+            let linkString = `https://discord.com/channels/${guildID}/${channelID}/`;
+            linkString += args[i];
+            allRaidsLinks.push(linkString);
+        }
+
+        // Obtains all relevant information from the #raidbot-info embeds for each raid, storing them in lists
+        const allRaidsRaiders = [];
+        const allRaidsTimes = [];
+        const allRaidsRLandType = [];
+        for (let i = 0; i < args.length; i++) {
+            const targetChannel = message.guild.channels.cache.get(targetChannelID);
+            const fetchedMessage = await targetChannel.messages.fetch(args[i]);
+            const afkEmbedFields = fetchedMessage.embeds[0].fields;
+            const raidersField = afkEmbedFields.find(item => item.name === 'Raiders');
             const raiders = raidersField.value;
             const raidersList = raiders.split(" ");
             for (let j = 0; j < raidersList.length; j++) {
@@ -32,14 +48,23 @@ module.exports = {
             }
             const raidRLandType = fetchedMessage.embeds[0].author.name;
             const raidTime = fetchedMessage.createdTimestamp;
-            // allRaidsDescriptions += `${raidRLandType} at <t:${(parseInt(raidTime)/1000).toFixed(0)}:f>\n`;
-            allRaidsDescriptions += `<t:${(parseInt(raidTime)/1000).toFixed(0)}:f> | ${raidRLandType}\n`
+            allRaidsRLandType.push(raidRLandType);
+            allRaidsTimes.push(`<t:${(parseInt(raidTime)/1000).toFixed(0)}:f>`);
         }
-        //Finding all unique raiders and how many times they appear.
+
+        // Creates strings containing the times and linked raid descriptions (RL and Type).
+        let allRaidsDescriptionsEmbed = '';
+        let allRaidsTimesEmbed = '';
+        for (i = 0; i < allRaidsRLandType.length; i++) {
+            allRaidsDescriptionsEmbed += `[${allRaidsRLandType[i]}](${allRaidsLinks[i]})\n`;
+            allRaidsTimesEmbed += allRaidsTimes[i] + '\n'
+        }
+
+        //Finds all unique raiders and how many times they appear.
         function onlyUnique(value, index, array) {
             return array.indexOf(value) === index;
         }
-        const uniqueRaiders = allRaidsRaiders.filter(onlyUnique); // List of all unique raiders
+        const uniqueRaiders = allRaidsRaiders.filter(onlyUnique);
         const countRaiders = [];
         for (let i = 0; i < uniqueRaiders.length; i++) {
             counter = 0;
@@ -51,37 +76,26 @@ module.exports = {
             countRaiders.push(counter);
         }
 
-        //Creating a string that contains raiders who have appeared at least twice.
-        let allSuspiciousMembers = '';
+        //Creates a string that contains raiders who have appeared at least twice: "suspicious" members.
+        let allSuspiciousMembersEmbed = '';
         for (let i = 0; i < uniqueRaiders.length; i++) {
             if (countRaiders[i] >= 2) {
-                allSuspiciousMembers += `${uniqueRaiders[i]} appears ${countRaiders[i]} times.\n`;
+                allSuspiciousMembersEmbed += `${uniqueRaiders[i]} appears ${countRaiders[i]} times.\n`;
             }
         }
 
-        //Creating a string that contains links to all raids.
-        const guildID = message.guild.id;
-        const channelID = targetChannelID;
-        let allRaidLinks = '';
-        for (let i = 0; i < args.length; i++) {
-            let linkString = `https://discord.com/channels/${guildID}/${channelID}/`;
-            linkString += args[i] + '\n';
-            allRaidLinks += linkString;
-        }
-
-        //Embed containing all relevant information.
+        //Makes and outputs an embed containing all relevant information.
         const exampleEmbed = new Discord.EmbedBuilder()
             .setColor('#FFC0CB')
             .setAuthor({ name: `${message.member.displayName}`, iconURL: message.member.user.avatarURL() })
             .setTitle(`Mutual Member Analysis`)
-            .setDescription(`${args.length} runs analysed.`)
+            .setDescription(`**Runs Analysed**: ${args.length}`)
             .addFields(
                 { name: '\u00A0', value: '\u00A0' },
-                { name: 'Raids', value: allRaidsDescriptions },
+                { name: 'Raids', value: allRaidsTimesEmbed, inline: true },
+                { name: '\u200B', value: allRaidsDescriptionsEmbed, inline: true},
                 { name: '\u00A0', value: '\u00A0' },
-                { name: 'Links to Raids', value: allRaidLinks },
-                { name: '\u00A0', value: '\u00A0' },
-                { name: 'Suspicious Raiders', value: allSuspiciousMembers},
+                { name: 'Common Raiders', value: allSuspiciousMembersEmbed},
             )
             .setTimestamp()
             .setFooter({ text: `${message.guild.name} • Mutual Member Analysis`, iconURL: message.guild.iconURL() });
@@ -89,7 +103,3 @@ module.exports = {
         message.reply({embeds: [exampleEmbed]})
     }
 }
-
-
-//To do: Only print the name if it appears at least twice, 
-//args is a list. args[0] etc. come from args
