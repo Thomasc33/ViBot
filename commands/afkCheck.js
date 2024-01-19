@@ -239,8 +239,8 @@ class afkCheck {
         this.timer = new Date(storedAfkCheck.timer)
         this.completes = storedAfkCheck.completes
         this.ended_by = this.#guild.members.cache.get(storedAfkCheck.ended_by_id)
-        this.deleted_by = storedAfkCheck.deleted_by == null ? null : this.#guild.members.cache.get(storedAfkCheck.deleted_by.id)
-        this.aborted_by = storedAfkCheck.aborted_by == null ? null : this.#guild.members.cache.get(storedAfkCheck.aborted_by.id)
+        this.deleted_by = null //deleted or aborted afk checks are not saved in the json
+        this.aborted_by = null
 
         this.raidStatusMessage = await this.#afkTemplate.raidStatusChannel.messages.fetch(storedAfkCheck.raidStatusMessage.id)
         this.raidCommandsMessage = await this.#afkTemplate.raidCommandChannel.messages.fetch(storedAfkCheck.raidCommandsMessage.id)
@@ -250,7 +250,7 @@ class afkCheck {
         this.#pointlogMid = storedAfkCheck.pointlogMid
         this.#bot.afkModules[this.#raidID] = this
 
-        if (this.phase <= this.#afkTemplate.phases) this.start()
+        if (this.phase <= this.#afkTemplate.phases && !this.ended_by) this.start()
         else {
             this.raidStatusInteractionHandler = new Discord.InteractionCollector(this.#bot, { message: this.raidStatusMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
             this.raidStatusInteractionHandler.on('collect', interaction => this.interactionHandler(interaction))
@@ -347,10 +347,8 @@ class afkCheck {
 
     startTimers() {
         if (this.#channel) this.moveInEarlysTimer = setInterval(() => this.moveInEarlys(), 10000)
-        if (!this.ended_by){
-            let updatePanelTimer = setInterval((updatePanelTimer) => this.updatePanel(updatePanelTimer), 5000)
-            this.updatePanelTimer = updatePanelTimer
-        }
+        let updatePanelTimer = setInterval((updatePanelTimer) => this.updatePanel(updatePanelTimer), 5000)
+        this.updatePanelTimer = updatePanelTimer
     }
 
     async moveInEarlys() {
