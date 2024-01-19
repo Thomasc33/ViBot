@@ -32,14 +32,14 @@ module.exports = {
             }
             const raidRLandType = fetchedMessage.embeds[0].author.name;
             const raidTime = fetchedMessage.createdTimestamp;
-            allRaidsDescriptions += `${raidRLandType} at <t:${(parseInt(raidTime)/1000).toFixed(0)}:f>\n`;
+            // allRaidsDescriptions += `${raidRLandType} at <t:${(parseInt(raidTime)/1000).toFixed(0)}:f>\n`;
+            allRaidsDescriptions += `<t:${(parseInt(raidTime)/1000).toFixed(0)}:f> | ${raidRLandType}\n`
         }
         //Finding all unique raiders and how many times they appear.
         function onlyUnique(value, index, array) {
             return array.indexOf(value) === index;
         }
         const uniqueRaiders = allRaidsRaiders.filter(onlyUnique); // List of all unique raiders
-
         const countRaiders = [];
         for (let i = 0; i < uniqueRaiders.length; i++) {
             counter = 0;
@@ -50,31 +50,38 @@ module.exports = {
             }
             countRaiders.push(counter);
         }
-        let returnString = '';
+
+        //Creating a string that contains raiders who have appeared at least twice.
+        let allSuspiciousMembers = '';
         for (let i = 0; i < uniqueRaiders.length; i++) {
-            returnString += `${uniqueRaiders[i]} appears ${countRaiders[i]} times.\n`;
+            if (countRaiders[i] >= 2) {
+                allSuspiciousMembers += `${uniqueRaiders[i]} appears ${countRaiders[i]} times.\n`;
+            }
         }
 
-
+        //Creating a string that contains links to all raids.
         const guildID = message.guild.id;
         const channelID = targetChannelID;
         let allRaidLinks = '';
         for (let i = 0; i < args.length; i++) {
             let linkString = `https://discord.com/channels/${guildID}/${channelID}/`;
-            linkString += args[i] + ' ';
+            linkString += args[i] + '\n';
             allRaidLinks += linkString;
         }
 
+        //Embed containing all relevant information.
         const exampleEmbed = new Discord.EmbedBuilder()
             .setColor('#FFC0CB')
             .setAuthor({ name: `${message.member.displayName}`, iconURL: message.member.user.avatarURL() })
             .setTitle(`Mutual Member Analysis`)
-            .setDescription(`${args.length} runs included, X matches`)
+            .setDescription(`${args.length} runs analysed.`)
             .addFields(
-                { name: 'Raids', value: allRaidsDescriptions},
+                { name: '\u00A0', value: '\u00A0' },
+                { name: 'Raids', value: allRaidsDescriptions },
+                { name: '\u00A0', value: '\u00A0' },
                 { name: 'Links to Raids', value: allRaidLinks },
                 { name: '\u00A0', value: '\u00A0' },
-                { name: 'Suspicious members', value: 'Some value here'},
+                { name: 'Suspicious Raiders', value: allSuspiciousMembers},
             )
             .setTimestamp()
             .setFooter({ text: `${message.guild.name} • Mutual Member Analysis`, iconURL: message.guild.iconURL() });
