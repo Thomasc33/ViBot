@@ -16,41 +16,47 @@ module.exports = {
         }
 
         // Appends Promises to fetch each message to a list and attempts to resolve.
-        const fetchedMessagePromises = []
-        for (let i = 0; i < args.length; i++) {
-            fetchedMessagePromises.push(targetChannel.messages.fetch(args[i]).catch(error => error))
-        }
-        const fetchedMessages = await Promise.all(fetchedMessagePromises)
-        for (let i = 0; i < fetchedMessages.length; i++) {
-            if (fetchedMessages[i] instanceof Error && fetchedMessages[i].code === 10008) {
-                return message.reply(`Could not find a message with message ID \`${args[i]}\` in <#${targetChannelID}>.`)
-            }
+        const notFoundMessageIDs = []
+        const allMessages = await Promise.all(
+            args.map(
+                arg => targetChannel.messages.fetch(arg).catch(
+                    error => {
+                        if (error.code === 10008) {
+                            notFoundMessageIDs.push(arg)
+                        }
+                        return null
+                    }
+                )
+            )
+        )
+        const fetchedMessages = allMessages.filter(i => i !== null)
+        if (notFoundMessageIDs.length > 0) {
+            return message.reply(`Could not find message(s) with message ID(s) \`${notFoundMessageIDs.join(', ')}\` in <#${targetChannelID}>.`)
         }
 
         // Obtains all relevant information from the #raidbot-info embeds for each raid, storing them in lists
         const guildID = message.guild.id
         const allRaidsRaiders = []
-        const allRaidsInfo = []
-        for (let i = 0; i < fetchedMessages.length; i++) {
-            const fetchedMessage = fetchedMessages[i]
-            const afkEmbedFields = fetchedMessage.embeds[0].fields
-            const raidersField = afkEmbedFields.find(item => item.name === 'Raiders')
-            const raiders = raidersField.value
-            const raidersList = raiders.split(' ')
-            for (let j = 0; j < raidersList.length; j++) {
-                if (raidersList[j].includes(',')) {
-                    const commaIndex = raidersList[j].indexOf(',')
-                    allRaidsRaiders.push(raidersList[j].slice(0, commaIndex))
-                } else {
-                    allRaidsRaiders.push(raidersList[j])
+        const allRaidsInfo = fetchedMessages.map(
+            fetchedMessage => {
+                const afkEmbedFields = fetchedMessage.embeds[0].fields
+                const raidersField = afkEmbedFields.find(item => item.name === 'Raiders')
+                const raiders = raidersField.value
+                const raidersList = raiders.split(' ')
+                for (let j = 0; j < raidersList.length; j++) {
+                    if (raidersList[j].includes(',')) {
+                        const commaIndex = raidersList[j].indexOf(',')
+                        allRaidsRaiders.push(raidersList[j].slice(0, commaIndex))
+                    } else {
+                        allRaidsRaiders.push(raidersList[j])
+                    }
                 }
+                const raidRLandType = fetchedMessage.embeds[0].author.name
+                const raidTime = fetchedMessage.createdTimestamp
+                const raidLink = `https://discord.com/channels/${guildID}/${targetChannelID}/${fetchedMessage.id}`
+                return [raidTime, raidRLandType, raidLink]
             }
-            const raidRLandType = fetchedMessage.embeds[0].author.name
-            const raidTime = fetchedMessage.createdTimestamp
-            const raidLink = `https://discord.com/channels/${guildID}/${targetChannelID}/${args[i]}`
-            allRaidsInfo.push([raidTime, raidRLandType, raidLink])
-        }
-        await Promise.all(fetchedMessagePromises)
+        )
 
         // Creates strings containing the times and linked raid descriptions (RL and Type), ordered chronologically.
         allRaidsInfo.sort((a, b) => a[0] - b[0])
@@ -62,20 +68,8 @@ module.exports = {
         }
 
         // Finds all unique raiders and how many times they appear. Note that uniqueRaiders and countRaiders have the same length.
-        function onlyUnique(value, index, array) {
-            return array.indexOf(value) === index
-        }
-        const uniqueRaiders = allRaidsRaiders.filter(onlyUnique)
-        const countRaiders = []
-        for (let i = 0; i < uniqueRaiders.length; i++) {
-            let counter = 0
-            for (let j = 0; j < allRaidsRaiders.length; j++) {
-                if (uniqueRaiders[i] === allRaidsRaiders[j]) {
-                    counter += 1
-                }
-            }
-            countRaiders.push(counter)
-        }
+        const uniqueRaiders = allRaidsRaiders.filter((value, index, array) => array.indexOf(value) === index)
+        const countRaiders = uniqueRaiders.map(raider => allRaidsRaiders.filter(r => r === raider).length)
 
         // Creates a string that contains raiders who have appeared at least twice: "suspicious" members. Ordered by descending observed frequency.
         const allSuspiciousMembers = []
