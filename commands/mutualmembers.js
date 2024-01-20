@@ -16,7 +16,8 @@ module.exports = {
         }
 
         // Obtains all relevant information from the #raidbot-info embeds for each raid, storing them in lists
-        const targetChannelID = '701483952233250866';
+        const targetChannel = message.guild.channels.cache.find(channel => channel.name === 'raidbot-info');
+        const targetChannelID = targetChannel.id;
         const guildID = message.guild.id;
         const allRaidsRaiders = [];
         const allRaidsInfo = [];
