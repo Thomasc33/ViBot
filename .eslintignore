@@ -38,7 +38,6 @@ commands/modmailClose.js
 commands/modmailRespond.js
 commands/mute.js
 commands/mutes.js
-commands/mutualmembers.js
 commands/noNicknames.js
 commands/parsemembers.js
 commands/permaSuspend.js
