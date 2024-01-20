@@ -8,22 +8,27 @@ module.exports = {
     role: 'security',
     args: '<Message ID 1> <Message ID 2> ... <Message ID N>',
     async execute(message, args) {
-        // Failure cases for argument errors.
+        const targetChannel = message.guild.channels.cache.find(channel => channel.name === 'raidbot-info')
+        const targetChannelID = targetChannel.id
+        // Failure case for argument errors.
         if (args.length < 2) {
             return message.reply('Incorrect usage. Please provide at least two Message IDs.')
         }
 
-        // Appends Promises to fetch each message to a list and resolves them all
-        const targetChannel = message.guild.channels.cache.find(channel => channel.name === 'raidbot-info')
+        // Appends Promises to fetch each message to a list and attempts to resolve.
         const fetchedMessagePromises = []
         for (let i = 0; i < args.length; i++) {
-            fetchedMessagePromises.push(targetChannel.messages.fetch(args[i]))
+            fetchedMessagePromises.push(targetChannel.messages.fetch(args[i]).catch(error => error))
         }
         const fetchedMessages = await Promise.all(fetchedMessagePromises)
+        for (let i = 0; i < fetchedMessages.length; i++) {
+            if (fetchedMessages[i] instanceof Error && fetchedMessages[i].code === 10008) {
+                return message.reply(`Could not find a message with message ID \`${args[i]}\` in <#${targetChannelID}>.`)
+            }
+        }
 
         // Obtains all relevant information from the #raidbot-info embeds for each raid, storing them in lists
         const guildID = message.guild.id
-        const targetChannelID = targetChannel.id
         const allRaidsRaiders = []
         const allRaidsInfo = []
         for (let i = 0; i < fetchedMessages.length; i++) {
@@ -42,7 +47,7 @@ module.exports = {
             }
             const raidRLandType = fetchedMessage.embeds[0].author.name
             const raidTime = fetchedMessage.createdTimestamp
-            const raidLink = `https://discord.com/channels/${guildID}/${targetChannelID}/` + args[i]
+            const raidLink = `https://discord.com/channels/${guildID}/${targetChannelID}/${args[i]}`
             allRaidsInfo.push([raidTime, raidRLandType, raidLink])
         }
         await Promise.all(fetchedMessagePromises)
