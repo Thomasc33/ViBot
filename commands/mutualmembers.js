@@ -15,21 +15,11 @@ module.exports = {
             return;
         }
 
-        //Creates a list of links to all input raids.
+        // Obtains all relevant information from the #raidbot-info embeds for each raid, storing them in lists
         const targetChannelID = '701483952233250866';
         const guildID = message.guild.id;
-        const channelID = targetChannelID;
-        let allRaidsLinks = [];
-        for (let i = 0; i < args.length; i++) {
-            let linkString = `https://discord.com/channels/${guildID}/${channelID}/`;
-            linkString += args[i];
-            allRaidsLinks.push(linkString);
-        }
-
-        // Obtains all relevant information from the #raidbot-info embeds for each raid, storing them in lists
         const allRaidsRaiders = [];
-        const allRaidsTimes = [];
-        const allRaidsRLandType = [];
+        const allRaidsInfo = [];
         for (let i = 0; i < args.length; i++) {
             const targetChannel = message.guild.channels.cache.get(targetChannelID);
             const fetchedMessage = await targetChannel.messages.fetch(args[i]);
@@ -48,19 +38,20 @@ module.exports = {
             }
             const raidRLandType = fetchedMessage.embeds[0].author.name;
             const raidTime = fetchedMessage.createdTimestamp;
-            allRaidsRLandType.push(raidRLandType);
-            allRaidsTimes.push(`<t:${(parseInt(raidTime)/1000).toFixed(0)}:f>`);
+            const raidLink = `https://discord.com/channels/${guildID}/${targetChannelID}/` + args[i];
+            allRaidsInfo.push([raidTime, raidRLandType, raidLink]);
         }
 
-        // Creates strings containing the times and linked raid descriptions (RL and Type).
+        // Creates strings containing the times and linked raid descriptions (RL and Type), ordered chronologically.
+        allRaidsInfo.sort((a,b) => a[0]-b[0]);
         let allRaidsDescriptionsEmbed = '';
         let allRaidsTimesEmbed = '';
-        for (i = 0; i < allRaidsRLandType.length; i++) {
-            allRaidsDescriptionsEmbed += `[${allRaidsRLandType[i]}](${allRaidsLinks[i]})\n`;
-            allRaidsTimesEmbed += allRaidsTimes[i] + '\n'
+        for (i = 0 ; i < allRaidsInfo.length; i++) {
+            allRaidsTimesEmbed += `<t:${(parseInt(allRaidsInfo[i][0])/1000).toFixed(0)}:f>\n`
+            allRaidsDescriptionsEmbed += `[${allRaidsInfo[i][1]}](${allRaidsInfo[i][2]})\n`
         }
 
-        //Finds all unique raiders and how many times they appear.
+        //Finds all unique raiders and how many times they appear. Note that uniqueRaiders and countRaiders have the same length.
         function onlyUnique(value, index, array) {
             return array.indexOf(value) === index;
         }
