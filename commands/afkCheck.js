@@ -7,7 +7,6 @@ const extensions = require(`../lib/extensions`)
 const consumablePopTemplates = require(`../data/keypop.json`);
 const popCommand = require('./pop.js');
 
-
 module.exports = {
     name: 'afk',
     description: 'The new version of the afk check',
