@@ -76,17 +76,22 @@ module.exports = {
             countRaiders.push(counter);
         }
 
-        //Creates a string that contains raiders who have appeared at least twice: "suspicious" members.
-        let allSuspiciousMembersEmbed = '';
+        //Creates a string that contains raiders who have appeared at least twice: "suspicious" members. Ordered by descending observed frequency.
+        const allSuspiciousMembers =[];
         for (let i = 0; i < uniqueRaiders.length; i++) {
             if (countRaiders[i] >= 2) {
-                allSuspiciousMembersEmbed += `${uniqueRaiders[i]} appears ${countRaiders[i]} times.\n`;
+                allSuspiciousMembers.push([uniqueRaiders[i], countRaiders[i]]);
             }
+        }
+        allSuspiciousMembers.sort((a,b) => b[1]-a[1]);
+        let allSuspiciousMembersEmbed = '';
+        for (let i = 0; i < allSuspiciousMembers.length; i++) {
+            allSuspiciousMembersEmbed += `${allSuspiciousMembers[i][0]} appears ${allSuspiciousMembers[i][1]} times.\n`
         }
 
         //Makes and outputs an embed containing all relevant information.
         const exampleEmbed = new Discord.EmbedBuilder()
-            .setColor('#FFC0CB')
+            .setColor('#63C5DA')
             .setAuthor({ name: `${message.member.displayName}`, iconURL: message.member.user.avatarURL() })
             .setTitle(`Mutual Member Analysis`)
             .setDescription(`**Runs Analysed**: ${args.length}`)
@@ -95,7 +100,7 @@ module.exports = {
                 { name: 'Raids', value: allRaidsTimesEmbed, inline: true },
                 { name: '\u200B', value: allRaidsDescriptionsEmbed, inline: true},
                 { name: '\u00A0', value: '\u00A0' },
-                { name: 'Common Raiders', value: allSuspiciousMembersEmbed},
+                { name: 'Suspicious Raiders', value: allSuspiciousMembersEmbed},
             )
             .setTimestamp()
             .setFooter({ text: `${message.guild.name} • Mutual Member Analysis`, iconURL: message.guild.iconURL() });
