@@ -11,21 +11,19 @@ module.exports = {
     async execute(message, args) {
         const targetChannel = message.guild.channels.cache.find(channel => channel.name === 'raidbot-info')
 
-        // Appends Promises to fetch each message to a list and attempts to resolve.
-        const notFoundMessageIDs = []
-        const allMessages = await Promise.all(
-            args.map(
-                arg => targetChannel.messages.fetch(arg).catch(
-                    error => {
-                        if (error.code === 10008) {
-                            notFoundMessageIDs.push(arg)
-                        }
-                        return null
-                    }
-                )
-            )
-        )
-        const fetchedMessages = allMessages.filter(i => i !== null)
+        // Defines and executes a function that returns an object containing the fetched messages and any erroneous messages IDs.
+        async function fetchMessages(targetChannel, messageIDs) {
+            const fetchedMessagePromises = messageIDs.map(messageID => targetChannel.messages.fetch(messageID).catch(error =>
+                (error.code === 10008) ? null : console.error(`Error fetching message ${messageID}:`, error)
+            ))
+            const fetchingResults = await Promise.all(fetchedMessagePromises)
+            const fetchedMessages = fetchingResults.filter(message => message !== null)
+            const notFoundMessageIDs = fetchingResults
+                .map((result, index) => (result === null ? messageIDs[index] : null))
+                .filter(messageID => messageID !== null)
+            return { fetchedMessages, notFoundMessageIDs }
+        }
+        const { fetchedMessages, notFoundMessageIDs } = await fetchMessages(targetChannel, args)
         if (notFoundMessageIDs.length > 0) {
             return message.reply(`Could not find message(s) with message ID(s) \`${notFoundMessageIDs.join(', ')}\` in <#${targetChannel.id}>.`)
         }
