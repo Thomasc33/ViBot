@@ -237,7 +237,8 @@ class afkCheck {
         this.timer = new Date(storedAfkCheck.timer)
         this.completes = storedAfkCheck.completes
         this.ended_by = this.#guild.members.cache.get(storedAfkCheck.ended_by_id)
-        this.deleted_by = null //deleted or aborted afk checks are not saved in the json
+         // deleted or aborted afk checks are not saved in the json
+        this.deleted_by = null
         this.aborted_by = null
 
         this.raidStatusMessage = await this.#afkTemplate.raidStatusChannel.messages.fetch(storedAfkCheck.raidStatusMessage.id)
