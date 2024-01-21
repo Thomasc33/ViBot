@@ -131,8 +131,7 @@ class afkCheck {
         this.completes = 0 // Number of times the afk has been completed
         this.logging = false // Whether logging is active
         this.ended_by = null
-        this.aborted_by = null
-        this.deleted_by = null
+
 
         this.raidStatusMessage = null // raid status message
         this.raidStatusInteractionHandler = null // raid status interaction handler
