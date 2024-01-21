@@ -138,8 +138,7 @@ class afkCheck {
         this.completes = 0 // Number of times the afk has been completed
         this.logging = false // Whether logging is active
         this.ended_by = null
-        this.aborted_by = null
-        this.deleted_by = null
+
 
         this.raidStatusMessage = null // raid status message
         this.raidStatusInteractionHandler = null // raid status interaction handler
@@ -213,7 +212,7 @@ class afkCheck {
                 phase: this.phase,
                 timer: this.timer.getTime(),
                 completes: this.completes,
-                ended_by: this.ended_by,
+                ended_by_id: this.ended_by?.id,
                 aborted_by: this.aborted_by,
                 deleted_by: this.deleted_by,
 
@@ -244,9 +243,10 @@ class afkCheck {
         this.phase = storedAfkCheck.phase
         this.timer = new Date(storedAfkCheck.timer)
         this.completes = storedAfkCheck.completes
-        this.ended_by = storedAfkCheck.ended_by == null ? null : this.#guild.members.cache.get(storedAfkCheck.ended_by.id)
-        this.deleted_by = storedAfkCheck.deleted_by == null ? null : this.#guild.members.cache.get(storedAfkCheck.deleted_by.id)
-        this.aborted_by = storedAfkCheck.aborted_by == null ? null : this.#guild.members.cache.get(storedAfkCheck.aborted_by.id)
+        this.ended_by = this.#guild.members.cache.get(storedAfkCheck.ended_by_id)
+         // deleted or aborted afk checks are not saved in the json
+        this.deleted_by = null
+        this.aborted_by = null
 
         this.raidStatusMessage = await this.#afkTemplate.raidStatusChannel.messages.fetch(storedAfkCheck.raidStatusMessage.id)
         this.raidCommandsMessage = await this.#afkTemplate.raidCommandChannel.messages.fetch(storedAfkCheck.raidCommandsMessage.id)
@@ -256,7 +256,7 @@ class afkCheck {
         this.#pointlogMid = storedAfkCheck.pointlogMid
         this.#bot.afkModules[this.#raidID] = this
 
-        if (this.phase <= this.#afkTemplate.phases) this.start()
+        if (this.phase <= this.#afkTemplate.phases && !this.ended_by) this.start()
         else {
             this.raidStatusInteractionHandler = new Discord.InteractionCollector(this.#bot, { message: this.raidStatusMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
             this.raidStatusInteractionHandler.on('collect', interaction => this.interactionHandler(interaction))
@@ -829,7 +829,7 @@ class afkCheck {
         this.phase += 1
         this.timer = new Date(Date.now() + (this.#body[this.phase].timeLimit * 1000))
         if (this.updatePanelTimer) clearInterval(this.updatePanelTimer)
-        
+
         const [tempRaidStatusMessage] = await Promise.all([
             this.#body[this.phase].message && this.#afkTemplate.raidStatusChannel.send({ content: `${this.#body[this.phase].message} in 5 seconds...` }),
             (interaction?.message.id == this.raidStatusMessage   ? interaction.editButtons({ disabled: true }) : this.raidStatusMessage.editButtons({ disabled: true })),
