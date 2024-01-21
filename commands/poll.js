@@ -31,9 +31,9 @@ module.exports = {
 
         let embedNew = new Discord.EmbedBuilder()
             .setColor('#fefefe')
-            .setTitle(poll.name)
-            .setDescription(`Please react to one of the below dungeons\nOr react to one of the below gear or items that you're bringing\n\n${poll.reacts.map(react => `${bot.storedEmojis[react.emoji].text}: ${react.name}`).join('\n')}`)
-            .setFooter({ text: `Started by ${message.guild.members.cache.get(message.author.id).nickname}` })
+            .setTitle(poll.name.charAt(0).toUpperCase() + poll.name.slice(1))
+            .setDescription(`Please react to one of the below dungeons.\nAlternatively, please react to one of the items displayed below that you are bringing.\n\n${poll.reacts.map(react => `${bot.storedEmojis[react.emoji].text}: ${react.name}`).join('\n')}`)
+            .setFooter({ text: `Started by ${message.member.displayName}` })
         let newMessage = await message.channel.send({ embeds: [embedNew] })
         poll.reacts.map(async react => {
             await newMessage.react(bot.storedEmojis[react.emoji].id)
