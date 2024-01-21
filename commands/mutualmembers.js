@@ -8,8 +8,8 @@ module.exports = {
     role: 'security',
     args: '[<Message ID 1>, <Message ID 2>, (Message ID 3), ...]',
     requiredArgs: 2,
-    async execute(message, args) {
-        const targetChannel = message.guild.channels.cache.find(channel => channel.name === 'raidbot-info');
+    async execute(message, args, bot) {
+        const targetChannel = message.guild.channels.cache.get(bot.settings[message.guild.id].channels.runlogs);
 
         // Defines and executes a function that returns an object containing the fetched messages and any erroneous messages IDs.
         async function fetchMessages(targetChannel, messageIDs) {
