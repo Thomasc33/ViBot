@@ -1,6 +1,6 @@
-const Discord = require('discord.js')
-const fs = require('fs')
-const { rateLimitLogger } = require('./lib/rateLimitLogger')
+const Discord = require('discord.js');
+const fs = require('fs');
+const { rateLimitLogger } = require('./lib/rateLimitLogger');
 const bot = new Discord.Client({
     intents: [ // Discord moment
         Discord.GatewayIntentBits.Guilds,
@@ -27,44 +27,44 @@ const bot = new Discord.Client({
         Discord.Partials.Message,
         Discord.Partials.Reaction
     ]
-})
+});
 
-rateLimitLogger(bot)
+rateLimitLogger(bot);
 
-bot.commands = new Discord.Collection()
-bot.afkChecks = {}
-bot.afkModules = {}
-bot.settings = moduleIsAvailable('./guildSettings.json') ? require('./guildSettings.json') : {}
-bot.settingsTimestamp = {}
-bot.partneredServers = moduleIsAvailable('./data/partneredServers.json') ? require('./data/partneredServers.json') : []
+bot.commands = new Discord.Collection();
+bot.afkChecks = {};
+bot.afkModules = {};
+bot.settings = moduleIsAvailable('./guildSettings.json') ? require('./guildSettings.json') : {};
+bot.settingsTimestamp = {};
+bot.partneredServers = moduleIsAvailable('./data/partneredServers.json') ? require('./data/partneredServers.json') : [];
 bot.fetchPartneredServer = function (guildId) {
     for (const server of bot.partneredServers) {
-        if (server.guildId == guildId) return server
+        if (server.guildId == guildId) return server;
     }
-    return null
-}
-bot.adminUsers = ['277636691227836419', '258286481167220738', '190572077219184650', '120540036855889921', '658783569191370802', '130850662522159104']
-bot.partneredServers = moduleIsAvailable('./data/partneredServers.json') ? require('./data/partneredServers.json') : {}
-bot.emojiServers = moduleIsAvailable('./data/emojiServers.json') ? require('./data/emojiServers.json') : {}
-bot.devServers = ['739623118833713214']
-bot.storedEmojis = moduleIsAvailable('./data/emojis.json') ? require('./data/emojis.json') : {}
+    return null;
+};
+bot.adminUsers = ['277636691227836419', '258286481167220738', '190572077219184650', '120540036855889921', '658783569191370802', '130850662522159104'];
+bot.partneredServers = moduleIsAvailable('./data/partneredServers.json') ? require('./data/partneredServers.json') : {};
+bot.emojiServers = moduleIsAvailable('./data/emojiServers.json') ? require('./data/emojiServers.json') : {};
+bot.devServers = ['739623118833713214'];
+bot.storedEmojis = moduleIsAvailable('./data/emojis.json') ? require('./data/emojis.json') : {};
 
 function loadCommands() {
-    const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'))
+    const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
     for (const file of commandFiles) {
-        const command = require(`./commands/${file}`)
-        bot.commands.set(command.name, command)
+        const command = require(`./commands/${file}`);
+        bot.commands.set(command.name, command);
     }
 }
 
 function moduleIsAvailable(path) {
     try {
-        require.resolve(path)
-        require(path)
-        return true
+        require.resolve(path);
+        require(path);
+        return true;
     } catch (e) {
-        return false
+        return false;
     }
 }
 
-module.exports = { bot, loadCommands }
+module.exports = { bot, loadCommands };
