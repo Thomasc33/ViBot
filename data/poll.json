@@ -62,7 +62,7 @@
         {
             "name": "exaltations",
             "aliases": [
-                "exalts"
+                "exalts", "ex", "exalt"
             ],
             "reacts": [
                 {
@@ -74,8 +74,12 @@
                     "emoji": "cultist"
                 },
                 {
+                    "name": "Oryx Sanctuary",
+                    "emoji": "oryxThree"
+                },
+                {
                     "name": "The Shatters",
-                    "emoji": "forgottenKing"
+                    "emoji": "forgottenking"
                 },
                 {
                     "name": "Fungal Cavern",
@@ -84,6 +88,18 @@
                 {
                     "name": "The Nest",
                     "emoji": "killerBeeQueen"
+                },
+                {
+                    "name": "Advanced Nest",
+                    "emoji": "advancedNestBee"
+                },
+                {
+                    "name": "Kogbold Steamworks",
+                    "emoji": "SteamworksBoss"
+                },
+                {
+                    "name": "Advanced Kogbold Steamworks",
+                    "emoji": "exaltedAdvancedSteamworks"
                 }
             ]
         },
@@ -167,7 +183,7 @@
         {
             "name": "exaltations",
             "aliases": [
-                "exalts"
+                "exalts", "ex", "exalt"
             ],
             "reacts": [
                 {
@@ -179,8 +195,12 @@
                     "emoji": "cultist"
                 },
                 {
+                    "name": "Oryx Sanctuary",
+                    "emoji": "oryxThree"
+                },
+                {
                     "name": "The Shatters",
-                    "emoji": "forgottenKing"
+                    "emoji": "forgottenking"
                 },
                 {
                     "name": "Fungal Cavern",
@@ -189,6 +209,18 @@
                 {
                     "name": "The Nest",
                     "emoji": "killerBeeQueen"
+                },
+                {
+                    "name": "Advanced Nest",
+                    "emoji": "advancedNestBee"
+                },
+                {
+                    "name": "Kogbold Steamworks",
+                    "emoji": "SteamworksBoss"
+                },
+                {
+                    "name": "Advanced Kogbold Steamworks",
+                    "emoji": "exaltedAdvancedSteamworks"
                 }
             ]
         },
