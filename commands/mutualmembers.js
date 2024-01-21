@@ -6,14 +6,10 @@ module.exports = {
     alias: ['mm'],
     guildspecific: true,
     role: 'security',
-    args: '<Message ID 1> <Message ID 2> ... <Message ID N>',
+    args: '[<Message ID 1>, <Message ID 2>, (Message ID 3), ...]',
+    requiredArgs: 2,
     async execute(message, args) {
         const targetChannel = message.guild.channels.cache.find(channel => channel.name === 'raidbot-info')
-        const targetChannelID = targetChannel.id
-        // Failure case for argument errors.
-        if (args.length < 2) {
-            return message.reply('Incorrect usage. Please provide at least two Message IDs.')
-        }
 
         // Appends Promises to fetch each message to a list and attempts to resolve.
         const notFoundMessageIDs = []
@@ -31,7 +27,7 @@ module.exports = {
         )
         const fetchedMessages = allMessages.filter(i => i !== null)
         if (notFoundMessageIDs.length > 0) {
-            return message.reply(`Could not find message(s) with message ID(s) \`${notFoundMessageIDs.join(', ')}\` in <#${targetChannelID}>.`)
+            return message.reply(`Could not find message(s) with message ID(s) \`${notFoundMessageIDs.join(', ')}\` in <#${targetChannel.id}>.`)
         }
 
         // Obtains all relevant information from the #raidbot-info embeds for each raid, storing them in lists
@@ -53,7 +49,7 @@ module.exports = {
                 }
                 const raidRLandType = fetchedMessage.embeds[0].author.name
                 const raidTime = fetchedMessage.createdTimestamp
-                const raidLink = `https://discord.com/channels/${guildID}/${targetChannelID}/${fetchedMessage.id}`
+                const raidLink = `https://discord.com/channels/${guildID}/${targetChannel.id}/${fetchedMessage.id}`
                 return [raidTime, raidRLandType, raidLink]
             }
         )
