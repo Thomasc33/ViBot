@@ -6,9 +6,15 @@ const pollInfo = require('../data/poll.json');
 module.exports = {
     name: 'poll',
     description: 'Puts a poll in a raid status channel',
-    args: '<\`c/v\` -or- \`us/eu\` -or- \`r/a\` -or- \`exalts\`> -or- \`fc/n\`',
+    args: '<poll type>',
     requiredArgs: 1,
     role: 'eventrl',
+    getNotes(guild) {
+        if (pollInfo.hasOwnProperty(guild.id)) {
+            return pollInfo[guild.id].map(pollTemplate => `${pollTemplate.name}: \`${pollTemplate.aliases.join('\`, \`')}\``).join('\n')
+        }
+        return 'This server has no poll templates.'
+    },
     async execute(message, args, bot) {
         let settings = bot.settings[message.guild.id]
         if (!settings) return message.channel.send('settings not setup')
@@ -21,7 +27,7 @@ module.exports = {
             for (let i in polls) {
                 let poll = polls[i]
 
-                if (choice.toLowerCase() == poll.name) return poll
+                if (choice.toLowerCase() == poll.name.toLowerCase()) return poll
                 if (poll.aliases.includes(choice.toLowerCase())) return poll
             }
             return false
@@ -31,7 +37,7 @@ module.exports = {
 
         let embedNew = new Discord.EmbedBuilder()
             .setColor('#fefefe')
-            .setTitle(poll.name.charAt(0).toUpperCase() + poll.name.slice(1))
+            .setTitle(poll.name)
             .setDescription(`Please react to one of the below dungeons.\nAlternatively, please react to one of the items displayed below that you are bringing.\n\n${poll.reacts.map(react => `${bot.storedEmojis[react.emoji].text}: ${react.name}`).join('\n')}`)
             .setFooter({ text: `Started by ${message.member.displayName}` })
         let newMessage = await message.channel.send({ embeds: [embedNew] })
