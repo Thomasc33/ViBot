@@ -25,7 +25,7 @@ module.exports = {
         }
         const { fetchedMessages, notFoundMessageIDs } = await fetchMessages(targetChannel, args);
         if (notFoundMessageIDs.length > 0) {
-            return message.reply(`Could not find message(s) with message ID(s) \`${notFoundMessageIDs.join(', ')}\` in <#${targetChannel.id}>.`);
+            return message.reply(`Could not find message(s) with message ID(s) \`${notFoundMessageIDs.join(', ')}\` in ${targetChannel}.`);
         }
 
         // Obtains all relevant information from the #raidbot-info embeds for each raid, storing them in lists
@@ -68,22 +68,25 @@ module.exports = {
 
         const allSuspiciousMembersEmbed = suspiciousMembers.join('\n');
 
+        // Creates variable analysisEmbedFields containing the fields for analysisEmbed.
+        const analysisEmbedFields = [
+            { name: '\u00A0', value: '\u00A0' },
+            { name: 'Raids', value: allRaidsTimesEmbed, inline: true },
+            { name: '\u200B', value: allRaidsDescriptionsEmbed, inline: true },
+            { name: '\u00A0', value: '\u00A0' },
+            { name: 'Suspicious Raiders', value: allSuspiciousMembersEmbed }
+        ];
+
         // Makes and outputs an embed containing all relevant information.
-        const exampleEmbed = new Discord.EmbedBuilder()
+        const analysisEmbed = new Discord.EmbedBuilder()
             .setColor('#63C5DA')
             .setAuthor({ name: `${message.member.displayName}`, iconURL: message.member.user.avatarURL() })
             .setTitle('Mutual Member Analysis')
             .setDescription(`**Runs Analysed**: ${args.length}`)
-            .addFields(
-                { name: '\u00A0', value: '\u00A0' },
-                { name: 'Raids', value: allRaidsTimesEmbed, inline: true },
-                { name: '\u200B', value: allRaidsDescriptionsEmbed, inline: true },
-                { name: '\u00A0', value: '\u00A0' },
-                { name: 'Suspicious Raiders', value: allSuspiciousMembersEmbed }
-            )
+            .addFields(...analysisEmbedFields)
             .setTimestamp()
             .setFooter({ text: `${message.guild.name} • Mutual Member Analysis`, iconURL: message.guild.iconURL() });
 
-        message.reply({ embeds: [exampleEmbed] });
+        message.reply({ embeds: [analysisEmbed] });
     }
 };
