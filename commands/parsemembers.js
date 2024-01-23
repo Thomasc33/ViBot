@@ -35,19 +35,25 @@ module.exports = {
         
         const raidIDs = afkCheck.returnRaidIDsbyAll(bot, message.member.id, null, null);
 
-        if (raidIDs.length == 0) return message.channel.send('Could not find an active run. Please try again.')
-        else if (raidIDs.length == 1) raidID = raidIDs[0] // only option
-        else if (raidIDs.filter(r => bot.afkChecks[r].channel == memberVoiceChannel)) raidID = raidIDs[0] // prioritize vc
-        else if (raidIDs.filter(r => bot.afkChecks[r].members.hasOwnProperty(member.id)).length() == 1) raidID = raidIDs[0] // prioritize the raids they've joined
+        if (raidIDs.length == 0)
+            return message.channel.send('Could not find an active run. Please try again.')
+        else if (raidIDs.length == 1) {
+            raidID = raidIDs[0];
+        }
+        else if (raidIDs.some(r => bot.afkChecks[r].channel != null && bot.afkChecks[r].channel.id == memberVoiceChannel)) // prioritize vc
+            raidID = raidIDs.find(r => bot.afkChecks[r].channel != null && bot.afkChecks[r].channel.id == memberVoiceChannel);
+        else if (raidIDs.filter(r => bot.afkChecks[r].members.hasOwnProperty(message.member.id)).length == 1) { // prioritize the raids they've joined
+            raidID = raidID = raidIDs.find(r => bot.afkChecks[r].members.hasOwnProperty(message.member.id));
+        }  
         else {
             const raidMenu = new Discord.StringSelectMenuBuilder()
                 .setPlaceholder(`Active Runs`)
                 .setMinValues(1)
                 .setMaxValues(1)
-            let text = `Which active run would you like to parse for?`
+            let text = 'Which active run would you like to parse for?'
             let index = 0
             for (let id of raidIDs) {
-                const label = `${bot.afkChecks[id].afkTemplateName} by <@${bot.afkChecks[id].leader?.nickname ?? bot.afkChecks[id].leader?.user?.id}>`
+                const label = `${bot.afkChecks[id].afkTemplateName} by <@${bot.afkChecks[id].leader?.userId}>`
                 text += `\n\`\`${index+1}.\`\` ${label} at <t:${Math.floor(bot.afkChecks[id].time/1000)}:f>`
                 raidMenu.addOptions({ label: `${index+1}. ${label}`, value: id })
                 index++
@@ -59,8 +65,7 @@ module.exports = {
 
         const raid = bot.afkChecks[raidID];
 
-        //RETURN IMAGE PARSING
-
+        // start parse building
         let parseStatusEmbed = new Discord.EmbedBuilder()
             .setColor(`#00ff00`)
             .setTitle('Parse Status')
@@ -68,33 +73,38 @@ module.exports = {
             .addFields([{ name: 'Status', value: 'Gathering image' }])
         let parseStatusMessage = await message.channel.send({ embeds: [parseStatusEmbed] })
         let started = Date.now()
-        // let image;
-        // if (message.attachments.size) image = await message.attachments.first().proxyURL;
-        // else if (args.length) image = args[0]; //added check if args actually exists
-        // if (!image) {
-        //     parseStatusEmbed.setColor('#ff0000')
-        //         .data.fields[1].value = 'Error Getting Image'
-        //     await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
-        //     return;
-        // }
-        // parseStatusEmbed.data.fields[1].value = 'Sending Image to Google'
-        // parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
-        // try {
-        //     const [result] = await client.textDetection(image);
-        //     var imgPlayers = result.fullTextAnnotation;
-        //     imgPlayers = imgPlayers.text.replace(/[\n,]/g, " ").split(/ +/)
-        //     imgPlayers.shift()
-        //     imgPlayers.shift()
-        //     imgPlayers.shift()
-        // } catch (er) {
-        //     parseStatusEmbed.data.fields[1].value = `Error: \`${er.message}\``
-        //     await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
-        //     return;
-        // }
-
-        var imgPlayers = ['Trodaire, Bantering, HeadRaidLeader']; // TODO REMOVE
+        let image;
+        if (message.attachments.size) image = await message.attachments.first().proxyURL;
+        else if (args.length) image = args[0]; //added check if args actually exists
+        if (!image) {
+            parseStatusEmbed.setColor('#ff0000')
+                .data.fields[1].value = 'Error Getting Image'
+            await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
+            return;
+        }
+        parseStatusEmbed.data.fields[1].value = 'Sending Image to Google'
+        parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
+        try {
+            const [result] = await client.textDetection(image);
+            var imgPlayers = result.fullTextAnnotation;
+            imgPlayers = imgPlayers.text.replace(/[\n,]/g, " ").split(/ +/)
+            imgPlayers.shift()
+            imgPlayers.shift()
+            imgPlayers.shift()
+        } catch (er) {
+            parseStatusEmbed.data.fields[1].value = `Error: \`${er.message}\``
+            await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
+            return;
+        }
 
         async function vcCrasherParse() {
+            let raidVc;
+            if (raid.channel != null) {
+                raidVc = bot.channels.resolve(raid.channel.id) // raid.channel may not be an object upon reloading afk after restart, need to confirm
+            } else {
+                return message.reply("Channel not found, please join a vc or specify channel id");
+            }
+
             parseStatusEmbed.data.fields[1].value = 'Processing Data'
             await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
             var raiders = []
@@ -108,7 +118,7 @@ module.exports = {
             var findA = []
             let allowedCrashers = []
             var kickList = '/kick'
-            voiceUsers = memberVoiceChannel.members.map(m => m);
+            voiceUsers = raidVc.members.map(m => m);
             for (let i in raiders) {
                 let player = raiders[i];
                 if (player == '') continue;
@@ -155,7 +165,7 @@ module.exports = {
             if (altsS == ' ') { altsS = 'None' }
             if (movedS == ' ') { movedS = 'None' }
             let embed = new Discord.EmbedBuilder()
-                .setTitle(`Parse for ${memberVoiceChannel.name}`)
+                .setTitle(`Parse for ${raid.leader.displayName}'s ${raid.afkTemplateName}`)
                 .setColor('#00ff00')
                 .setDescription(`There are ${crashers.length} crashers, ${alts.length} potential alts, and ${otherChannel.length} people in other channels`)
                 .addFields({ name: 'Potential Alts', value: altsS }, { name: 'Other Channels', value: movedS }, { name: 'Crashers', value: crashersS }, { name: 'Find Command', value: `\`\`\`${find}\`\`\`` }, { name: 'Kick List', value: `\`\`\`${kickList}\`\`\`` })
@@ -179,18 +189,20 @@ module.exports = {
             }
             var crashers = []
             var findA = []
-            let allowedCrashers = []
             var kickList = '/kick'
             for (let i in raiders) {
                 let player = raiders[i];
-                if (player == '') continue;
+                if (player == '')
+                    continue;
                 let member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(player.toLowerCase()));
                 if (member == null) {
                     crashers.push(player);
                     kickList = kickList.concat(` ${player}`)
                 } else if (!raid.members.includes(member)) {
-                    if (member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.almostrl).position) allowedCrashers.push(member);
+                    if (member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.almostrl).position)
+                        continue;
                     else crashers.unshift(`<@!${member.id}>`);
+
                     kickList = kickList.concat(` ${player}`)
                     findA.push(player)
                 }
@@ -355,7 +367,7 @@ module.exports = {
                     })
                 }
             }
-            //await Promise.all(promises)
+            // await Promise.all(promises)
             let unreachableEmbed = new Discord.EmbedBuilder()
                 .setColor('#00ff00')
                 .setTitle('The following were unreachable')
@@ -369,18 +381,15 @@ module.exports = {
         }
 
         let parsePromises = []
-        if (raid.vcOptions == afkTemplate.TemplateVCOptions.NO_VC) parsePromises.push(noVcCrasherParse());
-        else {
-            if (!memberVoiceChannel) return message.channel.send('Channel not found. Make sure you are in a channel, then try again'); // ensure vc is there, if not, throw error
-
+        if (raid.vcOptions == afkTemplate.TemplateVCOptions.NO_VC)
+            parsePromises.push(noVcCrasherParse());
+        else
             parsePromises.push(vcCrasherParse());
-        }
         if (settings.backend.characterparse) parsePromises.push(characterParse());
-
 
         await Promise.all(parsePromises)
 
-        parseStatusEmbed.data.fields[1].value = `Parse Completed`
+        parseStatusEmbed.data.fields[1].value = 'Parse Completed'
         parseStatusEmbed.setFooter({ text: `Parse took ${(Date.now() - started) / 1000} seconds` })
         await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
 
