@@ -6,6 +6,7 @@ const realmEyeScrape = require('../lib/realmEyeScrape');
 const charStats = require('../data/charStats.json')
 const botSettings = require('../settings.json')
 const ParseCurrentWeek = require('../data/currentweekInfo.json').parsecurrentweek
+const o3ParseCurrentWeek = require('../data/currentweekInfo.json').o3parsecurrentweek
 const quota = require('./quota')
 const quotas = require('../data/quotas.json');
 const { AfkTemplate } = require('./afkTemplate.js');
@@ -384,18 +385,33 @@ module.exports = {
         await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
 
         // log parse quota
-        let currentWeekParseName, parseTotalName;
-        for (let i in ParseCurrentWeek) {
-            i = ParseCurrentWeek[i];
-            if (message.guild.id == i.id && !i.disabled) {
-                currentWeekParseName = i.parsecurrentweek;
-                parseTotalName = i.parsetotal;
+        let currentWeekParseName, parseTotalName, commandName;
+
+        if (parseQuotaValues.hasOwnProperty(message.guild.id) && parseQuotaValues[message.guild.id].includes(raid.afkTemplateName)) {
+            for (let i in o3ParseCurrentWeek) {
+                i = o3ParseCurrentWeek[i];
+                if (message.guild.id == i.id && !i.disabled) {
+                    currentWeekParseName = i.parsecurrentweek;
+                    parseTotalName = i.parsetotal;
+                }
             }
+            commandName = 'o3ParseMembers';
         }
+        else {
+            for (let i in ParseCurrentWeek) {
+                i = ParseCurrentWeek[i];
+                if (message.guild.id == i.id && !i.disabled) {
+                    currentWeekParseName = i.parsecurrentweek;
+                    parseTotalName = i.parsetotal;
+                }
+            }
+            commandName = 'parseMembers';
+        }
+
         if (!currentWeekParseName || !parseTotalName) return;
-        const quotaValue = (parseQuotaValues.hasOwnProperty(message.member.guild.id) && parseQuotaValues[message.member.guild.id].hasOwnProperty(raid.afkTemplateName)) ? parseQuotaValues[message.member.guild.id][raid.afkTemplateName] : 1;
-        db.query('UPDATE users SET ? = ? + ?, ? = ? + ? WHERE id = ?', [parseTotalName, parseTotalName, quotaValue, currentWeekParseName, currentWeekParseName, quotaValue, message.author.id]);
-        db.query('INSERT INTO loggedusage (logged, userid, guildid, utime, amount) values (\'parseMembers\', ?, ?, ?, ?)', [message.author.id, message.guild.id, Date.now(), 1]);
+
+        db.query('UPDATE users SET ' + parseTotalName + ' = ' + parseTotalName + ' + 1, ' + currentWeekParseName + ' = ' + currentWeekParseName + ' + 1 WHERE id = ?', [message.author.id]);
+        db.query('INSERT INTO loggedusage (logged, userid, guildid, utime, amount) values (?, ?, ?, ?, ?)', [commandName, message.author.id, message.guild.id, Date.now(), 1]);
         const guildQuota = quotas[message.guild.id];
         if (!guildQuota) return;
         const parseQuota = guildQuota.quotas.filter(q => q.id == 'security')[0];
