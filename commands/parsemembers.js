@@ -9,6 +9,7 @@ const ParseCurrentWeek = require('../data/currentweekInfo.json').parsecurrentwee
 const quota = require('./quota')
 const quotas = require('../data/quotas.json')
 const client = new vision.ImageAnnotatorClient(botSettings.gcloudOptions);
+const parseQuotaValues = require('../data/parseQuotaValues.json');
 
 
 module.exports = {
@@ -295,22 +296,23 @@ module.exports = {
         parseStatusEmbed.setFooter({ text: `Parse took ${(Date.now() - started) / 1000} seconds` })
         await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
 
-        let currentweekparsename, parsetotalname
+        // log parse quota
+        let currentWeekParseName, parseTotalName;
         for (let i in ParseCurrentWeek) {
             i = ParseCurrentWeek[i];
             if (message.guild.id == i.id && !i.disabled) {
-                currentweekparsename = i.parsecurrentweek;
-                parsetotalname = i.parsetotal
+                currentWeekParseName = i.parsecurrentweek;
+                parseTotalName = i.parsetotal;
             }
         }
-        if (!currentweekparsename || !parsetotalname) return
-        db.query(`UPDATE users SET ${parsetotalname} = ${parsetotalname} + 1, ${currentweekparsename} = ${currentweekparsename} + 1 WHERE id = '${message.author.id}'`)
-        db.query(`INSERT INTO loggedusage (logged, userid, guildid, utime, amount) values ('parseMembers', '${message.author.id}', '${message.guild.id}', '${Date.now()}', 1)`)
+        if (!currentWeekParseName || !parseTotalName) return;
+        const quotaValue = (parseQuotaValues.hasOwnProperty(message.member.guild.id) && parseQuotaValues[message.member.guild.id].hasOwnProperty(raid.afkTemplateName)) ? parseQuotaValues[message.member.guild.id][raid.afkTemplateName] : 1;
+        db.query('UPDATE users SET ? = ? + ?, ? = ? + ? WHERE id = ?', [parseTotalName, parseTotalName, quotaValue, currentWeekParseName, currentWeekParseName, quotaValue, message.author.id]);
+        db.query('INSERT INTO loggedusage (logged, userid, guildid, utime, amount) values (\'parseMembers\', ?, ?, ?, ?)', [message.author.id, message.guild.id, Date.now(), 1]);
         const guildQuota = quotas[message.guild.id];
         if (!guildQuota) return;
-        const parseQuota = guildQuota.quotas.filter(q => q.id == "security")[0]
-        if (parseQuota)
-            quota.update(message.guild, db, bot, settings, guildQuota, parseQuota)
+        const parseQuota = guildQuota.quotas.filter(q => q.id == 'security')[0];
+        if (parseQuota) {quota.update(message.guild, db, bot, settings, guildQuota, parseQuota);}
     }
 }
 
