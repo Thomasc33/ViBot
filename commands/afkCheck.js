@@ -101,6 +101,7 @@ class afkCheck {
     #afkTemplate;
     #message;
     #guild;
+    #vcOptions;
     #channel;
     #leader;
     #raidID;
@@ -114,6 +115,7 @@ class afkCheck {
         this.#db = db // bot database
         this.#message = message // message of the afk
         this.#guild = message.guild // guild of the afk
+        this.#vcOptions = afkTemplate.vcOptions; // vc-type of the afk
         this.#channel = null // channel of the afk
         this.#leader = message.member // leader of the afk
         this.#raidID = null // ID of the afk
@@ -196,6 +198,7 @@ class afkCheck {
                 afkTemplateName: this.#afkTemplate.templateName,
                 message: this.#message,
                 guild: this.#guild,
+                vcOptions: this.#vcOptions,
                 channel: this.#channel,
                 leader: this.#leader,
                 raidID: this.#raidID,
