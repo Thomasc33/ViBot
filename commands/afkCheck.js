@@ -233,6 +233,9 @@ class afkCheck {
     async loadBotAfkCheck(storedAfkCheck) {
         this.#channel = storedAfkCheck.channel ? this.#guild.channels.cache.get(storedAfkCheck.channel.id) : null
         this.#raidID = storedAfkCheck.raidID
+        this.vcOptions = storedAfkCheck.vcOptions
+        this.afkTemplateName = storedAfkCheck.afkTemplateName
+        this.leader = storedAfkCheck.leader
 
         this.members = storedAfkCheck.members
         this.earlyLocationMembers = storedAfkCheck.earlyLocationMembers
