@@ -53,7 +53,8 @@ module.exports = {
             let text = 'Which active run would you like to parse for?'
             let index = 0
             for (let id of raidIDs) {
-                const label = `${bot.afkChecks[id].afkTemplateName} by <@${bot.afkChecks[id].leader?.userId}>`
+                const label = `${bot.afkChecks[id].afkTemplateName} by <@${bot.afkChecks[id].leader?.user?.id ?? bot.afkChecks[id].leader?.userId}>`
+                console.log(bot.afkChecks[id].leader);
                 text += `\n\`\`${index+1}.\`\` ${label} at <t:${Math.floor(bot.afkChecks[id].time/1000)}:f>`
                 raidMenu.addOptions({ label: `${index+1}. ${label}`, value: id })
                 index++
