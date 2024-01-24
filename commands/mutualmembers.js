@@ -12,6 +12,33 @@ async function fetchMessages(targetChannel, messageIDs) {
     return { fetchedMessages, notFoundMessageIDs };
 }
 
+// Define a function that splits up the value inputs to the embed to satisfy Discord.js constraints
+function splitIntoChunks(list, maxLength) {
+    const chunks = [];
+    let currentChunk = [];
+    for (const element of list) {
+        const string = Array.isArray(element) ? element[1] : element;
+        if (currentChunk.join('').length + string.length < maxLength) {
+            currentChunk.push(element);
+        } else {
+            chunks.push([...currentChunk]);
+            currentChunk = [element];
+        }
+    }
+    if (currentChunk.length > 0) {
+        chunks.push(currentChunk);
+    }
+    return chunks;
+}
+
+function destructureChunk(chunk, index) {
+    const embedString = chunk.map(item => {
+        const string = Array.isArray(item) ? item[index] : item;
+        return `${string}`;
+    }).join('\n');
+    return embedString;
+}
+
 module.exports = {
     name: 'mutualmembers',
     description: 'Tells you which raiders appear at least twice in the raids corresponding to the input message IDs from #raidbot-info.',
@@ -28,46 +55,76 @@ module.exports = {
         }
 
         // Obtains all relevant information from the #raidbot-info embeds for each raid, storing them in lists
-        const guildID = message.guild.id;
         const allRaidsRaiders = [];
         const allRaidsInfo = fetchedMessages.map(fetchedMessage => {
             const embed = fetchedMessage.embeds[0];
             const raidersField = embed.fields.find(item => item.name === 'Raiders');
             const raiders = raidersField.value.split(' ').map(raider => raider.split(',')[0]);
+            const raidTimestamp = fetchedMessage.createdTimestamp;
             const raidRLandType = embed.author.name;
-            const raidTime = fetchedMessage.createdTimestamp;
-            const raidLink = `https://discord.com/channels/${guildID}/${targetChannel.id}/${fetchedMessage.id}`;
+            const raidLink = `https://discord.com/channels/${message.guild.id}/${targetChannel.id}/${fetchedMessage.id}`;
             allRaidsRaiders.push(...raiders);
-            return [raidTime, raidRLandType, raidLink];
+            return [raidTimestamp, raidRLandType, raidLink];
         });
 
         // Sort allRaidsInfo chronologically based on raidTime (a[0])
         allRaidsInfo.sort((a, b) => a[0] - b[0]);
 
         // Create strings containing the times and linked raid descriptions
-        const allRaidsTimesEmbed = allRaidsInfo.map(raidInfo => {
+        const allRaidsDescriptions = allRaidsInfo.map(raidInfo => {
             const raidTime = new Date(raidInfo[0]);
-            return `<t:${Math.floor(raidTime.getTime() / 1000)}:f>`;
-        }).join('\n');
-        const allRaidsDescriptionsEmbed = allRaidsInfo.map(raidInfo => `[${raidInfo[1]}](${raidInfo[2]})`).join('\n');
+            const formattedRaidTime = `<t:${Math.floor(raidTime.getTime() / 1000)}:f>`;
+            return [formattedRaidTime, `[${raidInfo[1]}](${raidInfo[2]})`];
+        });
 
-        // Finds all unique raiders and how many times they appear. >=2 means suspicious.
+        // Finds all unique raiders and how many times they appear. >=2 means suspicious
         const uniqueRaiders = allRaidsRaiders.filter((value, index, array) => array.indexOf(value) === index);
         const countRaiders = uniqueRaiders.map(raider => [raider, allRaidsRaiders.filter(r => r === raider).length]);
-        const suspiciousMembers = countRaiders
+        const allSuspiciousMembers = countRaiders
             .filter(([raider, count]) => count >= 2)
             .sort(([raiderA, countA], [raiderB, countB]) => countB - countA)
             .map(([raider, count]) => `${raider} appears ${count} times.`);
 
-        const allSuspiciousMembersEmbed = suspiciousMembers.join('\n');
+        // Splits lists into chunks that are less than 1024 characters long
+        const allRaidDescriptionsChunks = splitIntoChunks(allRaidsDescriptions, 1024);
+        const allSuspiciousMembersChunks = splitIntoChunks(allSuspiciousMembers, 1024);
 
-        // Creates variable analysisEmbedFields containing the fields for analysisEmbed.
+        // Constructs the "Raids" fields for the embed
+        const firstRaidsChunk = allRaidDescriptionsChunks.shift();
+        const raidsDescriptionFields = [
+            { name: 'Raids', value: destructureChunk(firstRaidsChunk, 0), inline: true },
+            { name: '\u200B', value: '\u200B', inline: true },
+            { name: '\u200B', value: destructureChunk(firstRaidsChunk, 1), inline: true }
+        ];
+        raidsDescriptionFields.push(
+            ...allRaidDescriptionsChunks.reduce((acc, raidDescriptionsChunk) =>
+                acc.concat(
+                    { name: '-', value: destructureChunk(raidDescriptionsChunk, 0), inline: true },
+                    { name: '\u200B', value: '\u200B', inline: true },
+                    { name: '\u200B', value: destructureChunk(raidDescriptionsChunk, 1), inline: true }
+                ),
+            []
+            )
+        );
+
+        // Constructs the "Suspicious Raiders" fields for the embed
+        const firstSuspiciousRaidersChunk = allSuspiciousMembersChunks.shift();
+        const suspiciousRaidersFields = [
+            { name: 'Suspicious Raiders', value: destructureChunk(firstSuspiciousRaidersChunk) },
+        ];
+        suspiciousRaidersFields.push(
+            ...allSuspiciousMembersChunks.reduce((acc, suspiciousMembersChunk) =>
+                acc.concat({ name: '-', value: destructureChunk(suspiciousMembersChunk) }),
+            []
+            )
+        );
+
+        // Combining the fields together
         const analysisEmbedFields = [
             { name: '\u00A0', value: '\u00A0' },
-            { name: 'Raids', value: allRaidsTimesEmbed, inline: true },
-            { name: '\u200B', value: allRaidsDescriptionsEmbed, inline: true },
+            ...raidsDescriptionFields,
             { name: '\u00A0', value: '\u00A0' },
-            { name: 'Suspicious Raiders', value: allSuspiciousMembersEmbed }
+            ...suspiciousRaidersFields
         ];
 
         // Makes and outputs an embed containing all relevant information.
