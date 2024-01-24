@@ -12,11 +12,12 @@ async function fetchMessages(targetChannel, messageIDs) {
     return { fetchedMessages, notFoundMessageIDs };
 }
 
-// Define a function that splits up the value inputs to the embed to satisfy Discord.js constraints
+// Splits up the value inputs to the embed to satisfy Discord.js constraints
 function splitIntoChunks(list, maxLength) {
     const chunks = [];
     let currentChunk = [];
     for (const element of list) {
+        // Agnosticism w.r.t. list of two-membered list (allRaidsDescriptions) or list of strings (allSuspiciousRaiders)
         const string = Array.isArray(element) ? element[1] : element;
         if (currentChunk.join('').length + string.length < maxLength) {
             currentChunk.push(element);
@@ -31,6 +32,7 @@ function splitIntoChunks(list, maxLength) {
     return chunks;
 }
 
+// Obtains key information, selected for by index if applicable, from a chunk
 function destructureChunk(chunk, index) {
     const embedString = chunk.map(item => {
         const string = Array.isArray(item) ? item[index] : item;
@@ -80,14 +82,14 @@ module.exports = {
         // Finds all unique raiders and how many times they appear. >=2 means suspicious
         const uniqueRaiders = allRaidsRaiders.filter((value, index, array) => array.indexOf(value) === index);
         const countRaiders = uniqueRaiders.map(raider => [raider, allRaidsRaiders.filter(r => r === raider).length]);
-        const allSuspiciousMembers = countRaiders
+        const allSuspiciousRaiders = countRaiders
             .filter(([raider, count]) => count >= 2)
             .sort(([raiderA, countA], [raiderB, countB]) => countB - countA)
             .map(([raider, count]) => `${raider} appears ${count} times.`);
 
         // Splits lists into chunks that are less than 1024 characters long
         const allRaidDescriptionsChunks = splitIntoChunks(allRaidsDescriptions, 1024);
-        const allSuspiciousMembersChunks = splitIntoChunks(allSuspiciousMembers, 1024);
+        const allSuspiciousRaidersChunks = splitIntoChunks(allSuspiciousRaiders, 1024);
 
         // Constructs the "Raids" fields for the embed
         const firstRaidsChunk = allRaidDescriptionsChunks.shift();
@@ -108,13 +110,13 @@ module.exports = {
         );
 
         // Constructs the "Suspicious Raiders" fields for the embed
-        const firstSuspiciousRaidersChunk = allSuspiciousMembersChunks.shift();
+        const firstSuspiciousRaidersChunk = allSuspiciousRaidersChunks.shift();
         const suspiciousRaidersFields = [
             { name: 'Suspicious Raiders', value: destructureChunk(firstSuspiciousRaidersChunk) },
         ];
         suspiciousRaidersFields.push(
-            ...allSuspiciousMembersChunks.reduce((acc, suspiciousMembersChunk) =>
-                acc.concat({ name: '-', value: destructureChunk(suspiciousMembersChunk) }),
+            ...allSuspiciousRaidersChunks.reduce((acc, suspiciousRaidersChunk) =>
+                acc.concat({ name: '-', value: destructureChunk(suspiciousRaidersChunk) }),
             []
             )
         );
