@@ -70,7 +70,7 @@ module.exports = {
             }
             if (interaction.customId == 'reset') {
                 puzzle = [[false, false, false], [false, false, false], [false, false, false]];
-                buttons.forEach(button => button.setStyle(4).setLabel('R'));
+                buttons.forEach(button => button.setStyle(4).setLabel('🟥'));
                 return interaction.update({ components: actionRows });
             }
             const move = parseInt(interaction.customId);
