@@ -1419,7 +1419,10 @@ class afkCheck {
         ])
 
         if (this.#channel) this.#channel.members.forEach(m => this.members.push(m.id))
-        else this.earlySlotMembers.forEach(id => this.members.push(id))
+        this.earlySlotMembers.forEach(id => this.members.push(id))
+        this.members.push(this.#leader.id)
+        this.members = [...new Set(this.members)];
+
 
         if (this.#channel && this.#botSettings.backend.giveLocationToEarlyVConStart){
             const lateLocationMembers = this.earlySlotMembers.filter(u => !this.earlyLocationMembers.includes(u))
@@ -1479,6 +1482,8 @@ class afkCheck {
 
     async loggingAfk() {
         let members = this.#channel && this.#channel.members.size != 0 ? this.#channel.members.map(m => m.id) : this.earlySlotMembers
+        members.push(this.#leader.id);
+        members = [...new Set(members)];
         if (members.length > 0) {
             await this.#db.promise().query('INSERT INTO completionruns (??) VALUES ?', [
                                       ['userid', 'guildid',      'unixtimestamp', 'amount', 'templateid',                 'raidid',     'parenttemplateid'],
