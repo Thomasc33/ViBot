@@ -101,7 +101,7 @@ module.exports = {
         raidsDescriptionFields.push(
             ...allRaidDescriptionsChunks.reduce((acc, raidDescriptionsChunk) =>
                 acc.concat(
-                    { name: '-', value: destructureChunk(raidDescriptionsChunk, 0), inline: true },
+                    { name: '\u200B', value: destructureChunk(raidDescriptionsChunk, 0), inline: true },
                     { name: '\u200B', value: '\u200B', inline: true },
                     { name: '\u200B', value: destructureChunk(raidDescriptionsChunk, 1), inline: true }
                 ),
@@ -116,7 +116,7 @@ module.exports = {
         ];
         suspiciousRaidersFields.push(
             ...allSuspiciousRaidersChunks.reduce((acc, suspiciousRaidersChunk) =>
-                acc.concat({ name: '-', value: destructureChunk(suspiciousRaidersChunk) }),
+                acc.concat({ name: '\u200B', value: destructureChunk(suspiciousRaidersChunk) }),
             []
             )
         );
