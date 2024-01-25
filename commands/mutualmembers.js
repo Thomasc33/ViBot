@@ -58,29 +58,25 @@ module.exports = {
 
         // Obtains all relevant information from the #raidbot-info embeds for each raid, storing them in lists
         const allRaidsRaiders = [];
-        const allRaidsInfo = fetchedMessages.map(fetchedMessage => {
-            const embed = fetchedMessage.embeds[0];
-            const raidersField = embed.fields.find(item => item.name === 'Raiders');
-            const raiders = raidersField.value.split(' ').map(raider => raider.split(',')[0]);
-            const raidTimestamp = fetchedMessage.createdTimestamp;
-            const raidRLandType = embed.author.name;
-            const raidLink = `https://discord.com/channels/${message.guild.id}/${targetChannel.id}/${fetchedMessage.id}`;
-            allRaidsRaiders.push(...raiders);
-            return [raidTimestamp, raidRLandType, raidLink];
-        });
-
-        // Sort allRaidsInfo chronologically based on raidTime (a[0])
-        allRaidsInfo.sort((a, b) => a[0] - b[0]);
-
-        // Create strings containing the times and linked raid descriptions
-        const allRaidsDescriptions = allRaidsInfo.map(raidInfo => {
-            const raidTime = new Date(raidInfo[0]);
-            const formattedRaidTime = `<t:${Math.floor(raidTime.getTime() / 1000)}:f>`;
-            return [formattedRaidTime, `[${raidInfo[1]}](${raidInfo[2]})`];
-        });
+        const allRaidsDescriptions = fetchedMessages
+            .map(fetchedMessage => {
+                const embed = fetchedMessage.embeds[0];
+                const raidersField = embed.fields.find(item => item.name === 'Raiders');
+                const raiders = raidersField.value.split(' ').map(raider => raider.split(',')[0]);
+                const raidTimestamp = fetchedMessage.createdTimestamp;
+                const raidRLandType = embed.author.name;
+                const raidLink = `https://discord.com/channels/${message.guild.id}/${targetChannel.id}/${fetchedMessage.id}`;
+                allRaidsRaiders.push(...raiders);
+                return [raidTimestamp, raidRLandType, raidLink];
+            })
+            .sort((a, b) => a[0] - b[0])
+            .map((raidInfo) => {
+                const raidTime = new Date(raidInfo[0]);
+                const formattedRaidTime = `<t:${Math.floor(raidTime.getTime() / 1000)}:f>`;
+                return [formattedRaidTime, `[${raidInfo[1]}](${raidInfo[2]})`];
+            });
 
         // Finds all unique raiders and how many times they appear. >=2 means suspicious
-        // const uniqueRaiders = allRaidsRaiders.filter((value, index, array) => array.indexOf(value) === index);
         const uniqueRaiders = [...new Set(allRaidsRaiders)];
         const countRaiders = uniqueRaiders.map(raider => [raider, allRaidsRaiders.filter(r => r === raider).length]);
         const allSuspiciousRaiders = countRaiders
