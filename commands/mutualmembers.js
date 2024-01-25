@@ -7,8 +7,8 @@ async function fetchMessages(targetChannel, messageIDs) {
     const fetchingResults = await Promise.all(fetchedMessagePromises);
     const fetchedMessages = fetchingResults.filter(message => message !== null);
     const notFoundMessageIDs = fetchingResults
-        .map((result, index) => (result === null ? messageIDs[index] : null))
-        .filter(messageID => messageID !== null);
+        .filter(messageID => messageID === null)
+        .map((result, index) => messageIDs[index]);
     return { fetchedMessages, notFoundMessageIDs };
 }
 
@@ -80,7 +80,8 @@ module.exports = {
         });
 
         // Finds all unique raiders and how many times they appear. >=2 means suspicious
-        const uniqueRaiders = allRaidsRaiders.filter((value, index, array) => array.indexOf(value) === index);
+        // const uniqueRaiders = allRaidsRaiders.filter((value, index, array) => array.indexOf(value) === index);
+        const uniqueRaiders = [...new Set(allRaidsRaiders)];
         const countRaiders = uniqueRaiders.map(raider => [raider, allRaidsRaiders.filter(r => r === raider).length]);
         const allSuspiciousRaiders = countRaiders
             .filter(([raider, count]) => count >= 2)
