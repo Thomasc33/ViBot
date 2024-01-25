@@ -97,14 +97,15 @@
         },
         {
             "id": "708026927721480254",
-            "parsecurrentweek": "o3currentweekparses",
-            "parsetotal": "o3parses"
+            "disabled": true,
+            "parsecurrentweek": "",
+            "parsetotal": ""
         },
         {
             "id": "451171819672698920",
-            "disabled": false,
-            "parsecurrentweek": "o3currentweekparses",
-            "parsetotal": "o3parses"
+            "disabled": true,
+            "parsecurrentweek": "",
+            "parsetotal": ""
         },
         {
             "id": "697216053914370158",

@@ -5,11 +5,9 @@ const vision = require('@google-cloud/vision');
 const realmEyeScrape = require('../lib/realmEyeScrape');
 const charStats = require('../data/charStats.json')
 const botSettings = require('../settings.json')
-const ParseCurrentWeek = require('../data/currentweekInfo.json').parsecurrentweek
-const o3ParseCurrentWeek = require('../data/currentweekInfo.json').o3parsecurrentweek
+const ParseCurrentWeek = require('../data/currentweekInfo.json')
 const quota = require('./quota')
 const quotas = require('../data/quotas.json');
-const { AfkTemplate } = require('./afkTemplate.js');
 const afkTemplate = require('./afkTemplate.js');
 const client = new vision.ImageAnnotatorClient(botSettings.gcloudOptions);
 const parseQuotaValues = require('../data/parseQuotaValues.json');
@@ -31,9 +29,9 @@ module.exports = {
         let memberVoiceChannel = message.member.voice.channel
 
         if (args.length && /^\d+$/.test(args[0])) //add ability to parse from a different channel with ;pm channelid <image>
-            memberVoiceChannel = bot.channels.resolve(args.shift());
+            memberVoiceChannel = await bot.channels.fetch(args.shift());
         
-        const raidIDs = afkCheck.returnRaidIDsbyAll(bot, message.member.id, null, null);
+        const raidIDs = afkCheck.returnActiveRaidIDs(bot).filter(r => bot.afkChecks[r].guild.id == message.guild.id);
 
         if (raidIDs.length == 0)
             return message.channel.send('Could not find an active run. Please try again.')
@@ -53,10 +51,9 @@ module.exports = {
             let text = 'Which active run would you like to parse for?'
             let index = 0
             for (let id of raidIDs) {
-                const label = `${bot.afkChecks[id].afkTemplateName} by <@${bot.afkChecks[id].leader?.user?.id ?? bot.afkChecks[id].leader?.userId}>`
-                console.log(bot.afkChecks[id].leader);
+                const label = `${bot.afkChecks[id].afkTemplateName} by <@${bot.afkChecks[id].leader?.user?.id ?? bot.afkChecks[id].leader?.userId}>` // BUG this shows up undefined upon restart sometimes
                 text += `\n\`\`${index+1}.\`\` ${label} at <t:${Math.floor(bot.afkChecks[id].time/1000)}:f>`
-                raidMenu.addOptions({ label: `${index+1}. ${label}`, value: id })
+                raidMenu.addOptions({ label: `${index+1}. ${bot.afkChecks[id].afkTemplateName} by ${bot.afkChecks[id].leader?.nickname}`, value: id })
                 index++
             }
             const { value: id } = await message.selectPanel(text, null, raidMenu, 30000, false, true)
@@ -101,35 +98,33 @@ module.exports = {
         async function vcCrasherParse() {
             let raidVc;
             if (raid.channel != null) {
-                raidVc = bot.channels.resolve(raid.channel.id) // raid.channel may not be an object upon reloading afk after restart, need to confirm
+                raidVc = await bot.channels.fetch(raid.channel.id)
             } else {
                 return message.reply("Channel not found, please join a vc or specify channel id");
             }
 
             parseStatusEmbed.data.fields[1].value = 'Processing Data'
             await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
-            var raiders = []
-            for (let i in imgPlayers) {
-                raiders.push(imgPlayers[i].toLowerCase())
-            }
-            var voiceUsers = []
-            var alts = []
-            var crashers = []
-            var otherChannel = []
-            var findA = []
+            let raiders = imgPlayers.map(imgPlayer => imgPlayer.toLowerCase());
+            let voiceUsers = []
+            let alts = []
+            let crashers = []
+            let otherChannel = []
+            let findA = []
             let allowedCrashers = []
-            var kickList = '/kick'
+            let kickList = '/kick'
+            let raidMembers = raid.members;
+
+            raid.earlySlotMembers.forEach(m => raidMembers.push(m));
             voiceUsers = raidVc.members.map(m => m);
-            for (let i in raiders) {
-                let player = raiders[i];
-                if (player == '') continue;
-                let member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(player.toLowerCase()));
+            for (let player of raiders) {
+                let member = message.guild.findMember(player);
                 if (member == null) {
                     crashers.push(player);
                     kickList = kickList.concat(` ${player}`)
                 } else if (!voiceUsers.includes(member)) {
                     if (member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.almostrl).position) continue;
-                    if (raid.members.includes(member.id)) allowedCrashers.push(member)
+                    if (raidMembers.includes(member.id)) allowedCrashers.push(member)
                     if (member.voice.channel) otherChannel.push(`${member}: ${member.voice.channel}`);
                     else crashers.unshift(`<@!${member.id}>`);
                     kickList = kickList.concat(` ${player}`)
@@ -154,7 +149,7 @@ module.exports = {
             crashers = filterNames(crashers, matchedCrashers);
             alts = filterNames(alts, matchedCrashers);
 
-            var crashersS = ' ',
+            let crashersS = ' ',
                 altsS = ' ',
                 movedS = ' ',
                 find = `;find `
@@ -184,22 +179,16 @@ module.exports = {
         async function noVcCrasherParse() {
             parseStatusEmbed.data.fields[1].value = 'Processing Data'
             await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
-            var raiders = []
-            for (let i in imgPlayers) {
-                raiders.push(imgPlayers[i].toLowerCase())
-            }
-            var crashers = []
-            var findA = []
-            var kickList = '/kick'
-            for (let i in raiders) {
-                let player = raiders[i];
-                if (player == '')
-                    continue;
-                let member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(player.toLowerCase()));
+            let raiders = imgPlayers.map(imgPlayer => imgPlayer.toLowerCase());
+            let crashers = []
+            let findA = []
+            let kickList = '/kick'
+            for (let player of raiders) {
+                let member = message.guild.findMember(player);
                 if (member == null) {
                     crashers.push(player);
                     kickList = kickList.concat(` ${player}`)
-                } else if (!raid.members.includes(member)) {
+                } else if (!raid.members.includes(member.id)) {
                     if (member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.almostrl).position)
                         continue;
                     else crashers.unshift(`<@!${member.id}>`);
@@ -216,10 +205,10 @@ module.exports = {
             // Remove the names that were matched
             crashers = filterNames(crashers, matchedCrashers);
 
-            var crashersS = ' ',
-                find = `;find `
-            for (let i in crashers) { crashersS = crashersS.concat(crashers[i]) + ', ' }
-            for (let i in findA) { find = find.concat(findA[i]) + ' ' }
+            let crashersS = ' ';
+            let find = `;find `;
+            crashersS += crashers.join(', ');
+            find += findA.join(' ');
             if (crashersS == ' ') { crashersS = 'None' }
             let embed = new Discord.EmbedBuilder()
                 .setTitle(`Parse for ${raid.leader.displayName}'s ${raid.afkTemplateName}`)
@@ -398,8 +387,8 @@ module.exports = {
         let currentWeekParseName, parseTotalName, commandName;
 
         if (parseQuotaValues.hasOwnProperty(message.guild.id) && parseQuotaValues[message.guild.id].includes(raid.afkTemplateName)) {
-            for (let i in o3ParseCurrentWeek) {
-                i = o3ParseCurrentWeek[i];
+            for (let i in ParseCurrentWeek.o3parsecurrentweek) {
+                i = ParseCurrentWeek.o3parsecurrentweek[i];
                 if (message.guild.id == i.id && !i.disabled) {
                     currentWeekParseName = i.parsecurrentweek;
                     parseTotalName = i.parsetotal;
@@ -408,8 +397,8 @@ module.exports = {
             commandName = 'o3ParseMembers';
         }
         else {
-            for (let i in ParseCurrentWeek) {
-                i = ParseCurrentWeek[i];
+            for (let i in ParseCurrentWeek.parsecurrentweek) {
+                i = ParseCurrentWeek.parsecurrentweek[i];
                 if (message.guild.id == i.id && !i.disabled) {
                     currentWeekParseName = i.parsecurrentweek;
                     parseTotalName = i.parsetotal;
@@ -420,7 +409,7 @@ module.exports = {
 
         if (!currentWeekParseName || !parseTotalName) return;
 
-        db.query('UPDATE users SET ' + parseTotalName + ' = ' + parseTotalName + ' + 1, ' + currentWeekParseName + ' = ' + currentWeekParseName + ' + 1 WHERE id = ?', [message.author.id]);
+        db.query('UPDATE users SET ?? = ?? + 1, ?? = ?? + 1 WHERE id = ?', [parseTotalName, parseTotalName, currentWeekParseName, currentWeekParseName, message.author.id]);
         db.query('INSERT INTO loggedusage (logged, userid, guildid, utime, amount) values (?, ?, ?, ?, ?)', [commandName, message.author.id, message.guild.id, Date.now(), 1]);
         const guildQuota = quotas[message.guild.id];
         if (!guildQuota) return;

@@ -161,7 +161,7 @@
                 "pastweeks": "pastparseweeks",
                 "values": [
                     { "column": "currentweekparses", "emoji": ":mag:", "name": "Parses", "value": 1 },
-                    { "column": "o3currentweekparses", "name": "O3 Parses", "value": 1.5 }
+                    { "column": "o3currentweekparses", "emoji": "<:oryxThree:831047591096745984>", "name": "O3 Parses", "value": 1.5 }
                 ]
             },
             {

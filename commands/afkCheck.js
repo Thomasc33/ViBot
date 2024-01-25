@@ -101,7 +101,6 @@ class afkCheck {
     #afkTemplate;
     #message;
     #guild;
-    #vcOptions;
     #channel;
     #leader;
     #raidID;
@@ -115,7 +114,6 @@ class afkCheck {
         this.#db = db // bot database
         this.#message = message // message of the afk
         this.#guild = message.guild // guild of the afk
-        this.#vcOptions = afkTemplate.vcOptions; // vc-type of the afk
         this.#channel = null // channel of the afk
         this.#leader = message.member // leader of the afk
         this.#raidID = null // ID of the afk
@@ -196,9 +194,9 @@ class afkCheck {
         else {
             this.#bot.afkChecks[this.#raidID] = {
                 afkTemplateName: this.#afkTemplate.templateName,
+                vcOptions: this.#afkTemplate.vcOptions,
                 message: this.#message,
                 guild: this.#guild,
-                vcOptions: this.#vcOptions,
                 channel: this.#channel,
                 leader: this.#leader,
                 raidID: this.#raidID,
@@ -233,9 +231,6 @@ class afkCheck {
     async loadBotAfkCheck(storedAfkCheck) {
         this.#channel = storedAfkCheck.channel ? this.#guild.channels.cache.get(storedAfkCheck.channel.id) : null
         this.#raidID = storedAfkCheck.raidID
-        this.vcOptions = storedAfkCheck.vcOptions
-        this.afkTemplateName = storedAfkCheck.afkTemplateName
-        this.leader = storedAfkCheck.leader
 
         this.members = storedAfkCheck.members
         this.earlyLocationMembers = storedAfkCheck.earlyLocationMembers
