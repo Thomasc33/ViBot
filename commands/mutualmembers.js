@@ -7,9 +7,27 @@ async function fetchMessages(targetChannel, messageIDs) {
     const fetchingResults = await Promise.all(fetchedMessagePromises);
     const fetchedMessages = fetchingResults.filter(message => message !== null);
     const notFoundMessageIDs = fetchingResults
-        .map((result, index) => (result === null ? messageIDs[index] : null))
-        .filter(messageID => messageID !== null);
+        .filter(messageID => messageID === null)
+        .map((result, index) => messageIDs[index]);
     return { fetchedMessages, notFoundMessageIDs };
+}
+
+// Splits up the value inputs to the embed to satisfy Discord.js constraints
+function splitIntoChunks(list, maxLength) {
+    const chunks = [];
+    let currentChunk = [];
+    for (const string of list) {
+        if (currentChunk.join('').length + string.length < maxLength) {
+            currentChunk.push(string);
+        } else {
+            chunks.push([...currentChunk]);
+            currentChunk = [string];
+        }
+    }
+    if (currentChunk.length > 0) {
+        chunks.push(currentChunk);
+    }
+    return chunks;
 }
 
 module.exports = {
@@ -28,58 +46,89 @@ module.exports = {
         }
 
         // Obtains all relevant information from the #raidbot-info embeds for each raid, storing them in lists
-        const guildID = message.guild.id;
         const allRaidsRaiders = [];
-        const allRaidsInfo = fetchedMessages.map(fetchedMessage => {
-            const embed = fetchedMessage.embeds[0];
-            const raidersField = embed.fields.find(item => item.name === 'Raiders');
-            const raiders = raidersField.value.split(' ').map(raider => raider.split(',')[0]);
-            const raidRLandType = embed.author.name;
-            const raidTime = fetchedMessage.createdTimestamp;
-            const raidLink = `https://discord.com/channels/${guildID}/${targetChannel.id}/${fetchedMessage.id}`;
-            allRaidsRaiders.push(...raiders);
-            return [raidTime, raidRLandType, raidLink];
-        });
+        const allRaidsInfo = fetchedMessages
+            .map(fetchedMessage => {
+                const embed = fetchedMessage.embeds[0];
+                const raidersField = embed.fields.find(item => item.name === 'Raiders');
+                const raiders = raidersField.value.split(' ').map(raider => raider.split(',')[0]);
+                allRaidsRaiders.push(...raiders);
+                const raidRLandType = embed.author.name;
+                const raidLink = `https://discord.com/channels/${message.guild.id}/${targetChannel.id}/${fetchedMessage.id}`;
+                const raidTime = new Date(fetchedMessage.createdTimestamp);
+                const formattedRaidTime = `<t:${Math.floor(raidTime.getTime() / 1000)}:f>`;
+                return [formattedRaidTime, `[${raidRLandType}](${raidLink})`];
+            })
+            .sort((a, b) => {
+                const numericPartA = parseInt(a[0].substring(a[0].indexOf('t:') + 2, a[0].indexOf(':f')));
+                const numericPartB = parseInt(b[0].substring(b[0].indexOf('t:') + 2, b[0].indexOf(':f')));
+                return numericPartA - numericPartB;
+            });
+        const allRaidsTimes = allRaidsInfo.map(raidInfo => raidInfo[0]);
+        const allRaidsDescriptions = allRaidsInfo.map(raidInfo => raidInfo[1]);
 
-        // Sort allRaidsInfo chronologically based on raidTime (a[0])
-        allRaidsInfo.sort((a, b) => a[0] - b[0]);
-
-        // Create strings containing the times and linked raid descriptions
-        const allRaidsTimesEmbed = allRaidsInfo.map(raidInfo => {
-            const raidTime = new Date(raidInfo[0]);
-            return `<t:${Math.floor(raidTime.getTime() / 1000)}:f>`;
-        }).join('\n');
-        const allRaidsDescriptionsEmbed = allRaidsInfo.map(raidInfo => `[${raidInfo[1]}](${raidInfo[2]})`).join('\n');
-
-        // Finds all unique raiders and how many times they appear. >=2 means suspicious.
-        const uniqueRaiders = allRaidsRaiders.filter((value, index, array) => array.indexOf(value) === index);
+        // Finds all unique raiders and how many times they appear. >=2 means suspicious
+        const uniqueRaiders = [...new Set(allRaidsRaiders)];
         const countRaiders = uniqueRaiders.map(raider => [raider, allRaidsRaiders.filter(r => r === raider).length]);
-        const suspiciousMembers = countRaiders
+        const allSuspiciousRaiders = countRaiders
             .filter(([raider, count]) => count >= 2)
             .sort(([raiderA, countA], [raiderB, countB]) => countB - countA)
             .map(([raider, count]) => `${raider} appears ${count} times.`);
 
-        const allSuspiciousMembersEmbed = suspiciousMembers.join('\n');
+        // Splits lists into chunks that are less than 1024 characters long
+        const allRaidsDescriptionsChunks = splitIntoChunks(allRaidsDescriptions, 1024);
+        const allSuspiciousRaidersChunks = splitIntoChunks(allSuspiciousRaiders, 1024);
 
-        // Creates variable analysisEmbedFields containing the fields for analysisEmbed.
+        // Dividing allRaidsTime into the same size chunks as allRaidDescriptionsChunks. Assumes character count of times always shorter than character count of description.
+        const allRaidsTimesChunks = allRaidsDescriptionsChunks.map(chunk =>
+            allRaidsTimes.splice(0, chunk.length)
+        );
+
+        // Constructs the "Raids" fields for the embed
+        let raidsDescriptionFields = [];
+        for (let i = 0; i < allRaidsDescriptionsChunks.length; i++) {
+            raidsDescriptionFields = raidsDescriptionFields.concat(
+                { name: '\u200B', value: allRaidsTimesChunks[i].join('\n'), inline: true },
+                { name: '\u200B', value: '\u200B', inline: true },
+                { name: '\u200B', value: allRaidsDescriptionsChunks[i].join('\n'), inline: true }
+            );
+        }
+        raidsDescriptionFields[0].name = 'Raids';
+
+        // Constructs the "Suspicious Raiders" fields for the embed
+        const suspiciousRaidersFields = allSuspiciousRaidersChunks.map(chunk => ({ name: '\u200B', value: chunk.join('\n') }));
+        suspiciousRaidersFields[0].name = 'Suspicious Raiders';
+
+        // Combining the fields together
         const analysisEmbedFields = [
             { name: '\u00A0', value: '\u00A0' },
-            { name: 'Raids', value: allRaidsTimesEmbed, inline: true },
-            { name: '\u200B', value: allRaidsDescriptionsEmbed, inline: true },
+            ...raidsDescriptionFields,
             { name: '\u00A0', value: '\u00A0' },
-            { name: 'Suspicious Raiders', value: allSuspiciousMembersEmbed }
+            ...suspiciousRaidersFields
         ];
-
+        if (analysisEmbedFields.length > 25) {
+            return message.reply('The analysis result has too many fields to display. Remove a few input IDs and try again.');
+        }
         // Makes and outputs an embed containing all relevant information.
-        const analysisEmbed = new Discord.EmbedBuilder()
-            .setColor('#63C5DA')
-            .setAuthor({ name: `${message.member.displayName}`, iconURL: message.member.user.avatarURL() })
-            .setTitle('Mutual Member Analysis')
-            .setDescription(`**Runs Analysed**: ${args.length}`)
-            .addFields(...analysisEmbedFields)
-            .setTimestamp()
-            .setFooter({ text: `${message.guild.name} • Mutual Member Analysis`, iconURL: message.guild.iconURL() });
+        try {
+            const analysisEmbed = new Discord.EmbedBuilder()
+                .setColor('#63C5DA')
+                .setAuthor({ name: `${message.member.displayName}`, iconURL: message.member.user.avatarURL() })
+                .setTitle('Mutual Member Analysis')
+                .setDescription(`**Runs Analysed**: ${args.length}`)
+                .addFields(...analysisEmbedFields)
+                .setTimestamp()
+                .setFooter({ text: `${message.guild.name} • Mutual Member Analysis`, iconURL: message.guild.iconURL() });
 
-        message.reply({ embeds: [analysisEmbed] });
+            const analysisEmbedJSON = JSON.stringify(analysisEmbed);
+            // Check the total character length of the JSON string before sending
+            if (analysisEmbedJSON.length > 6000) {
+                return message.reply('The analysis result is too long to display.');
+            }
+            message.reply({ embeds: [analysisEmbed] });
+        } catch (error) {
+            console.error('Error creating embed:', error);
+            message.reply('An unknown error occurred while creating the analysis embed.');
+        }
     }
 };
