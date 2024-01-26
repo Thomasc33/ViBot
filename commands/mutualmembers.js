@@ -16,29 +16,18 @@ async function fetchMessages(targetChannel, messageIDs) {
 function splitIntoChunks(list, maxLength) {
     const chunks = [];
     let currentChunk = [];
-    for (const element of list) {
-        // Agnosticism w.r.t. list of two-membered list (allRaidsDescriptions) or list of strings (allSuspiciousRaiders)
-        const string = Array.isArray(element) ? element[1] : element;
+    for (const string of list) {
         if (currentChunk.join('').length + string.length < maxLength) {
-            currentChunk.push(element);
+            currentChunk.push(string);
         } else {
             chunks.push([...currentChunk]);
-            currentChunk = [element];
+            currentChunk = [string];
         }
     }
     if (currentChunk.length > 0) {
         chunks.push(currentChunk);
     }
     return chunks;
-}
-
-// Obtains key information, selected for by index if applicable, from a chunk
-function destructureChunk(chunk, index) {
-    const embedString = chunk.map(item => {
-        const string = Array.isArray(item) ? item[index] : item;
-        return `${string}`;
-    }).join('\n');
-    return embedString;
 }
 
 module.exports = {
@@ -58,7 +47,7 @@ module.exports = {
 
         // Obtains all relevant information from the #raidbot-info embeds for each raid, storing them in lists
         const allRaidsRaiders = [];
-        const allRaidsDescriptions = fetchedMessages
+        const allRaidsInfo = fetchedMessages
             .map(fetchedMessage => {
                 const embed = fetchedMessage.embeds[0];
                 const raidersField = embed.fields.find(item => item.name === 'Raiders');
@@ -75,6 +64,8 @@ module.exports = {
                 const formattedRaidTime = `<t:${Math.floor(raidTime.getTime() / 1000)}:f>`;
                 return [formattedRaidTime, `[${raidInfo[1]}](${raidInfo[2]})`];
             });
+        const allRaidsTimes = allRaidsInfo.map(raidInfo => raidInfo[0]);
+        const allRaidsDescriptions = allRaidsInfo.map(raidInfo => raidInfo[1]);
 
         // Finds all unique raiders and how many times they appear. >=2 means suspicious
         const uniqueRaiders = [...new Set(allRaidsRaiders)];
@@ -85,38 +76,28 @@ module.exports = {
             .map(([raider, count]) => `${raider} appears ${count} times.`);
 
         // Splits lists into chunks that are less than 1024 characters long
-        const allRaidDescriptionsChunks = splitIntoChunks(allRaidsDescriptions, 1024);
+        const allRaidsDescriptionsChunks = splitIntoChunks(allRaidsDescriptions, 1024);
         const allSuspiciousRaidersChunks = splitIntoChunks(allSuspiciousRaiders, 1024);
 
-        // Constructs the "Raids" fields for the embed
-        const firstRaidsChunk = allRaidDescriptionsChunks.shift();
-        const raidsDescriptionFields = [
-            { name: 'Raids', value: destructureChunk(firstRaidsChunk, 0), inline: true },
-            { name: '\u200B', value: '\u200B', inline: true },
-            { name: '\u200B', value: destructureChunk(firstRaidsChunk, 1), inline: true }
-        ];
-        raidsDescriptionFields.push(
-            ...allRaidDescriptionsChunks.reduce((acc, raidDescriptionsChunk) =>
-                acc.concat(
-                    { name: '\u200B', value: destructureChunk(raidDescriptionsChunk, 0), inline: true },
-                    { name: '\u200B', value: '\u200B', inline: true },
-                    { name: '\u200B', value: destructureChunk(raidDescriptionsChunk, 1), inline: true }
-                ),
-            []
-            )
+        // Dividing allRaidsTime into the same size chunks as allRaidDescriptionsChunks
+        const allRaidsTimesChunks = allRaidsDescriptionsChunks.map(chunk =>
+            allRaidsTimes.splice(0, chunk.length)
         );
 
+        // Constructs the "Raids" fields for the embed
+        let raidsDescriptionFields = [];
+        for (let i = 0; i < allRaidsDescriptionsChunks.length; i++) {
+            raidsDescriptionFields = raidsDescriptionFields.concat(
+                { name: '\u200B', value: allRaidsTimesChunks[i].join('\n'), inline: true },
+                { name: '\u200B', value: '\u200B', inline: true },
+                { name: '\u200B', value: allRaidsDescriptionsChunks[i].join('\n'), inline: true }
+            );
+        }
+        raidsDescriptionFields[0].name = 'Raids';
+
         // Constructs the "Suspicious Raiders" fields for the embed
-        const firstSuspiciousRaidersChunk = allSuspiciousRaidersChunks.shift();
-        const suspiciousRaidersFields = [
-            { name: 'Suspicious Raiders', value: destructureChunk(firstSuspiciousRaidersChunk) },
-        ];
-        suspiciousRaidersFields.push(
-            ...allSuspiciousRaidersChunks.reduce((acc, suspiciousRaidersChunk) =>
-                acc.concat({ name: '\u200B', value: destructureChunk(suspiciousRaidersChunk) }),
-            []
-            )
-        );
+        const suspiciousRaidersFields = allSuspiciousRaidersChunks.map(chunk => ({ name: '\u200B', value: chunk.join('\n') }));
+        suspiciousRaidersFields[0].name = 'Suspicious Raiders';
 
         // Combining the fields together
         const analysisEmbedFields = [
