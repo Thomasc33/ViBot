@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-vibot-rules",
-  "version": "0.0.0",
+  "version": "8.8.2",
   "description": "Custom ESLint rules for ViBot",
   "keywords": [
     "eslint",
