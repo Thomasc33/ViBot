@@ -17,7 +17,7 @@ function splitIntoChunks(list, maxLength) {
     const chunks = [];
     let currentChunk = [];
     for (const string of list) {
-        if (currentChunk.join('').length + string.length < maxLength) {
+        if (currentChunk.join('').length + string.length + currentChunk.length < maxLength) { // Total chars + "\n" for each entry
             currentChunk.push(string);
         } else {
             chunks.push([...currentChunk]);
@@ -123,7 +123,7 @@ module.exports = {
             const analysisEmbedJSON = JSON.stringify(analysisEmbed);
             // Check the total character length of the JSON string before sending
             if (analysisEmbedJSON.length > 6000) {
-                return message.reply('The analysis result is too long to display.');
+                return message.reply('The analysis result is too long to display. Remove a few input IDs and try again.');
             }
             message.reply({ embeds: [analysisEmbed] });
         } catch (error) {
