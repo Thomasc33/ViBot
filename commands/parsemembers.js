@@ -41,7 +41,7 @@ module.exports = {
         else if (raidIDs.some(r => bot.afkChecks[r].channel != null && bot.afkChecks[r].channel.id == memberVoiceChannel)) // prioritize vc
             raidID = raidIDs.find(r => bot.afkChecks[r].channel != null && bot.afkChecks[r].channel.id == memberVoiceChannel);
         else if (raidIDs.filter(r => bot.afkChecks[r].members.hasOwnProperty(message.member.id)).length == 1) { // prioritize the raids they've joined
-            raidID = raidID = raidIDs.find(r => bot.afkChecks[r].members.hasOwnProperty(message.member.id));
+            raidID = raidIDs.find(r => bot.afkChecks[r].members.hasOwnProperty(message.member.id));
         }  
         else {
             const raidMenu = new Discord.StringSelectMenuBuilder()
@@ -96,15 +96,13 @@ module.exports = {
         }
 
         async function vcCrasherParse() {
-            let raidVc;
-            if (raid.channel != null) {
-                raidVc = await bot.channels.fetch(raid.channel.id)
-            } else {
+            if (raid.channel === null) {
                 return message.reply("Channel not found, please join a vc or specify channel id");
             }
+            let raidVc = await bot.channels.fetch(raid.channel.id);
 
-            parseStatusEmbed.data.fields[1].value = 'Processing Data'
-            await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
+            parseStatusEmbed.data.fields[1].value = 'Processing Data';
+            await parseStatusMessage.edit({ embeds: [parseStatusEmbed] });
             let raiders = imgPlayers.map(imgPlayer => imgPlayer.toLowerCase());
             let voiceUsers = []
             let alts = []
@@ -116,7 +114,7 @@ module.exports = {
             let raidMembers = raid.members;
 
             raid.earlySlotMembers.forEach(m => raidMembers.push(m));
-            voiceUsers = raidVc.members.map(m => m);
+            voiceUsers = raidVc.members.map;
             for (let player of raiders) {
                 let member = message.guild.findMember(player);
                 if (member == null) {

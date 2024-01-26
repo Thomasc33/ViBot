@@ -1413,10 +1413,8 @@ class afkCheck {
             (interaction?.message.id == this.raidChannelsMessage ? interaction.update(this.#genRaidChannels()) : this.raidChannelsMessage.edit(this.#genRaidChannels()))
         ])
 
-        if (this.#channel) this.#channel.members.forEach(m => this.members.push(m.id))
-        this.earlySlotMembers.forEach(id => this.members.push(id))
-        this.members.push(this.#leader.id)
-        this.members = [...new Set(this.members)];
+        if (this.#channel) this.#channel.members.forEach(m => this.members.push(m.id));
+        this.members = [...new Set([...this.members, ...this.earlySlotMembers, this.#leader.id])];
 
 
         if (this.#channel && this.#botSettings.backend.giveLocationToEarlyVConStart){
