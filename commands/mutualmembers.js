@@ -106,17 +106,29 @@ module.exports = {
             { name: '\u00A0', value: '\u00A0' },
             ...suspiciousRaidersFields
         ];
-
+        if (analysisEmbedFields.length > 25) {
+            return message.reply('The analysis result has too many fields to display. Remove a few input IDs and try again.');
+        }
         // Makes and outputs an embed containing all relevant information.
-        const analysisEmbed = new Discord.EmbedBuilder()
-            .setColor('#63C5DA')
-            .setAuthor({ name: `${message.member.displayName}`, iconURL: message.member.user.avatarURL() })
-            .setTitle('Mutual Member Analysis')
-            .setDescription(`**Runs Analysed**: ${args.length}`)
-            .addFields(...analysisEmbedFields)
-            .setTimestamp()
-            .setFooter({ text: `${message.guild.name} • Mutual Member Analysis`, iconURL: message.guild.iconURL() });
+        try {
+            const analysisEmbed = new Discord.EmbedBuilder()
+                .setColor('#63C5DA')
+                .setAuthor({ name: `${message.member.displayName}`, iconURL: message.member.user.avatarURL() })
+                .setTitle('Mutual Member Analysis')
+                .setDescription(`**Runs Analysed**: ${args.length}`)
+                .addFields(...analysisEmbedFields)
+                .setTimestamp()
+                .setFooter({ text: `${message.guild.name} • Mutual Member Analysis`, iconURL: message.guild.iconURL() });
 
-        message.reply({ embeds: [analysisEmbed] });
+            const analysisEmbedJSON = JSON.stringify(analysisEmbed);
+            // Check the total character length of the JSON string before sending
+            if (analysisEmbedJSON.length > 6000) {
+                return message.reply('The analysis result is too long to display.');
+            }
+            message.reply({ embeds: [analysisEmbed] });
+        } catch (error) {
+            console.error('Error creating embed:', error);
+            message.reply('An unknown error occurred while creating the analysis embed.');
+        }
     }
 };
