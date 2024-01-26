@@ -31,17 +31,17 @@ module.exports = {
         if (args.length && /^\d+$/.test(args[0])) //add ability to parse from a different channel with ;pm channelid <image>
             memberVoiceChannel = await bot.channels.fetch(args.shift());
         
-        const raidIDs = afkCheck.returnActiveRaidIDs(bot).filter(r => bot.afkChecks[r].guild.id == message.guild.id);
+        const raidIDs = afkCheck.returnActiveRaidIDs(bot).filter(r => bot.afkModules[r].guild.id == message.guild.id);
 
         if (raidIDs.length == 0)
             return message.channel.send('Could not find an active run. Please try again.')
         else if (raidIDs.length == 1) {
             raidID = raidIDs[0];
         }
-        else if (raidIDs.some(r => bot.afkChecks[r].channel != null && bot.afkChecks[r].channel.id == memberVoiceChannel)) // prioritize vc
-            raidID = raidIDs.find(r => bot.afkChecks[r].channel != null && bot.afkChecks[r].channel.id == memberVoiceChannel);
-        else if (raidIDs.filter(r => bot.afkChecks[r].members.hasOwnProperty(message.member.id)).length == 1) { // prioritize the raids they've joined
-            raidID = raidIDs.find(r => bot.afkChecks[r].members.hasOwnProperty(message.member.id));
+        else if (raidIDs.some(r => bot.afkModules[r].channel != null && bot.afkModules[r].channel.id == memberVoiceChannel)) // prioritize vc
+            raidID = raidIDs.find(r => bot.afkModules[r].channel != null && bot.afkModules[r].channel.id == memberVoiceChannel);
+        else if (raidIDs.filter(r => bot.afkModules[r].members.includes(message.member.id)).length == 1) { // prioritize the raids they've joined
+            raidID = raidIDs.find(r => bot.afkModules[r].members.includes(message.member.id));
         }  
         else {
             const raidMenu = new Discord.StringSelectMenuBuilder()
@@ -51,9 +51,9 @@ module.exports = {
             let text = 'Which active run would you like to parse for?'
             let index = 0
             for (let id of raidIDs) {
-                const label = `${bot.afkChecks[id].afkTemplateName} by <@${bot.afkChecks[id].leader?.user?.id ?? bot.afkChecks[id].leader?.userId}>` // BUG this shows up undefined upon restart sometimes
-                text += `\n\`\`${index+1}.\`\` ${label} at <t:${Math.floor(bot.afkChecks[id].time/1000)}:f>`
-                raidMenu.addOptions({ label: `${index+1}. ${bot.afkChecks[id].afkTemplateName} by ${bot.afkChecks[id].leader?.nickname}`, value: id })
+                const label = `${bot.afkModules[id].afkTitle()}` // BUG this shows up undefined upon restart sometimes
+                text += `\n\`\`${index+1}.\`\` ${label}`
+                raidMenu.addOptions({ label: `${index+1}. ${bot.afkModules[id].afkTitle()}`, value: id })
                 index++
             }
             const { value: id } = await message.selectPanel(text, null, raidMenu, 30000, false, true)
@@ -61,7 +61,7 @@ module.exports = {
             raidID = id
         }
 
-        const raid = bot.afkChecks[raidID];
+        const raid = bot.afkModules[raidID];
 
         // start parse building
         let parseStatusEmbed = new Discord.EmbedBuilder()
@@ -114,13 +114,14 @@ module.exports = {
             let raidMembers = raid.members;
 
             raid.earlySlotMembers.forEach(m => raidMembers.push(m));
-            voiceUsers = raidVc.members.map;
+            voiceUsers = raidVc.members;
+            console.log(raidMembers);
             for (let player of raiders) {
                 let member = message.guild.findMember(player);
                 if (member == null) {
                     crashers.push(player);
                     kickList = kickList.concat(` ${player}`)
-                } else if (!voiceUsers.includes(member)) {
+                } else if (!member.id in voiceUsers) {
                     if (member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.almostrl).position) continue;
                     if (raidMembers.includes(member.id)) allowedCrashers.push(member)
                     if (member.voice.channel) otherChannel.push(`${member}: ${member.voice.channel}`);
@@ -159,7 +160,7 @@ module.exports = {
             if (altsS == ' ') { altsS = 'None' }
             if (movedS == ' ') { movedS = 'None' }
             let embed = new Discord.EmbedBuilder()
-                .setTitle(`Parse for ${raid.leader.displayName}'s ${raid.afkTemplateName}`)
+                .setTitle(`Parse for ${raid.afkTitle()}`)
                 .setColor('#00ff00')
                 .setDescription(`There are ${crashers.length} crashers, ${alts.length} potential alts, and ${otherChannel.length} people in other channels`)
                 .addFields({ name: 'Potential Alts', value: altsS }, { name: 'Other Channels', value: movedS }, { name: 'Crashers', value: crashersS }, { name: 'Find Command', value: `\`\`\`${find}\`\`\`` }, { name: 'Kick List', value: `\`\`\`${kickList}\`\`\`` })
@@ -209,7 +210,7 @@ module.exports = {
             find += findA.join(' ');
             if (crashersS == ' ') { crashersS = 'None' }
             let embed = new Discord.EmbedBuilder()
-                .setTitle(`Parse for ${raid.leader.displayName}'s ${raid.afkTemplateName}`)
+                .setTitle(`Parse for ${raid.afkTitle()}`)
                 .setColor('#00ff00')
                 .setDescription(`There are ${crashers.length} crashers`)
                 .addFields({ name: 'Crashers', value: crashersS }, { name: 'Find Command', value: `\`\`\`${find}\`\`\`` }, { name: 'Kick List', value: `\`\`\`${kickList}\`\`\`` })
