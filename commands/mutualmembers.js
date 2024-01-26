@@ -52,17 +52,17 @@ module.exports = {
                 const embed = fetchedMessage.embeds[0];
                 const raidersField = embed.fields.find(item => item.name === 'Raiders');
                 const raiders = raidersField.value.split(' ').map(raider => raider.split(',')[0]);
-                const raidTimestamp = fetchedMessage.createdTimestamp;
+                allRaidsRaiders.push(...raiders);
                 const raidRLandType = embed.author.name;
                 const raidLink = `https://discord.com/channels/${message.guild.id}/${targetChannel.id}/${fetchedMessage.id}`;
-                allRaidsRaiders.push(...raiders);
-                return [raidTimestamp, raidRLandType, raidLink];
-            })
-            .sort((a, b) => a[0] - b[0])
-            .map((raidInfo) => {
-                const raidTime = new Date(raidInfo[0]);
+                const raidTime = new Date(fetchedMessage.createdTimestamp);
                 const formattedRaidTime = `<t:${Math.floor(raidTime.getTime() / 1000)}:f>`;
-                return [formattedRaidTime, `[${raidInfo[1]}](${raidInfo[2]})`];
+                return [formattedRaidTime, `[${raidRLandType}](${raidLink})`];
+            })
+            .sort((a, b) => {
+                const numericPartA = parseInt(a[0].substring(a[0].indexOf('t:') + 2, a[0].indexOf(':f')));
+                const numericPartB = parseInt(b[0].substring(b[0].indexOf('t:') + 2, b[0].indexOf(':f')));
+                return numericPartA - numericPartB;
             });
         const allRaidsTimes = allRaidsInfo.map(raidInfo => raidInfo[0]);
         const allRaidsDescriptions = allRaidsInfo.map(raidInfo => raidInfo[1]);
@@ -79,7 +79,7 @@ module.exports = {
         const allRaidsDescriptionsChunks = splitIntoChunks(allRaidsDescriptions, 1024);
         const allSuspiciousRaidersChunks = splitIntoChunks(allSuspiciousRaiders, 1024);
 
-        // Dividing allRaidsTime into the same size chunks as allRaidDescriptionsChunks
+        // Dividing allRaidsTime into the same size chunks as allRaidDescriptionsChunks. Assumes character count of times always shorter than character count of description.
         const allRaidsTimesChunks = allRaidsDescriptionsChunks.map(chunk =>
             allRaidsTimes.splice(0, chunk.length)
         );
