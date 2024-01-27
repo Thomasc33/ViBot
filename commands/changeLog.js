@@ -38,11 +38,11 @@ module.exports = {
     },
     async autocomplete(interaction) {
         const focusedValue = interaction.options.getFocused();
-        const types = clConfig[interaction.guild.id]?.logtypes.map(type => type + (clConfig[interaction.guild.id]?.currentweeks.find(cw => cw.case == type) ? '\\*' : '')).sort(a => a[a.length - 1] == '*' ? -1 : 1);
+        const types = clConfig[interaction.guild.id]?.logtypes;
+        // match changelog types with what the user is typing (focusedValue)
         const filtered = types.filter(type => type.toLowerCase().includes(focusedValue.toLowerCase())).slice(0, 25);
-        await interaction.respond(
-            filtered.map(type => ({ name: type, value: type }))
-        );
+        // regex: put a space after each capitalized word and then uppercase the first letter
+        await interaction.respond(filtered.map(type => ({ name: type.replace(/([A-Z])/g, ' $1').replace(/^./, (firstChar) => firstChar.toUpperCase()), value: type })));
     },
     /**
      * @param {Discord.Message | Discord.CommandInteraction} interaction
