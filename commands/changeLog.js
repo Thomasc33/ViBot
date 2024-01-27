@@ -17,7 +17,8 @@ module.exports = {
             choices: slashChoices(['Add', 'Remove', 'Set'])
         }),
         slashArg(SlashArgType.String, 'type', {
-            description: 'Type of log to change'
+            description: 'Type of log to change',
+            autocomplete: true
         }),
         slashArg(SlashArgType.Integer, 'number', {
             description: 'Number of logs to change'
@@ -35,7 +36,9 @@ module.exports = {
         if (clConfig[guild.id]?.logtypes.length <= 25) json[0].options[2].choices = clConfig[guild.id].logtypes.map((k) => ({ name: k?.deCamelCase(), value: k }))
         return json
     },
-
+    async autocomplete(interaction) {
+        // fill this out
+    },
     /**
      * @param {Discord.Message | Discord.CommandInteraction} interaction
      * @param {Discord.Client} bot
