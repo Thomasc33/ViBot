@@ -39,6 +39,7 @@ module.exports = {
     async autocomplete(interaction) {
         const focusedValue = interaction.options.getFocused();
         const types = clConfig[interaction.guild.id]?.logtypes;
+        if (!types) return;
         // match changelog types with what the user is typing (focusedValue)
         const filtered = types.filter(type => type.toLowerCase().includes(focusedValue.toLowerCase())).slice(0, 25);
         // regex: put a space after each capitalized word and then uppercase the first letter
