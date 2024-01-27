@@ -161,12 +161,16 @@ class afkCheck {
 
     get guild() { return this.#guild }
 
-    #raidLeaderDisplayName() {
+    get vcOptions() { return this.#afkTemplate.vcOptions }
+
+    get channel() { return this.#channel }
+
+    raidLeaderDisplayName() {
         return this.#leader.displayName.replace(/[^a-z|]/gi, '').split('|')[0]
     }
 
-    #afkTitle() {
-        return `${this.#raidLeaderDisplayName()}'s ${this.#afkTemplate.name}`
+    afkTitle() {
+        return `${this.raidLeaderDisplayName()}'s ${this.#afkTemplate.name}`
     }
 
     #pingText() {
@@ -272,7 +276,7 @@ class afkCheck {
         if (this.#afkTemplate.vcOptions == AfkTemplate.TemplateVCOptions.NO_VC) return
         else if (this.#afkTemplate.vcOptions == AfkTemplate.TemplateVCOptions.STATIC_VC) return this.#channel = this.#leader.voice.channel
         let channel = await this.#afkTemplate.raidTemplateChannel.clone({
-            name: this.#afkTitle(),
+            name: this.afkTitle(),
             parent: this.#afkTemplate.raidCategory.id,
             userLimit: this.cap,
             position: 0
@@ -337,7 +341,7 @@ class afkCheck {
     async createThreads() {
         for (let i in this.buttons) {
             if (this.buttons[i].type == AfkTemplate.TemplateButtonType.DRAG) {
-                this.raidDragThreads[i].thread = await this.#afkTemplate.raidCommandChannel.threads.create({ name: `${this.#raidLeaderDisplayName()} Drag ${i}`, reason: `Dragging ${i} Reacts` })
+                this.raidDragThreads[i].thread = await this.#afkTemplate.raidCommandChannel.threads.create({ name: `${this.raidLeaderDisplayName()} Drag ${i}`, reason: `Dragging ${i} Reacts` })
                 this.raidDragThreads[i].collector = new Discord.InteractionCollector(this.#bot, { channel: this.raidDragThreads[i].thread, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
                 this.raidDragThreads[i].collector.on('collect', (interaction) => this.dragInteractionHandler(interaction))
                 const emote = this.buttons[i].emote ? `${this.buttons[i].emote.text} ` : ``
@@ -395,7 +399,7 @@ class afkCheck {
 
     #genEmbedBase() {
         return new Discord.EmbedBuilder()
-            .setAuthor({ name: `AFK for ${this.#afkTemplate.name} by ${this.#raidLeaderDisplayName()}`, iconURL: this.#leader.user.avatarURL() })
+            .setAuthor({ name: `AFK for ${this.#afkTemplate.name} by ${this.raidLeaderDisplayName()}`, iconURL: this.#leader.user.avatarURL() })
             .setColor(this.#body[this.phase || 1].embed.color ? this.#body[this.phase || 1].embed.color : '#ffffff')
             .setTimestamp(Date.now())
     }
@@ -950,7 +954,7 @@ class afkCheck {
             embeds: [
                 new Discord.EmbedBuilder()
                     .setDescription(`Logging ${number} ${choiceText} for ${member}.`)
-                    .setFooter({ text: `${interaction.guild.name} • ${this.#afkTitle()}`, iconURL: interaction.guild.iconURL() })
+                    .setFooter({ text: `${interaction.guild.name} • ${this.afkTitle()}`, iconURL: interaction.guild.iconURL() })
             ],
             components: [
                 new Discord.ActionRowBuilder()
@@ -1038,7 +1042,7 @@ class afkCheck {
                     .setColor('#0000ff')
                     .setTitle(`${button} logged!`)
                     .setDescription(`${member} now has \`\`${parseInt(rows[0][option]) + parseInt(number)}\`\` (+\`${number}\`) ${choiceText} pops`)
-                    .setFooter({ text: `${interaction.guild.name} • ${this.#afkTitle()}`, iconURL: interaction.guild.iconURL() })
+                    .setFooter({ text: `${interaction.guild.name} • ${this.afkTitle()}`, iconURL: interaction.guild.iconURL() })
                 await (this.raidCommandsMessage?.reply({ embeds: [embed] }) || this.#afkTemplate.raidCommandChannel.send({ embeds: [embed] }))
             })
         }
@@ -1412,8 +1416,9 @@ class afkCheck {
             (interaction?.message.id == this.raidChannelsMessage ? interaction.update(this.#genRaidChannels()) : this.raidChannelsMessage.edit(this.#genRaidChannels()))
         ])
 
-        if (this.#channel) this.#channel.members.forEach(m => this.members.push(m.id))
-        else this.earlySlotMembers.forEach(id => this.members.push(id))
+        if (this.#channel) this.#channel.members.forEach(m => this.members.push(m.id));
+        this.members = [...new Set([...this.members, ...this.earlySlotMembers, this.#leader.id])];
+
 
         if (this.#channel && this.#botSettings.backend.giveLocationToEarlyVConStart){
             const lateLocationMembers = this.earlySlotMembers.filter(u => !this.earlyLocationMembers.includes(u))
@@ -1423,7 +1428,7 @@ class afkCheck {
             .setColor('Green')
             .setTitle(`Early location info`)
             .addFields([{name: `The location of ${this.#channel.name} is` , value: `\`${this.location}\``},
-                {name: `Raid leader info: `, value:`\`${this.#raidLeaderDisplayName()}\` | ${this.#leader}`},
+                {name: `Raid leader info: `, value:`\`${this.raidLeaderDisplayName()}\` | ${this.#leader}`},
                 {name: `Link to channel:`, value: `${this.#channel}`}],
                 {name: `If you get disconnected, join`, value: `${this.lounge} and press reconnect`})
             .setTimestamp(Date.now());
@@ -1473,6 +1478,8 @@ class afkCheck {
 
     async loggingAfk() {
         let members = this.#channel && this.#channel.members.size != 0 ? this.#channel.members.map(m => m.id) : this.earlySlotMembers
+        members.push(this.#leader.id);
+        members = [...new Set(members)];
         if (members.length > 0) {
             await this.#db.promise().query('INSERT INTO completionruns (??) VALUES ?', [
                                       ['userid', 'guildid',      'unixtimestamp', 'amount', 'templateid',                 'raidid',     'parenttemplateid'],
