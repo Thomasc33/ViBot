@@ -1,7 +1,7 @@
 {
     "701483950559985705": [
         {
-            "name": "lost halls",
+            "name": "Lost Halls",
             "aliases": [
                 "cult/void",
                 "c/v"
@@ -26,7 +26,7 @@
             ]
         },
         {
-            "name": "server region",
+            "name": "Server Region",
             "aliases": [
                 "eu/us",
                 "us/eu"
@@ -43,7 +43,7 @@
             ]
         },
         {
-            "name": "regular or Exalted",
+            "name": "Regular or Exalted",
             "aliases": [
                 "r/e",
                 "e/r"
@@ -60,9 +60,9 @@
             ]
         },
         {
-            "name": "exaltations",
+            "name": "Exaltations",
             "aliases": [
-                "exalts"
+                "exalts", "ex", "exalt"
             ],
             "reacts": [
                 {
@@ -74,8 +74,12 @@
                     "emoji": "cultist"
                 },
                 {
+                    "name": "Oryx Sanctuary",
+                    "emoji": "oryxThree"
+                },
+                {
                     "name": "The Shatters",
-                    "emoji": "forgottenKing"
+                    "emoji": "forgottenking"
                 },
                 {
                     "name": "Fungal Cavern",
@@ -84,11 +88,27 @@
                 {
                     "name": "The Nest",
                     "emoji": "killerBeeQueen"
+                },
+                {
+                    "name": "Advanced Nest",
+                    "emoji": "advancedNestBee"
+                },
+                {
+                    "name": "Kogbold Steamworks",
+                    "emoji": "SteamworksBoss"
+                },
+                {
+                    "name": "Advanced Kogbold Steamworks",
+                    "emoji": "exaltedAdvancedSteamworks"
+                },
+                {
+                    "name": "Moonlight Village",
+                    "emoji": "MoonlightBoss"
                 }
             ]
         },
         {
-            "name": "fungal or nest",
+            "name": "Fungal or Nest",
             "aliases": [
                 "fc/n"
             ],
@@ -106,7 +126,7 @@
     ],
     "343704644712923138": [
         {
-            "name": "lost halls",
+            "name": "Lost Halls",
             "aliases": [
                 "cult/void",
                 "c/v"
@@ -131,7 +151,7 @@
             ]
         },
         {
-            "name": "server region",
+            "name": "Server Region",
             "aliases": [
                 "eu/us",
                 "us/eu"
@@ -148,7 +168,7 @@
             ]
         },
         {
-            "name": "regular or Exalted",
+            "name": "Regular or Exalted",
             "aliases": [
                 "r/e",
                 "e/r"
@@ -165,9 +185,9 @@
             ]
         },
         {
-            "name": "exaltations",
+            "name": "Exaltations",
             "aliases": [
-                "exalts"
+                "exalts", "ex", "exalt"
             ],
             "reacts": [
                 {
@@ -179,8 +199,12 @@
                     "emoji": "cultist"
                 },
                 {
+                    "name": "Oryx Sanctuary",
+                    "emoji": "oryxThree"
+                },
+                {
                     "name": "The Shatters",
-                    "emoji": "forgottenKing"
+                    "emoji": "forgottenking"
                 },
                 {
                     "name": "Fungal Cavern",
@@ -189,11 +213,27 @@
                 {
                     "name": "The Nest",
                     "emoji": "killerBeeQueen"
+                },
+                {
+                    "name": "Advanced Nest",
+                    "emoji": "advancedNestBee"
+                },
+                {
+                    "name": "Kogbold Steamworks",
+                    "emoji": "SteamworksBoss"
+                },
+                {
+                    "name": "Advanced Kogbold Steamworks",
+                    "emoji": "exaltedAdvancedSteamworks"
+                },
+                {
+                    "name": "Moonlight Village",
+                    "emoji": "MoonlightBoss"
                 }
             ]
         },
         {
-            "name": "fungal or nest",
+            "name": "Fungal or Nest",
             "aliases": [
                 "fc/n"
             ],
@@ -211,7 +251,7 @@
     ],
     "708026927721480254": [
         {
-            "name": "server region",
+            "name": "Server Region",
             "aliases": [
                 "eu/us",
                 "us/eu"
@@ -228,7 +268,7 @@
             ]
         },
         {
-            "name": "oryx or oryx",
+            "name": "Oryx or oRyx",
             "aliases": [
                 "o",
                 "o/o"

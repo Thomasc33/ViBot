@@ -1,60 +1,60 @@
-const { CronJob } = require('cron')
-const LogError = require('../lib/logError.js')
+const { CronJob } = require('cron');
+const LogError = require('../lib/logError.js');
 
 class RepeatedJob {
-    bot
-    #intervalId = null
-    #intervalPromiseResolver
-    #cronJob = null
+    bot;
+    #intervalId = null;
+    #intervalPromiseResolver;
+    #cronJob = null;
 
     constructor(bot) {
-        this.bot = bot
+        this.bot = bot;
     }
 
     run() {
-        throw new Error('`run` not implimented for RepeatedJob ' + this)
+        throw new Error('`run` not implimented for RepeatedJob ' + this);
     }
 
     async runOnce() {
         try {
-            return await this.run(this.bot)
+            return await this.run(this.bot);
         } catch (er) {
-            LogError.log(er, this.bot)
+            LogError.log(er, this.bot);
         }
     }
 
     runAtInterval(msec) {
-        if (this.#intervalId !== null) return false
+        if (this.#intervalId !== null) return false;
 
-        this.#intervalId = setInterval(() => this.runOnce(), msec)
+        this.#intervalId = setInterval(() => this.runOnce(), msec);
         return new Promise(resolve => {
-            this.#intervalPromiseResolver = resolve
-        })
+            this.#intervalPromiseResolver = resolve;
+        });
     }
 
     stopInterval() {
-        if (this.#intervalId === null) return false
+        if (this.#intervalId === null) return false;
 
-        clearInterval(this.#intervalId)
-        this.#intervalId = null
-        this.#intervalPromiseResolver()
-        return true
+        clearInterval(this.#intervalId);
+        this.#intervalId = null;
+        this.#intervalPromiseResolver();
+        return true;
     }
 
     schedule(cronString) {
-        if (this.#cronJob !== null) return false
+        if (this.#cronJob !== null) return false;
 
-        this.#cronJob = new CronJob(cronString, () => this.runOnce(), null, true, 'America/New_York', null, false)
-        return true
+        this.#cronJob = new CronJob(cronString, () => this.runOnce(), null, true, 'America/New_York', null, false);
+        return true;
     }
 
     endSchedule() {
-        if (this.#cronJob === null) return false
+        if (this.#cronJob === null) return false;
 
-        this.#cronJob.stop()
-        this.#cronJob = null
-        return true
+        this.#cronJob.stop();
+        this.#cronJob = null;
+        return true;
     }
 }
 
-module.exports = { RepeatedJob }
+module.exports = { RepeatedJob };

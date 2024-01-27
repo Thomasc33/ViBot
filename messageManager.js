@@ -151,7 +151,7 @@ class MessageManager {
 
         if (!this.commandPermitted(e.member, e.guild, command)) return await commandError('You do not have permission to use this command', 'no permission')
 
-        if (command.requiredArgs && command.requiredArgs > argCount) return await commandError(`Command Entered incorrecty. \`${this.#botSettings.prefix}${command.name} ${argString(command.args)}\``, 'invalid syntax')
+        if (command.requiredArgs && command.requiredArgs > argCount) return await commandError(`Command entered incorrectly. \`${this.#botSettings.prefix}${command.name} ${argString(command.args)}\``, 'invalid syntax')
 
         if (command.cooldown) {
             if (this.#cooldowns.get(command.name)) {
