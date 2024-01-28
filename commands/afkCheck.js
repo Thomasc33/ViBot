@@ -122,6 +122,14 @@ class AfkButton {
             ...this
         })
     }
+
+    toJSON() {
+        return JSON.stringify(this)
+    }
+
+    static fromJSON(json) {
+        return new AfkButton(JSON.parse(json))
+    }
 }
 
 class afkCheck {
@@ -239,8 +247,8 @@ class afkCheck {
                 members: this.members,
                 earlyLocationMembers: this.earlyLocationMembers,
                 earlySlotMembers: this.earlySlotMembers,
-                reactables: this.reactables,
-                buttons: this.buttons,
+                buttons: Object.values(this.buttons).map(button => button.toJSON()),
+                reactRequests: Object.fromEntries(Object.entries(this.reactRequests).map(([messageId, button]) => [messageId, button.toJSON()])),
                 body: this.#body,
                 
                 cap: this.cap,
@@ -271,8 +279,8 @@ class afkCheck {
         this.members = storedAfkCheck.members
         this.earlyLocationMembers = storedAfkCheck.earlyLocationMembers
         this.earlySlotMembers = storedAfkCheck.earlySlotMembers
-        this.reactables = storedAfkCheck.reactables
-        this.buttons = storedAfkCheck.buttons
+        this.buttons = Object.fromEntries(storedAfkCheck.buttons.map(button => [button.name, new AfkButton(button)]))
+        this.reactRequests = Object.fromEntries(Object.entries(storedAfkCheck.reactRequests).map(([messageId, button]) => [messageId, new AfkButton(button)]))
         this.#body = storedAfkCheck.body
 
         this.cap = storedAfkCheck.cap
