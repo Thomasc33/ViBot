@@ -68,7 +68,8 @@
                 "currentweek": "parsecurrentweek",
                 "pastweeks": "pastparseweeks",
                 "values": [
-                    { "column": "currentweekparses", "name": "Parses", "value": 1 }
+                    { "column": "currentweekparses", "name": "Parses", "value": 1 },
+                    { "column": "o3currentweekparses", "name": "O3 Parses", "value": 1.5 }
                 ]
             },
             {
@@ -91,7 +92,7 @@
         "totalUnexcused": "totalUnexcused",
         "consecutiveUnexcused": "consecutiveUnexcused",
         "consecutiveLeave": "consecutiveLeave",
-        "ignoreRoles": ["officer", "moderator", "headrl", "admin"],
+        "ignoreRoles": ["officer", "moderator", "headrl", "admin", "headdev"],
         "ignoreRolesDisplay": [],
         "roleDisplay": [],
         "quotas": [
@@ -159,7 +160,8 @@
                 "currentweek": "parsecurrentweek",
                 "pastweeks": "pastparseweeks",
                 "values": [
-                    { "column": "currentweekparses", "emoji": ":mag:", "name": "Parses", "value": 1 }
+                    { "column": "currentweekparses", "emoji": ":mag:", "name": "Parses", "value": 1 },
+                    { "column": "o3currentweekparses", "emoji": "<:oryxThree:831047591096745984>", "name": "O3 Parses", "value": 1.5 }
                 ]
             },
             {

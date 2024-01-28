@@ -248,7 +248,7 @@ async function interactionHandler(interaction, settings, bot, db) {
             } else { await interaction.message.edit({ components: [...modmailOpenComponents] }); await confirmMessage.delete(); await interaction.deferUpdate() }
         })
     } else if (interaction.customId === "modmailClose") {
-        confirmationEmbed.setDescription(`This will close the modmail permenantly.\nIf you wish to send a message after closing, use the \`\`;mmr\`\` command to send a message to this modmail`)
+        confirmationEmbed.setDescription(`This will close the modmail permanently.\nIf you wish to send a message after closing, use the \`\`;mmr\`\` command to send a message to this modmail`)
         await modmailChannel.send({ embeds: [confirmationEmbed] }).then(async confirmMessage => {
             if (await confirmMessage.confirmButton(interaction.member.id)) {
                 await confirmMessage.delete()

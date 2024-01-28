@@ -55,7 +55,6 @@ commands/reset.js
 commands/roleAssignment.js
 commands/russianRoulette.js
 commands/script.js
-commands/seppuku.js
 commands/setStatus.js
 commands/setup.js
 commands/status.js

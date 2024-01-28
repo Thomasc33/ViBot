@@ -46,7 +46,7 @@
         "password": null
     },
     "gcloudOptions": {
-        "keyFilename": "C:/Program Files (x86)/Google/Cloud SDK/vibotparsingkeyjs.json",
+        "keyFilename": "./data/vibot-275815-0fbd602620ae.json",
         "projectId": "vibot-275815"
     },
     "defaultDbInfo": {
