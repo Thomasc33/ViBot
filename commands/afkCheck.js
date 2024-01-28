@@ -126,10 +126,6 @@ class AfkButton {
     toJSON() {
         return JSON.stringify(this)
     }
-
-    static fromJSON(json) {
-        return new AfkButton(JSON.parse(json))
-    }
 }
 
 class afkCheck {
