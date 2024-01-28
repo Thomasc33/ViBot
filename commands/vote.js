@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 const getFeedback = require('./getFeedback');
-const voteConfiruationTemplates = require('../data/voteConfiguration.json');
+const ErrorLogger = require('../lib/logError');
+const voteConfigurationTemplates = require('../data/voteConfiguration.json');
 
 module.exports = {
     name: 'vote',
@@ -42,21 +43,15 @@ class Vote {
         this.template = null;
         this.settingRoleName = null;
         this.embedStyling = { color: null, image: null };
-        this.voteConfiruationTemplates = voteConfiruationTemplates;
+        this.voteConfigurationTemplates = voteConfigurationTemplates;
 
-        this.initializeVoteConfiguration();
-    }
-
-    initializeVoteConfiguration() {
-        this.defaultMaximumFeedbacks = 5;
         this.emojis = ['✅', '❌', '👀'];
         this.voteConfiguration = {
             channel: this.channel,
-            maximumFeedbacks: this.defaultMaximumFeedbacks,
+            maximumFeedbacks: 5,
             members: this.args.map(member => this.guild.findMember(member)).filter(member => member != undefined),
             role: this.guild.findRole(this.roleType)
         };
-        console.log(this.voteConfiguration.members);
     }
 
     async startProcess() {
@@ -68,18 +63,12 @@ class Vote {
     }
 
     async validateRole() {
-        if (!this.voteConfiguration.role) {
-            await this.channel.send(`Could not find role \`${this.roleType}\``);
-            return false;
-        }
+        if (!this.voteConfiguration.role) { await this.channel.send(`Could not find role \`${this.roleType}\``); return false; }
         return true;
     }
 
     async validateMembers() {
-        if (this.voteConfiguration.members.length == 0) {
-            await this.channel.send('No members found.');
-            return false;
-        }
+        if (this.voteConfiguration.members.length == 0) { await this.channel.send('No members found.'); return false; }
         return true;
     }
 
@@ -98,7 +87,7 @@ class Vote {
             .setColor(this.member.roles.highest.hexColor)
             .setAuthor({ name: 'Vote Configuration', iconURL: this.member.user.displayAvatarURL({ dynamic: true }) })
             .setDescription('Loading...');
-        this.voteConfigurationMessage = await this.channel.send({ embeds: [this.embed], components: [this.voteConfigurationMainMenu] });
+        this.voteConfigurationMessage = await this.channel.send({ embeds: [this.embed], components: [this.getVoteConfigurationButtons()] });
 
         this.voteConfigurationMessageInteractionCollector = new Discord.InteractionCollector(this.bot, { message: this.voteConfigurationMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button });
         this.voteConfigurationMessageInteractionCollector.on('collect', async (interaction) => await this.interactionHandler(interaction));
@@ -110,7 +99,7 @@ class Vote {
             .setColor(this.member.roles.highest.hexColor)
             .setAuthor({ name: 'Vote Configuration', iconURL: this.member.user.displayAvatarURL({ dynamic: true }) })
             .setDescription(this.voteConfigurationDescription);
-        await this.voteConfigurationMessage.edit({ embeds: [this.embed], components: [this.voteConfigurationMainMenu] });
+        await this.voteConfigurationMessage.edit({ embeds: [this.embed], components: [this.getVoteConfigurationButtons()] });
     }
 
     getVoteConfigurationDescription() {
@@ -124,7 +113,7 @@ class Vote {
     }
 
     getVoteConfigurationButtons() {
-        this.voteConfigurationMainMenu = new Discord.ActionRowBuilder()
+        return new Discord.ActionRowBuilder()
             .addComponents([
                 new Discord.ButtonBuilder()
                     .setLabel('✅ Confirm')
@@ -153,7 +142,7 @@ class Vote {
     async interactionHandler(interaction) {
         if (!interaction) { return; }
         if (interaction.member.id != this.member.id) {
-            return await interaction.deferUpdate();
+            return await interaction.reply({ content: 'You are not permitted to configure this', ephemeral: true });
         }
 
         switch (interaction.customId) {
@@ -180,7 +169,7 @@ class Vote {
 
     async endVoteConfigurationPhase(interaction) {
         await interaction.deferUpdate();
-        await this.voteConfigurationMessage.delete();
+        await interaction.delete();
         this.voteConfigurationMessageInteractionCollector.stop();
     }
 
@@ -193,7 +182,7 @@ class Vote {
                 await this.startVote(member, feedbacks);
             });
         } catch (error) {
-            console.log(error);
+            ErrorLogger.log(error, this.bot, this.guild);
         }
     }
 
@@ -225,6 +214,7 @@ class Vote {
     }
 
     async buttonVoteCancel(interaction) {
+        await interaction.reply({ content: 'You have decided to cancel the votes', ephemeral: true });
         await this.endVoteConfigurationPhase(interaction);
     }
 
@@ -265,12 +255,11 @@ class Vote {
     }
 
     getBaseEmbed() {
-        const embed = new Discord.EmbedBuilder()
+        return new Discord.EmbedBuilder()
             .setColor(this.member.roles.highest.hexColor)
             .setAuthor({
                 name: 'Vote Configuration',
                 iconURL: this.member.user.displayAvatarURL({ dynamic: true })
             });
-        return embed;
     }
 }
