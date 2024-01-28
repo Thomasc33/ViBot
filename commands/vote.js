@@ -1,6 +1,6 @@
-const Discord = require('discord.js')
-const getFeedback = require('./getFeedback')
-const voteConfiruationTemplates = require('../data/voteConfiguration.json')
+const Discord = require('discord.js');
+const getFeedback = require('./getFeedback');
+const voteConfiruationTemplates = require('../data/voteConfiguration.json');
 
 module.exports = {
     name: 'vote',
@@ -9,10 +9,10 @@ module.exports = {
     requiredArgs: 2,
     description: 'Puts up a vote for the person based on your role input',
     async execute(message, args, bot, db) {
-        const voteModule = new Vote(message, args, bot, db)
-        await voteModule.startProcess()
+        const voteModule = new Vote(message, args, bot, db);
+        await voteModule.startProcess();
     }
-}
+};
 
 class Vote {
     /**
@@ -42,7 +42,7 @@ class Vote {
         this.template = null;
         this.settingRoleName = null;
         this.embedStyling = { color: null, image: null };
-        this.voteConfiruationTemplates = voteConfiruationTemplates
+        this.voteConfiruationTemplates = voteConfiruationTemplates;
 
         this.initializeVoteConfiguration();
     }
@@ -56,7 +56,7 @@ class Vote {
             members: this.args.map(member => this.guild.findMember(member)).filter(member => member != undefined),
             role: this.guild.findRole(this.roleType)
         };
-        console.log(this.voteConfiguration.members)
+        console.log(this.voteConfiguration.members);
     }
 
     async startProcess() {
@@ -98,19 +98,19 @@ class Vote {
             .setColor(this.member.roles.highest.hexColor)
             .setAuthor({ name: 'Vote Configuration', iconURL: this.member.user.displayAvatarURL({ dynamic: true }) })
             .setDescription('Loading...');
-        this.voteConfigurationMessage = await this.channel.send({ embeds: [this.embed], components: [this.voteConfigurationMainMenu] })
+        this.voteConfigurationMessage = await this.channel.send({ embeds: [this.embed], components: [this.voteConfigurationMainMenu] });
 
-        this.voteConfigurationMessageInteractionCollector = new Discord.InteractionCollector(this.bot, { message: this.voteConfigurationMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
-        this.voteConfigurationMessageInteractionCollector.on('collect', async (interaction) => await this.interactionHandler(interaction))
+        this.voteConfigurationMessageInteractionCollector = new Discord.InteractionCollector(this.bot, { message: this.voteConfigurationMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button });
+        this.voteConfigurationMessageInteractionCollector.on('collect', async (interaction) => await this.interactionHandler(interaction));
     }
 
     async updateConfirmationMessage() {
-        this.getVoteConfigurationDescription()
+        this.getVoteConfigurationDescription();
         this.embed = new Discord.EmbedBuilder()
             .setColor(this.member.roles.highest.hexColor)
             .setAuthor({ name: 'Vote Configuration', iconURL: this.member.user.displayAvatarURL({ dynamic: true }) })
             .setDescription(this.voteConfigurationDescription);
-        await this.voteConfigurationMessage.edit({ embeds: [this.embed], components: [this.voteConfigurationMainMenu] })
+        await this.voteConfigurationMessage.edit({ embeds: [this.embed], components: [this.voteConfigurationMainMenu] });
     }
 
     getVoteConfigurationDescription() {
@@ -120,7 +120,7 @@ class Vote {
             
             ## Leaders
             ${this.voteConfiguration.members.join(', ')}
-        `
+        `;
     }
 
     getVoteConfigurationButtons() {
@@ -147,121 +147,121 @@ class Vote {
                     .setLabel('❌ Cancel')
                     .setStyle(4)
                     .setCustomId('voteCancel')
-            ])
+            ]);
     }
 
     async interactionHandler(interaction) {
-        if (!interaction) { return }
+        if (!interaction) { return; }
         if (interaction.member.id != this.member.id) {
-            return await interaction.deferUpdate()
+            return await interaction.deferUpdate();
         }
 
         switch (interaction.customId) {
             case 'voteConfirm':
-                await this.buttonVoteConfirm(interaction)
+                await this.buttonVoteConfirm(interaction);
                 break;
             case 'voteCancel':
-                await this.buttonVoteCancel(interaction)
+                await this.buttonVoteCancel(interaction);
                 break;
             case 'voteFeedbackConfigure':
-                await this.buttonVoteFeedbackConfigure(interaction)
+                await this.buttonVoteFeedbackConfigure(interaction);
                 break;
             case 'voteChannelConfigure':
-                await this.buttonVoteChannelConfigure(interaction)
+                await this.buttonVoteChannelConfigure(interaction);
                 break;
             case 'voteRoleConfigure':
-                await this.buttonVoteRoleConfigure(interaction)
+                await this.buttonVoteRoleConfigure(interaction);
                 break;
             default:
-                this.channel.send('How?')
+                this.channel.send('How?');
                 break;
         }
     }
 
     async endVoteConfigurationPhase(interaction) {
-        await interaction.deferUpdate()
-        await this.voteConfigurationMessage.delete()
-        this.voteConfigurationMessageInteractionCollector.stop()
+        await interaction.deferUpdate();
+        await this.voteConfigurationMessage.delete();
+        this.voteConfigurationMessageInteractionCollector.stop();
     }
 
     async buttonVoteConfirm(interaction) {
         try {
-            await this.endVoteConfigurationPhase(interaction)
-            this.getEmbedStyling()
+            await this.endVoteConfigurationPhase(interaction);
+            this.getEmbedStyling();
             this.voteConfiguration.members.map(async member => {
                 const feedbacks = await getFeedback.getFeedback(member, this.guild, this.bot);
-                await this.startVote(member, feedbacks)
-            })
+                await this.startVote(member, feedbacks);
+            });
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
     }
 
     async startVote(member, feedbacks) {
-        let embedColor = this.voteConfiguration.role.hexColor
-        if (this.embedStyling != undefined && this.embedStyling.embedColor) { embedColor = this.embedStyling.embedColor }
+        let embedColor = this.voteConfiguration.role.hexColor;
+        if (this.embedStyling != undefined && this.embedStyling.embedColor) { embedColor = this.embedStyling.embedColor; }
         this.embed = new Discord.EmbedBuilder()
             .setColor(embedColor)
             .setAuthor({ name: `${member.displayName} to ${this.voteConfiguration.role.name}`, iconURL: member.user.displayAvatarURL({ dynamic: true }) })
-            .setDescription(`${member} \`${member.displayName}\``)
-        if (this.embedStyling != undefined && this.embedStyling.image) { this.embed.setThumbnail(this.embedStyling.image) }
+            .setDescription(`${member} \`${member.displayName}\``);
+        if (this.embedStyling != undefined && this.embedStyling.image) { this.embed.setThumbnail(this.embedStyling.image); }
         this.embed.addFields({
             name: 'Recent Feedback:',
             value: `${feedbacks.length != 0 ? `${feedbacks.slice(
                 0, this.voteConfiguration.maximumFeedbacks).map(
                 (feedback, index) => `\`${(index + 1).toString().padStart(2, ' ')}\` ${feedback}`).join('\n')}` : 'None'}`,
             inline: false
-        })
-        const voteMessage = await this.voteConfiguration.channel.send({ embeds: [this.embed] })
-        for (const emoji of this.emojis) { voteMessage.react(emoji) }
+        });
+        const voteMessage = await this.voteConfiguration.channel.send({ embeds: [this.embed] });
+        for (const emoji of this.emojis) { voteMessage.react(emoji); }
     }
 
     getEmbedStyling() {
         this.settingRoleName = Object.keys(this.settings.roles)
-            .find(roleName => this.settings.roles[roleName] === this.voteConfiguration.role.id)
-        if (!this.settingRoleName) { return }
+            .find(roleName => this.settings.roles[roleName] === this.voteConfiguration.role.id);
+        if (!this.settingRoleName) { return; }
         this.embedStyling = this.voteConfiruationTemplates
-            .find(template => template.settingRole === this.settingRoleName)
+            .find(template => template.settingRole === this.settingRoleName);
     }
 
     async buttonVoteCancel(interaction) {
-        await this.endVoteConfigurationPhase(interaction)
+        await this.endVoteConfigurationPhase(interaction);
     }
 
     async buttonVoteFeedbackConfigure(interaction) {
-        const embedFeedbackConfigure = this.getBaseEmbed()
+        const embedFeedbackConfigure = this.getBaseEmbed();
         embedFeedbackConfigure.setDescription('Choose how many feedbacks you want ViBot to look through');
-        const confirmationMessage = await this.channel.send({ embeds: [embedFeedbackConfigure] })
-        await interaction.deferUpdate()
-        const choice = await confirmationMessage.confirmNumber(10, interaction.member.id)
+        const confirmationMessage = await this.channel.send({ embeds: [embedFeedbackConfigure] });
+        await interaction.deferUpdate();
+        const choice = await confirmationMessage.confirmNumber(10, interaction.member.id);
         if (!choice || isNaN(choice) || choice == 'Cancelled') return await confirmationMessage.delete();
-        this.voteConfiguration.maximumFeedbacks = choice
+        this.voteConfiguration.maximumFeedbacks = choice;
         await confirmationMessage.delete();
-        await this.updateConfirmationMessage()
+        await this.updateConfirmationMessage();
     }
 
     async buttonVoteChannelConfigure(interaction) {
-        const embedFeedbackConfigure = this.getBaseEmbed()
+        const embedFeedbackConfigure = this.getBaseEmbed();
         embedFeedbackConfigure.setDescription('Type a different channel for the vote to be put up in');
-        const confirmationMessage = await this.channel.send({ embeds: [embedFeedbackConfigure] })
-        await interaction.deferUpdate()
-        const configurationRepliedMessage = await interaction.channel.next(null, null, interaction.member.id)
-        const channel = await this.guild.findChannel(configurationRepliedMessage.content)
-        if (channel) { this.voteConfiguration.channel = channel }
+        const confirmationMessage = await this.channel.send({ embeds: [embedFeedbackConfigure] });
+        await interaction.deferUpdate();
+        const configurationRepliedMessage = await interaction.channel.next(null, null, interaction.member.id);
+        const channel = await this.guild.findChannel(configurationRepliedMessage.content);
+        if (channel) { this.voteConfiguration.channel = channel; }
         await confirmationMessage.delete();
-        await this.updateConfirmationMessage()
+        await this.updateConfirmationMessage();
     }
 
     async buttonVoteRoleConfigure(interaction) {
-        const embedFeedbackConfigure = this.getBaseEmbed()
+        const embedFeedbackConfigure = this.getBaseEmbed();
         embedFeedbackConfigure.setDescription('Type a different role for the vote');
-        const confirmationMessage = await this.channel.send({ embeds: [embedFeedbackConfigure] })
-        await interaction.deferUpdate()
-        const configurationRepliedMessage = await interaction.channel.next(null, null, interaction.member.id)
-        const role = await this.guild.findRole(configurationRepliedMessage.content)
-        if (role) { this.voteConfiguration.role = role }
+        const confirmationMessage = await this.channel.send({ embeds: [embedFeedbackConfigure] });
+        await interaction.deferUpdate();
+        const configurationRepliedMessage = await interaction.channel.next(null, null, interaction.member.id);
+        const role = await this.guild.findRole(configurationRepliedMessage.content);
+        if (role) { this.voteConfiguration.role = role; }
         await confirmationMessage.delete();
-        await this.updateConfirmationMessage()
+        await this.updateConfirmationMessage();
     }
 
     getBaseEmbed() {
@@ -270,7 +270,7 @@ class Vote {
             .setAuthor({
                 name: 'Vote Configuration',
                 iconURL: this.member.user.displayAvatarURL({ dynamic: true })
-            })
-        return embed
+            });
+        return embed;
     }
 }
