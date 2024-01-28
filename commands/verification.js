@@ -436,10 +436,9 @@ module.exports = {
                 reactionCollector.stop()
                 return message.delete()
             }
-            message.embeds[0].footer.text = `Opened by ${message.guild.members.cache.get(u.id).nickname || u.tag} - ${message.embeds[0].footer.text}`
-            message.edit({ embeds: message.embeds })
-            //remove reactions and get reactor
             let reactor = message.guild.members.cache.get(u.id)
+            message.embeds[0].data.footer.text = `Opened by ${reactor.displayName || u.tag} - ${member_id}`
+            message.edit({ embeds: message.embeds })
             //stop old reaction collector, start new reaction collector
             reactionCollector.stop()
             let checkXCollector = new Discord.ReactionCollector(message, { filter: (r, u) => u.id == reactor.id && (r.emoji.name === '✅' || r.emoji.name === '❌' || r.emoji.name === '🔒') })
@@ -455,7 +454,7 @@ module.exports = {
                 await message.reactions.removeAll()
                 //lock
                 if (r.emoji.name === '🔒') {
-                    message.embeds[0].footer.text = message.embeds[0].footer.text.split(' ').pop();
+                    message.embeds[0].data.footer.text = `${member_id}`
                     message.edit({ embeds: message.embeds })
                     return module.exports.watchMessage(message, bot, db)
                 }
@@ -465,7 +464,7 @@ module.exports = {
                     message.react('💯')
                     //set embed color to green
                     embed.setColor('#00ff00')
-                    embed.setFooter({ text: `Accepted by "${reactor.nickname}"` })
+                    embed.setFooter({ text: `Accepted by ${reactor.displayName}` })
                     embed.setTimestamp()
                     message.edit({ embeds: [embed] })
                     //log in veri-log
@@ -516,7 +515,11 @@ module.exports = {
                         message.reactions.removeAll()
                         reasonCollector.stop()
                         //lock
-                        if (r.emoji.name === '🔒') return module.exports.watchMessage(message, bot, db)
+                        if (r.emoji.name === '🔒') {
+                            message.embeds[0].data.footer.text = `${member_id}`
+                            message.edit({ embeds: message.embeds })
+                            return module.exports.watchMessage(message, bot, db)
+                        }
                         //1
                         else if (r.emoji.name === '1️⃣') {
                             //add to expelled
@@ -555,7 +558,7 @@ module.exports = {
                                 db.query(`INSERT INTO veriblacklist (id, modid, guildid, reason) VALUES ('${member.id}', '${reactor.id}', '${message.guild.id}', 'Reacted with 2️⃣ to verification.'),('${ign.toLowerCase()}', '${reactor.id}', '${message.guild.id}', 'Reacted with 2️⃣ to verification.')`)
                             }
                             //dm user and explain event boi
-                            member.user.send(`Your application to the server ${message.guild.name} has been denied. Because your account has been flagged, we ask that you continue to play on your account for an additional two weeks before contacting ${reactor} \`${reactor.user.tag} | ${reactor.nickname}\` to appeal. ${er_msg}`)
+                            member.user.send(`Your application to the server ${message.guild.name} has been denied. Because your account has been flagged, we ask that you continue to play on your account for an additional two weeks before contacting ${reactor} \`${reactor.user.tag} | ${reactor.displayName}\` to appeal. ${er_msg}`)
                             //set embed color to red, add wave emote
                             denyMessage('2️⃣')
                         }
@@ -578,7 +581,7 @@ module.exports = {
                         function denyMessage(e) {
                             //set embed color to red, add wave emote
                             embed.setColor(`#ff0000`)
-                            embed.setFooter({ text: `Denied using ${e} by ${reactor.nickname}` })
+                            embed.setFooter({ text: `Denied using ${e} by ${reactor.displayName}` })
                             message.edit({ embeds: [embed] })
                             message.react('👋')
                             //send to verilog
