@@ -1,6 +1,6 @@
 {
   "name": "vibot",
-  "version": "8.8.4",
+  "version": "8.9.0",
   "description": "ViBot",
   "main": "index.js",
   "dependencies": {

@@ -45,7 +45,6 @@ module.exports = {
         await afkModule.createChannel()
         await afkModule.sendButtonChoices()
         await afkModule.sendInitialStatusMessage()
-        await afkModule.createThreads()
         if (afkTemplate.startDelay > 0) setTimeout(() => afkModule.start(), afkTemplate.startDelay*1000)
         else afkModule.start()
     },
@@ -87,6 +86,44 @@ module.exports = {
    }
 }
 
+class AfkButton {
+    constructor({points, disableStart, emote, minRole, minStaffRoles, confirmationMessage, color, logOptions, displayName, limit, name, type, parent, choice, confirm, location, confirmationMedia, start, lifetime}) {
+        // template
+        this.displayName = displayName;
+        this.limit = limit;
+        this.name = name;
+        this.type = type;
+        this.parent = parent;
+        this.choice = choice;
+        this.confirm = confirm;
+        this.location = location;
+        this.confirmationMedia = confirmationMedia;
+        this.start = start;
+        this.lifetime = lifetime;
+
+        // processButtons
+        this.points = points;
+        this.disableStart = disableStart;
+        this.emote = emote;
+        this.minRole = minRole;
+        this.minStaffRoles = minStaffRoles;
+        this.confirmationMessage = confirmationMessage;
+        this.color = color;
+        this.logOptions = logOptions;
+
+        // reactable parameters
+        this.members = [];
+        this.position = null;
+        this.logged = 0;
+    }
+
+    clone() {
+        return new AfkButton({
+            ...this
+        })
+    }
+}
+
 class afkCheck {
     /**
      * @param {AfkTemplate.AfkTemplate} afkTemplate
@@ -123,12 +160,10 @@ class afkCheck {
         this.earlyLocationMembers = [] // All members with early location in the afk
         this.earlySlotMembers = [] // All members with early slots in the afk
         this.dragMembers = [] // All members currently in drag system in the afk
-        this.reactables = Object.keys(afkTemplate.buttons).reduce((obj, key) => { obj[key] = { members: [], position: null, logged: 0 }; return obj }, {}) // All members of each reactable and position on embed
-        this.buttons = afkTemplate.processButtons(this.#message.channel)
+        this.buttons = Object.fromEntries(Object.entries(afkTemplate.processButtons(this.#message.channel)).map(([k, buttons]) => [k, new AfkButton(buttons)]))
+        this.reactRequests = {} // {messageId => AfkButton}
         this.cap = afkTemplate.cap
         this.capButtons = Object.keys(afkTemplate.buttons).filter(key => afkTemplate.buttons[key].limit == 0)
-        this.miniBossGuessing = {}
-        this.miniBossGuessed = false
 
         this.location = location // Location of the afk
         this.singleUseHotfixStopTimersDontUseThisAnywhereElse = false // DO NOT USE THIS. ITS A HOTFIX. https://canary.discord.com/channels/343704644712923138/706670131115196588/1142549685719027822
@@ -147,8 +182,6 @@ class afkCheck {
         this.raidCommandsInteractionHandler = null // raid commands interaction handler
         this.raidChannelsMessage = null // raid channels message
         this.raidChannelsInteractionHandler = null // raid channels interaction handler
-        this.raidDragThreads = {}
-        Object.keys(afkTemplate.buttons).forEach((key) => { if (afkTemplate.buttons[key].type == AfkTemplate.TemplateButtonType.DRAG) this.raidDragThreads[key] = { thread: null, collector: null } })
     }
 
     get active() {
@@ -292,20 +325,21 @@ class afkCheck {
         this.#afkTemplate.processButtons(this.#channel)
         let buttonChoices = this.#afkTemplate.getButtonChoices()
         for (let i of buttonChoices) {
-            if (this.buttons[i].minStaffRoles && !this.buttons[i].minStaffRoles.some(role => this.#leader.roles.cache.has(role.id))) continue
-            let choiceText = this.buttons[i].emote ? `${this.buttons[i].emote.text} **${i}**` : `**${i}**` 
-            switch (this.buttons[i].choice) {
+            const button = this.buttons[i]
+            if (button.minStaffRoles && !button.minStaffRoles.some(role => this.#leader.roles.cache.has(role.id))) continue
+            let choiceText = button.emote ? `${button.emote.text} **${i}**` : `**${i}**` 
+            switch (button.choice) {
                 case AfkTemplate.TemplateButtonChoice.YES_NO_CHOICE:
-                    const text1 = `Do you want to add ${choiceText} reacts to this run?\n If no response is received, this run will use the default ${this.buttons[i].limit} ${choiceText}.`
+                    const text1 = `Do you want to add ${choiceText} reacts to this run?\n If no response is received, this run will use the default ${button.limit} ${choiceText}.`
                     const confirmButton1 = new Discord.ButtonBuilder()
                         .setLabel('✅ Confirm')
                         .setStyle(Discord.ButtonStyle.Success)
                     const cancelButton1 = new Discord.ButtonBuilder()
                     const {value: confirmValue1, interaction: subInteraction1} = await this.#message.confirmPanel(text1, null, confirmButton1, cancelButton1, 30000, true)
-                    this.buttons[i].limit = (confirmValue1 == null || confirmValue1) ? this.buttons[i].limit : 0
+                    button.limit = (confirmValue1 == null || confirmValue1) ? button.limit : 0
                     break
                 case AfkTemplate.TemplateButtonChoice.NUMBER_CHOICE_PRESET:
-                    const text2 = `How many ${choiceText} reacts do you want to add to this run?\n If no response is received, this run will use the default ${this.buttons[i].limit} ${choiceText}.`
+                    const text2 = `How many ${choiceText} reacts do you want to add to this run?\n If no response is received, this run will use the default ${button.limit} ${choiceText}.`
                     const confirmSelectMenu2 = new Discord.StringSelectMenuBuilder()
                         .setPlaceholder(`Number of ${i}s`)
                         .setOptions(
@@ -315,10 +349,10 @@ class afkCheck {
                             { label: 'None', value: '0' },
                         )
                     const {value: confirmValue2, interaction: subInteraction2} = await this.#message.selectPanel(text2, null, confirmSelectMenu2, 30000, false, true)
-                    this.buttons[i].limit = Number.isInteger(parseInt(confirmValue2)) ? parseInt(confirmValue2) : this.buttons[i].limit
+                    button.limit = Number.isInteger(parseInt(confirmValue2)) ? parseInt(confirmValue2) : button.limit
                     break
                 case AfkTemplate.TemplateButtonChoice.NUMBER_CHOICE_CUSTOM:
-                    const text3 = `How many ${choiceText} reacts do you want to add to this run?\n If no response is received, this run will use the default ${this.buttons[i].limit} ${choiceText}.`
+                    const text3 = `How many ${choiceText} reacts do you want to add to this run?\n If no response is received, this run will use the default ${button.limit} ${choiceText}.`
                     const confirmSelectMenu3 = new Discord.StringSelectMenuBuilder()
                         .setPlaceholder(`Number of ${i}s`)
                         .setOptions(
@@ -328,29 +362,11 @@ class afkCheck {
                             { label: 'None', value: '0' },
                         )
                     const {value: confirmValue3, interaction: subInteraction3} = await this.#message.selectPanel(text3, null, confirmSelectMenu3, 30000, true, true)
-                    this.buttons[i].limit = Number.isInteger(parseInt(confirmValue3)) ? parseInt(confirmValue3) : this.buttons[i].limit
+                    button.limit = Number.isInteger(parseInt(confirmValue3)) ? parseInt(confirmValue3) : button.limit
                     break
             }
-            if (this.buttons[i].limit == 0) {
+            if (button.limit == 0) {
                 delete this.buttons[i]
-                delete this.reactables[i]
-            }
-        }
-    }
-
-    async createThreads() {
-        for (let i in this.buttons) {
-            if (this.buttons[i].type == AfkTemplate.TemplateButtonType.DRAG) {
-                this.raidDragThreads[i].thread = await this.#afkTemplate.raidCommandChannel.threads.create({ name: `${this.raidLeaderDisplayName()} Drag ${i}`, reason: `Dragging ${i} Reacts` })
-                this.raidDragThreads[i].collector = new Discord.InteractionCollector(this.#bot, { channel: this.raidDragThreads[i].thread, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
-                this.raidDragThreads[i].collector.on('collect', (interaction) => this.dragInteractionHandler(interaction))
-                const emote = this.buttons[i].emote ? `${this.buttons[i].emote.text} ` : ``
-                let descriptionBeginning = `This thread is for the ${emote}${i}.\n`
-                let descriptionEnd = `Press ✅ on images to allow. Otherwise press ❌ to deny.`
-                let descriptionMiddle = ``
-                if (this.buttons[i].confirmationMessage) descriptionMiddle = `${this.buttons[i].confirmationMessage}\n`
-                const text = `${descriptionBeginning}${descriptionMiddle}${descriptionEnd}`
-                await this.raidDragThreads[i].thread.send({ embeds: [extensions.createEmbed(this.#message, text, this.buttons[i].confirmationMedia)] })
             }
         }
     }
@@ -444,25 +460,38 @@ class afkCheck {
 
         let position = 0
         for (let i in this.buttons) {
-            this.reactables[i].position = position
-            embed.addFields({ name: `${this.buttons[i].emote ? this.buttons[i].emote.text : ''} ${i}${this.buttons[i].limit ? ` (${this.buttons[i].limit})` : ''}${this.buttons[i].location ? ` \`L\`` : `` }`, value: 'None!', inline: true })
+            const button = this.buttons[i]
+            button.position = position
+            embed.addFields({ name: `${button.emote ? button.emote.text : ''} ${i}${button.limit ? ` (${button.limit})` : ''}${button.location ? ` \`L\`` : `` }`, value: 'None!', inline: true })
             position++
         }
 
-        for (const customId of Object.keys(this.reactables)) {
-            const position = this.reactables[customId].position
-            const buttonInfo = Object.values(this.buttons)[position]
-            const emote = (buttonInfo && buttonInfo.emote) ? `${buttonInfo.emote.text} ` : ``
-            if (this.reactables[customId].members.length == 0) {
+        for (let i in this.reactRequests) {
+            const button = this.reactRequests[i]
+            button.position = position
+            embed.addFields({ name: `${button.emote ? button.emote.text : ''} ${button.name} Request ${button.limit ? ` (${button.limit})` : ''}${button.location ? ` \`L\`` : `` }`, value: 'None!', inline: true })
+            position++
+        }
+
+        for (const customId of Object.keys(this.buttons)) {
+            const button = this.buttons[customId]
+            const position = button.position
+            const emote = (button && button.emote) ? `${button.emote.text} ` : ``
+            if (button.members.length == 0) {
                 embed.data.fields[position].value = "None!"
-            } else if (customId.includes('request')) {
-                embed.data.fields[position].value = this.reactables[customId.substring(0, customId.length - 8)].members.reduce((string, id, ind) => string + `${emote ? emote : ind+1}: <@!${id}>\n`, '')
-                embed.data.fields[position].value += this.reactables[customId].members.reduce((string, id, ind) => string + `${emote ? emote : ind+1}: <@!${id}>\n`, '')
-            } else if (this.reactables[`${customId}_request`]) {
-                embed.data.fields[position].value = this.reactables[customId].members.reduce((string, id, ind) => string + `${emote ? emote : ind+1}: <@!${id}>\n`, '')
-                embed.data.fields[position].value += this.reactables[`${customId}_request`].members.reduce((string, id, ind) => string + `${emote ? emote : ind+1}: <@!${id}>\n`, '')
             } else {
-                embed.data.fields[position].value = this.reactables[customId].members.reduce((string, id, ind) => string + `${emote ? emote : ind+1}: <@!${id}>\n`, '')
+                embed.data.fields[position].value = button.members.reduce((string, id, ind) => string + `${emote ? emote : ind+1}: <@!${id}>\n`, '')
+            }
+            if (embed.data.fields[position].value.length >= 1024) embed.data.fields[position].value = '*Too many users to process*'
+        }
+
+        for (const button of Object.values(this.reactRequests)) {
+            const position = button.position
+            const emote = (button && button.emote) ? `${button.emote.text} ` : ``
+            if (button.members.length == 0) {
+                embed.data.fields[position].value = "None!"
+            } else {
+                embed.data.fields[position].value = button.members.reduce((string, id, ind) => string + `${emote ? emote : ind+1}: <@!${id}>\n`, '')
             }
             if (embed.data.fields[position].value.length >= 1024) embed.data.fields[position].value = '*Too many users to process*'
         }
@@ -607,21 +636,21 @@ class afkCheck {
         let reactablesActionRow = []
         let counter = 0
         for (let i in this.buttons) {
-            if (i == 'MiniBossGuessing' && !this.#botSettings.backend.miniBossGuessing) { continue }
-            let disableStart = this.buttons[i].disableStart
-            let start = this.buttons[i].start
-            let end = start + this.buttons[i].lifetime
+            const button = this.buttons[i]
+            let disableStart = button.disableStart
+            let start = button.start
+            let end = start + button.lifetime
             if (disableStart < start && disableStart > this.phase) continue
             if (!(disableStart < start) && start > this.phase) continue
             if (end <= this.phase) continue
-            if (this.capButtons.includes(i)) this.buttons[i].limit = this.cap
+            if (this.capButtons.includes(i)) button.limit = this.cap
             const reactableButton = new Discord.ButtonBuilder()
-                .setStyle(this.buttons[i].color)
+                .setStyle(button.color)
                 .setCustomId(`${i}`)
-            let label = `${this.buttons[i].displayName ? `${i} ` : ``}${this.buttons[i].limit ? ` ${this.reactables[i].members.length}/${this.buttons[i].limit}` : ``}`
+            let label = `${button.displayName ? `${i} ` : ``}${button.limit ? ` ${button.members.length}/${button.limit}` : ``}`
             reactableButton.setLabel(label)
-            if (this.buttons[i].emote) reactableButton.setEmoji(this.buttons[i].emote.id)
-            if (this.buttons[i].limit && this.reactables[i].members.length >= this.buttons[i].limit) reactableButton.setDisabled(true)
+            if (button.emote) reactableButton.setEmoji(button.emote.id)
+            if (button.limit && button.members.length >= button.limit) reactableButton.setDisabled(true)
             if (disableStart < start && start > this.phase) reactableButton.setDisabled(true)
             reactablesActionRow.push(reactableButton)
             counter ++
@@ -643,9 +672,9 @@ class afkCheck {
         let loggingText = ``
         if (this.#botSettings.backend.allowAdditionalCompletes) loggingText += `Completes: \`${this.completes}\`\n`
         for (let i in this.buttons) {
-            const buttonType = this.buttons[i].type
             const buttonInfo = this.buttons[i]
-            const logged = this.reactables[i].logged
+            const buttonType = buttonInfo.type
+            const logged = buttonInfo.logged
             const emote = buttonInfo.emote ? `${buttonInfo.emote.text} ` : ``
             if (buttonType == AfkTemplate.TemplateButtonType.LOG || buttonType == AfkTemplate.TemplateButtonType.LOG_SINGLE) {
                 loggingText += `${emote}${i} Logged: \`${logged}\`\n`
@@ -656,8 +685,8 @@ class afkCheck {
 
     #reactionIsFull(customId) {
         const buttonInfo = this.buttons[customId]
-        return (buttonInfo.limit && this.reactables[customId].members.length >= buttonInfo.limit)
-            || (buttonInfo.parent && buttonInfo.parent.some(i => this.reactables[i].members.length >= this.buttons[i].limit))
+        return (buttonInfo.limit && this.buttons[customId].members.length >= buttonInfo.limit)
+            || (buttonInfo.parent && buttonInfo.parent.some(i => this.buttons[i].members.length >= this.buttons[i].limit))
     }
 
     /**
@@ -667,18 +696,20 @@ class afkCheck {
     async interactionHandler(interaction) {
         if (!interaction.isButton()) return
 
-        if (this.buttons[interaction.customId]) {
-            const buttonType = this.buttons[interaction.customId].type
-            const buttonInfo = this.buttons[interaction.customId]
+        const isReactRequestInteraction = interaction.message.id !== this.raidStatusMessage.id
+        const button = isReactRequestInteraction ? this.reactRequests[interaction.message.id] : this.buttons[interaction.customId]
+        if (button) {
+            const buttonType = button.type
+            const buttonInfo = button
             const emote = buttonInfo.emote ? `${buttonInfo.emote.text} ` : ``
 
             if (buttonInfo.minRole && !interaction.member.roles.cache.has(buttonInfo.minRole.id)) {
                 return await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You do not have the required role ${buttonInfo.minRole} to react to this run.`, null)], ephemeral: true })
             }
-            if (this.reactables[interaction.customId].members.includes(interaction.member.id)) {
+            if (button.members.includes(interaction.member.id)) {
                 return await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have already reacted as ${emote}${interaction.customId}. Try another react or try again next run.`, null)], ephemeral: true })
             }
-            if (interaction.customId.includes('request') && this.reactables[interaction.customId.substring(0, interaction.customId.length - 8)].members.includes(interaction.member.id)) {
+            if (isReactRequestInteraction && this.buttons[button.name].members.includes(interaction.member.id)) {
                 return await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have already reacted as ${emote}${interaction.customId.substring(0, interaction.customId - 7)}. Try another react or try again next run.`, null)], ephemeral: true })
             }
             if (this.#reactionIsFull(interaction.customId)) {
@@ -698,11 +729,6 @@ class afkCheck {
                 case AfkTemplate.TemplateButtonType.POINTS:
                     confirmInteraction = await this.processReactablePoints(interaction)
                     break
-                case AfkTemplate.TemplateButtonType.DRAG:
-                    confirmInteraction = await this.processReactableDrag(interaction)
-                    break
-                case AfkTemplate.TemplateButtonType.OPTION:
-                    return await this.processReactableOption(interaction)
             }
 
             if (!confirmInteraction) return
@@ -711,11 +737,11 @@ class afkCheck {
                 return await confirmInteraction.reply({ embeds: [extensions.createEmbed(interaction, `Too many people have already reacted and confirmed for that. Try another react or try again next run.`, null)], ephemeral: true })
             }
 
-            if (this.reactables[interaction.customId].members.includes(interaction.member.id)) {
+            if (button.members.includes(interaction.member.id)) {
                 return await confirmInteraction.reply({ embeds: [extensions.createEmbed(interaction, `You have already been confirmed for this reaction`, null)], ephemeral: true })
             }
 
-            this.reactables[interaction.customId].members.push(interaction.member.id)
+            button.members.push(interaction.member.id)
 
             if ([
                 AfkTemplate.TemplateButtonType.LOG,
@@ -727,7 +753,7 @@ class afkCheck {
 
             if (buttonInfo.parent) {
                 for (let i of buttonInfo.parent) {
-                    if (!this.reactables[i].members.includes(interaction.member.id)) this.reactables[i].members.push(interaction.member.id)
+                    if (!this.buttons[i].members.includes(interaction.member.id)) this.buttons[i].members.push(interaction.member.id)
                     const parentButtonInfo = this.buttons[i]
                     if (parentButtonInfo.location && !this.earlyLocationMembers.includes(interaction.member.id)) this.earlyLocationMembers.push(interaction.member.id)
                 }
@@ -740,7 +766,7 @@ class afkCheck {
             ])
             return
         }
-        else if (['abort', 'phase', 'cap', 'additional', 'end', 'miniboss'].includes(interaction.customId) || interaction.customId.startsWith('log ')) {
+        else if (['abort', 'phase', 'cap', 'additional', 'end'].includes(interaction.customId) || interaction.customId.startsWith('log ')) {
             if (this.#afkTemplate.minimumStaffRoles.some(roles => roles.every(role => interaction.member.roles.cache.has(role.id)))) return await this.processPhaseControl(interaction)
             else {
                 return await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You do not have the required Staff Role to use this button.`, null)], ephemeral: true })
@@ -768,9 +794,6 @@ class afkCheck {
                 break
             case "end":
                 await this.processPhaseEnd(interaction)
-                break
-            case "miniboss":
-                await this.processPhaseMiniboss(interaction)
                 break
             default:
                 if (interaction.customId.startsWith('log ')) await this.processPhaseLog(interaction)
@@ -933,16 +956,16 @@ class afkCheck {
         let isModded = interaction.customId.split(' ')[1] == 'Modded'
         let choiceText = buttonInfo.emote ? `${buttonInfo.emote.text} **${buttonType} ${button}**` : `**${buttonType} ${button}**`
 
-        if (this.reactables[button].members.length == 0) {
+        if (buttonInfo.members.length == 0) {
             [member, interaction] = await this.#keyNameInputPrompt(interaction)
             if (!member) return
-        } else if (this.reactables[button].members.length == 1) {
-            member = this.#guild.members.cache.get(this.reactables[button].members[0])
+        } else if (buttonInfo.members.length == 1) {
+            member = this.#guild.members.cache.get(buttonInfo.members[0])
         } else {
             const text1 = `Which member do you want to log ${choiceText} reacts for this run?\nChoose or input a username or id.`
             const confirmMemberMenu = new Discord.StringSelectMenuBuilder()
                 .setPlaceholder(`Name of ${button}s`)
-            for (let i of this.reactables[button].members) confirmMemberMenu.addOptions({ label: this.#guild.members.cache.get(i).nickname, value: i })
+            for (let i of buttonInfo.members) confirmMemberMenu.addOptions({ label: this.#guild.members.cache.get(i).nickname, value: i })
             const {value: confirmMemberValue, interaction: logKeyInteraction} = await interaction.selectPanel(text1, null, confirmMemberMenu, 10000, true, true)
             if (confirmMemberValue) member = this.#lookupGuildMember(confirmMemberValue)
             if (!logKeyInteraction) return await interaction.followUp({ embeds: [extensions.createEmbed(interaction, `Timed out. You can dismiss this message.`, null)], ephemeral: true })
@@ -1052,7 +1075,7 @@ class afkCheck {
             let pointsLog = [{ uid: member.id, points: points, reason: `${button}`}]
             await pointLogger.pointLogging(pointsLog, this.#guild, this.#bot, this.#genEmbedBase())
         }
-        this.reactables[button].logged += number
+        this.buttons[button].logged += number
         await this.raidChannelsMessage.edit(this.#genRaidChannels())
     }
 
@@ -1086,48 +1109,6 @@ class afkCheck {
             this.raidChannelsMessage.delete()
         ])
         this.saveBotAfkCheck(true)
-    }
-
-    async processPhaseMiniboss(interaction) {
-        const buttonInfo = this.buttons['MiniBossGuessing']
-
-        if (this.miniBossGuessed) {
-            return await interaction.reply({ content: "You have already set the miniboss.\nPut more runs up to do more miniboss guessing! :)", ephemeral: true })
-        }
-
-        let points = this.#botSettings.points.miniBossGuessingPoints
-        let embed = new Discord.EmbedBuilder()
-            .setTitle('Set the Miniboss')
-            .setDescription(`Choose one of the minibosses below.\nAll of the users who reacted correctly will recieve \`${points}\` points.`)
-            .setColor('#FFFFFF')
-        await interaction.reply({ embeds: [embed], ephemeral: true, fetchReply: true })
-        const choice = await interaction.confirmListEmojisWithText(
-            Object.keys(buttonInfo.logOptions).map(key => this.#bot.storedEmojis[buttonInfo.logOptions[key].emojiName].id),
-            Object.keys(buttonInfo.logOptions).map(key => buttonInfo.logOptions[key].name),
-            Object.keys(buttonInfo.logOptions).map(key => buttonInfo.logOptions[key].emojiName),
-            interaction.member.id)
-        if (!choice || choice == 'Cancelled') {
-            return interaction.editReply({ embeds: [failEmbed], ephemeral: true, components: [] })
-        }
-
-        let choicePrettyName = buttonInfo.logOptions[choice].name;
-        let choiceEmote = this.#bot.storedEmojis[buttonInfo.logOptions[choice].emojiName].text;
-        embed.setDescription(`You set the Miniboss to ${choiceEmote} **${choicePrettyName}** ${choiceEmote}\nThank you!`)
-
-        await interaction.followUp({ embeds: [embed], components: [], ephemeral: true })
-        await interaction.deleteReply()
-
-        const [rows] = await this.#db.promise().query('SELECT userid FROM miniBossEvent WHERE guildid = ? AND raidid = ? AND miniboss = ?', [this.#guild.id, this.#raidID, choice])
-        await this.#db.promise().query('UPDATE users SET points = points + ? WHERE id IN (?)', [points, rows.map(row => row.userid)])
-        rows.forEach(row => {
-            let user = this.#guild.members.cache.get(row.userid)
-            try {
-                user.send(`Congratulations!\nYou have been awarded ${points} points for guessing the correct miniboss!\nThe Miniboss was ${choiceEmote} **${choicePrettyName}** ${choiceEmote}`)
-            } catch (e) {
-                console.log('Could not DM user\n\n', e)
-            }
-        })
-        this.miniBossGuessed = true
     }
 
     async processReconnect(interaction) {
@@ -1205,12 +1186,12 @@ class afkCheck {
             await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You are not eligible for this reaction as you do not have the required Supporter role`, null)], ephemeral: true })
             return false
         }
-        if (this.reactables[interaction.customId].members.length > this.#botSettings.numerical.supporterlimit) {
+        if (this.buttons[interaction.customId].members.length > this.#botSettings.numerical.supporterlimit) {
             this.buttons[interaction.customId].limit = this.#botSettings.numerical.supporterlimit
             await interaction.reply({ embeds: [extensions.createEmbed(interaction, `Too many Supporters have already reacted and received guaranteed slots. Try another react or try again next run.`, null)], ephemeral: true })
             return false 
         }
-        if (this.reactables[interaction.customId].members.length > this.#botSettings.supporter[`supporterLimit${supporterRole}`]) {
+        if (this.buttons[interaction.customId].members.length > this.#botSettings.supporter[`supporterLimit${supporterRole}`]) {
             await interaction.reply({ embeds: [extensions.createEmbed(interaction, `Too many Supporters have already reacted and received guaranteed slots. Try another react or try again next run.`, null)], ephemeral: true })
             return false
         }
@@ -1272,131 +1253,6 @@ class afkCheck {
         return interaction
     }
 
-    async processReactableDrag(interaction) {
-        const buttonInfo = this.buttons[interaction.customId]
-        const emote = buttonInfo.emote ? `${buttonInfo.emote.text} ` : ``
-
-        function isImageURL(url) {
-            return /^https?:\/\/.+\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(url)
-        }
-
-        if (this.dragMembers.includes(interaction.member.id)) {
-            return await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have already reacted as ${emote}${interaction.customId}. Please wait for the RL to accept or deny you.`, null)], ephemeral: true })
-        }
-
-        let descriptionBeginning = `You reacted with ${emote}${interaction.customId}.\n`
-        let descriptionEnd = `Press ⬆️ and upload an image (have a link on hand) to confirm your reaction. Otherwise press ❌`
-        let descriptionMiddle = ``
-        if (buttonInfo.confirmationMessage) descriptionMiddle = `${buttonInfo.confirmationMessage}\n`
-        const text = `${descriptionBeginning}${descriptionMiddle}${descriptionEnd}`
-        const confirmButton = new Discord.ButtonBuilder()
-            .setLabel('⬆️ Upload')
-            .setStyle(Discord.ButtonStyle.Success)
-        const cancelButton = new Discord.ButtonBuilder()
-        const {value: confirmValue, interaction: subInteraction} = await interaction.confirmMenuPanel(text, buttonInfo.confirmationMedia, confirmButton, cancelButton, 30000, true)
-        if (!subInteraction) {
-            await interaction.editReply({ embeds: [extensions.createEmbed(interaction, `Timed out. You can dismiss this message.`, null)], components: [] }) 
-            return false
-        } else if (!confirmValue) {
-            await subInteraction.update({ embeds: [extensions.createEmbed(interaction, `Cancelled. You can dismiss this message.`, null)], components: [] })
-            return false
-        } else if (!isImageURL(confirmValue)) {
-            await subInteraction.update({ embeds: [extensions.createEmbed(interaction, `Invalid Image URL. You can dismiss this message.`, null)], components: [] })
-            return false
-        } else if (this.reactables[interaction.customId].members.length >= buttonInfo.limit) {
-            await subInteraction.update({ embeds: [extensions.createEmbed(interaction, `Too many people have already reacted and confirmed for that. Try another react or try again next run.`, null)], components: [] })
-            return false
-        } else if (buttonInfo.parent) {
-            for (let i of buttonInfo.parent) if (this.reactables[i].members.length >= this.buttons[i].limit) {
-                await subInteraction.update({ embeds: [extensions.createEmbed(interaction, `Too many people have already reacted and confirmed for the main react ${i}. Try another react or try again next run.`, null)], components: [] })
-                return false
-            }
-        }
-        await subInteraction.update({ embeds: [extensions.createEmbed(interaction, `Successfully sent Image. You can dismiss this message.`, null)], components: [] })
-        const threadEmbed = new Discord.EmbedBuilder()
-            .setDescription(`${interaction.member.id}`)
-            .setImage(confirmValue)
-        const threadActionRow = new Discord.ActionRowBuilder().addComponents([
-            new Discord.ButtonBuilder()
-                .setCustomId(`${interaction.member.id}`)
-                .setLabel('✅ Accept')
-                .setStyle(Discord.ButtonStyle.Success),
-            new Discord.ButtonBuilder()
-                .setCustomId('Deny')
-                .setLabel('❌ Deny')
-                .setStyle(Discord.ButtonStyle.Danger)
-        ])
-        await this.raidDragThreads[interaction.customId].thread.send({ content: `${interaction.member}`, embeds: [threadEmbed], components: [threadActionRow] })
-        this.dragMembers.push(interaction.member.id)
-        return false
-    }
-
-    async processReactableOption(interaction) {
-        const buttonInfo = this.buttons[interaction.customId]
-        const emote = buttonInfo.emote ? `${buttonInfo.emote.text} ` : ``
-        let points = this.#botSettings.points.miniBossGuessingPoints
-
-        let failEmbed = new Discord.EmbedBuilder()
-            .setTitle('Interaction Failed')
-            .setDescription('You either cancelled your interaction, or the interaction timed out.\nTry again if this was a mistake')
-            .setColor('#FF0000')
-        let embed = new Discord.EmbedBuilder()
-            .setTitle('Guess The MiniBoss!')
-            .setDescription(`Choose one of the minibosses below.\nIf you guess correctly you get \`${points}\``)
-            .setColor('#FFFFFF')
-        await interaction.reply({ embeds: [embed], ephemeral: true, fetchReply: true })
-        const choice = await interaction.confirmListEmojisWithText(
-            Object.keys(buttonInfo.logOptions).map(key => this.#bot.storedEmojis[buttonInfo.logOptions[key].emojiName].id),
-            Object.keys(buttonInfo.logOptions).map(key => buttonInfo.logOptions[key].name),
-            Object.keys(buttonInfo.logOptions).map(key => buttonInfo.logOptions[key].emojiName),
-            interaction.member.id)
-        if (!choice || choice == 'Cancelled') {
-            let ind = this.reactables[interaction.customId].members.indexOf(interaction.member.id)
-            if (ind > -1) this.reactables[interaction.customId].members.splice(ind)
-            return await interaction.editReply({ embeds: [failEmbed], ephemeral: true, components: [] }) 
-        }
-        let choicePrettyName = buttonInfo.logOptions[choice].name;
-        let choiceEmote = this.#bot.storedEmojis[buttonInfo.logOptions[choice].emojiName].text;
-        embed.setDescription(`You guessed ${choiceEmote} **${choicePrettyName}** ${choiceEmote}`)
-        this.miniBossGuessing[interaction.member.id] = choice
-        await interaction.followUp({ embeds: [embed], components: [], ephemeral: true })
-        await interaction.deleteReply()
-    }
-
-    async dragInteractionHandler(interaction) {
-        await interaction.message.delete()
-        const memberID = interaction.message.embeds[0].description
-        const member = this.#guild.members.cache.get(memberID)
-        if (!member || !memberID) return
-        const DMEmbed = extensions.createEmbed(interaction, 'PlaceHolder', null)
-        if (interaction.customId == 'Deny') {
-            let ind = this.dragMembers.indexOf(memberID)
-            if (ind > -1) this.dragMembers.splice(ind)
-            DMEmbed.setDescription(`You have been denied by ${interaction.member}.`)
-            await member.send({ embeds: [DMEmbed], components: [] }).catch(er => {})
-        } else {
-            let customID = null
-            for (let i in this.raidDragThreads) if (interaction.channel.id == this.raidDragThreads[i].thread.id) customID = i
-            if (!customID) return
-            const buttonInfo = this.buttons[customID]
-            if (this.buttons[customID].location) DMEmbed.setDescription(`You have been accepted by ${interaction.member}.\nThe location for this run has been set to \`${this.location}\`, get there ASAP!${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`)
-            else DMEmbed.setDescription(`You have been accepted by ${interaction.member}.\nYou do not get location for this reaction.${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`)
-            await member.send({ embeds: [DMEmbed], components: [] }).catch(er => {})
-
-            this.reactables[customID].members.push(memberID)
-            if (buttonInfo.parent) {
-                for (let i of buttonInfo.parent) {
-                    if (!this.reactables[i].members.includes(memberID)) this.reactables[i].members.push(memberID)
-                    if (parentButtonInfo.location && !this.earlyLocationMembers.includes(memberID)) this.earlyLocationMembers.push(memberID)
-                }
-            }
-            if (!this.earlySlotMembers.includes(memberID)) this.earlySlotMembers.push(memberID)
-            if (buttonInfo.location && !this.earlyLocationMembers.includes(memberID)) this.earlyLocationMembers.push(memberID)
-            await this.raidCommandsMessage.edit(this.#genRaidCommands())
-            await this.raidInfoMessage.edit(this.#genRaidInfo())
-        }
-    }
-
     async postAfk(interaction) {
         this.singleUseHotfixStopTimersDontUseThisAnywhereElse = true // DO NOT USE THIS. ITS A HOTFIX. https://canary.discord.com/channels/343704644712923138/706670131115196588/1142549685719027822
         if (this.moveInEarlysTimer) clearInterval(this.moveInEarlysTimer)
@@ -1448,20 +1304,17 @@ class afkCheck {
         
         if (this.#botSettings.backend.points) {
             let pointsLog = []
-            for (let i in this.reactables) for (let memberID of this.reactables[i].members) {
-                switch (this.buttons[i].type) {
+            for (let button of [...Object.values(this.buttons), ...Object.values(this.reactRequests)]) for (let memberID of button.members) {
+                switch (button.type) {
                     case AfkTemplate.TemplateButtonType.OPTION:
-                        if (this.miniBossGuessing.hasOwnProperty(memberID) && this.members.includes(memberID)) {
-                            this.#db.query(`INSERT INTO miniBossEvent (userid, guildid, raidid, unixtimestamp, miniboss) VALUES ('${memberID}', '${this.#guild.id}', '${this.#raidID}', '${Date.now()}', '${this.miniBossGuessing[memberID]}')`)
-                        }
                         break
                     case AfkTemplate.TemplateButtonType.SUPPORTER:
                         this.#db.query(`INSERT INTO supporterusage (guildid, userid, utime) VALUES ('${this.#guild.id}', '${memberID}', '${Date.now()}')`)
                     default:
-                        let points = this.buttons[i].points
-                        if (this.buttons[i].type != AfkTemplate.TemplateButtonType.POINTS && this.#guild.members.cache.get(memberID).roles.cache.hasAny(...this.#afkTemplate.perkRoles.map(role => role.id))) points = points * this.#botSettings.points.supportermultiplier
+                        let points = button.points
+                        if (button.type != AfkTemplate.TemplateButtonType.POINTS && this.#guild.members.cache.get(memberID).roles.cache.hasAny(...this.#afkTemplate.perkRoles.map(role => role.id))) points = points * this.#botSettings.points.supportermultiplier
                         await this.#db.promise().query('UPDATE users SET points = points + ? WHERE id = ?', [points, memberID])
-                        pointsLog.push({ uid: memberID, points: points, reason: `${i}`})
+                        pointsLog.push({ uid: memberID, points: points, reason: `${button.name}`})
                 }
             }
             this.#pointlogMid = await pointLogger.pointLogging(pointsLog, this.#guild, this.#bot, this.#genEmbedBase())
@@ -1524,16 +1377,6 @@ class afkCheck {
             phaseActionRow.push(phaseLogAdditionalButton)
         }
 
-        if (this.#botSettings.backend.miniBossGuessing) {
-            counter++
-            const phaseMinibossButton = new Discord.ButtonBuilder()
-                .setLabel('Set Miniboss')
-                .setStyle(Discord.ButtonStyle.Secondary)
-                .setCustomId('miniboss')
-                .setEmoji(this.#bot.storedEmojis.oryxSanctuaryPortal.id)
-            phaseActionRow.push(phaseMinibossButton)
-        }
-
         for (let i in this.buttons) {
             if (this.buttons[i].type != AfkTemplate.TemplateButtonType.LOG && this.buttons[i].type != AfkTemplate.TemplateButtonType.LOG_SINGLE) continue
             const logOptions = Object.keys(this.buttons[i].logOptions)
@@ -1575,24 +1418,23 @@ class afkCheck {
 
     async updateReactsRequest(reactable, number) {
         let reactablesRequestActionRow = []
-        const i = `${reactable}_request`
-        this.reactables[i] = { members: [], position: this.reactables[reactable].position}
-        this.buttons[i] = JSON.parse(JSON.stringify(this.buttons[reactable]))
-        this.buttons[i].limit = number
-        this.buttons[i].disableStart = 69
-        this.buttons[i].start = 69
-        this.buttons[i].lifetime = 69
-        const emote = this.buttons[i].emote ? `${this.buttons[i].emote.text} ` : ``
+        const button = this.buttons[reactable].clone()
+        button.limit = number
+        button.disableStart = 69
+        button.start = 69
+        button.lifetime = 69
+        const emote = button.emote ? `${button.emote.text} ` : ``
         const reactableButton = new Discord.ButtonBuilder()
             .setStyle(2)
-            .setCustomId(i)
-        let label = `${this.buttons[i].displayName ? `${reactable} ` : ``}${this.buttons[i].limit ? ` ${this.reactables[i].members.length}/${this.buttons[i].limit}` : ``}`
+            .setCustomId(button.name)
+        let label = `${button.displayName ? `${reactable} ` : ``}${button.limit ? ` ${button.members.length}/${button.limit}` : ``}`
         reactableButton.setLabel(label)
-        if (this.buttons[i].emote) reactableButton.setEmoji(this.buttons[i].emote.id)
+        if (button.emote) reactableButton.setEmoji(button.emote.id)
         reactablesRequestActionRow.push(reactableButton)
         const component = new Discord.ActionRowBuilder({ components: reactablesRequestActionRow })
 
         let requestMessage = await this.#afkTemplate.raidStatusChannel.send({ content: `@here`, embeds: [extensions.createEmbed(this.#message, `${this.#leader} is requesting a ${emote}${reactable}.`)], components: [component] })
+        this.reactRequests[requestMessage.id] = button
         let requestInteractionHandler = new Discord.InteractionCollector(this.#bot, { message: requestMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
         requestInteractionHandler.on('collect', interaction => this.interactionHandler(interaction))
         let updateRequestPanelTimer = setInterval(() => this.updateRequestPanel(requestMessage, requestInteractionHandler, reactable, updateRequestPanelTimer), 5000)
@@ -1605,14 +1447,14 @@ class afkCheck {
             clearInterval(timer)
         }
         let reactablesRequestActionRow = []
-        const i = `${reactable}_request`
+        const button = this.reactRequests[message.id]
         const reactableButton = new Discord.ButtonBuilder()
             .setStyle(2)
-            .setCustomId(i)
-        let label = `${this.buttons[i].displayName ? `${reactable} ` : ``}${this.buttons[i].limit ? ` ${this.reactables[i].members.length}/${this.buttons[i].limit}` : ``}`
+            .setCustomId(button.name)
+        let label = `${button.displayName ? `${reactable} ` : ``}${button.limit ? ` ${button.members.length}/${button.limit}` : ``}`
         reactableButton.setLabel(label)
-        if (this.buttons[i].emote) reactableButton.setEmoji(this.buttons[i].emote.id)
-        if (this.reactables[i].members.length >= this.buttons[i].limit) reactableButton.setDisabled(true)
+        if (button.emote) reactableButton.setEmoji(button.emote.id)
+        if (button.members.length >= button.limit) reactableButton.setDisabled(true)
         reactablesRequestActionRow.push(reactableButton)
         const component = new Discord.ActionRowBuilder({ components: reactablesRequestActionRow })
         message.edit({ components: [component] })
