@@ -40,7 +40,7 @@ module.exports = {
             raidID = locationValue
         }
 
-        const raid = bot.afkChecks[raidID]
+        const raid = bot.afkModules[raidID]
         message.react('✅')
 
         let text = `Which react would you like to request more of for the run?`

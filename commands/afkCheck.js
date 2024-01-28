@@ -113,8 +113,25 @@ class AfkButton {
 
         // reactable parameters
         this.members = [];
-        this.position = null;
         this.logged = 0;
+    }
+
+    label() {
+        return `${this.displayName ? `${this.name} ` : ``}${this.limit ? ` ${this.members.length}/${this.limit}` : ``}`
+    }
+
+    memberListLabel(isRequest) {
+        return `${this.emote ? this.emote.text : ''} ${this.name}${isRequest ? ' Request' : ''}${this.limit ? ` (${this.limit})` : ''}${this.location ? ` \`L\`` : `` }`
+    }
+
+    memberList() {
+        const emote = this.emote ? `${this.emote.text} ` : ``
+        if (this.members.length == 0) {
+            return "None!"
+        } else {
+            const memberString = this.members.reduce((string, id, ind) => string + `${emote ? emote : ind+1}: <@!${id}>\n`, '')
+            return memberString >= 1024 ? '*Too many users to process*' : memberString
+        }
     }
 
     clone() {
@@ -124,7 +141,7 @@ class AfkButton {
     }
 
     toJSON() {
-        return JSON.stringify(this)
+        return JSON.stringify({...this})
     }
 }
 
@@ -462,42 +479,14 @@ class afkCheck {
         embed.setDescription(`**Raid Leader: ${this.#leader} \`\`${this.#leader.nickname}\`\`\nVC: ${this.#channel ? this.#channel : "VCLess"}\nLocation:** \`\`${this.location}\`\` ${this.flag ? ` in (${this.flag})` : ''}`)
         embed.setFooter(this.#genEmbedFooter())
 
-        let position = 0
         for (let i in this.buttons) {
             const button = this.buttons[i]
-            button.position = position
-            embed.addFields({ name: `${button.emote ? button.emote.text : ''} ${i}${button.limit ? ` (${button.limit})` : ''}${button.location ? ` \`L\`` : `` }`, value: 'None!', inline: true })
-            position++
+            embed.addFields({ name: button.memberListLabel(false), value: button.memberList(), inline: true })
         }
 
         for (let i in this.reactRequests) {
             const button = this.reactRequests[i]
-            button.position = position
-            embed.addFields({ name: `${button.emote ? button.emote.text : ''} ${button.name} Request ${button.limit ? ` (${button.limit})` : ''}${button.location ? ` \`L\`` : `` }`, value: 'None!', inline: true })
-            position++
-        }
-
-        for (const customId of Object.keys(this.buttons)) {
-            const button = this.buttons[customId]
-            const position = button.position
-            const emote = (button && button.emote) ? `${button.emote.text} ` : ``
-            if (button.members.length == 0) {
-                embed.data.fields[position].value = "None!"
-            } else {
-                embed.data.fields[position].value = button.members.reduce((string, id, ind) => string + `${emote ? emote : ind+1}: <@!${id}>\n`, '')
-            }
-            if (embed.data.fields[position].value.length >= 1024) embed.data.fields[position].value = '*Too many users to process*'
-        }
-
-        for (const button of Object.values(this.reactRequests)) {
-            const position = button.position
-            const emote = (button && button.emote) ? `${button.emote.text} ` : ``
-            if (button.members.length == 0) {
-                embed.data.fields[position].value = "None!"
-            } else {
-                embed.data.fields[position].value = button.members.reduce((string, id, ind) => string + `${emote ? emote : ind+1}: <@!${id}>\n`, '')
-            }
-            if (embed.data.fields[position].value.length >= 1024) embed.data.fields[position].value = '*Too many users to process*'
+            embed.addFields({ name: button.memberListLabel(true), value: button.memberList(), inline: true })
         }
 
         return embed
@@ -651,8 +640,7 @@ class afkCheck {
             const reactableButton = new Discord.ButtonBuilder()
                 .setStyle(button.color)
                 .setCustomId(`${i}`)
-            let label = `${button.displayName ? `${i} ` : ``}${button.limit ? ` ${button.members.length}/${button.limit}` : ``}`
-            reactableButton.setLabel(label)
+                .setLabel(button.label())
             if (button.emote) reactableButton.setEmoji(button.emote.id)
             if (button.limit && button.members.length >= button.limit) reactableButton.setDisabled(true)
             if (disableStart < start && start > this.phase) reactableButton.setDisabled(true)
@@ -1431,8 +1419,7 @@ class afkCheck {
         const reactableButton = new Discord.ButtonBuilder()
             .setStyle(2)
             .setCustomId(button.name)
-        let label = `${button.displayName ? `${reactable} ` : ``}${button.limit ? ` ${button.members.length}/${button.limit}` : ``}`
-        reactableButton.setLabel(label)
+            .setLabel(button.label())
         if (button.emote) reactableButton.setEmoji(button.emote.id)
         reactablesRequestActionRow.push(reactableButton)
         const component = new Discord.ActionRowBuilder({ components: reactablesRequestActionRow })
@@ -1455,8 +1442,7 @@ class afkCheck {
         const reactableButton = new Discord.ButtonBuilder()
             .setStyle(2)
             .setCustomId(button.name)
-        let label = `${button.displayName ? `${reactable} ` : ``}${button.limit ? ` ${button.members.length}/${button.limit}` : ``}`
-        reactableButton.setLabel(label)
+            .setLabel(button.label())
         if (button.emote) reactableButton.setEmoji(button.emote.id)
         if (button.members.length >= button.limit) reactableButton.setDisabled(true)
         reactablesRequestActionRow.push(reactableButton)
