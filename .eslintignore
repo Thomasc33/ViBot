@@ -4,7 +4,6 @@ commands/afkTemplate.js
 commands/avatar.js
 commands/botstatus.js
 commands/bruh.js
-commands/bugreport.js
 commands/changename.js
 commands/characterList.js
 commands/check.js
