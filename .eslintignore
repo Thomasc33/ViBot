@@ -76,7 +76,6 @@ commands/verification.js
 commands/vetBan.js
 commands/vetVerification.js
 commands/vibotChannels.js
-commands/vote.js
 commands/warnRemove.js
 commands/warns.js
 jobs/runner.js
