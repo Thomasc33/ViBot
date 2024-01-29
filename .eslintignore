@@ -55,7 +55,6 @@ commands/roleAssignment.js
 commands/russianRoulette.js
 commands/script.js
 commands/setStatus.js
-commands/setup.js
 commands/status.js
 commands/suspend.js
 commands/suspendremove.js
