@@ -41,7 +41,6 @@ class Vote {
         this.roleType = args.shift() || '';
         this.guildVoteTemplates = null;
         this.template = null;
-        this.settingRoleName = null;
         this.embedStyling = { color: null, image: null };
         this.voteConfigurationTemplates = voteConfigurationTemplates;
 
@@ -58,16 +57,8 @@ class Vote {
         if (!this.voteConfiguration.role) { return await this.channel.send(`Could not find role \`${this.roleType}\``); }
         if (this.voteConfiguration.members.length == 0) { return await this.channel.send('No members found.'); }
 
-        await this.initializeVoteProcess();
-        await this.manageVoteMessages();
-    }
-
-    async initializeVoteProcess() {
         this.getVoteConfigurationButtons();
         await this.message.delete();
-    }
-
-    async manageVoteMessages() {
         await this.sendConfirmationMessage();
         await this.updateConfirmationMessage();
     }
@@ -84,16 +75,16 @@ class Vote {
     }
 
     async updateConfirmationMessage() {
-        this.getVoteConfigurationDescription();
+        const voteConfigurationDescription = this.getVoteConfigurationDescription();
         this.embed = new Discord.EmbedBuilder()
             .setColor(this.member.roles.highest.hexColor)
             .setAuthor({ name: 'Vote Configuration', iconURL: this.member.user.displayAvatarURL({ dynamic: true }) })
-            .setDescription(this.voteConfigurationDescription);
+            .setDescription(voteConfigurationDescription);
         await this.voteConfigurationMessage.edit({ embeds: [this.embed], components: [this.getVoteConfigurationButtons()] });
     }
 
     getVoteConfigurationDescription() {
-        this.voteConfigurationDescription = `
+        return `
             This vote will be for ${this.voteConfiguration.role}, inside of ${this.voteConfiguration.channel}
             ${this.emojiDatabase.feedback.text} \`${this.voteConfiguration.maximumFeedbacks}\`
             
@@ -130,7 +121,6 @@ class Vote {
     }
 
     async interactionHandler(interaction) {
-        if (!interaction) { return; }
         if (interaction.member.id != this.member.id) {
             return await interaction.reply({ content: 'You are not permitted to configure this', ephemeral: true });
         }
@@ -158,19 +148,19 @@ class Vote {
     }
 
     async endVoteConfigurationPhase(interaction) {
-        await interaction.deferUpdate();
-        await interaction.delete();
+        await interaction.message.delete();
         this.voteConfigurationMessageInteractionCollector.stop();
     }
 
     async buttonVoteConfirm(interaction) {
         try {
+            await interaction.reply({ content: 'The votes will be put up', ephemeral: true });
             await this.endVoteConfigurationPhase(interaction);
             this.getEmbedStyling();
-            this.voteConfiguration.members.map(async member => {
+            Promise.all(this.voteConfiguration.members.map(async member => {
                 const feedbacks = await getFeedback.getFeedback(member, this.guild, this.bot);
                 await this.startVote(member, feedbacks);
-            });
+            }));
         } catch (error) {
             ErrorLogger.log(error, this.bot, this.guild);
         }
@@ -196,11 +186,11 @@ class Vote {
     }
 
     getEmbedStyling() {
-        this.settingRoleName = Object.keys(this.settings.roles)
+        const settingRoleName = Object.keys(this.settings.roles)
             .find(roleName => this.settings.roles[roleName] === this.voteConfiguration.role.id);
-        if (!this.settingRoleName) { return; }
-        this.embedStyling = this.voteConfiruationTemplates
-            .find(template => template.settingRole === this.settingRoleName);
+        if (!settingRoleName) { return; }
+        this.embedStyling = this.voteConfigurationTemplates
+            .find(template => template.settingRole === settingRoleName);
     }
 
     async buttonVoteCancel(interaction) {
@@ -211,36 +201,31 @@ class Vote {
     async buttonVoteFeedbackConfigure(interaction) {
         const embedFeedbackConfigure = this.getBaseEmbed();
         embedFeedbackConfigure.setDescription('Choose how many feedbacks you want ViBot to look through');
-        const confirmationMessage = await this.channel.send({ embeds: [embedFeedbackConfigure] });
-        await interaction.deferUpdate();
+        const confirmationMessage = await interaction.reply({ embeds: [embedFeedbackConfigure], fetchReply: true });
         const choice = await confirmationMessage.confirmNumber(10, interaction.member.id);
         if (!choice || isNaN(choice) || choice == 'Cancelled') return await confirmationMessage.delete();
-        this.voteConfiguration.maximumFeedbacks = choice;
         await confirmationMessage.delete();
+        this.voteConfiguration.maximumFeedbacks = choice;
         await this.updateConfirmationMessage();
     }
 
     async buttonVoteChannelConfigure(interaction) {
         const embedFeedbackConfigure = this.getBaseEmbed();
         embedFeedbackConfigure.setDescription('Type a different channel for the vote to be put up in');
-        const confirmationMessage = await this.channel.send({ embeds: [embedFeedbackConfigure] });
-        await interaction.deferUpdate();
+        await interaction.update({ embeds: [embedFeedbackConfigure] });
         const configurationRepliedMessage = await interaction.channel.next(null, null, interaction.member.id);
         const channel = await this.guild.findChannel(configurationRepliedMessage.content);
         if (channel) { this.voteConfiguration.channel = channel; }
-        await confirmationMessage.delete();
         await this.updateConfirmationMessage();
     }
 
     async buttonVoteRoleConfigure(interaction) {
         const embedFeedbackConfigure = this.getBaseEmbed();
         embedFeedbackConfigure.setDescription('Type a different role for the vote');
-        const confirmationMessage = await this.channel.send({ embeds: [embedFeedbackConfigure] });
-        await interaction.deferUpdate();
+        await interaction.update({ embeds: [embedFeedbackConfigure] });
         const configurationRepliedMessage = await interaction.channel.next(null, null, interaction.member.id);
         const role = await this.guild.findRole(configurationRepliedMessage.content);
         if (role) { this.voteConfiguration.role = role; }
-        await confirmationMessage.delete();
         await this.updateConfirmationMessage();
     }
 
