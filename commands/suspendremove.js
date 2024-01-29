@@ -11,22 +11,57 @@ module.exports = {
     role: 'officer',
     async execute(message, args, bot, db) {
         const settings = bot.settings[message.guild.id]
-        let member = message.guild.findMember(args[0])
+        const member = message.guild.findMember(args[0])
         if (!member) return message.channel.send('Member not found. Please try again')
         db.query(`SELECT * FROM suspensions WHERE id = '${member.user.id}'`, async function (err, rows) {
             if (err) ErrorLogger.log(err, bot, message.guild)
             for (let i in rows) { if (rows[i].suspended == true) { rows.splice(i, 1) } }
             for (let i in rows) { rows[i].index = parseInt(i) }
+            if (rows.length == 0) return message.channel.send('There are no expired suspensions found for the user. Please unsuspend them and try again.')
             let embed = new Discord.EmbedBuilder()
                 .setTitle(`Confirm Action`)
                 .setColor('#F04747')
-                .setDescription(rows.map(sus => `${sus.index + 1}. By <@!${sus.modid}> ended <t:${(parseInt(sus.uTime)/1000).toFixed(0)}:R> at <t:${(parseInt(sus.uTime)/1000).toFixed(0)}:f>\`\`\`${sus.reason}\`\`\``).join('\n'))
+                .setDescription(rows.map(sus => `${sus.index + 1}. By <@!${sus.modid}> was set to end <t:${(parseInt(sus.uTime)/1000).toFixed(0)}:R> at <t:${(parseInt(sus.uTime)/1000).toFixed(0)}:f>\`\`\`${sus.reason}\`\`\``).join('\n'))
             let confirmMessage = await message.channel.send({ embeds: [embed] })
             const choice = await confirmMessage.confirmNumber(rows.length, message.member.id);
             if (!choice || isNaN(choice) || choice == 'Cancelled') return await confirmMessage.delete();
             let removeSuspension = rows[choice - 1]
-            db.query(`DELETE FROM suspensions WHERE (id, guildid, suspended, reason, modid, uTime, botid) = ('${removeSuspension.id}', '${removeSuspension.guildid}', '${removeSuspension.suspended}', '${removeSuspension.reason}', '${removeSuspension.modid}', '${removeSuspension.uTime}', '${removeSuspension.botid}')`)
             await confirmMessage.delete()
+
+            let response = ''
+            let responseEmbed = new Discord.EmbedBuilder()
+                .setDescription(`__What's the reason for removing ${member.nickname}'s suspension?__`)
+            let responseEmbedMessage = await message.channel.send({ embeds: [responseEmbed] })
+            let responseCollector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id === message.author.id })
+            let responsePromise = await new Promise(async (resolve) => {
+                responseCollector.on('collect', async function (mes) {
+                    response = mes.content.trim()
+                    await mes.delete()
+                    responseCollector.stop()
+                    responseEmbed.setDescription(`__Are you sure you want to remove the following suspension?__\n${removeSuspension.reason}`)
+                    await responseEmbedMessage.edit({ embeds: [responseEmbed] }).then(async confirmMessage => {
+                        if (await confirmMessage.confirmButton(message.author.id)) {
+                            await responseEmbedMessage.delete()
+                            resolve(true);
+                        }
+                    })
+                    await responseEmbedMessage.delete()
+                    resolve(false);
+                })
+            })
+            if (!responsePromise) return
+            db.query(`DELETE FROM suspensions WHERE id = ${removeSuspension.id} AND modid = '${removeSuspension.modid}'`)
+            await message.react('✅')
+
+            const modlogs = message.guild.channels.cache.get(settings.channels.modlogs);
+            let removeembed = new Discord.EmbedBuilder()
+                .setColor('#ff0000')
+                .setTitle('Suspend Remove Information')
+                .setDescription(`The following suspension was removed from \`\`${member.nickname}\`\` | <@!${member.id}>  and was set to end <t:${(parseInt(removeSuspension.uTime) / 1000).toFixed(0)}:R> \n\`\`\`${removeSuspension.reason}\`\`\``)
+                .addFields([{ name: `Removed by`, value:`\`${message.guild.members.cache.get(message.author.id).nickname}\` | ${message.guild.members.cache.get(message.author.id)}`, inline: true },
+                { name: `Original suspension issued by`, value: ` \`${message.guild.members.cache.get(removeSuspension.modid).nickname}\` | <@${removeSuspension.modid}>`, inline: true },
+                { name: `Reason for removal`, value: response, inline: false }])
+            modlogs.send({ embeds: [removeembed] });
         })
     }
 }
