@@ -26,16 +26,14 @@ module.exports = {
     ],
     requiredArgs: 4,
     getNotes(guild) {
-        const types = clConfig[guild.id]?.logtypes.map(type => type + (clConfig[guild.id]?.currentweeks.find(cw => cw.case == type) ? '\\*' : '')).sort(a => a[a.length - 1] == '*' ? -1 : 1);
+        const types = clConfig[guild.id]?.logtypes
+            // maps to an array, splits and decamelcases, appends * to current week values
+            .map(type => type.replace(/([A-Z])/g, ' $1').replace(/^./, (firstChar) => firstChar.toUpperCase()) + (clConfig[guild.id]?.currentweeks.find(cw => cw.case == type) ? '\\*' : ''))
+            // sorts values to have current week values in front
+            .sort(a => a[a.length - 1] == '*' ? -1 : 1);
         return { title: 'Available Logs', value: (types ? `${types.join(', ')}\n\n*\\* logs associated with quota*` : `Not setup for guild ${guild.id}`) };
     },
-    getSlashCommandData(guild) {
-        const json = slashCommandJSON(this, guild);
-        // Magic regex!
-        // Makes the log type names look pretty :3
-        if (clConfig[guild.id]?.logtypes.length <= 25) json[0].options[2].choices = clConfig[guild.id].logtypes.map((k) => ({ name: k?.deCamelCase(), value: k }));
-        return json;
-    },
+    getSlashCommandData(guild) { return slashCommandJSON(this, guild); },
     async autocomplete(interaction) {
         const focusedValue = interaction.options.getFocused();
         const types = clConfig[interaction.guild.id]?.logtypes;
