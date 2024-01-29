@@ -276,6 +276,11 @@ module.exports = {
         let keyCollector = new Discord.ReactionCollector(message, { filter: KeyFilter })
         keyCollector.on('collect', async function (r, u) {
             let reactor = message.guild.members.cache.get(u.id)
+            let embed = new Discord.EmbedBuilder()
+            embed.data = message.embeds[0].data
+            let member = message.guild.members.cache.get(embed.data.footer.text)
+            message.embeds[0].data.footer.text = `Opened by ${reactor.displayName || u.tag} - ${message.embeds[0].footer.text}`
+            message.edit({ embeds: message.embeds })
             message.reactions.removeAll()
                 .then(message.react('💯'))
                 .then(message.react('👋'))
@@ -283,9 +288,6 @@ module.exports = {
             let ManualVerificationCollector = new Discord.ReactionCollector(message, { filter: ManualFilter })
             ManualVerificationCollector.on('collect', async function (r, u) {
                 if (!(u.id == reactor.id)) return;
-                let embed = new Discord.EmbedBuilder()
-                embed.data = message.embeds[0].data
-                let member = message.guild.members.cache.get(embed.data.footer.text)
                 const info = {
                     role: vetRaider,
                     guild: message.guild,
@@ -300,7 +302,7 @@ module.exports = {
                         //verify
                         await message.react('💯')
                         embed.setColor('#00ff00')
-                        embed.setFooter({ text: `Accepted by ${reactor.nickname}` })
+                        embed.setFooter({ text: `Accepted by ${reactor.displayName}` })
                         await message.edit({ embeds: [embed] })
                         await member.roles.add(vetRaider.id)
                         if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) await member.roles.remove(settings.roles.unverified)
@@ -320,7 +322,7 @@ module.exports = {
                         //deny
                         await message.react('👋')
                         embed.setColor('#ff0000')
-                        embed.setFooter({ text: `Rejected by ${reactor.nickname}` })
+                        embed.setFooter({ text: `Rejected by ${reactor.displayName}` })
                         await message.edit({ embeds: [embed] })
                         manualVetVerifyLog(message, u.id, bot, db)
                         try {
@@ -337,6 +339,8 @@ module.exports = {
                         removeFromArray(member.id)
                         break;
                     case '🔒':
+                        message.embeds[0].data.footer.text = `${member.id}`
+                        message.edit({ embeds: message.embeds })
                         message.react('🔑')
                         ManualVerificationCollector.stop()
                         break;
