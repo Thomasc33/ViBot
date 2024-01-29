@@ -31,12 +31,19 @@ module.exports = {
             let response = ''
             let responseEmbed = new Discord.EmbedBuilder()
                 .setDescription(`__What's the reason for removing ${member.nickname}'s suspension?__`)
+                .addFields(
+                    { name: 'Mod', value: `<@${removeSuspension.modid}>`, inline: true },
+                    { name: 'When', value: removeSuspension.unixTimestamp ? `<t:${Math.floor(removeSuspension.unixTimestamp/1000)}:t>` : 'Unknown', inline: true },
+                    { name: 'Ends', value: `<t:${Math.floor(removeSuspension.uTime/1000)}:f>`, inline: true },
+                    { name: 'Suspension Reason', value: removeSuspension.reason || 'No Reason' }
+                )
             let responseEmbedMessage = await message.channel.send({ embeds: [responseEmbed] })
             let responseCollector = new Discord.MessageCollector(message.channel, { filter: m => m.author.id === message.author.id })
             let responsePromise = await new Promise(async (resolve) => {
                 responseCollector.on('collect', async function (mes) {
                     response = mes.content.trim()
                     await mes.delete()
+                    responseEmbed.addFields({ name: 'Removal Reason', value: response || 'No Reason Provided' })
                     responseCollector.stop()
                     responseEmbed.setDescription(`__Are you sure you want to remove the following suspension?__\n${removeSuspension.reason}`)
                     await responseEmbedMessage.edit({ embeds: [responseEmbed] }).then(async confirmMessage => {
