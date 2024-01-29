@@ -200,7 +200,7 @@ class afkCheck {
         }
         else {
             this.#bot.afkChecks[this.#raidID] = {
-                afkTemplateName: this.#afkTemplate.templateName,
+                afkTemplateName: this.afkTemplateName,
                 message: this.#message,
                 guild: this.#guild,
                 channel: this.#channel,
