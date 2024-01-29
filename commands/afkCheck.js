@@ -164,6 +164,9 @@ class afkCheck {
     get vcOptions() { return this.#afkTemplate.vcOptions }
 
     get channel() { return this.#channel }
+    
+    // needed for parsemembers
+    get afkTemplateName() { return this.#afkTemplate.templateName }
 
     raidLeaderDisplayName() {
         return this.#leader.displayName.replace(/[^a-z|]/gi, '').split('|')[0]
@@ -197,7 +200,7 @@ class afkCheck {
         }
         else {
             this.#bot.afkChecks[this.#raidID] = {
-                afkTemplateName: this.#afkTemplate.templateName,
+                afkTemplateName: this.afkTemplateName,
                 message: this.#message,
                 guild: this.#guild,
                 channel: this.#channel,
