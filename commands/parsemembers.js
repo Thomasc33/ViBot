@@ -104,6 +104,7 @@ module.exports = {
             parseStatusEmbed.data.fields[1].value = 'Processing Data';
             await parseStatusMessage.edit({ embeds: [parseStatusEmbed] });
             let raiders = imgPlayers.map(imgPlayer => imgPlayer.toLowerCase());
+            /** @type {Discord.Collection<Discord.Snowflake,Discord.GuildMember>} */
             let voiceUsers = []
             let alts = []
             let crashers = []
@@ -117,7 +118,8 @@ module.exports = {
             voiceUsers = raidVc.members;
             console.log(raidMembers);
             for (let player of raiders) {
-                let member = message.guild.findMember(player);
+                const member = message.guild.findMember(player);
+
                 if (member == null) {
                     crashers.push(player);
                     kickList = kickList.concat(` ${player}`)
@@ -130,12 +132,12 @@ module.exports = {
                     findA.push(player)
                 }
             }
-            for (let i in voiceUsers) {
-                if (voiceUsers[i].roles.highest.position >= message.guild.roles.cache.get(settings.roles.almostrl).position) continue;
-                if (!voiceUsers[i].nickname) continue
-                let nick = voiceUsers[i].nickname.toLowerCase().replace(/[^a-z|]/gi, '')
+            for (let [i,member]  of voiceUsers) {
+                if (member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.almostrl).position) continue;
+                if (!member.nickname) continue
+                let nick = member.nickname.toLowerCase().replace(/[^a-z|]/gi, '')
                 if (!raiders.includes(nick)) {
-                    alts.push(`<@!${voiceUsers[i].id}>`);
+                    alts.push(`<@!${member.id}>`);
                 }
             }
 
@@ -148,17 +150,11 @@ module.exports = {
             crashers = filterNames(crashers, matchedCrashers);
             alts = filterNames(alts, matchedCrashers);
 
-            let crashersS = ' ',
-                altsS = ' ',
-                movedS = ' ',
-                find = `;find `
-            for (let i in crashers) { crashersS = crashersS.concat(crashers[i]) + ', ' }
-            for (let i in alts) { altsS = altsS.concat(alts[i]) + ', ' }
-            for (let i in otherChannel) { movedS = movedS.concat(otherChannel[i]) + '\n' }
-            for (let i in findA) { find = find.concat(findA[i]) + ' ' }
-            if (crashersS == ' ') { crashersS = 'None' }
-            if (altsS == ' ') { altsS = 'None' }
-            if (movedS == ' ') { movedS = 'None' }
+            let crashersS = crashers.join(', ') || 'None',
+                altsS = alts.join(', ') || 'None',
+                movedS = otherChannel.join('\n') || 'None',
+                find = `;find ${findA.join(' ')}`
+
             let embed = new Discord.EmbedBuilder()
                 .setTitle(`Parse for ${raid.afkTitle()}`)
                 .setColor('#00ff00')
@@ -182,16 +178,16 @@ module.exports = {
             let crashers = []
             let findA = []
             let kickList = '/kick'
+            const members = Object.values(raid.reactables).flat()
             for (let player of raiders) {
                 let member = message.guild.findMember(player);
                 if (member == null) {
                     crashers.push(player);
                     kickList = kickList.concat(` ${player}`)
-                } else if (!raid.members.includes(member.id)) {
-                    if (member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.almostrl).position)
-                        continue;
-                    else crashers.unshift(`<@!${member.id}>`);
-
+                } else if (!members.includes(member.id)) {
+                    if (member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.almostrl).position) continue;
+                    
+                    crashers.unshift(`<@!${member.id}>`);
                     kickList = kickList.concat(` ${player}`)
                     findA.push(player)
                 }
@@ -465,7 +461,7 @@ function reassembleAndCheckNames(splitNames, inRaidNames) {
 
 function filterNames(namesArray, matchedMap) {
     return namesArray.filter(name => {
-        for (let [matchedName, originalNames] of matchedMap.entries()) {
+        for (let [, originalNames] of matchedMap.entries()) {
             if (originalNames.includes(name)) {
                 return false; // Exclude this name as it's part of a matched set
             }
