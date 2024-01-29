@@ -115,7 +115,6 @@ module.exports = {
 
             raid.earlySlotMembers.forEach(m => raidMembers.push(m));
             voiceUsers = raidVc.members;
-            console.log(raidMembers);
             for (let player of raiders) {
                 let member = message.guild.findMember(player);
                 if (member == null) {
