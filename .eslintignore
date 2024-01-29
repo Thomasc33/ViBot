@@ -4,7 +4,6 @@ commands/afkTemplate.js
 commands/avatar.js
 commands/botstatus.js
 commands/bruh.js
-commands/bugreport.js
 commands/changename.js
 commands/characterList.js
 commands/check.js
@@ -51,12 +50,10 @@ commands/reload.js
 commands/removeAlt.js
 commands/removePending.js
 commands/request.js
-commands/reset.js
 commands/roleAssignment.js
 commands/russianRoulette.js
 commands/script.js
 commands/setStatus.js
-commands/setup.js
 commands/status.js
 commands/suspend.js
 commands/suspendremove.js

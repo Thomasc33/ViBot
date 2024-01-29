@@ -5,7 +5,10 @@ const { slashCommandJSON } = require('../utils.js');
 module.exports = {
     name: 'puzzle',
     role: 'eventrl',
-    description: 'solve shatters puzzle',
+    description: 'Solve the Shatters puzzle',
+    getNotes() {
+        return '🟩 - On\n🟥 - Off\n🟪 - Hit once each in any order to solve';
+    },
     getSlashCommandData(guild) { return slashCommandJSON(this, guild); },
     /**
      *
@@ -19,7 +22,7 @@ module.exports = {
         const ephemeral = message instanceof Discord.ChatInputCommandInteraction;
 
         const embed = new Discord.EmbedBuilder()
-            .setTitle('Shatters Puzzle')
+            .setTitle('Shatters Puzzle Solver')
             .setDescription('Click the buttons to toggle the lights on and off. The goal is to set all the lights to green.')
             .setColor('#015c21');
 
@@ -57,15 +60,17 @@ module.exports = {
                 collector.stop();
                 const solution = new Set(lightsOutSolver(puzzle));
                 // use red and green buttons to show solution
-                embed.setDescription(`Solution:
-                ${solution.has(0) ? '🟪' : puzzle[0][0] ? '🟩' : '🟥'} ${solution.has(1) ? '🟪' : puzzle[0][1] ? '🟩' : '🟥'} ${solution.has(2) ? '🟪' : puzzle[0][2] ? '🟩' : '🟥'}
-                ${solution.has(3) ? '🟪' : puzzle[1][0] ? '🟩' : '🟥'} ${solution.has(4) ? '🟪' : puzzle[1][1] ? '🟩' : '🟥'} ${solution.has(5) ? '🟪' : puzzle[1][2] ? '🟩' : '🟥'}
-                ${solution.has(6) ? '🟪' : puzzle[2][0] ? '🟩' : '🟥'} ${solution.has(7) ? '🟪' : puzzle[2][1] ? '🟩' : '🟥'} ${solution.has(8) ? '🟪' : puzzle[2][2] ? '🟩' : '🟥'}`);
+                embed.setDescription('Hit each 🟪 once in any order to solve');
+                embed.addFields({
+                    name: 'Solution:',
+                    value: `${solution.has(0) ? '🟪' : puzzle[0][0] ? '🟩' : '🟥'} ${solution.has(1) ? '🟪' : puzzle[0][1] ? '🟩' : '🟥'} ${solution.has(2) ? '🟪' : puzzle[0][2] ? '🟩' : '🟥'}
+                            ${solution.has(3) ? '🟪' : puzzle[1][0] ? '🟩' : '🟥'} ${solution.has(4) ? '🟪' : puzzle[1][1] ? '🟩' : '🟥'} ${solution.has(5) ? '🟪' : puzzle[1][2] ? '🟩' : '🟥'}
+                            ${solution.has(6) ? '🟪' : puzzle[2][0] ? '🟩' : '🟥'} ${solution.has(7) ? '🟪' : puzzle[2][1] ? '🟩' : '🟥'} ${solution.has(8) ? '🟪' : puzzle[2][2] ? '🟩' : '🟥'}` });
                 return interaction.update({ embeds: [embed], components: [] });
             }
             if (interaction.customId == 'reset') {
                 puzzle = [[false, false, false], [false, false, false], [false, false, false]];
-                buttons.forEach(button => button.setStyle(4).setLabel('R'));
+                buttons.forEach(button => button.setStyle(4).setLabel('🟥'));
                 return interaction.update({ components: actionRows });
             }
             const move = parseInt(interaction.customId);
