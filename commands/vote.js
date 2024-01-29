@@ -55,21 +55,11 @@ class Vote {
     }
 
     async startProcess() {
-        if (!this.validateRole()) { return; }
-        if (!this.validateMembers()) { return; }
+        if (!this.voteConfiguration.role) { return await this.channel.send(`Could not find role \`${this.roleType}\``); }
+        if (this.voteConfiguration.members.length == 0) { return await this.channel.send('No members found.'); }
 
         await this.initializeVoteProcess();
         await this.manageVoteMessages();
-    }
-
-    async validateRole() {
-        if (!this.voteConfiguration.role) { await this.channel.send(`Could not find role \`${this.roleType}\``); return false; }
-        return true;
-    }
-
-    async validateMembers() {
-        if (this.voteConfiguration.members.length == 0) { await this.channel.send('No members found.'); return false; }
-        return true;
     }
 
     async initializeVoteProcess() {
