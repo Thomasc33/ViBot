@@ -45,6 +45,9 @@ bot.on('interactionCreate', logWrapper('message', async (logger, interaction) =>
     // Validate the server is whitelisted
     if (interaction.guild && !serverWhiteList.includes(interaction.guild.id)) return logger('serverBlacklisted');
 
+    // Triggers when an option is selected in context menu, before a command is run
+    if (interaction.isAutocomplete()) return await messageManager.handleAutocomplete(interaction);
+
     // Validate the interaction is a command
     if (interaction.isChatInputCommand()) return await messageManager.handleCommand(interaction, true);
     if (interaction.isUserContextMenuCommand()) return await messageManager.handleCommand(interaction, true);
