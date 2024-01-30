@@ -13,9 +13,8 @@ module.exports = {
         const settings = bot.settings[message.guild.id]
         const member = message.guild.findMember(args[0])
         if (!member) return message.channel.send('Member not found. Please try again')
-        db.query(`SELECT * FROM suspensions WHERE id = '${member.user.id}'`, async function (err, rows) {
+        db.query(`SELECT * FROM suspensions WHERE id = ? AND suspended = 0`, [member.id], async function (err, rows) {
             if (err) ErrorLogger.log(err, bot, message.guild)
-            for (let i in rows) { if (rows[i].suspended == true) { rows.splice(i, 1) } }
             for (let i in rows) { rows[i].index = parseInt(i) }
             if (rows.length == 0) return message.channel.send('There are no expired suspensions found for the user. Please unsuspend them and try again.')
             let embed = new Discord.EmbedBuilder()
