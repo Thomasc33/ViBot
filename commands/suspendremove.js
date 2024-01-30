@@ -57,7 +57,7 @@ module.exports = {
                 })
             })
             if (!responsePromise) return
-            db.query(`DELETE FROM suspensions WHERE id = ${removeSuspension.id} AND modid = '${removeSuspension.modid}'`)
+            db.query('DELETE FROM suspensions WHERE id = ? AND modid = ? AND uTime = ?', [removeSuspension.id, removeSuspension.modid, removeSuspension.uTime])
             await message.react('✅')
 
             const modlogs = message.guild.channels.cache.get(settings.channels.modlogs);
