@@ -180,7 +180,6 @@ class afkCheck {
         this.members = [] // All members in the afk
         this.earlyLocationMembers = [] // All members with early location in the afk
         this.earlySlotMembers = [] // All members with early slots in the afk
-        this.dragMembers = [] // All members currently in drag system in the afk
         this.buttons = Object.fromEntries(Object.entries(afkTemplate.processButtons(this.#message.channel)).map(([k, buttons]) => [k, new AfkButton(buttons)]))
         this.reactRequests = {} // {messageId => AfkButton}
         this.cap = afkTemplate.cap
@@ -279,7 +278,6 @@ class afkCheck {
                 pointlogMid: this.#pointlogMid,
                 raidInfoMessage: this.raidInfoMessage,
                 raidChannelsMessage: this.raidChannelsMessage,
-                raidDragThreads: this.raidDragThreads,
             }
         }
         fs.writeFileSync('./data/afkChecks.json', JSON.stringify(this.#bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.#bot, this.#guild) })
@@ -702,7 +700,7 @@ class afkCheck {
                 return await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have already reacted as ${emote}${interaction.customId}. Try another react or try again next run.`, null)], ephemeral: true })
             }
             if (isReactRequestInteraction && this.buttons[button.name].members.includes(interaction.member.id)) {
-                return await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have already reacted as ${emote}${interaction.customId.substring(0, interaction.customId - 7)}. Try another react or try again next run.`, null)], ephemeral: true })
+                return await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have already reacted as ${emote}${interaction.customId}. Try another react or try again next run.`, null)], ephemeral: true })
             }
             if (this.#reactionIsFull(interaction.customId)) {
                 return await interaction.reply({ embeds: [extensions.createEmbed(interaction, `Too many people have already reacted and confirmed for that. Try another react or try again next run.`, null)], ephemeral: true })
@@ -806,11 +804,6 @@ class afkCheck {
         this.raidStatusInteractionHandler.stop()
         this.raidCommandsInteractionHandler.stop()
         this.raidChannelsInteractionHandler.stop()
-
-        for (let i in this.raidDragThreads) {
-            if (this.raidDragThreads[i].collector) this.raidDragThreads[i].collector.stop()
-            if (this.raidDragThreads[i].thread) await this.raidDragThreads[i].thread.delete()
-        }
 
         if (this.moveInEarlysTimer) clearInterval(this.moveInEarlysTimer)
         if (this.updatePanelTimer) clearInterval(this.updatePanelTimer)
@@ -1085,11 +1078,6 @@ class afkCheck {
         this.raidCommandsInteractionHandler.stop()
         this.raidChannelsInteractionHandler.stop()
 
-        for (let i in this.raidDragThreads) {
-            if (this.raidDragThreads[i].collector) this.raidDragThreads[i].collector.stop()
-            if (this.raidDragThreads[i].thread) await this.raidDragThreads[i].thread.delete()
-        }
-
         if (this.#channel) await this.#channel.delete()
 
         this.deleted_by = this.#guild.members.cache.get(interaction.member.id)
@@ -1298,8 +1286,6 @@ class afkCheck {
             let pointsLog = []
             for (let button of [...Object.values(this.buttons), ...Object.values(this.reactRequests)]) for (let memberID of button.members) {
                 switch (button.type) {
-                    case AfkTemplate.TemplateButtonType.OPTION:
-                        break
                     case AfkTemplate.TemplateButtonType.SUPPORTER:
                         this.#db.query(`INSERT INTO supporterusage (guildid, userid, utime) VALUES ('${this.#guild.id}', '${memberID}', '${Date.now()}')`)
                     default:

@@ -42,8 +42,6 @@ const TemplateButtonType = {
     'LOG': 1,
     'SUPPORTER': 2,
     'POINTS': 3,
-    'DRAG': 4,
-    'OPTION': 5,
     'LOG_SINGLE': 6,
 }
 
