@@ -135,9 +135,7 @@ class AfkButton {
     }
 
     clone() {
-        return new AfkButton({
-            ...this
-        })
+        return new AfkButton({...this})
     }
 
     toJSON() {
