@@ -53,7 +53,6 @@ module.exports = {
 
         async function printError(err) {
             ErrorLogger.log(err, bot, member.guild);
-            const reply = await interaction.fetchReply();
 
             const errEmbed = new Discord.EmbedBuilder()
                 .setTitle('Changelog Error')
@@ -62,8 +61,7 @@ module.exports = {
                 .setDescription(`Could not perform changelog for ${member}`)
                 .addFields({ name: 'Reason', value: `${err}` });
 
-            if (reply) interaction.editReply({ embeds: [errEmbed], components: [] });
-            else interaction.reply({ embeds: [errEmbed], ephemeral: true, allowedMentions: { repliedUser: false } });
+            await interaction.reply({ embeds: [errEmbed], ephemeral: true, allowedMentions: { repliedUser: false } });
         }
 
         const modlogs = interaction.guild.channels.cache.get(bot.settings[interaction.member.guild.id]?.channels.modlogs);
