@@ -48,7 +48,7 @@ module.exports = {
         }));
 
         // match changelog types with what the user is typing (focusedValue), takes first 25 values
-        const filteredValues = typeAliases.filter(type => type.aliases.some(alias => alias.toLowerCase().includes(focusedValue.toLowerCase()))).slice(0, 25);
+        const filteredValues = typeAliases.filter(type => type.aliases.some(alias => alias.toLowerCase().includes(focusedValue.trim().toLowerCase()))).slice(0, 25);
         // mapping type to display pretty name and return json value
         await interaction.respond(filteredValues.map(type => ({
             name: type.value.replace(/([A-Z])/g, ' $1').replace(/^./, (firstChar) => firstChar.toUpperCase()), // regex: uppercase the first letter
