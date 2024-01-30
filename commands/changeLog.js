@@ -38,10 +38,21 @@ module.exports = {
         const focusedValue = interaction.options.getFocused();
         const types = clConfig[interaction.guild.id]?.logtypes;
         if (!types) return;
-        // match changelog types with what the user is typing (focusedValue)
-        const filtered = types.filter(type => type.toLowerCase().includes(focusedValue.toLowerCase())).slice(0, 25);
-        // regex: put a space after each capitalized word and then uppercase the first letter
-        await interaction.respond(filtered.map(type => ({ name: type.replace(/([A-Z])/g, ' $1').replace(/^./, (firstChar) => firstChar.toUpperCase()), value: type })));
+        // create map of valid aliases to types
+        const typeAliases = types.map(type => ({
+            aliases: [
+                type,
+                type.replace(/([A-Z])/g, ' $1') // regex: put a space after each capitalized word
+            ],
+            value: type
+        }));
+
+        // match changelog types with what the user is typing (focusedValue), takes first 25 values
+        const filteredValues = typeAliases.filter(type => type.aliases.some(alias => alias.toLowerCase().includes(focusedValue.toLowerCase()))).slice(0, 25);
+        // mapping type to display pretty name and return json value
+        await interaction.respond(filteredValues.map(type => ({
+            name: type.value.replace(/([A-Z])/g, ' $1').replace(/^./, (firstChar) => firstChar.toUpperCase()), // regex: uppercase the first letter
+            value: type.value })));
     },
     /**
      * @param {Discord.Message | Discord.CommandInteraction} interaction
