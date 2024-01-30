@@ -88,6 +88,10 @@ class LegacyCommandOptions {
         if (this.#optTypeMatch(SlashArgType.User, k)) return this.args[k];
     }
 
+    getRole(k) {
+        if (this.#optTypeMatch(SlashArgType.Role, k)) return this.args[k];
+    }
+
     getInteger(k) {
         if (this.#optTypeMatch(SlashArgType.Integer, k)) return this.args[k];
     }
@@ -112,6 +116,11 @@ class LegacyCommandOptions {
                 if (!member) throw new LegacyParserError(`User \`${value}\` not found`);
                 this.#users.push(member);
                 return member;
+            }
+            case SlashArgType.Role: {
+                const role = this.#message.guild.findRole(value);
+                if (!role) throw new LegacyParserError(`Role \`${value}\` not found`);
+                return role;
             }
             case SlashArgType.String: return value;
             case SlashArgType.Integer: return parseInt(value);

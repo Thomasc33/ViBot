@@ -42,20 +42,32 @@ module.exports = {
     },
     async handleReactionRow(bot, interaction) {
         if (!(interaction instanceof Discord.ButtonInteraction)) return false;
+        const messageKey = `messagebuttons:${interaction.message.id}`;
         // eslint-disable-next-line new-cap
-        const data = await client.HGETALL('messagebuttons:' + interaction.message.id);
+        const data = await client.HGETALL(messageKey);
         if (!data.command || !data.callback) return false;
         if (data.allowedUser && data.allowedUser != interaction.user.id) return false;
         const command = bot.commands.get(data.command) || bot.commands.find(cmd => cmd.alias && cmd.alias.includes(data.command));
         const callback = command[data.callback];
         const db = getDB(interaction.guild.id);
+        const updateStateFunc = async (k, v) => {
+            // eslint-disable-next-line new-cap
+            await client.EVAL(`
+                    local state = cjson.decode(redis.call('HGET', KEYS[1], 'state'))
+                    state[ARGV[1]] = ARGV[2]
+                    redis.call('HSET', KEYS[1], 'state', cjson.encode(state))
+                `, {
+                keys: [messageKey],
+                arguments: [k, v]
+            });
+        };
         if (data.token) {
             const resp = new MockMessage(new Discord.InteractionWebhook(bot, data.whid, data.token), interaction);
-            await callback(bot, resp, db, interaction.customId, JSON.parse(data.state));
+            await callback(bot, resp, db, interaction.customId, JSON.parse(data.state), updateStateFunc);
         } else {
             const resp = interaction.message;
             resp.interaction = interaction;
-            await callback(bot, resp, db, interaction.customId, JSON.parse(data.state));
+            await callback(bot, resp, db, interaction.customId, JSON.parse(data.state), updateStateFunc);
         }
         return true;
     }
