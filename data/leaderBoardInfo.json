@@ -310,11 +310,27 @@
                     ]
                 },
                 {
-                    "prettyName": "Steamwork Completes",
+                    "prettyName": "Advanced Nest Completes",
+                    "emoji": "advancedNestBee",
+                    "embedColor": "#469628",
+                    "dbRows": [
+                        "advancedNestRuns"
+                    ]
+                },
+                {
+                    "prettyName": "Steamworks Completes",
                     "emoji": "SteamworksBoss",
                     "embedColor": "#3b3e46",
                     "dbRows": [
                         "steamworkRuns"
+                    ]
+                },
+                {
+                    "prettyName": "Advanced Steamworks Completes",
+                    "emoji": "exaltedAdvancedSteamworks",
+                    "embedColor": "#3b3e46",
+                    "dbRows": [
+                        "advancedSteamworkRuns"
                     ]
                 },
                 {
