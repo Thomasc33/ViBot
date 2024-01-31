@@ -43,7 +43,7 @@ module.exports = {
             name: type.replace(/([A-Z])/g, ' $1').replace(/^./, (firstChar) => firstChar.toUpperCase()), // regex: uppercase the first letter
             aliases: [
                 type.toLowerCase(),
-                type.toLowerCase().replace(/([A-Z])/g, ' $1') // regex: put a space after each capitalized word
+                type.replace(/([A-Z])/g, ' $1').toLowerCase() // regex: put a space after each capitalized word
             ],
             value: type
         }));
