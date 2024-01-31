@@ -319,6 +319,10 @@ class AfkTemplate {
         }
     }
 
+    getButton(buttonName) {
+        return this.buttons.find(button => button.name === buttonName)
+    }
+
     #validateTemplateGuild(guild, channels = null) {
         const otherGuild = this.#bot.guilds.cache.get(guild)
         if (!otherGuild) return false
@@ -398,7 +402,7 @@ class AfkTemplate {
         this.capButton = this.#template.capButton
         this.phases = this.#template.phases
         this.body = this.#template.body
-        this.buttons = this.#template.buttons
+        this.buttons = Object.values(this.#template.buttons) // Temporary until the website is updated to match
         this.reacts = this.#template.reacts
         this.templateID = this.#template.templateId
         this.parentTemplateID = this.#template.parentTemplateId
@@ -469,30 +473,6 @@ class AfkTemplate {
         return description
     }
 
-    processButtons(channel) {
-        return Object.entries(this.#template.buttons).reduce((obj, [key, button]) => {
-            obj[key] = {
-                ...button,
-                points: typeof button.points == 'string' ? this.#botSettings.points[button.points] : button.points ?? 0,
-                disableStart: button.disableStart || button.start,
-                emote: this.#bot.storedEmojis[button.emote],
-                minRole: this.#guild.roles.cache.get(this.#botSettings.roles[button.minRole]),
-                minStaffRoles: button.minStaffRoles && button.minStaffRoles.map(role => this.#guild.roles.cache.get(this.#botSettings.roles[role])),
-                confirmationMessage: button.confirmationMessage && this.processMessages(channel, button.confirmationMessage),
-                color: button.color in TemplateButtonColors ? button.color : Discord.ButtonStyle.Secondary,
-                logOptions: button.logOptions && Object.entries(button.logOptions).reduce((obj, [key, logOption]) => {
-                    obj[key] = {
-                        ...logOption,
-                        points: typeof logOption.points == 'string' ? this.#botSettings.points[logOption.points] : logOption.points ?? 0,
-                        multiplier: typeof logOption.multiplier == 'string' ? this.#botSettings.points[logOption.multiplier] : logOption.multiplier ?? 1,
-                    }
-                    return obj
-                }, {})
-            }
-            return obj
-        }, {})
-    }
-
     processMessages(channel, currentMessage) {
         let newMessage1 = ""
         let newMessage2 = ""
@@ -516,7 +496,7 @@ class AfkTemplate {
     }
 }
 
-module.exports = { AfkTemplate, TemplateVCOptions, TemplateVCState, TemplateButtonType, TemplateButtonChoice, templateNamePrompt, AfkTemplateValidationError, resolveTemplateAlias, resolveTemplateList,
+module.exports = { AfkTemplate, TemplateVCOptions, TemplateVCState, TemplateButtonType, TemplateButtonColors, TemplateButtonChoice, templateNamePrompt, AfkTemplateValidationError, resolveTemplateAlias, resolveTemplateList,
     name: 'afkinfo',
     description: 'Gives information about afk checks on the bot.',
     args: '<number/reset/delete/show> (guildID/all)',

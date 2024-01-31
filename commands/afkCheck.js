@@ -107,7 +107,7 @@ class AfkButton {
     #logOptions;
     #isCap;
 
-    constructor({points, disableStart, emote, minRole, minStaffRoles, confirmationMessage, color, logOptions, displayName, limit, name, type, parent, choice, confirm, location, confirmationMedia, start, lifetime, isCap}) {
+    constructor(botSettings, storedEmojis, guild, {points, disableStart, emote, minRole, minStaffRoles, confirmationMessage, color, logOptions, displayName, limit, name, type, parent, choice, confirm, location, confirmationMedia, start, lifetime, isCap, members, logged}) {
         // template
         this.#displayName = displayName;
         this.limit = limit;
@@ -122,18 +122,25 @@ class AfkButton {
         this.#lifetime = lifetime;
 
         // processButtons
-        this.#points = points;
-        this.#disableStart = disableStart;
-        this.#emote = emote;
-        this.#minRole = minRole;
-        this.#minStaffRoles = minStaffRoles;
+        this.#points = typeof points == 'string' ? botSettings.points[points] : points ?? 0;
+        this.#disableStart = disableStart || start;
+        this.#emote = storedEmojis[emote];
+        this.#minRole = guild.roles.cache.get(botSettings.roles[minRole]);
+        this.#minStaffRoles = minStaffRoles && minStaffRoles.map(role => guild.roles.cache.get(botSettings.roles[role]));
         this.#confirmationMessage = confirmationMessage;
-        this.#color = color;
-        this.#logOptions = logOptions;
+        this.#color = color in AfkTemplate.TemplateButtonColors ? color : Discord.ButtonStyle.Secondary;
+        this.#logOptions = logOptions && Object.entries(logOptions).reduce((obj, [key, logOption]) => {
+            obj[key] = {
+                ...logOption,
+                points: typeof logOption.points == 'string' ? botSettings.points[logOption.points] : logOption.points ?? 0,
+                multiplier: typeof logOption.multiplier == 'string' ? botSettings.points[logOption.multiplier] : logOption.multiplier ?? 1,
+            }
+            return obj
+        }, {});
 
         // reactable parameters
-        this.members = [];
-        this.logged = 0;
+        this.members = members || [];
+        this.logged = logged || 0;
 
         // capButtons
         this.#isCap = isCap === undefined ? this.limit === 0 : isCap
@@ -147,6 +154,7 @@ class AfkButton {
     get type() { return this.#type }
     get confirm() { return this.#confirm }
     get confirmationMedia() { return this.#confirmationMedia }
+    get confirmationMessage() { return this.#confirmationMessage }
     get location() { return this.#location }
     get points() { return this.#points }
     get emote() { return this.#emote }
@@ -238,53 +246,18 @@ class AfkButton {
         }
     }
 
-    confirmationDescription(defaultDescriptionMiddle = '') {
+    confirmationDescription(descriptionMiddle) {
         const emote = this.emote ? `${this.emote.text} ` : ''
         const descriptionBeginning = `You reacted with ${emote}${this.#name}.`
         const descriptionEnd = 'Press ✅ to confirm your reaction. Otherwise press ❌'
-        return `${descriptionBeginning}\n${this.#confirmationMessage || defaultDescriptionMiddle}${descriptionEnd}`
-    }
-
-    toRequest(limit) {
-        return new AfkButton({
-            ...this.toJSON(),
-            disableStart: 69,
-            start: 69,
-            lifetime: 69,
-            limit
-        })
-
+        return `${descriptionBeginning}\n${descriptionMiddle}${descriptionEnd}`
     }
 
     toJSON() {
         return {
-            displayName: this.#displayName,
             limit: this.limit,
-            name: this.#name,
-            type: this.#type,
-            parent: this.#parent,
-            choice: this.#choice,
-            confirm: this.#confirm,
-            location: this.#location,
-            confirmationMedia: this.#confirmationMedia,
-            start: this.#start,
-            lifetime: this.#lifetime,
-
-            // processButtons
-            points: this.#points,
-            disableStart: this.#disableStart,
-            emote: this.#emote,
-            minRole: this.#minRole,
-            minStaffRoles: this.#minStaffRoles,
-            confirmationMessage: this.#confirmationMessage,
-            color: this.#color,
-            logOptions: this.#logOptions,
-
-            // reactable parameters
             members: this.members,
             logged: this.logged,
-
-            // capButtons
             isCap: this.#isCap
         }
     }
@@ -325,7 +298,7 @@ class afkCheck {
         this.members = [] // All members in the afk
         this.earlyLocationMembers = [] // All members with early location in the afk
         this.earlySlotMembers = [] // All members with early slots in the afk
-        this.buttons = Object.entries(afkTemplate.processButtons(this.#message.channel)).map(([k, buttons]) => new AfkButton(buttons))
+        this.buttons = afkTemplate.buttons.map(button => new AfkButton(this.#botSettings, this.#bot.storedEmojis, this.#guild, button))
         this.reactRequests = {} // {messageId => AfkButton}
         this.cap = afkTemplate.cap
 
@@ -406,7 +379,7 @@ class afkCheck {
                 earlyLocationMembers: this.earlyLocationMembers,
                 earlySlotMembers: this.earlySlotMembers,
                 buttons: this.buttons.map(button => button.toJSON()),
-                reactRequests: Object.fromEntries(Object.entries(this.reactRequests).map(([messageId, button]) => [messageId, button.toJSON()])),
+                reactRequests: Object.fromEntries(Object.entries(this.reactRequests).map(([messageId, button]) => [messageId, {name: button.name, ...button.toJSON()}])),
                 body: this.#body,
                 
                 cap: this.cap,
@@ -436,8 +409,8 @@ class afkCheck {
         this.members = storedAfkCheck.members
         this.earlyLocationMembers = storedAfkCheck.earlyLocationMembers
         this.earlySlotMembers = storedAfkCheck.earlySlotMembers
-        this.buttons = storedAfkCheck.buttons.map(button => new AfkButton(button))
-        this.reactRequests = Object.fromEntries(Object.entries(storedAfkCheck.reactRequests).map(([messageId, button]) => [messageId, new AfkButton(button)]))
+        this.buttons = this.#afkTemplate.buttons.map((button, idx) => new AfkButton(this.#botSettings, this.#bot.storedEmojis, this.#guild, {...button, ...storedAfkCheck.buttons[idx]}))
+        this.reactRequests = Object.fromEntries(Object.entries(storedAfkCheck.reactRequests).map(([messageId, button]) => [messageId, new AfkButton(this.#botSettings, this.#bot.storedEmojis, this.#guild, {...this.#afkTemplate.getButton(button.name), ...button})]))
         this.#body = storedAfkCheck.body
 
         this.cap = storedAfkCheck.cap
@@ -584,7 +557,7 @@ class afkCheck {
             embed.addFields({ name: button.memberListLabel(false), value: button.memberList(), inline: true })
         }
 
-        for (const button in Object.values(this.reactRequests)) {
+        for (const button of Object.values(this.reactRequests)) {
             embed.addFields({ name: button.memberListLabel(true), value: button.memberList(), inline: true })
         }
 
@@ -1193,7 +1166,7 @@ class afkCheck {
         const emote = button.emote ? `${button.emote.text} ` : ``
 
         if (button.confirm) {
-            const text = button.confirmationDescription()
+            const text = button.confirmationDescription(this.#channel, button.confirmationMessage && this.#afkTemplate.processMessages(this.#message.channel, button.confirmationMessage))
             const confirmButton = new Discord.ButtonBuilder()
                 .setLabel('✅ Confirm')
                 .setStyle(Discord.ButtonStyle.Success)
@@ -1279,7 +1252,7 @@ class afkCheck {
         }
 
         if (button.confirm) {
-            const text = button.confirmationDescription(`You currently have ${emote} \`${points}\` points\n${button.location ? `Early location` : `A guaranteed slot in the channel`} costs ${emote} \`${button.points * -1}\`.\n`)
+            const text = button.confirmationDescription((button.confirmationMessage && this.#afkTemplate.processMessages(this.#message.channel, button.confirmationMessage)) || `You currently have ${emote} \`${points}\` points\n${button.location ? `Early location` : `A guaranteed slot in the channel`} costs ${emote} \`${button.points * -1}\`.\n`)
             const confirmButton = new Discord.ButtonBuilder()
                 .setLabel('✅ Confirm')
                 .setStyle(Discord.ButtonStyle.Success)
@@ -1459,7 +1432,7 @@ class afkCheck {
 
     async updateReactsRequest(reactable, number) {
         let reactablesRequestActionRow = []
-        const button = this.#getButton(reactable).toRequest(number)
+        const button = new AfkButton(this.#botSettings, this.#bot.storedEmojis, this.#guild, {...this.#afkTemplate.getButton(reactable), limit: number, start: 69, disableStart: 69, lifetime: 69})
         const emote = button.emote ? `${button.emote.text} ` : ``
         const reactableButton = new Discord.ButtonBuilder()
             .setStyle(2)
