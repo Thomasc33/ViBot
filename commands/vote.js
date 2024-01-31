@@ -58,7 +58,7 @@ class Vote {
         if (this.voteConfiguration.members.length == 0) { return await this.channel.send('No members found.'); }
 
         this.getVoteConfigurationButtons();
-        await this.message.delete();
+        await this.message.smartDelete();
         await this.sendConfirmationMessage();
         await this.updateConfirmationMessage();
     }
@@ -148,7 +148,7 @@ class Vote {
     }
 
     async endVoteConfigurationPhase(interaction) {
-        await interaction.message.delete();
+        await interaction.message.smartDelete();
         this.voteConfigurationMessageInteractionCollector.stop();
     }
 
@@ -203,8 +203,8 @@ class Vote {
         embedFeedbackConfigure.setDescription('Choose how many feedbacks you want ViBot to look through');
         const confirmationMessage = await interaction.reply({ embeds: [embedFeedbackConfigure], fetchReply: true });
         const choice = await confirmationMessage.confirmNumber(10, interaction.member.id);
-        if (!choice || isNaN(choice) || choice == 'Cancelled') return await confirmationMessage.delete();
-        await confirmationMessage.delete();
+        if (!choice || isNaN(choice) || choice == 'Cancelled') return await confirmationMessage.smartDelete();
+        await confirmationMessage.smartDelete();
         this.voteConfiguration.maximumFeedbacks = choice;
         await this.updateConfirmationMessage();
     }
