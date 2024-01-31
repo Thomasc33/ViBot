@@ -205,7 +205,7 @@ module.exports = {
             await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
 
             if (settings.commands.crasherlist)
-                postInCrasherList(embed, message.guild.channels.cache.get(settings.channels.parsechannel), message.member, raid.reactables.Key?.members[0])
+                postInCrasherList(embed, message.guild.channels.cache.get(settings.channels.parsechannel), message.member, raid.reactables?.Key?.members[0])
         }
 
         async function characterParse() {
