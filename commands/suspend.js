@@ -107,13 +107,12 @@ module.exports = {
                         .setTimestamp(Date.now() + time);
                     if (overwrite) {
                         db.query(`SELECT reason FROM suspensions WHERE id = '${member.id}' AND suspended = true`, async (err, rows) => {
-                            const new_suspender = message.guild.members.cache.get(message.author.id).nickname
-                            db.query(`UPDATE suspensions SET suspended = false, reason = '${'(overwritten by ' + new_suspender + ') - ' + reason}' WHERE id = '${member.id}' AND suspended = true`)
+                            const new_suspender = message.guild.members.cache.get(message.author.id).nickname??''
+                            db.query(`UPDATE suspensions SET suspended = false, reason = '${'overwriter: ' + new_suspender + '- ' + reason}' WHERE id = '${member.id}' AND suspended = true`)
                             embed.data.fields[3].value = `Overwritten suspensions. Roles the same as prior suspension`
                             suspensionLog.send({ embeds: [embed] }).then(member.user.send({ embeds: [embed] }).catch(() => {}))
                         })
                     } 
-
                     let userRolesString = '', userRoles = []
                     const roles = [...member.roles.cache.filter(r => !r.managed && (!settings.lists.discordRoles.map(role => settings.roles[role]).includes(r.id))).values()];
                     embed.data.fields[3].value = roles.join(', ') || 'None!';
