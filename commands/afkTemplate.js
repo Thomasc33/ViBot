@@ -514,12 +514,6 @@ class AfkTemplate {
     #processReacts() {
         for (let i in this.reacts) this.reacts[i].emote = this.#bot.storedEmojis[this.reacts[i].emote]
     }
-
-    getButtonChoices() {
-        let choices = []
-        for (let i in this.buttons) if (this.buttons[i].choice != TemplateButtonChoice.NO_CHOICE) choices.push(i) 
-        return choices
-    }
 }
 
 module.exports = { AfkTemplate, TemplateVCOptions, TemplateVCState, TemplateButtonType, TemplateButtonChoice, templateNamePrompt, AfkTemplateValidationError, resolveTemplateAlias, resolveTemplateList,
