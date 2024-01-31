@@ -12,7 +12,6 @@ const botSettings = require('./settings.json');
 const ErrorLogger = require('./lib/logError');
 // Commands
 const emoji = require('./commands/emoji.js');
-const globalSetup = require('./commands/setup');
 const afkCheck = require('./commands/afkCheck.js');
 const vibotChannels = require('./commands/vibotChannels');
 const vetVerification = require('./commands/vetVerification');
@@ -102,9 +101,6 @@ async function setup(bot) {
 
     // to hide dev server
     if (bot.user.id == botSettings.prodBotId) { bot.devServers.push('701483950559985705'); }
-
-    // generate default settings
-    iterServers(bot, (bot, g) => globalSetup.autoSetup(g, bot));
 
     // purge veri-active
     iterServers(bot, (bot, g) => {

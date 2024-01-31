@@ -17,7 +17,8 @@ module.exports = {
             choices: slashChoices(['Add', 'Remove', 'Set'])
         }),
         slashArg(SlashArgType.String, 'type', {
-            description: 'Type of log to change'
+            description: 'Type of log to change',
+            autocomplete: true
         }),
         slashArg(SlashArgType.Integer, 'number', {
             description: 'Number of logs to change'
@@ -25,17 +26,33 @@ module.exports = {
     ],
     requiredArgs: 4,
     getNotes(guild) {
-        const types = clConfig[guild.id]?.logtypes.map(type => type + (clConfig[guild.id]?.currentweeks.find(cw => cw.case == type) ? '\\*' : '')).sort(a => a[a.length - 1] == '*' ? -1 : 1);
+        const types = clConfig[guild.id]?.logtypes
+            // maps to an array, splits and decamelcases, appends * to current week values
+            .map(type => type.replace(/([A-Z])/g, ' $1').replace(/^./, (firstChar) => firstChar.toUpperCase()) + (clConfig[guild.id]?.currentweeks.find(cw => cw.case == type) ? '\\*' : ''))
+            // sorts values to have current week values in front
+            .sort(a => a[a.length - 1] == '*' ? -1 : 1);
         return { title: 'Available Logs', value: (types ? `${types.join(', ')}\n\n*\\* logs associated with quota*` : `Not setup for guild ${guild.id}`) };
     },
-    getSlashCommandData(guild) {
-        const json = slashCommandJSON(this, guild);
-        // Magic regex!
-        // Makes the log type names look pretty :3
-        if (clConfig[guild.id]?.logtypes.length <= 25) json[0].options[2].choices = clConfig[guild.id].logtypes.map((k) => ({ name: k?.deCamelCase(), value: k }));
-        return json;
-    },
+    getSlashCommandData(guild) { return slashCommandJSON(this, guild); },
+    async autocomplete(interaction) {
+        const focusedValue = interaction.options.getFocused().trim().toLowerCase();
+        const types = clConfig[interaction.guild.id]?.logtypes;
+        if (!types) return;
+        // create map of valid aliases to types
+        const typeMapping = types.map(type => ({
+            name: type.replace(/([A-Z])/g, ' $1').replace(/^./, (firstChar) => firstChar.toUpperCase()), // regex: uppercase the first letter
+            aliases: [
+                type.toLowerCase(),
+                type.replace(/([A-Z])/g, ' $1').toLowerCase() // regex: put a space after each capitalized word
+            ],
+            value: type
+        }));
 
+        // match changelog types with what the user is typing (focusedValue), takes first 25 values
+        const filteredValues = typeMapping.filter(type => type.aliases.some(alias => alias.includes(focusedValue))).slice(0, 25);
+
+        await interaction.respond(filteredValues);
+    },
     /**
      * @param {Discord.Message | Discord.CommandInteraction} interaction
      * @param {Discord.Client} bot
@@ -46,7 +63,6 @@ module.exports = {
 
         async function printError(err) {
             ErrorLogger.log(err, bot, member.guild);
-            const reply = await interaction.fetchReply();
 
             const errEmbed = new Discord.EmbedBuilder()
                 .setTitle('Changelog Error')
@@ -55,8 +71,7 @@ module.exports = {
                 .setDescription(`Could not perform changelog for ${member}`)
                 .addFields({ name: 'Reason', value: `${err}` });
 
-            if (reply) interaction.editReply({ embeds: [errEmbed], components: [] });
-            else interaction.reply({ embeds: [errEmbed], ephemeral: true, allowedMentions: { repliedUser: false } });
+            await interaction.reply({ embeds: [errEmbed], ephemeral: true, allowedMentions: { repliedUser: false } });
         }
 
         const modlogs = interaction.guild.channels.cache.get(bot.settings[interaction.member.guild.id]?.channels.modlogs);

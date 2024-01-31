@@ -116,8 +116,18 @@
                     },
                     {
                         "name": null,
+                        "emoji": "advancedNestBee",
+                        "row": "advancedNestRuns"
+                    },
+                    {
+                        "name": null,
                         "emoji": "SteamworksBoss",
                         "row": "steamworkRuns"
+                    },
+                    {
+                        "name": null,
+                        "emoji": "exaltedAdvancedSteamworks",
+                        "row": "advancedSteamworkRuns"
                     },
                     {
                         "name": null,
