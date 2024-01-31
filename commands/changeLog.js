@@ -51,7 +51,7 @@ module.exports = {
         // match changelog types with what the user is typing (focusedValue), takes first 25 values
         const filteredValues = typeMapping.filter(type => type.aliases.some(alias => alias.includes(focusedValue))).slice(0, 25);
 
-        await interaction.respond(filteredValues.map(type => ({ name: type.name, value: type.value })));
+        await interaction.respond(filteredValues);
     },
     /**
      * @param {Discord.Message | Discord.CommandInteraction} interaction
