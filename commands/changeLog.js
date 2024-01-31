@@ -35,13 +35,23 @@ module.exports = {
     },
     getSlashCommandData(guild) { return slashCommandJSON(this, guild); },
     async autocomplete(interaction) {
-        const focusedValue = interaction.options.getFocused();
+        const focusedValue = interaction.options.getFocused().trim().toLowerCase();
         const types = clConfig[interaction.guild.id]?.logtypes;
         if (!types) return;
-        // match changelog types with what the user is typing (focusedValue)
-        const filtered = types.filter(type => type.toLowerCase().includes(focusedValue.toLowerCase())).slice(0, 25);
-        // regex: put a space after each capitalized word and then uppercase the first letter
-        await interaction.respond(filtered.map(type => ({ name: type.replace(/([A-Z])/g, ' $1').replace(/^./, (firstChar) => firstChar.toUpperCase()), value: type })));
+        // create map of valid aliases to types
+        const typeMapping = types.map(type => ({
+            name: type.replace(/([A-Z])/g, ' $1').replace(/^./, (firstChar) => firstChar.toUpperCase()), // regex: uppercase the first letter
+            aliases: [
+                type.toLowerCase(),
+                type.toLowerCase().replace(/([A-Z])/g, ' $1') // regex: put a space after each capitalized word
+            ],
+            value: type
+        }));
+
+        // match changelog types with what the user is typing (focusedValue), takes first 25 values
+        const filteredValues = typeMapping.filter(type => type.aliases.some(alias => alias.includes(focusedValue))).slice(0, 25);
+
+        await interaction.respond(filteredValues);
     },
     /**
      * @param {Discord.Message | Discord.CommandInteraction} interaction
