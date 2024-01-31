@@ -46,6 +46,8 @@ class MessageManager {
     handleMessage(message) {
         switch (message.channel.type) {
             case Discord.ChannelType.GuildText:
+            case Discord.ChannelType.PublicThread:
+            case Discord.ChannelType.PrivateThread:
                 if (message.author.bot) return;
                 if (message.content.startsWith(this.#prefix) && message.content[this.#prefix.length] !== ' ') {
                     // Handle commands (messages that start with a prefix + command)
