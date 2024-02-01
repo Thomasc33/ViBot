@@ -111,9 +111,9 @@ module.exports = {
                                 ErrorLogger.log(err, bot, message.guild)                                 
                             }else{
                                 const overwriter = message.guild.members.cache.get(message.author.id).nickname ?? 'Unknown'
-                                db.query(`UPDATE suspensions SET suspended = ?, reason = ? WHERE id = ? AND suspended = ?`, [false, 'overwritten: ' + overwriter + ' - ' + reason, member.id, true])
+                                db.query(`UPDATE suspensions SET suspended = ?, reason = ? WHERE id = ? AND suspended = ?`, [false, '(overwritten: ' + overwriter + ') ' + reason, member.id, true])
                                 embed.data.fields[3].value = `Overwritten suspensions. Roles the same as prior suspension`
-                                await suspensionLog.send({ embeds: [embed] }).then(member.user.send({ embeds: [embed] }).catch(() => {}))
+                                await suspensionLog.send({ embeds: [embed] }).then(()=>member.user.send({ embeds: [embed] }).catch(() => {}))
                             }
                         })
                     } 
@@ -128,11 +128,11 @@ module.exports = {
                     })
                     messageId = await suspensionLog.send({ embeds: [embed] });
                     await member.roles.remove(userRoles)
-                    setTimeout(() => { member.roles.add(suspendedRole.id); }, 1000)
-                    await member.user.send({ embeds: [embed] }).catch(() => {})
+                    await member.roles.add(suspendedRole.id)
                     db.query(`INSERT INTO suspensions (id, guildid, suspended, uTime, reason, modid, roles, logmessage, unixTimestamp, length) VALUES ('${member.id}', '${message.guild.id}', true, '${Date.now() + time}', ${db.escape(reason)}, '${message.author.id}', '${userRolesString}', '${messageId.id}', '${Date.now()}', '${`${timeString} ${timeTypeString}`}');`)
-                
                     message.channel.send(`${member} has been suspended`)
+                    member.user.send({ embeds: [embed] }).catch(() => {})
+                    
                 }
 
             })
