@@ -112,8 +112,8 @@ module.exports = {
             const minimumStaffRolePosition = message.guild.roles.cache.get(settings.roles.almostrl).position
 
             const raiders = imgPlayers.map(player => player.toLowerCase())
-            const raidMembers = !vcless && raid.members.concat(...raid.earlySlotMembers)
-            const members = vcless ? Object.values(raid.reactables).map(r => r.members).flat() : bot.channels.cache.get(raid.channel.id).members.map(m => m.id)
+            const raidMembers = raid.members
+            const members = vcless ? raidMembers : bot.channels.cache.get(raid.channel.id).members.map(m => m.id)
 
             /** @type {{ id: string, nicknames: string[] }[]} */
             const alts = []
@@ -204,8 +204,11 @@ module.exports = {
             parseStatusEmbed.data.fields[1].value = `Crasher Parse Completed. See Below. Beginning Character Parse`
             await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
 
-            if (settings.commands.crasherlist)
-                postInCrasherList(embed, message.guild.channels.cache.get(settings.channels.parsechannel), message.member, raid.reactables?.Key?.members[0])
+            if (settings.commands.crasherlist) {
+                const keyMemberId = (raid.buttons["Key"]?.members ?? [])[0];
+                postInCrasherList(embed, message.guild.channels.cache.get(settings.channels.parsechannel), message.member, keyMemberId)
+            }
+                
         }
 
         async function characterParse() {
