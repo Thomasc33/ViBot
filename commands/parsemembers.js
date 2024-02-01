@@ -205,8 +205,7 @@ module.exports = {
             await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
 
             if (settings.commands.crasherlist) {
-                const keyMemberId = (raid.buttons["Key"]?.members ?? [])[0];
-                postInCrasherList(embed, message.guild.channels.cache.get(settings.channels.parsechannel), message.member, keyMemberId)
+                postInCrasherList(embed, message.guild.channels.cache.get(settings.channels.parsechannel), message.member, (raid.buttons["Key"]?.members ?? [])[0])
             }
                 
         }
