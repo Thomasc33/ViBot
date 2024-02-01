@@ -56,7 +56,6 @@ commands/script.js
 commands/setStatus.js
 commands/status.js
 commands/suspend.js
-commands/suspendremove.js
 commands/suspends.js
 commands/sysinfo.js
 commands/tempKeyRemove.js
