@@ -214,6 +214,8 @@ class afkCheck {
 
     get vcOptions() { return this.#afkTemplate.vcOptions }
 
+    get isVcless() { return this.vcOptions == AfkTemplate.TemplateVCOptions.NO_VC }
+
     get channel() { return this.#channel }
     
     // needed for parsemembers
