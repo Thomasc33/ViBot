@@ -409,7 +409,7 @@ function reassembleAndCheckNames(crasherNames, raidMembers) {
         for (let i = 0; i <= namesToCheck.length; i++) {
             const matchedMember = raidMembers.find(({nicknames}) => nicknames.includes(currentName + namesToCheck.slice(0, i).join('')));
             if (matchedMember) {
-                const matchedComponents = namesToCheck.length ? namesToCheck.shift(i) : [];
+                const matchedComponents = namesToCheck.splice(0, i);
                 matchedNamesMap.set(currentName + matchedComponents.join(''), { parts: [currentName, ...matchedComponents], id: matchedMember.id })
             }
         }
