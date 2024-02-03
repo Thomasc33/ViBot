@@ -139,7 +139,7 @@ module.exports = {
 
             for (const memberId of members) {
                 const member = message.guild.members.cache.get(memberId)
-                if (member.roles.highest.position > minimumStaffRolePosition) continue
+                // if (member.roles.highest.position > minimumStaffRolePosition) continue
                 if (!member.nickname) continue
                 const nicknames = member.nickname.toLowerCase().replace(/[^a-z|]/gi, '').split('|')
                 if (!raiders.some(raider => nicknames.includes(raider)) && !alts.some(alt => alt.id == member.id)) alts.push({ id: member.id, nicknames })
@@ -403,14 +403,14 @@ function reassembleAndCheckNames(crasherNames, raidMembers) {
 
     const namesToCheck = crasherNames.slice(); // Copy array
 
-    while (namesToCheck.length > 0) {
+    while (namesToCheck.length > 0 && raidMembers.length > 0) {
         let currentName = namesToCheck.shift();
 
-        for (let i = 0; i < namesToCheck.length; i++) {
-            const { id: matchingId } = raidMembers.find(({nicknames}) => nicknames.includes(currentName + namesToCheck.slice(0, i).join('')));
-            if (matchingId) {
-                const matchedComponents = namesToCheck.shift(i);
-                matchedNamesMap.set(currentName + matchedComponents.join(''), { parts: [currentName, ...matchedComponents], id: matchingId })
+        for (let i = 0; i <= namesToCheck.length; i++) {
+            const matchedMember = raidMembers.find(({nicknames}) => nicknames.includes(currentName + namesToCheck.slice(0, i).join('')));
+            if (matchedMember) {
+                const matchedComponents = namesToCheck.length ? namesToCheck.shift(i) : [];
+                matchedNamesMap.set(currentName + matchedComponents.join(''), { parts: [currentName, ...matchedComponents], id: matchedMember.id })
             }
         }
     }
