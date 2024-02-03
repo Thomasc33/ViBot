@@ -9,7 +9,7 @@ const { createReactionRow } = require('../redis.js');
 module.exports = {
     name: 'pop',
     description: 'Logs key pops',
-    getNotes(guild, member) {
+    getNotes(guild) {
         return keypops[guild.id] ? Object.keys(keypops[guild.id]).toString() : `not setup for guild ${guild.id}`;
     },
     requiredArgs: 2,
@@ -37,10 +37,8 @@ module.exports = {
         if (args.length < 1) return;
         if (args.length > 2) count = parseInt(args[2]);
         if (isNaN(count) || !count) count = 1;
-        let user = message.mentions.members.first();
-        if (!user) user = message.guild.members.cache.get(args[1]);
-        if (!user) user = message.guild.members.cache.filter(user => user.nickname !== null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[1].toLowerCase()));
-        if (!user) return message.replyUserError('User not found');
+        const member = message.guild.findMember(args[1]);
+        if (!member) return message.reply('Could not find a member.');
 
         // Validate Command Arguments
         if (!keypops[message.guild.id]) return message.replyUserError('Key information missing for this guild');
@@ -50,7 +48,7 @@ module.exports = {
         // Create Discord Embed Confirmation
         const confirmEmbed = new Discord.EmbedBuilder()
             .setColor('#ff0000')
-            .setDescription(`Are you sure you want to log \`\`${count}\`\` **${keyInfo.name}** pops for ${user.nickname}?\n\nPlease select which key.`);
+            .setDescription(`Are you sure you want to log \`\`${count}\`\` **${keyInfo.name}** pops for ${member.nickname}?\n\nPlease select which key.`);
 
         // add buttons initialized with regular key button
         const buttons = new Discord.ActionRowBuilder()
@@ -80,10 +78,10 @@ module.exports = {
         );
 
         const reply = await message.reply({ embeds: [confirmEmbed], components: [buttons], ephemeral: true });
-        createReactionRow(reply, module.exports.name, 'handleButtons', buttons, message.author, { userId: user.id, keyInfo, count });
+        createReactionRow(reply, module.exports.name, 'handleButtons', buttons, message.author, { memberId: member.id, keyInfo, count });
     },
     async handleButtons(bot, confirmMessage, db, choice, state) {
-        const user = confirmMessage.interaction.guild.members.cache.get(state.userId);
+        const member = confirmMessage.interaction.guild.members.cache.get(state.memberId);
         const { count, keyInfo } = state;
         const settings = bot.settings[confirmMessage.interaction.guild.id];
         const { guild } = confirmMessage.interaction;
@@ -92,15 +90,15 @@ module.exports = {
         if (choice == 'Modded Key') moddedKey = true;
 
         // Execute Database Query
-        db.query('SELECT * FROM users WHERE id = ?', [user.id], async (err, rows) => {
+        db.query('SELECT * FROM users WHERE id = ?', [member.id], async (err, rows) => {
             if (err) ErrorLogger.log(err, bot);
             if (rows.length == 0) {
                 const success = await new Promise((res) => {
-                    db.query('INSERT INTO users (id) VALUES (?)', [user.id], (err, rows) => {
+                    db.query('INSERT INTO users (id) VALUES (?)', [member.id], (err, rows) => {
                         if (err || !rows || rows.length == 0) {
                             confirmMessage.interaction.reply({
                                 embeds: [
-                                    new Discord.EmbedBuilder().setDescription(`Unable to add <@!${user.id}> to the database.`).addFields([{ name: 'Error', value: `${err || 'Unknown reason'}` }])
+                                    new Discord.EmbedBuilder().setDescription(`Unable to add <@!${member.id}> to the database.`).addFields([{ name: 'Error', value: `${err || 'Unknown reason'}` }])
                                 ],
                                 ephemeral: true
                             });
@@ -111,7 +109,7 @@ module.exports = {
                 if (!success) return;
             }
             const consumablepops = {
-                userid: user.id,
+                userid: member.id,
                 guildid: guild.id,
                 unixtimestamp: Date.now(),
                 amount: count,
@@ -122,29 +120,29 @@ module.exports = {
                 if (err) throw err;
                 if (err) return console.log(`${keyInfo.schema} missing from ${guild.name} ${guild.id}`);
             });
-            db.query('UPDATE users SET ?? = ?? + ? WHERE id = ?', [keyInfo.schema, keyInfo.schema, count, user.id], err => {
+            db.query('UPDATE users SET ?? = ?? + ? WHERE id = ?', [keyInfo.schema, keyInfo.schema, count, member.id], err => {
                 if (err) throw err;
-                keyRoles.checkUser(user, bot, db);
+                keyRoles.checkUser(member, bot, db);
             });
             if (moddedKey) {
-                db.query('UPDATE users SET ?? = ?? + ? WHERE id = ?', [keyInfo.moddedSchema, keyInfo.moddedSchema, count, user.id], err => {
+                db.query('UPDATE users SET ?? = ?? + ? WHERE id = ?', [keyInfo.moddedSchema, keyInfo.moddedSchema, count, member.id], err => {
                     if (err) throw err;
-                    keyRoles.checkUser(user, bot, db);
+                    keyRoles.checkUser(member, bot, db);
                 });
             }
             const embed = new Discord.EmbedBuilder()
                 .setColor('#0000ff')
                 .setTitle('Key logged!')
-                .setDescription(`${user} now has \`\`${parseInt(rows[0][keyInfo.schema]) + parseInt(count)}\`\` ${keyInfo.name} pops`);
+                .setDescription(`${member} now has \`\`${parseInt(rows[0][keyInfo.schema]) + parseInt(count)}\`\` ${keyInfo.name} pops`);
             confirmMessage.interaction.channel.send({ embeds: [embed] });
         });
 
         // Add Points to Database
         if (settings.backend.points && keyInfo.points) {
             let points = settings.points[keyInfo.points] * count;
-            if (user.roles.cache.hasAny(...settings.lists.perkRoles.map(role => settings.roles[role]))) points *= settings.points.supportermultiplier;
+            if (member.roles.cache.hasAny(...settings.lists.perkRoles.map(role => settings.roles[role]))) points *= settings.points.supportermultiplier;
             if (moddedKey) points *= settings.points.keymultiplier;
-            db.query('UPDATE users SET points = points + ? WHERE id = ?', [points, user.id]);
+            db.query('UPDATE users SET points = points + ? WHERE id = ?', [points, member.id]);
         }
         // Delete Confirmation Message
         return confirmMessage.delete();
