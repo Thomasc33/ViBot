@@ -79,8 +79,8 @@ module.exports = {
                 console.log(afkTemplate.message())
                 continue
             }
-            bot.afkChecks[currentStoredAfkCheck.raidID] = new afkCheck(afkTemplate, bot, db, message, currentStoredAfkCheck.location)
-            await bot.afkChecks[currentStoredAfkCheck.raidID].loadBotAfkCheck(currentStoredAfkCheck)
+            bot.afkModules[currentStoredAfkCheck.raidID] = new afkCheck(afkTemplate, bot, db, message, currentStoredAfkCheck.location)
+            await bot.afkModules[currentStoredAfkCheck.raidID].loadBotAfkCheck(currentStoredAfkCheck)
         }
         console.log(`Restored ${storedAfkChecks.length} afk checks for ${guild.name}`);
    }
@@ -332,10 +332,13 @@ class afkCheck {
 
     get vcOptions() { return this.#afkTemplate.vcOptions }
 
+
     get channel() { return this.#channel }
     
     // needed for parsemembers
     get afkTemplateName() { return this.#afkTemplate.templateName }
+
+    isVcless() { return this.vcOptions == AfkTemplate.TemplateVCOptions.NO_VC }
 
     raidLeaderDisplayName() {
         return this.#leader.displayName.replace(/[^a-z|]/gi, '').split('|')[0]
@@ -429,7 +432,6 @@ class afkCheck {
         this.raidChannelsMessage = await this.#afkTemplate.raidActiveChannel.messages.fetch(storedAfkCheck.raidChannelsMessage.id)
 
         this.#pointlogMid = storedAfkCheck.pointlogMid
-        this.#bot.afkModules[this.#raidID] = this
 
         if (this.phase <= this.#afkTemplate.phases && !this.ended_by) this.start()
         else {
@@ -439,6 +441,7 @@ class afkCheck {
             this.raidCommandsInteractionHandler.on('collect', (interaction) => this.interactionHandler(interaction))
             this.raidChannelsInteractionHandler = new Discord.InteractionCollector(this.#bot, { message: this.raidChannelsMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
             this.raidChannelsInteractionHandler.on('collect', (interaction) => this.interactionHandler(interaction))
+            this.saveBotAfkCheck()
             if (this.active) this.postAfk(null)
         }
     }
@@ -596,7 +599,7 @@ class afkCheck {
 
     #genRaidChannelsEmbed() {
         const embed = this.#genEmbedBase()
-        embed.addFields({ name: `Logging Info`, value: this.getLoggingText(), inline: false })
+        if (this.getLoggingText()) embed.addFields({ name: `Logging Info`, value: this.getLoggingText(), inline: false })
         embed.setDescription(`**Raid Leader: ${this.#leader} \`\`${this.#leader.nickname}\`\`\nVC: ${this.#channel ? this.#channel : "VCLess"}\nLocation:** \`\`${this.location}\`\` ${this.flag ? ` in (${this.flag})` : ''}\n\nWhenever the run is over. Click the button to delete the channel.`)
         embed.setFooter(this.#genEmbedFooter())
         return embed
