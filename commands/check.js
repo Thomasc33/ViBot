@@ -261,9 +261,9 @@ class Check {
         const panelName = 'falseSuspensions';
         if (!this.settings.checkPanels[panelName]) { return; }
         
-        const suspensionRoles = this.settings.checkRoles.falseSuspenionRoles;
-        for (const id of suspensionRoles) {
-            const role = this.roleCache.get(id);
+        const ids = this.settings.checkRoles.falseSuspenionRoles;
+        for (const id of ids) {
+            const role = this.guild.findRole(id);
 
             role.members.forEach(async member => {
                 if (await this.isPanelRestricted(member, panelName)) { return; }
