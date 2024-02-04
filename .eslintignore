@@ -71,7 +71,6 @@ commands/verification.js
 commands/vetBan.js
 commands/vetVerification.js
 commands/vibotChannels.js
-commands/vote.js
 commands/warnRemove.js
 commands/warns.js
 jobs/runner.js
@@ -79,7 +78,6 @@ lib/API.js
 lib/extensions.js
 lib/logCommand.js
 lib/logError.js
-lib/patreonHelper.js
 lib/pointLogger.js
 lib/realmEyeScrape.js
 lib/sqlHelper.js
