@@ -129,7 +129,7 @@ module.exports = {
                     messageId = await suspensionLog.send({ embeds: [embed] });
                     await member.roles.remove(userRoles)
                     await member.roles.add(suspendedRole.id)
-                    db.query(`INSERT INTO suspensions (id, guildid, suspended, uTime, reason, modid, roles, logmessage, unixTimestamp, length) VALUES ('${member.id}', '${message.guild.id}', true, '${Date.now() + time}', ${db.escape(reason)}, '${message.author.id}', '${userRolesString}', '${messageId.id}', '${Date.now()}', '${`${timeString} ${timeTypeString}`}');`)
+                    db.promise().query(`INSERT INTO suspensions (id, guildid, suspended, uTime, reason, modid, roles, logmessage, unixTimestamp, length) VALUES (?,?,?,?,?,?,?,?,?,?);`, [member.id, message.guild.id, true, Date.now() + time, reason, message.author.id, userRolesString, messageId.id, Date.now(), timeString + ' ' + timeTypeString])
                     message.channel.send(`${member} has been suspended`)
                     member.user.send({ embeds: [embed] }).catch(() => {})
                     
