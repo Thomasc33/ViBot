@@ -408,6 +408,10 @@ class AfkTemplate {
         this.parentTemplateID = this.#template.parentTemplateId
     }
 
+    headcountEmoji() {
+        return this.buttons.filter(button => ([AfkTemplate.TemplateButtonType.NORMAL, AfkTemplate.TemplateButtonType.LOG, AfkTemplate.TemplateButtonType.LOG_SINGLE].includes(button.type) && button.emote)).map(button => this.#bot.storedEmojis[button.emoji])
+    }
+
     processBody(channel) {
         const body = JSON.parse(JSON.stringify(this.body))
         for (let i = 1; i <= this.#template.phases; i++) {

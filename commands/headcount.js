@@ -53,9 +53,8 @@ module.exports = {
         for (let i in afkTemplate.reacts) {
             if (afkTemplate.reacts[i].onHeadcount && afkTemplate.reacts[i].emote) await raidStatusMessage.react(afkTemplate.reacts[i].emote.id)
         }
-        const buttons = afkTemplate.processButtons()
-        for (let i in buttons) {
-            if ((buttons[i].type == AfkTemplate.TemplateButtonType.NORMAL || buttons[i].type == AfkTemplate.TemplateButtonType.LOG || buttons[i].type == AfkTemplate.TemplateButtonType.LOG_SINGLE) && buttons[i].emote) await raidStatusMessage.react(buttons[i].emote.id)
+        for (const emoji in afkTemplate.headcountEmoji) {
+            await raidStatusMessage.react(emoji.id)
         }
 
         function updateHeadcount() {

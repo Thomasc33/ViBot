@@ -146,10 +146,6 @@ class AfkButton {
         this.#isCap = isCap === undefined ? this.limit === 0 : isCap
     }
 
-    label() {
-        return `${this.#displayName ? `${this.name} ` : ``}${this.limit ? ` ${this.members.length}/${this.limit}` : ``}`
-    }
-
     get name() { return this.#name }
     get type() { return this.#type }
     get confirm() { return this.#confirm }
@@ -162,6 +158,10 @@ class AfkButton {
     get logOptions() { return this.#logOptions }
     get isCap() { return this.#isCap }
 
+    label() {
+        return `${this.#displayName ? `${this.name} ` : ``}${this.limit ? ` ${this.members.length}/${this.limit}` : ``}`
+    }
+
     memberListLabel(isRequest) {
         return `${this.emote ? this.emote.text : ''} ${this.name}${isRequest ? ' Request' : ''}${this.limit ? ` (${this.limit})` : ''}${this.location ? ` \`L\`` : `` }`
     }
@@ -172,7 +172,7 @@ class AfkButton {
 
     present(phase) {
         const end = this.#start + this.#lifetime
-        return (phase >= this.#start || phase >= this.#disableStart) && phase <= end
+        return (phase >= this.#start || phase >= this.#disableStart) && phase < end
     }
 
     disabled(phase) {
@@ -462,7 +462,7 @@ class afkCheck {
     async sendButtonChoices() {
         for (const [buttonIdx, button] of this.buttons.entries()) {
             await button.choicePrompt(this.#message, this.#leader);
-            if (button.limit == 0) delete this.buttons[buttonIdx]
+            if (button.limit == 0 && button.choice != AfkTemplate.TemplateButtonChoice.NO_CHOICE) this.buttons.splice(buttonIdx, 1)
         }
     }
 
