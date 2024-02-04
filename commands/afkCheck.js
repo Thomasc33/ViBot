@@ -732,13 +732,13 @@ class afkCheck {
         return loggingMessages.join('\n')
     }
 
-    #getButton(buttonName) {
+    getButton(buttonName) {
         return this.buttons.find(button => button.name === buttonName)
     }
 
     #reactionIsFull(button) {
         return (button.limit && button.members.length >= button.limit)
-            || (button.parent && button.parent.some(i => this.#getButton(i).members.length >= this.#getButton(i).limit))
+            || (button.parent && button.parent.some(i => this.getButton(i).members.length >= this.getButton(i).limit))
     }
 
     /**
@@ -749,7 +749,7 @@ class afkCheck {
         if (!interaction.isButton()) return
 
         const isReactRequestInteraction = interaction.message.id !== this.raidStatusMessage.id
-        const button = isReactRequestInteraction ? this.reactRequests[interaction.message.id] : this.#getButton(interaction.customId)
+        const button = isReactRequestInteraction ? this.reactRequests[interaction.message.id] : this.getButton(interaction.customId)
         if (button) {
             const emote = button.emote ? `${button.emote.text} ` : ``
 
@@ -797,7 +797,7 @@ class afkCheck {
 
             if (button.parent) {
                 for (let i of button.parent) {
-                    const parentButton = this.#getButton(i);
+                    const parentButton = this.getButton(i);
                     if (!parentButton.members.includes(interaction.member.id)) parentButton.members.push(interaction.member.id)
                     if (parentButton.location && !this.earlyLocationMembers.includes(interaction.member.id)) this.earlyLocationMembers.push(interaction.member.id)
                 }
@@ -987,7 +987,7 @@ class afkCheck {
     async processPhaseLog(interaction, modded) {
         const buttonName = interaction.customId.split(' ').slice(2).join(' ')
         const buttonType = interaction.customId.split(' ')[1]
-        const button = this.#getButton(buttonName)
+        const button = this.getButton(buttonName)
 
         let member = null
         let number = 1
