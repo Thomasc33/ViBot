@@ -260,15 +260,17 @@ class Check {
     async panelFalseSuspensions() {
         const panelName = 'falseSuspensions'
         if (!this.settings.checkPanels[panelName]) { return }
-        const allSuspensions = await this.getSuspends()
+        
+        const suspensionRoles = this.settings.checkRoles.falseSuspenionRoles
+        for (const id of suspensionRoles) {
+            const role = this.roleCache.get(id)
 
-        const suspensionRoleNames = this.settings.checkRoles.falseSuspenionRoles
-        for (const index in suspensionRoleNames) {
-            const roleName = suspensionRoleNames[index]
-            const roleSuspension = this.roleCache.get(this.settings.roles[roleName])
-            roleSuspension.members.forEach(async member => {
+            role.members.forEach(async member => {
                 if (await this.isPanelRestricted(member, panelName)) { return }
-                if (!allSuspensions.includes(member.id)) { return }
+                // get all valid suspensions
+                const [rows,] = await this.db.promise().query('SELECT * FROM suspensions WHERE suspended = true AND guildid = ? AND id = ? AND UNIX_TIMESTAMP() < uTime', [this.guild.id, member.id])
+                if (rows.length > 0) return;
+                
                 const problemCategory = 'False Suspensions'
                 const problem = {
                     text: `<@!${member.id}>`
