@@ -79,8 +79,8 @@ module.exports = {
                 console.log(afkTemplate.message())
                 continue
             }
-            bot.afkChecks[currentStoredAfkCheck.raidID] = new afkCheck(afkTemplate, bot, db, message, currentStoredAfkCheck.location)
-            await bot.afkChecks[currentStoredAfkCheck.raidID].loadBotAfkCheck(currentStoredAfkCheck)
+            bot.afkModules[currentStoredAfkCheck.raidID] = new afkCheck(afkTemplate, bot, db, message, currentStoredAfkCheck.location)
+            await bot.afkModules[currentStoredAfkCheck.raidID].loadBotAfkCheck(currentStoredAfkCheck)
         }
         console.log(`Restored ${storedAfkChecks.length} afk checks for ${guild.name}`);
    }
@@ -294,8 +294,8 @@ class afkCheck {
         this.members = storedAfkCheck.members
         this.earlyLocationMembers = storedAfkCheck.earlyLocationMembers
         this.earlySlotMembers = storedAfkCheck.earlySlotMembers
-        this.buttons = Object.fromEntries(storedAfkCheck.buttons.map(button => [button.name, new AfkButton(button)]))
-        this.reactRequests = Object.fromEntries(Object.entries(storedAfkCheck.reactRequests).map(([messageId, button]) => [messageId, new AfkButton(button)]))
+        this.buttons = Object.fromEntries(storedAfkCheck.buttons.map(JSON.parse).map(button => [button.name, new AfkButton(button)]))
+        this.reactRequests = Object.fromEntries(Object.entries(storedAfkCheck.reactRequests).map(([messageId, button]) => [messageId, new AfkButton(JSON.parse(button))]))
         this.#body = storedAfkCheck.body
 
         this.cap = storedAfkCheck.cap
@@ -314,7 +314,6 @@ class afkCheck {
         this.raidChannelsMessage = await this.#afkTemplate.raidActiveChannel.messages.fetch(storedAfkCheck.raidChannelsMessage.id)
 
         this.#pointlogMid = storedAfkCheck.pointlogMid
-        this.#bot.afkModules[this.#raidID] = this
 
         if (this.phase <= this.#afkTemplate.phases && !this.ended_by) this.start()
         else {
@@ -324,6 +323,7 @@ class afkCheck {
             this.raidCommandsInteractionHandler.on('collect', (interaction) => this.interactionHandler(interaction))
             this.raidChannelsInteractionHandler = new Discord.InteractionCollector(this.#bot, { message: this.raidChannelsMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
             this.raidChannelsInteractionHandler.on('collect', (interaction) => this.interactionHandler(interaction))
+            this.saveBotAfkCheck()
             if (this.active) this.postAfk(null)
         }
     }
@@ -526,7 +526,7 @@ class afkCheck {
 
     #genRaidChannelsEmbed() {
         const embed = this.#genEmbedBase()
-        embed.addFields({ name: `Logging Info`, value: this.getLoggingText(), inline: false })
+        if (this.getLoggingText()) embed.addFields({ name: `Logging Info`, value: this.getLoggingText(), inline: false })
         embed.setDescription(`**Raid Leader: ${this.#leader} \`\`${this.#leader.nickname}\`\`\nVC: ${this.#channel ? this.#channel : "VCLess"}\nLocation:** \`\`${this.location}\`\` ${this.flag ? ` in (${this.flag})` : ''}\n\nWhenever the run is over. Click the button to delete the channel.`)
         embed.setFooter(this.#genEmbedFooter())
         return embed
