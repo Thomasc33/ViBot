@@ -19,7 +19,8 @@ const TemplateState = {
     'INVALID_NUMBER': 11,
     'INVALID_OBJECT': 12,
     'INVALID_EMOTE': 13,
-    'INVALID_BOOLEAN': 14
+    'INVALID_BOOLEAN': 14,
+    'CONNECTION_ERROR': 15
 }
 
 // Enum for the VC Options in an AFK Template
@@ -41,8 +42,6 @@ const TemplateButtonType = {
     'LOG': 1,
     'SUPPORTER': 2,
     'POINTS': 3,
-    'DRAG': 4,
-    'OPTION': 5,
     'LOG_SINGLE': 6,
 }
 
@@ -54,14 +53,34 @@ const TemplateButtonChoice = {
     'NUMBER_CHOICE_CUSTOM' : 3
 }
 
+// Enum for Button Colors in AFK Templates
+const TemplateButtonColors = [1,2,3,4]
+
 async function resolveTemplateAlias(botSettings, member, guildId, commandChannel, alias) {
     const templateUrl = new URL(settings.config.url)
     templateUrl.pathname = `/api/${guildId}/template/${commandChannel}/alias/${alias}`
     templateUrl.searchParams.append('roles', getRoleStrings(botSettings, member).join(','))
     templateUrl.searchParams.append('key', settings.config.key)
-    const templateNames = await fetch(templateUrl).then(f => f.json())
-    console.log(templateNames)
+    const templateNames = await fetch(templateUrl).then(f => f.json()).catch(() => { return new AfkTemplateValidationError(TemplateState.CONNECTION_ERROR, 'Failed to connect to the template service; however, it should be back momentarily. Please wait a minute and try again. If after 2-3 minutes you are still receiving this message, please contact a developer.') })
     return templateNames
+}
+
+async function resolveTemplateList(botSettings, member, guildId, commandChannel) {
+    const templateUrl = new URL(settings.config.url)
+    templateUrl.pathname = `/api/${guildId}/commandchannel/${commandChannel}/templates`
+    templateUrl.searchParams.append('roles', getRoleStrings(botSettings, member).join(','))
+    templateUrl.searchParams.append('key', settings.config.key)
+    const templateNames = await fetch(templateUrl).then(f => f.json()).catch(() => { return new AfkTemplateValidationError(TemplateState.CONNECTION_ERROR, 'Failed to connect to the template service; however, it should be back momentarily. Please wait a minute and try again. If after 2-3 minutes you are still receiving this message, please contact a developer.') })
+    return templateNames
+}
+
+async function resolveTemplateName(botSettings, member, guildId, commandChannel, templateName) {
+    const templateUrl = new URL(settings.config.url)
+    templateUrl.pathname = `/api/${guildId}/template/${commandChannel}/template/${templateName}`
+    templateUrl.searchParams.append('roles', getRoleStrings(botSettings, member).join(','))
+    templateUrl.searchParams.append('key', settings.config.key)
+    const template = await fetch(templateUrl).then(f => f.json()).catch(() => { return new AfkTemplateValidationError(TemplateState.CONNECTION_ERROR, 'Failed to connect to the template service; however, it should be back momentarily. Please wait a minute and try again. If after 2-3 minutes you are still receiving this message, please contact a developer.') })
+    return template
 }
 
 async function templateNamePrompt(message, templateNames) {
@@ -119,6 +138,7 @@ class AfkTemplate {
         this.#template = template
         this.#templateName = template.templateName
 
+        if (this.#template instanceof AfkTemplateValidationError) throw this.#template
         // Validate that the template is OK to use
         this.#validateTemplateParameters() // Validate existence of AFK Template parameters
         if (!this.#template.enabled) throw new AfkTemplateValidationError(TemplateState.DISABLED, `This afk template is disabled.`)
@@ -131,11 +151,7 @@ class AfkTemplate {
 
     // TODO: Need to be able to skip permission checks on reload
     static async tryCreate(bot, botSettings, message, templateName) {
-        const templateUrl = new URL(settings.config.url)
-        templateUrl.pathname = `/api/${message.guild.id}/template/${message.channel.id}/template/${templateName}`
-        templateUrl.searchParams.append('roles', getRoleStrings(botSettings, message.member).join(','))
-        templateUrl.searchParams.append('key', settings.config.key)
-        const template = await fetch(templateUrl).then(f => f.json())
+        const template = await resolveTemplateName(botSettings, message.member, message.guild.id, message.channel.id, templateName)
         try {
             return new this(bot, message.guild, template)
         } catch (e) {
@@ -288,6 +304,7 @@ class AfkTemplate {
             if (this.#template.buttons[i].disableStart && !this.#validateTemplateNumber(this.#template.buttons[i].disableStart)) throw new AfkTemplateValidationError(TemplateState.INVALID_NUMBER, `This afk template at Button ${i} has an Invalid Disable Start.`)
             if (!this.#validateTemplateNumber(this.#template.buttons[i].start)) throw new AfkTemplateValidationError(TemplateState.INVALID_NUMBER, `This afk template at Button ${i} has an Invalid Start.`)
             if (!this.#validateTemplateNumber(this.#template.buttons[i].lifetime)) throw new AfkTemplateValidationError(TemplateState.INVALID_NUMBER, `This afk template at Button ${i} has an Invalid Lifetime.`)
+            if (this.#template.buttons[i].color && !this.#validateTemplateNumber(this.#template.buttons[i].color, TemplateButtonColors)) throw new AfkTemplateValidationError(TemplateState.INVALID_, `This afk template at Button ${i} has an Invalid Color`)
             if (this.#template.buttons[i].logOptions != null) for (let j in this.#template.buttons[i].logOptions) {
                 if (this.#template.buttons[i].logOptions[j].points && !(this.#validateTemplateNumber(this.#template.buttons[i].logOptions[j].points) || this.#validateTemplatePoints(this.#template.buttons[i].logOptions[j].points))) throw new AfkTemplateValidationError(TemplateState.INVALID_NUMBER, `This afk template at Button ${i} at Log Option ${j} has an Invalid Points.`)
                 if (this.#template.buttons[i].logOptions[j].multiplier && !(this.#validateTemplateNumber(this.#template.buttons[i].logOptions[j].multiplier) || this.#validateTemplatePoints(this.#template.buttons[i].logOptions[j].multiplier))) throw new AfkTemplateValidationError(TemplateState.INVALID_NUMBER, `This afk template at Button ${i} at Log Option ${j} has an Invalid Multiplier.`)
@@ -462,6 +479,7 @@ class AfkTemplate {
                 minRole: this.#guild.roles.cache.get(this.#botSettings.roles[button.minRole]),
                 minStaffRoles: button.minStaffRoles && button.minStaffRoles.map(role => this.#guild.roles.cache.get(this.#botSettings.roles[role])),
                 confirmationMessage: button.confirmationMessage && this.processMessages(channel, button.confirmationMessage),
+                color: button.color in TemplateButtonColors ? button.color : Discord.ButtonStyle.Secondary,
                 logOptions: button.logOptions && Object.entries(button.logOptions).reduce((obj, [key, logOption]) => {
                     obj[key] = {
                         ...logOption,
@@ -504,7 +522,7 @@ class AfkTemplate {
     }
 }
 
-module.exports = { AfkTemplate, TemplateVCOptions, TemplateVCState, TemplateButtonType, TemplateButtonChoice, templateNamePrompt, AfkTemplateValidationError, resolveTemplateAlias,
+module.exports = { AfkTemplate, TemplateVCOptions, TemplateVCState, TemplateButtonType, TemplateButtonChoice, templateNamePrompt, AfkTemplateValidationError, resolveTemplateAlias, resolveTemplateList,
     name: 'afkinfo',
     description: 'Gives information about afk checks on the bot.',
     args: '<number/reset/delete/show> (guildID/all)',

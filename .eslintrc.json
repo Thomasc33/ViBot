@@ -26,7 +26,7 @@
         "no-negated-condition": "off",
 
         "max-statements-per-line": "off",
-        "semi": ["warn", "never"],
+        "semi": "error",
         "radix": "off",
         "eqeqeq": "off",
         "arrow-parens": "off",

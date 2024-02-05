@@ -84,6 +84,36 @@
             "parsetotal": ""
         }
     ],
+    "o3parsecurrentweek": [
+        {
+            "id": "343704644712923138",
+            "parsecurrentweek": "o3currentweekparses",
+            "parsetotal": "o3parses"
+        },
+        {
+            "id": "701483950559985705",
+            "parsecurrentweek": "o3currentweekparses",
+            "parsetotal": "o3parses"
+        },
+        {
+            "id": "708026927721480254",
+            "disabled": true,
+            "parsecurrentweek": "",
+            "parsetotal": ""
+        },
+        {
+            "id": "451171819672698920",
+            "disabled": true,
+            "parsecurrentweek": "",
+            "parsetotal": ""
+        },
+        {
+            "id": "697216053914370158",
+            "disabled": true,
+            "parsecurrentweek": "",
+            "parsetotal": ""
+        }
+    ],
     "eventcurrentweek": [
         {
             "id": "343704644712923138",

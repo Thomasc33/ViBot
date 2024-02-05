@@ -4,7 +4,6 @@ commands/afkTemplate.js
 commands/avatar.js
 commands/botstatus.js
 commands/bruh.js
-commands/bugreport.js
 commands/changename.js
 commands/characterList.js
 commands/check.js
@@ -51,13 +50,10 @@ commands/reload.js
 commands/removeAlt.js
 commands/removePending.js
 commands/request.js
-commands/reset.js
 commands/roleAssignment.js
 commands/russianRoulette.js
 commands/script.js
-commands/seppuku.js
 commands/setStatus.js
-commands/setup.js
 commands/status.js
 commands/suspend.js
 commands/suspendremove.js
@@ -76,7 +72,6 @@ commands/verification.js
 commands/vetBan.js
 commands/vetVerification.js
 commands/vibotChannels.js
-commands/vote.js
 commands/warnRemove.js
 commands/warns.js
 jobs/runner.js
@@ -84,7 +79,6 @@ lib/API.js
 lib/extensions.js
 lib/logCommand.js
 lib/logError.js
-lib/patreonHelper.js
 lib/pointLogger.js
 lib/realmEyeScrape.js
 lib/sqlHelper.js

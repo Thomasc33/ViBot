@@ -1,198 +1,240 @@
-const Discord = require('discord.js')
-const getFeedback = require('./getFeedback')
-const ErrorLogger = require('../lib/logError')
-const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
-const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js')
-
-const num_words = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '❌']
-
-const guilds = require('../data/voteInfo.json')
+const Discord = require('discord.js');
+const getFeedback = require('./getFeedback');
+const ErrorLogger = require('../lib/logError');
+const voteConfigurationTemplates = require('../data/voteConfiguration.json');
 
 module.exports = {
     name: 'vote',
-    role: 'headeventrl',
-    args: '<ign> [igns...]',
-    requiredArgs: 1,
-    description: 'Puts up a vote for promotions based on users current role.',
-    args: [
-        slashArg(SlashArgType.User, 'user', {
-            description: "Staff Member"
-        }),
-    ],
-    getSlashCommandData(guild) {
-        return slashCommandJSON(this, guild)
-    },
-    getNotes(guild, member, bot) {
-        return 'Puts the message in leader-chat/veteran-rl-chat based on vote'
-    },
+    role: 'headrl',
+    args: '<role> [<user1> (user2) (user3)...]',
+    requiredArgs: 2,
+    description: 'Puts up a vote for the person based on your role input',
     async execute(message, args, bot, db) {
-        if (args.length == 0) return;
-        for (let i in args) {
-            let member = message.guild.members.cache.get(args[i])
-            if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[i].toLowerCase()));
-            if (!member) {
-                message.channel.send(`Issue finding ${args[i]}. Try again`);
-                continue;
-            }
-            postVote2(message, member, bot, db)
-        }
-        message.delete()
+        const voteModule = new Vote(message, args, bot, db);
+        await voteModule.startProcess();
     }
-}
+};
 
-async function postVote2(message, member, bot, db) {
-    const settings = bot.settings[message.guild.id];
-    if (!settings) return;
+class Vote {
+    /**
+     * @param {Discord.Message} message
+     * @param {Array} args
+     * @param {Discord.Client} bot
+     * @param {import('mysql').Connection} db
+     */
 
-    const promos = guilds[message.guild.id] || guilds.default;
-    for (let [rolekey, info] of Object.entries(promos)) {
+    constructor(message, args, bot, db) {
+        // Basic assignments from parameters
+        this.message = message;
+        this.args = args;
+        this.bot = bot;
+        this.db = db;
 
-        if (rolekey == 'db_rows') continue;
-        if (!settings.roles[rolekey]) continue;
-        const role = message.guild.roles.cache.get(settings.roles[rolekey]);
+        // Guild and member-related assignments
+        this.guild = message.guild;
+        this.member = message.member || {};
+        this.channel = message.channel || {};
+        this.settings = bot.settings[this.guild.id] || {};
+        this.emojiDatabase = bot.storedEmojis || {};
 
-        if (!role) continue;
+        // Role and template initializations
+        this.roleType = args.shift() || '';
+        this.guildVoteTemplates = null;
+        this.template = null;
+        this.embedStyling = { color: null, image: null };
+        this.voteConfigurationTemplates = voteConfigurationTemplates;
 
-        if (!member.roles.cache.has(role.id)) continue;
-
-        info = info.filter(r => {
-            r = message.guild.roles.cache.get(settings.roles[r]);
-            return r && !member.roles.cache.has(r.id)
-        });
-        if (info.length == 0)
-            continue;
-        let promotion = info[0];
-        if (info.length > 1)
-            promotion = await retrievePromotionType(settings, message.channel, message.author, member, role, info).catch(err => ErrorLogger.log(err, bot, message.guild));
-        if (!promotion) return message.channel.send(`Cancelled vote for ${member}`);
-
-        const rows = await db.promise().query(`SELECT * FROM users WHERE id = ${member.id}`).catch((err) => ErrorLogger.log(err, bot, message.guild))
-        const feedback = await getFeedback.getFeedback(member, message.guild, bot);
-        const promo_role = message.guild.roles.cache.get(settings.roles[promotion]);
-        const embed = new Discord.EmbedBuilder()
-            .setColor('#ff0000')
-            .setAuthor({ name: `${member.nickname} to ${promo_role.name}`, iconURL: member.user.displayAvatarURL({ dynamic: true }) })
-            .setDescription(`${member}\n`);
-
-        const min_role = Object.keys(promos)[Object.keys(promos).length - 2];
-        if (rolekey != min_role) {
-            if (rows[0]) embed.data.description += `Runs Logged: ` + promos.db_rows.map(r => `${rows[0][r[1]]} ${r[0]}`).join(', ');
-            else embed.data.description += 'Issue getting runs';
-            embed.addFields([{name: `Recent Feedback:`, value: '** **'}]);
-        } else embed.addFields([{name: 'Feedback:', value: '** **'}]);
-
-        feedback.forEach(m => {
-            const link = `[Link](${m}) `;
-            let field = embed.data.fields[embed.data.fields.length - 1];
-            if (field.value.length + link.length < 1024)
-                field.value += link;
-            else if (embed.data.fields.length < 15)
-                embed.addFields([{name: '-', value: `[Link](${m}) `}]);
-        });
-
-        const msg = await message.guild.channels.cache.get(settings.channels[guilds.channels[rolekey]]).send({ embeds: [embed] });
-        await msg.react('✅');
-        if (!['343704644712923138', '708026927721480254', '701483950559985705'].includes(message.guild.id)) {
-            await msg.react('😐')
-        }
-        await msg.react('❌');
-        if (rolekey == 'almostrl' && message.guild.id !== '708026927721480254') {
-            await msg.react('👀')
-        }
-        try
-        { 
-            if (rolekey == 'rl' && message.guild.id == '708026927721480254') {
-                await msg.react('🇷')
-                await msg.react('🇫')
-            }
-        }
-        catch (e) {
-            ErrorLogger.log(e, bot, message.guild.id)
-        }
-        return;
+        this.emojis = ['✅', '❌', '👀'];
+        this.voteConfiguration = {
+            channel: this.channel,
+            maximumFeedbacks: 5,
+            members: this.args.map(member => this.guild.findMember(member)).filter(member => member != undefined),
+            role: this.guild.findRole(this.roleType)
+        };
     }
 
-    return message.channel.send(`${member} doesn't have a role eligible for promotion`);
-}
+    async startProcess() {
+        if (!this.voteConfiguration.role) { return await this.channel.send(`Could not find role \`${this.roleType}\``); }
+        if (this.voteConfiguration.members.length == 0) { return await this.channel.send('No members found.'); }
 
-function retrievePromotionType(settings, channel, author, member, role, info) {
-    return new Promise(async (resolve, reject) => {
-        const embed = new Discord.EmbedBuilder()
-            .setColor('#0000ff')
-            .setAuthor({ name: `Choose Promotion for ${member.nickname}`, iconURL: member.user.displayAvatarURL({ dynamic: true }) })
-            .setDescription(`There are multiple promotion paths for ${role}. Choose one of the following:` +
-                info.map((v, i) => `${num_words[i]}: **${member.guild.roles.cache.get(settings.roles[v])}**`).join('\n'));
+        this.getVoteConfigurationButtons();
+        await this.message.delete();
+        await this.sendConfirmationMessage();
+        await this.updateConfirmationMessage();
+    }
 
-        const message = await channel.send({ embeds: [embed] });
+    async sendConfirmationMessage() {
+        this.embed = new Discord.EmbedBuilder()
+            .setColor(this.member.roles.highest.hexColor)
+            .setAuthor({ name: 'Vote Configuration', iconURL: this.member.user.displayAvatarURL({ dynamic: true }) })
+            .setDescription('Loading...');
+        this.voteConfigurationMessage = await this.channel.send({ embeds: [this.embed], components: [this.getVoteConfigurationButtons()] });
 
-        const collector = message.createReactionCollector((reaction, user) => !user.bot && user.id == author.id && num_words.indexOf(reaction.emoji.name) >= 0, { time: 30000 });
-        let resolved = false;
+        this.voteConfigurationMessageInteractionCollector = new Discord.InteractionCollector(this.bot, { message: this.voteConfigurationMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button });
+        this.voteConfigurationMessageInteractionCollector.on('collect', async (interaction) => await this.interactionHandler(interaction));
+    }
 
-        collector.once('collect', async (reaction, user) => {
-            resolved = true;
-            collector.stop();
-            if (reaction.emoji.name == '❌')
-                return resolve();
-            return resolve(info[num_words.indexOf(reaction.emoji.name)]);
+    async updateConfirmationMessage() {
+        const voteConfigurationDescription = this.getVoteConfigurationDescription();
+        this.embed = new Discord.EmbedBuilder()
+            .setColor(this.member.roles.highest.hexColor)
+            .setAuthor({ name: 'Vote Configuration', iconURL: this.member.user.displayAvatarURL({ dynamic: true }) })
+            .setDescription(voteConfigurationDescription);
+        await this.voteConfigurationMessage.edit({ embeds: [this.embed], components: [this.getVoteConfigurationButtons()] });
+    }
 
-        });
+    getVoteConfigurationDescription() {
+        return `
+            This vote will be for ${this.voteConfiguration.role}, inside of ${this.voteConfiguration.channel}
+            ${this.emojiDatabase.feedback.text} \`${this.voteConfiguration.maximumFeedbacks}\`
+            
+            ## Leaders
+            ${this.voteConfiguration.members.join(', ')}
+        `;
+    }
 
-        collector.on('end', () => {
-            message.delete();
-        });
+    getVoteConfigurationButtons() {
+        return new Discord.ActionRowBuilder()
+            .addComponents([
+                new Discord.ButtonBuilder()
+                    .setLabel('✅ Confirm')
+                    .setStyle(3)
+                    .setCustomId('voteConfirm'),
+                new Discord.ButtonBuilder()
+                    .setLabel('Feedbacks')
+                    .setStyle(2)
+                    .setEmoji(this.emojiDatabase.feedback.id)
+                    .setCustomId('voteFeedbackConfigure'),
+                new Discord.ButtonBuilder()
+                    .setLabel('# Channel')
+                    .setStyle(2)
+                    .setCustomId('voteChannelConfigure'),
+                new Discord.ButtonBuilder()
+                    .setLabel('@ Role')
+                    .setStyle(2)
+                    .setCustomId('voteRoleConfigure'),
+                new Discord.ButtonBuilder()
+                    .setLabel('❌ Cancel')
+                    .setStyle(4)
+                    .setCustomId('voteCancel')
+            ]);
+    }
 
-        for (const i in info) {
-            if (resolved)
-                return;
-            await message.react(num_words[i]).catch(() => { });
+    async interactionHandler(interaction) {
+        if (interaction.member.id != this.member.id) {
+            return await interaction.reply({ content: 'You are not permitted to configure this', ephemeral: true });
         }
-        if (!resolved)
-            await message.react('❌').catch(() => { });
-    })
-}
 
-async function postVote(message, member, bot, db) {
-    let settings = bot.settings[message.guild.id]
-    let voteType
-    if (member.roles.cache.has(settings.roles.fullskip)) {
-        voteType = 'Veteran Raid Leader'
-        var channel = message.guild.channels.cache.get(settings.channels.vetleaderchat)
-    } else if (member.roles.cache.has(settings.roles.rl)) {
-        voteType = 'Fullskip'
-        var channel = message.guild.channels.cache.get(settings.channels.vetleaderchat)
-    } else if (member.roles.cache.has(settings.roles.almostrl)) {
-        voteType = 'Raid Leader'
-        var channel = message.guild.channels.cache.get(settings.channels.leaderchat)
-    } else if (member.roles.cache.has(settings.roles.trialrl)) {
-        voteType = 'Almost Raid Leader'
-        var channel = message.guild.channels.cache.get(settings.channels.leaderchat)
-    } else return message.channel.send(`${member} doesn't have a role eligible for promotion`)
-    let feedback = await getFeedback.getFeedback(member, message.guild, bot)
-    let voteEmbed = new Discord.EmbedBuilder()
-        .setColor('#ff0000')
-        .setAuthor({ name: `${member.nickname} to ${voteType}` })
-        .setDescription(`${member}\n`)
-    if (member.user.avatarURL()) voteEmbed.setAuthor({ name: `${member.nickname} to ${voteType}`, iconURL: member.user.avatarURL() })
-    db.query(`SELECT * FROM users WHERE id = ${member.id}`, async (err, rows) => {
-        if (err) ErrorLogger.log(err, bot, message.guild)
-        if (voteType != 'Almost Raid Leader')
-            if (rows[0]) {
-                voteEmbed.data.description += `Runs Logged: \`${rows[0].voidsLead}\` Voids, \`${rows[0].cultsLead}\` Cults\nRecent Feedback:\n`
-            } else voteEmbed.data.description += `Issue getting runs\nRecent Feedback:\n`
-        else voteEmbed.data.description += `Feedback:\n`
-        let cont = true
-        feedback.forEach(m => {
-            if (cont)
-                if (voteEmbed.data.description.length + `[Link](${m}) `.length < 2048) voteEmbed.data.description += `[Link](${m}) `
-                else cont = false
-        })
-        let m = await channel.send({ embeds: [voteEmbed] })
-        await m.react('✅')
-        await m.react('😐')
-        await m.react('❌')
-        if (voteType == 'Raid Leader') {
-            m.react('👀')
+        switch (interaction.customId) {
+            case 'voteConfirm':
+                await this.buttonVoteConfirm(interaction);
+                break;
+            case 'voteCancel':
+                await this.buttonVoteCancel(interaction);
+                break;
+            case 'voteFeedbackConfigure':
+                await this.buttonVoteFeedbackConfigure(interaction);
+                break;
+            case 'voteChannelConfigure':
+                await this.buttonVoteChannelConfigure(interaction);
+                break;
+            case 'voteRoleConfigure':
+                await this.buttonVoteRoleConfigure(interaction);
+                break;
+            default:
+                this.channel.send('How?');
+                break;
         }
-    })
+    }
 
+    async endVoteConfigurationPhase(interaction) {
+        await interaction.message.delete();
+        this.voteConfigurationMessageInteractionCollector.stop();
+    }
+
+    async buttonVoteConfirm(interaction) {
+        try {
+            await interaction.reply({ content: 'The votes will be put up', ephemeral: true });
+            await this.endVoteConfigurationPhase(interaction);
+            this.getEmbedStyling();
+            Promise.all(this.voteConfiguration.members.map(async member => {
+                const feedbacks = await getFeedback.getFeedback(member, this.guild, this.bot);
+                await this.startVote(member, feedbacks);
+            }));
+        } catch (error) {
+            ErrorLogger.log(error, this.bot, this.guild);
+        }
+    }
+
+    async startVote(member, feedbacks) {
+        let embedColor = this.voteConfiguration.role.hexColor;
+        if (this.embedStyling != undefined && this.embedStyling.embedColor) { embedColor = this.embedStyling.embedColor; }
+        this.embed = new Discord.EmbedBuilder()
+            .setColor(embedColor)
+            .setAuthor({ name: `${member.displayName} to ${this.voteConfiguration.role.name}`, iconURL: member.user.displayAvatarURL({ dynamic: true }) })
+            .setDescription(`${member} \`${member.displayName}\``);
+        if (this.embedStyling != undefined && this.embedStyling.image) { this.embed.setThumbnail(this.embedStyling.image); }
+        this.embed.addFields({
+            name: 'Recent Feedback:',
+            value: `${feedbacks.length != 0 ? `${feedbacks.slice(
+                0, this.voteConfiguration.maximumFeedbacks).map(
+                (feedback, index) => `\`${(index + 1).toString().padStart(2, ' ')}\` ${feedback}`).join('\n')}` : 'None'}`,
+            inline: false
+        });
+        const voteMessage = await this.voteConfiguration.channel.send({ embeds: [this.embed] });
+        for (const emoji of this.emojis) { voteMessage.react(emoji); }
+    }
+
+    getEmbedStyling() {
+        const settingRoleName = Object.keys(this.settings.roles)
+            .find(roleName => this.settings.roles[roleName] === this.voteConfiguration.role.id);
+        if (!settingRoleName) { return; }
+        this.embedStyling = this.voteConfigurationTemplates
+            .find(template => template.settingRole === settingRoleName);
+    }
+
+    async buttonVoteCancel(interaction) {
+        await interaction.reply({ content: 'You have decided to cancel the votes', ephemeral: true });
+        await this.endVoteConfigurationPhase(interaction);
+    }
+
+    async buttonVoteFeedbackConfigure(interaction) {
+        const embedFeedbackConfigure = this.getBaseEmbed();
+        embedFeedbackConfigure.setDescription('Choose how many feedbacks you want ViBot to look through');
+        const confirmationMessage = await interaction.reply({ embeds: [embedFeedbackConfigure], fetchReply: true });
+        const choice = await confirmationMessage.confirmNumber(10, interaction.member.id);
+        if (!choice || isNaN(choice) || choice == 'Cancelled') return await confirmationMessage.delete();
+        await confirmationMessage.delete();
+        this.voteConfiguration.maximumFeedbacks = choice;
+        await this.updateConfirmationMessage();
+    }
+
+    async buttonVoteChannelConfigure(interaction) {
+        const embedFeedbackConfigure = this.getBaseEmbed();
+        embedFeedbackConfigure.setDescription('Type a different channel for the vote to be put up in');
+        await interaction.update({ embeds: [embedFeedbackConfigure] });
+        const configurationRepliedMessage = await interaction.channel.next(null, null, interaction.member.id);
+        const channel = await this.guild.findChannel(configurationRepliedMessage.content);
+        if (channel) { this.voteConfiguration.channel = channel; }
+        await this.updateConfirmationMessage();
+    }
+
+    async buttonVoteRoleConfigure(interaction) {
+        const embedFeedbackConfigure = this.getBaseEmbed();
+        embedFeedbackConfigure.setDescription('Type a different role for the vote');
+        await interaction.update({ embeds: [embedFeedbackConfigure] });
+        const configurationRepliedMessage = await interaction.channel.next(null, null, interaction.member.id);
+        const role = await this.guild.findRole(configurationRepliedMessage.content);
+        if (role) { this.voteConfiguration.role = role; }
+        await this.updateConfirmationMessage();
+    }
+
+    getBaseEmbed() {
+        return new Discord.EmbedBuilder()
+            .setColor(this.member.roles.highest.hexColor)
+            .setAuthor({
+                name: 'Vote Configuration',
+                iconURL: this.member.user.displayAvatarURL({ dynamic: true })
+            });
+    }
 }

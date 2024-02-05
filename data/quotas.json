@@ -48,6 +48,7 @@
                     { "column": "currentweekAssists", "emoji": ":handshake:", "name": "Assists", "value": 0.5 },
                     { "column": "currentweekFeedback", "emoji": "<:feedback:858920770806087710>", "name": "Feedback", "value": 1 },
                     { "column": "currentweekshattersFeedback", "emoji": "<:shattersFeedback:1071433377879707728>", "name": "Shatters Feedback", "value": 2 },
+                    { "column": "currentweekOryxFeedback", "emoji": "<:oryxFeedback:1189018214949208195>", "name": "Oryx Feedback", "value": 2 },
                     { "column": "rollingQuota", "emoji": ":hourglass:", "name": "Rolled Quota", "value": 1, "rolling": true }
                 ],
                 "voteInfo": {
@@ -67,7 +68,8 @@
                 "currentweek": "parsecurrentweek",
                 "pastweeks": "pastparseweeks",
                 "values": [
-                    { "column": "currentweekparses", "name": "Parses", "value": 1 }
+                    { "column": "currentweekparses", "emoji": "<:parse:1130663987999154247>", "name": "Parses", "value": 1 },
+                    { "column": "o3currentweekparses", "emoji": "<:oryxParse:1203773635312222218>", "name": "O3 Parses", "value": 1.5 }
                 ]
             },
             {
@@ -90,7 +92,7 @@
         "totalUnexcused": "totalUnexcused",
         "consecutiveUnexcused": "consecutiveUnexcused",
         "consecutiveLeave": "consecutiveLeave",
-        "ignoreRoles": ["officer", "moderator", "headrl", "admin"],
+        "ignoreRoles": ["officer", "moderator", "headrl", "admin", "headdev"],
         "ignoreRolesDisplay": [],
         "roleDisplay": [],
         "quotas": [
@@ -138,6 +140,7 @@
                     { "column": "currentweekAssists", "emoji": ":handshake:", "name": "Assists", "value": 0.5 },
                     { "column": "currentweekFeedback", "emoji": "<:feedback:858920770806087710>", "name": "Feedback", "value": 1 },
                     { "column": "currentweekshattersFeedback", "emoji": "<:shattersFeedback:1071433377879707728>", "name": "Shatters Feedback", "value": 2 },
+                    { "column": "currentweekOryxFeedback", "emoji": "<:oryxFeedback:1189018214949208195>", "name": "Oryx Feedback", "value": 2 },
                     { "column": "rollingQuota", "emoji": ":hourglass:", "name": "Rolled Quota", "value": 1, "rolling": true }
                 ],
                 "voteInfo": {
@@ -157,7 +160,8 @@
                 "currentweek": "parsecurrentweek",
                 "pastweeks": "pastparseweeks",
                 "values": [
-                    { "column": "currentweekparses", "emoji": ":mag:", "name": "Parses", "value": 1 }
+                    { "column": "currentweekparses", "emoji": "<:parse:1130663987999154247>", "name": "Parses", "value": 1 },
+                    { "column": "o3currentweekparses", "emoji": "<:oryxParse:1203773635312222218>", "name": "O3 Parses", "value": 1.5 }
                 ]
             },
             {
