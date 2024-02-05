@@ -258,22 +258,24 @@ class Check {
     }
 
     async panelFalseSuspensions() {
-        const panelName = 'falseSuspensions'
-        if (!this.settings.checkPanels[panelName]) { return }
-        const allSuspensions = await this.getSuspends()
+        const panelName = 'falseSuspensions';
+        if (!this.settings.checkPanels[panelName]) { return; }
+        
+        const ids = this.settings.checkRoles.falseSuspenionRoles;
+        for (const id of ids) {
+            const role = this.guild.findRole(id);
 
-        const suspensionRoleNames = this.settings.checkRoles.falseSuspenionRoles
-        for (const index in suspensionRoleNames) {
-            const roleName = suspensionRoleNames[index]
-            const roleSuspension = this.roleCache.get(this.settings.roles[roleName])
-            roleSuspension.members.forEach(async member => {
-                if (await this.isPanelRestricted(member, panelName)) { return }
-                if (!allSuspensions.includes(member.id)) { return }
-                const problemCategory = 'False Suspensions'
+            role.members.forEach(async member => {
+                if (await this.isPanelRestricted(member, panelName)) { return; }
+                // get all valid suspensions
+                const [rows,] = await this.db.promise().query('SELECT * FROM suspensions WHERE suspended = true AND guildid = ? AND id = ? AND UNIX_TIMESTAMP() < uTime', [this.guild.id, member.id]);
+                if (rows.length > 0) return;
+                
+                const problemCategory = 'False Suspensions';
                 const problem = {
                     text: `<@!${member.id}>`
-                }
-                this.addProblemToCategory(problemCategory, problem, ' ', this.settings.checkStrings.falseSuspenions)
+                };
+                this.addProblemToCategory(problemCategory, problem, ' ', this.settings.checkStrings.falseSuspenions);
             })
         }
     }
@@ -570,10 +572,5 @@ class Check {
     replacePlaceholders(stringInput, variables) {
         if (!stringInput) return ''
         return stringInput.replace(/\{([^}]+)\}/g, (match, key) => variables[key] || match)
-    }
-
-    async getSuspends() {
-        const [rows,] = await this.db.promise().query('SELECT * FROM suspensions WHERE suspended = true AND guildid = ?', [this.guild.id])
-        return rows.map(row => row.id)
     }
 }
