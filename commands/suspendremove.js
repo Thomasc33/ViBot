@@ -22,31 +22,29 @@ module.exports = {
     async execute(message, args, bot, db) {
         const settings = bot.settings[message.guild.id];
         const modlogs = message.guild.channels.cache.get(settings.channels.modlogs);
-        if (!modlogs) return message.channel.send('the modlogs channel is not configured for this server.');
+        if (!modlogs) return message.channel.send('The modlogs channel is not configured for this server.');
 
         const member = message.options.getMember('user');
         if (!member) return message.channel.send('Member not found. Please try again');
         const [rows] = await db.promise().query('SELECT * FROM suspensions WHERE id = ? AND suspended = 0', [member.user.id]);
-        for (let i = 0; i < rows.length; i++) {
-            rows[i].index = i;
-        }
+
         // Performs a check to see if the raider is currently suspended, if they are, you will not be allowed to continue and the raider stays suspended
         if (rows.length == 0) return message.channel.send('There are no expired suspensions found for the user. Please unsuspend them and try again.');
         const embed = new Discord.EmbedBuilder()
             .setTitle('Suspension Removal')
             .setColor(Discord.Colors.Blue)
-            .setDescription('**Select a suspension to remove:**\n\n' + rows.map(sus => `${sus.index + 1}. By <@!${sus.modid}> ends <t:${(parseInt(sus.uTime) / 1000).toFixed(0)}:R> at <t:${(parseInt(sus.uTime) / 1000).toFixed(0)}:f>\`\`\`${sus.reason}\`\`\``).join('\n'));
+            .setDescription('**Select a suspension to remove:**\n\n' + rows.map((sus, index) => `${index + 1}. By <@!${sus.modid}> ends <t:${(parseInt(sus.uTime) / 1000).toFixed(0)}:R> at <t:${(parseInt(sus.uTime) / 1000).toFixed(0)}:f>\`\`\`${sus.reason}\`\`\``).join('\n'));
         const rsPanel = await message.channel.send({ embeds: [embed] });
         const choice = await rsPanel.confirmNumber(rows.length, message.member.id)
             .then(c => {
                 if (isNaN(c) || c == 'Cancelled') {
-                    embed.addFields({ name: 'Cancelled', value: 'This interaction has been cancelled.' });
+                    embed.setTitle('Suspension Removal Cancelled').addFields({ name: 'Cancelled', value: 'This interaction has been cancelled.' });
                     return false;
                 }
                 return parseInt(c);
             })
             .catch(() => {
-                embed.addFields({ name: 'Cancelled', value: 'This interaction has timed out.' });
+                embed.setTitle('Suspension Removal Cancelled').addFields({ name: 'Cancelled', value: 'This interaction has timed out.' });
                 return false;
             });
 
@@ -71,7 +69,8 @@ module.exports = {
         const reason = await rsPanel.channel.next(null, null, message.author.id)
             .then(result => result.content.trim() || 'No Reason Provided')
             .catch(err => {
-                embed.setDescription(`Cancelled suspension removal for the following suspension: ${err}`)
+                embed.setTitle('Suspension Removal Cancelled')
+                    .setDescription(`Cancelled suspension removal for the following suspension: ${err}`)
                     .setColor(Discord.Colors.Red);
                 rsPanel.edit({ embeds: [embed] });
                 return false;
@@ -84,8 +83,9 @@ module.exports = {
             .addFields({ name: 'Removal Reason', value: reason });
 
         await rsPanel.edit({ embeds: [embed] });
-        if (!(await rsPanel.confirmButton(message.author.id))) {
-            embed.setDescription('Cancelled removing the following suspension')
+        if (!(await rsPanel.confirmButton(message.author.id).catch(() => { embed.setFooter({ text: 'Timed out' }); }))) {
+            embed.setTitle('Suspension Removal Cancelled')
+                .setDescription('Cancelled removing the following suspension')
                 .setColor(Discord.Colors.Red);
             rsPanel.edit({ embeds: [embed], components: [] });
             return;
@@ -104,6 +104,6 @@ module.exports = {
             .setDescription('The following suspension was removed')
             .setFields(rsPanel.embeds[0].data.fields);
 
-        modlogs.send({ embeds: [removeembed] });
+        await modlogs.send({ embeds: [removeembed] });
     }
 };
