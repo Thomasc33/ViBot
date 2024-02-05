@@ -12,6 +12,9 @@ module.exports = {
             description: 'The message to echo'
         })
     ],
+    getNotes() {
+        return 'The slash command version is completely invisible to other members :)';
+    },
     getSlashCommandData(guild) {
         return slashCommandJSON(this, guild);
     },
@@ -21,7 +24,7 @@ module.exports = {
     },
     async slashCommandExecute(interaction) {
         await interaction.deferReply({ ephemeral: true });
+        await interaction.deleteReply();
         await interaction.channel.send(interaction.options.getString('message'));
-        await interaction.followUp({ content: 'Echo sucessful, dismiss this message', ephemeral: true });
     }
 };
