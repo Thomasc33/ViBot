@@ -152,22 +152,21 @@ async function interactionHandler(interaction, settings, bot, db) {
     let raider = guild.members.cache.get(modmailMessage.embeds[0].data.footer.text.split(/ +/g)[2])
     if (!raider) {
         embed.addFields({ name: `This modmail has been closed automatically <t:${moment().unix()}:R>`, value: `The raider in this modmail is no longer in this server.\nI can no longer proceed with this modmail`, inline: false })
-        interaction.message.edit({ embeds: [embed], components: [] })
-        return await interaction.deferUpdate()
+        interaction.update({ embeds: [embed], components: [] })
+        return
     }
     let directMessages = await raider.user.createDM()
 
     function checkInServer() {
         const result = guild.members.cache.get(directMessages.recipient.id);
-        if (!result) { failedEmbed.setDescription(`${raider} Has left this server and I can no longer continue with this modmail`); interaction.reply({ embeds: [failedEmbed] }); interaction.message.edit({ components: [] }) }
+        if (!result) { failedEmbed.setDescription(`${raider} Has left this server and I can no longer continue with this modmail`); interaction.reply({ embeds: [failedEmbed] }); interaction.update({ components: [] }) }
         return result;
     }
     let userModMailMessage = await directMessages.messages.fetch(modmailMessageID)
     let security = interaction.member
 
     if (interaction.customId === "modmailUnlock") {
-        await interaction.message.edit({ embed: [interaction.message.embed], components: [...modmailOpenComponents] })
-        await interaction.deferUpdate()
+        await interaction.update({ embed: [interaction.message.embed], components: [...modmailOpenComponents] })
     } else if (interaction.customId === "modmailLock") {
         modmailCloseComponents = new Discord.ActionRowBuilder()
             .addComponents([
@@ -176,10 +175,9 @@ async function interactionHandler(interaction, settings, bot, db) {
                     .setStyle(3)
                     .setCustomId('modmailUnlock')
             ])
-        await interaction.message.edit({ embed: [interaction.message.embed], components: [modmailCloseComponents] })
-        await interaction.deferUpdate()
+        await interaction.update({ embed: [interaction.message.embed], components: [modmailCloseComponents] })
     } else if (interaction.customId === "modmailSend") {
-        await interaction.update({ content: "Type in the channel to send a message", components: [] })
+        await interaction.reply({ content: "Type in the channel to send a message" })
         let originalModmail = embed.data.description;
         let embedResponse = new Discord.EmbedBuilder()
             .setDescription(`__How would you like to respond to ${raider}'s [message](${modmailMessage.url})__\n${originalModmail}`)
@@ -195,7 +193,7 @@ async function interactionHandler(interaction, settings, bot, db) {
                 await tempResponseMessage.delete()
                 failedEmbed.setDescription(`${raider} Has left this server and I can no longer continue with this modmail`)
                 await interaction.reply({ embeds: [failedEmbed] });
-                await interaction.message.edit({ components: [] })
+                await interaction.update({ components: [] })
                 return
             }
             embedResponse.setDescription(`__Are you sure you want to respond with the following?__\n${responseMessage}`)
@@ -205,16 +203,16 @@ async function interactionHandler(interaction, settings, bot, db) {
                         await tempResponseMessage.delete()
                         failedEmbed.setDescription(`${raider} Has left this server and I can no longer continue with this modmail`)
                         await interaction.editReply({ embeds: [failedEmbed] });
-                        await interaction.message.edit({ components: [] })
+                        await interaction.update({ components: [] })
                         return
                     }
                     await directMessages.send(responseMessage)
                     await tempResponseMessage.delete()
                     embed.addFields([{ name: `Response by ${interaction.member.nickname} <t:${moment().unix()}:R>:`, value: responseMessage }])
-                    await interaction.message.edit({ embeds: [embed], components: [] })
+                    await interaction.update({ embeds: [embed], components: [] })
                 } else {
                     await tempResponseMessage.delete()
-                    await interaction.message.edit({ components: [...modmailOpenComponents] })
+                    await interaction.update({ components: [...modmailOpenComponents] })
                 }
             })
         })
@@ -235,8 +233,7 @@ async function interactionHandler(interaction, settings, bot, db) {
                     }
                     embed.addFields([{ name: `${interaction.member.nickname} has forwarded this modmail <t:${moment().unix()}:R>`, value: `This modmail has been forwarded to ${forwardedMessageChannel}` }])
 
-                    await interaction.message.edit({ embeds: [embed], components: [] })
-                    await interaction.deferUpdate()
+                    await interaction.update({ embeds: [embed], components: [] })
                 } else if (forwardedMessageChannel == undefined) {
                     embed = new Discord.EmbedBuilder()
                         .setDescription(`${interaction.member} This feature has not been set up.\nIf you would like for this to be set up, then do the following\nContact any Mod+\nHave them do \`\`;setup\`\`\nAnd enable \`\`forwardedModmailMessage\`\` under \`\`channels\`\``)
@@ -244,7 +241,7 @@ async function interactionHandler(interaction, settings, bot, db) {
                         .setFooter({ text: `${interaction.customId}` })
                     await interaction.reply({ embeds: [embed] })
                 }
-            } else { await interaction.message.edit({ components: [...modmailOpenComponents] }); await confirmMessage.delete(); await interaction.deferUpdate() }
+            } else { await interaction.update({ components: [...modmailOpenComponents] }); await confirmMessage.delete(); }
         })
     } else if (interaction.customId === "modmailClose") {
         confirmationEmbed.setDescription(`This will close the modmail permenantly.\nIf you wish to send a message after closing, use the \`\`;mmr\`\` command to send a message to this modmail`)
@@ -252,9 +249,8 @@ async function interactionHandler(interaction, settings, bot, db) {
             if (await confirmMessage.confirmButton(interaction.member.id)) {
                 await confirmMessage.delete()
                 embed.addFields([{ name: `${interaction.member.nickname} has closed this modmail <t:${moment().unix()}:R>`, value: `This modmail has been closed` }])
-                await interaction.message.edit({ embeds: [embed], components: [] })
-                await interaction.deferUpdate()
-            } else { await interaction.message.edit({ components: [...modmailOpenComponents] }); await confirmMessage.delete(); await interaction.deferUpdate() }
+                await interaction.update({ embeds: [embed], components: [] })
+            } else { await interaction.update({ components: [...modmailOpenComponents] }); await confirmMessage.delete(); }
         })
     } else if (interaction.customId === "modmailBlacklist") {
         confirmationEmbed.setDescription(`This will blacklist ${raider} and they can no longer send in any future modmails`)
@@ -263,9 +259,8 @@ async function interactionHandler(interaction, settings, bot, db) {
                 await confirmMessage.delete()
                 db.query(`INSERT INTO modmailblacklist (id) VALUES ('${raider.id}')`)
                 embed.addFields([{ name: `${interaction.member.nickname} has blacklisted ${raider.nickname} <t:${moment().unix()}:R>`, value: `${raider} has been blacklisted by ${interaction.member}` }])
-                await interaction.message.edit({ embeds: [embed], components: [] })
-                await interaction.deferUpdate()
-            } else { await interaction.message.edit({ components: [...modmailOpenComponents] }); await confirmMessage.delete(); await interaction.deferUpdate() }
+                await interaction.update({ embeds: [embed], components: [] })
+            } else { await interaction.update({ components: [...modmailOpenComponents] }); await confirmMessage.delete(); }
         })
     } else if (interaction.customId === "modmailGPT") {
         // Get the original modmail
@@ -294,7 +289,7 @@ async function interactionHandler(interaction, settings, bot, db) {
                         await tempResponseMessage.delete();
                         failedEmbed.setDescription(`${raider} Has left this server and I can no longer continue with this modmail`);
                         await interaction.reply({ embeds: [failedEmbed] });
-                        await interaction.message.edit({ components: [] });
+                        await interaction.update({ components: [] });
                         return;
                     }
 
@@ -302,12 +297,12 @@ async function interactionHandler(interaction, settings, bot, db) {
                     await tempResponseMessage.delete();
 
                     embed.addFields([{ name: `Generated Response Approved by ${interaction.member.nickname} <t:${moment().unix()}:R>:`, value: generatedText }]);
-                    await interaction.message.edit({ embeds: [embed], components: [] });
+                    await interaction.update({ embeds: [embed], components: [] });
 
                 } else {
                     // User rejected the generated response
                     await tempResponseMessage.delete();
-                    await interaction.message.edit({ components: [...modmailOpenComponents] });
+                    await interaction.update({ components: [...modmailOpenComponents] });
                 }
             })
             .catch(function (error) {
