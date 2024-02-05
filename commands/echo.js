@@ -19,8 +19,10 @@ module.exports = {
         return slashCommandJSON(this, guild);
     },
     async execute(message) {
-        await message.channel.send(message.content.substring(6, message.content.length));
-        await message.delete();
+        await Promise.all([
+            message.channel.send(message.content.substring(6)),
+            message.delete()
+        ]);
     },
     async slashCommandExecute(interaction) {
         await interaction.deferReply({ ephemeral: true });
