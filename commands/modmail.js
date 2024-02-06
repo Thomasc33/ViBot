@@ -191,8 +191,8 @@ async function interactionHandler(interaction, settings, bot, db) {
             if (!checkInServer) {
                 await tempResponseMessage.delete()
                 failedEmbed.setDescription(`${raider} Has left this server and I can no longer continue with this modmail`)
-                await interaction.reply({ embeds: [failedEmbed] });
-                await interaction.update({ components: [] })
+                await interaction.editReply({ embeds: [failedEmbed] });
+                await interaction.edit({ components: [] })
                 return
             }
             embedResponse.setDescription(`__Are you sure you want to respond with the following?__\n${responseMessage}`)
@@ -202,16 +202,16 @@ async function interactionHandler(interaction, settings, bot, db) {
                         await tempResponseMessage.delete()
                         failedEmbed.setDescription(`${raider} Has left this server and I can no longer continue with this modmail`)
                         await interaction.editReply({ embeds: [failedEmbed] });
-                        await interaction.update({ components: [] })
+                        await interaction.edit({ components: [] })
                         return
                     }
                     await directMessages.send(responseMessage)
                     await tempResponseMessage.delete()
                     embed.addFields([{ name: `Response by ${interaction.member.nickname} <t:${moment().unix()}:R>:`, value: responseMessage }])
-                    await interaction.update({ embeds: [embed], components: [] })
+                    await interaction.edit({ embeds: [embed], components: [] })
                 } else {
                     await tempResponseMessage.delete()
-                    await interaction.update({ components: [...modmailOpenComponents] })
+                    await interaction.edit({ components: [...modmailOpenComponents] })
                 }
             })
         })
