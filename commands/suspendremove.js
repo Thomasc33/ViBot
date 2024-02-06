@@ -33,27 +33,23 @@ module.exports = {
         const embed = new Discord.EmbedBuilder()
             .setTitle('Suspension Removal')
             .setColor(Discord.Colors.Blue)
-            .setDescription('**Select a suspension to remove:**\n\n' + rows.map((sus, index) => `${index + 1}. By <@!${sus.modid}> ends <t:${(parseInt(sus.uTime) / 1000).toFixed(0)}:R> at <t:${(parseInt(sus.uTime) / 1000).toFixed(0)}:f>\`\`\`${sus.reason}\`\`\``).join('\n'));
+            .setDescription('**Select a suspension to remove:**\n\n' + rows.map((sus, index) => `${index + 1}. By <@!${sus.modid}> ended <t:${(parseInt(sus.uTime) / 1000).toFixed(0)}:R> at <t:${(parseInt(sus.uTime) / 1000).toFixed(0)}:f>\`\`\`${sus.reason}\`\`\``).join('\n'));
         const rsPanel = await message.channel.send({ embeds: [embed] });
-        const choice = await rsPanel.confirmNumber(rows.length, message.member.id)
-            .then(c => {
-                if (isNaN(c) || c == 'Cancelled') {
-                    embed.setTitle('Suspension Removal Cancelled').addFields({ name: 'Cancelled', value: 'This interaction has been cancelled.' });
-                    return false;
-                }
-                return parseInt(c);
-            })
-            .catch(() => {
-                embed.setTitle('Suspension Removal Cancelled').addFields({ name: 'Cancelled', value: 'This interaction has timed out.' });
-                return false;
-            });
+        const choice = await rsPanel.confirmNumber(rows.length, message.member.id).catch(() => false);
 
         if (choice === false) {
+            embed.setTitle('Suspension Removal Cancelled').addFields({ name: 'Cancelled', value: 'This interaction has timed out.' });
             rsPanel.edit({ embeds: [embed], components: [] });
             return;
         }
 
-        const suspension = rows[choice];
+        if (isNaN(choice) || choice == 'Cancelled') {
+            embed.setTitle('Suspension Removal Cancelled').addFields({ name: 'Cancelled', value: 'This interaction has been cancelled.' });
+            rsPanel.edit({ embeds: [embed], components: [] });
+            return;
+        }
+
+        const suspension = rows[parseInt(choice)];
         const mod = message.guild.members.cache.get(suspension.modid);
 
         embed.setDescription('What is your reason for removing the following suspension?')
@@ -66,21 +62,21 @@ module.exports = {
                 { name: 'Reason', value: suspension.reason || 'No Reason Provided' });
 
         await rsPanel.edit({ embeds: [embed], components: [] });
-        const reason = await rsPanel.channel.next(null, null, message.author.id)
-            .then(result => result.content.trim() || 'No Reason Provided')
-            .catch(err => {
-                embed.setTitle('Suspension Removal Cancelled')
-                    .setDescription(`Cancelled suspension removal for the following suspension: ${err}`)
-                    .setColor(Discord.Colors.Red);
-                rsPanel.edit({ embeds: [embed] });
-                return false;
-            });
+        const reason = await rsPanel.channel.next(null, null, message.author.id).catch(err => {
+            embed.setTitle('Suspension Removal Cancelled')
+                .setDescription(`Cancelled suspension removal for the following suspension: ${err}`)
+                .setColor(Discord.Colors.Red);
+            return false;
+        });
 
-        if (!reason) return;
+        if (!reason) {
+            rsPanel.edit({ embeds: [embed] });
+            return;
+        }
 
         embed.setDescription('__Are you sure you want to remove the following suspension?__')
             .addFields({ name: 'Removal By', value: `${message.member} \`${message.member.displayName}\`` })
-            .addFields({ name: 'Removal Reason', value: reason });
+            .addFields({ name: 'Removal Reason', value: reason.content.trim() || 'No Reason Provided' });
 
         await rsPanel.edit({ embeds: [embed] });
         if (!(await rsPanel.confirmButton(message.author.id).catch(() => { embed.setFooter({ text: 'Timed out' }); }))) {
