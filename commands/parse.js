@@ -37,20 +37,20 @@ module.exports = {
                     required: true,
                     description: '/who image'
                 }),
-                slashArg(SlashArgType.String, 'vc_id', {
+                slashArg(SlashArgType.String, 'vc', {
                     required: false,
-                    description: 'The vc to parse'
+                    description: 'The vc id to parse'
                 })
             ]
         })
     ],
     getSlashCommandData(guild) { return slashCommandJSON(this, guild); },
     role: 'eventrl',
-    async autocomplete(interaction) {
-        const focusedValue = interaction.options.getFocused().trim().toLowerCase();
-        switch (focusedValue.name) {
+    async autocomplete(interaction, bot) {
+        const focusedOption = interaction.options.getFocused(true);
+        switch (focusedOption.name) { // switch statement for future autocomplete types, may remove later
             case 'raid':
-                break;
+                return await filterRaidIds(interaction, bot);
             default:
         }
     },
@@ -58,7 +58,6 @@ module.exports = {
         const action = message.options.getSubcommand();
         switch (action) {
             case 'members':
-                console.log(message.options[0].options);
                 await message.reply('members');
                 break;
             case 'reacts':
@@ -71,3 +70,11 @@ module.exports = {
         }
     }
 };
+
+async function filterRaidIds(interaction, bot) {
+    const raidIdMappings = Object.keys(bot.afkModules).filter(raidId => bot.afkModules[raidId].guild.id == interaction.guild.id).map(raidId => ({ name: bot.afkModules[raidId].afkTitle(), value: raidId })); // may need some null-proofing here, unsure if I should bother
+    if (raidIdMappings.length == 0) { return; }
+    const focusedValue = interaction.options.getFocused().trim().toLowerCase();
+    const filteredValues = raidIdMappings.filter(raidIdMapping => raidIdMapping.name.includes(focusedValue)).slice(0, 25);
+    await interaction.respond(filteredValues);
+}
