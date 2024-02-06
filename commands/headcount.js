@@ -1,8 +1,143 @@
-const Discord = require('discord.js');
-const AfkTemplate = require('./afkTemplate.js');
-const afkCheck = require('./afkCheck');
+const { Message, CommandInteraction, GuildMember, Client, EmbedBuilder, AutocompleteInteraction } = require('discord.js')
+const { AfkTemplate, resolveTemplateList } = require('./afkTemplate.js');
 const { createEmbed } = require('../lib/extensions.js');
+const { slashCommandJSON, slashArg } = require('../utils.js');
+const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
 
+class Headcount {
+    /** @type {Message | CommandInteraction} */
+    #interaction;
+
+    /** @type {Message} */
+    #message;
+
+    /** @type {AfkTemplate} */
+    #template;
+
+    /** @type {GuildMember} */
+    #member;
+
+    /** @type {Client} */
+    #bot;
+
+    /** @type {import('../data/guildSettings.708026927721480254.cache.json')} */
+    #settings;
+
+    /**
+     * 
+     * @param {Messsage | CommandInteraction} interaction 
+     * @param {GuildMember} member 
+     * @param {Client} bot 
+     * @param {string} templateName 
+     * @param {AfkTemplate} template 
+     */
+    constructor(interaction, member, bot, template) {
+        this.#interaction = interaction;
+        this.#member = member;
+        this.#bot = bot;
+        this.#settings = bot.settings[this.#interaction.guild.id];
+        this.#template = template;
+
+        this.#init();
+    }
+
+    async #init() {
+        this.#message = await this.#template.raidStatusChannel.send(this.#statusData);
+
+        for (const reactName in this.#template.reacts) {
+            const react = this.#template.reacts[reactName];
+            // eslint-disable-next-line no-await-in-loop
+            if (react.onHeadcount && react.emote) await this.#message.react(react.emote.id);
+        }
+
+        for (const keyName in this.#template.buttons) {
+            const button = this.#template.buttons[keyName];
+            switch (button.type) {
+                case AfkTemplate.TemplateButtonType.NORMAL:
+                case AfkTemplate.TemplateButtonType.LOG:
+                case AfkTemplate.TemplateButtonType.LOG_SINGLE:
+                    const emote = this.bot.storedEmojis[button.emote];
+                    // eslint-disable-next-line no-await-in-loop
+                    if (emote) await this.#message.react(emote.id);
+                default:
+            }
+        }
+    }
+
+    get #statusData() {
+        const embed = new EmbedBuilder()
+            .setAuthor({ name: `Headcount for ${this.#template.name} by ${this.#member.displayName}`, iconURL: this.#member.displayAvatarURL() })
+            .setDescription(this.#template.processBodyHeadcount(null))
+            .setColor(this.#template.body[1].embed.color || 'White')
+            .setImage(this.#settings.strings[this.#template.body[1].embed.image] || this.#template.body[1].embed.image)
+            .setFooter({ text: this.#interaction.guild.name, iconURL: this.#interaction.guild.iconURL() })
+            .setTimestamp(Date.now());
+        const thumbnail = this.#template.getRandomThumbnail();
+        if (thumbnail) embed.setThumbnail(thumbnail);
+        const data = { embeds: [embed] };
+        if (this.#template.pingRoles) data.content = this.#template.pingRoles.join(' ');
+        return data;
+    }
+}
+
+/**
+ * @typedef {{
+*  emote: string,
+*  onHeadcount: boolean,
+*  start: number,
+*  lifetime: number
+* }} ReactData
+* 
+* @typedef {{
+*  reacts: Record<string, ReactData>,
+*  aliases: string[],
+*  templateName: string,
+*  sectionNames: string[]
+* }} Template   
+*/
+
+module.exports = {
+    name: 'headcount',
+    description: 'Puts a headcount in a raid status channel',
+    alias: ['hc'],
+    role: 'eventrl',
+    args: [
+        slashArg(SlashArgType.String, 'type', {
+            description: 'Type of run to put a headcount for',
+            autocomplete: true
+        })
+    ],
+    requiredArgs: 1,
+    getSlashCommandData(guild) { return slashCommandJSON(this, guild); },
+
+    /** 
+     * @param {AutocompleteInteraction} interaction 
+     */
+    async autocomplete(interaction) {
+        const settings = interaction.client.settings[interaction.guild.id];
+        const search = interaction.options.getFocused().trim().toLowerCase();
+
+        /** @type {Template[]} */
+        const templates = await resolveTemplateList(settings, interaction.member, interaction.guild.id, interaction.channel.id);
+
+        const results = templates.map(({ templateName, aliases }) => ({ name: templateName, value: templateName, aliases }))
+            .filter(({ name, aliases }) => name.toLowerCase().includes(search) || aliases.some(alias => alias.toLowerCase().includes(search)))
+
+        interaction.respond(results.slice(0, 25))
+    },
+
+    /**
+     * 
+     * @param {Message | CommandInteraction} interaction 
+     * @param {string[]} args 
+     * @param {Client} bot 
+     */
+    async execute(interaction, args, bot) {
+        const templateName = interaction.options.getString('type');
+        interaction.reply({ content: templateName, ephemeral: true })
+    }
+}
+/*
 module.exports = {
     name: 'headcount',
     description: 'Puts a headcount in a raid status channel',
@@ -75,3 +210,4 @@ module.exports = {
         message.react('✅')
     }
 }
+*/
