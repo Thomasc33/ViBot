@@ -63,7 +63,7 @@ module.exports = {
             var duplicates = {}
             bot.emojiServers.forEach(id => {
                 let guild = bot.guilds.cache.get(id)
-                guild.emojis.cache.forEach(emoji => {
+                guild?.emojis.cache.forEach(emoji => {
                     let dataTransfer = {
                         tag: `:${emoji.name}:${emoji.id}`,
                         name: emoji.name,

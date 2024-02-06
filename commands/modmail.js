@@ -36,15 +36,9 @@ module.exports = {
             .setDescription(`<@!${message.author.id}> **sent the bot**\n${message.content}`)
             .setFooter({ text: `User ID: ${message.author.id} MSG ID: ${message.id}` })
             .setTimestamp()
-        modmailCloseComponents = new Discord.ActionRowBuilder()
-            .addComponents([
-                new Discord.ButtonBuilder()
-                    .setLabel('🔓 Unlock')
-                    .setStyle(3)
-                    .setCustomId('modmailUnlock')
-            ])
+
         let modMailChannel = guild.channels.cache.get(settings.channels.modmail)
-        let embedMessage = await modMailChannel.send({ embeds: [embed], components: [modmailCloseComponents] }).catch(er => ErrorLogger.log(er, bot, message.guild))
+        let embedMessage = await modMailChannel.send({ embeds: [embed], components: getCloseModmailComponents() }).catch(er => ErrorLogger.log(er, bot, message.guild))
 
         modmailInteractionCollector = new Discord.InteractionCollector(bot, { message: embedMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
         modmailInteractionCollector.on('collect', (interaction) => interactionHandler(interaction, settings, bot, db))
@@ -55,6 +49,45 @@ module.exports = {
     },
 }
 
+function getCloseModmailComponents() {
+    return [new Discord.ActionRowBuilder().addComponents(new Discord.ButtonBuilder().setLabel('🔓 Unlock').setStyle(3).setCustomId('modmailUnlock'))]
+}
+function getOpenModmailComponents(settings) {
+    const components = []
+    if (settings.modmail.lockModmail) {
+        components.push(new Discord.ButtonBuilder().setLabel('🔒 Lock').setStyle(1).setCustomId('modmailLock'))
+    }
+    if (settings.modmail.sendMessage) {
+        components.push(new Discord.ButtonBuilder().setLabel('✉️ Send Message').setStyle(3).setCustomId('modmailSend'))
+    }
+    if (settings.modmail.modmailGPT) {
+        components.push(new Discord.ButtonBuilder().setLabel('🤖 Generate Response').setStyle(2).setCustomId('modmailGPT'))
+    }
+    if (settings.modmail.forwardMessage) {
+        components.push(new Discord.ButtonBuilder().setLabel('↪️ Forward ModMail').setStyle(2).setCustomId('modmailForward'))
+    }
+    if (settings.modmail.blacklistUser) {
+        components.push(new Discord.ButtonBuilder().setLabel('🔨 Blacklist User').setStyle(2).setCustomId('modmailBlacklist'))
+    }
+    if (settings.modmail.closeModmail) {
+        components.push(new Discord.ButtonBuilder().setLabel('❌ Close ModMail').setStyle(4).setCustomId('modmailClose'))
+    }
+
+    return components.reduce((rows, btn, idx) => {
+        if (idx % 5 == 0) rows.push(new Discord.ActionRowBuilder());
+        rows[rows.length - 1].addComponents(btn);
+        return rows;
+    }, [])
+}
+
+/**
+ * 
+ * @param {Discord.ButtonInteraction} interaction 
+ * @param {*} settings 
+ * @param {*} bot 
+ * @param {*} db 
+ * @returns 
+ */
 async function interactionHandler(interaction, settings, bot, db) {
     if (!interaction.isButton()) return;
     if (!settings.backend.modmail) {
@@ -62,120 +95,99 @@ async function interactionHandler(interaction, settings, bot, db) {
         return
     }
 
-    failedEmbed = new Discord.EmbedBuilder()
+    const failedEmbed = new Discord.EmbedBuilder()
         .setFooter({ text: `Status: ${interaction.customId} MSG ID: ${interaction.message.id}` })
         .setDescription(`Could not figure out what went wrong`)
         .setColor('#FF0000')
 
-    confirmationEmbed = new Discord.EmbedBuilder()
+    const confirmationEmbed = new Discord.EmbedBuilder()
         .setTitle(`Confirm Action`)
         .setDescription(`Are you sure you wanna perform this action?\n`)
         .setFooter({ text: `${interaction.customId}` })
         .setColor('#FF0000')
 
-    modmailOpenComponents = new Discord.ActionRowBuilder()
-    if (settings.modmail.lockModmail) {
-        modmailOpenComponents.addComponents([
-            new Discord.ButtonBuilder()
-                .setLabel('🔒 Lock')
-                .setStyle(1)
-                .setCustomId('modmailLock')
-        ])
-    }
-    if (settings.modmail.sendMessage) {
-        modmailOpenComponents.addComponents([
-            new Discord.ButtonBuilder()
-                .setLabel('✉️ Send Message')
-                .setStyle(3)
-                .setCustomId('modmailSend')
-        ])
-    }
-    if (settings.modmail.modmailGPT || true) { // remove the true thing
-        modmailOpenComponents.addComponents([
-            new Discord.ButtonBuilder()
-                .setLabel('🤖 Generate Response')
-                .setStyle(2)
-                .setCustomId('modmailGPT')
-        ])
-    }
-    if (settings.modmail.forwardMessage) {
-        modmailOpenComponents.addComponents([
-            new Discord.ButtonBuilder()
-                .setLabel('↪️ Forward ModMail')
-                .setStyle(2)
-                .setCustomId('modmailForward')
-        ])
-    }
-    if (settings.modmail.blacklistUser) {
-        modmailOpenComponents.addComponents([
-            new Discord.ButtonBuilder()
-                .setLabel('🔨 Blacklist User')
-                .setStyle(2)
-                .setCustomId('modmailBlacklist')
-        ])
-    }
-    if (settings.modmail.closeModmail) {
-        modmailOpenComponents.addComponents([
-            new Discord.ButtonBuilder()
-                .setLabel('❌ Close ModMail')
-                .setStyle(4)
-                .setCustomId('modmailClose')
-        ])
-    }
+    const modmailOpenComponents = getModmailComponents(settings);
 
-    // Split row if open components is > 5
-    if (modmailOpenComponents.components.length > 5) {
-        // Split the components into two rows
-        const splitComponents = modmailOpenComponents.components.reduce((acc, component, index) => {
-            if (index < 5) {
-                acc[0].push(component);
-            } else {
-                acc[1].push(component);
-            }
-            return acc;
-        }, [[], []]);
+    const embed = Discord.EmbedBuilder.from(interaction.message.embeds[0].data);
 
-        // Create the two rows
-        modmailOpenComponents = [
-            new Discord.ActionRowBuilder().addComponents(splitComponents[0]),
-            new Discord.ActionRowBuilder().addComponents(splitComponents[1])
-        ];
-    } else modmailOpenComponents = [modmailOpenComponents]
+    const { message: modmailMessage, guild, member } = interaction;
+    const modmailChannel = guild.channels.cache.get(settings.channels.modmail);
+    const modmailMessageID = embed.data.footer.text.split(/ +/g)[5];
 
-    let embed = new Discord.EmbedBuilder()
-    embed.data = interaction.message.embeds[0].data
-
-    let modmailMessage = interaction.message
-    let guild = interaction.guild
-    let modmailChannel = guild.channels.cache.get(settings.channels.modmail)
-    let modmailMessageID = modmailMessage.embeds[0].data.footer.text.split(/ +/g)[5]
-    let raider = guild.members.cache.get(modmailMessage.embeds[0].data.footer.text.split(/ +/g)[2])
+    const raider = guild.members.cache.get(embed.data.footer.text.split(/ +/g)[2])
+    
     if (!raider) {
         embed.addFields({ name: `This modmail has been closed automatically <t:${moment().unix()}:R>`, value: `The raider in this modmail is no longer in this server.\nI can no longer proceed with this modmail`, inline: false })
         interaction.update({ embeds: [embed], components: [] })
         return
     }
-    let directMessages = await raider.user.createDM()
+    // TODO: REWRITE THE REST
+    const directMessages = await raider.user.createDM()
 
     function checkInServer() {
         const result = guild.members.cache.get(directMessages.recipient.id);
-        if (!result) { failedEmbed.setDescription(`${raider} Has left this server and I can no longer continue with this modmail`); interaction.reply({ embeds: [failedEmbed] }); interaction.update({ components: [] }) }
+        if (!result) { 
+            failedEmbed.setDescription(`${raider} Has left this server and I can no longer continue with this modmail`); 
+            interaction.reply({ embeds: [failedEmbed] }); 
+            interaction.update({ components: [] });
+        }
         return result;
     }
-    let userModMailMessage = await directMessages.messages.fetch(modmailMessageID)
-    let security = interaction.member
 
-    if (interaction.customId === "modmailUnlock") {
-        await interaction.update({ embed: [interaction.message.embed], components: [...modmailOpenComponents] })
-    } else if (interaction.customId === "modmailLock") {
-        modmailCloseComponents = new Discord.ActionRowBuilder()
-            .addComponents([
-                new Discord.ButtonBuilder()
-                    .setLabel('🔓 Unlock')
-                    .setStyle(3)
-                    .setCustomId('modmailUnlock')
-            ])
-        await interaction.update({ embed: [interaction.message.embed], components: [modmailCloseComponents] })
+    const userModmailMessage = await directMessages.messages.fetch(modmailMessageID)
+
+    /**
+     * @typedef {{
+     *  interaction: Discord.ButtonInteraction,
+     *  modmailMessage: Discord.Message,
+     *  guild: Discord.Guild,
+     *  member: Discord.GuildMember,
+     *  modmailChannel: Discord.GuildTextBasedChannel,
+     *  userModmailMessage: Discord.Message?,
+     *  directMessages: Discord.DMChannel,
+     *  settings: import('../data/guildSettings.701483950559985705.cache.json'),
+     *  embed: Discord.EmbedBuilder,
+     *  raider: Discord.GuildMember
+     * }} ModmailData
+     */
+
+    /** @type {ModmailData} */
+    const modmailData = { interaction, modmailMessage, guild, member, modmailChannel, userModmailMessage, directMessages, settings, embed, raider }
+    const Modmail = {
+        /** @param {ModmailData} options */
+        async modmailUnlock({ embed, settings, interaction }) {
+            await interaction.update({ embeds: [embed], components: getModmailComponents(settings) })
+        },
+
+        /** @param {ModmailData} options */
+        async modmailLock({ interaction, embed }) {
+            await interaction.update({ embeds: [embed], components: getCloseModmailComponents() })
+        },
+
+        /** @param {ModmailData} options */
+        async modmailSend({ interaction, embed, raider, modmailMessage }) {
+            const originalMessage = embed.data.description;
+            const confirmEmbed = new Discord.EmbedBuilder()
+                .setDescription(`__How would you like to respond to ${raider}'s [message](${modmailMessage.url})__\n${originalMessage}`)
+                .setColor(Discord.Colors.Blue);
+            await interaction.reply({ embeds: [confirmEmbed] });
+
+            const result = 
+        }
+    }
+    switch (interaction.customId) {
+        case 'modmailUnlock':
+            await interaction.update({ embed: [embed], components: getModmailComponents(settings) });
+            break;
+        case 'modmailLock':
+            await interaction.update({ embed: [embed], components: getCloseModmailComponents() });
+            break;
+        case 'modmailSend': {
+
+            }
+            break;
+    }
+        
     } else if (interaction.customId === "modmailSend") {
         let originalModmail = embed.data.description;
         let embedResponse = new Discord.EmbedBuilder()
@@ -192,7 +204,7 @@ async function interactionHandler(interaction, settings, bot, db) {
                 await tempResponseMessage.delete()
                 failedEmbed.setDescription(`${raider} Has left this server and I can no longer continue with this modmail`)
                 await interaction.editReply({ embeds: [failedEmbed] });
-                await interaction.edit({ components: [] })
+                await modmailMessage.edit({ components: [] })
                 return
             }
             embedResponse.setDescription(`__Are you sure you want to respond with the following?__\n${responseMessage}`)
@@ -202,16 +214,16 @@ async function interactionHandler(interaction, settings, bot, db) {
                         await tempResponseMessage.delete()
                         failedEmbed.setDescription(`${raider} Has left this server and I can no longer continue with this modmail`)
                         await interaction.editReply({ embeds: [failedEmbed] });
-                        await interaction.edit({ components: [] })
+                        await modmailMessage.edit({ components: [] })
                         return
                     }
                     await directMessages.send(responseMessage)
                     await tempResponseMessage.delete()
                     embed.addFields([{ name: `Response by ${interaction.member.nickname} <t:${moment().unix()}:R>:`, value: responseMessage }])
-                    await interaction.edit({ embeds: [embed], components: [] })
+                    await modmailMessage.edit({ embeds: [embed], components: [] })
                 } else {
                     await tempResponseMessage.delete()
-                    await interaction.edit({ components: [...modmailOpenComponents] })
+                    await modmailMessage.edit({ components: [...modmailOpenComponents] })
                 }
             })
         })
@@ -258,8 +270,8 @@ async function interactionHandler(interaction, settings, bot, db) {
                 await confirmMessage.delete()
                 db.query(`INSERT INTO modmailblacklist (id) VALUES ('${raider.id}')`)
                 embed.addFields([{ name: `${interaction.member.nickname} has blacklisted ${raider.nickname} <t:${moment().unix()}:R>`, value: `${raider} has been blacklisted by ${interaction.member}` }])
-                await interaction.update({ embeds: [embed], components: [] })
-            } else { await interaction.update({ components: [...modmailOpenComponents] }); await confirmMessage.delete(); }
+                await modmailMessag({ embeds: [embed], components: [] })
+            } else { await modmailMessage.edit({ components: [...modmailOpenComponents] }); await confirmMessage.delete(); }
         })
     } else if (interaction.customId === "modmailGPT") {
         // Get the original modmail
