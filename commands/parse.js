@@ -9,15 +9,15 @@ module.exports = {
         slashArg(SlashArgType.Subcommand, 'members', {
             description: 'regular old parse',
             options: [
-                slashArg(SlashArgType.Attachment, 'players', {
-                    required: true,
-                    description: '/who image'
-                }),
                 slashArg(SlashArgType.String, 'raid', {
                     required: false,
                     autocomplete: true,
                     description: 'The raid to parse'
                 }),
+                slashArg(SlashArgType.Attachment, 'players', {
+                    required: false,
+                    description: '/who image'
+                })
             ]
         }),
         slashArg(SlashArgType.Subcommand, 'reacts', {
@@ -33,13 +33,13 @@ module.exports = {
         slashArg(SlashArgType.Subcommand, 'simple', {
             description: 'Checks vc against /who only',
             options: [
-                slashArg(SlashArgType.Attachment, 'players', {
-                    required: true,
-                    description: '/who image'
-                }),
                 slashArg(SlashArgType.String, 'vc', {
                     required: false,
                     description: 'The vc id to parse'
+                }),
+                slashArg(SlashArgType.Attachment, 'players', {
+                    required: false,
+                    description: '/who image'
                 })
             ]
         })
