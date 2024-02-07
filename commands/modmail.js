@@ -54,7 +54,11 @@ const Modmail = {
 
         const atmtInfo = attachments.map(a => `[${a.name}](${a.proxyURL})`).join('\n');
         confirmEmbed.setDescription(`__Are you sure you want to respond with the following?__\n${content.trim()}`)
-        if (attachments.size) {
+        
+        if (attachments.size == 1 && attachments.first().contentType?.toLowerCase().startsWith('image')) {
+            confirmEmbed.setImage(attachments.first().proxyURL);
+        }
+        else if (attachments.size >= 1) {
             confirmEmbed.addFields({ name: 'Attachments', value: atmtInfo})
         }
         await confirmResponse.edit({ embeds: [confirmEmbed] });
@@ -66,10 +70,18 @@ const Modmail = {
                 .setTitle('Modmail Response')
                 .setColor(Discord.Colors.Red)
                 .setAuthor({ name: guild.name, iconURL: guild.iconURL() })
-                .setDescription(content.trim() || `See attachments`)
-            if (attachments.size) {
-                userEmbed.addFields({ name: 'Attachments', value: atmtInfo})
+            
+            if (attachments.size == 1 && attachments.first().contentType?.toLowerCase().startsWith('image')) {
+                userEmbed.setImage(attachments.first().proxyURL);
+                if (content.trim()) userEmbed.setDescription(content.trim())
             }
+            else if (attachments.size >= 1) {
+                userEmbed.addFields({ name: 'Attachments', value: atmtInfo})
+                userEmbed.setDescription(content.trim() || 'See attachments')
+
+            } 
+
+            if (content.trim()) userEmbed.setDescription(content.trim())
 
             if (userModmailMessage) await userModmailMessage.reply({ embeds: [userEmbed] })
             else await directMessages.send({ embeds: [userEmbed] })
