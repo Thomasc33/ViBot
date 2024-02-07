@@ -110,7 +110,7 @@ const Modmail = {
         await confirmResponse.edit({ embeds: [confirmEmbed] });
 
         const performReply = await confirmMessage.confirmButton(member.id);
-        confirmMessage.delete();
+        confirmResponse.delete();
         if (performReply) {
             const userEmbed = new Discord.EmbedBuilder()
                 .setTitle('Modmail Response')
@@ -176,20 +176,30 @@ const Modmail = {
     /** @param {ModmailData} options */
     async close(options) {
         const { interaction, interaction: { message, member }, embed: modmailEmbed } = options;
-        const embed = new Discord.EmbedBuilder()
+        const confirmEmbed = new Discord.EmbedBuilder()
             .setTitle('Modmail Close')
             .setDescription(`This will close the modmail permanently.\nIf you wish to send a message after closing, use the \`\`;mmr\`\` command to send a message to this modmail`)
             .setColor(Discord.Colors.Blue); 
 
-        const confirmMessage = await interaction.reply({ embeds: [embed] });
-        const result = await confirmMessage.confirmButton(member.id);
-        await confirmMessage.delete();
-        if (result) {
-            modmailEmbed.addFields({ name: `${interaction.member.nickname} has closed this modmail <t:${moment().unix()}:R>`, value: `This modmail has been closed` });
-            await message.edit({ embeds: [modmailEmbed], components: [] });
-        } else {
-            message.edit({ components: getOpenModmailComponents(settings) });
-        }
+        // const confirmMessage = await interaction.reply({ embeds: [confirmEmbed] });
+        // const result = await confirmMessage.confirmButton(member.id);
+        // await confirmMessage.delete();
+        // if (result) {
+        //     modmailEmbed.addFields({ name: `${interaction.member.nickname} has closed this modmail <t:${moment().unix()}:R>`, value: `This modmail has been closed` });
+        //     await message.edit({ embeds: [modmailEmbed], components: [] });
+        // } else {
+        //     message.edit({ components: getOpenModmailComponents(settings) });
+        // }
+
+        await interaction.channel.send({ embeds: [confirmEmbed] }).then(async confirmMessage => {
+            if (await confirmMessage.confirmButton(message.author.id)) {
+                modmailEmbed.addFields({ name: `${interaction.member.nickname} has closed this modmail <t:${moment().unix()}:R>`, value: `This modmail has been closed` });
+                await message.edit({ embeds: [modmailEmbed], components: [] });
+            } else {
+                message.edit({ components: getOpenModmailComponents(settings) });
+            }
+            return confirmMessage.delete()
+        })
     },
 
     /** @param {ModmailData} options */
