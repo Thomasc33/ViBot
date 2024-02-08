@@ -10,7 +10,6 @@ const quota = require('./quota')
 const quotas = require('../data/quotas.json');
 const afkTemplate = require('./afkTemplate.js');
 const client = new vision.ImageAnnotatorClient(botSettings.gcloudOptions);
-const parseQuotaValues = require('../data/parseQuotaValues.json');
 
 
 module.exports = {
@@ -342,7 +341,7 @@ module.exports = {
         // log parse quota
         let currentWeekParseName, parseTotalName, commandName;
 
-        if (parseQuotaValues.hasOwnProperty(message.guild.id) && parseQuotaValues[message.guild.id].includes(raid.afkTemplateName)) {
+        if (Object.keys(raid.buttons).some(button => button.toLowerCase() == 'winecellar incantation')) { // hope this never causes problems in the future
             for (let i in ParseCurrentWeek.o3parsecurrentweek) {
                 i = ParseCurrentWeek.o3parsecurrentweek[i];
                 if (message.guild.id == i.id && !i.disabled) {
