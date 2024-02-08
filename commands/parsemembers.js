@@ -43,11 +43,9 @@ module.exports = {
                 return
             }
 
-            if (raids.length == 1) return raids[0]
+            if (raids.length == 1) return raids[0];
             if (raids.filter(afk => afk.channel?.id == memberVoiceChannel).length == 1)
                 return raids.find(afk => afk.channel?.id == memberVoiceChannel)
-            if (raids.filter(afk => afk.members.includes(message.member.id)).length == 1)
-                return raids.find(afk => afk.members.includes(message.member.id))
 
             const raidMenu = new Discord.StringSelectMenuBuilder()
                 .setPlaceholder(`Active Runs`)
