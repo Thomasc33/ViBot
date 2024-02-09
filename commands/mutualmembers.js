@@ -13,11 +13,11 @@ async function fetchMessages(targetChannel, messageIDs) {
 }
 
 // Splits up the value inputs to the embed to satisfy Discord.js constraints
-function splitIntoChunks(list, maxLength) {
+function splitIntoChunks(list, maxLength, delimiterLength) {
     const chunks = [];
     let currentChunk = [];
     for (const string of list) {
-        if (currentChunk.join('').length + string.length + currentChunk.length < maxLength) { // Total chars + "\n" for each entry
+        if (currentChunk.join('').length + string.length + (currentChunk.length * delimiterLength) < maxLength) { // Total chars + length of delimiter ('\n' or ', ') for each entry
             currentChunk.push(string);
         } else {
             chunks.push([...currentChunk]);
@@ -50,9 +50,11 @@ module.exports = {
         const allRaidsInfo = fetchedMessages
             .map(fetchedMessage => {
                 const embed = fetchedMessage.embeds[0];
-                const raidersField = embed.fields.find(item => item.name === 'Raiders');
-                const raiders = raidersField.value.split(' ').map(raider => raider.split(',')[0]);
-                allRaidsRaiders.push(...raiders);
+                const raidersFieldPartOne = embed.fields.find(item => item.name === 'Raiders');
+                const raidersFieldPartTwo = embed.fields.find(item => item.name === '-');
+                const raidersPartOne = raidersFieldPartOne.value.split(' ').map(raider => raider.split(',')[0]).filter(item => item !== '');
+                const raidersPartTwo = raidersFieldPartTwo ? raidersFieldPartTwo.value.split(' ').map(raider => raider.split(',')[0]).filter(item => item !== '') : [];
+                allRaidsRaiders.push(...raidersPartOne, ...raidersPartTwo);
                 const raidRLandType = embed.author.name;
                 const raidLink = `https://discord.com/channels/${message.guild.id}/${targetChannel.id}/${fetchedMessage.id}`;
                 const raidTime = new Date(fetchedMessage.createdTimestamp);
@@ -73,11 +75,20 @@ module.exports = {
         const allSuspiciousRaiders = countRaiders
             .filter(([raider, count]) => count >= 2)
             .sort(([raiderA, countA], [raiderB, countB]) => countB - countA)
-            .map(([raider, count]) => `${raider} appears ${count} times.`);
+            .reduce((accumulator, [raider, count]) => {
+                accumulator[count] = accumulator[count] || [];
+                accumulator[count].push(raider);
+                return accumulator;
+            }, {});
 
-        // Splits lists into chunks that are less than 1024 characters long
-        const allRaidsDescriptionsChunks = splitIntoChunks(allRaidsDescriptions, 1024);
-        const allSuspiciousRaidersChunks = splitIntoChunks(allSuspiciousRaiders, 1024);
+        // Splitting into chunks that are less than 1024 characters long
+        const allRaidsDescriptionsChunks = splitIntoChunks(allRaidsDescriptions, 1024, 1);
+        const allSuspiciousRaidersChunks = {};
+        for (const count in allSuspiciousRaiders) {
+            if (!Object.hasOwn(allSuspiciousRaiders, count)) continue;
+            allSuspiciousRaidersChunks[count] = splitIntoChunks(allSuspiciousRaiders[count], 1024, 2);
+        }
+        // console.log(allSuspiciousRaidersChunks);
 
         // Dividing allRaidsTime into the same size chunks as allRaidDescriptionsChunks. Assumes character count of times always shorter than character count of description.
         const allRaidsTimesChunks = allRaidsDescriptionsChunks.map(chunk =>
@@ -96,8 +107,14 @@ module.exports = {
         raidsDescriptionFields[0].name = 'Raids';
 
         // Constructs the "Suspicious Raiders" fields for the embed
-        const suspiciousRaidersFields = allSuspiciousRaidersChunks.map(chunk => ({ name: '\u200B', value: chunk.join('\n') }));
-        suspiciousRaidersFields[0].name = 'Suspicious Raiders';
+        const sortedCounts = Object.keys(allSuspiciousRaidersChunks).sort((a, b) => b - a);
+        const suspiciousRaidersFields = [];
+        for (const count of sortedCounts) {
+            if (!Object.hasOwn(allSuspiciousRaiders, count)) continue;
+            const currentChunkFields = allSuspiciousRaidersChunks[count].map(chunk => ({ name: '\u200B', value: chunk.join(', ') }));
+            currentChunkFields[0].name = `Appears ${count} times`;
+            suspiciousRaidersFields.push(...currentChunkFields);
+        }
 
         // Combining the fields together
         const analysisEmbedFields = [
