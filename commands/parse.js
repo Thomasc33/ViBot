@@ -229,15 +229,17 @@ async function getRaid(message, bot, memberVoiceChannel) {
 
 /**
  * Filters raid IDs based on the interaction and bot.
- * @param {Object} interaction - The interaction object.
- * @param {Object} bot - The bot object.
+ * @param {Discord.Interaction} interaction - The discord interaction object.
+ * @param {Discord.Client} bot - The bot client instance.
  * @returns {Promise} A promise that resolves with the filtered raid IDs.
  */
 async function filterRaidIds(interaction, bot) {
-    const raidIdMappings = Object.keys(bot.afkModules).filter(raidId => bot.afkModules[raidId].guild.id == interaction.guild.id).map(raidId => ({ name: bot.afkModules[raidId].afkTitle(), value: raidId })); // may need some null-proofing here, unsure if I should bother
+    const raidIdMappings = Object.keys(bot.afkModules).filter(raidId => bot.afkModules[raidId].guild.id == interaction.guild.id).map(raidId => ({
+        name: bot.afkModules[raidId].afkTitle(),
+        value: raidId })); // may need some null-proofing here, unsure if I should bother
     if (raidIdMappings.length == 0) { return; }
     const focusedValue = interaction.options.getFocused().trim().toLowerCase();
-    const filteredValues = raidIdMappings.filter(raidIdMapping => raidIdMapping.name.includes(focusedValue)).slice(0, 25);
+    const filteredValues = raidIdMappings.filter(raidIdMapping => raidIdMapping.name.toLowerCase().includes(focusedValue)).slice(0, 25);
     await interaction.respond(filteredValues);
 }
 
