@@ -16,14 +16,14 @@ module.exports = {
         slashArg(SlashArgType.Subcommand, 'members', {
             description: 'regular old parse',
             options: [
-                slashArg(SlashArgType.String, 'raid', {
-                    required: false,
-                    autocomplete: true,
-                    description: 'The raid to parse'
-                }),
                 slashArg(SlashArgType.Attachment, 'players', {
-                    required: false,
+                    required: true,
                     description: '/who image'
+                }),
+                slashArg(SlashArgType.String, 'raid', {
+                    autocomplete: true,
+                    required: false,
+                    description: 'The raid to parse'
                 })
             ]
         }),
@@ -40,17 +40,31 @@ module.exports = {
         slashArg(SlashArgType.Subcommand, 'basic', {
             description: 'Checks vc against /who only',
             options: [
+                slashArg(SlashArgType.Attachment, 'players', {
+                    required: true,
+                    description: '/who image'
+                }),
                 slashArg(SlashArgType.String, 'vc', {
                     required: false,
                     description: 'The vc id to parse against (optional)'
-                }),
-                slashArg(SlashArgType.Attachment, 'players', {
-                    required: false,
-                    description: '/who image'
                 })
             ]
         })
     ],
+    getNotes() {
+        return {
+            title: 'Subcommand Options',
+            value: 'The slash version of this command is highly recommended!\n\n'
+                + '`/parse members <raid> </who image>`\n'
+                + '- This is the standard parse\n'
+                + '- **Note:** you must include the RSA id of the raid to parse if using the legacy command\n\n'
+                + '`/parse reacts <raid>`\n'
+                + '- This displays raid reactions in a parse-friendly formatting output\n\n'
+                + '`/parse basic (vc) </who image>`\n'
+                + '- This parse only checks vc against /who players\n'
+                + '- **Note:** This isn\'t the standard parse, use `/parse members` for that\n'
+        };
+    },
     /**
      * Returns the slash command data.
      * @param {Discord.Guild} guild - The guild object.
