@@ -7,6 +7,8 @@ const Discord = require('discord.js');
 const botSettings = require('../settings.json');
 const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
 const { slashArg, slashCommandJSON } = require('../utils.js');
+const vision = require('@google-cloud/vision');
+const client = new vision.ImageAnnotatorClient(botSettings.gcloudOptions);
 
 module.exports = {
     name: 'parse',
@@ -111,7 +113,10 @@ async function parseMembers(message, bot) {
     const raid = bot.afkModules[message.options.getString('raid')] || getRaid(message, bot, message.member.voice?.channelID);
     if (!raid) return; // error message already sent in getRaid()
 
-    runRaidParse(message, bot, raid, playerImgURL);
+    const imgPlayers = await parseWhoImage(message, playerImgURL);
+    if (!imgPlayers) return; // error message already sent in parseWhoImage()
+
+    await runRaidParse(message, bot, raid, imgPlayers);
 }
 
 // async function parseReacts(message, bot) { }
@@ -128,12 +133,8 @@ async function parseMembers(message, bot) {
  * @param {Discord.Embed} parseStatusEmbed - the embed to edit with the status of the parse
  */
 // eslint-disable-next-line complexity
-async function runRaidParse(message, bot, raid, imgPlayers, parseStatusMessage, parseStatusEmbed) {
-    parseStatusEmbed.data.fields[1].value = 'Processing Data';
-    await parseStatusMessage.edit({ embeds: [parseStatusEmbed] });
-
+async function runRaidParse(message, bot, raid, imgPlayers) {
     const minimumStaffRolePosition = message.guild.roles.cache.get(botSettings.roles.almostrl).position;
-
     const raiders = imgPlayers.map(player => player.toLowerCase());
     const members = raid.isVcless() ? raid.members : bot.channels.cache.get(raid.channel.id).members.map(m => m.id);
 
@@ -205,8 +206,6 @@ async function runRaidParse(message, bot, raid, imgPlayers, parseStatusMessage, 
     }
 
     await message.channel.send({ embeds: [embed] });
-    parseStatusEmbed.data.fields[1].value = 'Crasher Parse Completed. See Below. Beginning Character Parse';
-    await parseStatusMessage.edit({ embeds: [parseStatusEmbed] });
 }
 /**
  * Determines the raid via interactive modal
@@ -269,7 +268,6 @@ function normalizeName(name) {
  * @param {[{id: string, nicknames: string[]}]} raidMembers
  * @returns {Map<string, { parts: string[], id: string }}
  */
-
 function reassembleAndCheckNames(crasherNames, raidMembers) {
     const matchedNamesMap = new Map();
 
@@ -287,4 +285,21 @@ function reassembleAndCheckNames(crasherNames, raidMembers) {
         }
     }
     return matchedNamesMap;
+}
+
+/**
+ *
+ * @param {Discord.Message} message - The command message object
+ * @param {String} playerImgURL - The URL of the /who image
+ * @returns String[] - The names of the players in the /who image
+ */
+async function parseWhoImage(message, playerImgURL) {
+    try {
+        const [result] = await client.textDetection(playerImgURL);
+        const imgPlayers = result.fullTextAnnotation.text.replace(/[\n,]/g, ' ').split(/ +/); // regex: split on spaces, remove newlines and commas
+        imgPlayers.splice(0, 3); // remove the /who header 'Players online (x):'
+        return imgPlayers;
+    } catch (er) {
+        await message.reply(er.message);
+    }
 }
