@@ -15,7 +15,7 @@ const dbSetup = require('./dbSetup.js');
 const memberHandler = require('./memberHandler.js');
 const { logWrapper } = require('./metrics.js');
 const { handleReactionRow } = require('./redis.js');
-
+const { handleHeadcountRow } = require('./commands/headcount.js');
 // Specific Commands
 const verification = require('./commands/verification');
 
@@ -51,7 +51,7 @@ bot.on('interactionCreate', logWrapper('message', async (logger, interaction) =>
     // Validate the interaction is a command
     if (interaction.isChatInputCommand()) return await messageManager.handleCommand(interaction, true);
     if (interaction.isUserContextMenuCommand()) return await messageManager.handleCommand(interaction, true);
-    if (interaction.isButton()) return await handleReactionRow(bot, interaction);
+    if (interaction.isButton()) return await handleReactionRow(bot, interaction) || await handleHeadcountRow(bot,  interaction);
 }));
 
 bot.on('ready', async () => {

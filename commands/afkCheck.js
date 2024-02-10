@@ -7,85 +7,6 @@ const extensions = require(`../lib/extensions`)
 const consumablePopTemplates = require(`../data/keypop.json`);
 const popCommand = require('./pop.js');
 
-module.exports = {
-    name: 'afk',
-    description: 'The new version of the afk check',
-    requiredArgs: 1,
-    args: '<run symbol> <location>',
-    role: 'eventrl',
-    /**
-     * Main Execution Function
-     * @param {Discord.Message} message
-     * @param {String[]} args
-     * @param {Discord.Client} bot
-     * @param {import('mysql').Connection} db
-     */
-    async execute(message, args, bot, db) {
-        let alias = args.shift().toLowerCase()
-
-        const afkTemplateNames = await AfkTemplate.resolveTemplateAlias(bot.settings[message.guild.id], message.member, message.guild.id, message.channel.id, alias)
-        if (afkTemplateNames instanceof AfkTemplate.AfkTemplateValidationError) return message.channel.send(afkTemplateNames.message())
-        if (afkTemplateNames.length == 0) return await message.channel.send('This afk template does not exist.')
-
-        const afkTemplateName = afkTemplateNames.length == 1 ? afkTemplateNames[0] : await AfkTemplate.templateNamePrompt(message, afkTemplateNames)
-
-        const afkTemplate = await AfkTemplate.AfkTemplate.tryCreate(bot, bot.settings[message.guild.id], message, afkTemplateName)
-        if (afkTemplate instanceof AfkTemplate.AfkTemplateValidationError) {
-            if (afkTemplate.invalidChannel()) await message.delete()
-            await message.channel.send(afkTemplate.message())
-            return
-        }
-
-        let location = args.join(' ')
-        if (location.length >= 1024) return await message.channel.send('Location must be below 1024 characters, try again')
-        if (location == '') location = 'None'
-        message.react('✅')
-
-        const afkModule = new afkCheck(afkTemplate, bot, db, message, location)
-        await afkModule.createChannel()
-        await afkModule.sendButtonChoices()
-        await afkModule.sendInitialStatusMessage()
-        if (afkTemplate.startDelay > 0) setTimeout(() => afkModule.start(), afkTemplate.startDelay*1000)
-        else afkModule.start()
-    },
-    returnRaidIDsbyMemberID(bot, memberID) {
-        return Object.keys(bot.afkChecks).filter(raidID => bot.afkChecks[raidID].leader == memberID)
-    },
-    returnRaidIDsbyMemberVoice(bot, voiceID) {
-        return Object.keys(bot.afkChecks).filter(raidID => bot.afkChecks[raidID].channel == voiceID)
-    },
-    returnRaidIDsbyRaidID(bot, RSAID) {
-        return Object.keys(bot.afkChecks).filter(raidID => bot.afkChecks[raidID].raidStatusMessage && bot.afkChecks[raidID].raidStatusMessage.id == RSAID)
-    },
-    returnRaidIDsbyAll(bot, memberID, voiceID, argument) {
-        return [...new Set([
-            ...this.returnRaidIDsbyMemberID(bot, memberID),
-            ...this.returnRaidIDsbyMemberVoice(bot, voiceID),
-            ...this.returnRaidIDsbyMemberVoice(bot, argument),
-            ...this.returnRaidIDsbyRaidID(bot, argument)
-        ])]
-    },
-    returnActiveRaidIDs(bot) {
-        return Object.keys(bot.afkChecks)
-    },
-    async loadBotAfkChecks(guild, bot, db) {
-        const storedAfkChecks = Object.values(require('../data/afkChecks.json')).filter(raid => raid.guild.id === guild.id);
-        for (const currentStoredAfkCheck of storedAfkChecks) {
-            const messageChannel = guild.channels.cache.get(currentStoredAfkCheck.message.channelId)
-            const message = await messageChannel.messages.fetch(currentStoredAfkCheck.message.id)
-            const afkTemplateName = currentStoredAfkCheck.afkTemplateName
-            const afkTemplate = await AfkTemplate.AfkTemplate.tryCreate(bot, bot.settings[message.guild.id], message, afkTemplateName)
-            if (afkTemplate instanceof AfkTemplate.AfkTemplateValidationError) {
-                console.log(afkTemplate.message())
-                continue
-            }
-            bot.afkModules[currentStoredAfkCheck.raidID] = new afkCheck(afkTemplate, bot, db, message, currentStoredAfkCheck.location)
-            await bot.afkModules[currentStoredAfkCheck.raidID].loadBotAfkCheck(currentStoredAfkCheck)
-        }
-        console.log(`Restored ${storedAfkChecks.length} afk checks for ${guild.name}`);
-   }
-}
-
 class AfkButton {
     constructor({points, disableStart, emote, minRole, minStaffRoles, confirmationMessage, color, logOptions, displayName, limit, name, type, parent, choice, confirm, location, confirmationMedia, start, lifetime}) {
         // template
@@ -155,6 +76,7 @@ class afkCheck {
     #botSettings;
     #db;
     #afkTemplate;
+    /** @type {Message} */
     #message;
     #guild;
     #channel;
@@ -163,7 +85,7 @@ class afkCheck {
     #pointlogMid;
     #body = null;
 
-    constructor(afkTemplate, bot, db, message, location) {
+    constructor(afkTemplate, bot, db, message, location, leader = message.member) {
         this.#bot = bot // bot
         this.#botSettings = bot.settings[message.guild.id] // bot settings
         this.#afkTemplate = afkTemplate // static AFK template
@@ -171,7 +93,7 @@ class afkCheck {
         this.#message = message // message of the afk
         this.#guild = message.guild // guild of the afk
         this.#channel = null // channel of the afk
-        this.#leader = message.member // leader of the afk
+        this.#leader = leader // leader of the afk
         this.#raidID = null // ID of the afk
         this.#pointlogMid = null
 
@@ -234,11 +156,15 @@ class afkCheck {
         return this.#afkTemplate.pingRoles ? `${this.#afkTemplate.pingRoles.join(' ')}, ` : ``
     }
 
-    async start() {
+    /**
+     * 
+     * @param {Message?} panelReply - if this is from a headcount, should reply to the panel
+     */
+    async start(panelReply) {
         if (this.phase === 0) this.phase = 1
         this.timer = new Date(Date.now() + (this.#body[this.phase].timeLimit * 1000))
         this.#bot.afkModules[this.#raidID] = this
-        await Promise.all([this.sendStatusMessage(), this.sendCommandsMessage(), this.sendChannelsMessage()])
+        await Promise.all([this.sendStatusMessage(), this.sendCommandsMessage(panelReply), this.sendChannelsMessage()])
         this.startTimers()
         this.saveBotAfkCheck()
     }
@@ -344,53 +270,100 @@ class afkCheck {
         this.#channel = channel
     }
 
+    async #confirmButtonReactYesNo(index, button) {
+        const choiceText = button.emote ? `${button.emote.text} **${index}**` : `**${index}**`;
+        
+        const embed = new Discord.EmbedBuilder()
+            .setDescription(`Do you want to add ${choiceText} reacts to this run?\n If no response is received, this run will use the default ${button.limit} ${choiceText}.\nThis window will close in 30 seconds and cancel.`)
+            .setTimestamp(Date.now())
+            .setFooter({ text: this.#guild.name, iconURL: this.#guild.iconURL() });
+
+        const confirmMessage = await this.#message.followUp({ embeds: [embed], components: [components], ephemeral: true, fetchReply: true });
+        const result = await confirmMessage.confirmButton(this.#leader.id);
+        if (confirmMessage.deletable) confirmMessage.delete();
+        return result;
+    }
+
+    /**
+     * 
+     * @param {*} button 
+     * @param {Discord.StringSelectMenuInteraction} interaction 
+     */
+    async #confirmCustomNumber(button, interaction) {
+        const modal = new Discord.ModalBuilder()
+            .setCustomId('customNumberModal')
+            .setTitle('Custom Value');
+
+        const input = new Discord.TextInputBuilder()
+            .setCustomId('value')
+            .setLabel('What custom value would you like to use?')
+            .setStyle(Discord.TextInputStyle.Short)
+            .setRequired(true);
+
+        modal.addComponents(new Discord.ActionRowBuilder().addComponents(input));
+
+        await interaction.showModal(modal);
+        return await interaction.awaitModalSubmit({ filter: i => i.customId == 'customNumberModal' && i.user.id == interaction.user.id, time: 30_000 })
+            .then(response => parseInt(response.fields.getField('value').value))
+            .catch(() => button.limit);
+    }
+
+    async #confirmNumberChoice(index, button, custom = false) {
+        const choiceText = button.emote ? `${button.emote.text} **${index}**` : `**${index}**`;
+
+        const embed = new Discord.EmbedBuilder()
+            .setDescription(`How many ${choiceText} reacts do you want to add to this run?\n If no response is received, this run will use the default ${button.limit} ${choiceText}.`)
+            .setTimestamp(Date.now())
+            .setFooter({ text: this.#guild.name, iconURL: this.#guild.iconURL() });
+
+        const menu = new Discord.StringSelectMenuBuilder()
+            .setPlaceholder(`Number of ${index}s`)
+            .setMinValues(1)
+            .setMaxValues(1)
+            .setCustomId('choice')
+            .setOptions(
+                { label: '1', value: '1' },
+                { label: '2', value: '2' },
+                { label: '3', value: '3' }
+            );
+        if (custom) menu.addOptions({ label: 'Custom', value: 'custom' });
+        menu.addOptions({ label: 'None', value: '0' });
+        
+        const components = new Discord.ActionRowBuilder().addComponents(menu);
+        /** @type {Discord.Message} */
+        const confirmMessage = await this.#message.followUp({ embeds: [embed], components: [components] });
+
+        const result = await confirmMessage.awaitMessageComponent({ componentType: Discord.ComponentType.StringSelect, filter: i => i.user.id == this.#leader.id })
+            .then(async (response) => {
+                const { values: [value] } = response;
+                if (value == 'custom') return await this.#confirmCustomNumber(button, response);
+                return parseInt(value);
+            })
+            .catch(() => button.limit);
+        if (confirmMessage.deletable) confirmMessage.delete();
+        return result;
+    }
+
     async sendButtonChoices() {
         this.#afkTemplate.processButtons(this.#channel)
         let buttonChoices = this.#afkTemplate.getButtonChoices()
-        for (let i of buttonChoices) {
-            const button = this.buttons[i]
-            if (button.minStaffRoles && !button.minStaffRoles.some(role => this.#leader.roles.cache.has(role.id))) continue
-            let choiceText = button.emote ? `${button.emote.text} **${i}**` : `**${i}**` 
+
+        for (const index of buttonChoices) {
+            const button = this.buttons[index];
+            if (button.minStaffRoles && !button.minStaffRoles.some(role => this.#leader.roles.cache.has(role.id))) continue;
             switch (button.choice) {
                 case AfkTemplate.TemplateButtonChoice.YES_NO_CHOICE:
-                    const text1 = `Do you want to add ${choiceText} reacts to this run?\n If no response is received, this run will use the default ${button.limit} ${choiceText}.`
-                    const confirmButton1 = new Discord.ButtonBuilder()
-                        .setLabel('✅ Confirm')
-                        .setStyle(Discord.ButtonStyle.Success)
-                    const cancelButton1 = new Discord.ButtonBuilder()
-                    const {value: confirmValue1, interaction: subInteraction1} = await this.#message.confirmPanel(text1, null, confirmButton1, cancelButton1, 30000, true)
-                    button.limit = (confirmValue1 == null || confirmValue1) ? button.limit : 0
-                    break
+                    if (!await this.#confirmButtonReactYesNo(index, button)) button.limit = 0;
+                    break;
                 case AfkTemplate.TemplateButtonChoice.NUMBER_CHOICE_PRESET:
-                    const text2 = `How many ${choiceText} reacts do you want to add to this run?\n If no response is received, this run will use the default ${button.limit} ${choiceText}.`
-                    const confirmSelectMenu2 = new Discord.StringSelectMenuBuilder()
-                        .setPlaceholder(`Number of ${i}s`)
-                        .setOptions(
-                            { label: '1', value: '1' },
-                            { label: '2', value: '2' },
-                            { label: '3', value: '3' },
-                            { label: 'None', value: '0' },
-                        )
-                    const {value: confirmValue2, interaction: subInteraction2} = await this.#message.selectPanel(text2, null, confirmSelectMenu2, 30000, false, true)
-                    button.limit = Number.isInteger(parseInt(confirmValue2)) ? parseInt(confirmValue2) : button.limit
-                    break
+                    button.limit = await this.#confirmNumberChoice(index, button, false);
+                    break;
                 case AfkTemplate.TemplateButtonChoice.NUMBER_CHOICE_CUSTOM:
-                    const text3 = `How many ${choiceText} reacts do you want to add to this run?\n If no response is received, this run will use the default ${button.limit} ${choiceText}.`
-                    const confirmSelectMenu3 = new Discord.StringSelectMenuBuilder()
-                        .setPlaceholder(`Number of ${i}s`)
-                        .setOptions(
-                            { label: '1', value: '1' },
-                            { label: '2', value: '2' },
-                            { label: '3', value: '3' },
-                            { label: 'None', value: '0' },
-                        )
-                    const {value: confirmValue3, interaction: subInteraction3} = await this.#message.selectPanel(text3, null, confirmSelectMenu3, 30000, true, true)
-                    button.limit = Number.isInteger(parseInt(confirmValue3)) ? parseInt(confirmValue3) : button.limit
-                    break
-            }
-            if (button.limit == 0) {
-                delete this.buttons[i]
-            }
+                    button.limit = await this.#confirmNumberChoice(index, button, true);
+                    break;
+                default:
+            }  
+            if (!button.limit) delete this.buttons[index];
         }
     }
 
@@ -539,7 +512,7 @@ class afkCheck {
         return { content: `${this.#leader}`, embeds: [this.#genRaidChannelsEmbed()], components }
     }
 
-    async sendInitialStatusMessage() {
+    async sendInitialStatusMessage(replyTo) {
         this.#body = this.#afkTemplate.processBody(this.#channel)
         
         const raidStatusMessageContents = {
@@ -547,7 +520,7 @@ class afkCheck {
             embeds: [this.#afkTemplate.startDelay > 0 ? this.#genRaidStatusEmbed() : null]
         };
         [this.raidStatusMessage] = await Promise.all([
-            this.#afkTemplate.raidStatusChannel.send(raidStatusMessageContents),
+            replyTo?.reply(raidStatusMessageContents) || this.#afkTemplate.raidStatusChannel.send(raidStatusMessageContents),
             this.#body[1].message && this.#afkTemplate.raidStatusChannel.send({ content: `${this.#body[1].message} in 5 seconds...` }).then(msg => setTimeout(async () => await msg.delete(), 5000)),
             ...Object.values(this.#afkTemplate.raidPartneredStatusChannels).map(channel => channel.send({ content: `**${this.#afkTemplate.name}** is starting inside of **${this.#guild.name}**${this.#channel ? ` in ${this.#channel}` : ``}` }))
         ])
@@ -577,14 +550,14 @@ class afkCheck {
         }
     }
 
-    async sendCommandsMessage() {
+    async sendCommandsMessage(panel) {
         const raidCommandsMessageContents = this.#genRaidCommands()
         const raidInfoMessageContents = this.#genRaidInfo();
         [
             this.raidCommandsMessage,
             this.raidInfoMessage
         ] = await Promise.all([
-            this.raidCommandsMessage?.edit(raidCommandsMessageContents) || this.#afkTemplate.raidCommandChannel.send(raidCommandsMessageContents),
+            this.raidCommandsMessage?.edit(raidCommandsMessageContents) || panel?.reply(raidCommandsMessageContents) || this.#afkTemplate.raidCommandChannel.send(raidCommandsMessageContents),
             this.raidInfoMessage?.edit(raidInfoMessageContents) || this.#afkTemplate.raidInfoChannel.send(raidInfoMessageContents)
         ])
         
@@ -1439,4 +1412,84 @@ class afkCheck {
         const component = new Discord.ActionRowBuilder({ components: reactablesRequestActionRow })
         message.edit({ components: [component] })
     }
+}
+
+module.exports = {
+    name: 'afk',
+    description: 'The new version of the afk check',
+    requiredArgs: 1,
+    args: '<run symbol> <location>',
+    role: 'eventrl',
+    /**
+     * Main Execution Function
+     * @param {Discord.Message} message
+     * @param {String[]} args
+     * @param {Discord.Client} bot
+     * @param {import('mysql').Connection} db
+     */
+    async execute(message, args, bot, db) {
+        let alias = args.shift().toLowerCase()
+
+        const afkTemplateNames = await AfkTemplate.resolveTemplateAlias(bot.settings[message.guild.id], message.member, message.guild.id, message.channel.id, alias)
+        if (afkTemplateNames instanceof AfkTemplate.AfkTemplateValidationError) return message.channel.send(afkTemplateNames.message())
+        if (afkTemplateNames.length == 0) return await message.channel.send('This afk template does not exist.')
+
+        const afkTemplateName = afkTemplateNames.length == 1 ? afkTemplateNames[0] : await AfkTemplate.templateNamePrompt(message, afkTemplateNames)
+
+        const afkTemplate = await AfkTemplate.AfkTemplate.tryCreate(bot, bot.settings[message.guild.id], message, afkTemplateName)
+        if (afkTemplate instanceof AfkTemplate.AfkTemplateValidationError) {
+            if (afkTemplate.invalidChannel()) await message.delete()
+            await message.channel.send(afkTemplate.message())
+            return
+        }
+
+        let location = args.join(' ')
+        if (location.length >= 1024) return await message.channel.send('Location must be below 1024 characters, try again')
+        if (location == '') location = 'None'
+        message.react('✅')
+
+        const afkModule = new afkCheck(afkTemplate, bot, db, message, location)
+        await afkModule.createChannel()
+        await afkModule.sendButtonChoices()
+        await afkModule.sendInitialStatusMessage()
+        if (afkTemplate.startDelay > 0) setTimeout(() => afkModule.start(), afkTemplate.startDelay*1000)
+        else afkModule.start()
+    },
+    returnRaidIDsbyMemberID(bot, memberID) {
+        return Object.keys(bot.afkChecks).filter(raidID => bot.afkChecks[raidID].leader == memberID)
+    },
+    returnRaidIDsbyMemberVoice(bot, voiceID) {
+        return Object.keys(bot.afkChecks).filter(raidID => bot.afkChecks[raidID].channel == voiceID)
+    },
+    returnRaidIDsbyRaidID(bot, RSAID) {
+        return Object.keys(bot.afkChecks).filter(raidID => bot.afkChecks[raidID].raidStatusMessage && bot.afkChecks[raidID].raidStatusMessage.id == RSAID)
+    },
+    returnRaidIDsbyAll(bot, memberID, voiceID, argument) {
+        return [...new Set([
+            ...this.returnRaidIDsbyMemberID(bot, memberID),
+            ...this.returnRaidIDsbyMemberVoice(bot, voiceID),
+            ...this.returnRaidIDsbyMemberVoice(bot, argument),
+            ...this.returnRaidIDsbyRaidID(bot, argument)
+        ])]
+    },
+    returnActiveRaidIDs(bot) {
+        return Object.keys(bot.afkChecks)
+    },
+    async loadBotAfkChecks(guild, bot, db) {
+        const storedAfkChecks = Object.values(require('../data/afkChecks.json')).filter(raid => raid.guild.id === guild.id);
+        for (const currentStoredAfkCheck of storedAfkChecks) {
+            const messageChannel = guild.channels.cache.get(currentStoredAfkCheck.message.channelId)
+            const message = await messageChannel.messages.fetch(currentStoredAfkCheck.message.id)
+            const afkTemplateName = currentStoredAfkCheck.afkTemplateName
+            const afkTemplate = await AfkTemplate.AfkTemplate.tryCreate(bot, bot.settings[message.guild.id], message, afkTemplateName)
+            if (afkTemplate instanceof AfkTemplate.AfkTemplateValidationError) {
+                console.log(afkTemplate.message())
+                continue
+            }
+            bot.afkModules[currentStoredAfkCheck.raidID] = new afkCheck(afkTemplate, bot, db, message, currentStoredAfkCheck.location)
+            await bot.afkModules[currentStoredAfkCheck.raidID].loadBotAfkCheck(currentStoredAfkCheck)
+        }
+        console.log(`Restored ${storedAfkChecks.length} afk checks for ${guild.name}`);
+   },
+   afkCheck
 }

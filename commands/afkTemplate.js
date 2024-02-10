@@ -164,6 +164,10 @@ class AfkTemplate {
         return this.#templateName
     }
 
+    get template() {
+        return this.#template
+    }
+
     // Function for populating child AFK Template parameters in an object from Parent AFK Template object
     #populateObjectInherit(template, parentTemplate) {
         for (let i in parentTemplate) {
@@ -365,7 +369,7 @@ class AfkTemplate {
     }
 
     #validateTemplateEmote(emote) {
-        return this.#bot.storedEmojis[emote]
+        return emote.id || this.#bot.storedEmojis[emote] // headcounts are reusing processed templates, if react[index].emote has an id property, assume it's a processed emote
     }
 
     #validateTemplateBoolean(bool) {
@@ -512,7 +516,10 @@ class AfkTemplate {
     }
 
     #processReacts() {
-        for (let i in this.reacts) this.reacts[i].emote = this.#bot.storedEmojis[this.reacts[i].emote]
+        for (let i in this.reacts) {
+            if (this.reacts[i].emote.id) continue;
+            this.reacts[i].emote = this.#bot.storedEmojis[this.reacts[i].emote]
+        }
     }
 
     getButtonChoices() {

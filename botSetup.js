@@ -16,6 +16,8 @@ const afkCheck = require('./commands/afkCheck.js');
 const vibotChannels = require('./commands/vibotChannels');
 const vetVerification = require('./commands/vetVerification');
 const verification = require('./commands/verification');
+const headcount = require('./commands/headcount');
+
 // Specific Jobs
 const { UnbanVet, Unsuspend } = require('./jobs/unban.js');
 const { KeyAlert } = require('./jobs/keyAlert.js');
@@ -137,6 +139,8 @@ async function setup(bot) {
 
     // Initialize the bot's slash commands
     iterServers(bot, deployCommands);
+
+    await headcount.initialize(bot);
 }
 
 const launchFlask = require('./ml/spawnFlask.js');
