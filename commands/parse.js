@@ -112,19 +112,16 @@ async function parseMembers(message, bot) {
     if (!playerImgURL) return await message.reply('You must provide a /who image to parse.');
     const raid = bot.afkModules[message.options.getString('raid')] || getRaid(message, bot, message.member.voice?.channelID);
     if (!raid) return; // error message already sent in getRaid()
-
     const imgPlayers = await parseWhoImage(message, playerImgURL);
     if (!imgPlayers) return; // error message already sent in parseWhoImage()
 
-    const playersInDungeon = imgPlayers.map(player => player.toLowerCase());
+    const whoImgPlayers = imgPlayers.map(player => player.toLowerCase());
+    const allowedRaiders = raid.members.map(member => member.id);
 
-    const { alts, crashers, kick, find, otherChannel, allowedCrashers } = processPlayers(playersInDungeon, message.guild, raid);
+    const { alts, crashers, kick, find, otherChannel, allowedCrashers } = processPlayers(whoImgPlayers, message.guild, allowedRaiders, raid);
 
-    const { actualCrashers, possibleAlts, actualKicks, actualFind } = processUnrecognizedPlayers(alts, crashers, kick, find);
-
-    const embed = buildParseMembersEmbed(raid, actualCrashers, possibleAlts, otherChannel, actualKicks, actualFind, allowedCrashers);
-
-    await message.channel.send({ embeds: [embed] });
+    // const embed = buildParseMembersEmbed(raid, actualCrashers, possibleAlts, otherChannel, actualKicks, actualFind, allowedCrashers);
+    // await message.channel.send({ embeds: [embed] });
 }
 
 // async function parseReacts(message, bot) { }
@@ -132,105 +129,44 @@ async function parseMembers(message, bot) {
 // async function parseSimple(message, bot) { }
 
 /**
- * Processes the players in the dungeon and identifies alts, crashers, kick, find, otherChannel, and allowedCrashers.
- * @param {string[]} playersInDungeon - The list of players in the dungeon.
- * @param {string[]} raidMemberIds - The list of member IDs in the raid.
- * @param {Guild} guild - The guild object.
- * @param {Raid} raid - The raid object.
- * @returns {ReturnType<processPlayers()>} - An object containing the identified alts, crashers, kick, find, otherChannel, and allowedCrashers.
+ * 
+ * @param {string[]} whoImgPlayers - names of players in the dungeon, from OCR
+ * @param {Discord.Guild} guild - discord guild of the raid taking place
+ * @param {string[]} allowedRaiders - discord members who are allowed to be in the raid
+ * @param {AfkCheck} raid - raid object taken from bot.afkModules
  */
-function processPlayers(playersInDungeon, raidMemberIds, guild, raid) {
+async function processPlayers(whoImgPlayers, guild, allowedRaiders, raid = null) {
+    /** @type Discord.Member[] */
+    const inRaidCrashers = [];
+    /** @type Discord.Member[] */
+    const otherCrashers = [];
+    /** @type string[] */
+    const unidentifiedCrashers = [];
+    /** @type Discord.Member[] */
+    const membersInDungeon = [];
     /**
-     * Array of alt ids
+     * @type {{id: string, nicknames: string[]}[]}
+     * @description A map of raid member ids and their nicknames
      */
-    const alts = [];
-    const crashers = [];
-    const kick = [];
-    const find = [];
-    /**
-     * Array of strings in the format `<member> : <channel>`
-     * @type {string[]}
-     */
-    const otherChannel = [];
-    /**
-     * Array of allowed crasher's member ids.
-     * @type {string[]}
-     */
-    const allowedCrashers = [];
-    /** @type {number} */
-    const minimumStaffRolePosition = guild.roles.cache.get(botSettings[guild.id].roles.almostrl).position;
-
-    for (const player of playersInDungeon) {
-        const serverMember = guild.findMember(player);
-        if (!serverMember) {
-            crashers.push(player);
-            kick.push(player);
-        } else if (!raidMemberIds.includes(serverMember.id)) {
-            if (serverMember.roles.highest.position >= minimumStaffRolePosition) continue;
-
-            if (!raid.isVcless()) {
-                if (raid.members.includes(serverMember.id)) allowedCrashers.push(serverMember.id);
-                if (serverMember.voice.channel) otherChannel.push(`${serverMember}: ${serverMember.voice.channel}`);
-                else crashers.unshift(`${serverMember}`);
-            } else crashers.unshift(`${serverMember}`);
-
-            kick.push(player);
-            find.push(player);
-        }
+    const allowedRaidersNicknames = new Map();
+    for (const member of allowedRaiders) {
+        allowedRaidersNicknames.set(member.id, splitNickNames(member));
     }
 
-    for (const memberId of raidMemberIds) {
-        const member = guild.members.cache.get(memberId);
-        if (member.roles.highest.position >= minimumStaffRolePosition || !member.nickname) continue;
-        const nicknames = member.nickname.toLowerCase().replace(/[^a-z|]/gi, '').split('|');
-        if (!playersInDungeon.some(raider => nicknames.includes(raider)) && !alts.some(alt => alt.id == member.id)) {
-            alts.push({ id: member.id, nicknames });
-        }
+    for (const player of whoImgPlayers) {
+        let matchedRaider = allowedRaidersNicknames.find(({ nicknames }) => nicknames.includes(player));
+        if (matchedRaider) continue;
+        // takes 3 whoimgplayers to check for sequential combinations of names, checking for the longest combination first
+        matchedRaider = searchCombinationNames(whoImgPlayers.slice(whoImgPlayers.indexOf(player), whoImgPlayers.indexOf(player) + 3), allowedRaidersNicknames);
     }
-    return { alts, crashers, kick, find, otherChannel, allowedCrashers };
 }
 
-function processUnrecognizedPlayers(alts, crashers, kick, find) {
-    const normalizedCrashers = crashers.map(normalizeName);
-    const normalizedAlts = alts.map(({ id, nicknames }) => ({ id, nicknames: nicknames.map(normalizeName) }));
-    const results = reassembleAndCheckNames(normalizedCrashers, normalizedAlts);
-    const [matchKeys, matchValues] = [Array.from(results.keys()), Array.from(results.values())];
 
-    const actualCrashers = crashers.filter((_, idx) => !matchValues.some(m => m.parts.includes(normalizedCrashers[idx])));
-    const possibleAlts = normalizedAlts.filter(alt => !matchKeys.some(full => alt.nicknames.some(name => full == name))).map(alt => `<@${alt.id}>`);
-    const actualKicks = kick.filter(raider => !matchValues.some(m => m.parts.includes(normalizeName(raider))));
-    const actualFind = find.filter(raider => !matchValues.some(m => m.parts.includes(normalizeName(raider))));
-    return { actualCrashers, possibleAlts, actualKicks, actualFind };
-}
-
-function buildParseMembersEmbed(raid, actualCrashers, possibleAlts, otherChannel, actualKicks, actualFind, allowedCrashers) {
-    const embed = new Discord.EmbedBuilder()
-        .setTitle(`Parse for ${raid.afkTitle()}`)
-        .setColor('#00ff00')
-        .setDescription(`There are ${actualCrashers.length} crashers, ${possibleAlts.length} potential alts` + (raid.isVcless() ? '' : `, and ${otherChannel.length} people in other channels`))
-        .addFields({ name: 'Potential Alts', value: possibleAlts.join(', ') || 'None' });
-
-    if (!raid.isVcless()) embed.addFields({ name: 'Other Channels', value: otherChannel.join('\n') || 'None' });
-
-    embed.addFields(
-        { name: 'Crashers', value: actualCrashers.join(', ') || 'None' },
-        { name: 'Find Command', value: `\`\`\`;find ${actualFind.join(' ')}\`\`\`` },
-        { name: 'Kick List', value: actualKicks.length ? `\`\`\`${actualKicks.join(' ')}\`\`\`` : 'None' }
-    );
-
-    if (!raid.isVcless()) {
-        embed.addFields({
-            name: 'Were in VC',
-            value: `The following can use the \`reconnect\` button:\n${allowedCrashers.map(u => `<@${u}>`).join(' ')}`
-        });
-    }
-    return embed;
-}
 /**
  * Determines the raid via interactive modal
- * @param {Object} message - The message object.
- * @param {Object} bot - The bot object.
- * @param {string} memberVoiceChannel - The member's voice channel ID.
+ * @param {Discord.Message} message - The message object.
+ * @param {Discord.Client} bot - The bot object.
+ * @param {Bot.afkCheck} memberVoiceChannel - The member's voice channel ID.
  * @returns {Promise} A promise that resolves with the raid.
  */
 async function getRaid(message, bot, memberVoiceChannel) {
@@ -275,35 +211,22 @@ async function filterRaidIds(interaction, bot) {
     await interaction.respond(filteredValues);
 }
 
-// Normalization function as defined earlier
-function normalizeName(name) {
-    return name.toLowerCase().replace(/\s/g, '').replace(/i/g, 'l');
-}
-
-// Function to reassemble and check split names
 /**
- *
- * @param {string[]} crasherNames
- * @param {[{id: string, nicknames: string[]}]} raidMembers
- * @returns {Map<string, { parts: string[], id: string }}
+ * @description Searches for a sequential combination of playerArray strings in allowedRaidersNicknames, starting by combining all strings, then all but the last, then but the last two, etc.
+ *  If a match is found, the Discord.Member object is returned. and the playerArray is spliced to remove the matched names.
+ * @param {string[]} playerArray - names to combine and check
+ * @param {{{id: Discord.Member, nicknames: string[]}[]}} allowedRaidersNicknames - map of raider id to their nicknames
  */
-function reassembleAndCheckNames(crasherNames, raidMembers) {
-    const matchedNamesMap = new Map();
-
-    const namesToCheck = crasherNames.slice(); // Copy array
-
-    while (namesToCheck.length > 0 && raidMembers.length > 0) {
-        const currentName = namesToCheck.shift();
-
-        for (let i = 0; i <= namesToCheck.length; i++) {
-            const matchedMember = raidMembers.find(({ nicknames }) => nicknames.includes(currentName + namesToCheck.slice(0, i).join('')));
-            if (matchedMember) {
-                const matchedComponents = namesToCheck.splice(0, i);
-                matchedNamesMap.set(currentName + matchedComponents.join(''), { parts: [currentName, ...matchedComponents], id: matchedMember.id });
-            }
-        }
+function searchCombinationNames(playerArray, allowedRaidersNicknames) { // TODO validate this function and add levenstein distance equivalent, need to actually modify the original playerArray if a match is found
+    let combinedName = playerArray.join('');
+    let matchedRaider = allowedRaidersNicknames.find(({ nicknames }) => nicknames.includes(combinedName));
+    if (matchedRaider) return matchedRaider;
+    for (let i = 0; i < playerArray.length; i++) {
+        combinedName = playerArray.slice(0, i).join('');
+        matchedRaider = allowedRaidersNicknames.find(({ nicknames }) => nicknames.includes(combinedName));
+        if (matchedRaider) return matchedRaider;
     }
-    return matchedNamesMap;
+    return null;
 }
 
 /**
@@ -321,4 +244,8 @@ async function parseWhoImage(message, playerImgURL) {
     } catch (er) {
         await message.reply(er.message);
     }
+}
+
+function splitNickNames(member) {
+    return member.map(member => member.nickname?.replace(/[^a-z|]/gi, '').toLowerCase().split('|'));
 }
