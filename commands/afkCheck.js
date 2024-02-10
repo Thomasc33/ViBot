@@ -51,7 +51,7 @@ class AfkButton {
             return "None!"
         } else {
             const memberString = this.members.reduce((string, id, ind) => string + `${emote ? emote : ind+1}: <@!${id}>\n`, '')
-            return memberString >= 1024 ? '*Too many users to process*' : memberString
+            return memberString.length >= 1024 ? '*Too many users to process*' : memberString
         }
     }
 
