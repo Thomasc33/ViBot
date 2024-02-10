@@ -109,14 +109,22 @@ module.exports = {
 
 async function parseMembers(message, bot) {
     const playerImgURL = message.options.getAttachment('players')?.url;
-    if (!playerImgURL) return message.reply('You must provide a /who image to parse.');
+    if (!playerImgURL) return await message.reply('You must provide a /who image to parse.');
     const raid = bot.afkModules[message.options.getString('raid')] || getRaid(message, bot, message.member.voice?.channelID);
     if (!raid) return; // error message already sent in getRaid()
 
     const imgPlayers = await parseWhoImage(message, playerImgURL);
     if (!imgPlayers) return; // error message already sent in parseWhoImage()
 
-    await runRaidParse(message, bot, raid, imgPlayers);
+    const playersInDungeon = imgPlayers.map(player => player.toLowerCase());
+
+    const { alts, crashers, kick, find, otherChannel, allowedCrashers } = processPlayers(playersInDungeon, message.guild, raid);
+
+    const { actualCrashers, possibleAlts, actualKicks, actualFind } = processUnrecognizedPlayers(alts, crashers, kick, find);
+
+    const embed = buildParseMembersEmbed(raid, actualCrashers, possibleAlts, otherChannel, actualKicks, actualFind, allowedCrashers);
+
+    await message.channel.send({ embeds: [embed] });
 }
 
 // async function parseReacts(message, bot) { }
@@ -124,56 +132,65 @@ async function parseMembers(message, bot) {
 // async function parseSimple(message, bot) { }
 
 /**
- *
- * @param {Discord.Message} message - Command message object
- * @param {Discord.Client} bot - Bot object cutosm???
- * @param {AfkCheck} raid - the raid to parse
- * @param {String[]} imgPlayers - the names of the players in the /who image
- * @param {Discord.Message} parseStatusMessage - the message to edit with the status of the parse
- * @param {Discord.Embed} parseStatusEmbed - the embed to edit with the status of the parse
+ * Processes the players in the dungeon and identifies alts, crashers, kick, find, otherChannel, and allowedCrashers.
+ * @param {string[]} playersInDungeon - The list of players in the dungeon.
+ * @param {string[]} raidMemberIds - The list of member IDs in the raid.
+ * @param {Guild} guild - The guild object.
+ * @param {Raid} raid - The raid object.
+ * @returns {ReturnType<processPlayers()>} - An object containing the identified alts, crashers, kick, find, otherChannel, and allowedCrashers.
  */
-// eslint-disable-next-line complexity
-async function runRaidParse(message, bot, raid, imgPlayers) {
-    const minimumStaffRolePosition = message.guild.roles.cache.get(botSettings.roles.almostrl).position;
-    const raiders = imgPlayers.map(player => player.toLowerCase());
-    const members = raid.isVcless() ? raid.members : bot.channels.cache.get(raid.channel.id).members.map(m => m.id);
-
-    /** @type {{ id: string, nicknames: string[] }[]} */
+function processPlayers(playersInDungeon, raidMemberIds, guild, raid) {
+    /**
+     * Array of alt ids
+     */
     const alts = [];
-    /** @type {string[]} */
     const crashers = [];
     const kick = [];
     const find = [];
+    /**
+     * Array of strings in the format `<member> : <channel>`
+     * @type {string[]}
+     */
     const otherChannel = [];
+    /**
+     * Array of allowed crasher's member ids.
+     * @type {string[]}
+     */
     const allowedCrashers = [];
+    /** @type {number} */
+    const minimumStaffRolePosition = guild.roles.cache.get(botSettings[guild.id].roles.almostrl).position;
 
-    for (const player of raiders) {
-        const member = message.guild.findMember(player);
-        if (!member) {
+    for (const player of playersInDungeon) {
+        const serverMember = guild.findMember(player);
+        if (!serverMember) {
             crashers.push(player);
             kick.push(player);
-        } else if (!members.includes(member.id)) {
-            if (member.roles.highest.position >= minimumStaffRolePosition) continue;
+        } else if (!raidMemberIds.includes(serverMember.id)) {
+            if (serverMember.roles.highest.position >= minimumStaffRolePosition) continue;
 
             if (!raid.isVcless()) {
-                if (raid.members.includes(member.id)) allowedCrashers.push(member.id);
-                if (member.voice.channel) otherChannel.push(`${member}: ${member.voice.channel}`);
-                else crashers.unshift(`${member}`);
-            } else crashers.unshift(`${member}`);
+                if (raid.members.includes(serverMember.id)) allowedCrashers.push(serverMember.id);
+                if (serverMember.voice.channel) otherChannel.push(`${serverMember}: ${serverMember.voice.channel}`);
+                else crashers.unshift(`${serverMember}`);
+            } else crashers.unshift(`${serverMember}`);
 
             kick.push(player);
             find.push(player);
         }
     }
 
-    for (const memberId of members) {
-        const member = message.guild.members.cache.get(memberId);
-        if (member.roles.highest.position > minimumStaffRolePosition) continue;
-        if (!member.nickname) continue;
+    for (const memberId of raidMemberIds) {
+        const member = guild.members.cache.get(memberId);
+        if (member.roles.highest.position >= minimumStaffRolePosition || !member.nickname) continue;
         const nicknames = member.nickname.toLowerCase().replace(/[^a-z|]/gi, '').split('|');
-        if (!raiders.some(raider => nicknames.includes(raider)) && !alts.some(alt => alt.id == member.id)) alts.push({ id: member.id, nicknames });
+        if (!playersInDungeon.some(raider => nicknames.includes(raider)) && !alts.some(alt => alt.id == member.id)) {
+            alts.push({ id: member.id, nicknames });
+        }
     }
+    return { alts, crashers, kick, find, otherChannel, allowedCrashers };
+}
 
+function processUnrecognizedPlayers(alts, crashers, kick, find) {
     const normalizedCrashers = crashers.map(normalizeName);
     const normalizedAlts = alts.map(({ id, nicknames }) => ({ id, nicknames: nicknames.map(normalizeName) }));
     const results = reassembleAndCheckNames(normalizedCrashers, normalizedAlts);
@@ -183,7 +200,10 @@ async function runRaidParse(message, bot, raid, imgPlayers) {
     const possibleAlts = normalizedAlts.filter(alt => !matchKeys.some(full => alt.nicknames.some(name => full == name))).map(alt => `<@${alt.id}>`);
     const actualKicks = kick.filter(raider => !matchValues.some(m => m.parts.includes(normalizeName(raider))));
     const actualFind = find.filter(raider => !matchValues.some(m => m.parts.includes(normalizeName(raider))));
+    return { actualCrashers, possibleAlts, actualKicks, actualFind };
+}
 
+function buildParseMembersEmbed(raid, actualCrashers, possibleAlts, otherChannel, actualKicks, actualFind, allowedCrashers) {
     const embed = new Discord.EmbedBuilder()
         .setTitle(`Parse for ${raid.afkTitle()}`)
         .setColor('#00ff00')
@@ -204,8 +224,7 @@ async function runRaidParse(message, bot, raid, imgPlayers) {
             value: `The following can use the \`reconnect\` button:\n${allowedCrashers.map(u => `<@${u}>`).join(' ')}`
         });
     }
-
-    await message.channel.send({ embeds: [embed] });
+    return embed;
 }
 /**
  * Determines the raid via interactive modal
