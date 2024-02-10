@@ -1,7 +1,7 @@
 /* eslint-disable guard-for-in */
 /* eslint-disable no-unused-vars */
 const { Message, Client, Colors, Guild, ButtonInteraction, EmbedBuilder, GuildMember, AutocompleteInteraction,
-    CommandInteraction, ModalBuilder, TextInputBuilder } = require('discord.js');
+    CommandInteraction, ModalBuilder, TextInputBuilder, Collection } = require('discord.js');
 const { TemplateButtonType, AfkTemplate, resolveTemplateList, resolveTemplateAlias, AfkTemplateValidationError } = require('./afkTemplate.js');
 const { slashCommandJSON, slashArg } = require('../utils.js');
 const { StringSelectMenuBuilder, ActionRowBuilder, StringSelectMenuOptionBuilder, ButtonBuilder } = require('@discordjs/builders');
@@ -217,6 +217,9 @@ module.exports = {
 };
 
 class Headcount {
+    /** @type {Collection<string, Headcount>} */
+    static #cache;
+
     /** @type {Guild} */
     #guild;
 
@@ -453,10 +456,11 @@ class Headcount {
             .catch(() => 'None');
     }
 
-    async #convert(interaction) {
+    async #convert(interaction, release) {
         this.#ended = { reason: 'converted to afk', time: Date.now() };
         await Headcount.#client.hDel('headcounts', this.#panel.id);
         await this.update();
+        release();
 
         const location = await this.#queryLocation(interaction);
 
@@ -470,10 +474,11 @@ class Headcount {
         await this.update(afkModule);
     }
 
-    async #abort() {
+    async #abort(release) {
         this.#ended = { reason: 'aborted', time: Date.now() };
         await Headcount.#client.hDel('headcounts', this.#panel.id);
         await this.update();
+        release();
     }
 
     static #mutex = new Mutex();
@@ -492,21 +497,21 @@ class Headcount {
 
         setInterval(async () => {
             const now = Date.now();
-            const release = await Headcount.#mutex.acquire();
-            try {
-                for await (const { field, value } of client.hScanIterator('headcounts')) {
-                    /** @type {ReturnType<typeof Headcount.prototype.toJSON>} */
-                    const data = JSON.parse(value);
+            for await (const { field, value } of client.hScanIterator('headcounts')) {
+                /** @type {ReturnType<typeof Headcount.prototype.toJSON>} */
+                const data = JSON.parse(value);
 
-                    if (now >= data.startTime + data.timeoutDuration) {
-                        data.ended = { reason: 'timed out', time: Date.now() };
-                        await client.hDel('headcounts', field);
-                    }
+                if (now >= data.startTime + data.timeoutDuration) {
+                    data.ended = { reason: 'timed out', time: Date.now() };
+                    await client.hDel('headcounts', field);
+                }
+                const release = await Headcount.#mutex.acquire();
+                try {
                     const headcount = await Headcount.fromJSON(bot.guilds.cache.get(data.guildId), data);
                     await headcount.update();
+                } finally {
+                    release();
                 }
-            } finally {
-                release();
             }
         }, 4_000);
     }
@@ -521,22 +526,18 @@ class Headcount {
      */
     static async handleHeadcountRow(bot, interaction) {
         const release = await Headcount.#mutex.acquire();
-        try {
-            const row = await Headcount.#client.hGet('headcounts', interaction.message.id);
-            if (!row) return false;
+        const row = await Headcount.#client.hGet('headcounts', interaction.message.id);
+        if (!row) return false;
 
-            /** @type {ReturnType<typeof Headcount.prototype.toJSON>} */
-            const data = JSON.parse(row);
-            const guild = bot.guilds.cache.get(data.guildId);
-            const headcount = await Headcount.fromJSON(guild, data);
-            switch (interaction.customId) {
-                case 'convert': await headcount.#convert(interaction); break;
-                case 'abort': await headcount.#abort(); break;
-                default: return false;
-            }
-            return true;
-        } finally {
-            release();
+        /** @type {ReturnType<typeof Headcount.prototype.toJSON>} */
+        const data = JSON.parse(row);
+        const guild = bot.guilds.cache.get(data.guildId);
+        const headcount = await Headcount.fromJSON(guild, data);
+        switch (interaction.customId) {
+            case 'convert': await headcount.#convert(interaction, release); break;
+            case 'abort': await headcount.#abort(release); break;
+            default: return false;
         }
+        return true;
     }
 }
