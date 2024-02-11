@@ -1103,7 +1103,7 @@ class afkCheck {
                 if (err) return console.log(`${option} missing from ${this.#guild.name} ${this.#guild.id}`)
                 let embed = new Discord.EmbedBuilder()
                     .setColor('#0000ff')
-                    .setTitle(`${button} logged!`)
+                    .setTitle(`${button.name} logged!`)
                     .setDescription(`${member} now has \`\`${parseInt(rows[0][option]) + parseInt(number)}\`\` (+\`${number}\`) ${choiceText} pops`)
                     .setFooter({ text: `${interaction.guild.name} • ${this.afkTitle()}`, iconURL: interaction.guild.iconURL() })
                 await (this.raidCommandsMessage?.reply({ embeds: [embed] }) || this.#afkTemplate.raidCommandChannel.send({ embeds: [embed] }))
