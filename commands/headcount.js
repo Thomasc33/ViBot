@@ -311,23 +311,9 @@ class Headcount {
     async start(interaction) {
         this.#message = await this.#template.raidStatusChannel.send(this.#statusData);
 
-        for (const reactName in this.#template.reacts) {
-            const react = this.#template.reacts[reactName];
+        for (const emoji of this.#template.headcountEmoji()) {
             // eslint-disable-next-line no-await-in-loop
-            if (react.onHeadcount && react.emote) await this.#message.react(react.emote.id);
-        }
-
-        for (const keyName in this.#template.buttons) {
-            const button = this.#template.buttons[keyName];
-            switch (button.type) {
-                case TemplateButtonType.NORMAL:
-                case TemplateButtonType.LOG:
-                case TemplateButtonType.LOG_SINGLE:
-                    // eslint-disable-next-line no-await-in-loop
-                    if (this.#bot.storedEmojis[button.emote]) await this.#message.react(this.#bot.storedEmojis[button.emote].id);
-                    break;
-                default:
-            }
+            await this.#message.react(emoji.id);
         }
 
         if (this.#timeoutDuration) {
