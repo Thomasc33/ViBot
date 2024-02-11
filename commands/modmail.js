@@ -46,8 +46,8 @@ const Modmail = {
         const { attachments, content, error } = await modmailChannel.next(null, null, moderator.id).catch(issue => issue);
 
         if (error) {
-            confirmResponse.delete()
-            return modmailMessage.edit({ components: getOpenModmailComponents(settings) })
+            await confirmResponse.delete();
+            return await modmailMessage.edit({ components: getOpenModmailComponents(settings) });
         }
 
         delete confirmEmbed.data.footer;
@@ -73,7 +73,7 @@ const Modmail = {
             
             if (attachments.size == 1 && attachments.first().contentType?.toLowerCase().startsWith('image')) {
                 userEmbed.setImage(attachments.first().proxyURL);
-                if (content.trim()) userEmbed.setDescription(content.trim())
+                userEmbed.setDescription(content.trim())
             }
             else if (attachments.size >= 1) {
                 userEmbed.addFields({ name: 'Attachments', value: atmtInfo})
@@ -91,7 +91,7 @@ const Modmail = {
             embed.addFields({ name: `Response by ${moderator.displayName} <t:${moment().unix()}:R>:`, value: respInfo })
             await modmailMessage.edit({ embeds: [embed], components: [] });
         } else {
-            interaction.message.edit({ components: getOpenModmailComponents(settings) })
+            modmailMessage.edit({ components: getOpenModmailComponents(settings) })
         }
     },
 
@@ -212,50 +212,6 @@ const Modmail = {
     }
 }
 
-module.exports = {
-    name: 'modmail',
-    description: 'Mod Mail Handler',
-    role: 'moderator',
-    args: '<update>',
-    interactionHandler,
-    async execute(message, args, bot, db) {
-        if (args.length > 0) {
-            switch (args[0].toLowerCase()) {
-                case 'update':
-                    this.update(message.guild, bot, db)
-                    break;
-                case 'sendinfo':
-                    this.sendInfo(message)
-                    break;
-            }
-        }
-    },
-    async sendModMail(message, guild, bot, db) {
-        let settings = bot.settings[guild.id]
-        if (await checkBlacklist(message.author, db)) return await message.author.send('You have been blacklisted from modmailing.')
-        if (!settings.backend.modmail) return
-        message.react('📧')
-        message.channel.send('Message has been sent to mod-mail. If this was a mistake, don\'t worry')
-        let embed = new Discord.EmbedBuilder()
-            .setColor('#ff0000')
-            .setAuthor({ name: message.author.tag, iconURL: message.author.avatarURL() })
-            .setDescription(`<@!${message.author.id}> **sent the bot**\n${message.content}`)
-            .setFooter({ text: `User ID: ${message.author.id} MSG ID: ${message.id}` })
-            .setTimestamp()
-
-        let modMailChannel = guild.channels.cache.get(settings.channels.modmail)
-        let embedMessage = await modMailChannel.send({ embeds: [embed], components: getCloseModmailComponents() }).catch(er => ErrorLogger.log(er, bot, message.guild))
-
-        modmailInteractionCollector = new Discord.InteractionCollector(bot, { message: embedMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
-        modmailInteractionCollector.on('collect', (interaction) => interactionHandler(interaction, settings, bot, db))
-        if (message.attachments.first()) modMailChannel.send(message.attachments.first().proxyURL)
-    },
-    async init(guild, bot, db) {
-        guild.channels.cache.get(bot.settings[guild.id].channels.modmail).messages.fetch({ limit: 100 })
-    },
-    Modmail
-}
-
 function getCloseModmailComponents() {
     return [new Discord.ActionRowBuilder().addComponents(new Discord.ButtonBuilder().setLabel('🔓 Unlock').setStyle(3).setCustomId('modmailUnlock'))]
 }
@@ -297,10 +253,7 @@ function getOpenModmailComponents(settings) {
  */
 async function interactionHandler(interaction, settings, bot, db) {
     if (!interaction.isButton()) return;
-    if (!settings.backend.modmail) {
-        interaction.reply(`Modmail is disabled in this server.`)
-        return
-    }
+    if (!settings.backend.modmail) return interaction.reply(`Modmail is disabled in this server.`);
 
     const embed = Discord.EmbedBuilder.from(interaction.message.embeds[0].data);
     const raider = interaction.guild.members.cache.get(embed.data.footer.text.split(/ +/g)[2])
@@ -336,10 +289,47 @@ async function interactionHandler(interaction, settings, bot, db) {
     }
 }
 
-async function checkBlacklist(member, db) {
-    const [rows] = await db.promise().query('SELECT * FROM modmailblacklist WHERE id = ?', [member.id]);
-    return rows.length != 0;
-}
+module.exports = {
+    name: 'modmail',
+    description: 'Mod Mail Handler',
+    role: 'moderator',
+    args: '<update>',
+    interactionHandler,
+    async execute(message, args, bot, db) {
+        if (args.length > 0) {
+            switch (args[0].toLowerCase()) {
+                case 'update':
+                    this.update(message.guild, bot, db)
+                    break;
+                case 'sendinfo':
+                    this.sendInfo(message)
+                    break;
+            }
+        }
+    },
+    async sendModMail(message, guild, bot, db) {
+        let settings = bot.settings[guild.id]
+        const [rows] = db.promise().query('SELECT * FROM modmailblacklist WHERE id = ?', [message.author.id]);
+        if (rows.length) return await message.author.send('You have been blacklisted from modmailing.');
+        if (!settings.backend.modmail) return
+        message.react('📧')
+        message.channel.send('Message has been sent to mod-mail. If this was a mistake, don\'t worry')
+        let embed = new Discord.EmbedBuilder()
+            .setColor('#ff0000')
+            .setAuthor({ name: message.author.tag, iconURL: message.author.avatarURL() })
+            .setDescription(`<@!${message.author.id}> **sent the bot**\n${message.content}`)
+            .setFooter({ text: `User ID: ${message.author.id} MSG ID: ${message.id}` })
+            .setTimestamp()
 
-const keyFilter = (r, u) => !u.bot && r.emoji.name === '🔑'
-const choiceFilter = (r, u) => !u.bot && (r.emoji.name === '📧' || r.emoji.name === '👀' || r.emoji.name === '🗑️' || r.emoji.name === '❌' || r.emoji.name === '🔨' || r.emoji.name === '🔒' /*temp, remove later*/ || r.emoji.id === '752368122551337061')
+        let modMailChannel = guild.channels.cache.get(settings.channels.modmail)
+        let embedMessage = await modMailChannel.send({ embeds: [embed], components: getCloseModmailComponents() }).catch(er => ErrorLogger.log(er, bot, message.guild))
+
+        modmailInteractionCollector = new Discord.InteractionCollector(bot, { message: embedMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
+        modmailInteractionCollector.on('collect', (interaction) => interactionHandler(interaction, settings, bot, db))
+        if (message.attachments.first()) modMailChannel.send(message.attachments.first().proxyURL)
+    },
+    async init(guild, bot, db) {
+        guild.channels.cache.get(bot.settings[guild.id].channels.modmail).messages.fetch({ limit: 100 })
+    },
+    Modmail
+}
