@@ -159,11 +159,11 @@ class AfkButton {
     get isCap() { return this.#isCap }
 
     label() {
-        return `${this.#displayName ? `${this.name} ` : ``}${this.limit ? ` ${this.members.length}/${this.limit}` : ``}`
+        return `${this.#displayName ? `${this.#name} ` : ``}${this.limit ? ` ${this.members.length}/${this.limit}` : ``}`
     }
 
     memberListLabel(isRequest) {
-        return `${this.emote ? this.emote.text : ''} ${this.name}${isRequest ? ' Request' : ''}${this.limit ? ` (${this.limit})` : ''}${this.location ? ` \`L\`` : `` }`
+        return `${this.#emote ? this.#emote.text : ''} ${this.#name}${isRequest ? ' Request' : ''}${this.limit ? ` (${this.limit})` : ''}${this.#location ? ` \`L\`` : `` }`
     }
 
     isLogged() {
@@ -412,7 +412,7 @@ class afkCheck {
         this.members = storedAfkCheck.members
         this.earlyLocationMembers = storedAfkCheck.earlyLocationMembers
         this.earlySlotMembers = storedAfkCheck.earlySlotMembers
-        this.buttons = this.#afkTemplate.buttons.map((button, idx) => new AfkButton(this.#botSettings, this.#bot.storedEmojis, this.#guild, {...button, ...storedAfkCheck.buttons[idx]}))
+        this.buttons = storedAfkCheck.buttons.map(button => new AfkButton(this.#botSettings, this.#bot.storedEmojis, this.#guild, {...this.#afkTemplate.getButton(button.name), ...button}))
         this.reactRequests = Object.fromEntries(Object.entries(storedAfkCheck.reactRequests).map(([messageId, button]) => [messageId, new AfkButton(this.#botSettings, this.#bot.storedEmojis, this.#guild, {...this.#afkTemplate.getButton(button.name), ...button})]))
         this.#body = storedAfkCheck.body
 
@@ -1166,10 +1166,8 @@ class afkCheck {
     }
 
     async processReactableNormal(interaction, button) {
-        const emote = button.emote ? `${button.emote.text} ` : ``
-
         if (button.confirm) {
-            const text = button.confirmationDescription(this.#channel, button.confirmationMessage && this.#afkTemplate.processMessages(this.#message.channel, button.confirmationMessage))
+            const text = button.confirmationDescription((button.confirmationMessage && this.#afkTemplate.processMessages(this.#message.channel, button.confirmationMessage)) || '')
             const confirmButton = new Discord.ButtonBuilder()
                 .setLabel('✅ Confirm')
                 .setStyle(Discord.ButtonStyle.Success)

@@ -53,7 +53,7 @@ module.exports = {
         for (let i in afkTemplate.reacts) {
             if (afkTemplate.reacts[i].onHeadcount && afkTemplate.reacts[i].emote) await raidStatusMessage.react(afkTemplate.reacts[i].emote.id)
         }
-        for (const emoji in afkTemplate.headcountEmoji) {
+        for (const emoji of afkTemplate.headcountEmoji()) {
             await raidStatusMessage.react(emoji.id)
         }
 
