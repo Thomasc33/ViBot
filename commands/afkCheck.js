@@ -1004,7 +1004,7 @@ class afkCheck {
         } else {
             const text = `Which member do you want to log ${choiceText} reacts for this run?\nChoose or input a username or id.`
             const confirmMemberMenu = new Discord.StringSelectMenuBuilder()
-                .setPlaceholder(`Name of ${button}s`)
+                .setPlaceholder(`Name of ${button.name}s`)
             for (let i of button.members) confirmMemberMenu.addOptions({ label: this.#guild.members.cache.get(i).nickname, value: i })
             const {value: confirmMemberValue, interaction: logKeyInteraction} = await interaction.selectPanel(text, null, confirmMemberMenu, 10000, true, true)
             if (confirmMemberValue) member = this.#lookupGuildMember(confirmMemberValue)
@@ -1103,7 +1103,7 @@ class afkCheck {
                 if (err) return console.log(`${option} missing from ${this.#guild.name} ${this.#guild.id}`)
                 let embed = new Discord.EmbedBuilder()
                     .setColor('#0000ff')
-                    .setTitle(`${button} logged!`)
+                    .setTitle(`${button.name} logged!`)
                     .setDescription(`${member} now has \`\`${parseInt(rows[0][option]) + parseInt(number)}\`\` (+\`${number}\`) ${choiceText} pops`)
                     .setFooter({ text: `${interaction.guild.name} • ${this.afkTitle()}`, iconURL: interaction.guild.iconURL() })
                 await (this.raidCommandsMessage?.reply({ embeds: [embed] }) || this.#afkTemplate.raidCommandChannel.send({ embeds: [embed] }))
@@ -1112,7 +1112,7 @@ class afkCheck {
         if (this.#botSettings.backend.points) {
             let points = logOption.points * number * logOption.multiplier
             await this.#db.promise().query('UPDATE users SET points = points + ? WHERE id = ?', [points, member.id])
-            let pointsLog = [{ uid: member.id, points: points, reason: `${button}`}]
+            let pointsLog = [{ uid: member.id, points: points, reason: `${button.name}`}]
             await pointLogger.pointLogging(pointsLog, this.#guild, this.#bot, this.#genEmbedBase())
         }
         button.logged += number
