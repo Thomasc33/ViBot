@@ -78,6 +78,7 @@ class AfkButton {
     get minRole() { return this.#minRole }
     get logOptions() { return this.#logOptions }
     get isCap() { return this.#isCap }
+    get choice() { return this.#choice }
 
     label() {
         return `${this.#displayName ? `${this.#name} ` : ``}${this.limit ? ` ${this.members.length}/${this.limit}` : ``}`
