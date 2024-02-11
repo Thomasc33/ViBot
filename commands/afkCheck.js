@@ -255,6 +255,7 @@ class AfkButton {
 
     toJSON() {
         return {
+            name: this.#name,
             limit: this.limit,
             members: this.members,
             logged: this.logged,
@@ -759,7 +760,7 @@ class afkCheck {
             if (button.members.includes(interaction.member.id)) {
                 return await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have already reacted as ${emote}${interaction.customId}. Try another react or try again next run.`, null)], ephemeral: true })
             }
-            if (isReactRequestInteraction && button.members.includes(interaction.member.id)) {
+            if (isReactRequestInteraction && this.getButton(button.name).members.includes(interaction.member.id)) {
                 return await interaction.reply({ embeds: [extensions.createEmbed(interaction, `You have already reacted as ${emote}${interaction.customId}. Try another react or try again next run.`, null)], ephemeral: true })
             }
             if (this.#reactionIsFull(button)) {
@@ -793,7 +794,7 @@ class afkCheck {
 
             button.members.push(interaction.member.id)
 
-            await this.reactableSendLoc(confirmInteraction, button.location)
+            await this.reactableSendLoc(confirmInteraction, button.location || button.parent?.some(parent => this.getButton(parent)?.location))
 
             if (button.parent) {
                 for (let i of button.parent) {
