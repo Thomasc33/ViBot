@@ -7,18 +7,37 @@ const axios = require('axios')
 const modmailGPTurl = require('../settings.json').modmailGPTurl
 
 /**
- * @typedef {{
-*  interaction: Discord.ButtonInteraction,
-*  moderator: Discord.GuildMember,
-*  userModmailMessage: Discord.Message?,
-*  directMessages: Discord.DMChannel,
-*  settings: import('../data/guildSettings.701483950559985705.cache.json'),
-*  embed: Discord.EmbedBuilder,
-*  raider: Discord.GuildMember,
-*  db: import('mysql2').Connection,
-*  bot: Discord.Client
-* }} ModmailData
-*/
+ * @typedef ModmailData
+ * @property {Discord.ButtonInteraction} interaction
+ * @property {import('../data/guildSettings.701483950559985705.cache.json')} settings
+ * @property {Discord.EmbedBuilder} embed
+ * @property {Discord.GuildMember} raider
+ * @property {import('mysql2').Pool} db
+ * @property {Discord.Client} bot
+ */
+async function performModmailReply(guild, attachments, content, raider, messageId ) {
+    const atmtInfo = attachments.map(a => `[${a.name}](${a.proxyURL})`).join('\n');
+    const userEmbed = new Discord.EmbedBuilder()
+        .setTitle('Modmail Response')
+        .setColor(Discord.Colors.Red)
+        .setAuthor({ name: guild.name, iconURL: guild.iconURL() });
+
+    if (attachments.size == 1 && attachments.first().contentType?.toLowerCase().startsWith('image')) {
+        userEmbed.setImage(attachments.first().proxyURL);
+    }
+    else if (attachments.size >= 1) {
+        userEmbed.addFields({ name: 'Attachments', value: atmtInfo });
+        userEmbed.setDescription('See attachments');
+    } 
+    if (content.trim()) userEmbed.setDescription(content.trim())
+
+    const directMessages = await raider.user.createDM();
+    const userModmailMessage = await directMessages.messages.fetch(messageId);
+
+    if (userModmailMessage) await userModmailMessage.reply({ embeds: [userEmbed] })
+    else await directMessages?.send({ embeds: [userEmbed] })
+}
+
 const Modmail = {
     /** @param {ModmailData} options */
     async unlock({ settings, interaction }) {
@@ -31,23 +50,21 @@ const Modmail = {
     },
 
     /** @param {ModmailData} options */
-    async send(options) {
-        const { interaction, settings, embed, raider, directMessages, userModmailMessage, moderator,
-                interaction: { guild, channel: modmailChannel, message: modmailMessage } } = options;
+    async send({ settings, interaction, interaction: { guild, channel, message, member }, embed, raider }) {
 
         const confirmEmbed = new Discord.EmbedBuilder()
-            .setDescription(`__How would you like to respond to ${raider}'s [message](${modmailMessage.url})__\n${embed.data.description}`)
+            .setDescription(`__How would you like to respond to ${raider}'s [message](${message.url})__\n${embed.data.description}`)
             .setFooter({ text: 'Type \'cancel\' to cancel' })
             .setColor(Discord.Colors.Blue);
 
-        const confirmResponse = await interaction.reply({ embeds: [confirmEmbed] }).then(resp => resp.fetch());
+        const confirmResponse = await interaction.reply({ embeds: [confirmEmbed], fetchReply: true });
         
         /** @type {Discord.Message} */
-        const { attachments, content, error } = await modmailChannel.next(null, null, moderator.id).catch(issue => issue);
+        const { attachments, content, error } = await channel.next(null, null, member.id).catch(issue => issue);
 
         if (error) {
             await confirmResponse.delete();
-            return await modmailMessage.edit({ components: getOpenModmailComponents(settings) });
+            return await message.edit({ components: getOpenModmailComponents(settings) });
         }
 
         delete confirmEmbed.data.footer;
@@ -63,149 +80,116 @@ const Modmail = {
         }
         await confirmResponse.edit({ embeds: [confirmEmbed] });
 
-        const performReply = await confirmResponse.confirmButton(moderator.id);
+        const performReply = await confirmResponse.confirmButton(member.id);
         confirmResponse.delete();
         if (performReply) {
-            const userEmbed = new Discord.EmbedBuilder()
-                .setTitle('Modmail Response')
-                .setColor(Discord.Colors.Red)
-                .setAuthor({ name: guild.name, iconURL: guild.iconURL() })
-            
-            if (attachments.size == 1 && attachments.first().contentType?.toLowerCase().startsWith('image')) {
-                userEmbed.setImage(attachments.first().proxyURL);
-                userEmbed.setDescription(content.trim())
-            }
-            else if (attachments.size >= 1) {
-                userEmbed.addFields({ name: 'Attachments', value: atmtInfo})
-                userEmbed.setDescription(content.trim() || 'See attachments')
-
-            } 
-
-            if (content.trim()) userEmbed.setDescription(content.trim())
-
-            if (userModmailMessage) await userModmailMessage.reply({ embeds: [userEmbed] })
-            else await directMessages.send({ embeds: [userEmbed] })
-
+            await performModmailReply(guild, attachments, content, raider, embed.data.footer.text.split(/ +/g)[5]);
             const respInfo = content.trim() + (attachments.size ? `\n**Attachments:**\n${atmtInfo}` : '' )
 
-            embed.addFields({ name: `Response by ${moderator.displayName} <t:${moment().unix()}:R>:`, value: respInfo })
-            await modmailMessage.edit({ embeds: [embed], components: [] });
+            embed.addFields({ name: `Response by ${member.displayName} <t:${moment().unix()}:R>:`, value: respInfo })
+            await message.edit({ embeds: [embed], components: [] });
         } else {
-            modmailMessage.edit({ components: getOpenModmailComponents(settings) })
+            message.edit({ components: getOpenModmailComponents(settings) })
         }
     },
 
     /** @param {ModmailData} options */
-    async forward(options) {
-        const { settings, interaction: { guild, message }, interaction, embed: modmailEmbed, moderator } = options;
+    async forward({ settings, interaction, interaction: { guild, message, member }, embed, raider }) {
         const forwardChannel = guild.channels.cache.get(settings.channels.forwardedModmailMessage);
 
-        const embed = new Discord.EmbedBuilder()
+        const confirmationEmbed = new Discord.EmbedBuilder()
             .setTitle('Modmail Forward')
             .setColor(Discord.Colors.Blue);
 
         if (forwardChannel) {
-            embed.setDescription(`Are you sure you want to forward this modmail to ${forwardChannel}?`);
-            const confirmMessage = await interaction.reply({ embeds: [embed] }).then(resp => resp.fetch());;
-            const result = await confirmMessage.confirmButton(moderator.id);
+            confirmationEmbed.setDescription(`__Are you sure you want to forward ${raider}'s [message](${message.url}) to ${forwardChannel}?__\n${embed.data.description}`);
+            const confirmMessage = await interaction.reply({ embeds: [confirmationEmbed], fetchReply: true });
+            const result = await confirmMessage.confirmButton(member.id);
             confirmMessage.delete();
             if (result) {
                 const forwardEmbed = new Discord.EmbedBuilder()
                     .setColor(Discord.Colors.Red)
                     .setDescription(message.embeds[0].data.description)
-                    .setFooter({ text: `Forwarded by ${moderator.displayName} • Modmail send at` })
+                    .setFooter({ text: `Forwarded by ${member.displayName} • Modmail send at` })
                     .setTimestamp(new Date(message.embeds[0].data.timestamp));
                 const forwardMessage = await forwardChannel.send({ embeds: [forwardEmbed] });
                 if (settings.backend.forwadedMessageThumbsUpAndDownReactions) {
                     await forwardMessage.react('👍')
                     await forwardMessage.react('👎')
                 }
-                modmailEmbed.addFields({ name: `${moderator.displayName} forwarded this modmail <t:${moment().unix()}:R>`, value: `This modmail has been forwarded to ${forwardChannel}` });
-                await message.edit({ embeds: [modmailEmbed], components: [] });
+                embed.addFields({ name: `${member.displayName} forwarded this modmail <t:${moment().unix()}:R>`, value: `This modmail has been forwarded to ${forwardChannel}` });
+                await message.edit({ embeds: [embed], components: [] });
             } else {
                 await message.edit({ components: getOpenModmailComponents(settings) });
             }
         } else {
-            embed.setDescription('There is no modmail forward channel configured for this server.')
+            confirmationEmbed.setDescription('There is no modmail forward channel configured for this server.')
                 .setColor(Discord.Colors.Red)
                 .setFooter({ text: interaction.customId });
             
-            await interaction.reply({ embeds: [embed] });
+            await interaction.reply({ embeds: [confirmationEmbed] });
             await message.edit({ components: getOpenModmailComponents(settings) });
         }
     },
 
     /** @param {ModmailData} options */
-    async close(options) {
-        const { interaction, interaction: { message }, embed: modmailEmbed, moderator } = options;
+    async close({ interaction, interaction: { message, member }, embed }) {
         const confirmEmbed = new Discord.EmbedBuilder()
             .setTitle('Modmail Close')
             .setDescription(`This will close the modmail permanently.\nIf you wish to send a message after closing, use the \`\`;mmr\`\` command to send a message to this modmail`)
             .setColor(Discord.Colors.Blue); 
 
-        const confirmMessage  = await interaction.reply({ embeds: [confirmEmbed] }).then(resp => resp.fetch());
-        const result = await confirmMessage.confirmButton(moderator.id);
+        const confirmMessage  = await interaction.reply({ embeds: [confirmEmbed], fetchReply: true });
+        const result = await confirmMessage.confirmButton(member.id);
         await confirmMessage.delete();
         if (result) {
-            modmailEmbed.addFields({ name: `${interaction.member.nickname} has closed this modmail <t:${moment().unix()}:R>`, value: `This modmail has been closed` });
-            await message.edit({ embeds: [modmailEmbed], components: [] });
+            embed.addFields({ name: `${member.displayName} has closed this modmail <t:${moment().unix()}:R>`, value: `This modmail has been closed` });
+            await message.edit({ embeds: [embed], components: [] });
         } else {
             message.edit({ components: getOpenModmailComponents(settings) });
         }
     },
 
     /** @param {ModmailData} options */
-    async blacklist(options) {
-        const { interaction, interaction: { message }, settings, db, raider, embed: modmailEmbed, moderator } = options;
-
-        const embed = new Discord.EmbedBuilder()
+    async blacklist({ settings, db, interaction, interaction: { message, member }, raider, embed }) {
+        const confirmEmbed = new Discord.EmbedBuilder()
             .setTitle('Modmail Blacklist')
             .setDescription(`This will blacklist ${raider}. They will no longer be able to send any modmails. Are you sure you want to do this?`)
             .setColor(Discord.Colors.Blue);
 
-        const confirmMessage = await interaction.reply({ embeds: [embed] }).then(resp => resp.fetch());
-        const result = await confirmMessage.confirmButton(moderator.id);
+        const confirmMessage = await interaction.reply({ embeds: [confirmEmbed], fetchReply: true });
+        const result = await confirmMessage.confirmButton(member.id);
         await confirmMessage.delete();
         if (result) {
             await db.promise().query(`INSERT INTO modmailblacklist (id) VALUES (?)`, [raider.id]);
-            modmailEmbed.addFields({ name: `${moderator.displayName} has blacklisted ${raider.nickname} <t:${moment().unix()}:R>`, value: `${raider} has been blacklisted by ${interaction.member}` });
-            await message.edit({ embeds: [modmailEmbed], components: [] });
+            embed.addFields({ name: `${member.displayName} has blacklisted ${raider.nickname} <t:${moment().unix()}:R>`, value: `${raider} has been blacklisted by ${member}` });
+            await message.edit({ embeds: [embed], components: [] });
         } else {
             await message.edit({ components: getOpenModmailComponents(settings) });
         }
     },
 
     /** @param {ModmailData} options */
-    async gpt(options) {
-        const { interaction, interaction: { message, guild }, moderator, settings, 
-                embed: modmailEmbed, userModmailMessage, directMessages } = options;
-        const originalModmail = modmailEmbed.data.description.replace(/<@!\d+?>/g, '').replace(' **sent the bot**\n', '').replace('\t', '');
+    async gpt({ settings, interaction, interaction: { guild, message, member }, embed }) {
+        const originalModmail = embed.data.description.replace(/<@!\d+?>/g, '').replace(' **sent the bot**\n', '').replace('\t', '');
 
         const reply = await interaction.deferReply();
-
         const { response: { data: { response } } } = await axios.post(modmailGPTurl, { modmail: originalModmail });
         
-        const embed = new Discord.EmbedBuilder()
+        const confirmEmbed = new Discord.EmbedBuilder()
             .setTitle('Modmail GPT Generated Response')
             .setDescription(`Generated text: ${response}`)
             .setColor(Discord.Colors.Blue);
 
-        const confirmMessage = await reply.edit({ embeds: [embed] });
-        const result = await confirmMessage.confirmButton(moderator.id);
+        const confirmMessage = await reply.edit({ embeds: [confirmEmbed] });
+        const result = await confirmMessage.confirmButton(member.id);
         await confirmMessage.delete();
 
         if (result) {
-            const userEmbed = new Discord.EmbedBuilder()
-                .setTitle('Modmail Response')
-                .setColor(Discord.Colors.Red)
-                .setAuthor({ name: guild.name, iconURL: guild.iconURL() })
-                .setDescription(response);
+            await performModmailReply(guild, new Collection(), response, raider, embed.data.footer.text.split(/ +/g)[5]);
 
-            if (userModmailMessage) await userModmailMessage.reply({ embeds: [userEmbed] });
-            else await directMessages.send({ embeds: [userEmbed] });
-
-            modmailEmbed.addFields({ name: `Generated Response Approved by ${moderator.displayName} <t:${moment().unix()}:R>:`, value: response });
-            await message.edit({ embeds: [modmailEmbed], components: [] });
+            embed.addFields({ name: `Generated Response Approved by ${member.displayName} <t:${moment().unix()}:R>:`, value: response });
+            await message.edit({ embeds: [embed], components: [] });
         } else {
             message.edit({ components: getOpenModmailComponents(settings) });
         }
@@ -255,7 +239,7 @@ async function interactionHandler(interaction, settings, bot, db) {
     if (!interaction.isButton()) return;
     if (!settings.backend.modmail) return interaction.reply(`Modmail is disabled in this server.`);
 
-    const embed = Discord.EmbedBuilder.from(interaction.message.embeds[0].data);
+    const embed = Discord.EmbedBuilder.from(interaction.message.embeds[0]);
     const raider = interaction.guild.members.cache.get(embed.data.footer.text.split(/ +/g)[2])
     
     if (!raider) {
@@ -264,12 +248,8 @@ async function interactionHandler(interaction, settings, bot, db) {
         return
     }
 
-    const directMessages = await raider.user.createDM()
-    const modmailMessageID = embed.data.footer.text.split(/ +/g)[5];
-    const userModmailMessage = await directMessages.messages.fetch(modmailMessageID)
-
     /** @type {ModmailData} */
-    const modmailData = { interaction, userModmailMessage, directMessages, settings, embed, raider, db, bot, moderator: interaction.member }
+    const modmailData = { interaction, settings, embed, raider, db, bot }
 
     switch (interaction.customId) {
         case 'modmailUnlock': await Modmail.unlock(modmailData); break;
@@ -309,7 +289,7 @@ module.exports = {
     },
     async sendModMail(message, guild, bot, db) {
         let settings = bot.settings[guild.id]
-        const [rows] = db.promise().query('SELECT * FROM modmailblacklist WHERE id = ?', [message.author.id]);
+        const [rows] = await db.promise().query('SELECT * FROM modmailblacklist WHERE id = ?', [message.author.id]);
         if (rows.length) return await message.author.send('You have been blacklisted from modmailing.');
         if (!settings.backend.modmail) return
         message.react('📧')
