@@ -1,5 +1,5 @@
 const Discord = require('discord.js')
-const { Modmail } = require('./modmail')
+const { Modmail } = require('../lib/modmail')
 
 module.exports = {
     name: 'modmailrespond',

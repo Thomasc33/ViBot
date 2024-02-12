@@ -130,7 +130,6 @@ async function setup(bot) {
         const db = dbSetup.getDB(g.id);
         vibotChannels.update(g, bot, db).catch(er => { });
         afkCheck.loadBotAfkChecks(g, bot, db);
-        // if (bot.settings[g.id].backend.modmail) modmail.init(g, bot, db).catch(er => { ErrorLogger.log(er, bot, g); })
         if (bot.settings[g.id].backend.verification) verification.init(g, bot, db).catch(er => { ErrorLogger.log(er, bot, g); });
         if (bot.settings[g.id].backend.vetverification) vetVerification.init(g, bot, db).catch(er => { ErrorLogger.log(er, bot, g); });
     });

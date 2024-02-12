@@ -3,7 +3,7 @@ const fs = require('fs')
 const botSettings = require('../settings.json')
 const ErrorLogger = require('../lib/logError')
 const vibotChannel = require('./vibotChannels.js')
-const modmail = require('./modmail.js')
+const modmail = require('../lib/modmail.js')
 const roleassignment = require('./roleAssignment.js')
 var watchedMessages = []
 var watchedButtons = {}; //the keys for this are the id of a VC
@@ -146,8 +146,6 @@ module.exports = {
                     .setCustomId('modmailUnlock'))
             message = await message.edit({ components: [components] })
         }
-        modmailInteractionCollector = new Discord.InteractionCollector(bot, { message: message, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
-        modmailInteractionCollector.on('collect', (interaction) => modmail.interactionHandler(interaction, settings, bot, db))
     },
 
     async addCloseChannelButtons(bot, m, rsaMessage) {
