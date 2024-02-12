@@ -16,6 +16,7 @@ const memberHandler = require('./memberHandler.js');
 const { logWrapper } = require('./metrics.js');
 const { handleReactionRow } = require('./redis.js');
 const { handleHeadcountRow } = require('./commands/headcount.js');
+const Modmail = require('./lib/modmail.js');
 // Specific Commands
 const verification = require('./commands/verification');
 
@@ -27,6 +28,24 @@ const serverWhiteList = require('./data/serverWhiteList.json');
 const { MessageManager } = require('./messageManager.js');
 
 const messageManager = new MessageManager(bot, botSettings);
+
+/**
+ * @param {Discord.Client} bot
+ * @param {Discord.ButtonInteraction} interaction
+ * @returns {boolean}
+ */
+async function handleButtonInteractions(bot, interaction) {
+    /** @type {import('./data/guildSettings.701483950559985705.cache.json')} */
+    const settings = bot.settings[interaction.guild.id];
+
+    if (await handleReactionRow(bot, interaction)) return true;
+    if (await handleHeadcountRow(interaction)) return true;
+    if (settings.channels.modmail == interaction.channel.id && interaction.customId.startsWith('modmail')) {
+        const db = dbSetup.getDB(interaction.guild.id);
+        return await Modmail.interactionHandler(interaction, settings, bot, db);
+    }
+    return false;
+}
 
 // Bot Event Handlers
 bot.on('messageCreate', logWrapper('message', async (logger, message) => {
@@ -51,7 +70,7 @@ bot.on('interactionCreate', logWrapper('message', async (logger, interaction) =>
     // Validate the interaction is a command
     if (interaction.isChatInputCommand()) return await messageManager.handleCommand(interaction, true);
     if (interaction.isUserContextMenuCommand()) return await messageManager.handleCommand(interaction, true);
-    if (interaction.isButton()) return await handleReactionRow(bot, interaction) || await handleHeadcountRow(interaction);
+    if (interaction.isButton()) return await handleButtonInteractions(bot, interaction);
 }));
 
 bot.on('ready', async () => {
