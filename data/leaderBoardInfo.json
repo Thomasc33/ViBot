@@ -247,6 +247,14 @@
                     ]
                 },
                 {
+                    "prettyName": "Winecellar Incantations Popped",
+                    "emoji": "inc",
+                    "embedColor": "#d6471c",
+                    "dbRows": [
+                        "incantationPops"
+                    ]
+                },
+                {
                     "prettyName": "Helmet Runes Popped",
                     "emoji": "helmetRune",
                     "embedColor": "#d6471c",
