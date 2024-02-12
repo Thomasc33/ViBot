@@ -27,6 +27,8 @@ class DragHandler {
 
     #lastUpdateTime = Date.now() + 600_000;
 
+    #lastEditTime = 0;
+    #performingEdit = false;
     /**
      * @param {Discord.Client} bot
      * @param {Discord.GuildChannel} channel
@@ -117,6 +119,15 @@ class DragHandler {
         return data;
     }
 
+    async throttleEdit() {
+        if (this.#performingEdit) return;
+        this.#performingEdit = true;
+        setTimeout(() => {
+            this.#performingEdit = false;
+            this.#message.edit(this.content);
+        }, 5_000);
+    }
+
     async update() {
         if (this.#unmoved.length) {
             for (const id of this.#unmoved) {
@@ -131,17 +142,17 @@ class DragHandler {
 
             this.#updateTimeout.refresh();
         }
-        this.#message.edit(this.content);
+        await this.throttleEdit();
     }
 
-    end() {
+    async end() {
         clearTimeout(this.#updateTimeout);
         clearTimeout(this.#autoCancelTimeout);
 
         this.#message.collector.stop();
         delete DragHandler.handlers[this.#voice.id];
 
-        this.#message.edit(this.content);
+        await this.throttleEdit();
     }
 
     get message() { return this.#message; }
