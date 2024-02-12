@@ -153,11 +153,21 @@ async function processPlayers(whoImgPlayers, guild, allowedRaiders, raid = null)
         allowedRaidersNicknames.set(member.id, splitNickNames(member));
     }
 
+    // TODO rework logic to allow checking if member who was in vc was deafened
     for (const player of whoImgPlayers) {
         let matchedRaider = allowedRaidersNicknames.find(({ nicknames }) => nicknames.includes(player));
         if (matchedRaider) continue;
         // takes 3 whoimgplayers to check for sequential combinations of names, checking for the longest combination first
         matchedRaider = searchCombinationNames(whoImgPlayers.slice(whoImgPlayers.indexOf(player), whoImgPlayers.indexOf(player) + 3), allowedRaidersNicknames);
+        // TOOD add skipping forward if there was a matched name
+        if (matchedRaider) continue;
+        matchedRaider = guild.findMember(player);
+        if (matchedRaider) continue;
+        // TODO try matching combindation of names with entire guild
+        if (matchecRaider) continue;
+        unidentifiedCrashers.push(player);
+
+        return { potentialAlts, inRaidCrashers, notInRaidCrashers, unidentifiedCrashers };
     }
 }
 
