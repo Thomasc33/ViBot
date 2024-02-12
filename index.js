@@ -15,7 +15,6 @@ const dbSetup = require('./dbSetup.js');
 const memberHandler = require('./memberHandler.js');
 const { logWrapper } = require('./metrics.js');
 const { handleReactionRow } = require('./redis.js');
-const { handleHeadcountRow } = require('./commands/headcount.js');
 const Modmail = require('./lib/modmail.js');
 // Specific Commands
 const verification = require('./commands/verification');
@@ -39,7 +38,6 @@ async function handleButtonInteractions(bot, interaction) {
     const settings = bot.settings[interaction.guild.id];
 
     if (await handleReactionRow(bot, interaction)) return true;
-    if (await handleHeadcountRow(interaction)) return true;
     if (settings.channels.modmail == interaction.channel.id && interaction.customId.startsWith('modmail')) {
         const db = dbSetup.getDB(interaction.guild.id);
         return await Modmail.interactionHandler(interaction, settings, bot, db);

@@ -10,7 +10,7 @@ const { createClient } = require('redis');
 const { redis: redisConfig } = require('../settings.json');
 const { afkCheck: AfkCheck } = require('./afkCheck.js');
 const { getDB } = require('../dbSetup.js');
-
+const { createReactionRow } = require('../redis.js');
 class Headcount {
     /** @type {Collection<string, Headcount>} */
     static cache = new Collection();
@@ -357,14 +357,15 @@ class Headcount {
 
     async #createHeadcountRow() {
         await Headcount.#client.hSet('headcounts', this.#panel.id, JSON.stringify(this.toJSON()));
+        await createReactionRow(this.#panel, module.exports.name, 'handleHeadcountRow', this.#panel.components[0], this.#member, {});
     }
 
     /**
      * @param {Client} bot
-     * @param {ButtonInteraction} interaction
+     * @param {Message & { interaction: ButtonInteraction }} interaction
      * @returns {boolean}
      */
-    static async handleHeadcountRow(interaction) {
+    static async handleHeadcountRow(bot, { interaction }) {
         const headcount = Headcount.cache.get(interaction.message.id);
         if (!headcount) return false;
 
@@ -614,7 +615,7 @@ module.exports = {
 
     async initialize(bot) { await Headcount.initialize(bot); },
 
-    async handleHeadcountRow(bot, interaction) { return await Headcount.handleHeadcountRow(bot, interaction); },
+    async handleHeadcountRow(...args) { return await Headcount.handleHeadcountRow(...args); },
 
     Headcount
 };
