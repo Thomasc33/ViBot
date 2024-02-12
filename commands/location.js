@@ -1,13 +1,36 @@
 const Discord = require('discord.js')
 const afkCheck = require('./afkCheck.js')
+const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
+const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js');
 
 module.exports = {
     name: 'location',
     description: 'Changes the location of the current run',
     alias: ['loc'],
+    varargs: 1, // TODO check if this is necessary
     requiredArgs: 1,
-    args: '<location>',
+    args: [
+        slashArg(SlashArgType.String, 'location', {
+            description: 'new location for the raid',
+            required: true
+        }),
+        slashArg(SlashArgType.String, 'raid', {
+            description: 'raid to change location for',
+            required: false,
+            autocomplete: true
+        })
+    ],
     role: 'eventrl',
+    getSlashCommandData(guild) { return slashCommandJSON(this, guild); },
+    async autocomplete(interaction) {
+        const raidIdMappings = Object.keys(bot.afkModules).filter(raidId => bot.afkModules[raidId].guild.id == interaction.guild.id).map(raidId => ({
+            name: bot.afkModules[raidId].afkTitle(),
+            value: raidId })); // may need some null-proofing here, unsure if I should bother
+        if (raidIdMappings.length == 0) { return; }
+        const focusedValue = interaction.options.getFocused().trim().toLowerCase();
+        const filteredValues = raidIdMappings.filter(raidIdMapping => raidIdMapping.name.toLowerCase().includes(focusedValue)).slice(0, 25);
+        await interaction.respond(filteredValues);
+    },
     async execute(message, args, bot) {
         let voiceChannel = message.member.voice.channel
         let location = args.join(' ')
