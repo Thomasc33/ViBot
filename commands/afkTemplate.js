@@ -55,7 +55,122 @@ const TemplateButtonChoice = {
 
 // Enum for Button Colors in AFK Templates
 const TemplateButtonColors = [1,2,3,4]
+/**
+ * @typedef {import('../data/guildSettings.701483950559985705.cache.json')} Settings
+ */
+/**
+ * @typedef EmojiData
+ * @property {string} tag
+ * @property {string} name
+ * @property {string} id
+ * @property {string} text
+ * @property {string} guildid
+ * @property {string} guildname
+ * @property {boolean} animated
+ */
+/**
+ * @typedef ReactData
+ * @property {string | EmojiData} emote
+ * @property {boolean} onHeadcount
+ * @property {number} start
+ * @property {number} lifetime
+ */
+/**
+ * @typedef {{}} UnknownTemplateResult
+ */
+/**
+ * @typedef TemplateMatchResult
+ * @property {{[name: string]: ReactData}} reacts
+ * @property {string[]} aliases
+ * @property {string} templateName
+ * @property {string[]} sectionNames
+ */
+/**
+ * @typedef BaseBodyData
+ * @property {'VC_LESS' | 'VC' | 'STATIC'} vcState
+ * @property {string} nextPhaseButton
+ * @property {number} timeLimit
+ * @property {string?} messsage
+ */
+/**
+ * @typedef BodyData
+ * @property {number} vcState
+ * @property {string} nextPhaseButton
+ * @property {number} timeLimit
+ * @property {string?} messsage
+ * @property {BodyEmbed?} embed
+ */
+/**
+ * @typedef {BodyData | {}} BodyDataListItem
+ */
+/**
+ * @typedef LogOption
+ * @property {string[]} logName
+ * @property {string} points
+ * @property {string?} multiplier
+ */
+/**
+ * @typedef TemplateButton
+ * @property {string?} minRole 
+ * @property {string?} confirmationMessage
+ * @property {string?} confirmationMedia
+ * @property {number?} disableStart
+ * @property {string[]} minStaffRoles
+ * @property {{[logName: string]: LogOption}} logOptions
+ * @property {number} limit
+ * @property {string[]} parent
+ * @property {boolean} displayName
+ * @property {boolean} confirm
+ * @property {boolean} location
+ * @property {number} start
+ * @property {number} lifetime
+ * @property {string} emote
+ * @property {string | number} [points]
+ * @property {string} name
+ * @property {number} type
+ * @property {number} choice
+ * @property {number} color
+ */
+/**
+ * @typedef TemplateData
+ * @property {{[name: string]: ReactData}} reacts
+ * @property {string} templateName
+ * @property {Discord.DateResolvable} creationDate
+ * @property {string} name
+ * @property {string} commandsChannel
+ * @property {number} startDelay
+ * @property {number} cap
+ * @property {number} phases
+ * @property {number} parentTemplateId
+ * @property {boolean} capButton
+ * @property {string} category
+ * @property {string} templateChannel
+ * @property {string} statusChannel
+ * @property {string} activeChannel
+ * @property {string[]} minViewRaiderRoles
+ * @property {string[]} minJoinRaiderRoles
+ * @property {BaseBodyData[]} baseBody
+ * @property {number} templateId
+ * @property {boolean} enabled
+ * @property {string[]} pingRoles
+ * @property {string} logName
+ * @property {number} vcOptions
+ * @property {{[x: string]: string}} partneredStatusChannels
+ * @property {BodyDataListItem[]} body
+ * @property {{[buttonName: string]: TemplateButton}} buttons
+ * @property {{[name: string]: ReactData}} reacts
+ * @property {string[][]} minStaffRoles
+ * 
+*/
 
+/**
+ * @param {Settings} botSettings 
+ * @param {Discord.GuildMember} member 
+ * @param {string} guildId 
+ * @param {string} commandChannel 
+ * @param {string} alias 
+ * @returns {Promise<string[]>} list of matching templates
+ */
 async function resolveTemplateAlias(botSettings, member, guildId, commandChannel, alias) {
     const templateUrl = new URL(settings.config.url)
     templateUrl.pathname = `/api/${guildId}/template/${commandChannel}/alias/${alias}`
@@ -65,6 +180,13 @@ async function resolveTemplateAlias(botSettings, member, guildId, commandChannel
     return templateNames
 }
 
+/**
+ * @param {Settings} botSettings 
+ * @param {Discord.GuildMember} member 
+ * @param {string} guildId 
+ * @param {string} commandChannel 
+ * @returns {Promise<TemplateMatchResult[]>}
+ */
 async function resolveTemplateList(botSettings, member, guildId, commandChannel) {
     const templateUrl = new URL(settings.config.url)
     templateUrl.pathname = `/api/${guildId}/commandchannel/${commandChannel}/templates`
@@ -74,6 +196,15 @@ async function resolveTemplateList(botSettings, member, guildId, commandChannel)
     return templateNames
 }
 
+/**
+ * 
+ * @param {Settings} botSettings 
+ * @param {Discord.GuildMember} member 
+ * @param {string} guildId 
+ * @param {string} commandChannel 
+ * @param {string} templateName 
+ * @returns {Promise<TemplateData | UnknownTemplateResult | AfkTemplateValidationError>}
+ */
 async function resolveTemplateName(botSettings, member, guildId, commandChannel, templateName) {
     const templateUrl = new URL(settings.config.url)
     templateUrl.pathname = `/api/${guildId}/template/${commandChannel}/template/${templateName}`
@@ -83,6 +214,12 @@ async function resolveTemplateName(botSettings, member, guildId, commandChannel,
     return template
 }
 
+/**
+ * 
+ * @param {Discord.Message} message 
+ * @param {string[]} templateNames 
+ * @returns {string}
+ */
 async function templateNamePrompt(message, templateNames) {
     const templateMenu = new Discord.StringSelectMenuBuilder() // If multiple found, give option to choose AFK Template
         .setCustomId(`template`)
@@ -115,14 +252,21 @@ class AfkTemplateValidationError extends Error {
     }
 }
 
-// Class for Finding, Checking, Loading and Processing Information in an AFK Template
+/**
+ * Class for Finding, Checking, Loading and Processing Information in an AFK Template
+ */
 class AfkTemplate {
+    /** @type {TemplateData} */
     #template;
+    /** @type {Discord.Client} */
     #bot;
+    /**@type {Settings} */
     #botSettings;
+    /** @type {Discord.Guild} */
     #guild;
-    #inherit;
+    /** @type {string} */
     #templateName;
+
 
     /** Constructor for the AFK Template Class
      * @param {Discord.Client} bot The client which is running the bot
@@ -134,10 +278,8 @@ class AfkTemplate {
         this.#bot = bot
         this.#botSettings = bot.settings[guild.id]
         this.#guild = guild
-        this.#inherit = null
         this.#template = template
         this.#templateName = template.templateName
-
         if (this.#template instanceof AfkTemplateValidationError) throw this.#template
         // Validate that the template is OK to use
         this.#validateTemplateParameters() // Validate existence of AFK Template parameters

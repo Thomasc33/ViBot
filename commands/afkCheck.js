@@ -7,6 +7,12 @@ const extensions = require(`../lib/extensions`)
 const consumablePopTemplates = require(`../data/keypop.json`);
 const popCommand = require('./pop.js');
 
+/**
+ * @typedef AfkCheckData
+ * @property {string} afkTemplateName
+ * @property 
+ */
+
 class AfkButton {
     #displayName;
     #name;
@@ -28,6 +34,12 @@ class AfkButton {
     #logOptions;
     #isCap;
 
+    /**
+     * @param {Discord.Client} botSettings 
+     * @param {{[name: string]: import('./afkTemplate').EmojiData}} storedEmojis 
+     * @param {Discord.Guild} guild 
+     * @param {import('./afkTemplate').TemplateButton} buttonInfo
+     */
     constructor(botSettings, storedEmojis, guild, {points, disableStart, emote, minRole, minStaffRoles, confirmationMessage, color, logOptions, displayName, limit, name, type, parent, choice, confirm, location, confirmationMedia, start, lifetime, isCap, members, logged}) {
         // template
         this.#displayName = displayName;
@@ -187,26 +199,38 @@ class AfkButton {
 }
 
 class afkCheck {
-    /**
-     * @param {AfkTemplate.AfkTemplate} afkTemplate
-     * @param {Discord.Client} bot
-     * @param {import('mysql').Connection} db
-     * @param {Discord.Message} message
-     * @param {String} location
-     */
+    /** @type {Discord.Client} */
     #bot;
+    /** @type {import('./afkTemplate').Settings} */
     #botSettings;
+    /** @type {import('mysql2').Pool} */
     #db;
+    /** @type {import('./afkTemplate').AfkTemplate} */
     #afkTemplate;
-    /** @type {Message} */
+    /** @type {Discord.Message} */
     #message;
+    /** @type {Discord.Guild} */
     #guild;
+    /** @type {Discord.VoiceChannel} */
     #channel;
+    /** @type {Discord.GuildMember} */
     #leader;
+    /** @type {string} */
     #raidID;
+    /** @type {string?} */
     #pointlogMid;
+    /** @type {import('./afkTemplate.js').BodyData?} */
     #body = null;
 
+    /**
+     * 
+     * @param {import('./afkTemplate').AfkTemplate} afkTemplate 
+     * @param {Discord.Client} bot 
+     * @param {import('mysql2').Pool} db 
+     * @param {Discord.GuildTextBasedChannel} message 
+     * @param {string} location 
+     * @param {Discord.GuildMember} leader 
+     */
     constructor(afkTemplate, bot, db, message, location, leader = message.member) {
         this.#bot = bot // bot
         this.#botSettings = bot.settings[message.guild.id] // bot settings
@@ -219,28 +243,47 @@ class afkCheck {
         this.#raidID = null // ID of the afk
         this.#pointlogMid = null
 
+        /** @type {Discord.GuildMember[]} */
         this.members = [] // All members in the afk
+        /** @type {string[]} */
         this.earlyLocationMembers = [] // All members with early location in the afk
+        /** @type {string[]} */
         this.earlySlotMembers = [] // All members with early slots in the afk
+        /** @type {AfkButton[]} */
         this.buttons = afkTemplate.buttons.map(button => new AfkButton(this.#botSettings, this.#bot.storedEmojis, this.#guild, button))
+        /** @type {{[messageId: string]: AfkButton}} */
         this.reactRequests = {} // {messageId => AfkButton}
+        /** @type {number} */
         this.cap = afkTemplate.cap
-
+        /** @type {string} */
         this.location = location // Location of the afk
+        /** @type {boolean} */
         this.singleUseHotfixStopTimersDontUseThisAnywhereElse = false // DO NOT USE THIS. ITS A HOTFIX. https://canary.discord.com/channels/343704644712923138/706670131115196588/1142549685719027822
         // Phase 0 is a special case, before start delay has expired
+        /** @type {number} */
         this.phase = this.#afkTemplate.startDelay > 0 ? 0 : 1 // Current phase of the afk
+        /** @type {Date} */
         this.timer = null // End time of the current phase of the AFK (Date)
+        /** @type {number} */
         this.completes = 0 // Number of times the afk has been completed
+        /** @type {boolean} */
         this.logging = false // Whether logging is active
+        /** @type {string?} */
         this.ended_by = null
 
+        /** @type {Discord.Message} */
         this.raidStatusMessage = null // raid status message
+        /** @type {Discord.InteractionCollector<Discord.ButtonInteraction>} */
         this.raidStatusInteractionHandler = null // raid status interaction handler
+        /** @type {Discord.Message} */
         this.raidCommandsMessage = null // raid commands message
+        /** @type {Discord.Message} */
         this.raidInfoMessage = null // raid info message
+        /** @type {Discord.InteractionCollector<Discord.ButtonInteraction>} */
         this.raidCommandsInteractionHandler = null // raid commands interaction handler
+        /** @type {Discord.Message} */
         this.raidChannelsMessage = null // raid channels message
+        /** @type {Discord.InteractionCollector<Discord.ButtonInteraction>} */
         this.raidChannelsInteractionHandler = null // raid channels interaction handler
     }
 
@@ -278,7 +321,7 @@ class afkCheck {
 
     /**
      * 
-     * @param {Message?} panelReply - if this is from a headcount, should reply to the panel
+     * @param {Discord.Message?} panelReply - if this is from a headcount, should reply to the panel
      */
     async start(panelReply) {
         if (this.phase === 0) this.phase = 1
@@ -288,7 +331,7 @@ class afkCheck {
         this.startTimers()
         this.saveBotAfkCheck()
     }
-
+    /** @type {string} */
     get flag() {
         return this.location ? {'us': ':flag_us:', 'eu': ':flag_eu:'}[this.location.toLowerCase().substring(0, 2)] : ''
     }

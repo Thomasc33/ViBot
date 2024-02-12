@@ -51,7 +51,7 @@ bot.on('interactionCreate', logWrapper('message', async (logger, interaction) =>
     // Validate the interaction is a command
     if (interaction.isChatInputCommand()) return await messageManager.handleCommand(interaction, true);
     if (interaction.isUserContextMenuCommand()) return await messageManager.handleCommand(interaction, true);
-    if (interaction.isButton()) return await handleReactionRow(bot, interaction) || await handleHeadcountRow(bot,  interaction);
+    if (interaction.isButton()) return await handleReactionRow(bot, interaction) || await handleHeadcountRow(interaction);
 }));
 
 bot.on('ready', async () => {
