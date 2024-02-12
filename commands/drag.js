@@ -27,8 +27,8 @@ class DragHandler {
 
     #lastUpdateTime = Date.now() + 600_000;
 
-    #lastEditTime = 0;
     #performingEdit = false;
+
     /**
      * @param {Discord.Client} bot
      * @param {Discord.GuildChannel} channel
