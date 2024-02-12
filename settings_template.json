@@ -41,6 +41,12 @@
         "discord": false,
         "console": false
     },
+    "parseLogger": {
+        "discord": false,
+        "console": false,
+        "ocr": false,
+        "parse": false
+    },
     "dynamicDomainCredentials": {
         "username": null,
         "password": null
