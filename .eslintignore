@@ -31,8 +31,6 @@ commands/manualVerify.js
 commands/manualVetVerify.js
 commands/memes.js
 commands/modmailBlacklist.js
-commands/modmailClose.js
-commands/modmailRespond.js
 commands/mute.js
 commands/mutes.js
 commands/noNicknames.js
