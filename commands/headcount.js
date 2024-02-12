@@ -158,7 +158,7 @@ class Headcount {
                 .setTimestamp(Date.now());
 
             if (this.#thumbnail) embed.setThumbnail(this.#thumbnail);
-            await interaction.editReply({ embeds: [embed] });
+            await interaction.editReply({ embeds: [embed], components: [] });
         }
 
         this.#beginTimers();
@@ -191,7 +191,7 @@ class Headcount {
         const embed = new EmbedBuilder()
             .setAuthor({ name: `Headcount for ${this.#template.name} by ${this.#member.displayName}`, iconURL: this.#member.displayAvatarURL() })
             .setDescription(this.#template.processBodyHeadcount(null))
-            .setColor(this.#template.body[1].embed.color || 'White')
+            .setColor(this.#template.body[1].embed.color || Colors.White)
             .setImage(this.#settings.strings[this.#template.body[1].embed.image] || this.#template.body[1].embed.image)
             .setFooter(this.#footerData)
             .setTimestamp(this.#timeoutDuration ? this.#endTime : this.#startTime);
@@ -230,7 +230,7 @@ class Headcount {
         const embed = new EmbedBuilder()
             .setAuthor({ name: `Headcount for ${this.#template.name} by ${this.#member.displayName}`, iconURL: this.#member.displayAvatarURL() })
             .setDescription(`**Raid Leader: ${this.#member} \`${this.#member.displayName}\`**`)
-            .setColor(this.#template.body[1].embed.color || 'White')
+            .setColor(this.#template.body[1].embed.color || Colors.White)
             .setFooter(this.#footerData)
             .setTimestamp(this.#endTime);
 
@@ -408,7 +408,7 @@ class Headcount {
             .setTitle('Confirm Starting Headcount')
             .setAuthor({ name: `${member.displayName}'s ${template.templateName}`, iconURL: member.displayAvatarURL() })
             .setDescription('Are you sure you want to send another headcount?')
-            .setColor(Colors.Blue)
+            .setColor(template.body[0].embed.color || Colors.Blue)
             .setFields(issues);
 
         const confirmMessage = await interaction.editReply({ embeds: [embed] });

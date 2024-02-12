@@ -93,15 +93,19 @@ const TemplateButtonColors = [1,2,3,4]
  * @property {string?} messsage
  */
 /**
+ * @typedef BodyEmbed
+ * @property {Discord.ColorResolvable} color
+ * @property {string?} description
+ * @property {string?} image
+ * @property {string[]} thumbnail
+ */
+/**
  * @typedef BodyData
  * @property {number} vcState
  * @property {string} nextPhaseButton
  * @property {number} timeLimit
  * @property {string?} messsage
  * @property {BodyEmbed?} embed
- */
-/**
- * @typedef {BodyData | {}} BodyDataListItem
  */
 /**
  * @typedef LogOption
@@ -156,7 +160,7 @@ const TemplateButtonColors = [1,2,3,4]
  * @property {string} logName
  * @property {number} vcOptions
  * @property {{[x: string]: string}} partneredStatusChannels
- * @property {BodyDataListItem[]} body
+ * @property {BodyData[]} body
  * @property {{[buttonName: string]: TemplateButton}} buttons
  * @property {{[name: string]: ReactData}} reacts
  * @property {string[][]} minStaffRoles
