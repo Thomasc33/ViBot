@@ -98,7 +98,7 @@ class DragHandler {
                 }).join(', ') : 'None!' },
                 { name: 'Have Moved', value: this.#moved.length ? this.#moved.map(id => `<@${id}>`).join(', ') : 'None!' }
             )
-            .setFooter({ text: '? = not in a VC • automatically ends at' })
+            .setFooter({ text: '? = not in a VC • Automatically ends at' })
             .setTimestamp(this.#lastUpdateTime);
 
         const data = { embeds: [embed], components: [] };
@@ -113,7 +113,7 @@ class DragHandler {
             data.components = [component];
         } else {
             embed.setDescription('This drag handler has been stopped.')
-                .setFooter({ text: 'ended at' })
+                .setFooter({ text: 'Ended at' })
                 .setTimestamp();
         }
         return data;
