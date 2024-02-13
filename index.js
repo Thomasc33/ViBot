@@ -15,7 +15,7 @@ const dbSetup = require('./dbSetup.js');
 const memberHandler = require('./memberHandler.js');
 const { logWrapper } = require('./metrics.js');
 const { handleReactionRow } = require('./redis.js');
-
+const Modmail = require('./lib/modmail.js');
 // Specific Commands
 const verification = require('./commands/verification');
 
@@ -51,7 +51,14 @@ bot.on('interactionCreate', logWrapper('message', async (logger, interaction) =>
     // Validate the interaction is a command
     if (interaction.isChatInputCommand()) return await messageManager.handleCommand(interaction, true);
     if (interaction.isUserContextMenuCommand()) return await messageManager.handleCommand(interaction, true);
-    if (interaction.isButton()) return await handleReactionRow(bot, interaction);
+    if (interaction.isButton()) {
+        if (interaction.customId.startsWith('modmail')) {
+            const settings = bot.settings[interaction.guild.id];
+            const db = dbSetup.getDB(interaction.guild.id);
+            return await Modmail.interactionHandler(interaction, settings, bot, db);
+        }
+        return await handleReactionRow(bot, interaction);
+    }
 }));
 
 bot.on('ready', async () => {
