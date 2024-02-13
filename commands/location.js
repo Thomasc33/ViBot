@@ -1,16 +1,15 @@
-const Discord = require('discord.js')
-const afkCheck = require('./afkCheck.js')
+const Discord = require('discord.js');
 const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
-const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js');
+const { slashArg, slashCommandJSON } = require('../utils.js');
 
 module.exports = {
     name: 'location',
     description: 'Changes the location of the current run',
     alias: ['loc'],
-    varargs: 1, // TODO check if this is necessary
+    varargs: true, // TODO check if this is necessary
     requiredArgs: 1,
     args: [
-        slashArg(SlashArgType.String, 'location', {
+        slashArg(SlashArgType.String, 'location', { // how do I differentiate between a location and a raid in the legacy command?
             description: 'new location for the raid',
             required: true
         }),
@@ -22,7 +21,7 @@ module.exports = {
     ],
     role: 'eventrl',
     getSlashCommandData(guild) { return slashCommandJSON(this, guild); },
-    async autocomplete(interaction) {
+    async autocomplete(interaction, bot) {
         const raidIdMappings = Object.keys(bot.afkModules).filter(raidId => bot.afkModules[raidId].guild.id == interaction.guild.id).map(raidId => ({
             name: bot.afkModules[raidId].afkTitle(),
             value: raidId })); // may need some null-proofing here, unsure if I should bother
@@ -32,33 +31,54 @@ module.exports = {
         await interaction.respond(filteredValues);
     },
     async execute(message, args, bot) {
-        let voiceChannel = message.member.voice.channel
-        let location = args.join(' ')
-        if (location.length >= 1024) return await message.channel.send('Location must be below 1024 characters, try again')
-        if (location == '') location = 'None'
-        let raidID = undefined
-        const raidIDs = afkCheck.returnRaidIDsbyAll(bot, message.member.id, voiceChannel ? voiceChannel.id : null, null)
-        if (raidIDs.length == 0) return message.channel.send('Could not find an active run. Please try again.')
-        else if (raidIDs.length == 1) raidID = raidIDs[0]
-        else {
-            const locationMenu = new Discord.StringSelectMenuBuilder()
-                .setPlaceholder(`Active Runs`)
-                .setMinValues(1)
-                .setMaxValues(1)
-            let text = `Which active run would you like to change location for?.\n If no response is received, the command will use the default run at \`\`${1}.\`\`.`
-            let index = 0
-            for (let raidID of raidIDs) {
-                const label = `${bot.afkChecks[raidID].afkTemplateName} by ${bot.afkChecks[raidID].leader?.nickname ?? bot.afkChecks[raidID].leader?.user?.id}`
-                text += `\n\`\`${index+1}.\`\` ${label} at <t:${Math.floor(bot.afkChecks[raidID].time/1000)}:f>`
-                locationMenu.addOptions({ label: `${index+1}. ${label}`, value: raidID })
-                index++
-            }
-            const {value: locationValue, interaction: subInteraction} = await message.selectPanel(text, null, locationMenu, 30000, false, true)
-            if (!locationValue) return await message.reply('You must specify the raid to change a location.')
-            raidID = locationValue
-        }
-        bot.afkChecks[raidID].location = location
-        bot.afkModules[raidID].updateLocation()
-        message.react('✅')
+        const voiceChannel = message.member.voice.channel;
+        let location = args.join(' ');
+        if (location.length >= 1024) return await message.reply('Location must be below 1024 characters, try again'); // TODO does slash arg strings enforce a limit
+        if (location == '') location = 'None';
+
+        let raidID;
+        const raidIDs = Object.keys(bot.afkModules).filter(raidId => bot.afkModules[raidId].guild.id == message.guild.id);
+        if (raidIDs.length == 0) return message.reply('Could not find an active run. Please try again.');
+        if (raidIDs.length == 1) raidID = raidIDs[0];
+        else if (voiceChannel) {
+            const matchingRaidID = Object.keys(bot.afkModules).find(raidId => bot.afkModules[raidId].channel.id == voiceChannel.id);
+            raidID = matchingRaidID ?? getLocation(message, bot, raidIDs);
+        } else raidID = getLocation(message, bot, raidIDs);
+
+        if (!raidID) return;
+
+        bot.afkChecks[raidID].location = location; // remove this or nah?
+        bot.afkModules[raidID].updateLocation();
+
+        const locationUpdateEmbed = new Discord.EmbedBuilder()
+            .setAuthor({ name: `${message.member.displayName}`, iconURL: message.member.iconUrl })
+            .setTitle('Location Updated')
+            .setDescription(`Set location for ${bot.afkModules[raidID].afkTitle()} to ${location}`);
+        await message.reply({ embeds: [locationUpdateEmbed] });
     }
+};
+
+/**
+ * Sends a modal for raid selection
+ * @param {Discord.Message} message - original command interaction
+ * @param {Discord.Client} bot - bot client
+ * @param {string[]} raidIDs - array of active raid IDs
+ * @returns {string} raidID selection
+ */
+async function getLocation(message, bot, raidIDs) {
+    const locationMenu = new Discord.StringSelectMenuBuilder()
+        .setPlaceholder('Active Runs')
+        .setMinValues(1)
+        .setMaxValues(1);
+    let text = 'Which active run would you like to change location for?';
+    let index = 0;
+    for (const raidID of raidIDs) {
+        const label = `${bot.afkModules[raidID].afkTitle()}`;
+        text += `\n\`\`${index + 1}.\`\` ${label} at <t:${Math.floor(bot.afkModules[raidID].time / 1000)}:f>`;
+        locationMenu.addOptions({ label: `${index + 1}. ${label}`, value: raidID });
+        index++;
+    }
+    const locationValue = await message.selectPanel(text, null, locationMenu, 30000, false, true);
+    if (!locationValue) return await message.reply('You must specify the raid to change a location.'); // TODO what happens here, is null returned?
+    return locationValue;
 }
