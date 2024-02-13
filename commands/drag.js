@@ -28,14 +28,13 @@ class DragHandler {
     #lastUpdateTime = Date.now() + 600_000;
     /**
      * @param {Discord.Client} bot
-     * @param {Discord.GuildChannel} channel
      * @param {Discord.VoiceChannel} voice
-     * @param {string[]} memberIds
+     * @param {Discord.GuildMember[]} members
      */
-    constructor(bot, voice, memberIds) {
+    constructor(bot, voice, members) {
         this.#bot = bot;
         this.#voice = voice;
-        this.#unmoved = memberIds;
+        this.#unmoved = members.map(m => m.id);
     }
 
     /**
@@ -74,7 +73,7 @@ class DragHandler {
      */
     async addUsers(...members) {
         for (const member of members) {
-            if (this.#unmoved.includes(member.id)) return;
+            if (this.#unmoved.includes(member.id)) continue;
             if (this.#moved.includes(member.id)) this.#moved.splice(this.#moved.indexOf(member.id), 1);
             this.#unmoved.push(member.id);
         }
@@ -189,12 +188,13 @@ module.exports = {
             .setTitle(`Drag for ${voice.name}`)
             .setColor('Blurple')
             .setDescription(`Dragging ${members.length} members.`);
-        if (DragHandler.handlers[voice.id]) embed.setDescription(`${embed.data.description} See [this embed](${DragHandler.handlers[voice.id].message.url}) for details`);
-        else {
+        if (DragHandler.handlers[voice.id]) {
+            await DragHandler.handlers[voice.id].addUsers(...members);
+            embed.setDescription(`${embed.data.description} See [this embed](${DragHandler.handlers[voice.id].message.url}) for details`);
+        } else {
             DragHandler.handlers[voice.id] = new DragHandler(bot, voice, members);
             await DragHandler.handlers[voice.id].init(message.channel);
         }
-        await DragHandler.handlers[voice.id].addUsers(members);
 
         if (unfound.length) embed.addFields({ name: 'Not Found', value: unfound.map(search => `\`${search}\``).join(', ') });
         if (invc.length) embed.addFields({ name: 'Already in VC', value: invc.map(m => `${m}`).join(', ') });
