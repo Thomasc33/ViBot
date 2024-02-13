@@ -88,7 +88,6 @@ module.exports = {
             if (!Object.hasOwn(allSuspiciousRaiders, count)) continue;
             allSuspiciousRaidersChunks[count] = splitIntoChunks(allSuspiciousRaiders[count], 1024, 2);
         }
-        // console.log(allSuspiciousRaidersChunks);
 
         // Dividing allRaidsTime into the same size chunks as allRaidDescriptionsChunks. Assumes character count of times always shorter than character count of description.
         const allRaidsTimesChunks = allRaidsDescriptionsChunks.map(chunk =>
