@@ -5,7 +5,7 @@ const { slashArg, slashCommandJSON } = require('../utils.js');
 module.exports = {
     name: 'location',
     description: 'Changes the location of the current run',
-    alias: ['loc'],
+    alias: ['location', 'loc'],
     varargs: true, // TODO check if this is necessary
     requiredArgs: 1,
     args: [
