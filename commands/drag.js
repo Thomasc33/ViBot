@@ -97,7 +97,7 @@ class DragHandler {
                 }).join(', ') : 'None!' },
                 { name: 'Have Moved', value: this.#moved.length ? this.#moved.map(id => `<@${id}>`).join(', ') : 'None!' }
             )
-            .setFooter({ text: '? = not in a VC • Automatically ends at' })
+            .setFooter({ text: '? = Not in a VC • Automatically Ends at' })
             .setTimestamp(this.#lastUpdateTime);
 
         const data = { embeds: [embed], components: [] };
