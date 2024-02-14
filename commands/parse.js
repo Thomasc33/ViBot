@@ -12,8 +12,8 @@ const client = new vision.ImageAnnotatorClient(botSettings.gcloudOptions);
 
 module.exports = {
     name: 'parse',
+    slashCommandName: 'parse',
     description: 'read the name',
-    alias: ['parse'],
     args: [
         slashArg(SlashArgType.Subcommand, 'members', {
             description: 'regular old parse',
