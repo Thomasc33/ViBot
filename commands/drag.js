@@ -26,24 +26,21 @@ class DragHandler {
     #bot;
 
     #lastUpdateTime = Date.now() + 600_000;
-
-    #performingEdit = false;
-
     /**
      * @param {Discord.Client} bot
-     * @param {Discord.GuildChannel} channel
      * @param {Discord.VoiceChannel} voice
+     * @param {Discord.GuildMember[]} members
      */
-    constructor(bot, channel, voice) {
+    constructor(bot, voice, members) {
         this.#bot = bot;
         this.#voice = voice;
-        this.#init(channel);
+        this.#unmoved = members.map(m => m.id);
     }
 
     /**
      * @param {Discord.GuildChannel} channel
      */
-    async #init(channel) {
+    async init(channel) {
         this.#autoCancelTimeout = setTimeout(() => this.end(), 600_000);
         this.#autoCancelTimeout.unref();
 
@@ -72,17 +69,18 @@ class DragHandler {
     }
 
     /**
-     * @param {Discord.GuildMember} member
+     * @param {Discord.GuildMember[]} members
      */
-    addUser(member) {
-        if (this.#unmoved.includes(member.id)) return;
-        if (this.#moved.includes(member.id)) this.#moved.splice(this.#moved.indexOf(member.id), 1);
-
-        this.#unmoved.push(member.id);
-
+    async addUsers(...members) {
+        for (const member of members) {
+            if (this.#unmoved.includes(member.id)) continue;
+            if (this.#moved.includes(member.id)) this.#moved.splice(this.#moved.indexOf(member.id), 1);
+            this.#unmoved.push(member.id);
+        }
         this.#autoCancelTimeout.refresh();
         this.#lastUpdateTime = Date.now() + 600_000;
 
+        await this.#message.edit(this.content);
         this.#updateTimeout?.refresh();
     }
 
@@ -99,8 +97,8 @@ class DragHandler {
                 }).join(', ') : 'None!' },
                 { name: 'Have Moved', value: this.#moved.length ? this.#moved.map(id => `<@${id}>`).join(', ') : 'None!' }
             )
-            .setFooter({ text: '? = not in a VC • automatically ends at' })
-            .setTimestamp(new Date(this.#lastUpdateTime));
+            .setFooter({ text: '? = Not in a VC • Automatically Ends at' })
+            .setTimestamp(this.#lastUpdateTime);
 
         const data = { embeds: [embed], components: [] };
 
@@ -113,36 +111,36 @@ class DragHandler {
             ]);
             data.components = [component];
         } else {
-            embed.setDescription('This handler has been stopped.');
-            embed.setFooter({ text: 'ended at' });
+            embed.setDescription('This drag handler has been stopped.')
+                .setFooter({ text: 'Ended at' })
+                .setTimestamp();
         }
         return data;
     }
 
-    async throttleEdit() {
-        if (this.#performingEdit) return;
-        this.#performingEdit = true;
-        setTimeout(() => {
-            this.#performingEdit = false;
-            this.#message.edit(this.content);
-        }, 5_000);
-    }
-
     async update() {
         if (this.#unmoved.length) {
+            const previous = [...this.#unmoved];
+
             for (const id of this.#unmoved) {
                 const member = this.#voice.guild.members.cache.get(id);
+                if (!member) { // if they left the server, just in case
+                    this.#unmoved.splice(this.#unmoved.indexOf(id), 1);
+                    continue;
+                }
                 if (member.voice?.channel?.guildId == this.#voice.guildId) {
-                    member.voice.setChannel(this.#voice).then(() => {
-                        this.#unmoved.splice(this.#unmoved.indexOf(member.id), 1);
+                    // eslint-disable-next-line no-await-in-loop
+                    await member.voice.setChannel(this.#voice).then(() => {
+                        this.#unmoved.splice(this.#unmoved.indexOf(id), 1);
                         this.#moved.push(member.id);
                     }).catch(e => ErrorLogger.log(e, this.#bot, this.#voice.guild));
                 }
             }
 
+            if (previous.length != this.#unmoved.length) await this.#message.edit(this.content);
+
             this.#updateTimeout.refresh();
         }
-        await this.throttleEdit();
     }
 
     async end() {
@@ -152,7 +150,7 @@ class DragHandler {
         this.#message.collector.stop();
         delete DragHandler.handlers[this.#voice.id];
 
-        await this.throttleEdit();
+        await this.#message.edit(this.content);
     }
 
     get message() { return this.#message; }
@@ -190,10 +188,13 @@ module.exports = {
             .setTitle(`Drag for ${voice.name}`)
             .setColor('Blurple')
             .setDescription(`Dragging ${members.length} members.`);
-        if (DragHandler.handlers[voice.id]) embed.setDescription(`${embed.data.description} See [this embed](${DragHandler.handlers[voice.id].message.url}) for details`);
-        else DragHandler.handlers[voice.id] = new DragHandler(bot, message.channel, voice);
-
-        members.forEach(member => DragHandler.handlers[voice.id].addUser(member));
+        if (DragHandler.handlers[voice.id]) {
+            await DragHandler.handlers[voice.id].addUsers(...members);
+            embed.setDescription(`${embed.data.description} See [this embed](${DragHandler.handlers[voice.id].message.url}) for details`);
+        } else {
+            DragHandler.handlers[voice.id] = new DragHandler(bot, voice, members);
+            await DragHandler.handlers[voice.id].init(message.channel);
+        }
 
         if (unfound.length) embed.addFields({ name: 'Not Found', value: unfound.map(search => `\`${search}\``).join(', ') });
         if (invc.length) embed.addFields({ name: 'Already in VC', value: invc.map(m => `${m}`).join(', ') });
