@@ -319,6 +319,10 @@ class AfkTemplate {
         }
     }
 
+    getButton(buttonName) {
+        return this.buttons.find(button => button.name === buttonName)
+    }
+
     #validateTemplateGuild(guild, channels = null) {
         const otherGuild = this.#bot.guilds.cache.get(guild)
         if (!otherGuild) return false
@@ -398,10 +402,14 @@ class AfkTemplate {
         this.capButton = this.#template.capButton
         this.phases = this.#template.phases
         this.body = this.#template.body
-        this.buttons = this.#template.buttons
+        this.buttons = Object.values(this.#template.buttons) // Temporary until the website is updated to match
         this.reacts = this.#template.reacts
         this.templateID = this.#template.templateId
         this.parentTemplateID = this.#template.parentTemplateId
+    }
+
+    headcountEmoji() {
+        return this.buttons.filter(button => ([TemplateButtonType.NORMAL, TemplateButtonType.LOG, TemplateButtonType.LOG_SINGLE].includes(button.type) && button.emote)).map(button => this.#bot.storedEmojis[button.emote])
     }
 
     processBody(channel) {
@@ -440,13 +448,13 @@ class AfkTemplate {
         else if (this.vcOptions == TemplateVCOptions.NO_VC) description += `To join, react for location\n`
         let emotes = []
         let supporter = null
-        for (let j in this.buttons) {
-            let start = this.buttons[j].start
-            let end = start + this.buttons[j].lifetime
-            if (i < this.buttons[j].start && i >= end ) continue
-            if (this.buttons[j].type == TemplateButtonType.NORMAL && this.buttons[j].emote) emotes.push(this.#bot.storedEmojis[this.buttons[j].emote].text)
-            if (this.buttons[j].type == TemplateButtonType.LOG || this.buttons[j].type == TemplateButtonType.LOG_SINGLE) description += `If you have a **${j}**, react with ${this.buttons[j].emote ? this.#bot.storedEmojis[this.buttons[j].emote].text : "the button"}\n`
-            if (this.buttons[j].type == TemplateButtonType.SUPPORTER) supporter = this.#bot.storedEmojis[this.buttons[j].emote].text
+        for (let button of this.buttons) {
+            let start = button.start
+            let end = start + button.lifetime
+            if (i < button.start && i >= end ) continue
+            if (button.type == TemplateButtonType.NORMAL && button.emote) emotes.push(this.#bot.storedEmojis[button.emote].text)
+            if (button.type == TemplateButtonType.LOG || button.type == TemplateButtonType.LOG_SINGLE) description += `If you have a **${button.name}**, react with ${button.emote ? this.#bot.storedEmojis[button.emote].text : "the button"}\n`
+            if (button.type == TemplateButtonType.SUPPORTER) supporter = this.#bot.storedEmojis[button.emote].text
         }
         if (emotes.length > 0) description += `If you have an early react, react with ${emotes.join(" ")}\n`
         if (supporter) description += `If you are a ${this.perkRoles.join("")}, react with ${supporter}\n`
@@ -460,37 +468,13 @@ class AfkTemplate {
         for (let i in this.reacts) {
             if (this.reacts[i].onHeadcount && this.reacts[i].emote) reactEmotes.push(this.reacts[i].emote.text)
         }
-        for (let i in this.buttons) {
-            if (this.buttons[i].type == TemplateButtonType.NORMAL && this.buttons[i].emote) buttonEmotes.push(this.#bot.storedEmojis[this.buttons[i].emote].text)
-            if ((this.buttons[i].type == TemplateButtonType.LOG || this.buttons[i].type == TemplateButtonType.LOG_SINGLE) && this.buttons[i].emote) description += `If you plan on bringing a **${i}**, react with ${this.#bot.storedEmojis[this.buttons[i].emote].text}\n`
+        for (let button of this.buttons) {
+            if (button.type == TemplateButtonType.NORMAL && button.emote) buttonEmotes.push(this.#bot.storedEmojis[button.emote].text)
+            if ((button.type == TemplateButtonType.LOG || button.type == TemplateButtonType.LOG_SINGLE) && button.emote) description += `If you plan on bringing a **${button.name}**, react with ${this.#bot.storedEmojis[button.emote].text}\n`
         }
         if (reactEmotes.length > 0) description += `If you plan on coming, react with ${reactEmotes.join(" ")}\n`
         if (buttonEmotes.length > 0) description += `If you plan on bringing an early react, react with ${buttonEmotes.join(" ")}\n`
         return description
-    }
-
-    processButtons(channel) {
-        return Object.entries(this.#template.buttons).reduce((obj, [key, button]) => {
-            obj[key] = {
-                ...button,
-                points: typeof button.points == 'string' ? this.#botSettings.points[button.points] : button.points ?? 0,
-                disableStart: button.disableStart || button.start,
-                emote: this.#bot.storedEmojis[button.emote],
-                minRole: this.#guild.roles.cache.get(this.#botSettings.roles[button.minRole]),
-                minStaffRoles: button.minStaffRoles && button.minStaffRoles.map(role => this.#guild.roles.cache.get(this.#botSettings.roles[role])),
-                confirmationMessage: button.confirmationMessage && this.processMessages(channel, button.confirmationMessage),
-                color: button.color in TemplateButtonColors ? button.color : Discord.ButtonStyle.Secondary,
-                logOptions: button.logOptions && Object.entries(button.logOptions).reduce((obj, [key, logOption]) => {
-                    obj[key] = {
-                        ...logOption,
-                        points: typeof logOption.points == 'string' ? this.#botSettings.points[logOption.points] : logOption.points ?? 0,
-                        multiplier: typeof logOption.multiplier == 'string' ? this.#botSettings.points[logOption.multiplier] : logOption.multiplier ?? 1,
-                    }
-                    return obj
-                }, {})
-            }
-            return obj
-        }, {})
     }
 
     processMessages(channel, currentMessage) {
@@ -514,15 +498,9 @@ class AfkTemplate {
     #processReacts() {
         for (let i in this.reacts) this.reacts[i].emote = this.#bot.storedEmojis[this.reacts[i].emote]
     }
-
-    getButtonChoices() {
-        let choices = []
-        for (let i in this.buttons) if (this.buttons[i].choice != TemplateButtonChoice.NO_CHOICE) choices.push(i) 
-        return choices
-    }
 }
 
-module.exports = { AfkTemplate, TemplateVCOptions, TemplateVCState, TemplateButtonType, TemplateButtonChoice, templateNamePrompt, AfkTemplateValidationError, resolveTemplateAlias, resolveTemplateList,
+module.exports = { AfkTemplate, TemplateVCOptions, TemplateVCState, TemplateButtonType, TemplateButtonColors, TemplateButtonChoice, templateNamePrompt, AfkTemplateValidationError, resolveTemplateAlias, resolveTemplateList,
     name: 'afkinfo',
     description: 'Gives information about afk checks on the bot.',
     args: '<number/reset/delete/show> (guildID/all)',

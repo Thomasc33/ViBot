@@ -10,7 +10,6 @@ const quota = require('./quota')
 const quotas = require('../data/quotas.json');
 const afkTemplate = require('./afkTemplate.js');
 const client = new vision.ImageAnnotatorClient(botSettings.gcloudOptions);
-const parseQuotaValues = require('../data/parseQuotaValues.json');
 
 
 module.exports = {
@@ -18,50 +17,52 @@ module.exports = {
     description: 'Parse',
     alias: ['pm'],
     args: '<image>',
-    getNotes(guild, member, bot) {
+    getNotes() {
         return 'Image can either be a link, or an embeded image'
     },
     role: 'eventrl',
+    /**
+     * 
+     * @param {Discord.Message} message 
+     * @param {string[]} args 
+     * @param {Discord.Client} bot 
+     * @param {import('mysql').Connection} db 
+     * @returns 
+     */
     async execute(message, args, bot, db) {
-        // determine raid to parse
-        let raidID
         let settings = bot.settings[message.guild.id]
         let memberVoiceChannel = message.member.voice.channel
 
         if (args.length && /^\d+$/.test(args[0])) //add ability to parse from a different channel with ;pm channelid <image>
             memberVoiceChannel = await bot.channels.fetch(args.shift());
-        
-        const raidIDs = afkCheck.returnActiveRaidIDs(bot).filter(r => bot.afkModules[r].guild.id == message.guild.id);
 
-        if (raidIDs.length == 0)
-            return message.channel.send('Could not find an active run. Please try again.')
-        else if (raidIDs.length == 1) {
-            raidID = raidIDs[0];
-        }
-        else if (raidIDs.some(r => bot.afkModules[r].channel != null && bot.afkModules[r].channel.id == memberVoiceChannel)) // prioritize vc
-            raidID = raidIDs.find(r => bot.afkModules[r].channel != null && bot.afkModules[r].channel.id == memberVoiceChannel);
-        else if (raidIDs.filter(r => bot.afkModules[r].members.includes(message.member.id)).length == 1) { // prioritize the raids they've joined
-            raidID = raidIDs.find(r => bot.afkModules[r].members.includes(message.member.id));
-        }  
-        else {
+        async function getRaid() {
+            const raids = Object.values(bot.afkModules).filter(afk => afk.guild?.id == message.guild.id)
+            if (raids.length == 0) {
+                message.channel.send('Could not find an active run. Please try again.')
+                return
+            }
+
+            if (raids.length == 1) return raids[0];
+            if (raids.filter(afk => afk.channel?.id == memberVoiceChannel).length == 1)
+                return raids.find(afk => afk.channel?.id == memberVoiceChannel)
+
             const raidMenu = new Discord.StringSelectMenuBuilder()
                 .setPlaceholder(`Active Runs`)
                 .setMinValues(1)
                 .setMaxValues(1)
             let text = 'Which active run would you like to parse for?'
-            let index = 0
-            for (let id of raidIDs) {
-                const label = `${bot.afkModules[id].afkTitle()}` // BUG this shows up undefined upon restart sometimes
-                text += `\n\`\`${index+1}.\`\` ${label}`
-                raidMenu.addOptions({ label: `${index+1}. ${bot.afkModules[id].afkTitle()}`, value: id })
-                index++
+            for (let index = 0; index < raids.length; index++) {
+                text += `\n\`\`${index+1}.\`\` ${raids[index].afkTitle()}`
+                raidMenu.addOptions({ label: `${index+1}. ${raids[index].afkTitle()}`, value: String(index) })
             }
-            const { value: id } = await message.selectPanel(text, null, raidMenu, 30000, false, true)
-            if (!id) return await message.reply('You must specify the raid to parse, or join the raid\'s voice channel.')
-            raidID = id
+            const { value } = await message.selectPanel(text, null, raidMenu, 30000, false, true)
+            if (value) return raids[value]
+            await message.reply('You must specify the raid to parse, or join the raid\'s voice channel.')
         }
-
-        const raid = bot.afkModules[raidID];
+        
+        const raid = await getRaid()
+        if (!raid) return
 
         // start parse building
         let parseStatusEmbed = new Discord.EmbedBuilder()
@@ -95,134 +96,92 @@ module.exports = {
             return;
         }
 
-        async function vcCrasherParse() {
-            if (raid.channel === null) {
-                return message.reply("Channel not found, please join a vc or specify channel id");
-            }
-            let raidVc = await bot.channels.fetch(raid.channel.id);
-
-            parseStatusEmbed.data.fields[1].value = 'Processing Data';
-            await parseStatusMessage.edit({ embeds: [parseStatusEmbed] });
-            let raiders = imgPlayers.map(imgPlayer => imgPlayer.toLowerCase());
-            let voiceUsers = []
-            let alts = []
-            let crashers = []
-            let otherChannel = []
-            let findA = []
-            let allowedCrashers = []
-            let kickList = '/kick'
-            let raidMembers = raid.members;
-
-            raid.earlySlotMembers.forEach(m => raidMembers.push(m));
-            voiceUsers = raidVc.members;
-            for (let player of raiders) {
-                let member = message.guild.findMember(player);
-                if (member == null) {
-                    crashers.push(player);
-                    kickList = kickList.concat(` ${player}`)
-                } else if (!member.id in voiceUsers) {
-                    if (member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.almostrl).position) continue;
-                    if (raidMembers.includes(member.id)) allowedCrashers.push(member)
-                    if (member.voice.channel) otherChannel.push(`${member}: ${member.voice.channel}`);
-                    else crashers.unshift(`<@!${member.id}>`);
-                    kickList = kickList.concat(` ${player}`)
-                    findA.push(player)
-                }
-            }
-            for (let i in voiceUsers) {
-                if (voiceUsers[i].roles.highest.position >= message.guild.roles.cache.get(settings.roles.almostrl).position) continue;
-                if (!voiceUsers[i].nickname) continue
-                let nick = voiceUsers[i].nickname.toLowerCase().replace(/[^a-z|]/gi, '')
-                if (!raiders.includes(nick)) {
-                    alts.push(`<@!${voiceUsers[i].id}>`);
-                }
-            }
-
-            // Check the names more thoroughly
-            let normalizedNames = crashers.map(normalizeName);
-            let normalizedAlts = alts.map(normalizeName);
-            let matchedCrashers = reassembleAndCheckNames(normalizedNames, normalizedAlts);
-
-            // Remove the names that were matched
-            crashers = filterNames(crashers, matchedCrashers);
-            alts = filterNames(alts, matchedCrashers);
-
-            let crashersS = ' ',
-                altsS = ' ',
-                movedS = ' ',
-                find = `;find `
-            for (let i in crashers) { crashersS = crashersS.concat(crashers[i]) + ', ' }
-            for (let i in alts) { altsS = altsS.concat(alts[i]) + ', ' }
-            for (let i in otherChannel) { movedS = movedS.concat(otherChannel[i]) + '\n' }
-            for (let i in findA) { find = find.concat(findA[i]) + ' ' }
-            if (crashersS == ' ') { crashersS = 'None' }
-            if (altsS == ' ') { altsS = 'None' }
-            if (movedS == ' ') { movedS = 'None' }
-            let embed = new Discord.EmbedBuilder()
-                .setTitle(`Parse for ${raid.afkTitle()}`)
-                .setColor('#00ff00')
-                .setDescription(`There are ${crashers.length} crashers, ${alts.length} potential alts, and ${otherChannel.length} people in other channels`)
-                .addFields({ name: 'Potential Alts', value: altsS }, { name: 'Other Channels', value: movedS }, { name: 'Crashers', value: crashersS }, { name: 'Find Command', value: `\`\`\`${find}\`\`\`` }, { name: 'Kick List', value: `\`\`\`${kickList}\`\`\`` })
-            if (raid) embed.addFields([{name: `Were in VC`, value: `The following can use the \`reconnect\` button:\n${allowedCrashers.map(u => `${u} `)}`}])
-            await message.channel.send({ embeds: [embed] });
-            parseStatusEmbed.data.fields[1].value = `Crasher Parse Completed. See Below. Beginning Character Parse`
-            await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
-
-            //post in crasher-list
-            let key = null
-            if (raid.reactables.Key && raid.reactables.Key.members[0]) key = raid.reactables.Key.members[0]
-            if (settings.commands.crasherlist)
-                postInCrasherList(embed, message.guild.channels.cache.get(settings.channels.parsechannel), message.member, key)
-        }
-        async function noVcCrasherParse() {
+        async function runParse() {
+            if (!raid.isVcless() && !raid.channel) return message.reply("Channel not found, please join a vc or specify channel id");
             parseStatusEmbed.data.fields[1].value = 'Processing Data'
             await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
-            let raiders = imgPlayers.map(imgPlayer => imgPlayer.toLowerCase());
-            let crashers = []
-            let findA = []
-            let kickList = '/kick'
-            for (let player of raiders) {
-                let member = message.guild.findMember(player);
-                if (member == null) {
-                    crashers.push(player);
-                    kickList = kickList.concat(` ${player}`)
-                } else if (!raid.members.includes(member.id)) {
-                    if (member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.almostrl).position)
-                        continue;
-                    else crashers.unshift(`<@!${member.id}>`);
+            
+            const minimumStaffRolePosition = message.guild.roles.cache.get(settings.roles.almostrl).position
 
-                    kickList = kickList.concat(` ${player}`)
-                    findA.push(player)
+            const raiders = imgPlayers.map(player => player.toLowerCase())
+            const members = raid.isVcless() ? raid.members : bot.channels.cache.get(raid.channel.id).members.map(m => m.id)
+
+            /** @type {{ id: string, nicknames: string[] }[]} */
+            const alts = []
+            /** @type {string[]} */
+            const crashers = []
+            const kick = []
+            const find = []
+            const otherChannel = []
+            const allowedCrashers = []
+
+            for (const player of raiders) {
+                const member = message.guild.findMember(player)
+                if (!member) {
+                    crashers.push(player)
+                    kick.push(player)
+                } else if (!members.includes(member.id)) {
+                    if (member.roles.highest.position >= minimumStaffRolePosition) continue
+
+                    if (!raid.isVcless()) {
+                        if (raid.members.includes(member.id)) allowedCrashers.push(member.id)
+                        if (member.voice.channel) otherChannel.push(`${member}: ${member.voice.channel}`)
+                        else crashers.unshift(`${member}`)
+                    } else crashers.unshift(`${member}`)
+
+                    kick.push(player)
+                    find.push(player)
                 }
             }
 
-            // Check the names more thoroughly
-            let normalizedNames = crashers.map(normalizeName);
-            let matchedCrashers = reassembleAndCheckNames(normalizedNames, raid.members);
+            for (const memberId of members) {
+                const member = message.guild.members.cache.get(memberId)
+                if (member.roles.highest.position > minimumStaffRolePosition) continue
+                if (!member.nickname) continue
+                const nicknames = member.nickname.toLowerCase().replace(/[^a-z|]/gi, '').split('|')
+                if (!raiders.some(raider => nicknames.includes(raider)) && !alts.some(alt => alt.id == member.id)) alts.push({ id: member.id, nicknames })
+            }
 
-            // Remove the names that were matched
-            crashers = filterNames(crashers, matchedCrashers);
+            const normalizedCrashers = crashers.map(normalizeName)
+            const normalizedAlts = alts.map(({id, nicknames}) => ({ id, nicknames: nicknames.map(normalizeName) }))
+            const results = reassembleAndCheckNames(normalizedCrashers, normalizedAlts)
+            const [matchKeys, matchValues] = [Array.from(results.keys()), Array.from(results.values())]
 
-            let crashersS = ' ';
-            let find = `;find `;
-            crashersS += crashers.join(', ');
-            find += findA.join(' ');
-            if (crashersS == ' ') { crashersS = 'None' }
-            let embed = new Discord.EmbedBuilder()
+            const actualCrashers = crashers.filter((_, idx) => !matchValues.some(m => m.parts.includes(normalizedCrashers[idx])))
+            const possibleAlts = normalizedAlts.filter(alt => !matchKeys.some(full => alt.nicknames.some(name => full == name))).map(alt => `<@${alt.id}>`)
+            const actualKicks = kick.filter(raider => !matchValues.some(m => m.parts.includes(normalizeName(raider))))
+            const actualFind = find.filter(raider => !matchValues.some(m => m.parts.includes(normalizeName(raider))))
+            
+
+            const embed = new Discord.EmbedBuilder()
                 .setTitle(`Parse for ${raid.afkTitle()}`)
                 .setColor('#00ff00')
-                .setDescription(`There are ${crashers.length} crashers`)
-                .addFields({ name: 'Crashers', value: crashersS }, { name: 'Find Command', value: `\`\`\`${find}\`\`\`` }, { name: 'Kick List', value: `\`\`\`${kickList}\`\`\`` })
+                .setDescription(`There are ${actualCrashers.length} crashers, ${possibleAlts.length} potential alts` + (raid.isVcless() ? '' : `, and ${otherChannel.length} people in other channels`))
+                .addFields({ name: 'Potential Alts', value: possibleAlts.join(', ') || 'None' })
+            
+            if (!raid.isVcless()) embed.addFields({ name: 'Other Channels', value: otherChannel.join('\n') || 'None' })
+            
+            embed.addFields(
+                { name: 'Crashers', value: actualCrashers.join(', ') || 'None' }, 
+                { name: 'Find Command', value: `\`\`\`;find ${actualFind.join(' ')}\`\`\`` }, 
+                { name: 'Kick List', value: actualKicks.length ? `\`\`\`${actualKicks.join(' ')}\`\`\`` : 'None' }
+            )
+
+            if (!raid.isVcless()) embed.addFields({
+                name: `Were in VC`, 
+                value: `The following can use the \`reconnect\` button:\n${allowedCrashers.map(u => `<@${u}>`).join(' ')}`
+            })
+
             await message.channel.send({ embeds: [embed] });
             parseStatusEmbed.data.fields[1].value = `Crasher Parse Completed. See Below. Beginning Character Parse`
             await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
 
-            //post in crasher-list
-            let key = null
-            if (raid.reactables.Key && raid.reactables.Key.members[0]) key = raid.reactables.Key.members[0]
-            if (settings.commands.crasherlist)
-                postInCrasherList(embed, message.guild.channels.cache.get(settings.channels.parsechannel), message.member, key)
+            if (settings.commands.crasherlist) {
+                postInCrasherList(embed, message.guild.channels.cache.get(settings.channels.parsechannel), message.member, raid.getButton("Key")?.members[0])
+            }
+                
         }
+
         async function characterParse() {
             let unreachable = []
             let characterParseEmbed = new Discord.EmbedBuilder()
@@ -368,11 +327,7 @@ module.exports = {
             await message.channel.send({ embeds: [unreachableEmbed] })
         }
 
-        let parsePromises = []
-        if (raid.vcOptions == afkTemplate.TemplateVCOptions.NO_VC)
-            parsePromises.push(noVcCrasherParse());
-        else
-            parsePromises.push(vcCrasherParse());
+        let parsePromises = [runParse()]
         if (settings.backend.characterparse) parsePromises.push(characterParse());
 
         await Promise.all(parsePromises)
@@ -384,7 +339,7 @@ module.exports = {
         // log parse quota
         let currentWeekParseName, parseTotalName, commandName;
 
-        if (parseQuotaValues.hasOwnProperty(message.guild.id) && parseQuotaValues[message.guild.id].includes(raid.afkTemplateName)) {
+        if (Object.keys(raid.buttons).some(button => button.toLowerCase() == 'winecellar incantation')) { // hope this never causes problems in the future
             for (let i in ParseCurrentWeek.o3parsecurrentweek) {
                 i = ParseCurrentWeek.o3parsecurrentweek[i];
                 if (message.guild.id == i.id && !i.disabled) {
@@ -433,42 +388,30 @@ function normalizeName(name) {
 }
 
 // Function to reassemble and check split names
-function reassembleAndCheckNames(splitNames, inRaidNames) {
+/**
+ * 
+ * @param {string[]} crasherNames 
+ * @param {[{id: string, nicknames: string[]}]} raidMembers 
+ * @returns {Map<string, { parts: string[], id: string }}
+ */
+
+function reassembleAndCheckNames(crasherNames, raidMembers) {
     let matchedNamesMap = new Map();
 
-    for (let i = 0; i < splitNames.length; i++) {
-        let currentName = splitNames[i];
-        let originalComponents = [splitNames[i]];
+    const namesToCheck = crasherNames.slice(); // Copy array
 
-        // Check the name as is
-        if (inRaidNames.includes(normalizeName(currentName))) {
-            matchedNamesMap.set(currentName, originalComponents);
-            continue;
-        }
+    while (namesToCheck.length > 0 && raidMembers.length > 0) {
+        let currentName = namesToCheck.shift();
 
-        // Try combining with the next name(s)
-        for (let j = i + 1; j < splitNames.length; j++) {
-            currentName += splitNames[j];
-            originalComponents.push(splitNames[j]);
-
-            if (inRaidNames.includes(normalizeName(currentName))) {
-                matchedNamesMap.set(currentName, originalComponents);
-                i = j; // Skip the next names as they are part of the current one
-                break;
+        for (let i = 0; i <= namesToCheck.length; i++) {
+            const matchedMember = raidMembers.find(({nicknames}) => nicknames.includes(currentName + namesToCheck.slice(0, i).join('')));
+            if (matchedMember) {
+                const matchedComponents = namesToCheck.splice(0, i);
+                matchedNamesMap.set(currentName + matchedComponents.join(''), { parts: [currentName, ...matchedComponents], id: matchedMember.id })
             }
         }
     }
 
-    return matchedNamesMap;
+    return matchedNamesMap
 }
-
-function filterNames(namesArray, matchedMap) {
-    return namesArray.filter(name => {
-        for (let [matchedName, originalNames] of matchedMap.entries()) {
-            if (originalNames.includes(name)) {
-                return false; // Exclude this name as it's part of a matched set
-            }
-        }
-        return true; // Include this name as it's not part of any matched set
-    });
-}
+ 

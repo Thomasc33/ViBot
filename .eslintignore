@@ -11,7 +11,6 @@ commands/commands.js
 commands/commend.js
 commands/complete.js
 commands/crasherList.js
-commands/echo.js
 commands/emoji.js
 commands/eval.js
 commands/excuse.js
@@ -31,10 +30,7 @@ commands/lockdown.js
 commands/manualVerify.js
 commands/manualVetVerify.js
 commands/memes.js
-commands/modmail.js
 commands/modmailBlacklist.js
-commands/modmailClose.js
-commands/modmailRespond.js
 commands/mute.js
 commands/mutes.js
 commands/noNicknames.js
