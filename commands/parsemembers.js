@@ -10,7 +10,6 @@ const quota = require('./quota')
 const quotas = require('../data/quotas.json');
 const afkTemplate = require('./afkTemplate.js');
 const client = new vision.ImageAnnotatorClient(botSettings.gcloudOptions);
-const parseQuotaValues = require('../data/parseQuotaValues.json');
 
 
 module.exports = {
@@ -44,11 +43,9 @@ module.exports = {
                 return
             }
 
-            if (raids.length == 1) return raids[0]
+            if (raids.length == 1) return raids[0];
             if (raids.filter(afk => afk.channel?.id == memberVoiceChannel).length == 1)
                 return raids.find(afk => afk.channel?.id == memberVoiceChannel)
-            if (raids.filter(afk => afk.members.includes(message.member.id)).length == 1)
-                return raids.find(afk => afk.members.includes(message.member.id))
 
             const raidMenu = new Discord.StringSelectMenuBuilder()
                 .setPlaceholder(`Active Runs`)
@@ -180,7 +177,7 @@ module.exports = {
             await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
 
             if (settings.commands.crasherlist) {
-                postInCrasherList(embed, message.guild.channels.cache.get(settings.channels.parsechannel), message.member, raid.buttons["Key"]?.members[0])
+                postInCrasherList(embed, message.guild.channels.cache.get(settings.channels.parsechannel), message.member, raid.getButton("Key")?.members[0])
             }
                 
         }
@@ -342,7 +339,7 @@ module.exports = {
         // log parse quota
         let currentWeekParseName, parseTotalName, commandName;
 
-        if (parseQuotaValues.hasOwnProperty(message.guild.id) && parseQuotaValues[message.guild.id].includes(raid.afkTemplateName)) {
+        if (Object.keys(raid.buttons).some(button => button.toLowerCase() == 'winecellar incantation')) { // hope this never causes problems in the future
             for (let i in ParseCurrentWeek.o3parsecurrentweek) {
                 i = ParseCurrentWeek.o3parsecurrentweek[i];
                 if (message.guild.id == i.id && !i.disabled) {

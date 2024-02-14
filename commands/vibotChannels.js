@@ -3,7 +3,7 @@ const fs = require('fs')
 const botSettings = require('../settings.json')
 const ErrorLogger = require('../lib/logError')
 const vibotChannel = require('./vibotChannels.js')
-const modmail = require('./modmail.js')
+const modmail = require('../lib/modmail.js')
 const roleassignment = require('./roleAssignment.js')
 var watchedMessages = []
 var watchedButtons = {}; //the keys for this are the id of a VC
@@ -25,26 +25,7 @@ module.exports = {
     },
     async update(guild, bot, db) {
         let settings = bot.settings[guild.id]
-        await updateModmailListeners(guild.channels.cache.get(settings.channels.modmail), settings, bot, db)
         await updateRoleAssignmentListeners(guild.channels.cache.get(settings.channels.roleassignment), settings, bot, db)
-        async function updateModmailListeners(modmailChannel, settings, bot, db) {
-            if (!modmailChannel) { return } // If there is no modmail channel it will not continue
-            let modmailChannelMessages = await modmailChannel.messages.fetch() // This fetches all the messages in the modmail channel
-            modmailChannelMessages.each(async modmailMessage => { // This will loop through the modmail channel messages
-                if (modmailMessage.author.id !== bot.user.id) return; // If the modmail message author is not the same id as ViBot it will not continue with this message
-                if (modmailMessage.embeds.length == 0) return; // If the message has no embeds it will not continue
-                let embed = new Discord.EmbedBuilder() // This creates a empty embed, able to be edited later
-                embed.data = modmailMessage.embeds[0].data // This will change the empty embed to have the modmailMessage embed data
-
-                /*  We have a message -> check if it has no components
-                    **EXPLANATION** When the modmail is done, its not supposed to have any components.
-                    If it has any components at all, we will revert them to the basic "unlock" modmail
-                */
-                if (modmailMessage.components == 0) { return }
-                // Anything below this code inside this function is for open modmails, and we need to reset them
-                module.exports.addModmailUnlockButton(modmailMessage, settings, bot, db) // This will add a modmail "unlock" button to the modmailMessage
-            })
-        }
         async function updateRoleAssignmentListeners(roleassignmentChannel, settings, bot, db) {
             if (!settings.backend.roleassignment) return;
             if (!roleassignmentChannel) { return } // If there is no roleassignment channel it will not continue
@@ -146,8 +127,6 @@ module.exports = {
                     .setCustomId('modmailUnlock'))
             message = await message.edit({ components: [components] })
         }
-        modmailInteractionCollector = new Discord.InteractionCollector(bot, { message: message, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
-        modmailInteractionCollector.on('collect', (interaction) => modmail.interactionHandler(interaction, settings, bot, db))
     },
 
     async addCloseChannelButtons(bot, m, rsaMessage) {

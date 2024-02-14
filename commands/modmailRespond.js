@@ -1,68 +1,50 @@
-const Discord = require('discord.js')
-const moment = require('moment')
+const { EmbedBuilder, Colors } = require('discord.js');
+const { Modmail } = require('../lib/modmail.js');
 
 module.exports = {
     name: 'modmailrespond',
     alias: ['mmr'],
     role: 'security',
     args: '<id>',
+    requiredArgs: 1,
+    /**
+     * @param {import('discord.js').Message} message
+     * @param {string[]} args
+     * @param {import('discord.js').Client} bot
+     * @param {import('mysql2').Pool} db
+     */
     async execute(message, args, bot, db) {
-        let settings = bot.settings[message.guild.id]
-        if (!settings.backend.modmail) {
-            messsage.reply(`Modmail is disabled in this server.`)
-            return
-        }
-        if (message.channel.id !== settings.channels.modmail) return
-        if (!args[0]) return
-        let m = await message.channel.messages.fetch(args[0])
-        if (!m) return message.channel.send(`Could not find message with ID of \`${args[0]}\``)
-        let embed = new Discord.EmbedBuilder()
-        embed.data = m.embeds[0].data;
-        let raider;
-        if (!raider)
-            try {
-                raider = message.guild.members.cache.get(embed.data.footer.text.split(/ +/g)[2]);
-                if (!raider)
-                    raider = await message.guild.members.fetch({ user: embed.data.footer.text.split(/ +/g)[2], force: true });
-            } catch (e) { return message.channel.send(`User is not currently in the server.`); }
-        if (!raider)
-            return message.channel.send(`User is not currently in the server.`);
-        let dms = await raider.user.createDM()
+        const settings = bot.settings[message.guild.id];
 
-        function checkInServer() {
-            const result = message.guild.members.cache.get(dms.recipient.id);
-            if (!result)
-                message.channel.send(`User ${dms.recipient} is no longer in the server.`);
-            return result;
-        }
+        const embed = new EmbedBuilder()
+            .setTitle('Modmail Respond')
+            .setAuthor({ name: message.member.displayName, iconURL: message.member.displayAvatarURL() })
+            .setColor(Colors.Red)
+            .setTimestamp();
 
-        let originalMessage = embed.data.description;
-        // originalMessage = originalMessage.substring(originalMessage.indexOf(':') + 3, originalMessage.length - 1)
-        let responseEmbed = new Discord.EmbedBuilder()
-            .setDescription(`__How would you like to respond to ${raider}'s [message](${m.url})__\n${originalMessage}`)
-        let responseEmbedMessage = await message.channel.send({ embeds: [responseEmbed] })
-        let responseCollector = new Discord.MessageCollector(message.channel,{filter:  m => m.author.id === message.author.id})
-        responseCollector.on('collect', async function (mes) {
-            let response = mes.content.trim()
-            if (response == '') return mes.channel.send(`Invalid response. Please provide text. If you attached an image, please copy the URL and send that`)
-            responseCollector.stop()
-            await mes.delete()
-            if (!checkInServer())
-                return responseEmbedMessage.delete();
-            responseEmbed.setDescription(`__Are you sure you want to respond with the following?__\n${response}`)
-            await responseEmbedMessage.edit({ embeds: [responseEmbed] }).then(async confirmMessage => {
-                if (await confirmMessage.confirmButton(message.author.id)) {
-                    if (!checkInServer())
-                        return responseEmbedMessage.delete();
-                    await dms.send(response)
-                    responseEmbedMessage.delete()
-                    embed.addFields([{ name: `Response by ${message.member.displayName} <t:${moment().unix()}:R>:`, value: response }])
-                    m.edit({ embeds: [embed] })
-                } else {
-                    await responseEmbedMessage.delete()
-                }
-            })
-        })
-        message.delete()
+        if (!settings.backend.modmail) return await message.reply({ embeds: [embed.setDescription('Modmail is disabled in this server.')] });
+        if (message.channel.id !== settings.channels.modmail) return await message.reply({ embeds: [embed.setDescription('This is not the modmail channel.')] });
+        /** @type {Discord.Message} */
+        const modmailMessage = await message.channel.messages.fetch(args[0]);
+        if (!modmailMessage) return await message.reply({ embeds: [embed.setDescription(`Could not find message with ID of \`${args[0]}\``)] });
+        const modmailEmbed = EmbedBuilder.from(modmailMessage.embeds[0]);
+
+        const raiderId = modmailEmbed.data.footer.text.split(/ +/g)[2];
+        const raider = await message.guild.members.fetch({ user: raiderId, force: true });
+        if (!raider) return await message.reply({ embeds: [embed.setDescription(`User <@!${raiderId}> is no longer in the server.`)] });
+
+        const dms = await raider.user.createDM();
+        if (!dms) return await message.reply({ embeds: [embed.setDescription(`Cannot send messages to ${raider}.`)] });
+
+        message.message = message;
+        const dummyInteraction = {
+            message: modmailMessage,
+            member: message.member,
+            guild: message.guild,
+            channel: message.channel,
+            reply: message.reply.bind(message)
+        };
+        await Modmail.send({ settings, interaction: dummyInteraction, embed: modmailEmbed, raider, db, bot });
+        message.delete();
     }
-}
+};
