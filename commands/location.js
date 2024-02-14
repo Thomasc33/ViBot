@@ -1,7 +1,6 @@
 const Discord = require('discord.js');
 const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
 const { slashArg, slashCommandJSON } = require('../utils.js');
-const afkCheck = require('./afkCheck.js');
 
 module.exports = {
     name: 'location',
@@ -10,9 +9,9 @@ module.exports = {
     varargs: true,
     requiredArgs: 1,
     args: [
-        slashArg(SlashArgType.String, 'location', {     // how do I differentiate between a location and a raid in the legacy command?
-            description: 'new location for the raid',   // If I put raid before location, it will be required and the user will have to specify it
-            maxLength: 1024,                            // If I put raid after location, it can be optional but legacy commands have no real way to specify it
+        slashArg(SlashArgType.String, 'location', {
+            description: 'new location for the raid',
+            maxLength: 1024,
             required: true
         }),
         slashArg(SlashArgType.String, 'raid', {
@@ -27,8 +26,6 @@ module.exports = {
         const raidIdMappings = Object.keys(bot.afkModules).filter(raidId => bot.afkModules[raidId].guild.id == interaction.guild.id).map(raidId => ({
             name: bot.afkModules[raidId].afkTitle(),
             value: raidId }));
-        // if (raidIdMappings.length == 0) return await interaction.respond(raidIdMappings);
-        // should I keep the above line? it's functionally the same to the user
         const focusedValue = interaction.options.getFocused().trim().toLowerCase();
         const filteredValues = raidIdMappings.filter(raidIdMapping => raidIdMapping.name.toLowerCase().includes(focusedValue)).slice(0, 25);
         await interaction.respond(filteredValues);
@@ -38,47 +35,45 @@ module.exports = {
         if (location.length >= 1024) return await message.reply('Location must be below 1024 characters, try again');
         if (location == '') location = 'None';
 
-        const voiceChannel = message.member.voice?.channel;
-        let raidID;
         const raidIDs = Object.keys(bot.afkModules).filter(raidId => bot.afkModules[raidId].guild.id == message.guild.id);
-        if (raidIDs.length == 0) return message.reply('Could not find an active run. Please try again.');
-        if (raidIDs.length == 1) raidID = raidIDs[0];
-        else if (voiceChannel) {
-            const matchingRaidID = Object.keys(bot.afkModules).find(raidId => bot.afkModules[raidId].channel.id == voiceChannel.id);
-            raidID = matchingRaidID ?? sendRaidSelectionMenu(message, bot, raidIDs);
-        } else raidID = sendRaidSelectionMenu(message, bot, raidIDs);
-        if (!raidID) return;
+        const raidID = await determineRaidID(message, bot, raidIDs);
 
         await handleLocationUpdate(message, bot, location, raidID);
     },
     async slashCommandExecute(interaction, bot) {
         const location = interaction.options.getString('location');
-        const raidOption = interaction.options.getString('raid');
+        let raidID = interaction.options.getString('raid');
 
-        // TODO make this clearer from control flow, and fix the logic
-        // if raidOption is a valid raid, no need to do the whole send raid thing, maybe abstract the raid selection logic into free function
-        const voiceChannel = interaction.member.voice?.channel;
-        let raidID = (afkCheck.returnRaidIDsbyRaidID(bot, raidOption).length == 1) ? raidOption : sendRaidSelectionMenu(interaction, bot, raidIDs);
+        console.log('location command\n', location, '\nraidid: ', raidID);
+
+        // check validity of raidID
         const raidIDs = Object.keys(bot.afkModules).filter(raidId => bot.afkModules[raidId].guild.id == interaction.guild.id);
-        if (raidIDs.length == 0) return interaction.reply('Could not find an active run. Please try again.');
-        if (raidIDs.length == 1) raidID = raidIDs[0];
-        else if (voiceChannel) {
-            const matchingRaidID = Object.keys(bot.afkModules).find(raidId => bot.afkModules[raidId].channel.id == voiceChannel.id);
-            raidID = matchingRaidID ?? sendRaidSelectionMenu(interaction, bot, raidIDs);
-        } else raidID = sendRaidSelectionMenu(interaction, bot, raidIDs);
+        // if options didn't have a raidID or had an invalid one, figure out which raid to select
+        if (!raidID || (raidID && !raidIDs.includes(raidID))) raidID = await determineRaidID(interaction, bot, raidIDs);
+        console.log('updated raidid: ', raidID);
+        if (!raidID) return interaction.reply({ content: 'Command failed', ephemeral: true }); // error message already sent in determineRaidID
 
         await handleLocationUpdate(interaction, bot, location, raidID);
     }
 };
 
 /**
- * Sends a modal for raid selection
+ * Detemines the raid ID to use for the location update, based on available raid IDs, then voice channel, then user selection
  * @param {Discord.Message} message - original command interaction
  * @param {Discord.Client} bot - bot client
  * @param {string[]} raidIDs - array of active raid IDs
  * @returns {string} raidID selection
  */
-async function sendRaidSelectionMenu(message, bot, raidIDs) {
+async function determineRaidID(message, bot, raidIDs) {
+    const voiceChannel = message.member.voice?.channel;
+    if (raidIDs.length == 0) return message.reply('Could not find an active run. Please try again.');
+    if (raidIDs.length == 1) return raidIDs[0];
+    console.log('checking vc: ', voiceChannel?.id);
+    if (voiceChannel) {
+        const matchingRaidID = raidIDs.find(raidId => bot.afkModules[raidId].channel?.id == voiceChannel.id);
+        if (matchingRaidID) return matchingRaidID;
+    }
+
     const locationMenu = new Discord.StringSelectMenuBuilder()
         .setPlaceholder('Active Runs')
         .setMinValues(1)
@@ -92,18 +87,24 @@ async function sendRaidSelectionMenu(message, bot, raidIDs) {
         index++;
     }
     const locationValue = await message.selectPanel(text, null, locationMenu, 30000, false, true);
-    if (!locationValue) return await message.reply('You must specify the raid to change a location.'); // TODO what happens here, is null returned?
+    if (!locationValue) return await message.reply('You must specify the raid to change a location.');
     return locationValue;
 }
 
-// TODO write docs
+/**
+ * Handles the location update for the raid
+ * @param {Discord.Message} message - original command interaction
+ * @param {Discord.Client} bot - bot client
+ * @param {string} location - new location for the raid
+ * @param {string} raidID - raid ID to update location for
+ */
 async function handleLocationUpdate(message, bot, location, raidID) {
     bot.afkChecks[raidID].location = location; // remove this or nah?
     bot.afkModules[raidID].updateLocation();
 
     const locationUpdateEmbed = new Discord.EmbedBuilder()
-        .setAuthor({ name: `${message.member.displayName}`, iconURL: message.member.iconUrl })
+        .setAuthor({ name: `${message.member.displayName}`, iconURL: message.member.avatarURL() })
         .setTitle('Location Updated')
-        .setDescription(`Set location for ${bot.afkModules[raidID].afkTitle()} to ${location}`);
+        .setDescription(`Set location for ${bot.afkModules[raidID].afkTitle()} to \`${location}\``);
     await message.reply({ embeds: [locationUpdateEmbed] });
 }
