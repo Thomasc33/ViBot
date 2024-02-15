@@ -90,8 +90,6 @@ async function determineRaidID(message, bot, raidIDs) {
         index++;
     }
     const locationValue = await message.selectPanel(text, null, locationMenu, 30000, false, false, false);
-    // someone help refactor this logic :)
-    // I return null because I don't want to continue if the user didn't select a raid, but my check in the outside function is for null so I can't return await message
     if (!locationValue.value) {
         await message.editReply({ content: 'You need to select a raid to change a location.', embeds: [], components: [] });
         return null;
