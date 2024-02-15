@@ -24,9 +24,8 @@ module.exports = {
     role: 'eventrl',
     getSlashCommandData(guild) { return slashCommandJSON(this, guild); },
     getNotes() {
-        return 'Use the slash command version of this command for best results.\n\n'
-        + '**`raid`** is an optional argument that can only be used with the slash command. It allows you to specify a raid to change the location for.\n'
-        + 'Use it if you are not the leader of the raid you want to change the location for.';
+        return 'Use the slash command version for best results.\n\n'
+        + '**`raid`** is an optional argument that can only be used with the slash command, add it if you are not the leader of the raid you want to change the location for.';
     },
     async autocomplete(interaction, bot) {
         const raidIdMappings = Object.keys(bot.afkModules).filter(raidId => bot.afkModules[raidId].guild.id == interaction.guild.id).map(raidId => ({
@@ -43,7 +42,7 @@ module.exports = {
 
         const raidIDs = Object.keys(bot.afkModules).filter(raidId => bot.afkModules[raidId].guild.id == message.guild.id);
         const raidID = await determineRaidID(message, bot, raidIDs);
-        if (!raidID) await handleLocationUpdate(message, bot, location, raidID);
+        if (raidID) await handleLocationUpdate(message, bot, location, raidID);
     },
     async slashCommandExecute(interaction, bot) {
         const location = interaction.options.getString('location');
@@ -51,7 +50,7 @@ module.exports = {
 
         const raidIDs = Object.keys(bot.afkModules).filter(raidId => bot.afkModules[raidId].guild.id == interaction.guild.id);
         // if options didn't have a raidID or had an invalid one, figure out which raid to select
-        if (raidID && !raidIDs.includes(raidID)) raidID = await determineRaidID(interaction, bot, raidIDs);
+        if (!raidID || !raidIDs.includes(raidID)) raidID = await determineRaidID(interaction, bot, raidIDs);
         if (raidID) await handleLocationUpdate(interaction, bot, location, raidID);
     }
 };
@@ -64,7 +63,10 @@ module.exports = {
  * @returns {string} raidID selection
  */
 async function determineRaidID(message, bot, raidIDs) {
-    if (raidIDs.length == 0) return message.reply('Could not find an active run. Please try again.');
+    if (raidIDs.length == 0) {
+        await message.reply('Could not find an active run. Please try again.');
+        return null;
+    }
     if (raidIDs.length == 1) return raidIDs[0];
     // if the user is in a vc, check if it's a raid vc
     if (message.member.voice?.channel) {
@@ -72,8 +74,8 @@ async function determineRaidID(message, bot, raidIDs) {
         if (matchingRaidID) return matchingRaidID;
     }
     // if message.member.id is the leader of only one raid, use that raid
-    const leaderRaidIDs = raidIDs.filter(raidId => bot.afkModules[raidId].leader.id == message.member.id);
-    if (leaderRaidIDs.length == 1) return leaderRaidIDs[0];
+    const leaderFilteredRaidIDs = raidIDs.filter(raidId => bot.afkModules[raidId].leaderId == message.member.id);
+    if (leaderFilteredRaidIDs.length == 1) return leaderFilteredRaidIDs[0];
     // if no valid raidID was found, send selectMenu
     const locationMenu = new Discord.StringSelectMenuBuilder()
         .setPlaceholder('Active Runs')
@@ -87,9 +89,11 @@ async function determineRaidID(message, bot, raidIDs) {
         locationMenu.addOptions({ label: `${index + 1}. ${label}`, value: raidID });
         index++;
     }
-    const locationValue = await message.selectPanel(text, null, locationMenu, 30000, false, true, false);
+    const locationValue = await message.selectPanel(text, null, locationMenu, 30000, false, false, false);
+    // someone help refactor this logic :)
+    // I return null because I don't want to continue if the user didn't select a raid, but my check in the outside function is for null so I can't return await message
     if (!locationValue.value) {
-        await message.editReply('You need to select a raid to change a location.');
+        await message.editReply({ content: 'You need to select a raid to change a location.', embeds: [], components: [] });
         return null;
     }
     return locationValue.value;
@@ -103,14 +107,18 @@ async function determineRaidID(message, bot, raidIDs) {
  * @param {string} raidID - raid ID to update location for
  */
 async function handleLocationUpdate(message, bot, location, raidID) {
-    // bot.afkChecks[raidID].location = location; // remove this or nah?
+    bot.afkChecks[raidID].location = location; // this is needed to update the location on the afkEmbed
     bot.afkModules[raidID].updateLocation();
 
     const locationUpdateEmbed = new Discord.EmbedBuilder()
         .setAuthor({ name: `${message.member.displayName}`, iconURL: message.member.displayAvatarURL() })
         .setTitle(`Location updated for ${bot.afkModules[raidID].afkTitle()}`)
         .setDescription(`Set location to:\n\`\`\`${location}\`\`\``);
-
-    if (message instanceof Discord.CommandInteraction && message.replied) return await message.editReply({ embeds: [locationUpdateEmbed], components: [] });
+    // if the message is an interaction and has been replied to, edit the reply
+    if (message.isInteraction && message.replied) return await message.editReply({ embeds: [locationUpdateEmbed], components: [] });
+    // if the message has been replied to (with selection menu), edit the reply
+    const reply = await message.fetchReply();
+    if (reply) return await reply.edit({ embeds: [locationUpdateEmbed], components: [] });
+    // reply with success embed
     return await message.reply({ embeds: [locationUpdateEmbed] });
 }

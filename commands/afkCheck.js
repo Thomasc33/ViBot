@@ -162,6 +162,9 @@ class afkCheck {
     // needed for parsemembers
     get afkTemplateName() { return this.#afkTemplate.templateName }
 
+    // needed for location command
+    get leaderId() { return this.#leader.id }
+
     isVcless() { return this.vcOptions == AfkTemplate.TemplateVCOptions.NO_VC }
 
     raidLeaderDisplayName() {
