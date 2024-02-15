@@ -39,8 +39,8 @@ module.exports = {
         const sendData = { embeds: [embed], components: [buttonRow] }
         const listMessage = await message.channel.send(sendData)
         const interactionHandler = new InteractionCollector(bot, { time: 60000, message: listMessage })
+        var validated
         interactionHandler.on('collect', async interaction => {
-            var validated
             if (interaction.user.id != message.author.id) return
             if (interaction.customId === userDict.ALL_SUPPORTERS || interaction.customId === userDict.INDIVIDUAL) {
                 await interaction.showModal(this.modalBuilder(message, interaction.customId))
@@ -59,9 +59,8 @@ module.exports = {
                             inputData.usernameValue = modalInteraction.fields.getTextInputValue('usernameInput')
                         }
                         const validation = this.validateInput(message, botSettings, inputData)
-                        console.log(validation)
                         if (validation.errors.length > 0) {
-                            return modalInteraction.reply(`Errors:\n${validation.errors.join(',\n')}`)
+                            return modalInteraction.update({ embeds: [new EmbedBuilder().setTitle(`Error(s)`).setDescription(validation.errors.join(',\n')).setColor("Red")], components: []})
                         }
                         else {
                             validated = validation.validated
@@ -70,15 +69,22 @@ module.exports = {
                         }
                     })
             }
+
             if (interaction.customId === 'cancelEdit') {
-                return interaction.update({embeds: [new EmbedBuilder().setDescription('Supporter Edit Usage Cancelled')], components: []})
+                return interaction.update({embeds: [new EmbedBuilder().setTitle('Supporter Edit Usage Cancelled')], components: []})
             }
             if (interaction.customId === 'confirmEdit') {
-                const [rows,metadata] = await db.promise().query(this.queryBuilder(validated))
+                const query = this.queryBuilder(validated)
+                await db.promise().query(query.query, query.values).then((result) => {
+                    if (result[0].affectedRows) {
+                        return interaction.update({embeds: [new EmbedBuilder().setTitle(`Successfully edited ${result[0].affectedRows} supporter usage(s)!`).setColor("Green")], components: []})
+                    }
+                    else {
+                        return interaction.update({embeds: [new EmbedBuilder().setTitle(`No edits made. Contact a developer if this isn't what you expected`).setColor("Red")], components: []})
+                    }
+                })
             }
-
         })
-
     },
 
 
@@ -136,6 +142,8 @@ module.exports = {
             errors:[],
             validated:{}
         }
+        // guildid
+        validation.validated.guildid = message.guild.id
 
         // username
         if (inputData.usernameValue) {
@@ -146,7 +154,7 @@ module.exports = {
             }
             else {
                 validation.validated.user = {
-                    id: parseInt(member.id),
+                    id:member.id,
                     username: inputData.usernameValue
                 }
             }
@@ -181,7 +189,7 @@ module.exports = {
             validation.validated.endTime = Date.now() - (parseInt(inputData.endTimeValue) * 60 * 60 * 1000)
         }
 
-        // order times correctly if start < end
+        // order times correctly if end < start
         if (validation.validated.endTime < validation.validated.startTime) {
             const tempTime = validation.validated.endTime
             validation.validated.endTime = validation.validated.startTime
@@ -200,6 +208,12 @@ module.exports = {
         if (!inputData.usernameValue && validation.validated.quantity < 0) {
             validation.errors.push(`You can't remove usages for all users`)
         }
+
+        // set start time to 24 hours before if no time is input and refunding
+        if (validation.validated.quantity > 0 & validation.validated.noTime) {
+            validation.validated.startTime = Date.now() - 24 * 60 * 60 * 1000
+        }
+
         return validation
     },
 
@@ -209,7 +223,6 @@ module.exports = {
         const refundOrRemove = validated.quantity < 0 ? `TAKE AWAY` : `REFUND`
         const startTime = this.dateFormatter(validated.startTime)
         const endTime = this.dateFormatter(validated.endTime)
-        // console.log(`start: ${startTime}, end: ${endTime}`)
         var timePeriod
         if (validated.quantity < 0) {
             if (validated.noTime) {
@@ -230,7 +243,6 @@ module.exports = {
             .setDescription(confirmation)
             .setColor('#0099ff');
 
-        // Create two buttons for confirmation
         const confirmButton = new ButtonBuilder()
             .setCustomId('confirmEdit')
             .setLabel('Confirm')
@@ -241,7 +253,6 @@ module.exports = {
             .setLabel('Cancel')
             .setStyle(ButtonStyle.Danger);
 
-        // Add the buttons to an action row
         const actionRow = new ActionRowBuilder()
             .addComponents(confirmButton, cancelButton);
         return {
@@ -251,10 +262,37 @@ module.exports = {
     },
 
     queryBuilder(validated) {
-        tableName = `supporterusage`
-        insertOrDelete = validated.quantity < 0 ? `DELETE` : `INSERT`
-        // const [rows,metadata] = await db.promise().query('SELECT * FROM supporterusage WHERE guildid = ? AND userid = ? AND utime > ?', [message.guild.id, member.id, lastUseCheck]);
-        query = `${insertOrDelete} FROM ${tableName} WHERE`
+        // Insert record(s) (take away)
+        if (validated.quantity < 0) {
+            const values = [validated.user.id,validated.guildid,validated.startTime]
+            const placeholders = Array.from({ length: Math.abs(validated.quantity) }, () => "(?, ?, ?)").join(", ")
+            return {
+                query: `INSERT INTO supporterusage (userid, guildid, utime) VALUES ${placeholders}`, 
+                values: Array.from({ length: Math.abs(validated.quantity) }, () => [...values]).flat()
+            }
+        }
+
+        // Refund for individual
+        if (validated.user) {
+            return {
+                query: `DELETE FROM supporterusage WHERE userid = ? AND utime BETWEEN ? AND ? ORDER BY utime DESC LIMIT ?`,
+                values: [validated.user.id,validated.startTime,validated.endTime,Math.abs(validated.quantity)]
+            }  
+        }
+
+        // Refund for all supporters
+        return { 
+            query: `DELETE FROM supporterusage WHERE idsupporterusage in 
+            (SELECT idsupporterusage
+            FROM (
+                SELECT idsupporterusage,
+                    ROW_NUMBER() OVER (PARTITION BY userid ORDER BY utime DESC) AS row_num
+                FROM supporterusage
+                WHERE utime BETWEEN ? AND ?
+            ) AS ranked_rows
+            WHERE row_num <= ?)`,
+            values: [validated.startTime,validated.endTime,validated.quantity]
+        }
     },
 
     dateFormatter(utcDate) {
@@ -274,7 +312,5 @@ module.exports = {
           const formattedDate = formatter.format(utcDate);
         
           return formattedDate;
-        
     }
 };
-
