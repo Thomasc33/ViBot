@@ -18,6 +18,7 @@ module.exports = {
 
         const embed = new EmbedBuilder()
             .setTitle('Edit Supported Usage')
+            .setColor('0099ff')
             .setDescription('Do you want to edit supporter usage for all supporters or an individual?');
 
         const buttonRow = new ActionRowBuilder()
