@@ -60,7 +60,7 @@ module.exports = {
  * @param {Discord.Message} message - original command interaction
  * @param {Discord.Client} bot - bot client
  * @param {string[]} raidIDs - array of active raid IDs
- * @returns {string} raidID selection
+ * @returns {Promise<string>}} raidID selection
  */
 async function determineRaidID(message, bot, raidIDs) {
     if (raidIDs.length == 0) {
@@ -112,18 +112,6 @@ async function handleLocationUpdate(message, bot, location, raidID) {
         .setTitle(`Location updated for ${bot.afkModules[raidID].afkTitle()}`)
         .setDescription(`Set location to:\n\`\`\`${location}\`\`\``);
 
-    if (message.isInteraction) {
-        if (message.replied) {
-            await message.editReply({ embeds: [locationUpdateEmbed], components: [] });
-        } else {
-            await message.reply({ embeds: [locationUpdateEmbed] });
-        }
-    } else {
-        const reply = await message.fetchReply();
-        if (reply) {
-            await reply.edit({ embeds: [locationUpdateEmbed], components: [] });
-        } else {
-            await message.reply({ embeds: [locationUpdateEmbed] });
-        }
-    }
+    if (message.replied) return await message.editReply({ embeds: [locationUpdateEmbed], components: [] });
+    return await message.reply({ embeds: [locationUpdateEmbed] });
 }
