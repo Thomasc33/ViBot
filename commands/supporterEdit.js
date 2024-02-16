@@ -1,9 +1,15 @@
 const { InteractionCollector, ModalBuilder, TextInputBuilder, TextInputStyle, EmbedBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const { ActionRowBuilder } = require('@discordjs/builders');
 
-const userDict = {
+const customIdEnum = {
     ALL_SUPPORTERS: 'allSupporters',
-    INDIVIDUAL: 'individual'
+    INDIVIDUAL: 'individual',
+    USERNAME_INPUT: 'usernameInput',
+    START_TIME_INPUT: 'startTimeInput',
+    END_TIME_INPUT: 'endTimeInput',
+    TICKET_QUANTITY_INPUT: 'quantityOfTicketsInput',
+    CANCEL_EDIT: 'cancelEdit',
+    CONFIRM_EDIT: 'confirmEdit'
 };
 
 module.exports = {
@@ -24,21 +30,21 @@ module.exports = {
         const buttonRow = new ActionRowBuilder()
             .addComponents(
                 new ButtonBuilder()
-                    .setCustomId(userDict.ALL_SUPPORTERS)
+                    .setCustomId(customIdEnum.ALL_SUPPORTERS)
                     .setLabel('All Users')
                     .setStyle(ButtonStyle.Primary),
                 new ButtonBuilder()
-                    .setCustomId(userDict.INDIVIDUAL)
+                    .setCustomId(customIdEnum.INDIVIDUAL)
                     .setLabel('Individual')
                     .setStyle(ButtonStyle.Secondary));
 
-        const sendData = { embeds: [embed], components: [buttonRow] };
-        const listMessage = await message.channel.send(sendData);
-        const interactionHandler = new InteractionCollector(bot, { time: 60000, message: listMessage });
+        const embedData = { embeds: [embed], components: [buttonRow] };
+        const sendEmbed = await message.channel.send(embedData);
+        const interactionHandler = new InteractionCollector(bot, { time: 60000, message: sendEmbed });
         let validated;
         interactionHandler.on('collect', async interaction => {
             if (interaction.user.id != message.author.id) return;
-            if (interaction.customId === userDict.ALL_SUPPORTERS || interaction.customId === userDict.INDIVIDUAL) {
+            if (interaction.customId === customIdEnum.ALL_SUPPORTERS || interaction.customId === customIdEnum.INDIVIDUAL) {
                 await interaction.showModal(this.modalBuilder(message, interaction.customId));
 
                 const filter = (interaction) => interaction.customId === `editSupporterUsage-${message.member}`;
@@ -47,12 +53,12 @@ module.exports = {
                     .awaitModalSubmit({ filter, time: 30000 })
                     .then((modalInteraction) => {
                         const inputData = {
-                            startTimeValue: modalInteraction.fields.getTextInputValue('startTimeInput'),
-                            endTimeValue: modalInteraction.fields.getTextInputValue('endTimeInput'),
-                            quantityValue: modalInteraction.fields.getTextInputValue('quantityOfTickets')
+                            startTimeValue: modalInteraction.fields.getTextInputValue(customIdEnum.START_TIME_INPUT),
+                            endTimeValue: modalInteraction.fields.getTextInputValue(customIdEnum.END_TIME_INPUT),
+                            quantityValue: modalInteraction.fields.getTextInputValue(customIdEnum.TICKET_QUANTITY_INPUT)
                         };
-                        if (interaction.customId === userDict.INDIVIDUAL) {
-                            inputData.usernameValue = modalInteraction.fields.getTextInputValue('usernameInput');
+                        if (interaction.customId === customIdEnum.INDIVIDUAL) {
+                            inputData.usernameValue = modalInteraction.fields.getTextInputValue(customIdEnum.USERNAME_INPUT);
                         }
                         const validation = this.validateInput(message, botSettings, inputData);
                         if (validation.errors.length > 0) {
@@ -65,10 +71,10 @@ module.exports = {
                     });
             }
 
-            if (interaction.customId === 'cancelEdit') {
+            if (interaction.customId === customIdEnum.CANCEL_EDIT) {
                 return interaction.update({ embeds: [new EmbedBuilder().setTitle('Supporter Edit Usage Cancelled')], components: [] });
             }
-            if (interaction.customId === 'confirmEdit') {
+            if (interaction.customId === customIdEnum.CONFIRM_EDIT) {
                 const query = this.queryBuilder(validated);
                 await db.promise().query(query.query, query.values).then((result) => {
                     if (!result || result[0].affectedRows === 0) {
@@ -90,13 +96,13 @@ module.exports = {
         });
 
         const usernameInput = new TextInputBuilder({
-            customId: 'usernameInput',
+            customId: customIdEnum.USERNAME_INPUT,
             label: 'Username',
             style: TextInputStyle.Short
         });
 
         const startTimeInput = new TextInputBuilder({
-            customId: 'startTimeInput',
+            customId: customIdEnum.START_TIME_INPUT,
             label: 'Start Time (hours ago)',
             placeholder: 'Leave this and below blank to edit most recent ticket(s)',
             style: TextInputStyle.Short,
@@ -105,7 +111,7 @@ module.exports = {
         });
 
         const endTimeInput = new TextInputBuilder({
-            customId: 'endTimeInput',
+            customId: customIdEnum.END_TIME_INPUT,
             label: 'End Time (hours ago)',
             style: TextInputStyle.Short,
             placeholder: 'Leave blank for current time',
@@ -114,7 +120,7 @@ module.exports = {
         });
 
         const quantityOfTickets = new TextInputBuilder({
-            customId: 'quantityOfTickets',
+            customId: customIdEnum.TICKET_QUANTITY_INPUT,
             label: 'Quantity of Tickets',
             placeholder: 'Positive Number: Refund. Negative: Take Away',
             style: TextInputStyle.Short,
@@ -126,7 +132,7 @@ module.exports = {
         const endTimeActionRow = new ActionRowBuilder().addComponents([endTimeInput]);
         const quantityActionRow = new ActionRowBuilder().addComponents([quantityOfTickets]);
 
-        if (users === userDict.INDIVIDUAL) { modal.addComponents(usernameActionRow); }
+        if (users === customIdEnum.INDIVIDUAL) { modal.addComponents(usernameActionRow); }
         modal.addComponents(startTimeActionRow, endTimeActionRow, quantityActionRow);
         return modal;
     },
@@ -224,12 +230,12 @@ module.exports = {
             .setColor('#0099ff');
 
         const confirmButton = new ButtonBuilder()
-            .setCustomId('confirmEdit')
+            .setCustomId(customIdEnum.CONFIRM_EDIT)
             .setLabel('Confirm')
             .setStyle(ButtonStyle.Success);
 
         const cancelButton = new ButtonBuilder()
-            .setCustomId('cancelEdit')
+            .setCustomId(customIdEnum.CANCEL_EDIT)
             .setLabel('Cancel')
             .setStyle(ButtonStyle.Danger);
 
@@ -288,7 +294,6 @@ module.exports = {
         };
 
         const formatter = new Intl.DateTimeFormat('en-US', options);
-        const formattedDate = formatter.format(utcDate);
-        return formattedDate;
+        return formatter.format(utcDate);
     }
 };
