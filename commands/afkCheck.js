@@ -163,7 +163,7 @@ class afkCheck {
     get afkTemplateName() { return this.#afkTemplate.templateName }
 
     // needed for location command
-    get leaderId() { return this.#leader.id }
+    get leader() { return this.#leader }
 
     isVcless() { return this.vcOptions == AfkTemplate.TemplateVCOptions.NO_VC }
 
@@ -1253,8 +1253,8 @@ class afkCheck {
         return phaseComponents
     }
     
-    async updateLocation() {
-        this.location = this.#bot.afkChecks[this.#raidID].location
+    async updateLocation(location) {
+        this.location = location
         await Promise.all([this.sendStatusMessage(), this.sendCommandsMessage(), this.sendChannelsMessage()])
         for (let i of this.earlyLocationMembers) {
             let member = this.#guild.members.cache.get(i)

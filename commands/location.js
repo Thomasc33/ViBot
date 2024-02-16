@@ -74,7 +74,7 @@ async function determineRaidID(message, bot, raidIDs) {
         if (matchingRaidID) return matchingRaidID;
     }
     // if message.member.id is the leader of only one raid, use that raid
-    const leaderFilteredRaidIDs = raidIDs.filter(raidId => bot.afkModules[raidId].leaderId == message.member.id);
+    const leaderFilteredRaidIDs = raidIDs.filter(raidId => bot.afkModules[raidId].leader?.id == message.member.id);
     if (leaderFilteredRaidIDs.length == 1) return leaderFilteredRaidIDs[0];
     // if no valid raidID was found, send selectMenu
     const locationMenu = new Discord.StringSelectMenuBuilder()
@@ -105,8 +105,7 @@ async function determineRaidID(message, bot, raidIDs) {
  * @param {string} raidID - raid ID to update location for
  */
 async function handleLocationUpdate(message, bot, location, raidID) {
-    bot.afkChecks[raidID].location = location; // this is needed to update the location on the afkEmbed
-    bot.afkModules[raidID].updateLocation();
+    bot.afkModules[raidID].updateLocation(location);
 
     const locationUpdateEmbed = new Discord.EmbedBuilder()
         .setAuthor({ name: `${message.member.displayName}`, iconURL: message.member.displayAvatarURL() })
