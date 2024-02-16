@@ -112,11 +112,19 @@ async function handleLocationUpdate(message, bot, location, raidID) {
         .setAuthor({ name: `${message.member.displayName}`, iconURL: message.member.displayAvatarURL() })
         .setTitle(`Location updated for ${bot.afkModules[raidID].afkTitle()}`)
         .setDescription(`Set location to:\n\`\`\`${location}\`\`\``);
-    // if the message is an interaction and has been replied to, edit the reply
-    if (message.isInteraction && message.replied) return await message.editReply({ embeds: [locationUpdateEmbed], components: [] });
-    // if the message has been replied to (with selection menu), edit the reply
-    const reply = await message.fetchReply();
-    if (reply) return await reply.edit({ embeds: [locationUpdateEmbed], components: [] });
-    // reply with success embed
-    return await message.reply({ embeds: [locationUpdateEmbed] });
+
+    if (message.isInteraction) {
+        if (message.replied) {
+            await message.editReply({ embeds: [locationUpdateEmbed], components: [] });
+        } else {
+            await message.reply({ embeds: [locationUpdateEmbed] });
+        }
+    } else {
+        const reply = await message.fetchReply();
+        if (reply) {
+            await reply.edit({ embeds: [locationUpdateEmbed], components: [] });
+        } else {
+            await message.reply({ embeds: [locationUpdateEmbed] });
+        }
+    }
 }
