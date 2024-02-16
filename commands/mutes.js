@@ -1,8 +1,110 @@
-const Discord = require('discord.js')
 const moment = require('moment');
-const ErrorLogger = require('../lib/logError')
+const ErrorLogger = require('../lib/logError');
+const { ApplicationCommandOptionType, EmbedBuilder, Colors } = require('discord.js');
+const { slashArg, slashCommandJSON } = require('../utils');
+
+/**
+ * @typedef MuteRow
+ * @property {string} id
+ * @property {string} guildid
+ * @property {boolean} muted
+ * @property {string} reason
+ * @property {string} modid
+ * @property {string} uTime
+ * @property {boolean} perma
+ */
+/**
+ * 
+ * @param {MuteRow} row 
+ * @param {number?} idx 
+ */
+function muteRowToString(row, idx) {
+
+}
+
+/**
+ * @param {import('discord.js').Message | import('discord.js').CommandInteraction} message
+ * @param {import('discord.js').Client} bot
+ * @param {import('mysql2').Pool} db
+ * @param {import('discord.js').GuildMember} member
+ * @param {import('discord.js').Role} mutedRole
+ * @param {EmbedBuilder} embed
+ */
+async function displayAllMutes(message, bot, db, mutedRole, embed) {
+    embed.setTitle(`${bot.user.displayName} Managed Mutes`);
+    const members = mutedRole.members.clone();
+
+    const [rows] = await db.promise().query('SELECT * FROM mutes WHERE muted = true AND guildid = ?', [message.guild.id]);
+
+    const mutedTexts = [''];
+    for (const row of rows) {
+        const duration = row.perma ? '**permanently**' : `ending <t:${(parseInt(row.uTime) / 1000).toFixed(0)}:R>`;
+        const userRow = `<@${row.id}> by <@${row.modid}> ${duration}`;
+        if (mutedTexts[mutedTexts.length - 1].length + userRow.length + 1 >= 3800) mutedTexts.push('');
+        mutedTexts[mutedTexts.length - 1] += `${userRow}\n`;
+        members.delete(row.id);
+    }
+
+    if (!rows.length) mutedTexts[0] = 'None!';
+    for (const text of mutedTexts) {
+        embed.setDescription(text);
+        await message.channel.send({ embeds: [embed] });
+        embed.setTitle(`${bot.user.displayName} Managed Mutes (cont.)`);
+    }
+
+    embed.setTitle(`Unmanaged Mutes`);
+    mutedTexts.splice(0);
+    mutedTexts.push('');
+
+    members.forEach(member => {
+        if (mutedTexts[mutedTexts.length - 1].length + `${member}`.length + 1 >= 3800) mutedTexts.push('');
+        mutedTexts[mutedTexts.length -1] += `${member}\n`
+    })
+
+    if (!members.size) mutedTexts[0] = 'None!';
+    for (const text of mutedTexts) {
+        embed.setDescription(text);
+        await message.channel.send({ embeds: [embed] });
+        embed.setTitle(`Unmanaged Mutes (cont.)`);
+    }
+}
 
 module.exports = {
+    name: 'mutes',
+    description: 'Shows mutes for the server',
+    role: 'security',
+    args: [slashArg(ApplicationCommandOptionType.User, 'member', { description: 'member to check mutes of', required: false })],
+    getSlashCommandData(guild) { return slashCommandJSON(this, guild); },
+
+    /**
+     * @param {import('discord.js').Message | import('discord.js').CommandInteraction} message
+     * @param {string[]} args
+     * @param {import('discord.js').Client} bot
+     * @param {import('mysql2').Pool} db
+     */
+    async execute(message, args, bot, db) {
+        /** @type {import('discord.js').GuildMember?} */
+        const member = message.options.getMember('member');
+        /** @type {import('discord.js').Role} */          
+        const mutedRole = message.guild.roles.cache.get(bot.settings[message.guild.id].roles.muted);
+
+        const embed = new EmbedBuilder()
+            .setAuthor({ name: message.guild.name, iconURL: message.guild.iconURL() })
+            .setColor(Colors.DarkButNotBlack)
+            .setTimestamp()
+            .setFooter({ text: `Ran by ${message.member.displayName}`, iconURL: message.member.displayAvatarURL() });
+
+        if (!member) return await displayAllMutes(message, bot, db, mutedRole);
+        
+        embed.setTitle(`Mutes for ${member.displayName}`);
+        const [rows] = await db.promise().query('SELECT * FROM mutes WHERE id = ? AND guildid = ? ORDER BY muted DESC, uTime DESC', [member.id, member.guild.id]);
+        for (const row of rows) {
+            const userText = ``
+        }
+    }
+}
+
+module.exports1 = {
     name: 'mutes',
     description: 'prints all muted members of the server',
     role: 'security',
@@ -19,24 +121,7 @@ module.exports = {
         let embed = new Discord.EmbedBuilder()
             .setAuthor({ name: member ? `Mutes for ${member.nickname || member.user.tag} in ${message.guild.name}` : `Muted members in ${message.guild.name}` })
             .setDescription(`None!`)
-        if (!member) {
-            db.query(`SELECT * FROM mutes WHERE muted = true AND guildid = ${message.guild.id}`, async (err, rows) => {
-                if (err) ErrorLogger.log(err, bot, message.guild);
-                const members = message.guild.roles.cache.get(require('../guildSettings.json')[message.guild.id].roles.muted).members.clone();
-                if (rows && rows.length) {
-                    for (const row of rows) {
-                        members.delete(row.id);
-                        fitStringIntoEmbed(embed, `<@!${row.id}> by <@!${row.modid}> ending <t:${(parseInt(row.uTime)/1000).toFixed(0)}:R> at <t:${(parseInt(row.uTime)/1000).toFixed(0)}:f>`, message.channel);
-                    }
-                }
-                message.channel.send({ embeds: [embed] })
-                embed.data.fields = [];
-                embed.setDescription('None!');
-                embed.setAuthor({ name: `Mutes in ${message.guild.name} not set by ${message.guild.members.cache.get(bot.user.id).nickname || bot.user.tag}` });
-                members.forEach(m => fitStringIntoEmbed(embed, `${m}`, message.channel));
-                message.channel.send({ embeds: [embed] });
-            })
-        } else {
+
             db.query(`SELECT * FROM mutes WHERE id = ${member.id} AND guildid = ${message.guild.id} ORDER BY muted DESC`, async (err, rows) => {
                 if (err) ErrorLogger.log(err, bot, message.guild);
                 if (!rows || !rows.length)
@@ -48,36 +133,8 @@ module.exports = {
                         fitStringIntoEmbed(embed, `Ended <t:${(parseInt(row.uTime)/1000).toFixed(0)}:R> at <t:${(parseInt(row.uTime)/1000).toFixed(0)}:f> by <@!${row.modid}>: ${row.reason}`);
                 }
                 message.channel.send({ embeds: [embed] });
-            });
-        }
+    });
+        
 
-    }
-}
-
-function fitStringIntoEmbed(embed, string, channel) {
-    if (embed.data.description == 'None!') {
-        embed.setDescription(string)
-    } else if (embed.data.description.length + `\n${string}`.length >= 2048) {
-        if (!embed.data.fields) {
-            embed.addFields({ name: '-', value: string })
-        } else if (embed.data.fields && embed.data.fields[embed.data.fields.length - 1].value.length + `\n${string}`.length >= 1024) {
-            if (JSON.stringify(embed.toJSON()).length + `\n${string}`.length >= 6000) {
-                channel.send({ embeds: [embed] })
-                embed.setDescription(string)
-                embed.data.fields = []
-            } else {
-                embed.addFields({ name: '-', value: string })
-            }
-        } else {
-            if (JSON.stringify(embed.toJSON()).length + `\n${string}`.length >= 6000) {
-                channel.send({ embeds: [embed] })
-                embed.setDescription(string)
-                embed.data.fields = []
-            } else {
-                embed.data.fields[embed.data.fields.length - 1].value = embed.data.fields[embed.data.fields.length - 1].value.concat(`\n${string}`)
-            }
-        }
-    } else {
-        embed.setDescription(embed.data.description.concat(`\n${string}`))
     }
 }

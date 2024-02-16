@@ -23,10 +23,11 @@ class LegacyCommandOptions {
     #opts;
     #users = [];
     #attachments;
-
+    #settings;
     constructor(opts, message, varargs) {
         this.#opts = opts;
         this.#message = message;
+        this.#settings = message.client.settings[message.guild.id];
         this.#attachments = message.attachments.map((v) => v);
         const s = message.content;
         const [, ...args] = s.slice(1).split(/ +/gi);
@@ -35,7 +36,7 @@ class LegacyCommandOptions {
             const currentOpt = optsToParse.shift();
             if (currentOpt.required && (currentOpt.type == SlashArgType.Attachment ? this.#attachments.length == 0 : args.length == 0)) throw new LegacyParserError(`Not enough arguments. Expected: ${argString(opts)}`);
             if (args.length == 0) break;
-            const currentArg = args.shift();
+            const currentArg = currentOpt.varargs ? args.splice(0).join(' ') : args.shift();
             if (currentOpt.type == SlashArgType.Subcommand) {
                 // Grab all the subcommand options
                 const possibleSubcommands = [currentOpt];
@@ -47,7 +48,12 @@ class LegacyCommandOptions {
                 this.subcommand = subcommand.name;
                 subcommand.options.forEach((opt) => {
                     if (args.length == 0 && opt.required) throw new LegacyParserError(`Not enough arguments for subcommand \`${subcommand.name}\`. Expected: ${argString(opts)}`);
-                    if (args.length != 0) {
+                    if (opt.varargs) {
+                        const v = this.#processType(opt.type, args.splice(0).join(' '));
+                        if (!v) throw new LegacyParserError(`Error parsing argument \`${opt.name}\``);
+                        this.args[opt.name] = v;
+                    }
+                    if (args.length) {
                         const v = this.#processType(opt.type, args.shift());
                         if (!v) throw new LegacyParserError(`Error parsing argument \`${opt.name}\``);
                         this.args[opt.name] = v;
@@ -76,26 +82,56 @@ class LegacyCommandOptions {
         };
     }
 
+    /**
+     * @returns {string[]}
+     */
     getVarargs() {
         return this.args.varargs || [];
     }
 
+    /**
+     * @param {string} k
+     * @returns {string}
+     */
     getString(k) {
         if (this.#optTypeMatch(SlashArgType.String, k)) return this.args[k];
     }
 
+    /**
+     * @param {string} k
+     * @returns {import('discord.js').GuildMember}
+     */
     getMember(k) {
         if (this.#optTypeMatch(SlashArgType.User, k)) return this.args[k];
     }
 
+    /**
+     * @param {string} k
+     * @returns {number}
+     */
     getInteger(k) {
         if (this.#optTypeMatch(SlashArgType.Integer, k)) return this.args[k];
     }
 
+    /**
+     * @param {string} k
+     * @returns {import('discord.js').Attachment}
+     */
     getAttachment(k) {
         if (this.#optTypeMatch(SlashArgType.Attachment, k)) return this.args[k];
     }
 
+    /**
+     * @param {string} k
+     * @returns {import('discord.js').Role | import('discord.js').BaseChannel | import('discord.js').GuildMember}
+     */
+    getMentionable(k) {
+        if (this.#optTypeMatch(SlashArgType.Mentionable, k)) return this.args[k];
+    }
+
+    /**
+     * @returns {string}
+     */
     getSubcommand() {
         return this.subcommand;
     }
@@ -113,14 +149,26 @@ class LegacyCommandOptions {
                 this.#users.push(member);
                 return member;
             }
+            case SlashArgType.Boolean: {
+                value = value.toLowerCase();
+                if (['f', 'false', 'no', 'n', '0'].includes(value)) return false;
+                if (['t', 'true', '1', 'yes', 'y'].includes(value)) return true;
+                throw new LegacyParserError(`\`${value}\` is not a valid value, try either \`true\` or \`false\`.`);
+            }
             case SlashArgType.String: return value;
             case SlashArgType.Integer: return parseInt(value);
             case SlashArgType.Attachment: return this.#attachments.shift();
+            case SlashArgType.Number: return parseFloat(value);
+            case SlashArgType.Role: return Object.keys(this.#settings.roles).includes(value) ? this.#message.guild.roles.cache.get(this.#settings.roles[value]) : this.#message.guild.roles.cache.get(value.replace(/\D/g, ''));
+            case SlashArgType.Channel: return Object.keys(this.#settings.channels).includes(value) ? this.#message.guild.channels.cache.get(this.#settings.channels[value]) : this.#message.guild.channels.cache.get(value.replace(/\D/g, ''));
+            case SlashArgType.Mentionable: return this.#processType(SlashArgType.Role, value) ?? this.#processType(SlashArgType.Channel, value) ?? this.#message.guild.findMember(value);
             default: throw new Error('Unhandled type');
         }
     }
 }
-
+/**
+ * @typedef {import('discord.js').Message & { options: LegacyCommandOptions } | import('discord.js').CommandInteraction} BotCommandInteraction
+ */
 module.exports = {
     slashArg(type, name, opts) {
         const obj = {

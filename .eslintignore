@@ -31,7 +31,6 @@ commands/manualVerify.js
 commands/manualVetVerify.js
 commands/memes.js
 commands/modmailBlacklist.js
-commands/mute.js
 commands/mutes.js
 commands/noNicknames.js
 commands/parsemembers.js
@@ -59,7 +58,6 @@ commands/tempKeyRemove.js
 commands/test.js
 commands/unlock.js
 commands/unlockdown.js
-commands/unmute.js
 commands/unsuspend.js
 commands/unverify.js
 commands/unvetverify.js
