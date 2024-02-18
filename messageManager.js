@@ -170,7 +170,7 @@ class MessageManager {
                 command.slashCommandExecute(e, this.#bot, db)
             } else {
                 // Add the shim for options
-                if (!isInteraction && typeof (command.args) == 'object') {
+                if (!isInteraction && typeof (command.args) == 'object' && !command.slashOnlyArgsProcessing) {
                     try {
                         const lco = new LegacyCommandOptions(command.args, e, command.varargs)
                         Object.defineProperty(e, 'options', {
