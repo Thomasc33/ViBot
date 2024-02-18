@@ -23,7 +23,6 @@ commands/keyRoles.js
 commands/leaderboard.js
 commands/leaveGuild.js
 commands/list.js
-commands/location.js
 commands/lock.js
 commands/lockdown.js
 commands/manualVerify.js

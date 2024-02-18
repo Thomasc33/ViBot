@@ -101,7 +101,7 @@ class MessageManager {
 
     async handleAutocomplete(interaction) {
         const command = this.#bot.commands.get(interaction.commandName) || this.#bot.commands.find(cmd => cmd.alias && cmd.alias.includes(interaction.commandName))
-        if (command.autocomplete) command.autocomplete(interaction)
+        if (command.autocomplete) command.autocomplete(interaction, this.#bot);
     }
     /**
      * Runs the command processing pipeline including parsing, state checks, permissions checks, etc.
