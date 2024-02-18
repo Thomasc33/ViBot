@@ -58,7 +58,6 @@ commands/unverify.js
 commands/unvetverify.js
 commands/updateIP.js
 commands/verification.js
-commands/vetBan.js
 commands/vetVerification.js
 commands/vibotChannels.js
 commands/warnRemove.js
