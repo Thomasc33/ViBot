@@ -45,7 +45,6 @@ commands/reload.js
 commands/removeAlt.js
 commands/removePending.js
 commands/request.js
-commands/roleAssignment.js
 commands/russianRoulette.js
 commands/script.js
 commands/setStatus.js
@@ -66,7 +65,6 @@ commands/updateIP.js
 commands/verification.js
 commands/vetBan.js
 commands/vetVerification.js
-commands/vibotChannels.js
 commands/warnRemove.js
 commands/warns.js
 jobs/runner.js

@@ -13,7 +13,7 @@ const ErrorLogger = require('./lib/logError');
 // Commands
 const emoji = require('./commands/emoji.js');
 const afkCheck = require('./commands/afkCheck.js');
-const vibotChannels = require('./commands/vibotChannels');
+const roleAssignment = require('./commands/roleAssignment.js');
 const vetVerification = require('./commands/vetVerification');
 const verification = require('./commands/verification');
 // Specific Jobs
@@ -128,8 +128,8 @@ async function setup(bot) {
     // initialize components (eg. modmail, verification)
     iterServers(bot, (bot, g) => {
         const db = dbSetup.getDB(g.id);
-        vibotChannels.update(g, bot, db).catch(er => { });
         afkCheck.loadBotAfkChecks(g, bot, db);
+        if (bot.settings[g.id].backend.roleassignment) roleAssignment.updateRoleAssignmentListeners(g, bot).catch(er => { ErrorLogger.log(er, bot, g); });
         if (bot.settings[g.id].backend.verification) verification.init(g, bot, db).catch(er => { ErrorLogger.log(er, bot, g); });
         if (bot.settings[g.id].backend.vetverification) vetVerification.init(g, bot, db).catch(er => { ErrorLogger.log(er, bot, g); });
     });
