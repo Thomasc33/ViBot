@@ -16,7 +16,6 @@ commands/falseSuspensions.js
 commands/glape.js
 commands/headcount.js
 commands/id.js
-commands/joinRun.js
 commands/keyRoles.js
 commands/leaderboard.js
 commands/leaveGuild.js
