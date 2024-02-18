@@ -395,7 +395,7 @@ class PunishmentsUI {
 }
 
 module.exports = {
-    role: 'security',
+    role: 'eventrl',
     name: 'punishments',
     slashCommandName: 'pu',
     alias: ['backgroundcheck', 'pu', 'ui', 'userinfo'],
