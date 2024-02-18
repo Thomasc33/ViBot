@@ -3,7 +3,6 @@ commands/afkCheck.js
 commands/afkTemplate.js
 commands/avatar.js
 commands/botstatus.js
-commands/bruh.js
 commands/changename.js
 commands/characterList.js
 commands/check.js
@@ -25,7 +24,6 @@ commands/leaderboard.js
 commands/leaveGuild.js
 commands/list.js
 commands/lock.js
-commands/lockdown.js
 commands/manualVerify.js
 commands/manualVetVerify.js
 commands/memes.js
@@ -57,7 +55,6 @@ commands/sysinfo.js
 commands/tempKeyRemove.js
 commands/test.js
 commands/unlock.js
-commands/unlockdown.js
 commands/unmute.js
 commands/unsuspend.js
 commands/unverify.js
