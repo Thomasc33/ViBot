@@ -7,6 +7,86 @@ const extensions = require(`../lib/extensions`)
 const consumablePopTemplates = require(`../data/keypop.json`);
 const popCommand = require('./pop.js');
 
+module.exports = {
+    name: 'afk',
+    description: 'The new version of the afk check',
+    requiredArgs: 1,
+    args: '<run symbol> <location>',
+    role: 'eventrl',
+    /**
+     * Main Execution Function
+     * @param {Discord.Message} message
+     * @param {String[]} args
+     * @param {Discord.Client} bot
+     * @param {import('mysql').Connection} db
+     */
+    async execute(message, args, bot, db) {
+        let alias = args.shift().toLowerCase()
+
+        const afkTemplateNames = await AfkTemplate.resolveTemplateAlias(bot.settings[message.guild.id], message.member, message.guild.id, message.channel.id, alias)
+        if (afkTemplateNames instanceof AfkTemplate.AfkTemplateValidationError) return message.channel.send(afkTemplateNames.message())
+        if (afkTemplateNames.length == 0) return await message.channel.send('This afk template does not exist.')
+
+        const afkTemplateName = afkTemplateNames.length == 1 ? afkTemplateNames[0] : await AfkTemplate.templateNamePrompt(message, afkTemplateNames)
+
+        const afkTemplate = await AfkTemplate.AfkTemplate.tryCreate(bot, bot.settings[message.guild.id], message, afkTemplateName)
+        if (afkTemplate instanceof AfkTemplate.AfkTemplateValidationError) {
+            if (afkTemplate.invalidChannel()) await message.delete()
+            await message.channel.send(afkTemplate.message())
+            return
+        }
+
+        let location = args.join(' ')
+        if (location.length >= 1024) return await message.channel.send('Location must be below 1024 characters, try again')
+        if (location == '') location = 'None'
+        message.react('✅')
+
+        const afkModule = new afkCheck(afkTemplate, bot, db, message, location)
+        await afkModule.createChannel()
+        await afkModule.sendButtonChoices()
+        await afkModule.sendInitialStatusMessage()
+        if (afkTemplate.startDelay > 0) setTimeout(() => afkModule.start(), afkTemplate.startDelay*1000)
+        else afkModule.start()
+    },
+    returnRaidIDsbyMemberID(bot, memberID) {
+        return Object.keys(bot.afkChecks).filter(raidID => bot.afkChecks[raidID].leader == memberID)
+    },
+    returnRaidIDsbyMemberVoice(bot, voiceID) {
+        return Object.keys(bot.afkChecks).filter(raidID => bot.afkChecks[raidID].channel == voiceID)
+    },
+    returnRaidIDsbyRaidID(bot, RSAID) {
+        return Object.keys(bot.afkChecks).filter(raidID => bot.afkChecks[raidID].raidStatusMessage && bot.afkChecks[raidID].raidStatusMessage.id == RSAID)
+    },
+    returnRaidIDsbyAll(bot, memberID, voiceID, argument) {
+        return [...new Set([
+            ...this.returnRaidIDsbyMemberID(bot, memberID),
+            ...this.returnRaidIDsbyMemberVoice(bot, voiceID),
+            ...this.returnRaidIDsbyMemberVoice(bot, argument),
+            ...this.returnRaidIDsbyRaidID(bot, argument)
+        ])]
+    },
+    returnActiveRaidIDs(bot) {
+        return Object.keys(bot.afkChecks)
+    },
+    async loadBotAfkChecks(guild, bot, db) {
+        const storedAfkChecks = Object.values(require('../data/afkChecks.json')).filter(raid => raid.guild.id === guild.id);
+        for (const currentStoredAfkCheck of storedAfkChecks) {
+            const messageChannel = guild.channels.cache.get(currentStoredAfkCheck.message.channelId)
+            const message = await messageChannel.messages.fetch(currentStoredAfkCheck.message.id)
+            const afkTemplateName = currentStoredAfkCheck.afkTemplateName
+            const afkTemplate = await AfkTemplate.AfkTemplate.tryCreate(bot, bot.settings[message.guild.id], message, afkTemplateName)
+            if (afkTemplate instanceof AfkTemplate.AfkTemplateValidationError) {
+                console.log(afkTemplate.message())
+                continue
+            }
+            bot.afkModules[currentStoredAfkCheck.raidID] = new afkCheck(afkTemplate, bot, db, message, currentStoredAfkCheck.location)
+            await bot.afkModules[currentStoredAfkCheck.raidID].loadBotAfkCheck(currentStoredAfkCheck)
+        }
+        console.log(`Restored ${storedAfkChecks.length} afk checks for ${guild.name}`);
+   },
+   afkCheck
+}
+
 /**
  * @typedef AfkCheckData
  * @property {string} afkTemplateName
@@ -1439,84 +1519,4 @@ class afkCheck {
         const component = new Discord.ActionRowBuilder({ components: reactablesRequestActionRow })
         message.edit({ components: [component] })
     }
-}
-
-module.exports = {
-    name: 'afk',
-    description: 'The new version of the afk check',
-    requiredArgs: 1,
-    args: '<run symbol> <location>',
-    role: 'eventrl',
-    /**
-     * Main Execution Function
-     * @param {Discord.Message} message
-     * @param {String[]} args
-     * @param {Discord.Client} bot
-     * @param {import('mysql').Connection} db
-     */
-    async execute(message, args, bot, db) {
-        let alias = args.shift().toLowerCase()
-
-        const afkTemplateNames = await AfkTemplate.resolveTemplateAlias(bot.settings[message.guild.id], message.member, message.guild.id, message.channel.id, alias)
-        if (afkTemplateNames instanceof AfkTemplate.AfkTemplateValidationError) return message.channel.send(afkTemplateNames.message())
-        if (afkTemplateNames.length == 0) return await message.channel.send('This afk template does not exist.')
-
-        const afkTemplateName = afkTemplateNames.length == 1 ? afkTemplateNames[0] : await AfkTemplate.templateNamePrompt(message, afkTemplateNames)
-
-        const afkTemplate = await AfkTemplate.AfkTemplate.tryCreate(bot, bot.settings[message.guild.id], message, afkTemplateName)
-        if (afkTemplate instanceof AfkTemplate.AfkTemplateValidationError) {
-            if (afkTemplate.invalidChannel()) await message.delete()
-            await message.channel.send(afkTemplate.message())
-            return
-        }
-
-        let location = args.join(' ')
-        if (location.length >= 1024) return await message.channel.send('Location must be below 1024 characters, try again')
-        if (location == '') location = 'None'
-        message.react('✅')
-
-        const afkModule = new afkCheck(afkTemplate, bot, db, message, location)
-        await afkModule.createChannel()
-        await afkModule.sendButtonChoices()
-        await afkModule.sendInitialStatusMessage()
-        if (afkTemplate.startDelay > 0) setTimeout(() => afkModule.start(), afkTemplate.startDelay*1000)
-        else afkModule.start()
-    },
-    returnRaidIDsbyMemberID(bot, memberID) {
-        return Object.keys(bot.afkChecks).filter(raidID => bot.afkChecks[raidID].leader == memberID)
-    },
-    returnRaidIDsbyMemberVoice(bot, voiceID) {
-        return Object.keys(bot.afkChecks).filter(raidID => bot.afkChecks[raidID].channel == voiceID)
-    },
-    returnRaidIDsbyRaidID(bot, RSAID) {
-        return Object.keys(bot.afkChecks).filter(raidID => bot.afkChecks[raidID].raidStatusMessage && bot.afkChecks[raidID].raidStatusMessage.id == RSAID)
-    },
-    returnRaidIDsbyAll(bot, memberID, voiceID, argument) {
-        return [...new Set([
-            ...this.returnRaidIDsbyMemberID(bot, memberID),
-            ...this.returnRaidIDsbyMemberVoice(bot, voiceID),
-            ...this.returnRaidIDsbyMemberVoice(bot, argument),
-            ...this.returnRaidIDsbyRaidID(bot, argument)
-        ])]
-    },
-    returnActiveRaidIDs(bot) {
-        return Object.keys(bot.afkChecks)
-    },
-    async loadBotAfkChecks(guild, bot, db) {
-        const storedAfkChecks = Object.values(require('../data/afkChecks.json')).filter(raid => raid.guild.id === guild.id);
-        for (const currentStoredAfkCheck of storedAfkChecks) {
-            const messageChannel = guild.channels.cache.get(currentStoredAfkCheck.message.channelId)
-            const message = await messageChannel.messages.fetch(currentStoredAfkCheck.message.id)
-            const afkTemplateName = currentStoredAfkCheck.afkTemplateName
-            const afkTemplate = await AfkTemplate.AfkTemplate.tryCreate(bot, bot.settings[message.guild.id], message, afkTemplateName)
-            if (afkTemplate instanceof AfkTemplate.AfkTemplateValidationError) {
-                console.log(afkTemplate.message())
-                continue
-            }
-            bot.afkModules[currentStoredAfkCheck.raidID] = new afkCheck(afkTemplate, bot, db, message, currentStoredAfkCheck.location)
-            await bot.afkModules[currentStoredAfkCheck.raidID].loadBotAfkCheck(currentStoredAfkCheck)
-        }
-        console.log(`Restored ${storedAfkChecks.length} afk checks for ${guild.name}`);
-   },
-   afkCheck
 }
