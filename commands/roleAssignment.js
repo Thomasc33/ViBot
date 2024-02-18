@@ -3,7 +3,31 @@ const reacts = require('../data/roleAssignment.json');
 const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
 const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js');
 
-async function interactionHandler(interaction, botSettings, guildReacts) {
+function addInteractionComponents(bot, guildReacts) {
+    const components = [];
+    components.push(new Discord.ButtonBuilder()
+        .setCustomId('giveAllRoles')
+        .setLabel('✅ Give All')
+        .setStyle(Discord.ButtonStyle.Success));
+    guildReacts.map(reaction =>
+        components.push(new Discord.ButtonBuilder()
+            .setCustomId(reaction.emote)
+            .setEmoji(bot.storedEmojis[reaction.emote].id)
+            .setStyle(Discord.ButtonStyle.Secondary))
+    );
+    components.push(new Discord.ButtonBuilder()
+        .setCustomId('takeAllRoles')
+        .setLabel('❌ Take All')
+        .setStyle(Discord.ButtonStyle.Danger));
+    return components.reduce((rows, btn, idx) => {
+        if (idx % 5 == 0) rows.push(new Discord.ActionRowBuilder());
+        rows[rows.length - 1].addComponents(btn);
+        return rows;
+    }, []);
+}
+
+async function interactionHandler(interaction, bot, guildReacts) {
+    const botSettings = bot.settings[interaction.guild.id];
     const embed = new Discord.EmbedBuilder()
         .setColor(Discord.Colors.Green)
         .setFooter({ text: interaction.guild.name, iconURL: interaction.guild.iconURL() })
@@ -15,7 +39,7 @@ async function interactionHandler(interaction, botSettings, guildReacts) {
             const rolesToAdd = guildReactsToAdd.map(reaction => interaction.guild.roles.cache.get(botSettings.roles[reaction.role]));
             await interaction.member.roles.add(rolesToAdd);
             if (rolesToAdd.length == 0) embed.setDescription('You already **have** all the roles to receive pings');
-            else embed.setDescription(`You now **have** the roles to receive pings for the following dungeons:\n${rolesToAdd.map((role, i) => `- ${guildReactsToAdd[i].emoji} ${guildReactsToAdd[i].name}: ${role}`).join('\n')} `);
+            else embed.setDescription(`You now **have** the roles to receive pings for the following dungeons:\n${rolesToAdd.map((role, i) => `- ${bot.storedEmojis[guildReactsToAdd[i].emote].text} ${guildReactsToAdd[i].name}: ${role}`).join('\n')} `);
             await interaction.reply({ embeds: [embed], ephemeral: true });
             break;
         }
@@ -24,19 +48,19 @@ async function interactionHandler(interaction, botSettings, guildReacts) {
             const rolesToRemove = guildReactsToRemove.map(reaction => interaction.guild.roles.cache.get(botSettings.roles[reaction.role]));
             await interaction.member.roles.remove(rolesToRemove);
             if (rolesToRemove.length == 0) embed.setDescription('You already **no longer** have any of the roles to receive pings');
-            else embed.setDescription(`You now **no longer have** the roles to receive pings for the following dungeons:\n${rolesToRemove.map((role, i) => `- ${guildReactsToRemove[i].emoji} ${guildReactsToRemove[i].name}: ${role}`).join('\n')} `);
+            else embed.setDescription(`You now **no longer have** the roles to receive pings for the following dungeons:\n${rolesToRemove.map((role, i) => `- ${bot.storedEmojis[guildReactsToRemove[i].emote].text} ${guildReactsToRemove[i].name}: ${role}`).join('\n')} `);
             await interaction.reply({ embeds: [embed], ephemeral: true });
             break;
         }
         default: {
-            const guildReact = guildReacts.find(reaction => reaction.emojiId === interaction.customId);
+            const guildReact = guildReacts.find(reaction => reaction.emote === interaction.customId);
             const role = interaction.guild.roles.cache.get(botSettings.roles[guildReact.role]);
             if (interaction.member.roles.cache.has(role.id)) {
                 await interaction.member.roles.remove(role);
-                embed.setDescription(`You now **no longer have** the role to receive pings for ${guildReact.emoji} ${guildReact.name}: ${role}`);
+                embed.setDescription(`You now **no longer have** the role to receive pings for ${bot.storedEmojis[guildReact.emote].text} ${guildReact.name}: ${role}`);
             } else {
                 await interaction.member.roles.add(role);
-                embed.setDescription(`You now **have** the role to receive pings for ${guildReact.emoji} ${guildReact.name}: ${role}`);
+                embed.setDescription(`You now **have** the role to receive pings for ${bot.storedEmojis[guildReact.emote].text} ${guildReact.name}: ${role}`);
             }
             await interaction.reply({ embeds: [embed], ephemeral: true });
         }
@@ -86,10 +110,10 @@ module.exports = {
                     .setDescription('Press the buttons with one of the following emojis to get pinged for specific runs\nCan be disabled by pressing the same button after recieving your role')
                     .setFooter({ text: interaction.guild.name, iconURL: interaction.guild.iconURL() })
                     .setTimestamp();
-                guildReacts.map(reaction => embed.addFields([{ name: reaction.name, value: reaction.emoji, inline: true }]));
-                const message = await channel.send({ embeds: [embed], components: this.addInteractionComponents(guildReacts) });
+                guildReacts.map(reaction => embed.addFields([{ name: reaction.name, value: bot.storedEmojis[reaction.emote].text, inline: true }]));
+                const message = await channel.send({ embeds: [embed], components: addInteractionComponents(bot, guildReacts) });
                 const roleAssignmentInteractionCollector = new Discord.InteractionCollector(bot, { message, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button });
-                roleAssignmentInteractionCollector.on('collect', (interaction) => interactionHandler(interaction, botSettings, guildReacts));
+                roleAssignmentInteractionCollector.on('collect', (interaction) => interactionHandler(interaction, bot, guildReacts));
                 interaction.reply(`Role Assignment message has been successfully sent ${message.url}`);
                 break;
             }
@@ -121,34 +145,9 @@ module.exports = {
             if (message.embeds.length == 0) return; // If the message has no embeds it will not continue
             if (message.components == 0) return; // If the message has no components it will not continue
             // Anything below this code inside this function is for roleassignment messages, and we need to reset them
-            await message.edit({ components: this.addInteractionComponents(guildReacts) }); // This will add a roleassignment button listeners to the message
+            await message.edit({ components: addInteractionComponents(bot, guildReacts) }); // This will add a roleassignment button listeners to the message
             const roleAssignmentInteractionCollector = new Discord.InteractionCollector(bot, { message, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button });
-            roleAssignmentInteractionCollector.on('collect', (interaction) => interactionHandler(interaction, botSettings, guildReacts));
+            roleAssignmentInteractionCollector.on('collect', (interaction) => interactionHandler(interaction, bot, guildReacts));
         });
-    },
-    addInteractionComponents(guildReacts) {
-        const components = [];
-
-        components.push(new Discord.ButtonBuilder()
-            .setCustomId('giveAllRoles')
-            .setLabel('✅ Give All')
-            .setStyle(Discord.ButtonStyle.Success));
-
-        guildReacts.map(reaction =>
-            components.push(new Discord.ButtonBuilder()
-                .setCustomId(reaction.emojiId)
-                .setEmoji(reaction.emojiId)
-                .setStyle(Discord.ButtonStyle.Secondary))
-        );
-
-        components.push(new Discord.ButtonBuilder()
-            .setCustomId('takeAllRoles')
-            .setLabel('❌ Take All')
-            .setStyle(Discord.ButtonStyle.Danger));
-        return components.reduce((rows, btn, idx) => {
-            if (idx % 5 == 0) rows.push(new Discord.ActionRowBuilder());
-            rows[rows.length - 1].addComponents(btn);
-            return rows;
-        }, []);
     }
 };
