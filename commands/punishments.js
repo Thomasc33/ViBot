@@ -379,7 +379,7 @@ class PunishmentsUI {
         if (pages.includes('Warns') && this.#page == 'Warns') page = this.#warnsPage();
         else if (pages.includes('Suspensions') && this.#page == 'Suspensions') page = this.#suspensionsPage();
         else if (pages.includes('Mutes') && this.#page == 'Mutes') page = this.#mutesPage();
-        page.setAuthor({ name: member.displayName, value: member.displayAvatarURL() })
+        page.setAuthor({ name: member.displayName, iconURL: member.displayAvatarURL() })
             .setFooter({ text: `Search by ${this.#moderator.displayName}`, iconURL: this.#moderator.displayAvatarURL() })
             .setTimestamp();
         return page;
