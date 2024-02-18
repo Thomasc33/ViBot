@@ -313,7 +313,7 @@ class PunishmentsUI {
             fields[fields.length - 1] += text;
         }
         embed.addFields(fields.slice(0, 24).map((text) => ({ name: '\u000B', value: text, inline: true })));
-        if (i - 1 != rows.length) embed.addFields({ name: 'Too Many Warns', value: `${member} has ${rows.length} warns but only ${embed.data.fields.length} could fit in the UI.` });
+        if (embed.data.fields?.length != rows.length) embed.addFields({ name: 'Too Many Warns', value: `${member} has ${rows.length} warns but only ${embed.data.fields.length} could fit in the UI.` });
         return embed;
     }
 
@@ -339,7 +339,7 @@ class PunishmentsUI {
             fields[fields.length - 1] += text;
         }
         embed.addFields(fields.slice(0, 24).map((text) => ({ name: '\u000B', value: text, inline: true })));
-        if (i - 1 != rows.length) embed.addFields({ name: 'Too Many Suspensions', value: `${member} has ${rows.length} suspensions but only ${embed.data.fields.length} could fit in the UI.` });
+        if (embed.data.fields?.length != rows.length) embed.addFields({ name: 'Too Many Suspensions', value: `${member} has ${rows.length} suspensions but only ${embed.data.fields.length} could fit in the UI.` });
         return embed;
     }
 
@@ -365,7 +365,7 @@ class PunishmentsUI {
             fields[fields.length - 1] += text;
         }
         embed.addFields(fields.slice(0, 24).map((text) => ({ name: '\u000B', value: text, inline: true })));
-        if (i - 1 != rows.length) embed.addFields({ name: 'Too Many Mutes', value: `${member} has ${rows.length} mutes but only ${embed.data.fields.length} could fit in the UI.` });
+        if (embed.data.fields?.length != rows.length) embed.addFields({ name: 'Too Many Mutes', value: `${member} has ${rows.length} mutes but only ${embed.data.fields.length} could fit in the UI.` });
         return embed;
     }
 
