@@ -18,11 +18,12 @@ async function getMessages(channel, limit) {
     const sumMessages = [];
     for (let i = 0; i <= limit; i += 100) {
         const options = { limit: 100, before: i > 0 ? sumMessages[sumMessages.length - 1].id : null };
-        const messages = channel.messages.fetch(options);
+        // eslint-disable-next-line no-await-in-loop
+        const messages = await channel.messages.fetch(options);
         sumMessages.push(...messages.map(m => m));
         if (messages.size != 100) break;
     }
-    return await Promise.all(sumMessages);
+    return sumMessages;
 }
 
 async function getFeedback(member, guild, bot) {
