@@ -145,7 +145,7 @@ class PunishmentsUI {
             const [mutes] = await db.promise().query('SELECT * FROM mutes WHERE id in (?) AND guildid = ? ORDER BY appliedOn + duration DESC', [ids, this.#guild.id]);
             const permas = mutes.filter(mute => !mute.removedOn && !mute.duration);
             const actives = mutes.filter(mute => !permas.includes(mute) && !mute.removedOn);
-            const remaining = mutes.filter(mute => !permas.includes(mute) && !actives.include(mute));
+            const remaining = mutes.filter(mute => !permas.includes(mute) && !actives.includes(mute));
             this.#mutes = flattenOnId([...permas, ...actives, ...remaining]); // sort by perma > active > inactive, flattenOnId respects local order
         }
 
