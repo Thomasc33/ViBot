@@ -312,8 +312,8 @@ class PunishmentsUI {
             if (fields[fields.length - 1].length + text.length >= 800) fields.push('');
             fields[fields.length - 1] += text;
         }
-        embed.addFields(fields.map((text) => ({ name: '\u000B', value: text, inline: true })));
-        if (i - 1 != rows.length) embed.addFields({ name: 'Too Many Warns', value: `${member} has ${rows.length} warns but only ${i - 1} could fit in the UI.` });
+        embed.addFields(fields.slice(0, 24).map((text) => ({ name: '\u000B', value: text, inline: true })));
+        if (i - 1 != rows.length) embed.addFields({ name: 'Too Many Warns', value: `${member} has ${rows.length} warns but only ${embed.data.fields.length} could fit in the UI.` });
         return embed;
     }
 
@@ -338,8 +338,8 @@ class PunishmentsUI {
             if (fields[fields.length - 1].length + text.length >= 800) fields.push('');
             fields[fields.length - 1] += text;
         }
-        embed.addFields(fields.map((text) => ({ name: '\u000B', value: text, inline: true })));
-        if (i - 1 != rows.length) embed.addFields({ name: 'Too Many Suspensions', value: `${member} has ${rows.length} suspensions but only ${i - 1} could fit in the UI.` });
+        embed.addFields(fields.slice(0, 24).map((text) => ({ name: '\u000B', value: text, inline: true })));
+        if (i - 1 != rows.length) embed.addFields({ name: 'Too Many Suspensions', value: `${member} has ${rows.length} suspensions but only ${embed.data.fields.length} could fit in the UI.` });
         return embed;
     }
 
@@ -364,8 +364,8 @@ class PunishmentsUI {
             if (fields[fields.length - 1].length + text.length >= 800) fields.push('');
             fields[fields.length - 1] += text;
         }
-        embed.addFields(fields.map((text) => ({ name: '\u000B', value: text, inline: true })));
-        if (i - 1 != rows.length) embed.addFields({ name: 'Too Many Mutes', value: `${member} has ${rows.length} mutes but only ${i - 1} could fit in the UI.` });
+        embed.addFields(fields.slice(0, 24).map((text) => ({ name: '\u000B', value: text, inline: true })));
+        if (i - 1 != rows.length) embed.addFields({ name: 'Too Many Mutes', value: `${member} has ${rows.length} mutes but only ${embed.data.fields.length} could fit in the UI.` });
         return embed;
     }
 
