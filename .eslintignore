@@ -12,7 +12,6 @@ commands/crasherList.js
 commands/emoji.js
 commands/eval.js
 commands/excuse.js
-commands/falseSuspensions.js
 commands/glape.js
 commands/headcount.js
 commands/id.js
@@ -27,10 +26,8 @@ commands/memes.js
 commands/modmailBlacklist.js
 commands/mute.js
 commands/mutes.js
-commands/noNicknames.js
 commands/parsemembers.js
 commands/permaSuspend.js
-commands/points.js
 commands/poll.js
 commands/prunerushers.js
 commands/pull.js
@@ -49,7 +46,6 @@ commands/suspend.js
 commands/suspendremove.js
 commands/suspends.js
 commands/sysinfo.js
-commands/tempKeyRemove.js
 commands/test.js
 commands/unlock.js
 commands/unmute.js
