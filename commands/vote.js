@@ -1,5 +1,4 @@
 const Discord = require('discord.js');
-const getFeedback = require('./getFeedback');
 const ErrorLogger = require('../lib/logError');
 const voteConfigurationTemplates = require('../data/voteConfiguration.json');
 
@@ -14,6 +13,26 @@ module.exports = {
         await voteModule.startProcess();
     }
 };
+
+async function getMessages(channel, limit) {
+    const sumMessages = [];
+    for (let i = 0; i <= limit; i += 100) {
+        const options = { limit: 100, before: i > 0 ? sumMessages[sumMessages.length - 1].id : null };
+        // eslint-disable-next-line no-await-in-loop
+        const messages = await channel.messages.fetch(options);
+        sumMessages.push(...messages.map(m => m));
+        if (messages.size != 100) break;
+    }
+    return sumMessages;
+}
+
+async function getFeedback(member, guild, bot) {
+    const settings = bot.settings[member.guild.id];
+    const feedbackChannel = guild.channels.cache.get(settings.channels.rlfeedback);
+    const messages = await getMessages(feedbackChannel, 500);
+    const mentions = messages.filter(m => m.mentions.users.get(member.id)).map(m => m.url);
+    return mentions;
+}
 
 class Vote {
     /**
@@ -158,7 +177,7 @@ class Vote {
             await this.endVoteConfigurationPhase(interaction);
             this.getEmbedStyling();
             Promise.all(this.voteConfiguration.members.map(async member => {
-                const feedbacks = await getFeedback.getFeedback(member, this.guild, this.bot);
+                const feedbacks = await getFeedback(member, this.guild, this.bot);
                 await this.startVote(member, feedbacks);
             }));
         } catch (error) {
