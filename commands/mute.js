@@ -110,6 +110,7 @@ module.exports = {
     name: 'mute',
     description: 'Gives user the muted role',
     role: 'security',
+    slashOnlyArgsProcessing: true,
     args: [
         slashArg(SlashArgType.Subcommand, 'temporary', {
             description: 'Temporarily mute member',
@@ -145,7 +146,9 @@ module.exports = {
     getSlashCommandData(guild) {
         return slashCommandJSON(this, guild);
     },
-
+    getNotes() {
+        return { title: 'Chat Command Args', value: '<user> <\'permanent\' | <time> <duration>> <reason>\n\nDuration should be either s(econds), m(inutes), h(ours), d(ays), w(eeks), mo(nths), y(ears)' };
+    },
     /**
      * @param {import('../utils.js').BotCommandInteraction?} interaction
      * @param {import('discord.js').GuildMember} member
@@ -194,19 +197,7 @@ module.exports = {
         const dm = await member.createDM().catch(() => {});
         await dm?.send({ embeds: [embed] }).catch(() => {});
     },
-
-    /**
-     * @param {import('../utils.js').BotCommandInteraction} interaction
-     * @param {string[]} args ignored
-     * @param {import('discord.js').Client} bot
-     * @param {import('mysql2').Pool} db
-     */
-    async execute(interaction, args, bot, db) {
-        const settings = bot.settings[interaction.guild.id];
-        const member = interaction.options.getMember('member');
-        const reason = interaction.options.getString('reason');
-        const type = interaction.options.getSubcommand();
-        const duration = type == 'permanent' ? 0 : processDuration(interaction.options.getString('duration'), interaction.options.getInteger('time'));
+    async processExecute(interaction, settings, db, member, reason, duration) {
         const embed = new EmbedBuilder()
             .setAuthor({ name: member.displayName, iconURL: member.displayAvatarURL() })
             .setColor(Colors.Blue)
@@ -216,12 +207,6 @@ module.exports = {
             .setDescription('Please wait...');
 
         await interaction.reply({ embeds: [embed] });
-
-        if (type != 'permanent' && !duration) {
-            embed.setColor(Colors.Red)
-                .setDescription(`\`${interaction.options.getInteger('time')} ${interaction.options.getString('duration')}\` is not a valid duration.`);
-            return await interaction.editReply({ embeds: [embed] });
-        }
 
         if (member.roles.highest.position >= interaction.member.roles.highest.position) {
             embed.setColor(Colors.Red)
@@ -244,6 +229,48 @@ module.exports = {
         }
 
         await this.mute(settings, db, interaction, member, duration, reason, rows[0]);
+    },
+    /**
+     * @param {import('discord.js').ChatInputCommandInteraction} interaction
+     * @param {import('discord.js').Client} bot
+     * @param {import('mysql2').Pool} db
+     */
+    async slashCommandExecute(interaction, bot, db) {
+        const settings = bot.settings[interaction.guild.id];
+        const member = interaction.options.getMember('member');
+        const reason = interaction.options.getString('reason');
+        const type = interaction.options.getSubcommand();
+        const duration = type == 'permanent' ? 0 : processDuration(interaction.options.getString('duration'), interaction.options.getInteger('time'));
+        await this.processExecute(interaction, settings, db, member, reason, duration);
+    },
+
+    /**
+     * @param {import('discord.js').Message} interaction
+     * @param {string[]} args ignored
+     * @param {import('discord.js').Client} bot
+     * @param {import('mysql2').Pool} db
+     */
+    async execute(message, args, bot, db) {
+        const settings = bot.settings[message.guild.id];
+
+        const embed = new EmbedBuilder()
+            .setColor(Colors.Red)
+            .setTimestamp()
+            .setFooter({ text: `Ran by ${message.member.displayName}` })
+            .setTitle('Invalid Arguments');
+        const search = args.shift();
+        const member = message.guild.findMember(search);
+        if (!member) return message.reply({ embeds: [embed.setDescription(`Could not find member matching \`${search}\``)] });
+
+        const timeValue = args.shift();
+        if (isNaN(timeValue) && !timeValue.toLowerCase().startsWith('perm')) {
+            return await message.reply({ embeds: [embed.setDescription(`\`${timeValue}\` is not a valid argument for \`time\``)] });
+        }
+
+        const duration = isNaN(timeValue) ? 0 : processDuration(args.shift(), parseInt(timeValue));
+        const reason = args.join(' ');
+
+        await this.processExecute(message, settings, db, member, reason, duration);
     }
 };
 

@@ -30,7 +30,6 @@ commands/manualVerify.js
 commands/manualVetVerify.js
 commands/memes.js
 commands/modmailBlacklist.js
-commands/mute.js
 commands/noNicknames.js
 commands/parsemembers.js
 commands/permaSuspend.js
