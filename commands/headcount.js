@@ -383,7 +383,6 @@ class Headcount {
      * @returns {Promise<boolean>}
      */
     static async confirmShouldSend(interaction, template) {
-        if (Headcount.cache.size == 0) return true;
         const { member } = interaction;
 
         const issues = [];
@@ -393,14 +392,20 @@ class Headcount {
 
         const matches = inChannel.filter(hc => hc.#template.templateID == template.templateID);
         if (matches.length) {
-            const matchList = matches.map(hc => `${hc.#message.url} - ${hc.#member.displayName}'s ${hc.#template.templateName} ${hc.discordTimestamp}`).join('\n');
+            const matchList = matches.map(hc => `${hc.#message.url} - \`${hc.#member.displayName}'s ${hc.#template.templateName}\` ${hc.discordTimestamp}`).join('\n');
             issues.push({ name: `Same Template (${matches.length})`, value: `There are headcount(s) already for \`${template.templateName}\` in ${template.raidStatusChannel.url}:\n${matchList}` });
         }
 
         const selfInGuild = Headcount.cache.map(hc => hc).filter(hc => hc.#guild.id == member.guild.id && hc.#member.id == member.id);
         if (selfInGuild.length) {
-            const matchList = selfInGuild.map(hc => `${hc.#message.url} - ${hc.#template.templateName} ${hc.discordTimestamp}`).join('\n');
+            const matchList = selfInGuild.map(hc => `${hc.#message.url} - \`${hc.#template.templateName}\` ${hc.discordTimestamp}`).join('\n');
             issues.push({ name: `Own Headcounts (${selfInGuild.length})`, value: `You already have headcounts active in \`${member.guild.name}\`:\n${matchList}` });
+        }
+
+        const afks = Object.values(interaction.client.afkModules).filter(afk => afk.active && afk.raidStatusMessage.channel.id == template.raidStatusChannel.id);
+        if (afks.length) {
+            // eslint-disable-next-line no-bitwise
+            issues.push({ name: `Active AFKs in ${template.raidStatusChannel.name}`, value: afks.map(afk => `${afk.raidStatusMessage.url} \`${afk.leader.displayName}'s ${afk.afkTemplateName}\` <t:${((Date.now() / 1000) + afk.timerSecondsRemaining()) ^ 0}:R>`).join('\n') });
         }
 
         if (!issues.length) return true;
@@ -410,6 +415,7 @@ class Headcount {
             .setAuthor({ name: `${member.displayName}'s ${template.templateName}`, iconURL: member.displayAvatarURL() })
             .setDescription('Are you sure you want to send another headcount?')
             .setColor(template.body[0].embed.color || Colors.Blue)
+            .setFooter({ text: 'This embed will automatically cancel in 30 seconds' })
             .setFields(issues);
 
         const confirmMessage = await interaction.editReply({ embeds: [embed] });
