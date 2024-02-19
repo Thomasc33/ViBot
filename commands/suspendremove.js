@@ -19,7 +19,6 @@ module.exports = {
      * @param {Discord.Client} bot
      * @param {import('mysql2').Connection} db
      */
-    // eslint-disable-next-line complexity
     async execute(message, args, bot, db) {
         /** @type {import('../data/guildSettings.701483950559985705.cache.json')} */
         const settings = bot.settings[message.guild.id];
@@ -41,9 +40,9 @@ module.exports = {
 
         /** @type {string[]} */
         const descriptions = rows.slice(0, 24).map((row, index) => {
-            const time = `set to end <t:${(parseInt(row.uTime) / 1000).toFixed(0)}:R>`;
-            const at = `at <t:${(parseInt(row.uTime) / 1000).toFixed(0)}:t> <t:${(parseInt(row.uTime) / 1000).toFixed(0)}:d>`;
-            const bulk = `**${index + 1}.${row.suspended ? ' Active' : ''}** By <@!${row.modid}> ${time} ${at}`;
+            const time = (parseInt(row.uTime) / 1000).toFixed(0);
+            const timestr = row.perma ? 'permanently' : `Set to End <t:${time}:R> at <t:${time}:f>`;
+            const bulk = `**${index + 1}.${row.suspended ? ' Active' : ''}** By <@!${row.modid}> ${timestr}`;
             return `${bulk}\n\`\`\`${row.reason}\`\`\``;
         }).reduce((acc, info) => {
             if (acc[acc.length - 1].length + info.length + 1 > 3800) acc.push('');
@@ -60,14 +59,8 @@ module.exports = {
         const embed = new Discord.EmbedBuilder()
             .setTitle('Suspension Removal')
             .setColor(Discord.Colors.Blue);
-        const displays = [];
-        if (descriptions.length) {
-            for (const desc of descriptions) {
-                embed.setDescription(`**Select a suspension to remove from ${member}:**\n\n${desc}`);
-                // eslint-disable-next-line no-await-in-loop
-                displays.push(await message.channel.send({ embeds: [embed] }));
-            }
-        }
+
+        const displays = await Promise.all(descriptions.map(desc => message.channel.send({ embeds: [embed.setDescription(`**Select a suspension to remove from ${member}:**\n\n${desc}`)] })));
 
         const rsPanel = displays.pop();
         const choice = await rsPanel.confirmNumber(Math.min(rows.length, 24), message.member.id).catch(() => false);
