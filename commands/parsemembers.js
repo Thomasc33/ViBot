@@ -339,7 +339,7 @@ module.exports = {
         // log parse quota
         let currentWeekParseName, parseTotalName, commandName;
 
-        if (Object.keys(raid.buttons).some(button => button.toLowerCase() == 'winecellar incantation')) { // hope this never causes problems in the future
+        if (raid.buttons.some(button => button.name.toLowerCase() == 'winecellar incantation')) { // hope this never causes problems in the future
             for (let i in ParseCurrentWeek.o3parsecurrentweek) {
                 i = ParseCurrentWeek.o3parsecurrentweek[i];
                 if (message.guild.id == i.id && !i.disabled) {
