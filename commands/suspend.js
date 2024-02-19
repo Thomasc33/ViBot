@@ -106,26 +106,33 @@ module.exports = {
                         .setFooter({ text: `Unsuspending at ` })
                         .setTimestamp(Date.now() + time);
                     if (overwrite) {
-                        db.query(`UPDATE suspensions SET uTime = '${Date.now() + time}' WHERE id = '${member.id}' AND suspended = true`)
-                        embed.data.fields[3].value = `Overwritten suspensions. Roles the same as prior suspension`
-                        suspensionLog.send({ embeds: [embed] }).then(member.user.send({ embeds: [embed] }).catch(() => {}))
-                    } else {
-                        let userRolesString = '', userRoles = []
-                        const roles = [...member.roles.cache.filter(r => !r.managed && (!settings.lists.discordRoles.map(role => settings.roles[role]).includes(r.id))).values()];
-                        embed.data.fields[3].value = roles.join(', ') || 'None!';
-                        member.roles.cache.each(r => {
-                            if (r.managed) return
-                            if (settings.lists.discordRoles.map(role => settings.roles[role]).includes(r.id)) return
-                            userRoles.push(r.id)
-                            userRolesString = userRolesString.concat(`${r.id} `)
+                        db.query(`SELECT reason FROM suspensions WHERE id = ? AND suspended = ? `, [member.id, true], async (err, rows) => {
+                            if(err) {
+                                ErrorLogger.log(err, bot, message.guild)                                 
+                            }else{
+                                const overwriter = message.guild.members.cache.get(message.author.id).nickname ?? 'Unknown'
+                                db.query(`UPDATE suspensions SET suspended = ?, reason = ? WHERE id = ? AND suspended = ?`, [false, '(overwritten: ' + overwriter + ') ' + reason, member.id, true])
+                                embed.data.fields[3].value = `Overwritten suspensions. Roles the same as prior suspension`
+                                await suspensionLog.send({ embeds: [embed] }).then(()=>member.user.send({ embeds: [embed] }).catch(() => {}))
+                            }
                         })
-                        messageId = await suspensionLog.send({ embeds: [embed] });
-                        await member.roles.remove(userRoles)
-                        setTimeout(() => { member.roles.add(suspendedRole.id); }, 1000)
-                        await member.user.send({ embeds: [embed] }).catch(() => {})
-                        db.query(`INSERT INTO suspensions (id, guildid, suspended, uTime, reason, modid, roles, logmessage, unixTimestamp, length) VALUES ('${member.id}', '${message.guild.id}', true, '${Date.now() + time}', ${db.escape(reason)}, '${message.author.id}', '${userRolesString}', '${messageId.id}', '${Date.now()}', '${`${timeString} ${timeTypeString}`}');`)
-                    }
+                    } 
+                    let userRolesString = '', userRoles = []
+                    const roles = [...member.roles.cache.filter(r => !r.managed && (!settings.lists.discordRoles.map(role => settings.roles[role]).includes(r.id))).values()];
+                    embed.data.fields[3].value = roles.join(', ') || 'None!';
+                    member.roles.cache.each(r => {
+                        if (r.managed) return
+                        if (settings.lists.discordRoles.map(role => settings.roles[role]).includes(r.id)) return
+                        userRoles.push(r.id)
+                        userRolesString = userRolesString.concat(`${r.id} `)
+                    })
+                    messageId = await suspensionLog.send({ embeds: [embed] });
+                    await member.roles.remove(userRoles)
+                    await member.roles.add(suspendedRole.id)
+                    db.promise().query(`INSERT INTO suspensions (id, guildid, suspended, uTime, reason, modid, roles, logmessage, unixTimestamp, length) VALUES (?,?,?,?,?,?,?,?,?,?);`, [member.id, message.guild.id, true, Date.now() + time, reason, message.author.id, userRolesString, messageId.id, Date.now(), timeString + ' ' + timeTypeString])
                     message.channel.send(`${member} has been suspended`)
+                    member.user.send({ embeds: [embed] }).catch(() => {})
+                    
                 }
 
             })
