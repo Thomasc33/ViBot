@@ -119,8 +119,7 @@ module.exports = {
                     description: 'The type of duration for the mute'
                 }),
                 slashArg(SlashArgType.String, 'reason', {
-                    description: 'The reason for the permanent mute',
-                    varargs: true
+                    description: 'The reason for the permanent mute'
                 })
             ]
         }),
@@ -131,8 +130,7 @@ module.exports = {
                     description: 'Server member to mute'
                 }),
                 slashArg(SlashArgType.String, 'reason', {
-                    description: 'The reason for the permanent mute',
-                    varargs: true
+                    description: 'The reason for the permanent mute'
                 })
             ]
         }),
