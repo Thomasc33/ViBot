@@ -83,7 +83,7 @@ module.exports = {
                     { name: 'Roles Received', value: `<@&${settings.roles.raider}>`, inline: true },
                     ...embed.data.fields)
                 .setTimestamp(Date.now())
-                .setFooter('Unsuspended at');
+                .setFooter({ text: 'Unsuspended at' });
 
             confirmMessage.edit({ embeds: [embed], components: [] });
             suspendlog?.send({ embeds: [embed] });
