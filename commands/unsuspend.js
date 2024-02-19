@@ -1,7 +1,4 @@
-const fs = module.require('fs')
-const Discord = require('discord.js')
-const ErrorLogger = require('../lib/logError')
-const permaSuspend = require('./permaSuspend')
+const Discord = require('discord.js');
 module.exports = {
     name: 'unsuspend',
     description: 'Manually unsuspends user',
@@ -9,12 +6,12 @@ module.exports = {
     requiredArgs: 1,
     role: 'warden',
     /**
-     * 
-     * @param {Discord.Message} message 
-     * @param {string[]} args 
-     * @param {Discord.Client} bot 
-     * @param {import('mysql2').Connection} db 
-     * @returns 
+     *
+     * @param {Discord.Message} message
+     * @param {string[]} args
+     * @param {Discord.Client} bot
+     * @param {import('mysql2').Connection} db
+     * @returns
      */
     async execute(message, args, bot, db) {
         const settings = bot.settings[message.guild.id];
@@ -35,11 +32,11 @@ module.exports = {
                 .setColor(Discord.Colors.Red);
             return confirmMessage.edit({ embeds: [embed] });
         }
-        if (!member.roles.cache.has(settings.roles.permasuspended) 
+        if (!member.roles.cache.has(settings.roles.permasuspended)
             && !member.roles.cache.has(settings.roles.tempsuspended)) {
             embed.setDescription(`${member} is not currently suspended.`)
                 .setColor(Discord.Colors.Red);
-            return confirmMessage.edit({ embeds: [embed] })
+            return confirmMessage.edit({ embeds: [embed] });
         }
         if (member.roles.cache.has(settings.roles.permasuspended)) {
             const unpermaRole = message.guild.roles.cache.get(settings.rolePermissions.unsuspendPermanentSuspension);
@@ -56,7 +53,6 @@ module.exports = {
                 embed.setDescription(`Cancelled attempting to unsuspend permanently suspended user ${member}`)
                     .setColor(Discord.Colors.Red)
                     .setTimestamp(Date.now());
-
                 return confirmMessage.edit({ embeds: [embed], components: [] });
             }
         }
@@ -69,15 +65,15 @@ module.exports = {
             return;
         }
 
-        embed.setDescription(`${member} was not suspended by ${bot.user}. Would you still like to unsuspend them? They will receive the <@&${settings.roles.raider}> role back.`)
-        if (!member.nickname) embed.addFields({ name: 'No Nickname Warning', value: `${member} does not have a nickname. Make sure they are supposed to receive <@&${settings.roles.raider}> before continuing.` })
+        embed.setDescription(`${member} was not suspended by ${bot.user}. Would you still like to unsuspend them? They will receive the <@&${settings.roles.raider}> role back.`);
+        if (!member.nickname) embed.addFields({ name: 'No Nickname Warning', value: `${member} does not have a nickname. Make sure they are supposed to receive <@&${settings.roles.raider}> before continuing.` });
         embed.addFields({ name: 'Reason', value: reason });
         confirmMessage.edit({ embeds: [embed] });
 
         if (await confirmMessage.confirmButton(message.member.id)) {
             member.roles.remove([settings.roles.tempsuspended, settings.roles.permasuspend])
                 .then(() => member.roles.add(settings.roles.raider))
-                .then(() => settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified) && member.roles.remove(settings.roles.unverified))
+                .then(() => settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified) && member.roles.remove(settings.roles.unverified));
 
             embed.setTitle('Unsuspended')
                 .setDescription(`${member} has been unsuspended.`)
@@ -89,18 +85,18 @@ module.exports = {
                 .setTimestamp(Date.now())
                 .setFooter('Unsuspended at');
 
-            confirmMessage.edit({ embeds: [embed], components: [] })
-            suspendlog?.send({ embeds: [embed] })
+            confirmMessage.edit({ embeds: [embed], components: [] });
+            suspendlog?.send({ embeds: [embed] });
         }
     },
     /**
      * @param {Discord.GuildMember} mod
-     * @param {*} row 
+     * @param {*} row
      * @param {Discord.Client} bot
      * @param {import('mysql2').Connection} db
      * @param {*} settings
-     * @param {string} reason 
-     * 
+     * @param {string} reason
+     *
      * @returns {EmbedBuilder}
      */
     async processUnsuspend(mod, row, bot, db, settings, reason) {
@@ -115,16 +111,17 @@ module.exports = {
             .concat(...member.roles.cache.map(r => r).filter(r => r.managed).map(r => r.id)) // add managed roles that might not be listed in discordRoles
             .filter(r => r != settings.roles.tempsuspended && r != settings.roles.permasuspend && (!settings.backend.useUnverifiedRole || r != settings.roles.unverified)); // filter out unverified & suspended
 
-        if (settings.backend.useUnverifiedRole && roles.length == roles.filter(r => member.guild.roles.cache.get(r)?.managed).length) 
+        if (settings.backend.useUnverifiedRole && roles.length == roles.filter(r => member.guild.roles.cache.get(r)?.managed).length) {
             roles.push(settings.roles.unverified); // if the only roles member has are managed roles, they should be Unverified
+        }
 
         await member.roles.set(roles);
 
         /** @type {Discord.GuildTextBasedChannel?} */
         const suspendlog = guild.channels.cache.get(settings.channels.suspendlog);
-        const suspendMessage = await suspendlog?.messages.fetch({ limit: 100 }).then(messages => messages.find(message => message.id == row.logmessage && message.author.id == bot.user.id))
+        const suspendMessage = await suspendlog?.messages.fetch({ limit: 100 }).then(messages => messages.find(message => message.id == row.logmessage && message.author.id == bot.user.id));
 
-        const embed = Discord.EmbedBuilder.from(suspendMessage?.embeds[0])
+        const embed = Discord.EmbedBuilder.from(suspendMessage?.embeds[0]);
 
         if (!suspendMessage) {
             embed.setTitle('Unsuspend Information')
@@ -132,20 +129,19 @@ module.exports = {
                 .addFields({ name: `User Information \`${member.displayName}\``, value: `${member} (Tag: ${member.user.tag})`, inline: true },
                     { name: `Mod Information \`${mod.displayName}\``, value: `${mod} (Tag: ${mod.user.tag})`, inline: true },
                     { name: 'Reason', value: reason },
-                    { name: 'Roles', value: roles.map(r => `<@&${r}>`).join(', ') || 'No Roles' })
+                    { name: 'Roles', value: roles.map(r => `<@&${r}>`).join(', ') || 'No Roles' });
         }
 
         embed.setColor(Discord.Colors.Green)
             .setDescription(embed.data.description.concat(`\nUnsuspended manually by ${mod} \`${mod.displayName}\``))
             .setFooter({ text: 'Unsuspended at' })
             .setTimestamp(Date.now())
-            .addFields({ name: 'Reason for unsuspension:', value: reason })
+            .addFields({ name: 'Reason for unsuspension:', value: reason });
 
-        if (suspendMessage) suspendMessage.edit({ embeds: [embed] })
-        else suspendlog?.send({ embeds: [embed] })
+        if (suspendMessage) suspendMessage.edit({ embeds: [embed] });
+        else suspendlog?.send({ embeds: [embed] });
 
-        await db.promise().query('UPDATE suspensions SET suspended = 0 WHERE id = ?', [member.id])
-
+        await db.promise().query('UPDATE suspensions SET suspended = 0 WHERE id = ?', [member.id]);
         return embed;
     }
-}
+};
