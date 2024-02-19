@@ -2,7 +2,6 @@ const Discord = require('discord.js')
 const botSettings = require('../settings.json')
 const ErrorLogger = require('../lib/logError')
 const realmEyeScrape = require('../lib/realmEyeScrape')
-const charList = require('./characterList')
 const lootInfo = require('../data/lootInfo.json')
 const ext = require('../lib/extensions');
 const dungeons = require('../data/vetVerification.json')
@@ -252,7 +251,7 @@ module.exports = {
             } catch (e) {
                 //User has DMs off
             }
-            veriPending.send({ embeds: [await charList.getEmbed(ign, bot)] })
+            veriPending.send({ embeds: [await realmEyeScrape.getEmbed(ign, bot)] })
             this.pendingModule(pendingMessage, db)
         }
     },
