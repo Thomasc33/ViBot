@@ -31,7 +31,6 @@ module.exports = {
         if (!member) return message.channel.send('Member not found. Please try again');
         const [rows] = await db.promise().query('SELECT * FROM suspensions WHERE guildid = ? AND id = ? ORDER BY suspended DESC, unixTimestamp DESC, uTime DESC', [member.guild.id, member.user.id]);
 
-        // Performs a check to see if the raider is currently suspended, if they are, you will not be allowed to continue and the raider stays suspended
         if (rows.length == 0) {
             const embed = new Discord.EmbedBuilder()
                 .setTitle('Suspension Removal')
@@ -52,17 +51,17 @@ module.exports = {
             return acc;
         }, ['']);
 
-        const displays = [];
         if (rows.length > 24) {
             const issue = `\n\n**Only 24 items can be selected from**, however ${member} has had ${rows.length} suspensions. If the suspension you want to remove does not show up, please contact a developer to remove it directly.`;
             if (descriptions[descriptions.length - 1].length + issue.length > 3800) descriptions.push('');
             descriptions[descriptions.length - 1] += issue;
         }
 
+        const embed = new Discord.EmbedBuilder()
+            .setTitle('Suspension Removal')
+            .setColor(Discord.Colors.Blue);
+        const displays = [];
         if (descriptions.length) {
-            const embed = new Discord.EmbedBuilder()
-                .setTitle('Suspension Removal')
-                .setColor(Discord.Colors.Blue);
             for (const desc of descriptions) {
                 embed.setDescription(`**Select a suspension to remove from ${member}:**\n\n${desc}`);
                 // eslint-disable-next-line no-await-in-loop
@@ -70,8 +69,7 @@ module.exports = {
             }
         }
 
-        const rsPanel = displays[displays.length - 1];
-        const embed = Discord.EmbedBuilder.from(rsPanel.embeds[0].data);
+        const rsPanel = displays.pop();
         const choice = await rsPanel.confirmNumber(Math.min(rows.length, 24), message.member.id).catch(() => false);
 
         if (choice === false) {
@@ -92,7 +90,7 @@ module.exports = {
             .setFields({ name: 'Member', value: `${member} \`${member.displayName}\``, inline: true },
                 { name: 'Issued By', value: mod ? `${mod} \`${mod.displayName}\`` : `<@${suspension.modid}>`, inline: true });
         if (suspension.suspended) {
-            const suspensionRoles = [settings.roles.tempsuspended, settings.roles.permasuspended].filter(r => member.roles.cache.get(r)).map(r => `<@&${r}>`);
+            const suspensionRoles = [settings.roles.tempsuspended, settings.roles.permasuspended].filter(r => member.roles.cache.get(r));
             embed.addFields({ name: 'Active Suspension', value: suspensionRoles.join(' ') || 'In database only (no roles)', inline: true });
         } else {
             embed.addFields({ name: '\u200b', value: '\u200b', inline: true });
@@ -102,7 +100,7 @@ module.exports = {
             { name: suspension.suspended ? 'Ends' : 'Ended', value: suspension.perma ? 'Permanent' : `<t:${(parseInt(suspension.uTime) / 1000).toFixed(0)}:R>`, inline: true },
             { name: 'Reason', value: suspension.reason || 'No Reason Provided' });
 
-        displays.forEach(msg => msg != rsPanel && msg.deletable && msg.delete());
+        displays.forEach(msg => msg.delete().catch(() => {})); // Message.deletable seems to be bugged/doesn't always work; just try and ignore if it fails
         await rsPanel.edit({ embeds: [embed], components: [] });
         const reason = await rsPanel.channel.next(null, null, message.author.id).catch(err => {
             embed.setTitle('Suspension Removal Cancelled')
