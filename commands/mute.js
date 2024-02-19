@@ -260,7 +260,7 @@ module.exports = {
         }
 
         const duration = isNaN(timeValue) ? 0 : processDuration(args.shift(), parseInt(timeValue));
-        const reason = args.join(' ');
+        const reason = args.join(' ') || 'No reason provided';
 
         await this.processExecute(message, settings, db, member, reason, duration);
     }

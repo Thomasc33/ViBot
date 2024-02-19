@@ -47,18 +47,21 @@ module.exports = {
         const reason = [interaction.options.getString('reason'), ...interaction.options.getVarargs()].join(' ') || 'No reason provided';
 
         const [[row]] = await db.promise().query('SELECT * FROM mutes WHERE id = ? AND guildid = ? AND removedOn IS NULL', [member.id, member.guild.id]);
-
+        const embed = new EmbedBuilder()
+            .setFooter({ text: `Ran by ${interaction.member.displayName}`, iconURL: interaction.member.displayAvatarURL() })
+            .setAuthor({ name: member.displayName, iconURL: member.displayAvatarURL() })
+            .setTitle('Unmute')
+            .setTimestamp()
+            .setColor(Colors.Red);
         if (!row && !member.roles.cache.has(settings.roles.muted)) {
-            const embed = new EmbedBuilder()
-                .setFooter({ text: `Ran by ${interaction.member.displayName}`, iconURL: interaction.member.displayAvatarURL() })
-                .setDescription(`${member} does not have the muted role and doesn't have any active mutes with ${interaction.client.user}.`)
-                .setAuthor({ name: member.displayName, iconURL: member.displayAvatarURL() })
-                .setTitle('Unmute')
-                .setTimestamp()
-                .setColor(Colors.Red);
+            embed.setDescription(`${member} does not have the muted role and doesn't have any active mutes with ${interaction.client.user}.`);
             return await interaction.reply({ embeds: [embed] });
         }
-
+        const rpmrole = member.guild.roles.cache.get(settings.roles[settings.rolePermissions.removePermanentMute]);
+        if (rpmrole && member.roles.highest.position < rpmrole.position) {
+            embed.setDescription(`You must have ${rpmrole} or higher to remove a permanent mute.`);
+            return await interaction.reply({ embeds: [embed] });
+        }
         await this.unmute(interaction, interaction.guild, interaction.member, member, settings, db, row, reason);
     },
 
@@ -79,8 +82,8 @@ module.exports = {
             .setTitle('Unmute')
             .setTimestamp()
             .setFooter({ text: `Ran by ${moderator.displayName}`, iconURL: moderator.displayAvatarURL() })
-            .addFields({ name: 'Member', value: member ? `${member} \`${member.displayName}\`` : `<@!${row.id}> (not in server)`, inline: true },
-                { name: 'Moderator', value: `${moderator} \`${moderator.displayName}\``, inline: true },
+            .addFields({ name: 'Member', value: member ? `${member}\n\`${member.displayName}\`` : `<@!${row.id}> (not in server)`, inline: true },
+                { name: 'Moderator', value: `${moderator}\n\`${moderator.displayName}\``, inline: true },
                 { name: 'Unmute Time', value: `<t:${Date.unix()}:f>`, inline: true },
                 { name: 'Unmute Reason', value: reason });
 
@@ -89,8 +92,8 @@ module.exports = {
                 [moderator.id, reason, row.id, guild.id]);
 
             const mod = guild.members.cache.get(row.modid);
-            embed.addFields({ name: 'Muted By', value: mod ? `${mod} \`${mod.displayName}\`` : `<@!${row.modid}>`, inline: true },
-                { name: 'Muted On', value: `<t:${row.appliedOn}:R> at <t:${row.appliedOn}:f>`, inline: true },
+            embed.addFields({ name: 'Muted By', value: mod ? `${mod}\n\`${mod.displayName}\`` : `<@!${row.modid}>`, inline: true },
+                { name: 'Muted On', value: `<t:${row.appliedOn}:R>\n<t:${row.appliedOn}:f>`, inline: true },
                 { name: 'Mute Duration', value: durationString(row.duration, row.appliedOn), inline: true },
                 { name: 'Mute Reason', value: row.reason });
         } else {
