@@ -227,12 +227,6 @@ class MessageManager {
                     message.channel.send('You are not currently logged in the database. The database gets updated every 24-48 hours')
                 }
             }
-        } else if (/^.?(pl[ea]{0,2}se?\s*)?(j[oi]{2}n|d[ra]{2}g\s*(me)?)(\s*pl[ea]{0,2}se?)?$/i.test(message.content)) {
-            const guild = await this.getGuild(message).catch(er => cancelled = true)
-            this.#logCommand(guild, message)
-            if (!cancelled) {
-                require('./commands/joinRun').dmExecution(message, message.content.split(/\s+/), this.#bot, getDB(guild.id), guild, this.#tokenDB);
-            }
         } else {
             if (message.content.replace(/[^0-9]/g, '') == message.content) return;
             const args = message.content.split(/ +/)
