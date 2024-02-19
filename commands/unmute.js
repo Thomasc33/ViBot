@@ -48,7 +48,7 @@ module.exports = {
 
         const [[row]] = await db.promise().query('SELECT * FROM mutes WHERE id = ? AND guildid = ? AND removedOn IS NULL', [member.id, member.guild.id]);
         const embed = new EmbedBuilder()
-            .setFooter({ text: `Ran by ${interaction.member.displayName}`, iconURL: interaction.member.displayAvatarURL() })
+            .setFooter({ text: `${interaction.member.displayName}`, iconURL: interaction.member.displayAvatarURL() })
             .setAuthor({ name: member.displayName, iconURL: member.displayAvatarURL() })
             .setTitle('Unmute')
             .setTimestamp()
@@ -81,7 +81,7 @@ module.exports = {
             .setAuthor({ name: member.displayName, iconURL: member.displayAvatarURL() })
             .setTitle('Unmute')
             .setTimestamp()
-            .setFooter({ text: `Ran by ${moderator.displayName}`, iconURL: moderator.displayAvatarURL() })
+            .setFooter({ text: `${moderator.displayName}`, iconURL: moderator.displayAvatarURL() })
             .addFields({ name: 'Member', value: member ? `${member}\n\`${member.displayName}\`` : `<@!${row.id}> (not in server)`, inline: true },
                 { name: 'Moderator', value: `${moderator}\n\`${moderator.displayName}\``, inline: true },
                 { name: 'Unmute Time', value: `<t:${Date.unix()}:f>`, inline: true },

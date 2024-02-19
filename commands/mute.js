@@ -156,7 +156,7 @@ module.exports = {
             .setAuthor({ name: member.displayName, iconURL: member.displayAvatarURL() })
             .setTitle('Mute Information')
             .setDescription(`The mute is ${duration ? 'for ' + moment.duration(duration * 1000).humanize(false) : 'permanent'}`)
-            .setFooter({ text: duration ? 'Unmuting at' : 'Permanent' })
+            .setFooter({ text: moderator.displayName, iconURL: moderator.displayAvatarURL() })
             .setColor(Colors.Green)
             .setTimestamp(endTime)
             .addFields({ name: 'Member', value: `${member} \`${member.displayName}\``, inline: true },
@@ -194,7 +194,7 @@ module.exports = {
             .setAuthor({ name: member.displayName, iconURL: member.displayAvatarURL() })
             .setColor(Colors.Blue)
             .setTimestamp()
-            .setFooter({ text: `Ran by ${interaction.member.displayName}` })
+            .setFooter({ text: `${interaction.member.displayName}`, iconURL: interaction.member.displayAvatarURL() })
             .setTitle('Processing Mute')
             .setDescription('Please wait...');
 
@@ -248,7 +248,7 @@ module.exports = {
         const embed = new EmbedBuilder()
             .setColor(Colors.Red)
             .setTimestamp()
-            .setFooter({ text: `Ran by ${message.member.displayName}` })
+            .setFooter({ text: `${message.member.displayName}`, iconURL: message.member.displayAvatarURL() })
             .setTitle('Invalid Arguments');
         const search = args.shift();
         const member = message.guild.findMember(search);
