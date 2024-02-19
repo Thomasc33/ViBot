@@ -171,21 +171,19 @@ async function checkUser(member, bot, db) {
 }
 
 async function checkRow(guild, bot, row, member) {
+    const settings = bot.settings[guild.id];
+    const popInfo = keyroles[guild.id];
+    if (!settings || !popInfo || !member) return;
     member = member || await guild.members.fetch(row.id).catch();
-    return new Promise((res) => {
-        const settings = bot.settings[guild.id];
-        const popInfo = keyroles[guild.id];
-        if (!settings || !popInfo || !member) return;
-        const rolesToAdd = [];
-        for (const keyInfo of popInfo) {
-            if (!settings.roles[keyInfo.role]) continue;
-            let count = 0;
-            for (const [keyType,] of keyInfo.types) count += row[keyType] || 0;
-            if (count >= keyInfo.amount) {
-                if (!member.roles.cache.has(settings.roles[keyInfo.role])) rolesToAdd.push(settings.roles[keyInfo.role]);
-            }
+    const rolesToAdd = [];
+    for (const keyInfo of popInfo) {
+        if (!settings.roles[keyInfo.role]) continue;
+        let count = 0;
+        for (const [keyType,] of keyInfo.types) count += row[keyType] || 0;
+        console.log(count, keyInfo.amount, member.roles.cache.has(settings.roles[keyInfo.role]));
+        if (count >= keyInfo.amount) {
+            if (!member.roles.cache.has(settings.roles[keyInfo.role])) rolesToAdd.push(settings.roles[keyInfo.role]);
         }
-        member.roles.add(rolesToAdd);
-        res(rolesToAdd);
-    });
+    }
+    await member.roles.add(rolesToAdd);
 }
