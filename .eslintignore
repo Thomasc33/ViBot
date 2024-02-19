@@ -43,13 +43,11 @@ commands/script.js
 commands/setStatus.js
 commands/status.js
 commands/suspend.js
-commands/suspendremove.js
 commands/suspends.js
 commands/sysinfo.js
 commands/test.js
 commands/unlock.js
 commands/unmute.js
-commands/unsuspend.js
 commands/unverify.js
 commands/unvetverify.js
 commands/updateIP.js
