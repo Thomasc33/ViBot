@@ -2,7 +2,6 @@ const fs = module.require('fs')
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
 const permaSuspend = require('./permaSuspend')
-const { role: srUserRole, name: srName } = require('./suspendremove')
 module.exports = {
     name: 'unsuspend',
     description: 'Manually unsuspends user',
@@ -36,9 +35,12 @@ module.exports = {
                 .setColor(Discord.Colors.Red);
             return confirmMessage.edit({ embeds: [embed] });
         }
-
-        const staffRole = message.guild.roles.cache.get(settings.roles.trialrl);
-
+        if (!member.roles.cache.has(settings.roles.permasuspended) 
+            && !member.roles.cache.has(settings.roles.tempsuspended)) {
+            embed.setDescription(`${member} is not currently suspended.`)
+                .setColor(Discord.Colors.Red);
+            return confirmMessage.edit({ embeds: [embed] })
+        }
         if (member.roles.cache.has(settings.roles.permasuspended)) {
             const unpermaRole = message.guild.roles.cache.get(settings.rolePermissions.unsuspendPermanentSuspension);
             if (unpermaRole && member.roles.highest.position < unpermaRole.position) {
@@ -57,10 +59,6 @@ module.exports = {
 
                 return confirmMessage.edit({ embeds: [embed], components: [] });
             }
-        } else if (!member.roles.cache.has(settings.roles.tempsuspended)) {
-            embed.setDescription(`${member} is not currently suspended.`)
-                .setColor(Discord.Colors.Red);
-            return confirmMessage.edit({ embeds: [embed] })
         }
 
         const [suspendedRows] = await db.promise().query('SELECT * FROM suspensions WHERE id = ? AND suspended = true', [member.id]);
@@ -72,11 +70,8 @@ module.exports = {
         }
 
         embed.setDescription(`${member} was not suspended by ${bot.user}. Would you still like to unsuspend them? They will receive the <@&${settings.roles.raider}> role back.`)
-
         if (!member.nickname) embed.addFields({ name: 'No Nickname Warning', value: `${member} does not have a nickname. Make sure they are supposed to receive <@&${settings.roles.raider}> before continuing.` })
-        
         embed.addFields({ name: 'Reason', value: reason });
-
         confirmMessage.edit({ embeds: [embed] });
 
         if (await confirmMessage.confirmButton(message.member.id)) {
@@ -118,7 +113,7 @@ module.exports = {
         const roles = row.roles.split(' ').filter(r => r)
             .concat(...settings.lists.discordRoles.map(r => settings.roles[r]).filter(r => member.roles.cache.get(r)))
             .concat(...member.roles.cache.map(r => r).filter(r => r.managed).map(r => r.id)) // add managed roles that might not be listed in discordRoles
-            .filter(r => r != settings.roles.temsuspended && r != settings.roles.permasuspend && (!settings.backend.useUnverifiedRole || r != settings.roles.unverified)); // filter out unverified & suspended
+            .filter(r => r != settings.roles.tempsuspended && r != settings.roles.permasuspend && (!settings.backend.useUnverifiedRole || r != settings.roles.unverified)); // filter out unverified & suspended
 
         if (settings.backend.useUnverifiedRole && roles.length == roles.filter(r => member.guild.roles.cache.get(r)?.managed).length) 
             roles.push(settings.roles.unverified); // if the only roles member has are managed roles, they should be Unverified
