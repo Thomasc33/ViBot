@@ -20,7 +20,7 @@ module.exports = {
     async execute(message, args, bot, db) {
         const settings = bot.settings[message.guild.id];
         const raider = args.shift();
-        const reason = args.join(' ') || 'No reason given';
+        const reason = args.join(' ') || 'No Reason Provided';
         /** @type {Discord.GuildMember} */
         const member = message.guild.findMember(raider);
         const suspendlog = message.guild.channels.cache.get(settings.channels.suspendlog);
