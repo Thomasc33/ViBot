@@ -84,7 +84,7 @@ module.exports = {
             return;
         }
 
-        const suspension = rows[parseInt(choice)];
+        const suspension = rows[parseInt(choice) - 1];
         const mod = message.guild.members.cache.get(suspension.modid);
         embed.setDescription('What is your reason for removing the following suspension?')
             .setFields({ name: 'Member', value: `${member} \`${member.displayName}\``, inline: true },
