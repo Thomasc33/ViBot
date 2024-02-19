@@ -20,14 +20,14 @@ module.exports = {
     name: 'unmute',
     description: 'Removes muted role from user',
     role: 'security',
+    varargs: true,
     args: [
         slashArg(ApplicationCommandOptionType.User, 'member', {
             description: 'Member in the Server'
         }),
         slashArg(ApplicationCommandOptionType.String, 'reason', {
             description: 'Reason for the unmute',
-            required: false,
-            varargs: true
+            required: false
         })
     ],
     getSlashCommandData(guild) {
@@ -44,7 +44,7 @@ module.exports = {
     async execute(interaction, args, bot, db) {
         const settings = bot.settings[interaction.guild.id];
         const member = interaction.options.getMember('member');
-        const reason = interaction.options.getString('reason') || 'No reason provided';
+        const reason = [interaction.options.getString('reason'), ...interaction.options.getVarargs()].join(' ') || 'No reason provided';
 
         const [[row]] = await db.promise().query('SELECT * FROM mutes WHERE id = ? AND guildid = ? AND removedOn IS NULL', [member.id, member.guild.id]);
 
