@@ -44,7 +44,7 @@ module.exports = {
         const descriptions = rows.slice(0, 24).map((row, index) => {
             const time = `set to end <t:${(parseInt(row.uTime) / 1000).toFixed(0)}:R>`;
             const at = `at <t:${(parseInt(row.uTime) / 1000).toFixed(0)}:t> <t:${(parseInt(row.uTime) / 1000).toFixed(0)}:d>`;
-            const bulk = `${row.suspended ? '**' : ''}${index + 1}.${row.suspended ? ' Active**' : ''} By <@!${row.modid}> ${time} ${at}`;
+            const bulk = `**${index + 1}.${row.suspended ? ' Active' : ''}** By <@!${row.modid}> ${time} ${at}`;
             return `${bulk}\n\`\`\`${row.reason}\`\`\``;
         }).reduce((acc, info) => {
             if (acc[acc.length - 1].length + info.length + 1 > 3800) acc.push('');
