@@ -1,7 +1,6 @@
 const Discord = require('discord.js');
 const ErrorLogger = require('../lib/logError');
 const keypops = require('../data/keypop.json');
-const keyRoles = require('./keyRoles');
 const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
 const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js');
 const { createReactionRow } = require('../redis.js');
@@ -122,12 +121,12 @@ module.exports = {
             });
             db.query('UPDATE users SET ?? = ?? + ? WHERE id = ?', [keyInfo.schema, keyInfo.schema, count, member.id], err => {
                 if (err) throw err;
-                keyRoles.checkUser(member, bot, db);
+                checkUser(member, bot, db);
             });
             if (moddedKey) {
                 db.query('UPDATE users SET ?? = ?? + ? WHERE id = ?', [keyInfo.moddedSchema, keyInfo.moddedSchema, count, member.id], err => {
                     if (err) throw err;
-                    keyRoles.checkUser(member, bot, db);
+                    checkUser(member, bot, db);
                 });
             }
             const embed = new Discord.EmbedBuilder()
@@ -157,3 +156,35 @@ module.exports = {
         return null;
     }
 };
+
+async function checkUser(member, bot, db) {
+    const popInfo = keypops[member.guild.id];
+    const settings = bot.settings[member.guild.id];
+    if (!settings || !popInfo) return;
+    const rows = popInfo.map(ki => ki.types.map(t => t[0]).join(', ')).join(', ');
+    db.query('SELECT id, ?? FROM users WHERE id = ?', [rows, member.id], (err, rows) => {
+        if (err) ErrorLogger.log(err, bot, member.guild);
+        if (!rows || !rows[0]) return db.query('INSERT INTO users (id) VALUES (?)', [member.id]);
+        checkRow(member.guild, bot, rows[0], member);
+    });
+}
+
+async function checkRow(guild, bot, row, member) {
+    member = member || await guild.members.fetch(row.id).catch();
+    return new Promise((res) => {
+        const settings = bot.settings[guild.id];
+        const popInfo = keypops[guild.id];
+        if (!settings || !popInfo || !member) return;
+        const rolesToAdd = [];
+        for (const keyInfo of popInfo) {
+            if (!settings.roles[keyInfo.role]) continue;
+            let count = 0;
+            for (const [keyType,] of keyInfo.types) count += row[keyType] || 0;
+            if (count >= keyInfo.amount) {
+                if (!member.roles.cache.has(settings.roles[keyInfo.role])) rolesToAdd.push(settings.roles[keyInfo.role]);
+            }
+        }
+        member.roles.add(rolesToAdd);
+        res(rolesToAdd);
+    });
+}
