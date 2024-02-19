@@ -14,30 +14,24 @@ const { slashArg, slashCommandJSON } = require('../utils.js');
  * @property {number?} removedOn
  * @property {string?} removedBy
  * @property {string?} removeReason
+ * @property {boolean} overwritten
  */
-
-/**
- *
- * @param {number} duration
- * @returns {string}
- */
-function durationString(duration, when = Date.unix()) {
-    if (!duration) return 'Permanent';
-    duration = parseInt(duration);
-    when = parseInt(when);
-    const mmt = moment.duration(duration * 1000).humanize();
-    return `${mmt[0].toUpperCase()}${mmt.substring(1)} ending <t:${when + duration}:R> at <t:${when + duration}:f>`;
-}
 
 /**
  * @param {MuteRow} row
  * @param {import('discord.js').GuildMember} member
  * @param {number?} duration
  */
-async function attemptOverwrite(db, row, member, duration) {
-    const removeReason = `Overwritten by ${member} on <t:${Date.unix()}:f> ${durationString(duration)}`;
-    await db.promise().query('UPDATE mutes SET removedOn = unix_timestamp(), removedBy = ?, removeReason = ? WHERE id = ? AND guildid = ? AND removedOn IS NULL',
-        [member.id, removeReason, row.id, row.guildid]);
+async function attemptOverwrite(db, row, member, reason) {
+    await db.promise().query('UPDATE mutes SET removedOn = unix_timestamp(), removedBy = ?, removeReason = ?, overwritten = true WHERE id = ? AND guildid = ? AND removedOn IS NULL',
+        [member.id, reason, row.id, row.guildid]);
+}
+
+function durationString(duration, when = Date.unix()) {
+    if (!duration) return 'Permanent';
+    duration = parseInt(duration);
+    when = parseInt(when);
+    return `Ending <t:${when + duration}:R>\nAt <t:${when + duration}:f>`;
 }
 
 /**
@@ -173,7 +167,7 @@ module.exports = {
                 { name: 'Reason', value: reason });
 
         if (row) {
-            await attemptOverwrite(db, row, moderator, duration);
+            await attemptOverwrite(db, row, moderator, reason);
             const mod = member.guild.members.cache.get(row.modid);
             embed.addFields({ name: 'Overwrote Mute', value: '\u000B' },
                 { name: 'Old Moderator', value: mod ? `${mod} \`${mod.displayName}\`` : `<@${row.modid}>`, inline: true },
