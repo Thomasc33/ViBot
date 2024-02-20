@@ -395,7 +395,7 @@ module.exports = {
     role: 'eventrl',
     name: 'punishments',
     slashCommandName: 'pu',
-    alias: ['backgroundcheck', 'pu', 'ui', 'userinfo'],
+    alias: ['backgroundcheck', 'pu', 'ui', 'userinfo', 'warns', 'suspends', 'suspensions', 'mutes'],
     description: 'Displays all mutes, warnings or suspensions any user has',
     varargs: true,
     slashOnlyArgsProcessing: true,
