@@ -59,27 +59,27 @@
         "dungeon": [
         {
             "flags": ["void", "halls", "mbc"],
-            "tag": "  Void",
+            "tag": "Void",
             "roles": ["almostHallsBanner", "hallsBanner", "vetHallsBanner"]
         },
         {
             "flags": ["cult"],
-            "tag": "  Cult",
+            "tag": "Cult",
             "roles": ["almostHallsBanner", "hallsBanner", "vetHallsBanner"]
         },
         {
             "flags": ["reading", "mapreading"],
-            "tag": "   Map",
+            "tag": "Map",
             "roles": ["almostHallsBanner", "hallsBanner", "vetHallsBanner", "fullskipBanner", "vetFullskipBanner"]
         },
         {
             "flags": ["fullskip", "fs", "skip", "fskip"],
-            "tag": " Fskip",
+            "tag": "Fskip",
             "roles": ["fullskipBanner", "vetFullskipBanner"]
         },
         {
             "flags": ["oryx", "o3"],
-            "tag": "  Oryx",
+            "tag": "Oryx",
             "roles": ["almostOryxBanner", "oryxBanner", "veteranOryxBanner"]
         },
         {
@@ -90,17 +90,17 @@
         "tier": [
         {
             "flags": ["trl"],
-            "tag": "TRL  ",
+            "tag": "TRL",
             "roles": ["almostHallsBanner", "almostOryxBanner", "almostShattersBanner"]
         },
         {
             "flags": ["arl"],
-            "tag": "ARL  ",
+            "tag": "ARL",
             "roles": ["hallsBanner", "oryxBanner", "shattersBanner"]
         },
         {
             "flags": ["reading", "mapreading"],
-            "tag": "Read ",
+            "tag": "Lesson",
             "roles": ["almostHallsBanner", "hallsBanner", "vetHallsBanner", "fullskipBanner", "vetFullskipBanner"]
         },
         {
@@ -110,7 +110,7 @@
         },
         {
             "flags": ["vtrl", "vrl", "rl"],
-            "tag": "VTRL ",
+            "tag": "VTRL",
             "roles": ["vetHallsBanner", "veteranOryxBanner", "vetShattersBanner"]
         }
     ]

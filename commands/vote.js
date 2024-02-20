@@ -9,29 +9,20 @@ const { createReactionRow } = require('../redis.js');
 * @property {string} emoji
 * @property {string[]} roles
 */
-// TODO clean up unused properties
 /**
  * @typedef FeedbackData
- * @property {string} feedbackContent
+ * @property {string} messageID
  * @property {FeedbackType} tier
  * @property {FeedbackType} dungeon
- * @property {string} firstLine
- * @property {string} mentionedID
+ * @property {string[]} mentionedIDs
  * @property {string} feedbackURL
- * @property {string} feedbackerID
  * @property {number} timeStamp
- * @property {FeedbackState} displayState
+ * @property {FeedbackState} feedbackState
  */
 
-/**
- * @enum {number}
- */
-const FeedbackState = {
-    Included: 1,
-    Unidentified: 0,
-    Other: -1
-};
-
+const FeedbackState = { Included: 0, Unidentified: 1, Other: 2 };
+// notes:
+// the filtering goes based of the first line of the message, so if someone is giving feedback to multiple people in the same message (feedback on feedback for fullskips), it may get mistagged
 module.exports = {
     name: 'vote',
     role: 'headrl',
@@ -58,7 +49,7 @@ module.exports = {
         });
 
         if (voteSetup.members.length == 0) { return await message.reply('No members found.'); }
-        await getFeedbacks(voteSetup.members, guild, bot, voteSetup);
+        await getFeedbacks(guild, bot, voteSetup);
 
         const embed = getSetupEmbed(voteSetup);
         const voteSetupButtons = generateVoteSetupButtons(bot);
@@ -72,7 +63,6 @@ module.exports = {
         switch (choice) {
             case 'voteSend':
                 await startVote(bot.settings[interaction.guild.id], voteSetup, member);
-                // TODO finish the interactions
                 // move index to next member
                 // if last member in array, delete the message
                 break;
@@ -84,26 +74,43 @@ module.exports = {
                 await message.delete();
                 break;
             case 'voteAddFeedbacks': {
-                // const confirmationMessage = await interaction.reply({ embeds: [voteSetup.getEmbed(member, 'Choose how many feedbacks you want ViBot to look through')], fetchReply: true });
-                // const choice = await confirmationMessage.confirmNumber(10, interaction.member.id);
-                // await confirmationMessage.delete();
-                // if (!choice || isNaN(choice) || choice == 'Cancelled') return;
+                const { includedFeedbacks, unidentifiedFeedbacks, otherFeedbacks } = sortMemberFeedbacks(voteSetup.feedbacks, member);
+                const addableFeedbacks = unidentifiedFeedbacks.concat(otherFeedbacks).slice(0, 25);
+                let index = includedFeedbacks.length + 1;
+                const addSelectionMenu = new Discord.StringSelectMenuBuilder()
+                    .setCustomId('voteAddFeedbacks')
+                    .setPlaceholder('Feedbacks to add')
+                    .setMinValues(1)
+                    .setMaxValues(addableFeedbacks.length)
+                    .addOptions(addableFeedbacks.map(feedback => ({
+                        label: `${index++}. ${feedback.dungeon?.tag || '??'} ${feedback.tier?.tag || '??'}`,
+                        value: feedback.messageID
+                    })));
+
+                const actionRow = new Discord.ActionRowBuilder()
+                    .addComponents(addSelectionMenu);
+
+                const reply = await interaction.reply({ content: 'Test string', components: [actionRow], ephemeral: true, fetchReply: true });
+                const replyResponse = await reply.awaitMessageComponent({ componentType: Discord.ComponentType.StringSelect, time: 120000, filter: i => i.user.id == member.id }); // TODO add a timeout
+                await replyResponse.deferUpdate();
+                // array of message IDs
+                console.log(replyResponse.values);
+                console.log(reply.id);
+                // delete the ephemeral message
+                await interaction.deleteReply(reply.id);
+                // TODO finish collecting feedbacks and altering the displayState on voteSetup
+                // TODO add custom value with modal response
+                // add function to grab custom feedback by message ID and process it
+
+                // example from previous code
                 // voteSetup.maximumFeedbacks = choice;
                 // await updateState('maximumFeedbacks', choice);
-                // await interaction.message.edit({ embeds: [voteSetup.confirmationMessage(member, emojiDatabase)], components: [generateVoteSetupButtons(bot)] });
+                await interaction.message.edit({ embeds: [getSetupEmbed(voteSetup)], components: [generateVoteSetupButtons(bot)] });
+                console.log('updated Interaction');
                 break;
             }
             case 'voteRemoveFeedbacks': {
-                // await interaction.update({ embeds: [voteSetup.getEmbed(member, 'Type a different channel for the vote to be put up in')] });
-                // const channelMessage = await interaction.channel.next(null, null, member.id);
-                // const channel = await interaction.guild.findChannel(channelMessage.content);
-                // if (channel) {
-                //     voteSetup.channel = channel;
-                //     await updateState('channel', channel.id);
-                // } else {
-                //     await interaction.channel.send('Invalid channel. Please type the name of a channel.');
-                // }
-                // await interaction.message.edit({ embeds: [voteSetup.confirmationMessage(member, emojiDatabase)], components: [generateVoteSetupButtons(bot)] });
+                // copy above code and change the filter to show only included feedbacks, no custom option on selectPanel
                 break;
             }
             default:
@@ -170,34 +177,52 @@ function getSetupEmbed(voteSetup) {
         .setDescription(`
             This vote will be for to <@${member.id}> to ${voteSetup.role}
         `);
-
-    const memberFeedbacks = voteSetup.feedbacks.filter(feedback => feedback.mentionedID == member.id);
-    const includedFeedbacks = memberFeedbacks.filter(feedback => feedback.feedbackState == FeedbackState.Included);
-    const unidentifiedFeedbacks = memberFeedbacks.filter(feedback => feedback.feedbackState == FeedbackState.Unidentified);
-    const otherFeedbacks = memberFeedbacks.filter(feedback => feedback.feedbackState == FeedbackState.Other);
+    const { includedFeedbacks, unidentifiedFeedbacks, otherFeedbacks } = sortMemberFeedbacks(voteSetup.feedbacks, member);
+    let index = 1;
     // TODO add length check for 1024 character limit, add <type> feedback two as name and continue list
-    // also add indexes to the feedbacks if needed
     embed.addFields([{
         name: 'Included Feedback:',
-        value: getFeedbackString(includedFeedbacks) || 'None'
+        value: includedFeedbacks.map(feedback => getDisplayString(index++, feedback)).join('\n') || 'None'
     },
     {
-        name: 'Unidentified Feedback:',
-        value: getFeedbackString(unidentifiedFeedbacks) || 'None'
+        name: 'Unknown Tags:',
+        value: unidentifiedFeedbacks.map(feedback => getDisplayString(index++, feedback)).join('\n') || 'None'
     },
     {
         name: 'Other Feedback:',
-        value: getFeedbackString(otherFeedbacks) || 'None'
+        value: otherFeedbacks.map(feedback => getDisplayString(index++, feedback)).join('\n') || 'None'
     }]);
     return embed;
 }
 
-function getFeedbackString(feedbacks) {
-    return feedbacks.map(feedback => `\`${feedback.dungeon?.tag || '  ??  '} ${feedback.tier?.tag || '  ?? '}\` ${feedback.feedbackURL} <t:${feedback.timeStamp}:f>`).join('\n');
+function sortMemberFeedbacks(feedbacks, member) {
+    const includedFeedbacks = [];
+    const unidentifiedFeedbacks = [];
+    const otherFeedbacks = [];
+    // sort by timestamp desc (after push the newest feedback is at the highest index)
+    feedbacks.filter(feedback => feedback.mentionedIDs.includes(member.id)).sort((a, b) => b.timeStamp - a.timeStamp).forEach(feedback => {
+        if (feedback.feedbackState == FeedbackState.Included) {
+            includedFeedbacks.push(feedback);
+        } else if (feedback.feedbackState == FeedbackState.Unidentified) {
+            unidentifiedFeedbacks.push(feedback);
+        } else {
+            otherFeedbacks.push(feedback);
+        }
+    });
+    return { includedFeedbacks, unidentifiedFeedbacks, otherFeedbacks };
+}
+
+function getDisplayString(index, feedback) {
+    const tags = (`${feedback.dungeon?.tag || '??'} ${feedback.tier?.tag || '??'}`).padStart(11);
+    return `\`${index}.\` \`${tags}\` ${feedback.feedbackURL} <t:${feedback.timeStamp}:f>`;
+}
+
+function getRoleSettingsName(settings, role) {
+    return Object.keys(settings.roles).find(roleName => settings.roles[roleName] == role.id);
 }
 
 async function startVote(settings, voteSetup, member) {
-    const roleSettingsName = voteSetup.getRoleSettingsName(settings);
+    const roleSettingsName = getRoleSettingsName(settings, voteSetup.role);
     if (!roleSettingsName) { return; }
     const embedStyling = voteConfig.templates
         .find(template => template.settingRole === roleSettingsName);
@@ -208,10 +233,10 @@ async function startVote(settings, voteSetup, member) {
         .setAuthor({ name: `${member.displayName} to ${voteSetup.role.name}`, iconURL: member.user.displayAvatarURL({ dynamic: true }) })
         .setDescription(`${member} \`${member.displayName}\``);
     if (embedStyling != undefined && embedStyling.image) { embed.setThumbnail(embedStyling.image); }
-    const feedbacks = voteSetup.feedbacks.filter(feedback => feedback.mentionedID == member.id && feedback.feedbackState == FeedbackState.Included);
+    const feedbacks = voteSetup.feedbacks.filter(feedback => feedback.mentionedIDs.includes[member.id] && feedback.feedbackState == FeedbackState.Included);
     embed.addFields({
         name: 'Feedback:',
-        value: getFeedbackString(feedbacks) || 'None'
+        value: getDisplayString(feedbacks) || 'None'
     });
     const voteMessage = await voteSetup.channel.send({ embeds: [embed] });
     for (const emoji of ['✅', '❌', '👀']) { voteMessage.react(emoji); }
@@ -252,49 +277,44 @@ function generateVoteSetupButtons(bot) {
  * @param {*} bot
  * @returns {Promise<FeedbackData[]>} The feedbacks for the members.
  */
-async function getFeedbacks(members, guild, bot, voteSetup) {
-    const feedbackChannel = guild.channels.cache.get(bot.settings[guild.id].channels.rlfeedback); // TODO clean up settings usages, it's only one guild settings ever
-    // get the messages that mention the relevant members
-    const messages = await getMessages(feedbackChannel, 500);
-    // filter the messages to only ones that mention the members, message.mentions.members is Collection<Snowflake, GuildMember>
-    const filteredMessages = messages.filter(message => members.some(member => message.mentions.members.has(member.id)));
-    const roleSettingsName = Object.keys(bot.settings[guild.id].roles).find(roleName => bot.settings[guild.id].roles[roleName] == voteSetup.role.id);
-    // map the messages to FeedbackData
+async function getFeedbacks(guild, bot, voteSetup) {
+    // TODO clean up settings usages, it's only one guild settings ever
+    async function fetchMessages(limit) {
+        const sumMessages = [];
+        const feedbackChannel = guild.channels.cache.get(bot.settings[guild.id].channels.rlfeedback);
+        for (let i = 0; i <= limit; i += 100) {
+            const options = { limit: 100, before: i > 0 ? sumMessages[sumMessages.length - 1].id : null };
+            // eslint-disable-next-line no-await-in-loop
+            const fetchedMessages = await feedbackChannel.messages.fetch(options);
+            sumMessages.push(...fetchedMessages.map(m => m));
+            if (fetchedMessages.size != 100) break;
+        }
+        return sumMessages;
+    }
+    const messages = await fetchMessages(500);
+
+    const filteredMessages = messages.filter(message => voteSetup.members.some(member => message.mentions.users.has(member.id)));
+    //* @type {Feedback[]} */
     voteSetup.feedbacks = filteredMessages.map(message => {
-        const mentionedID = message.mentions.users.first()?.id;
-        const feedbackerID = message.author.id;
+        const mentionedIDs = message.mentions.users.map(user => user.id);
         const firstLine = message.content.split('\n')[0].toLowerCase(); // Convert to lowercase for searching
         const dungeon = voteConfig.feedbackTypes.dungeon.find(dungeon => dungeon.flags.some(flag => firstLine.includes(flag)));
         const tier = voteConfig.feedbackTypes.tier.find(tier => tier.flags.some(flag => firstLine.includes(flag)));
-        let displayState = FeedbackState.Other;
-        if (!dungeon || !tier) {
-            displayState = FeedbackState.Unidentified;
-        } else if (dungeon.roles.includes(roleSettingsName) && tier.roles.includes(roleSettingsName)) {
-            displayState = FeedbackState.Included;
+        const roleSettingsName = getRoleSettingsName(bot.settings[guild.id], voteSetup.role);
+        let feedbackState = FeedbackState.Other;
+        if (!tier || !dungeon) {
+            feedbackState = FeedbackState.Unidentified;
+        } else if (tier.roles.includes(roleSettingsName) && dungeon.roles.includes(roleSettingsName)) {
+            feedbackState = FeedbackState.Included;
         }
-        console.log(displayState);
         return {
+            messageID: message.id,
             tier,
             dungeon,
-            firstLine: message.content.split('\n')[0], // Preserve the original case for the return
-            mentionedID,
+            mentionedIDs,
             feedbackURL: message.url,
-            display: FeedbackState.Other,
-            feedbackerID,
             timeStamp: (message.createdTimestamp / 1000).toFixed(0),
-            displayState
+            feedbackState
         };
-    }) || [];
-}
-
-async function getMessages(channel, limit) {
-    const sumMessages = [];
-    for (let i = 0; i <= limit; i += 100) {
-        const options = { limit: 100, before: i > 0 ? sumMessages[sumMessages.length - 1].id : null };
-        // eslint-disable-next-line no-await-in-loop
-        const messages = await channel.messages.fetch(options);
-        sumMessages.push(...messages.map(m => m));
-        if (messages.size != 100) break;
-    }
-    return sumMessages;
+    });
 }
