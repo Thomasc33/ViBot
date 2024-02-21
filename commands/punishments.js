@@ -425,7 +425,7 @@ module.exports = {
         const pui = new PunishmentsUI(interaction, interaction.guild, bot.settings[interaction.guild.id], members);
         try {
             pui.initialize(db, options.getBoolean('full', true));
-        } catch (e) { 
+        } catch (e) {
             pui.initialize(db, null);
         }
     },
