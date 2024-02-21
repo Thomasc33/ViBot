@@ -143,12 +143,8 @@ class PunishmentsUI {
             const remaining = mutes.filter(mute => !permas.includes(mute) && !actives.includes(mute));
             this.#mutes = flattenOnId([...permas, ...actives, ...remaining]); // sort by perma > active > inactive, flattenOnId respects local order
         }
-
-        if (this.#members.length == 1 && (this.#warns[this.#memberId()]?.length || 0) + (this.#suspensions[this.#memberId()]?.length || 0) + (this.#mutes[this.#memberId()]?.length || 0) <= 8) {
-            return await this.#sendAllEmbeds(0);
-        }
-
-        if (full) {
+        const joined = [...Object.values(this.#warns), ...Object.values(this.#mutes), ...Object.values(this.#suspensions)].flat();
+        if (full !== false && (full || joined.length < 20)) {
             for (let i = 0; i < this.#members.length; i++) await this.#sendAllEmbeds(i);
             return;
         }
@@ -183,9 +179,11 @@ class PunishmentsUI {
             if (this.#interaction.replied) await this.#interaction.followUp({ embeds, allowedMentions: { repliedUser: false } });
             else await this.#interaction.reply({ embeds, allowedMentions: { repliedUser: false } });
         } else {
+            if (this.#interaction.replied) await this.#interaction.followUp({ embeds: [embeds.shift()], allowedMentions: { repliedUser: false } });
+            else await this.#interaction.reply({ embeds: [embeds.shift()], allowedMentions: { repliedUser: false } });
             for (const embed of embeds) {
-                if (this.#interaction.replied) await this.#interaction.followUp({ embeds: [embed], allowedMentions: { repliedUser: false } });
-                else await this.#interaction.reply({ embeds: [embed], allowedMentions: { repliedUser: false } });
+                if (this.#interaction.replied) await this.#interaction.channel.send({ embeds: [embed], allowedMentions: { repliedUser: false } });
+                else await this.#interaction.channel.send({ embeds: [embed], allowedMentions: { repliedUser: false } });
             }
         }
     }
@@ -345,7 +343,7 @@ class PunishmentsUI {
     #mutesPage() {
         const member = this.#member();
         const embed = new EmbedBuilder()
-            .setColor(Colors.LightGrey)
+            .setColor(Colors.Orange)
             .setTitle('Mutes')
             .setDescription(`Mutes for ${member}`);
 
@@ -396,7 +394,7 @@ module.exports = {
     role: 'eventrl',
     name: 'punishments',
     slashCommandName: 'pu',
-    alias: ['backgroundcheck', 'pu', 'ui', 'userinfo'],
+    alias: ['backgroundcheck', 'pu', 'ui', 'userinfo', 'warns', 'suspends', 'suspensions', 'mutes'],
     description: 'Displays all mutes, warnings or suspensions any user has',
     varargs: true,
     slashOnlyArgsProcessing: true,
@@ -409,13 +407,13 @@ module.exports = {
             required: false
         })),
         slashArg(SlashArgType.Boolean, 'full', {
-            description: 'If given, will display all embeds in full instead of paginated',
+            description: 'If true, sends all embeds (not paginated). If explicitly set to false, will always paginate',
             required: false
         })
     ],
     getSlashCommandData(guild) { return slashCommandJSON(this, guild); },
     getNotes() {
-        return { title: 'Chat Command Args', value: '<User> [Users...] [\'Full\']\n\n**Other Notes**\nThe `full` option if provided sends all embeds instead of using pagination\n\nWill default to `full` if only a single user was provided and they have `8` or fewer total punishments.' };
+        return { title: 'Chat Command Args', value: '<User> [Users...] [\'Full\' | \'paged\']\n\n**Other Notes**\nThe `full` option if provided sends all embeds instead of using pagination\nThe `paged` option if provided will always paginate regardless of punishment count.\n\nWill default to `full` if there are `20` or fewer total punishments.' };
     },
     /**
      * @param {import('discord.js').ChatInputCommandInteraction} interaction
@@ -426,11 +424,15 @@ module.exports = {
         const { options } = interaction;
         const members = [options.getMember('user'), ...Array(7).fill(0).map((_, idx) => options.getMember(`user${idx + 2}`))].filter(m => m).map(m => m.id);
         const pui = new PunishmentsUI(interaction, interaction.guild, bot.settings[interaction.guild.id], members);
-        pui.initialize(db, !!options.getBoolean('full', false));
+        try {
+            pui.initialize(db, options.getBoolean('full', true));
+        } catch (e) {
+            pui.initialize(db, null);
+        }
     },
     async execute(interaction, args, bot, db) {
-        const full = args[args.length - 1].toLowerCase() == 'full';
-        if (full) args.pop();
+        const full = args[args.length - 1].toLowerCase() == 'full' ? true : args[args.length - 1].toLowerCase() == 'paged' ? false : null;
+        if (full !== null) args.pop();
         const settings = bot.settings[interaction.guild.id];
 
         const unfound = [];

@@ -7,7 +7,6 @@ commands/changename.js
 commands/check.js
 commands/commands.js
 commands/commend.js
-commands/complete.js
 commands/crasherList.js
 commands/emoji.js
 commands/eval.js
@@ -15,7 +14,6 @@ commands/excuse.js
 commands/glape.js
 commands/headcount.js
 commands/id.js
-commands/keyRoles.js
 commands/leaderboard.js
 commands/leaveGuild.js
 commands/list.js
@@ -45,7 +43,6 @@ commands/suspendremove.js
 commands/sysinfo.js
 commands/test.js
 commands/unlock.js
-commands/unsuspend.js
 commands/unverify.js
 commands/unvetverify.js
 commands/updateIP.js
