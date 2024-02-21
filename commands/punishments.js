@@ -145,8 +145,8 @@ class PunishmentsUI {
             const [mutes] = await db.promise().query('SELECT *  FROM mutes WHERE id in (?) AND guildid = ?', [ids, this.#guild.id]);
             this.#mutes = flattenOnId(mutes);
         }
-        
-        if (full || [...Object.values(this.#warns), ...Object.values(this.#mutes), ...Object.values(this.#suspensions)].length < 16) {
+        const joined = [...Object.values(this.#warns), ...Object.values(this.#mutes), ...Object.values(this.#suspensions)].flat();
+        if (full || joined.length < 20) {
             for (let i = 0; i < this.#members.length; i++) await this.#sendAllEmbeds(i);
             return;
         }
@@ -181,9 +181,11 @@ class PunishmentsUI {
             if (this.#interaction.replied) await this.#interaction.followUp({ embeds, allowedMentions: { repliedUser: false } });
             else await this.#interaction.reply({ embeds, allowedMentions: { repliedUser: false } });
         } else {
+            if (this.#interaction.replied) await this.#interaction.followUp({ embeds: [embeds.shift()], allowedMentions: { repliedUser: false } });
+            else await this.#interaction.reply({ embeds: [embeds.shift()], allowedMentions: { repliedUser: false } });
             for (const embed of embeds) {
-                if (this.#interaction.replied) await this.#interaction.followUp({ embeds: [embed], allowedMentions: { repliedUser: false } });
-                else await this.#interaction.reply({ embeds: [embed], allowedMentions: { repliedUser: false } });
+                if (this.#interaction.replied) await this.#interaction.channel.send({ embeds: [embed], allowedMentions: { repliedUser: false } });
+                else await this.#interaction.channel.send({ embeds: [embed], allowedMentions: { repliedUser: false } });
             }
         }
     }
@@ -345,7 +347,7 @@ class PunishmentsUI {
     #mutesPage() {
         const member = this.#member();
         const embed = new EmbedBuilder()
-            .setColor(Colors.Red)
+            .setColor(Colors.Orange)
             .setTitle('Mutes')
             .setDescription(`Mutes for ${member}`);
 
