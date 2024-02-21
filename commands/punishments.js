@@ -145,12 +145,8 @@ class PunishmentsUI {
             const [mutes] = await db.promise().query('SELECT *  FROM mutes WHERE id in (?) AND guildid = ?', [ids, this.#guild.id]);
             this.#mutes = flattenOnId(mutes);
         }
-
-        if (this.#members.length == 1 && (this.#warns[this.#memberId()]?.length || 0) + (this.#suspensions[this.#memberId()]?.length || 0) + (this.#mutes[this.#memberId()]?.length || 0) <= 8) {
-            return await this.#sendAllEmbeds(0);
-        }
-
-        if (full) {
+        
+        if (full || [...Object.values(this.#warns), ...Object.values(this.#mutes), ...Object.values(this.#suspensions)].length < 16) {
             for (let i = 0; i < this.#members.length; i++) await this.#sendAllEmbeds(i);
             return;
         }
