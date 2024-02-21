@@ -2,6 +2,7 @@ const Discord = require('discord.js');
 const reacts = require('../data/roleAssignment.json');
 const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
 const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js');
+const { createReactionRow } = require('../redis.js');
 
 function addInteractionComponents(bot, guildReacts) {
     const components = [];
@@ -24,47 +25,6 @@ function addInteractionComponents(bot, guildReacts) {
         rows[rows.length - 1].addComponents(btn);
         return rows;
     }, []);
-}
-
-async function interactionHandler(interaction, bot, guildReacts) {
-    const botSettings = bot.settings[interaction.guild.id];
-    const embed = new Discord.EmbedBuilder()
-        .setColor(Discord.Colors.Green)
-        .setFooter({ text: interaction.guild.name, iconURL: interaction.guild.iconURL() })
-        .setTimestamp();
-
-    switch (interaction.customId) {
-        case 'giveAllRoles': {
-            const guildReactsToAdd = guildReacts.filter(reaction => !interaction.member.roles.cache.has(botSettings.roles[reaction.role]));
-            const rolesToAdd = guildReactsToAdd.map(reaction => interaction.guild.roles.cache.get(botSettings.roles[reaction.role]));
-            await interaction.member.roles.add(rolesToAdd);
-            if (rolesToAdd.length == 0) embed.setDescription('You already **have** all the roles to receive pings');
-            else embed.setDescription(`You now **have** the roles to receive pings for the following dungeons:\n${rolesToAdd.map((role, i) => `- ${bot.storedEmojis[guildReactsToAdd[i].emote].text} ${guildReactsToAdd[i].name}: ${role}`).join('\n')} `);
-            await interaction.reply({ embeds: [embed], ephemeral: true });
-            break;
-        }
-        case 'takeAllRoles': {
-            const guildReactsToRemove = guildReacts.filter(reaction => interaction.member.roles.cache.has(botSettings.roles[reaction.role]));
-            const rolesToRemove = guildReactsToRemove.map(reaction => interaction.guild.roles.cache.get(botSettings.roles[reaction.role]));
-            await interaction.member.roles.remove(rolesToRemove);
-            if (rolesToRemove.length == 0) embed.setDescription('You already **no longer** have any of the roles to receive pings');
-            else embed.setDescription(`You now **no longer have** the roles to receive pings for the following dungeons:\n${rolesToRemove.map((role, i) => `- ${bot.storedEmojis[guildReactsToRemove[i].emote].text} ${guildReactsToRemove[i].name}: ${role}`).join('\n')} `);
-            await interaction.reply({ embeds: [embed], ephemeral: true });
-            break;
-        }
-        default: {
-            const guildReact = guildReacts.find(reaction => reaction.emote === interaction.customId);
-            const role = interaction.guild.roles.cache.get(botSettings.roles[guildReact.role]);
-            if (interaction.member.roles.cache.has(role.id)) {
-                await interaction.member.roles.remove(role);
-                embed.setDescription(`You now **no longer have** the role to receive pings for ${bot.storedEmojis[guildReact.emote].text} ${guildReact.name}: ${role}`);
-            } else {
-                await interaction.member.roles.add(role);
-                embed.setDescription(`You now **have** the role to receive pings for ${bot.storedEmojis[guildReact.emote].text} ${guildReact.name}: ${role}`);
-            }
-            await interaction.reply({ embeds: [embed], ephemeral: true });
-        }
-    }
 }
 
 module.exports = {
@@ -112,8 +72,7 @@ module.exports = {
                     .setTimestamp();
                 guildReacts.map(reaction => embed.addFields([{ name: reaction.name, value: bot.storedEmojis[reaction.emote].text, inline: true }]));
                 const message = await channel.send({ embeds: [embed], components: addInteractionComponents(bot, guildReacts) });
-                const roleAssignmentInteractionCollector = new Discord.InteractionCollector(bot, { message, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button });
-                roleAssignmentInteractionCollector.on('collect', (interaction) => interactionHandler(interaction, bot, guildReacts));
+                createReactionRow(message, module.exports.name, 'interactionHandler', addInteractionComponents(bot, guildReacts), null, guildReacts);
                 interaction.reply(`Role Assignment message has been successfully sent ${message.url}`);
                 break;
             }
@@ -140,14 +99,56 @@ module.exports = {
         if (!roleAssignmentChannel) return; // If there is no roleassignment channel it will not continue
 
         const roleAssignmentChannelMessages = await roleAssignmentChannel.messages.fetch(); // This fetches all the messages in the roleassignment channel
-        roleAssignmentChannelMessages.map(async message => { // This will loop through the roleassignment channel messages
+        Promise.all(roleAssignmentChannelMessages.map(async message => { // This will loop through the roleassignment channel messages
             if (message.author.id !== bot.user.id) return; // If the roleassignment message author is not the same id as ViBot it will not continue with this message
             if (message.embeds.length == 0) return; // If the message has no embeds it will not continue
             if (message.components == 0) return; // If the message has no components it will not continue
             // Anything below this code inside this function is for roleassignment messages, and we need to reset them
             await message.edit({ components: addInteractionComponents(bot, guildReacts) }); // This will add a roleassignment button listeners to the message
-            const roleAssignmentInteractionCollector = new Discord.InteractionCollector(bot, { message, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button });
-            roleAssignmentInteractionCollector.on('collect', (interaction) => interactionHandler(interaction, bot, guildReacts));
-        });
+            createReactionRow(message, module.exports.name, 'interactionHandler', addInteractionComponents(bot, guildReacts), null, guildReacts);
+        }));
+    },
+    async interactionHandler(bot, message, db, choice, guildReacts) {
+        const interaction = message.interaction; // eslint-disable-line prefer-destructuring
+        const guild = interaction.guild; // eslint-disable-line prefer-destructuring
+        const member = interaction.member; // eslint-disable-line prefer-destructuring
+        const botSettings = bot.settings[interaction.guild.id];
+        const embed = new Discord.EmbedBuilder()
+            .setColor(Discord.Colors.Green)
+            .setFooter({ text: guild.name, iconURL: guild.iconURL() })
+            .setTimestamp();
+
+        switch (choice) {
+            case 'giveAllRoles': {
+                const guildReactsToAdd = guildReacts.filter(reaction => !member.roles.cache.has(botSettings.roles[reaction.role]));
+                const rolesToAdd = guildReactsToAdd.map(reaction => guild.roles.cache.get(botSettings.roles[reaction.role]));
+                await member.roles.add(rolesToAdd);
+                if (rolesToAdd.length == 0) embed.setDescription('You already **have** all the roles to receive pings');
+                else embed.setDescription(`You now **have** the roles to receive pings for the following dungeons:\n${rolesToAdd.map((role, i) => `- ${bot.storedEmojis[guildReactsToAdd[i].emote].text} ${guildReactsToAdd[i].name}: ${role}`).join('\n')} `);
+                await interaction.reply({ embeds: [embed], ephemeral: true });
+                break;
+            }
+            case 'takeAllRoles': {
+                const guildReactsToRemove = guildReacts.filter(reaction => member.roles.cache.has(botSettings.roles[reaction.role]));
+                const rolesToRemove = guildReactsToRemove.map(reaction => guild.roles.cache.get(botSettings.roles[reaction.role]));
+                await member.roles.remove(rolesToRemove);
+                if (rolesToRemove.length == 0) embed.setDescription('You already **no longer** have any of the roles to receive pings');
+                else embed.setDescription(`You now **no longer have** the roles to receive pings for the following dungeons:\n${rolesToRemove.map((role, i) => `- ${bot.storedEmojis[guildReactsToRemove[i].emote].text} ${guildReactsToRemove[i].name}: ${role}`).join('\n')} `);
+                await interaction.reply({ embeds: [embed], ephemeral: true });
+                break;
+            }
+            default: {
+                const guildReact = guildReacts.find(reaction => reaction.emote === choice);
+                const role = guild.roles.cache.get(botSettings.roles[guildReact.role]);
+                if (member.roles.cache.has(role.id)) {
+                    await member.roles.remove(role);
+                    embed.setDescription(`You now **no longer have** the role to receive pings for ${bot.storedEmojis[guildReact.emote].text} ${guildReact.name}: ${role}`);
+                } else {
+                    await member.roles.add(role);
+                    embed.setDescription(`You now **have** the role to receive pings for ${bot.storedEmojis[guildReact.emote].text} ${guildReact.name}: ${role}`);
+                }
+                await interaction.reply({ embeds: [embed], ephemeral: true });
+            }
+        }
     }
 };

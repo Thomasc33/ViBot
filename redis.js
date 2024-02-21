@@ -33,7 +33,7 @@ module.exports = {
     },
     async createReactionRow(message, commandName, callback, buttons, allowedUser, state) {
         // eslint-disable-next-line camelcase
-        let opts = { valid_ids: JSON.stringify(buttons.components.map((c) => c.data.custom_id)), command: commandName, callback, state: JSON.stringify(state) };
+        let opts = { valid_ids: JSON.stringify(buttons.map(({ components }) => components.map(c => c.data.custom_id)).flat()), command: commandName, callback, state: JSON.stringify(state) };
         if (message instanceof Discord.InteractionResponse) opts = { token: message.interaction.token, whid: message.interaction.webhook.id, ...opts };
         if (allowedUser) opts.allowedUser = allowedUser.id;
         const key = 'messagebuttons:' + (await message.fetch()).id;
