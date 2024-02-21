@@ -28,6 +28,23 @@ const { MessageManager } = require('./messageManager.js');
 
 const messageManager = new MessageManager(bot, botSettings);
 
+/**
+ * @param {Discord.Client} bot
+ * @param {Discord.ButtonInteraction} interaction
+ * @returns {boolean}
+ */
+async function handleButtonInteractions(bot, interaction) {
+    /** @type {import('./data/guildSettings.701483950559985705.cache.json')} */
+    const settings = bot.settings[interaction.guild.id];
+
+    if (await handleReactionRow(bot, interaction)) return true;
+    if (settings.channels.modmail == interaction.channel.id && interaction.customId.startsWith('modmail')) {
+        const db = dbSetup.getDB(interaction.guild.id);
+        return await Modmail.interactionHandler(interaction, settings, bot, db);
+    }
+    return false;
+}
+
 // Bot Event Handlers
 bot.on('messageCreate', logWrapper('message', async (logger, message) => {
     // Ignore messages to non-whitelisted servers (but let DMs through)
@@ -51,14 +68,7 @@ bot.on('interactionCreate', logWrapper('message', async (logger, interaction) =>
     // Validate the interaction is a command
     if (interaction.isChatInputCommand()) return await messageManager.handleCommand(interaction, true);
     if (interaction.isUserContextMenuCommand()) return await messageManager.handleCommand(interaction, true);
-    if (interaction.isButton()) {
-        if (interaction.customId.startsWith('modmail')) {
-            const settings = bot.settings[interaction.guild.id];
-            const db = dbSetup.getDB(interaction.guild.id);
-            return await Modmail.interactionHandler(interaction, settings, bot, db);
-        }
-        return await handleReactionRow(bot, interaction);
-    }
+    if (interaction.isButton()) return await handleButtonInteractions(bot, interaction);
 }));
 
 bot.on('ready', async () => {

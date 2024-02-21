@@ -19,7 +19,7 @@ module.exports = {
             for (const inherit of templates[i].sectionNames) {
                 if (!parentTemplateValue[inherit]) parentTemplateValue[inherit] = { field: 0, line: 0, value: [''] };
                 const reacts = templates[i].reacts ? Object.keys(templates[i].reacts).filter(react => templates[i].reacts[react].onHeadcount) : [];
-                const newTemplate = `\n${reacts[0] ? `${bot.storedEmojis[templates[i].reacts[reacts[0]].emote].text}| ` : ''}\`${templates[i].aliases.reduce((a, b) => a.length <= b.length ? a : b).padEnd(2)}\` | **${templates[i].templateName.toString().substring(0, 20)}**`;
+                const newTemplate = `\n${reacts[0] ? `${bot.storedEmojis[templates[i].reacts[reacts[0]].emote]?.text}| ` : ''}\`${templates[i].aliases.reduce((a, b) => a.length <= b.length ? a : b).padEnd(2)}\` | **${templates[i].templateName.toString().substring(0, 20)}**`;
                 if (parentTemplateValue[inherit].value[parentTemplateValue[inherit].field].length + newTemplate.length > 1024 || parentTemplateValue[inherit].line >= 15) {
                     parentTemplateValue[inherit].field++;
                     parentTemplateValue[inherit].line = 0;

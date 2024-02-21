@@ -12,7 +12,6 @@ commands/emoji.js
 commands/eval.js
 commands/excuse.js
 commands/glape.js
-commands/headcount.js
 commands/id.js
 commands/leaderboard.js
 commands/leaveGuild.js
