@@ -12,3 +12,4 @@ debug.log
 .DS_Store
 ml/save/
 ml/models/
+build/

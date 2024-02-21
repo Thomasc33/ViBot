@@ -106,16 +106,15 @@ module.exports = {
         const member = guild.members.cache.get(row.id);
         if (!member) throw new Error(`Could not find member \`${row.id}\``);
 
-        const roles = row.roles.split(' ').filter(r => r)
-            .concat(...settings.lists.discordRoles.map(r => settings.roles[r]).filter(r => member.roles.cache.get(r)))
-            .concat(...member.roles.cache.map(r => r).filter(r => r.managed).map(r => r.id)) // add managed roles that might not be listed in discordRoles
-            .filter(r => r != settings.roles.tempsuspended && r != settings.roles.permasuspend && (!settings.backend.useUnverifiedRole || r != settings.roles.unverified)); // filter out unverified & suspended
+        const roles = row.roles.split(' ').filter(r => r && r != guild.id && !guild.roles.cache.get(r).managed)
+            .filter(r => r != settings.roles.tempsuspended && r != settings.roles.permasuspend && !(r == settings.roles.unverified && settings.backend.useUnverifiedRole)); // filter out unverified & suspended
 
         if (settings.backend.useUnverifiedRole && roles.length == roles.filter(r => member.guild.roles.cache.get(r)?.managed).length) {
             roles.push(settings.roles.unverified); // if the only roles member has are managed roles, they should be Unverified
         }
 
-        await member.roles.set(roles);
+        await member.roles.remove([settings.roles.tempsuspended, settings.roles.permasuspended]);
+        await member.roles.add([...new Set(roles)]);
 
         /** @type {Discord.GuildTextBasedChannel?} */
         const suspendlog = guild.channels.cache.get(settings.channels.suspendlog);
