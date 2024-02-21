@@ -1,0 +1,1190 @@
+{
+    "1208697475292995635": {
+        "afkTemplateName": "Void",
+        "message": {
+            "channelId": "701483952233250864",
+            "guildId": "701483950559985705",
+            "id": "1208697454589911100",
+            "createdTimestamp": 1708246329687,
+            "type": 0,
+            "system": false,
+            "content": "*afk v 2 min",
+            "authorId": "130850662522159104",
+            "pinned": false,
+            "tts": false,
+            "nonce": null,
+            "embeds": [],
+            "components": [],
+            "attachments": [],
+            "stickers": [],
+            "position": null,
+            "roleSubscriptionData": null,
+            "resolved": null,
+            "editedTimestamp": null,
+            "mentions": {
+                "everyone": false,
+                "users": [],
+                "roles": [],
+                "crosspostedChannels": [],
+                "repliedUser": null,
+                "members": [],
+                "channels": []
+            },
+            "webhookId": null,
+            "groupActivityApplicationId": null,
+            "applicationId": null,
+            "activity": null,
+            "flags": 0,
+            "reference": null,
+            "interaction": null,
+            "cleanContent": "*afk v 2 min"
+        },
+        "guild": {
+            "id": "701483950559985705",
+            "name": "Dev Halls",
+            "icon": "599da3fa90926067e2561ea2b0cfd173",
+            "features": [
+                "CHANNEL_ICON_EMOJIS_GENERATED",
+                "SOUNDBOARD"
+            ],
+            "commands": [],
+            "members": [
+                "658783569191370802",
+                "398514303449169920",
+                "720847925617360916",
+                "277636691227836419",
+                "1123864390047891476",
+                "169516346198065153",
+                "589996847083290629",
+                "714272958629019739",
+                "327274493678452736",
+                "691930841198231602",
+                "110505848043786240",
+                "780621281652506625",
+                "1034185039866507315",
+                "318823535491547157",
+                "178915849124446209",
+                "153285628795158528",
+                "756347622469402776",
+                "731700441980600340",
+                "606022573020676107",
+                "1204150114516598885",
+                "463436803978821655",
+                "258286481167220738",
+                "276751031541694465",
+                "141406148497637376",
+                "328328776318582785",
+                "190641440462864384",
+                "177942748836397056",
+                "715381710228815944",
+                "164887742134616064",
+                "251913998419623946",
+                "307864169883893760",
+                "1204152234749726740",
+                "706612345216172113",
+                "746506843710423052",
+                "120540036855889921",
+                "195220932065886208",
+                "701196529519689790",
+                "181149683949764620",
+                "799257734939803659",
+                "1129176358791172166",
+                "130850662522159104",
+                "344541015971069954",
+                "845023607789060127",
+                "340267639295180800",
+                "1205217586044870706",
+                "200842543481618433",
+                "141998344393195520",
+                "394892262993166337",
+                "230538029272399873",
+                "791693083497594880",
+                "190572077219184650",
+                "290956326224396288",
+                "189853114285817857",
+                "392908116448116736",
+                "370442457432981504"
+            ],
+            "channels": [
+                "701483952413605939",
+                "1114574154021208186",
+                "701483952057352272",
+                "701483951331606578",
+                "1129899224989962280",
+                "701483953663508562",
+                "701483953663508566",
+                "701483952233250864",
+                "701483952782966847",
+                "701483952233250863",
+                "701483952782966849",
+                "701483951687991345",
+                "1093128394960543764",
+                "701483951168159807",
+                "701483952590028848",
+                "941180626869059614",
+                "1056569488759332925",
+                "701483952413605941",
+                "701483951495184387",
+                "701483952057352271",
+                "701483950966833210",
+                "701483951495184388",
+                "1206992744791281714",
+                "701483952413605943",
+                "717947445132263504",
+                "954285167038591006",
+                "701483953437016187",
+                "701483951495184389",
+                "701483953063723034",
+                "701483953248403549",
+                "701483950798929991",
+                "1208697457555542098",
+                "701483952590028845",
+                "701483953063723035",
+                "701483952233250865",
+                "1205783331682131970",
+                "701483952233250866",
+                "1127016802237546617",
+                "717947391755681902",
+                "721894230036840450",
+                "1157616892631068773",
+                "701483951168159809",
+                "701483952782966845",
+                "1057853527797551234",
+                "701483950798929996",
+                "701483952057352267",
+                "701483951331606585",
+                "1057853299937775736",
+                "701483953663508569",
+                "701483953663508565",
+                "701483951687991336",
+                "701483950966833207",
+                "701483952057352265",
+                "701483953248403548",
+                "701483950798929993",
+                "701483951687991338",
+                "701483952057352264",
+                "1127000500211032094",
+                "701483951495184386",
+                "701483953437016186",
+                "701483950966833211",
+                "701483951331606583",
+                "701483950966833204",
+                "701483951168159814",
+                "701483951885123692",
+                "701483951495184393",
+                "701483953437016191",
+                "701483951168159805",
+                "701483951885123693",
+                "1126986456364224542",
+                "1127015847878217818",
+                "701483952782966846",
+                "701483953248403546",
+                "701483950966833205",
+                "701483950966833208",
+                "701483951495184390",
+                "701483951168159806",
+                "751630124071256125",
+                "701483953248403553",
+                "837885356467683349",
+                "701483950966833203",
+                "1150549562084294709",
+                "701483952590028850",
+                "701483950798929997",
+                "701483951687991340",
+                "701483951687991342",
+                "703441731932127242",
+                "701483952590028846",
+                "701483950798929994",
+                "701483953437016190",
+                "701483952233250857",
+                "701483951885123684",
+                "1150549544745042010",
+                "701483952782966848",
+                "742123684344496260",
+                "855212892198142012",
+                "701483951885123690",
+                "701483951331606582",
+                "701483951687991337",
+                "1206713613444718632",
+                "701483950966833202",
+                "701483953063723033",
+                "701483951885123691",
+                "701483951168159811",
+                "701483952057352270",
+                "1055555697418448906",
+                "701483952057352268",
+                "701483953248403551",
+                "807159816656257054",
+                "701483951687991344",
+                "701483951885123687",
+                "701483951495184392",
+                "701483951885123686",
+                "701483953063723036",
+                "701483953663508564",
+                "701483952782966850",
+                "701483950798929992",
+                "723994046368055326",
+                "701483951687991341",
+                "701483951885123688",
+                "1206989804667928576",
+                "701483951168159813",
+                "701483952413605940",
+                "701483952233250861",
+                "701483951331606587",
+                "701483952590028847",
+                "701483950798929999",
+                "701483953437016185",
+                "837885308581576724",
+                "787195924249968650",
+                "855549655445012490",
+                "701483952413605938",
+                "701483951885123685",
+                "701483953063723032",
+                "701483950798930000",
+                "701483951495184391",
+                "701483951885123689",
+                "701483953248403547",
+                "1205759635244720128",
+                "701483951331606581",
+                "701483953248403554",
+                "701483950966833209",
+                "723993975429660715",
+                "701483953663508561",
+                "701483950597734408",
+                "701483952057352273",
+                "1205765035616641076",
+                "1204951046602883092",
+                "701483950597734409",
+                "701483952233250862",
+                "701483951687991343",
+                "1131058653424779344",
+                "701483952782966844",
+                "721884595947307038",
+                "1110595993193422941",
+                "701483952057352266",
+                "701483953437016193",
+                "701483953248403550",
+                "701483952590028849",
+                "701483951331606584",
+                "948067062482341898",
+                "701483951495184384",
+                "721880245321465936",
+                "701483951168159812",
+                "1055555126821126264",
+                "701483953437016189",
+                "701483952233250860",
+                "701483953663508568",
+                "701483953248403555",
+                "701483951331606579",
+                "701483951168159808",
+                "701483953437016194",
+                "1135761550473449533",
+                "1055537664138424360",
+                "701483950798929995",
+                "701483953248403552",
+                "701483951687991339",
+                "701483951331606586",
+                "701483952057352269",
+                "701483951331606580",
+                "1208123096255701032",
+                "1205265205462827028",
+                "703443130875117578",
+                "701483953437016192",
+                "701483953663508563",
+                "1205783191844163584",
+                "703441794347827241",
+                "701483952233250858",
+                "701483950966833206",
+                "701483953437016188",
+                "701483953663508567",
+                "701483952233250859",
+                "701483950798929998",
+                "701483951168159810",
+                "701483953063723037",
+                "701483951495184385",
+                "1198712705327059065"
+            ],
+            "bans": [],
+            "roles": [
+                "701483950597734402",
+                "915665575718584381",
+                "1156643685556043926",
+                "1142079841974370365",
+                "1135493887377559633",
+                "1135493991513726976",
+                "1052286446255493180",
+                "1204151903248719903",
+                "701498109498228878",
+                "715668970627268628",
+                "714282620485107722",
+                "929592920280018944",
+                "1097207298591567912",
+                "701483950564049011",
+                "701483950597734405",
+                "886519429565915156",
+                "1156643763146469476",
+                "1175937882112938055",
+                "1136289462427582515",
+                "1121761310300983376",
+                "701483950589214804",
+                "701483950597734407",
+                "701483950589214800",
+                "1079540846338252910",
+                "1135494068529532928",
+                "701483950589214802",
+                "701483950564049007",
+                "701483950559985707",
+                "701483950589214801",
+                "1156643843429642313",
+                "787196065862516766",
+                "701483950597734403",
+                "1156644968459407390",
+                "701483950559985710",
+                "701483950559985713",
+                "701483950589214806",
+                "1056562167727525898",
+                "701483950564049008",
+                "827226665984720938",
+                "701483950564049013",
+                "701483950589214808",
+                "787196010341728266",
+                "701483950597734404",
+                "827225078340386846",
+                "1141025102008426527",
+                "1032340904083738674",
+                "701483950559985714",
+                "1136289412016242820",
+                "701483950564049014",
+                "701483950559985709",
+                "701483950559985712",
+                "1153636745833885749",
+                "701483950564049012",
+                "701483950559985705",
+                "1057125819631271976",
+                "701483950559985706",
+                "1026522584977780796",
+                "1056562046155632640",
+                "701483950589214805",
+                "1055554424141000804",
+                "1207002669374242817",
+                "799261427209994241",
+                "1204240876398977064",
+                "701483950564049016",
+                "1056995283378110514",
+                "1117519961829679205",
+                "1171576097129906327",
+                "1135494155779457025",
+                "701483950564049015",
+                "1135494116684345466",
+                "1205220682049396849",
+                "1156643735749279754",
+                "886519535425957901",
+                "1135494018810249277",
+                "1025111634643001361",
+                "1156643867085516920",
+                "701483950597734401",
+                "701483950564049010",
+                "701483950559985711",
+                "1127728514767003768",
+                "1026522640812351609",
+                "1131057587488567416",
+                "1033359947238482021",
+                "701483950589214803",
+                "701483950597734406",
+                "701483950597734400",
+                "1136289437018501231",
+                "1090181635913297940",
+                "701483950589214807",
+                "701483950564049009",
+                "886519596184633354",
+                "701483950589214809"
+            ],
+            "stageInstances": [],
+            "invites": [],
+            "scheduledEvents": [],
+            "autoModerationRules": [],
+            "shardId": 0,
+            "splash": null,
+            "banner": null,
+            "description": null,
+            "verificationLevel": 2,
+            "vanityURLCode": null,
+            "nsfwLevel": 0,
+            "premiumSubscriptionCount": 0,
+            "discoverySplash": null,
+            "memberCount": 56,
+            "large": true,
+            "premiumProgressBarEnabled": false,
+            "applicationId": null,
+            "afkTimeout": 300,
+            "afkChannelId": null,
+            "systemChannelId": null,
+            "premiumTier": 0,
+            "widgetEnabled": null,
+            "widgetChannelId": null,
+            "explicitContentFilter": 1,
+            "mfaLevel": 0,
+            "joinedTimestamp": 1707183798665,
+            "defaultMessageNotifications": 1,
+            "systemChannelFlags": 0,
+            "maximumMembers": 250000,
+            "maximumPresences": null,
+            "maxVideoChannelUsers": 25,
+            "maxStageVideoChannelUsers": 50,
+            "approximateMemberCount": null,
+            "approximatePresenceCount": null,
+            "vanityURLUses": null,
+            "rulesChannelId": null,
+            "publicUpdatesChannelId": null,
+            "preferredLocale": "en-US",
+            "safetyAlertsChannelId": null,
+            "ownerId": "277636691227836419",
+            "emojis": [
+                "701491229916921858",
+                "701491229925310575",
+                "701491229975773225",
+                "701491230172774442",
+                "701491230210523247",
+                "701491230260985877",
+                "701491230298734642",
+                "701491230306992219",
+                "701491230332157972",
+                "701491230349066261",
+                "701491230391140453",
+                "701491230395072522",
+                "701491230567039018",
+                "702005463377641522",
+                "702983901412458597",
+                "702983901429104692",
+                "703421323409621053",
+                "703421323417747556",
+                "704898335244288041",
+                "706688782732230696",
+                "714612460161859705",
+                "716763303480786968",
+                "871928205718732890",
+                "914626796656402554",
+                "1024104144845406248",
+                "1027356831565217812",
+                "1041141015437910096",
+                "1051590900872118282",
+                "1051591448237178921",
+                "1056615762120417290",
+                "1056615794164912250",
+                "1056615850091761664",
+                "1056619094289428561",
+                "1056624093304197211",
+                "1146436076555223095"
+            ],
+            "stickers": [],
+            "createdTimestamp": 1587317206755,
+            "nameAcronym": "DH",
+            "iconURL": "https://cdn.discordapp.com/icons/701483950559985705/599da3fa90926067e2561ea2b0cfd173.webp",
+            "splashURL": null,
+            "discoverySplashURL": null,
+            "bannerURL": null
+        },
+        "channel": {
+            "type": 2,
+            "guild": "701483950559985705",
+            "guildId": "701483950559985705",
+            "permissionOverwrites": [
+                "701483950589214807",
+                "701483950564049016",
+                "701483950559985705",
+                "701483950597734402",
+                "701483950589214805",
+                "701483950559985712",
+                "701483950589214801",
+                "701483950597734403",
+                "701483950589214808",
+                "701483950564049011",
+                "701483950597734400",
+                "701483950589214806",
+                "589996847083290629",
+                "130850662522159104",
+                "701483950589214809"
+            ],
+            "messages": [],
+            "nsfw": false,
+            "flags": 0,
+            "id": "1208697457555542098",
+            "name": "huskya's Void",
+            "rawPosition": 2,
+            "parentId": "701483952233250861",
+            "rtcRegion": null,
+            "bitrate": 64000,
+            "userLimit": 45,
+            "videoQualityMode": null,
+            "lastMessageId": null,
+            "rateLimitPerUser": 0,
+            "createdTimestamp": 1708246330394
+        },
+        "leader": {
+            "guildId": "701483950559985705",
+            "joinedTimestamp": 1610860223053,
+            "premiumSinceTimestamp": null,
+            "nickname": "huskya",
+            "pending": false,
+            "communicationDisabledUntilTimestamp": null,
+            "userId": "130850662522159104",
+            "avatar": null,
+            "flags": 0,
+            "displayName": "huskya",
+            "roles": [
+                "1156643685556043926",
+                "1142079841974370365",
+                "1135493887377559633",
+                "1135493991513726976",
+                "701498109498228878",
+                "1097207298591567912",
+                "1079540846338252910",
+                "1135494068529532928",
+                "701483950564049007",
+                "701483950589214801",
+                "701483950597734403",
+                "701483950589214808",
+                "701483950559985712",
+                "1026522584977780796",
+                "701483950589214805",
+                "701483950564049016",
+                "1026522640812351609",
+                "701483950564049009",
+                "701483950559985705"
+            ],
+            "avatarURL": null,
+            "displayAvatarURL": "https://cdn.discordapp.com/avatars/130850662522159104/bfa226abf7919b30903848289fa79df2.webp"
+        },
+        "raidID": "1208697475292995635",
+        "members": [
+            "130850662522159104"
+        ],
+        "earlyLocationMembers": [],
+        "earlySlotMembers": [],
+        "buttons": [
+            {
+                "name": "Key",
+                "limit": 2,
+                "members": [],
+                "logged": 0,
+                "isCap": false
+            },
+            {
+                "name": "Vial",
+                "limit": 3,
+                "members": [],
+                "logged": 0,
+                "isCap": false
+            },
+            {
+                "name": "Mystic",
+                "limit": 1,
+                "members": [],
+                "logged": 0,
+                "isCap": false
+            },
+            {
+                "name": "Armor Break",
+                "limit": 1,
+                "members": [],
+                "logged": 0,
+                "isCap": false
+            },
+            {
+                "name": "Expose",
+                "limit": 1,
+                "members": [],
+                "logged": 0,
+                "isCap": false
+            },
+            {
+                "name": "Stun",
+                "limit": 1,
+                "members": [],
+                "logged": 0,
+                "isCap": false
+            },
+            {
+                "name": "Marble Seal",
+                "limit": 1,
+                "members": [],
+                "logged": 0,
+                "isCap": false
+            },
+            {
+                "name": "Fungal Tome",
+                "limit": 2,
+                "members": [],
+                "logged": 0,
+                "isCap": false
+            },
+            {
+                "name": "Aether Orb",
+                "limit": 1,
+                "members": [],
+                "logged": 0,
+                "isCap": false
+            },
+            {
+                "name": "Trickster",
+                "limit": 1,
+                "members": [],
+                "logged": 0,
+                "isCap": false
+            },
+            {
+                "name": "Supporter",
+                "limit": null,
+                "members": [],
+                "logged": 0,
+                "isCap": false
+            },
+            {
+                "name": "Tickets",
+                "limit": 5,
+                "members": [],
+                "logged": 0,
+                "isCap": false
+            }
+        ],
+        "reactRequests": {},
+        "body": [
+            {
+                "vcState": 0,
+                "nextPhaseButton": "Open Channel",
+                "timeLimit": 360,
+                "message": null,
+                "embed": {
+                    "color": "#2f075c",
+                    "description": null,
+                    "image": null,
+                    "thumbnail": [
+                        "https://cdn.discordapp.com/emojis/701491230210523247.png?v=1"
+                    ]
+                }
+            },
+            {
+                "vcState": 0,
+                "nextPhaseButton": "Open Channel",
+                "timeLimit": 360,
+                "message": "Early Reacts, click the buttons",
+                "embed": {
+                    "color": "#2f075c",
+                    "description": "To join **click here** <#1208697457555542098>\nIf you have a **Key**, react with <:hallsK:1066377664279097354>\nIf you have a **Vial**, react with <:VialOfPureDarkness:1050494410770632794>\nIf you have an early react, react with <:Mystic:723018431275859969> <:Ogmur:1066714553586552956> <:Expose:1066714543780282468> <:Knight:723018431598952498> <:UTMarbleSeal:720401067086446672> <:tomeOfTheMushroomTribesFungal:1050171338515566723> <:UTOrbofAether:720265038664826959> <:Trickster:723018431275728918>\nIf you are a <@&701498109498228878><@&1057125819631271976>, react with <:NitroBooster:1050492863257002035>\n",
+                    "image": null,
+                    "thumbnail": [
+                        "https://cdn.discordapp.com/emojis/701491230210523247.png?v=1"
+                    ]
+                }
+            },
+            {
+                "vcState": 1,
+                "nextPhaseButton": "Start Run",
+                "timeLimit": 360,
+                "message": "The channel will be open",
+                "embed": {
+                    "color": "#2f075c",
+                    "description": "To join **click here** <#1208697457555542098>\nIf you have a **Key**, react with <:hallsK:1066377664279097354>\nIf you have a **Vial**, react with <:VialOfPureDarkness:1050494410770632794>\nIf you have an early react, react with <:Mystic:723018431275859969> <:Ogmur:1066714553586552956> <:Expose:1066714543780282468> <:Knight:723018431598952498> <:UTMarbleSeal:720401067086446672> <:tomeOfTheMushroomTribesFungal:1050171338515566723> <:UTOrbofAether:720265038664826959> <:Trickster:723018431275728918>\nIf you are a <@&701498109498228878><@&1057125819631271976>, react with <:NitroBooster:1050492863257002035>\n",
+                    "image": null,
+                    "thumbnail": [
+                        "https://cdn.discordapp.com/emojis/701491230210523247.png?v=1"
+                    ]
+                }
+            }
+        ],
+        "cap": 45,
+        "time": 1708374690426,
+        "location": "2 min",
+        "phase": 2,
+        "timer": 1708282797368,
+        "completes": 1,
+        "ended_by_id": "130850662522159104",
+        "aborted_by": null,
+        "deleted_by": null,
+        "raidStatusMessage": {
+            "channelId": "701483952233250863",
+            "guildId": "701483950559985705",
+            "id": "1208697475292995635",
+            "createdTimestamp": 1708246334623,
+            "type": 0,
+            "system": false,
+            "content": "@here <@&787196065862516766>, **Void**",
+            "authorId": "1204152234749726740",
+            "pinned": false,
+            "tts": false,
+            "nonce": null,
+            "embeds": [
+                {
+                    "type": "rich",
+                    "description": "This afk check has been ended. If you get disconnected during the run, **JOIN LOUNGE** *then* press the huge **RECONNECT** button",
+                    "color": 3082076,
+                    "timestamp": "2024-02-18T18:59:59.485000+00:00",
+                    "author": {
+                        "name": "AFK for Void by huskya",
+                        "icon_url": "https://cdn.discordapp.com/avatars/130850662522159104/bfa226abf7919b30903848289fa79df2.webp",
+                        "proxy_icon_url": "https://images-ext-1.discordapp.net/external/NG7r8hmWGqjCvqe6FpV6SlOgAOLRGd1Lp1cd7yBrluI/https/cdn.discordapp.com/avatars/130850662522159104/bfa226abf7919b30903848289fa79df2.webp"
+                    },
+                    "thumbnail": {
+                        "url": "https://cdn.discordapp.com/emojis/701491230210523247.png?v=1",
+                        "proxy_url": "https://images-ext-1.discordapp.net/external/pR0a8IMKr_ckYI6qHGcnwC2FroRwM1Fnc92efsVfHGo/%3Fv%3D1/https/cdn.discordapp.com/emojis/701491230210523247.png",
+                        "width": 128,
+                        "height": 128
+                    },
+                    "footer": {
+                        "text": "Dev Halls • Ended by huskya",
+                        "icon_url": "https://cdn.discordapp.com/icons/701483950559985705/599da3fa90926067e2561ea2b0cfd173.webp",
+                        "proxy_icon_url": "https://images-ext-2.discordapp.net/external/ZmTRXkp_Bt2wzgX66wfrKDzf2HqNY9YXt_vpKWldgwY/https/cdn.discordapp.com/icons/701483950559985705/599da3fa90926067e2561ea2b0cfd173.webp"
+                    }
+                }
+            ],
+            "components": [
+                {
+                    "type": 1,
+                    "components": [
+                        {
+                            "type": 2,
+                            "custom_id": "reconnect",
+                            "style": 1,
+                            "label": "Reconnect"
+                        }
+                    ]
+                }
+            ],
+            "attachments": [],
+            "stickers": [],
+            "position": null,
+            "roleSubscriptionData": null,
+            "resolved": {
+                "members": [],
+                "users": [],
+                "roles": [],
+                "channels": []
+            },
+            "editedTimestamp": 1708282857781,
+            "mentions": {
+                "everyone": true,
+                "users": [],
+                "roles": [
+                    "787196065862516766"
+                ],
+                "crosspostedChannels": [],
+                "repliedUser": null,
+                "members": [],
+                "channels": []
+            },
+            "webhookId": null,
+            "groupActivityApplicationId": null,
+            "applicationId": null,
+            "activity": null,
+            "flags": 0,
+            "reference": null,
+            "interaction": null,
+            "cleanContent": "@here @void ping, **Void**"
+        },
+        "raidCommandsMessage": {
+            "channelId": "701483952233250864",
+            "guildId": "701483950559985705",
+            "id": "1208697519186378752",
+            "createdTimestamp": 1708246345088,
+            "type": 0,
+            "system": false,
+            "content": "",
+            "authorId": "1204152234749726740",
+            "pinned": false,
+            "tts": false,
+            "nonce": null,
+            "embeds": [
+                {
+                    "type": "rich",
+                    "description": "**Raid Leader: <@130850662522159104> ``huskya``\nVC: <#1208697457555542098>\nLocation:** ``2 min``",
+                    "color": 3082076,
+                    "timestamp": "2024-02-18T18:59:59.486000+00:00",
+                    "fields": [
+                        {
+                            "name": "<:hallsK:1066377664279097354> Key (2) `L`",
+                            "value": "None!",
+                            "inline": true
+                        },
+                        {
+                            "name": "<:VialOfPureDarkness:1050494410770632794> Vial (3) `L`",
+                            "value": "None!",
+                            "inline": true
+                        },
+                        {
+                            "name": "<:Mystic:723018431275859969> Mystic (1)",
+                            "value": "None!",
+                            "inline": true
+                        },
+                        {
+                            "name": "<:Ogmur:1066714553586552956> Armor Break (1) `L`",
+                            "value": "None!",
+                            "inline": true
+                        },
+                        {
+                            "name": "<:Expose:1066714543780282468> Expose (1)",
+                            "value": "None!",
+                            "inline": true
+                        },
+                        {
+                            "name": "<:Knight:723018431598952498> Stun (1)",
+                            "value": "None!",
+                            "inline": true
+                        },
+                        {
+                            "name": "<:UTMarbleSeal:720401067086446672> Marble Seal (1)",
+                            "value": "None!",
+                            "inline": true
+                        },
+                        {
+                            "name": "<:tomeOfTheMushroomTribesFungal:1050171338515566723> Fungal Tome (2)",
+                            "value": "None!",
+                            "inline": true
+                        },
+                        {
+                            "name": "<:UTOrbofAether:720265038664826959> Aether Orb (1)",
+                            "value": "None!",
+                            "inline": true
+                        },
+                        {
+                            "name": "<:Trickster:723018431275728918> Trickster (1)",
+                            "value": "None!",
+                            "inline": true
+                        },
+                        {
+                            "name": "<:NitroBooster:1050492863257002035> Supporter",
+                            "value": "None!",
+                            "inline": true
+                        },
+                        {
+                            "name": "<:tickets:1109087335800389712> Tickets (5)",
+                            "value": "None!",
+                            "inline": true
+                        }
+                    ],
+                    "author": {
+                        "name": "AFK for Void by huskya",
+                        "icon_url": "https://cdn.discordapp.com/avatars/130850662522159104/bfa226abf7919b30903848289fa79df2.webp",
+                        "proxy_icon_url": "https://images-ext-1.discordapp.net/external/NG7r8hmWGqjCvqe6FpV6SlOgAOLRGd1Lp1cd7yBrluI/https/cdn.discordapp.com/avatars/130850662522159104/bfa226abf7919b30903848289fa79df2.webp"
+                    },
+                    "footer": {
+                        "text": "Dev Halls • Ended by huskya",
+                        "icon_url": "https://cdn.discordapp.com/icons/701483950559985705/599da3fa90926067e2561ea2b0cfd173.webp",
+                        "proxy_icon_url": "https://images-ext-2.discordapp.net/external/ZmTRXkp_Bt2wzgX66wfrKDzf2HqNY9YXt_vpKWldgwY/https/cdn.discordapp.com/icons/701483950559985705/599da3fa90926067e2561ea2b0cfd173.webp"
+                    }
+                }
+            ],
+            "components": [
+                {
+                    "type": 1,
+                    "components": [
+                        {
+                            "type": 2,
+                            "custom_id": "log Normal Key",
+                            "style": 2,
+                            "label": "Log Normal Key",
+                            "emoji": {
+                                "id": "1066377664279097354",
+                                "name": "hallsK"
+                            }
+                        },
+                        {
+                            "type": 2,
+                            "custom_id": "log Modded Key",
+                            "style": 2,
+                            "label": "Log Modded Key",
+                            "emoji": {
+                                "id": "1066377664279097354",
+                                "name": "hallsK"
+                            }
+                        },
+                        {
+                            "type": 2,
+                            "custom_id": "log Normal Vial",
+                            "style": 2,
+                            "label": "Log Vial",
+                            "emoji": {
+                                "id": "1050494410770632794",
+                                "name": "VialOfPureDarkness"
+                            }
+                        },
+                        {
+                            "type": 2,
+                            "custom_id": "end",
+                            "style": 4,
+                            "label": "Delete Channel"
+                        }
+                    ]
+                }
+            ],
+            "attachments": [],
+            "stickers": [],
+            "position": null,
+            "roleSubscriptionData": null,
+            "resolved": {
+                "members": [],
+                "users": [],
+                "roles": [],
+                "channels": []
+            },
+            "editedTimestamp": 1708282857648,
+            "mentions": {
+                "everyone": false,
+                "users": [],
+                "roles": [],
+                "crosspostedChannels": [],
+                "repliedUser": null,
+                "members": [],
+                "channels": []
+            },
+            "webhookId": null,
+            "groupActivityApplicationId": null,
+            "applicationId": null,
+            "activity": null,
+            "flags": 0,
+            "reference": null,
+            "interaction": null,
+            "cleanContent": ""
+        },
+        "pointlogMid": "1208850665959591967",
+        "raidInfoMessage": {
+            "channelId": "701483952233250866",
+            "guildId": "701483950559985705",
+            "id": "1208697518783729696",
+            "createdTimestamp": 1708246344992,
+            "type": 0,
+            "system": false,
+            "content": "",
+            "authorId": "1204152234749726740",
+            "pinned": false,
+            "tts": false,
+            "nonce": null,
+            "embeds": [
+                {
+                    "type": "rich",
+                    "description": "**Raid Leader: <@130850662522159104> ``huskya``\nVC: <#1208697457555542098>\nLocation:** ``2 min``",
+                    "color": 3082076,
+                    "timestamp": "2024-02-18T19:00:58.342000+00:00",
+                    "fields": [
+                        {
+                            "name": "<:hallsK:1066377664279097354> Key (2) `L`",
+                            "value": "None!",
+                            "inline": true
+                        },
+                        {
+                            "name": "<:VialOfPureDarkness:1050494410770632794> Vial (3) `L`",
+                            "value": "None!",
+                            "inline": true
+                        },
+                        {
+                            "name": "<:Mystic:723018431275859969> Mystic (1)",
+                            "value": "None!",
+                            "inline": true
+                        },
+                        {
+                            "name": "<:Ogmur:1066714553586552956> Armor Break (1) `L`",
+                            "value": "None!",
+                            "inline": true
+                        },
+                        {
+                            "name": "<:Expose:1066714543780282468> Expose (1)",
+                            "value": "None!",
+                            "inline": true
+                        },
+                        {
+                            "name": "<:Knight:723018431598952498> Stun (1)",
+                            "value": "None!",
+                            "inline": true
+                        },
+                        {
+                            "name": "<:UTMarbleSeal:720401067086446672> Marble Seal (1)",
+                            "value": "None!",
+                            "inline": true
+                        },
+                        {
+                            "name": "<:tomeOfTheMushroomTribesFungal:1050171338515566723> Fungal Tome (2)",
+                            "value": "None!",
+                            "inline": true
+                        },
+                        {
+                            "name": "<:UTOrbofAether:720265038664826959> Aether Orb (1)",
+                            "value": "None!",
+                            "inline": true
+                        },
+                        {
+                            "name": "<:Trickster:723018431275728918> Trickster (1)",
+                            "value": "None!",
+                            "inline": true
+                        },
+                        {
+                            "name": "<:NitroBooster:1050492863257002035> Supporter",
+                            "value": "None!",
+                            "inline": true
+                        },
+                        {
+                            "name": "<:tickets:1109087335800389712> Tickets (5)",
+                            "value": "None!",
+                            "inline": true
+                        },
+                        {
+                            "name": "Points Log MID",
+                            "value": "1208850665959591967",
+                            "inline": false
+                        },
+                        {
+                            "name": "Raiders",
+                            "value": "<@!130850662522159104>",
+                            "inline": false
+                        }
+                    ],
+                    "author": {
+                        "name": "AFK for Void by huskya",
+                        "icon_url": "https://cdn.discordapp.com/avatars/130850662522159104/bfa226abf7919b30903848289fa79df2.webp",
+                        "proxy_icon_url": "https://images-ext-1.discordapp.net/external/NG7r8hmWGqjCvqe6FpV6SlOgAOLRGd1Lp1cd7yBrluI/https/cdn.discordapp.com/avatars/130850662522159104/bfa226abf7919b30903848289fa79df2.webp"
+                    },
+                    "footer": {
+                        "text": "Dev Halls • Ended by huskya",
+                        "icon_url": "https://cdn.discordapp.com/icons/701483950559985705/599da3fa90926067e2561ea2b0cfd173.webp",
+                        "proxy_icon_url": "https://images-ext-2.discordapp.net/external/ZmTRXkp_Bt2wzgX66wfrKDzf2HqNY9YXt_vpKWldgwY/https/cdn.discordapp.com/icons/701483950559985705/599da3fa90926067e2561ea2b0cfd173.webp"
+                    }
+                }
+            ],
+            "components": [],
+            "attachments": [],
+            "stickers": [],
+            "position": null,
+            "roleSubscriptionData": null,
+            "resolved": null,
+            "editedTimestamp": 1708282858569,
+            "mentions": {
+                "everyone": false,
+                "users": [],
+                "roles": [],
+                "crosspostedChannels": [],
+                "repliedUser": null,
+                "members": [],
+                "channels": []
+            },
+            "webhookId": null,
+            "groupActivityApplicationId": null,
+            "applicationId": null,
+            "activity": null,
+            "flags": 0,
+            "reference": null,
+            "interaction": null,
+            "cleanContent": ""
+        },
+        "raidChannelsMessage": {
+            "channelId": "1110595993193422941",
+            "guildId": "701483950559985705",
+            "id": "1208697518947438592",
+            "createdTimestamp": 1708246345031,
+            "type": 0,
+            "system": false,
+            "content": "<@130850662522159104>",
+            "authorId": "1204152234749726740",
+            "pinned": false,
+            "tts": false,
+            "nonce": null,
+            "embeds": [
+                {
+                    "type": "rich",
+                    "description": "**Raid Leader: <@130850662522159104> ``huskya``\nVC: <#1208697457555542098>\nLocation:** ``2 min`` \n\nWhenever the run is over. Click the button to delete the channel.",
+                    "color": 3082076,
+                    "timestamp": "2024-02-18T19:00:59.069000+00:00",
+                    "fields": [
+                        {
+                            "name": "Logging Info",
+                            "value": "<:hallsK:1066377664279097354> Key Logged: `0`\n<:VialOfPureDarkness:1050494410770632794> Vial Logged: `0`",
+                            "inline": false
+                        }
+                    ],
+                    "author": {
+                        "name": "AFK for Void by huskya",
+                        "icon_url": "https://cdn.discordapp.com/avatars/130850662522159104/bfa226abf7919b30903848289fa79df2.webp",
+                        "proxy_icon_url": "https://images-ext-1.discordapp.net/external/NG7r8hmWGqjCvqe6FpV6SlOgAOLRGd1Lp1cd7yBrluI/https/cdn.discordapp.com/avatars/130850662522159104/bfa226abf7919b30903848289fa79df2.webp"
+                    },
+                    "footer": {
+                        "text": "Dev Halls • Ended by huskya",
+                        "icon_url": "https://cdn.discordapp.com/icons/701483950559985705/599da3fa90926067e2561ea2b0cfd173.webp",
+                        "proxy_icon_url": "https://images-ext-2.discordapp.net/external/ZmTRXkp_Bt2wzgX66wfrKDzf2HqNY9YXt_vpKWldgwY/https/cdn.discordapp.com/icons/701483950559985705/599da3fa90926067e2561ea2b0cfd173.webp"
+                    }
+                }
+            ],
+            "components": [
+                {
+                    "type": 1,
+                    "components": [
+                        {
+                            "type": 2,
+                            "custom_id": "log Normal Key",
+                            "style": 2,
+                            "label": "Log Normal Key",
+                            "emoji": {
+                                "id": "1066377664279097354",
+                                "name": "hallsK"
+                            }
+                        },
+                        {
+                            "type": 2,
+                            "custom_id": "log Modded Key",
+                            "style": 2,
+                            "label": "Log Modded Key",
+                            "emoji": {
+                                "id": "1066377664279097354",
+                                "name": "hallsK"
+                            }
+                        },
+                        {
+                            "type": 2,
+                            "custom_id": "log Normal Vial",
+                            "style": 2,
+                            "label": "Log Vial",
+                            "emoji": {
+                                "id": "1050494410770632794",
+                                "name": "VialOfPureDarkness"
+                            }
+                        },
+                        {
+                            "type": 2,
+                            "custom_id": "end",
+                            "style": 4,
+                            "label": "Delete Channel"
+                        }
+                    ]
+                }
+            ],
+            "attachments": [],
+            "stickers": [],
+            "position": null,
+            "roleSubscriptionData": null,
+            "resolved": {
+                "members": [],
+                "users": [],
+                "roles": [],
+                "channels": []
+            },
+            "editedTimestamp": 1708282864298,
+            "mentions": {
+                "everyone": false,
+                "users": [
+                    "130850662522159104"
+                ],
+                "roles": [],
+                "crosspostedChannels": [],
+                "repliedUser": null,
+                "members": [
+                    "130850662522159104"
+                ],
+                "channels": []
+            },
+            "webhookId": null,
+            "groupActivityApplicationId": null,
+            "applicationId": null,
+            "activity": null,
+            "flags": 0,
+            "reference": null,
+            "interaction": null,
+            "cleanContent": "@huskya"
+        }
+    }
+}

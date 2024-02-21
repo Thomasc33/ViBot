@@ -1,5 +1,10 @@
+import { Guild, GuildMember, MessageReaction, Typing, User } from "discord.js";
+import { Connection } from "mysql2";
+
 // Increasing stack trace limit from default of 10 to hopefully be able to follow more error logs
 Error.stackTraceLimit = 16;
+
+process.chdir(__dirname);
 
 // Imports
 const Discord = require('discord.js');
@@ -29,7 +34,7 @@ const { MessageManager } = require('./messageManager.js');
 const messageManager = new MessageManager(bot, botSettings);
 
 // Bot Event Handlers
-bot.on('messageCreate', logWrapper('message', async (logger, message) => {
+bot.on('messageCreate', logWrapper('message', async (logger: (arg0: string) => any, message: { guild: { id: any; }; author: { bot: any; }; }) => {
     // Ignore messages to non-whitelisted servers (but let DMs through)
     if (message.guild && !serverWhiteList.includes(message.guild.id)) return logger('serverBlacklisted');
     if (message.author.bot) return logger('botAuthor');
@@ -41,7 +46,7 @@ bot.on('messageCreate', logWrapper('message', async (logger, message) => {
     }
 }));
 
-bot.on('interactionCreate', logWrapper('message', async (logger, interaction) => {
+bot.on('interactionCreate', logWrapper('message', async (logger: (arg0: string) => any, interaction: { guild: { id: string | number; }; isAutocomplete: () => any; isChatInputCommand: () => any; isUserContextMenuCommand: () => any; isButton: () => any; customId: string; }) => {
     // Validate the server is whitelisted
     if (interaction.guild && !serverWhiteList.includes(interaction.guild.id)) return logger('serverBlacklisted');
 
@@ -70,7 +75,7 @@ bot.on('ready', async () => {
     await botSetup.setup(bot);
 });
 
-bot.on('guildMemberAdd', async (member) => {
+bot.on('guildMemberAdd', async (member: GuildMember) => {
     if (!dbSetup.guildHasDb(member.guild.id)) return;
 
     await memberHandler.checkWasSuspended(bot, member);
@@ -78,7 +83,7 @@ bot.on('guildMemberAdd', async (member) => {
     await memberHandler.checkWasMuted(bot, member);
 });
 
-bot.on('guildMemberUpdate', async (oldMember, newMember) => {
+bot.on('guildMemberUpdate', async (oldMember: GuildMember, newMember: GuildMember) => {
     if (!dbSetup.guildHasDb(newMember.guild.id)) return;
 
     const settings = bot.settings[newMember.guild.id];
@@ -92,7 +97,7 @@ bot.on('guildMemberUpdate', async (oldMember, newMember) => {
     await memberHandler.updateAffiliateRoles(bot, newMember);
 });
 
-bot.on('guildMemberRemove', async (member) => {
+bot.on('guildMemberRemove', async (member: GuildMember) => {
     if (!dbSetup.guildHasDb(member.guild.id)) return;
 
     await memberHandler.detectSuspensionEvasion(bot, member);
@@ -100,7 +105,7 @@ bot.on('guildMemberRemove', async (member) => {
     await memberHandler.logServerLeave(bot, member);
 });
 
-bot.on('messageReactionAdd', async (r, u) => {
+bot.on('messageReactionAdd', async (r: MessageReaction, u: User) => {
     if (u.bot) return;
     // modmail
     if (r.message.partial) r.message = await r.message.fetch();
@@ -123,26 +128,23 @@ bot.on('messageReactionAdd', async (r, u) => {
     }
 });
 
-bot.on('typingStart', (c, u) => {
+bot.on('typingStart', ({ channel: c, user: u }: Typing) => {
     if (c.type !== Discord.ChannelType.DM || u.bot || verification.checkActive(u.id)) return;
-    c.startTyping();
-    setTimeout(() => {
-        c.stopTyping();
-    }, 7500);
+    c.sendTyping();
 });
 
-Promise.all(botSettings.config?.guildIds.map(guildId => {
+Promise.all(botSettings.config?.guildIds.map((guildId: string) => {
     const sseUrl = new URL(botSettings.config.url);
     sseUrl.pathname = `/guild/${guildId}/sse`;
     sseUrl.searchParams.append('key', botSettings.config.key);
     const settingsEventSource = new EventSource(sseUrl.toString());
-    settingsEventSource.addEventListener('error', err => ErrorLogger.log(err, bot));
+    settingsEventSource.addEventListener('error', (err: string | Error) => ErrorLogger.log(err, bot));
     settingsEventSource.addEventListener('open', () => console.log(`Settings SEE Socket opened for ${guildId}`));
     const cacheFile = `data/guildSettings.${guildId}.cache.json`;
-    let fileReadTimeout;
-    return new Promise(res => {
+    let fileReadTimeout: NodeJS.Timeout;
+    return new Promise<void>(res => {
         // Wait 1s before reading from cache
-        settingsEventSource.addEventListener('message', m => {
+        settingsEventSource.addEventListener('message', (m: any) => {
             console.log(`Updated settings for ${guildId}`);
             const data = JSON.parse(m.data);
             bot.settings[guildId] = data;
@@ -152,7 +154,7 @@ Promise.all(botSettings.config?.guildIds.map(guildId => {
         });
 
         // Read from cache
-        fs.access(cacheFile, (err) => {
+        fs.access(cacheFile, (err: any) => {
             if (err) return;
             fileReadTimeout = setTimeout(() => {
                 console.log(`Could not fetch settings for ${guildId} reading cache`);
@@ -172,13 +174,13 @@ Promise.all(botSettings.config?.guildIds.map(guildId => {
 // Process Event Listening
 // ===========================================================================================================
 
-process.on('uncaughtException', err => {
+process.on('uncaughtException', (err: Error & { fatal?: boolean }) => {
     if (!err) return;
     ErrorLogger.log(err, bot);
     if (err.fatal) process.exit(1);
 });
 
-process.on('unhandledRejection', err => {
+process.on('unhandledRejection', (err: Error) => {
     if (err) {
         if (err.message == 'Target user is not connected to voice.') return;
         if (err.message == 'Cannot send messages to this user') return;
@@ -190,7 +192,7 @@ process.on('unhandledRejection', err => {
 });
 
 // Data Base Connectors (Global DB was here, now moved to bot ready listener)
-let tokenDB = mysql.createConnection(botSettings.tokenDBInfo);
+let tokenDB: Connection = mysql.createConnection(botSettings.tokenDBInfo);
 
 tokenDB.connect(err => {
     if (err) ErrorLogger.log(err, bot);
@@ -206,7 +208,7 @@ tokenDB.on('error', err => {
 // Functions
 // ===========================================================================================================
 
-let vibotControlGuild;
+let vibotControlGuild: Guild;
 /**
  * Checks user by ID's to see if they have a patreon role in control panel discord
  * @param {String} patreonRoleId
@@ -214,9 +216,9 @@ let vibotControlGuild;
  * @returns
  */
 // eslint-disable-next-line no-unused-vars
-function checkPatreon(patreonRoleId, userId) {
+function checkPatreon(patreonRoleId: string, userId: string) {
     if (!vibotControlGuild) vibotControlGuild = bot.guilds.cache.get('739623118833713214');
-    if (vibotControlGuild.members.cache.get(userId) && vibotControlGuild.members.cache.get(userId).roles.cache.has(patreonRoleId)) return true;
+    if (vibotControlGuild.members.cache.get(userId) && vibotControlGuild.members.cache.get(userId)?.roles.cache.has(patreonRoleId)) return true;
     return false;
 }
 

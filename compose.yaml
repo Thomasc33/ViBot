@@ -1,0 +1,17 @@
+services:
+  vibot:
+    image: node:20.6.1
+    volumes:
+      - ./:/app
+    working_dir: /app
+    init: true
+    entrypoint: ['npm', 'start']
+    stop_grace_period: 3s
+  ts:
+    image: node:20.6.1
+    init: true
+    stop_grace_period: 3s
+    volumns: 
+      - ./:/app
+    working_dir: /app
+    entrypoint: ['npm', 'run', 'ts', '--', '--watch', '--preserveWatchOutput']

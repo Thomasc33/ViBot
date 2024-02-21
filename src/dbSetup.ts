@@ -4,7 +4,7 @@ const mysql = require('mysql2');
 const metrics = require('./metrics.js');
 const { Point } = require('@influxdata/influxdb-client');
 
-let dbs = null;
+let dbs: DbWrap[]? = null;
 const uniqueDBs = [];
 
 const verbose = !process.title.includes('runner');
@@ -20,7 +20,7 @@ class DbWrap {
         return this.#db;
     }
 
-    query(query, params, cb) {
+    query(query: string, params: any[], cb: (rows: )) {
         let args;
         if (!params || (!cb && typeof params == 'function')) {
             args = [query];
@@ -128,7 +128,7 @@ async function reconnectDontDoThis(bot) {
 module.exports = {
     init,
     reconnectDontDoThis,
-    getDB(guildId) {
+    getDB(guildId: string) {
         if (dbs === null) throw new Error("Can't get DB before initialization");
         return dbs[guildId];
     },

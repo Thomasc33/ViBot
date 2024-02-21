@@ -26,10 +26,16 @@
     "request": "^2.88.2"
   },
   "scripts": {
+    "start": "node ./build/index.js",
     "test": ";ping",
     "job": "node jobs/runner.js",
     "lint": "eslint --ext .js .",
-    "lint-errors": "eslint --ext .js --quiet ."
+    "lint-errors": "eslint --ext .js --quiet .",
+    "tsc": "tsc",
+    "ts": "npx tsc",
+    "clean": "del-cli --force ./build/*",
+    "copyfiles": "node ./build/build_script/copyFiles.js",
+    "build": "npm run clean && npm run tsc && npm run copyfiles"
   },
   "repository": {
     "type": "git",
@@ -45,8 +51,16 @@
   },
   "homepage": "https://github.com/Thomasc33/ViBot#readme",
   "devDependencies": {
+    "@types/node": "^20.11.19",
+    "@typescript-eslint/eslint-plugin": "^7.0.2",
+    "@typescript-eslint/parser": "^7.0.2",
+    "cpy-cli": "^5.0.0",
+    "del-cli": "^5.1.0",
     "eslint": "^8.49.0",
     "eslint-plugin-vibot-rules": "file:eslint-plugin-vibot-rules",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.3.3",
     "xo": "^0.56.0"
   }
 }

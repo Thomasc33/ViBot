@@ -52,7 +52,8 @@ bot.storedEmojis = moduleIsAvailable('./data/emojis.json') ? require('./data/emo
 function loadCommands() {
     const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
     for (const file of commandFiles) {
-        const command = require(`./commands/${file}`);
+        const commandModule = require(`./commands/${file}`);
+        const command = commandModule.default || commandModule;
         bot.commands.set(command.name, command);
     }
 }

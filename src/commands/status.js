@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
 const ErrorLogger = require('../lib/logError')
-const package = require('../package.json')
+const package = require('../../package.json')
 
 module.exports = {
     name: 'status',
