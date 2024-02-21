@@ -1,10 +1,13 @@
+import { createPool, FieldPacket, OkPacket, Pool, ProcedureCallPacket, Query, QueryError, QueryOptions, ResultSetHeader, RowDataPacket } from 'mysql2';
+type QueryResult = OkPacket | OkPacket[] | ResultSetHeader | ResultSetHeader[] | RowDataPacket[] | RowDataPacket[][] | ProcedureCallPacket;
+type QueryCallback = (err: QueryError | null, result: QueryResult, fields: FieldPacket[]) => any;
+
 const botSettings = require('./settings.json');
 const dbSchemas = require('./data/schemas.json');
-const mysql = require('mysql2');
 const metrics = require('./metrics.js');
 const { Point } = require('@influxdata/influxdb-client');
 
-let dbs: DbWrap[]? = null;
+let dbs: DbWrap[] | null = null;
 const uniqueDBs = [];
 
 const verbose = !process.title.includes('runner');
@@ -12,7 +15,7 @@ const verbose = !process.title.includes('runner');
 class DbWrap {
     #db;
 
-    constructor(db) {
+    constructor(db: Pool) {
         this.#db = db;
     }
 
@@ -20,23 +23,16 @@ class DbWrap {
         return this.#db;
     }
 
-    query(query: string, params: any[], cb: (rows: )) {
-        let args;
-        if (!params || (!cb && typeof params == 'function')) {
-            args = [query];
-            cb = params;
-        } else {
-            args = [query, params];
-        }
-        const start = new Date();
-        return this.#db.query(...args, (err, ...results) => {
-            const runtime = new Date() - start;
-            if (cb) {
-                cb(err, ...results);
-            }
-            if (Array.isArray(params)) {
+    query(sql: string, values?: any[] | QueryCallback, callback?: QueryCallback): Query {
+        if (!callback && typeof values == 'function') callback = values;
+        if (!Array.isArray(values)) values = undefined;
+        const start = Date.now();
+        return this.#db.query(sql, values, (err, rows, fields) => {
+            const runtime = Date.now() - start;
+            callback?.(err, rows, fields);
+            if (Array.isArray(values)) {
                 const point = new Point('mysql_raw_querytimes')
-                    .intField(query, runtime)
+                    .intField(sql, runtime)
                     .tag('functiontype', 'sync');
                 if (err) point.stringField('error', err);
                 metrics.writePoint(point);
@@ -47,31 +43,27 @@ class DbWrap {
     promise() {
         const dbPromise = this.#db.promise();
         return {
-            async query(query, params, cb) {
-                const start = new Date();
-                let error = null;
-                let rv = null;
-                try {
-                    rv = await dbPromise.query(query, params, cb).catch(() => {});
-                } catch (e) {
-                    error = e;
-                }
-                const runtime = new Date() - start;
-                if (Array.isArray(params)) {
+            async query(sql: string, values?: any[] | QueryCallback, callback?: QueryCallback): Promise<[QueryResult, FieldPacket[]]> {
+                if (!callback && typeof values == 'function') callback = values;
+                if (!Array.isArray(values)) values = undefined;
+                const start = Date.now();
+                const { result, error } = await dbPromise.query(sql, values).then(result => ({ result })).catch(error => ({ error })) as { result?: [QueryResult, FieldPacket[]], error?: any };
+                const runtime = Date.now() - start;
+                if (Array.isArray(values)) {
                     const point = new Point('mysql_raw_querytimes')
-                        .intField(query, runtime)
+                        .intField(sql, runtime)
                         .tag('functiontype', 'async');
                     if (error) point.stringField('error', error);
                     metrics.writePoint(point);
                 }
-
                 if (error) throw error;
-                return rv;
+                return result!;
             }
         };
     }
 
-    escape(...params) {
+    escape(...params: any[]) {
+        //@ts-ignore
         return this.#db.escape(...params);
     }
 }
@@ -103,7 +95,7 @@ async function setupConnections(bot) {
         if (matchingGuild) {
             dbs[guildId] = dbs[matchingGuild[1]];
         } else {
-            const pool = mysql.createPool(dbInfo);
+            const pool = createPool(dbInfo);
             dbs[guildId] = new DbWrap(pool, bot, dbInfo.database);
             uniqueDBs.push(dbs[guildId]);
             dbInfos.push([dbInfo, guildId]);

@@ -32,10 +32,11 @@
     "lint": "eslint --ext .js .",
     "lint-errors": "eslint --ext .js --quiet .",
     "tsc": "tsc",
-    "ts": "npx tsc",
-    "clean": "del-cli --force ./build/*",
-    "copyfiles": "node ./build/build_script/copyFiles.js",
-    "build": "npm run clean && npm run tsc && npm run copyfiles"
+    "clean": "node ./build/build_script/files.js clean",
+    "copyfiles": "node ./build/build_script/files.js copy",
+    "build": "npm run clean && npm run tsc && npm run copyfiles",
+    "dev": "npm run build && npm start",
+    "devncc": "npm run tsc && npm start"
   },
   "repository": {
     "type": "git",
