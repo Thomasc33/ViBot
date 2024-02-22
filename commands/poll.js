@@ -2,6 +2,7 @@ const Discord = require('discord.js');
 const botSettings = require('../settings.json');
 const ErrorLogger = require('../lib/logError');
 const pollInfo = require('../data/poll.json');
+const { settings } = require('../lib/settings');
 
 module.exports = {
     name: 'poll',
@@ -16,8 +17,6 @@ module.exports = {
         return 'This server has no poll templates.'
     },
     async execute(message, args, bot) {
-        let settings = bot.settings[message.guild.id]
-        if (!settings) return message.channel.send('settings not setup')
         if (!pollInfo.hasOwnProperty(message.guild.id)) {
             return message.channel.send("Polls are not set up for this server.")
         }

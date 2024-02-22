@@ -83,7 +83,6 @@ module.exports = {
     async handleButtons(bot, confirmMessage, db, choice, state) {
         const member = confirmMessage.interaction.guild.members.cache.get(state.memberId);
         const { count, keyInfo } = state;
-        const settings = bot.settings[confirmMessage.interaction.guild.id];
         const { guild } = confirmMessage.interaction;
         let moddedKey = false;
         if (!choice || choice == 'Cancelled') return confirmMessage.delete();
@@ -137,11 +136,12 @@ module.exports = {
             confirmMessage.interaction.channel.send({ embeds: [embed] });
         });
 
+        const { backend, points: pointsSettings, lists, roles } = settings[confirmMessage.interaction.guild.id];
         // Add Points to Database
-        if (settings.backend.points && keyInfo.points) {
-            let points = settings.points[keyInfo.points] * count;
-            if (member.roles.cache.hasAny(...settings.lists.perkRoles.map(role => settings.roles[role]))) points *= settings.points.supportermultiplier;
-            if (moddedKey) points *= settings.points.keymultiplier;
+        if (backend.points && keyInfo.points) {
+            let points = pointsSettings[keyInfo.points] * count;
+            if (member.roles.cache.hasAny(...lists.perkRoles.map(role => roles[role]))) points *= pointsSettings.supportermultiplier;
+            if (moddedKey) points *= pointsSettings.keymultiplier;
             db.query('UPDATE users SET points = points + ? WHERE id = ?', [points, member.id]);
         }
         // Delete Confirmation Message
@@ -171,18 +171,18 @@ async function checkUser(member, bot, db) {
 }
 
 async function checkRow(guild, bot, row, member) {
-    const settings = bot.settings[guild.id];
+    const { roles }= settings[guild.id];
     const popInfo = keyroles[guild.id];
-    if (!settings || !popInfo || !member) return;
+    if (!roles || !popInfo || !member) return;
     member = member || await guild.members.fetch(row.id).catch();
     const rolesToAdd = [];
     for (const keyInfo of popInfo) {
-        if (!settings.roles[keyInfo.role]) continue;
+        if (!roles[keyInfo.role]) continue;
         let count = 0;
         for (const [keyType,] of keyInfo.types) count += row[keyType] || 0;
-        console.log(count, keyInfo.amount, member.roles.cache.has(settings.roles[keyInfo.role]));
+        console.log(count, keyInfo.amount, member.roles.cache.has(roles[keyInfo.role]));
         if (count >= keyInfo.amount) {
-            if (!member.roles.cache.has(settings.roles[keyInfo.role])) rolesToAdd.push(settings.roles[keyInfo.role]);
+            if (!member.roles.cache.has(roles[keyInfo.role])) rolesToAdd.push(roles[keyInfo.role]);
         }
     }
     await member.roles.add(rolesToAdd);

@@ -1,6 +1,7 @@
 const fs = module.require('fs');
 const Discord = require('discord.js');
 const ErrorLogger = require('../lib/logError')
+const { settings } = require('../lib/settings');
 
 module.exports = {
     name: 'permasuspend',
@@ -15,9 +16,8 @@ module.exports = {
         if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
         if (!member) return message.channel.send('User not found')
 
-        let settings = bot.settings[message.guild.id]
-        const suspendedRole = message.guild.roles.cache.get(settings.roles.tempsuspended)
-        const pSuspendRole = message.guild.roles.cache.get(settings.roles.permasuspended)
+        const suspendedRole = message.guild.roles.cache.get(settings[message.guild.id].roles.tempsuspended)
+        const pSuspendRole = message.guild.roles.cache.get(settings[message.guild.id].roles.permasuspended)
 
         let reason = "";
         for (i = 1; i < args.length; i++) reason = reason.concat(args[i]) + ' '
@@ -62,7 +62,7 @@ module.exports = {
             let userRolesString = '',
                 userRoles = []
             member.roles.cache.each(r => {
-                if (!(r.managed || settings.lists.discordRoles.map(role => settings.roles[role]).includes(r.id))) {
+                if (!(r.managed || settings[message.guild.id].lists.discordRoles.map(role => settings[message.guild.id].roles[role]).includes(r.id))) {
                     userRoles.push(r.id)
                     userRolesString = userRolesString.concat(`${r.id} `)
                 }
@@ -77,7 +77,7 @@ module.exports = {
             if (overwrite) db.query(`UPDATE suspensions SET perma = true, uTime = '0', modid = '${message.member.id}' WHERE id = '${member.id}' AND suspended = true`)
             else db.query(`INSERT INTO suspensions (id, guildid, suspended, uTime, reason, modid, roles, logmessage, perma) VALUES ('${member.id}', '${message.guild.id}', true, '0', ${db.escape(reason)}, '${message.author.id}', '${userRolesString}', 'n/a', true);`)
             message.channel.send(`${member} has been permanently suspended`)
-            message.guild.channels.cache.get(settings.channels.suspendlog).send({ embeds: [embed] })
+            message.guild.channels.cache.get(settings[message.guild.id].channels.suspendlog).send({ embeds: [embed] })
         }
     }
 }

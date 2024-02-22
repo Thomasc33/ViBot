@@ -1,4 +1,5 @@
 const Discord = require('discord.js')
+const { settings } = require('../lib/settings');
 
 module.exports = {
     name: 'prunerushers',
@@ -15,12 +16,11 @@ module.exports = {
      */
     async execute(message, args, bot, db) {
         //Create lists of rushers
-        let settings = bot.settings[message.guild.id]
-        if (!settings) return message.channel.send("Settings missing")
+        const { roles, numerical } = settings[message.guild.id];
 
         let today = new Date()
         const rushers = await this.getRushers(message.guild.id, db)
-        const inactiveRushers = rushers.filter(rusher => new Date(parseInt(rusher.time)) < today.setDate(today.getDate() - settings.numerical.prunerushersoffset))
+        const inactiveRushers = rushers.filter(rusher => new Date(parseInt(rusher.time)) < today.setDate(today.getDate() - numerical.prunerushersoffset))
 
         if (inactiveRushers.length == 0) {
             message.channel.send(`No rushers to prune!`)
@@ -39,12 +39,12 @@ module.exports = {
 
         let embedMessage = await message.channel.send({ embeds: [embed] })
         if (await embedMessage.confirmButton(message.author.id)) {
-            this.purgeRushers(message.guild.id, db, settings.numerical.prunerushersoffset)
+            this.purgeRushers(message.guild.id, db, numerical.prunerushersoffset)
             //Remove Rusher roles
             for (let rusher of inactiveRushers) {
                 await new Promise((res) => {
                     setTimeout(async () => {
-                        await message.guild.members.cache.get(rusher.id).roles.remove(bot.settings[message.guild.id].roles.rusher)
+                        await message.guild.members.cache.get(rusher.id).roles.remove(roles.rusher)
                         res()
                     }, 1500)
                 })

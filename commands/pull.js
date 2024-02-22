@@ -1,5 +1,5 @@
 const { spawn } = require('child_process');
-const { botOwners } = require('../settings.json');
+const { config: { botOwners } } = require('../lib/settings');
 const Discord = require('discord.js');
 const process = require('process');
 const cwd = process.cwd();

@@ -10,6 +10,7 @@ const quota = require('./quota')
 const quotas = require('../data/quotas.json');
 const afkTemplate = require('./afkTemplate.js');
 const client = new vision.ImageAnnotatorClient(botSettings.gcloudOptions);
+const { settings } = require('../lib/settings');
 
 
 module.exports = {
@@ -30,7 +31,7 @@ module.exports = {
      * @returns 
      */
     async execute(message, args, bot, db) {
-        let settings = bot.settings[message.guild.id]
+        const { roles, channels, commands, runreqs, backend } = settings[message.guild.id];
         let memberVoiceChannel = message.member.voice.channel
 
         if (args.length && /^\d+$/.test(args[0])) //add ability to parse from a different channel with ;pm channelid <image>
@@ -101,7 +102,7 @@ module.exports = {
             parseStatusEmbed.data.fields[1].value = 'Processing Data'
             await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
             
-            const minimumStaffRolePosition = message.guild.roles.cache.get(settings.roles.almostrl).position
+            const minimumStaffRolePosition = message.guild.roles.cache.get(roles.almostrl).position
 
             const raiders = imgPlayers.map(player => player.toLowerCase())
             const members = raid.isVcless() ? raid.members : bot.channels.cache.get(raid.channel.id).members.map(m => m.id)
@@ -176,8 +177,8 @@ module.exports = {
             parseStatusEmbed.data.fields[1].value = `Crasher Parse Completed. See Below. Beginning Character Parse`
             await parseStatusMessage.edit({ embeds: [parseStatusEmbed] })
 
-            if (settings.commands.crasherlist) {
-                postInCrasherList(embed, message.guild.channels.cache.get(settings.channels.parsechannel), message.member, raid.getButton("Key")?.members[0])
+            if (commands.crasherlist) {
+                postInCrasherList(embed, message.guild.channels.cache.get(channels.parsechannel), message.member, raid.getButton("Key")?.members[0])
             }
                 
         }
@@ -211,7 +212,7 @@ module.exports = {
                                 issueString += `\nNot level 20 (${character.level}/20)`
                             }
                             //check for max dex/attack
-                            if (settings.backend.realmeyestats) {
+                            if (backend.realmeyestats) {
                                 let statstot = character.statsTotal.replace(/[^0-9-,]/g, '').split(',')
                                 let statsbonus = character.statsBonus.replace(/[^0-9-,]/g, '').split(',')
                                 let statsArray = []
@@ -241,7 +242,7 @@ module.exports = {
                             //weapon
                             if (character.weapon) {
                                 let weaponTier = parseInt(character.weapon.split(/ +/).pop().replace('T', ''))
-                                if (weaponTier < settings.runreqs.weapon && weaponTier !== NaN) {
+                                if (weaponTier < runreqs.weapon && weaponTier !== NaN) {
                                     issue = true;
                                     issueString += `\nWeapon tier is too low (T${weaponTier})`
                                 }
@@ -253,7 +254,7 @@ module.exports = {
                             if (character.ability) {
                                 if (character.class.toLowerCase() != 'trickster' && character.class.toLowerCase() != 'mystic') {
                                     let abilityTier = parseInt(character.ability.split(/ +/).pop().replace('T', ''))
-                                    if (abilityTier < settings.runreqs.ability && abilityTier !== NaN) {
+                                    if (abilityTier < runreqs.ability && abilityTier !== NaN) {
                                         issue = true;
                                         issueString += `\nAbility tier is too low (T${abilityTier})`
                                     }
@@ -265,7 +266,7 @@ module.exports = {
                             //armor
                             if (character.armor) {
                                 let armorTier = parseInt(character.armor.split(/ +/).pop().replace('T', ''))
-                                if (armorTier < settings.runreqs.armor && armorTier !== NaN) {
+                                if (armorTier < runreqs.armor && armorTier !== NaN) {
                                     issue = true;
                                     issueString += `\nArmor tier is too low (T${armorTier})`
                                 }
@@ -276,7 +277,7 @@ module.exports = {
                             //ring
                             if (character.ring) {
                                 let ringTier = parseInt(character.ring.split(/ +/).pop().replace('T', ''))
-                                if (ringTier < settings.runreqs.ring && ringTier !== NaN) {
+                                if (ringTier < runreqs.ring && ringTier !== NaN) {
                                     issue = true;
                                     issueString += `\nRing tier is too low (T${ringTier})`
                                 }
@@ -328,7 +329,7 @@ module.exports = {
         }
 
         let parsePromises = [runParse()]
-        if (settings.backend.characterparse) parsePromises.push(characterParse());
+        if (backend.characterparse) parsePromises.push(characterParse());
 
         await Promise.all(parsePromises)
 
@@ -367,7 +368,7 @@ module.exports = {
         const guildQuota = quotas[message.guild.id];
         if (!guildQuota) return;
         const parseQuota = guildQuota.quotas.filter(q => q.id == 'security')[0];
-        if (parseQuota) {quota.update(message.guild, db, bot, settings, guildQuota, parseQuota);}
+        if (parseQuota) {quota.update(message.guild, db, bot, guildQuota, parseQuota);}
     }
 }
 
