@@ -62,22 +62,25 @@ module.exports = {
         const voteSetup = VoteSetup.fromJSON(interaction.guild, voteSetupJSON);
         switch (choice) {
             case 'voteSend':
-                await sendVote(bot.settings[interaction.guild.id], voteSetup);
+                interaction.deferUpdate();
+                await sendVote(voteSetup, getRoleSettingsName(bot.settings[interaction.guild.id], voteSetup.role));
+                console.log(typeof voteSetup.currentMemberIndex, voteSetup.currentMemberIndex, voteSetup.members.length);
                 voteSetup.currentMemberIndex++;
-                updateState('currentMemberIndex', voteSetup.currentMemberIndex);
-                if (voteSetup.currentMemberIndex >= voteSetup.members.length) {
+                updateState('currentMemberIndex', voteSetup.currentMemberIndex.toString()); // TODO debug why number is being reset to 0
+                console.log('post', typeof voteSetup.currentMemberIndex, voteSetup.currentMemberIndex, voteSetup.members.length);
+                if (voteSetup.currentMemberIndex > voteSetup.members.length) {
                     await message.delete();
                 } else {
-                    await interaction.message.edit({ embeds: [getSetupEmbed(voteSetup)], components: [generateVoteSetupButtons(bot)] });
+                    await message.edit({ embeds: [getSetupEmbed(voteSetup)], components: [generateVoteSetupButtons(bot)] });
                 }
                 break;
             case 'voteSkip':
                 voteSetup.currentMemberIndex++;
-                updateState('currentMemberIndex', voteSetup.currentMemberIndex);
+                updateState('currentMemberIndex', voteSetup.currentMemberIndex.toString());
                 if (voteSetup.currentMemberIndex >= voteSetup.members.length) {
                     await message.delete();
                 } else {
-                    await interaction.message.edit({ embeds: [getSetupEmbed(voteSetup)], components: [generateVoteSetupButtons(bot)] });
+                    await message.edit({ embeds: [getSetupEmbed(voteSetup)], components: [generateVoteSetupButtons(bot)] });
                 }
                 break;
             case 'voteAbort':
@@ -86,6 +89,7 @@ module.exports = {
             case 'voteAddFeedbacks': {
                 // TODO add custom value with modal response
                 // add function to grab custom feedback by message ID and process it
+                // also make sure first 24 feedbacks show up in the select panel, since last is custom
                 const { includedFeedbacks, unidentifiedFeedbacks, otherFeedbacks } = sortMemberFeedbacks(voteSetup);
                 const addableFeedbacks = unidentifiedFeedbacks.concat(otherFeedbacks).slice(0, 25);
                 let index = includedFeedbacks.length + 1;
@@ -157,6 +161,7 @@ class VoteSetup {
     static fromJSON(guild, json) {
         return new this({
             ...json,
+            currentMemberIndex: parseInt(json.currentMemberIndex), // TODO check if this is necessary, for some reason it's being reset to 0 but the setup panel is working fine
             channel: guild.channels.cache.get(json.channel),
             members: json.members.map(memberId => guild.members.cache.get(memberId)),
             role: guild.roles.cache.get(json.role)
@@ -191,20 +196,20 @@ function getSetupEmbed(voteSetup) {
         .setDescription(`
             This vote will be for to <@${member.id}> to ${voteSetup.role}
         `);
-    const { includedFeedbacks, unidentifiedFeedbacks, otherFeedbacks } = sortMemberFeedbacks(voteSetup.feedbacks, member);
+    const { includedFeedbacks, unidentifiedFeedbacks, otherFeedbacks } = sortMemberFeedbacks(voteSetup);
     let index = 1;
     // TODO add length check for 1024 character limit, add <type> feedback two as name and continue list
     embed.addFields([{
         name: 'Included Feedback:',
-        value: includedFeedbacks.map(feedback => getDisplayString(index++, feedback)).join('\n') || 'None'
+        value: includedFeedbacks.map(feedback => getSetupDisplayString(index++, feedback)).join('\n') || 'None'
     },
     {
         name: 'Unknown Tags:',
-        value: unidentifiedFeedbacks.map(feedback => getDisplayString(index++, feedback)).join('\n') || 'None'
+        value: unidentifiedFeedbacks.map(feedback => getSetupDisplayString(index++, feedback)).join('\n') || 'None'
     },
     {
         name: 'Other Feedback:',
-        value: otherFeedbacks.map(feedback => getDisplayString(index++, feedback)).join('\n') || 'None'
+        value: otherFeedbacks.map(feedback => getSetupDisplayString(index++, feedback)).join('\n') || 'None'
     }]);
     return embed;
 }
@@ -227,9 +232,14 @@ function sortMemberFeedbacks(voteSetup) {
     return { includedFeedbacks, unidentifiedFeedbacks, otherFeedbacks };
 }
 
-function getDisplayString(index, feedback) {
+function getSetupDisplayString(index, feedback) {
     const tags = (`${feedback.dungeon?.tag || '??'} ${feedback.tier?.tag || '??'}`).padStart(11);
     return `\`${index}.\` \`${tags}\` ${feedback.feedbackURL} <t:${feedback.timeStamp}:f>`;
+}
+
+function getVoteDisplayString(index, feedback) {
+    const tags = (`${feedback.dungeon?.tag || '??'} ${feedback.tier?.tag || '??'}`).padStart(11);
+    return `\`${index}.\` \`${tags}\` ${feedback.feedbackURL} <t:${feedback.timeStamp}:d>`;
 }
 
 function getRoleSettingsName(settings, role) {
@@ -248,10 +258,11 @@ async function sendVote(voteSetup, roleSettingsName) {
         .setAuthor({ name: `${member.displayName} to ${voteSetup.role.name}`, iconURL: member.user.displayAvatarURL({ dynamic: true }) })
         .setDescription(`${member} \`${member.displayName}\``);
     if (embedStyling != undefined && embedStyling.image) { embed.setThumbnail(embedStyling.image); }
-    const feedbacks = voteSetup.feedbacks.filter(feedback => feedback.mentionedIDs.includes[member.id] && feedback.feedbackState == FeedbackState.Included);
+    const { includedFeedbacks } = sortMemberFeedbacks(voteSetup);
+    let index = 1;
     embed.addFields({
         name: 'Feedback:',
-        value: getDisplayString(feedbacks) || 'None'
+        value: includedFeedbacks.map(feedback => getVoteDisplayString(index++, feedback)).join('\n') || 'None'
     });
     const voteMessage = await voteSetup.channel.send({ embeds: [embed] });
     for (const emoji of ['✅', '❌', '👀']) { voteMessage.react(emoji); }
