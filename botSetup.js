@@ -8,7 +8,7 @@ const http = require('http');
 const Discord = require('discord.js');
 const redisConnect = require('./redis.js').setup;
 
-const botSettings = require('./settings.json');
+const { config, settings } = require('./lib/settings.js');
 const ErrorLogger = require('./lib/logError');
 // Commands
 const emoji = require('./commands/emoji.js');
@@ -30,7 +30,7 @@ async function deployCommands(bot, guild) {
     const slashCommands = bot.commands.filter(c => c.getSlashCommandData).map(c => c.getSlashCommandData(guild)).filter(c => c).flat();
 
     // Deploy commands
-    const rest = new Discord.REST({ version: '10' }).setToken(require('./settings.json').key);
+    const rest = new Discord.REST({ version: '10' }).setToken(config.key);
     try {
         console.log(`Deploying ${slashCommands.length} slash commands to ${guild.name} (${guild.id})`);
         await rest.put(Discord.Routes.applicationGuildCommands(bot.user.id, guild.id), { body: slashCommands });
@@ -41,7 +41,7 @@ async function deployCommands(bot, guild) {
 }
 
 function startAPI() {
-    if (botSettings.api) {
+    if (config.api) {
         console.log('api starting');
 
         const apiLimit = rateLimit({
@@ -67,7 +67,7 @@ function startAPI() {
         });
 
         const server = http.createServer(app);
-        const port = botSettings.apiPort;
+        const port = config.apiPort;
         server.listen(port);
     }
 }
@@ -100,11 +100,11 @@ async function setup(bot) {
     await redisConnect();
 
     // to hide dev server
-    if (bot.user.id == botSettings.prodBotId) { bot.devServers.push('701483950559985705'); }
+    if (bot.user.id == config.prodBotId) { bot.devServers.push('701483950559985705'); }
 
     // purge veri-active
     iterServers(bot, (bot, g) => {
-        const veriActive = g.channels.cache.get(bot.settings[g.id].channels.veriactive);
+        const veriActive = g.channels.cache.get(settings[g.id].channels.veriactive);
         if (veriActive) veriActive.bulkDelete(100).catch(er => { console.log('Could not delete veriActive'); });
     });
 
@@ -130,8 +130,8 @@ async function setup(bot) {
         const db = dbSetup.getDB(g.id);
         vibotChannels.update(g, bot, db).catch(er => { });
         afkCheck.loadBotAfkChecks(g, bot, db);
-        if (bot.settings[g.id].backend.verification) verification.init(g, bot, db).catch(er => { ErrorLogger.log(er, bot, g); });
-        if (bot.settings[g.id].backend.vetverification) vetVerification.init(g, bot, db).catch(er => { ErrorLogger.log(er, bot, g); });
+        if (settings[g.id].backend.verification) verification.init(g, bot, db).catch(er => { ErrorLogger.log(er, bot, g); });
+        if (settings[g.id].backend.vetverification) vetVerification.init(g, bot, db).catch(er => { ErrorLogger.log(er, bot, g); });
     });
 
     // Initialize the bot's slash commands

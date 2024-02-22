@@ -1,7 +1,7 @@
 /* eslint-disable no-prototype-builtins */
 /* eslint-disable no-await-in-loop */
 const Discord = require('discord.js');
-
+const { settings } = require('../lib/settings');
 module.exports = {
     name: 'activitycheck',
     description: 'Goes through ever user with the specified role as their highest. Then lists them with how many runs they have done in the past 3 months.',
@@ -27,7 +27,7 @@ class ActivityCheck {
         this.memberList = this.guild.findUsersWithRoleAsHighest(this.role?.id);
 
         this.bot = bot;
-        this.settings = this.bot.settings[this.guild.id];
+        this.settings = settings[this.guild.id];
         this.problems = [];
         this.maximumUsers = 500;
         this.embedDescriptionMaxLimit = 4096;

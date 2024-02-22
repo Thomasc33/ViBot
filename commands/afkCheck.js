@@ -7,6 +7,7 @@ const extensions = require(`../lib/extensions`)
 const consumablePopTemplates = require(`../data/keypop.json`);
 const popCommand = require('./pop.js');
 const AfkButton = require('../lib/afk/AfkButton');
+const { settings } = require('../lib/settings');
 
 module.exports = {
     name: 'afk',
@@ -24,13 +25,13 @@ module.exports = {
     async execute(message, args, bot, db) {
         let alias = args.shift().toLowerCase()
 
-        const afkTemplateNames = await AfkTemplate.resolveTemplateAlias(bot.settings[message.guild.id], message.member, message.guild.id, message.channel.id, alias)
+        const afkTemplateNames = await AfkTemplate.resolveTemplateAlias(settings[message.guild.id], message.member, message.guild.id, message.channel.id, alias)
         if (afkTemplateNames instanceof AfkTemplate.AfkTemplateValidationError) return message.channel.send(afkTemplateNames.message())
         if (afkTemplateNames.length == 0) return await message.channel.send('This afk template does not exist.')
 
         const afkTemplateName = afkTemplateNames.length == 1 ? afkTemplateNames[0] : await AfkTemplate.templateNamePrompt(message, afkTemplateNames)
 
-        const afkTemplate = await AfkTemplate.AfkTemplate.tryCreate(bot, bot.settings[message.guild.id], message, afkTemplateName)
+        const afkTemplate = await AfkTemplate.AfkTemplate.tryCreate(bot, settings[message.guild.id], message, afkTemplateName)
         if (afkTemplate instanceof AfkTemplate.AfkTemplateValidationError) {
             if (afkTemplate.invalidChannel()) await message.delete()
             await message.channel.send(afkTemplate.message())
@@ -75,7 +76,7 @@ module.exports = {
             const messageChannel = guild.channels.cache.get(currentStoredAfkCheck.message.channelId)
             const message = await messageChannel.messages.fetch(currentStoredAfkCheck.message.id)
             const afkTemplateName = currentStoredAfkCheck.afkTemplateName
-            const afkTemplate = await AfkTemplate.AfkTemplate.tryCreate(bot, bot.settings[message.guild.id], message, afkTemplateName)
+            const afkTemplate = await AfkTemplate.AfkTemplate.tryCreate(bot, settings[message.guild.id], message, afkTemplateName)
             if (afkTemplate instanceof AfkTemplate.AfkTemplateValidationError) {
                 console.log(afkTemplate.message())
                 continue
@@ -109,7 +110,7 @@ class afkCheck {
 
     constructor(afkTemplate, bot, db, message, location) {
         this.#bot = bot // bot
-        this.#botSettings = bot.settings[message.guild.id] // bot settings
+        this.#botSettings = settings[message.guild.id] // bot settings
         this.#afkTemplate = afkTemplate // static AFK template
         this.#db = db // bot database
         this.#message = message // message of the afk

@@ -1,9 +1,9 @@
 const { InfluxDB, Point } = require('@influxdata/influxdb-client');
 const Discord = require('discord.js');
-const botSettings = require('./settings.json');
+const { config } = require('./lib/settings');
 const process = require('process');
 
-const influxDB = botSettings.influxDB ? new InfluxDB({ token: botSettings.influxDB.token, url: botSettings.influxDB.url }).getWriteApi('vibot', botSettings.influxDB.bucket, 'ns') : undefined;
+const influxDB = config.influxDB ? new InfluxDB({ token: config.influxDB.token, url: config.influxDB.url }).getWriteApi('vibot', config.influxDB.bucket, 'ns') : undefined;
 
 // write node resource/cpu/memory usage
 function writeProcessUsage() {

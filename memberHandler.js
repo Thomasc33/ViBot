@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
 const ErrorLogger = require('./lib/logError');
 const { getDB } = require('./dbSetup.js');
-
+const { settings } = require('./lib/settings');
 async function modLog(member, logChannel, color, msg) {
     const iconUrl = 'https://cdn.discordapp.com/avatars/' + member.id + '/' + member.user.avatar + '.webp';
     const embed = new Discord.EmbedBuilder()
@@ -12,7 +12,7 @@ async function modLog(member, logChannel, color, msg) {
 }
 
 function modlogChannel(bot, guild) {
-    const modlog = guild.channels.cache.get(bot.settings[guild.id].channels.modlogs);
+    const modlog = guild.channels.cache.get(settings[guild.id].channels.modlogs);
     if (!modlog) ErrorLogger.log(new Error(`mod log not found in ${guild.id}`), bot, guild);
     return modlog;
 }
@@ -31,7 +31,7 @@ async function addRole(member, role, logChannel) {
 
 async function suspendedMemberRejoin(bot, member, ignOnLeave) {
     const logChannel = modlogChannel(bot, member.guild);
-    await member.roles.add(bot.settings[member.guild.id].roles.tempsuspended);
+    await member.roles.add(settings[member.guild.id].roles.tempsuspended);
     if (ignOnLeave) {
         member.setNickname(ignOnLeave);
         if (logChannel) await logChannel.send(`${member} rejoined server after leaving while suspended. Giving suspended role and nickname back.`);
@@ -52,7 +52,7 @@ module.exports = {
 
         const [[{ muteCount }]] = await db.promise().query('SELECT COUNT(*) as muteCount FROM mutes WHERE id = ? AND muted = true', [member.id]);
         if (muteCount !== 0) {
-            await member.roles.add(bot.settings[member.guild.id].roles.muted);
+            await member.roles.add(settings[member.guild.id].roles.muted);
             const logChannel = modlogChannel(bot, member.guild);
             if (logChannel) await logChannel.send(`${member} rejoined server after leaving while muted. Giving muted role back.`);
         }
@@ -67,7 +67,7 @@ module.exports = {
     },
     async updateAffiliateRoles(bot, member) {
         await Promise.all(bot.partneredServers.filter((server) => server.guildId == member.guild.id).map(async (partneredServer) => {
-            const partneredSettings = bot.settings[partneredServer.id];
+            const partneredSettings = settings[partneredServer.id];
             const otherServer = bot.guilds.cache.find(g => g.id == partneredServer.id);
             const partneredMember = otherServer.members.cache.get(member.id);
 
@@ -82,7 +82,7 @@ module.exports = {
             const partneredModLogs = otherServer.channels.cache.get(partneredSettings.channels.modlogs);
 
             const memberRoleIds = Array.from(member.roles.cache.values()).map((role) => role.id.toString());
-            const partnerServerRoleIds = bot.settings[member.guild.id].roles;
+            const partnerServerRoleIds = settings[member.guild.id].roles;
             const isStaff     = !!partneredServer.affiliatelist.find((roletype) => memberRoleIds.includes(partnerServerRoleIds[roletype]));
             const vasEligable = !!partneredServer.vaslist.find((roletype) => memberRoleIds.includes(partnerServerRoleIds[roletype]));
 
@@ -120,14 +120,16 @@ module.exports = {
         });
     },
     async logServerLeave(bot, member) {
-        const settings = bot.settings[member.guild.id];
-        if (!settings.backend.logServerLeave) return;
+        const { backend: { logServerLeave }, 
+            roles: { minimumServerLeaveRole }, 
+            channels: { serverLeaveChannel } } = settings[member.guild.id];
+        if (!logServerLeave) return;
 
-        const minimumServerLeaveRole = member.guild.roles.cache.get(settings.roles.minimumServerLeaveRole);
-        if (!minimumServerLeaveRole || member.roles.highest.position < minimumServerLeaveRole.position) return;
+        const mslRole = member.guild.roles.cache.get(minimumServerLeaveRole);
+        if (!mslRole || member.roles.highest.position < mslRole.position) return;
 
-        const serverLeaveChannel = member.guild.channels.cache.get(settings.channels.serverLeaveChannel);
-        if (!serverLeaveChannel) return;
+        const slChannel = member.guild.channels.cache.get(serverLeaveChannel);
+        if (!slChannel) return;
 
         const embed = new Discord.EmbedBuilder()
             .setColor('Red')
@@ -141,6 +143,6 @@ module.exports = {
             .setTimestamp()
             .setFooter({ text: `ID: ${member.id}`, iconURL: member.displayAvatarURL() });
 
-        await serverLeaveChannel.send({ embeds: [embed] }).catch(er => { ErrorLogger.log(er, bot, member.guild); });
+        await slChannel.send({ embeds: [embed] }).catch(er => { ErrorLogger.log(er, bot, member.guild); });
     }
 };

@@ -1,4 +1,4 @@
-const botSettings = require('./settings.json');
+const { config: botConfig } = require('./lib/settings');
 const dbSchemas = require('./data/schemas.json');
 const mysql = require('mysql2');
 const metrics = require('./metrics.js');
@@ -90,10 +90,10 @@ async function setupConnections(bot) {
             return;
         }
         const dbInfo = {
-            port: botSettings.defaultDbInfo.port || 3306,
-            host: dbConfig.host || botSettings.defaultDbInfo.host,
-            user: dbConfig.user || botSettings.defaultDbInfo.user,
-            password: dbConfig.password || botSettings.defaultDbInfo.password,
+            port: botConfig.defaultDbInfo.port || 3306,
+            host: dbConfig.host || botConfig.defaultDbInfo.host,
+            user: dbConfig.user || botConfig.defaultDbInfo.user,
+            password: dbConfig.password || botConfig.defaultDbInfo.password,
             database: dbConfig.schema,
             maxIdle: 5
         };

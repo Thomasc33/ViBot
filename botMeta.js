@@ -34,8 +34,6 @@ rateLimitLogger(bot);
 bot.commands = new Discord.Collection();
 bot.afkChecks = {};
 bot.afkModules = {};
-bot.settings = moduleIsAvailable('./guildSettings.json') ? require('./guildSettings.json') : {};
-bot.settingsTimestamp = {};
 bot.partneredServers = moduleIsAvailable('./data/partneredServers.json') ? require('./data/partneredServers.json') : [];
 bot.fetchPartneredServer = function (guildId) {
     for (const server of bot.partneredServers) {

@@ -1,7 +1,7 @@
 const Discord = require('discord.js')
 const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType
 const { slashArg, slashCommandJSON } = require('../utils.js')
-
+const { settings } = require('../lib/settings');
 module.exports = {
     name: 'addalt',
     description: 'Adds the username of an alt to a user and logs it',
@@ -23,7 +23,7 @@ module.exports = {
     ],
     getSlashCommandData(guild) { return slashCommandJSON(this, guild) },
     async execute(message, args, bot, db) {
-        const settings = bot.settings[message.guild.id]
+        const { channels: { modlogs } } = settings[message.guild.id]
         let member = message.mentions.members.first()
         if (member) args.shift()
         else member = message.guild.members.cache.get(args.shift())
@@ -50,7 +50,7 @@ module.exports = {
             ])
             .setTimestamp(Date.now())
             .setImage(image)
-        await message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] })
+        await message.guild.channels.cache.get(modlogs).send({ embeds: [embed] })
 
         db.query(`SELECT * FROM veriblacklist WHERE id = '${altName}'`, async (err, rows) => {
             if (!rows || !rows.length) return
@@ -81,7 +81,7 @@ module.exports = {
         })
     },
     async slashCommandExecute(interaction, bot, db) {
-        const settings = bot.settings[interaction.guild.id]
+        const { channels: { modlogs } } = settings[message.guild.id]
         const member = interaction.options.getMember('user')
         const altName = interaction.options.getString('altname')
         const dupeName = interaction.guild.members.cache.filter(user => user.nickname !== null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(altName.toLowerCase()))
@@ -100,7 +100,7 @@ module.exports = {
             ])
             .setTimestamp(Date.now())
         if (validURL(image)) embed.setImage(image)
-        await interaction.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] })
+        await interaction.guild.channels.cache.get(modlogs).send({ embeds: [embed] })
 
         // Remove from blacklist
         db.query(`SELECT * FROM veriblacklist WHERE id = '${altName}'`, async (err, rows) => {
