@@ -71,7 +71,7 @@ module.exports = {
         confirmMessage.edit({ embeds: [embed] });
 
         if (await confirmMessage.confirmButton(message.member.id)) {
-            member.roles.remove([settings.roles.tempsuspended, settings.roles.permasuspend])
+            member.roles.remove([settings.roles.tempsuspended, settings.roles.permasuspended].filter(r => r))
                 .then(() => member.roles.add(settings.roles.raider))
                 .then(() => settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified) && member.roles.remove(settings.roles.unverified));
 
