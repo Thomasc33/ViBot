@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable guard-for-in */
-const Discord = require('discord.js')
+const { EmbedBuilder, InteractionCollector, InteractionType, ComponentType, ActionRowBuilder, ButtonBuilder, Role } = require('discord.js');
 
 module.exports = {
     name: 'check',
@@ -48,7 +48,7 @@ class Check {
     }
 
     async sendProcessMessage() {
-        this.embed = new Discord.EmbedBuilder()
+        this.embed = new EmbedBuilder()
             .setAuthor({ name: `${this.member.displayName}`, iconURL: this.member.user.avatarURL() })
             .setFooter({ text: `${this.guild.name}`, iconURL: this.guild.iconURL() })
             .setColor(this.embedColor)
@@ -261,23 +261,17 @@ class Check {
         const panelName = 'falseSuspensions';
         if (!this.settings.checkPanels[panelName]) { return; }
         
-        const ids = this.settings.checkRoles.falseSuspenionRoles;
-        for (const id of ids) {
-            const role = this.guild.findRole(id);
-
-            role.members.forEach(async member => {
-                if (await this.isPanelRestricted(member, panelName)) { return; }
-                // get all valid suspensions
-                const [rows,] = await this.db.promise().query('SELECT * FROM suspensions WHERE suspended = true AND guildid = ? AND id = ? AND UNIX_TIMESTAMP() < uTime', [this.guild.id, member.id]);
-                if (rows.length > 0) return;
-                
-                const problemCategory = 'False Suspensions';
-                const problem = {
-                    text: `<@!${member.id}>`
-                };
-                this.addProblemToCategory(problemCategory, problem, ' ', this.settings.checkStrings.falseSuspenions);
-            })
-        }
+        const members = [...new Set(this.settings.checkRoles.falseSuspenionRoles
+            .map(r => this.guild.roles.cache.get(r))
+            .filter(r => r)
+            .map(r => r.members.map(m => m))
+            .flat())];
+        const rows = await this.db.promise().query('SELECT * FROM suspensions WHERE (suspended = true OR perma = true) AND guildid = ? AND id in ?', [this.guild.id, [members.map(m => m.id)]])
+            .then(([rows]) => rows.reduce((acc, row) => { acc[row.id] = row; return acc; }, {}))
+        members.filter(m => !rows[m.id])
+            .forEach(m => this.addProblemToCategory('False Suspensions', { text: `${m}` }, ' ', this.settings.checkStrings.falseSuspenions))
+        members.map(m => rows[m.id]).filter(row => row && !row.perma && !isNaN(row.uTime) && parseInt(row.uTime) < Date.now())
+            .forEach(row => this.addProblemToCategory('Expired Suspensions', { text: `<@!${row.id}>` }, ' ')); 
     }
 
     async isPanelRestricted(member, panel) {
@@ -290,7 +284,7 @@ class Check {
 
     async transformPanelsIntoFields() {}
     embedBuilder() {
-        const embed = new Discord.EmbedBuilder()
+        const embed = new EmbedBuilder()
         embed.setColor(this.embedColor)
         return embed
     }
@@ -352,17 +346,17 @@ class Check {
     async interactionHandler() {
         await this.updateComponents()
         if (this.actionRowBuilder.components.length == 0) { return }
-        this.checkInteractionCollector = new Discord.InteractionCollector(this.bot, { message: this.checkMessage, interactionType: Discord.InteractionType.MessageComponent, componentType: Discord.ComponentType.Button })
+        this.checkInteractionCollector = new InteractionCollector(this.bot, { message: this.checkMessage, interactionType: InteractionType.MessageComponent, componentType: ComponentType.Button })
         this.checkInteractionCollector.on('collect', async (interaction) => await this.processInteractions(interaction))
         setTimeout(() => this.interactionHandlerEnd(), Math.floor(10 * 60 * 1000))
     }
 
     async updateComponents() {
         if (this.hasListenerEnded) { return }
-        this.actionRowBuilder = new Discord.ActionRowBuilder()
+        this.actionRowBuilder = new ActionRowBuilder()
         if (this.settings.checkPanels.buttonGuide && this.doesAnyProblemHaveGuide()) {
             this.actionRowBuilder.addComponents([
-                new Discord.ButtonBuilder()
+                new ButtonBuilder()
                     .setLabel('🔍 Guide')
                     .setStyle(1)
                     .setCustomId('checkGuide')
@@ -370,7 +364,7 @@ class Check {
         }
         if (this.settings.checkPanels.buttonAutoFix && this.doesAnyProblemHave()) {
             this.actionRowBuilder.addComponents([
-                new Discord.ButtonBuilder()
+                new ButtonBuilder()
                     .setLabel('🐕‍🦺 Auto Fixer')
                     .setStyle(2)
                     .setCustomId('checkAutoFixer')
@@ -391,7 +385,7 @@ class Check {
     }
 
     async checkGuideEmbed() {
-        return new Discord.EmbedBuilder()
+        return new EmbedBuilder()
             .setTitle('Check Guide 🔍')
             .setColor(this.embedColor)
     }
@@ -419,7 +413,7 @@ class Check {
 
     async processInteractionAutofix(interaction) {
         const autoFixProblems = parseInt(this.autoFixers.length)
-        const interactionEmbed = new Discord.EmbedBuilder()
+        const interactionEmbed = new EmbedBuilder()
             .setTitle('Auto Fixer 🐕‍🦺')
             .setColor(this.embedColor)
             .setFooter({ text: `${this.guild.name} • Check Auto Fixer`, iconURL: this.guild.iconURL() })
@@ -490,7 +484,7 @@ class Check {
     }
 
     async processInteractionUnknown(interaction) {
-        const interactionEmbed = new Discord.EmbedBuilder()
+        const interactionEmbed = new EmbedBuilder()
             .setTitle('Action Failed')
             .setDescription('Hey. You really should not have recieved this error...\nPlease report this to the developers')
             .setColor('#FF0000')
@@ -504,24 +498,10 @@ class Check {
         this.checkInteractionCollector.stop()
     }
 
-    addProblemToCategory(categoryName, problem, arrayJoiner, categoryGuide) {
-        let problemWasAdded = false
-        for (const index in this.problems) {
-            const existingProblem = this.problems[index]
-            if (categoryName == existingProblem.category) {
-                this.problems[index].problems.push(problem)
-                problemWasAdded = true
-            }
-        }
-        if (!problemWasAdded) {
-            const categoryProblem = {
-                category: categoryName ?? 'Unknown',
-                arrayJoiner: arrayJoiner ?? ' ',
-                problems: [problem]
-            }
-            if (categoryGuide) { categoryProblem.guide = categoryGuide }
-            this.problems.push(categoryProblem)
-        }
+    addProblemToCategory(category = 'Unknown', problem, arrayJoiner = ' ', guide) {
+        const existing = this.problems.find(p => p.category == category);
+        if (existing) return existing.problems.push(problem);
+        this.problems.push({ category, arrayJoiner, problems: [problem], guide })
     }
 
     addAutoFixProblem(problem) {
