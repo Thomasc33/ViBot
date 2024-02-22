@@ -2,6 +2,7 @@ const Discord = require('discord.js');
 const logs = require('../data/logInfo.json');
 const quotas = require('../data/quotas.json');
 const quota = require('./quota');
+const { settings } = require('../lib/settings');
 
 module.exports = {
     name: 'log',
@@ -14,7 +15,7 @@ module.exports = {
     },
 
     async execute(message, args, bot, db) {
-        const settings = bot.settings[message.guild.id];
+        const { backend: { isLogAssistsCapped }, numerical: { logAssistsCap }, roles, channels: { leadinglog } } = settings[message.guild.id];
         const { member } = message;
         const mentions = message.mentions.members.map(m => m).filter(m => m.id != member.id);
 
@@ -26,14 +27,14 @@ module.exports = {
         if (!run) return message.channel.send('Run Type not recognized\n' + this.getNotes(message.guild.id));
 
         const count = /^\d{1,2}$/.test(args[args.length - 1]) ? Number(args[args.length - 1]) : 1;
-        const assistCount = settings.backend.isLogAssistsCapped ? Math.min(count, settings.numerical.logAssistsCap) : count;
+        const assistCount = isLogAssistsCapped ? Math.min(count, logAssistsCap) : count;
 
         const confirmed = !run.confirm || await confirm(run, message, count);
         if (!confirmed) return;
 
         const changes = [
             run,
-            ...(run.additionalLogs || []).filter(add => add.roles.some(roles => roles.every(role => settings.roles[role] && member.roles.cache.get(settings.roles[role]))))
+            ...(run.additionalLogs || []).filter(add => add.roles.some(addroles => addroles.every(role => roles[role] && member.roles.cache.get(roles[role]))))
         ];
 
         const promises = [db.promise().query('INSERT INTO loggedusage (logged, userid, guildid, utime, amount) VALUES (?, ?, ?, ?, ?)', [run.name, member.id, member.guild.id, Date.now(), count])];
@@ -82,14 +83,14 @@ module.exports = {
 
         if (mentions.length) leadingLogEmbed.addFields({ name: 'Assists', value: mentions.join(' ') });
 
-        message.guild.channels.cache.get(settings.channels.leadinglog)?.send({ embeds: [leadingLogEmbed] });
+        message.guild.channels.cache.get(leadinglog)?.send({ embeds: [leadingLogEmbed] });
 
         const guildQuota = quotas[message.guild.id];
         if (guildQuota) {
             toUpdate.forEach(update => {
                 const runQuota = guildQuota.quotas.filter(q => q.id == update);
                 if (runQuota.length) {
-                    quota.update(message.guild, db, bot, settings, guildQuota, runQuota[0]);
+                    quota.update(message.guild, db, bot, guildQuota, runQuota[0]);
                 }
             });
         }

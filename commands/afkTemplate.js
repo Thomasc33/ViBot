@@ -1,6 +1,6 @@
 const fs = require('fs')
 const Discord = require('discord.js')
-const settings = require('../settings.json')
+const { config: { config }, settings } = require('../settings.json')
 const { createEmbed, getRoleStrings } = require('../lib/extensions.js')
 
 // Enum for the Error States in a Template
@@ -57,28 +57,28 @@ const TemplateButtonChoice = {
 const TemplateButtonColors = [1,2,3,4]
 
 async function resolveTemplateAlias(botSettings, member, guildId, commandChannel, alias) {
-    const templateUrl = new URL(settings.config.url)
+    const templateUrl = new URL(config.url)
     templateUrl.pathname = `/api/${guildId}/template/${commandChannel}/alias/${alias}`
     templateUrl.searchParams.append('roles', getRoleStrings(botSettings, member).join(','))
-    templateUrl.searchParams.append('key', settings.config.key)
+    templateUrl.searchParams.append('key', config.key)
     const templateNames = await fetch(templateUrl).then(f => f.json()).catch(() => { return new AfkTemplateValidationError(TemplateState.CONNECTION_ERROR, 'Failed to connect to the template service; however, it should be back momentarily. Please wait a minute and try again. If after 2-3 minutes you are still receiving this message, please contact a developer.') })
     return templateNames
 }
 
 async function resolveTemplateList(botSettings, member, guildId, commandChannel) {
-    const templateUrl = new URL(settings.config.url)
+    const templateUrl = new URL(config.url)
     templateUrl.pathname = `/api/${guildId}/commandchannel/${commandChannel}/templates`
     templateUrl.searchParams.append('roles', getRoleStrings(botSettings, member).join(','))
-    templateUrl.searchParams.append('key', settings.config.key)
+    templateUrl.searchParams.append('key', config.key)
     const templateNames = await fetch(templateUrl).then(f => f.json()).catch(() => { return new AfkTemplateValidationError(TemplateState.CONNECTION_ERROR, 'Failed to connect to the template service; however, it should be back momentarily. Please wait a minute and try again. If after 2-3 minutes you are still receiving this message, please contact a developer.') })
     return templateNames
 }
 
 async function resolveTemplateName(botSettings, member, guildId, commandChannel, templateName) {
-    const templateUrl = new URL(settings.config.url)
+    const templateUrl = new URL(config.url)
     templateUrl.pathname = `/api/${guildId}/template/${commandChannel}/template/${templateName}`
     templateUrl.searchParams.append('roles', getRoleStrings(botSettings, member).join(','))
-    templateUrl.searchParams.append('key', settings.config.key)
+    templateUrl.searchParams.append('key', config.key)
     const template = await fetch(templateUrl).then(f => f.json()).catch(() => { return new AfkTemplateValidationError(TemplateState.CONNECTION_ERROR, 'Failed to connect to the template service; however, it should be back momentarily. Please wait a minute and try again. If after 2-3 minutes you are still receiving this message, please contact a developer.') })
     return template
 }
@@ -132,7 +132,7 @@ class AfkTemplate {
      */
     constructor(bot, guild, template) {
         this.#bot = bot
-        this.#botSettings = bot.settings[guild.id]
+        this.#botSettings = settings[guild.id]
         this.#guild = guild
         this.#inherit = null
         this.#template = template

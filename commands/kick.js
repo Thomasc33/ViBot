@@ -1,8 +1,7 @@
-/* eslint-disable semi, func-name-matching, func-names */
-
 const Discord = require('discord.js');
 const ErrorLogger = require('../lib/logError');
 const templates = require('../data/kickOptions.json');
+const { settings } = require('../lib/settings');
 
 module.exports = {
     name: 'kick',
@@ -29,7 +28,7 @@ module.exports = {
      * @param {Discord.Client} bot
      */
     execute: async function ExecuteKickCommand(message, args, bot) {
-        const settings = bot.settings[message.guild.id];
+        const { rolePermissions: { minimumStaffRoleNoKick }, roles, channels: { modlogs } } = settings[message.guild.id];
 
         const embed = new Discord.EmbedBuilder()
             .setAuthor({ iconURL: message.member.displayAvatarURL(), name: message.member.nickname || message.author.displayName })
@@ -40,8 +39,7 @@ module.exports = {
         const member = message.guild.findMember(args[0]);
         let failure = null;
 
-        const minRole = settings.rolePermissions.minimumStaffRoleNoKick;
-        if (!minRole) failure = '`minimumStaffRoleNoKick` is not configured for this server. Please have a developer or moderator assist before using this command.';
+        if (!minimumStaffRoleNoKick) failure = '`minimumStaffRoleNoKick` is not configured for this server. Please have a developer or moderator assist before using this command.';
 
         if (!failure && !member) failure = 'member could not be found.';
 
@@ -50,7 +48,7 @@ module.exports = {
 
         if (!failure && !member.kickable) failure = 'you do not have permissions to kick this member.';
 
-        if (!failure && member.roles.highest.position >= message.guild.roles.cache.get(settings.roles[minRole]).position) failure = 'staff members cannot be kicked with this command.';
+        if (!failure && member.roles.highest.position >= message.guild.roles.cache.get(roles[minimumStaffRoleNoKick]).position) failure = 'staff members cannot be kicked with this command.';
 
         if (failure) {
             embed.setDescription(`Failed to kick user ${member || args[0]}: ${failure}`);
@@ -90,7 +88,7 @@ module.exports = {
                         .setColor('Green')
                         .setTimestamp(Date.now());
 
-                    message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] }).then(logMessage => {
+                    message.guild.channels.cache.get(modlogs).send({ embeds: [embed] }).then(logMessage => {
                         embed.setFields({ name: 'Log Link', value: logMessage.url })
                             .setDescription(`Successfully kicked ${kickedMember} (\`${kickedMember.displayName}\`).`)
                             .setTimestamp(Date.now());

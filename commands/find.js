@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
 const { slashArg, slashCommandJSON } = require('../utils.js');
+const { settings } = require('../lib/settings');
 
 module.exports = {
     name: 'find',
@@ -14,10 +15,9 @@ module.exports = {
     ],
     getSlashCommandData(guild) { return slashCommandJSON(this, guild); },
     async execute(message, args, bot, db) {
-        const settings = bot.settings[message.guild.id];
         if (args.length == 0) return;
-        const suspendedButVerifed = message.guild.roles.cache.get(settings.roles.tempsuspended);
-        const suspendedRole = message.guild.roles.cache.get(settings.roles.permasuspended);
+        const suspendedButVerifed = message.guild.roles.cache.get(settings[message.guild.id].roles.tempsuspended);
+        const suspendedRole = message.guild.roles.cache.get(settings[message.guild.id].roles.permasuspended);
         let notFoundString = '';
         let expelled = [...args];
         const embeds = [];

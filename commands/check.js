@@ -1,6 +1,7 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable guard-for-in */
 const Discord = require('discord.js')
+const { settings } = require('../lib/settings')
 
 module.exports = {
     name: 'check',
@@ -32,7 +33,7 @@ class Check {
         this.bot = bot
         this.roleCache = this.guild.roles.cache
 
-        this.settings = this.bot.settings[this.guild.id]
+        this.settings = settings[this.guild.id]
 
         this.db = db
 

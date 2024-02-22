@@ -3,6 +3,7 @@ const clConfig = require('../data/changelog.json');
 const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
 const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js');
 const ErrorLogger = require('../lib/logError');
+const { settings } = require('../lib/settings');
 
 module.exports = {
     name: 'changelog',
@@ -74,7 +75,7 @@ module.exports = {
             await interaction.reply({ embeds: [errEmbed], ephemeral: true, allowedMentions: { repliedUser: false } });
         }
 
-        const modlogs = interaction.guild.channels.cache.get(bot.settings[interaction.member.guild.id]?.channels.modlogs);
+        const modlogs = interaction.guild.channels.cache.get(settings[interaction.member.guild.id]?.channels.modlogs);
 
         if (!modlogs) return printError(`Mod-logs channel not setup for guild ${member.guild.name}`);
         if (!clConfig[interaction.member.guild.id]) return printError(`Changelog not setup for guild ${member.guild.name}`);

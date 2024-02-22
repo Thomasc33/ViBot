@@ -1,4 +1,5 @@
 const { PermissionsBitField } = require('discord.js');
+const { settings } = require('../lib/settings');
 
 module.exports = {
     name: 'lock',
@@ -6,21 +7,14 @@ module.exports = {
     alias: ['rc', 'resetchannel'],
     role: 'eventrl',
     async execute(message, args, bot) {
-        // Get Settings
-        const settings = bot.settings[message.guild.id];
+        const { roles: { raider, vetraider } } = settings[message.guild.id];
 
         // Get Channel
         let channel = message.member.voice.channel;
         if (!channel) return message.channel.send('You must be in a voice channel to use this command.');
 
-        // Get appropriate raider role
-        let raiderRole = settings.roles.raider
-        if (channel.parent.name.toLowerCase().includes('veteran')) raiderRole = settings.roles.vetraider
-
-        // Check to see if raider can view channel
+        const raiderRole = channel.parent.name.toLowerCase().includes('veteran') ? vetraider : raider;
         if (!channel.permissionOverwrites.cache.get(raiderRole).allow.has(PermissionsBitField.Flags.ViewChannel)) return message.channel.send('Cannot lock this channel.');
-
-        // Allow raiders to connect
         await channel.permissionOverwrites.edit(raiderRole, { ViewChannel: true, Connect: false }, 'Channel locked by ' + message.author.tag);
 
         // React to message

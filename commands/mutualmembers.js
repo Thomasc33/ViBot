@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+const { settings } = require('../lib/settings');
 
 async function fetchMessages(targetChannel, messageIDs) {
     const fetchedMessagePromises = messageIDs.map(messageID => targetChannel.messages.fetch(messageID).catch(error =>
@@ -39,7 +40,7 @@ module.exports = {
     args: '[<Message ID 1>, <Message ID 2>, (Message ID 3), ...]',
     requiredArgs: 2,
     async execute(message, args, bot) {
-        const targetChannel = message.guild.channels.cache.get(bot.settings[message.guild.id].channels.runlogs);
+        const targetChannel = message.guild.channels.cache.get(settings[message.guild.id].channels.runlogs);
         const { fetchedMessages, notFoundMessageIDs } = await fetchMessages(targetChannel, args);
         if (notFoundMessageIDs.length > 0) {
             return message.reply(`Could not find message(s) with message ID(s) \`${notFoundMessageIDs.join(', ')}\` in ${targetChannel}.`);

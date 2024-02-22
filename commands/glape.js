@@ -20,7 +20,6 @@ class Glape {
         this.channel = this.message.channel
 
         this.bot = bot
-        this.settings = this.bot.settings[this.guild.id]
 
         this.timeoutMinutes = 5
         this.isGlapeInfected = false

@@ -1,6 +1,7 @@
 const Discord = require('discord.js')
 const fs = require('fs')
 const ErrorLogger = require('../lib/logError')
+const { settings } = require('../lib/settings');
 
 let crasherList;
 try {
@@ -18,11 +19,10 @@ module.exports = {
     args: '<send/update/add/remove/preview>',
     requiredArgs: 1,
     execute(message, args, bot) {
-        let settings = bot.settings[message.guild.id]
         if (args.length < 1) return message.channel.send('Please provide an argument')
         switch (args[0].toLowerCase()) {
             case 'send':
-                this.send(message.guild.channels.cache.get(settings.channels.parsechannel), bot)
+                this.send(message.guild.channels.cache.get(settings[message.guild.id].channels.parsechannel), bot)
                 break;
             case 'update':
                 this.update(message, args, bot)
@@ -122,8 +122,7 @@ module.exports = {
         if (!found) return message.channel.send(`${args[1].toLowerCase()} was not found.`)
     },
     async update(message, args, bot) {
-        let settings = bot.settings[message.guild.id]
-        let crasherChannel = message.guild.channels.cache.get(settings.channels.parsechannel)
+        let crasherChannel = message.guild.channels.cache.get(settings[message.guild.id].channels.parsechannel)
         if (!crasherChannel) return;
         await crasherChannel.bulkDelete(100)
         this.send(crasherChannel, bot)

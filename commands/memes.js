@@ -1,7 +1,3 @@
-const vr_gamers = ['277636691227836419', '130850662522159104', '258286481167220738', '145332599718543360']
-const Discord = require('discord.js')
-const read_channel_bit_flag = Discord.PermissionFlagsBits.ViewChannel
-
 module.exports = {
     name: 'memes',
     alias: ['phd', 'xbox', 'cwinner', 'eury', 'nefiah', 'abysm', 'drunkdevil', 'shiba',
@@ -9,7 +5,6 @@ module.exports = {
         'bathroom'],
     role: 'eventrl',
     async execute(message, args, bot) {
-        const settings = bot.settings[message.guild.id]
         switch (message.content.split(/ +/)[0].replace(/[^a-z]/gi, '').toLowerCase()) {
             case 'phd':
                 message.channel.send({ files: ['https://cdn.discordapp.com/attachments/488881485366165515/733195330287304734/unknown.png'] })
@@ -39,9 +34,6 @@ module.exports = {
                 break;
             case 'rj':
                 message.channel.send({ files: ['https://media.discordapp.net/attachments/488881485366165515/795036389834096640/20210102_151014.jpg?width=811&height=1081'] })
-                break;
-            case 'ver':
-                message.channel.send(vr_gamers.includes(message.author.id) ? `<@&${settings.roles.raider}>` : '@verified raider')
                 break;
             case 'pusbal':
                 message.channel.send({ files: ['https://media.discordapp.net/attachments/488881485366165515/1033372031384817714/52ca3466-744e-4372-8211-175184521ecd.png'] })

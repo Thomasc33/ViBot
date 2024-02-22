@@ -136,8 +136,8 @@ module.exports = {
         await this.update(guild, db, bot, settings, guildQuotas, quota)
 
     },
-    async update(guild, db, bot, settings, guildQuotas, quota) {
-        let currentweek = guild.channels.cache.get(settings.channels[quota.currentweek])
+    async update(guild, db, bot, guildQuotas, quota) {
+        let currentweek = guild.channels.cache.get(settings[guild.id].channels[quota.currentweek])
         if (!currentweek) return;
         await this.sendEmbed(currentweek, db, bot, false, guildQuotas, quota)
     },

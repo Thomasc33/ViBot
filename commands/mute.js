@@ -3,6 +3,7 @@ const ErrorLogger = require('../lib/logError')
 const fs = require('fs')
 const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
 const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js')
+const { settings } = require('../lib/settings');
 
 module.exports = {
     name: 'mute',
@@ -32,14 +33,13 @@ module.exports = {
         return slashCommandJSON(this, guild)
     },
     async execute(message, args, bot, db) {
-        let settings = bot.settings[message.guild.id]
+        const { roles: { muted }, channels: { modlogs } } = settings[message.guild.id];
         const memberSearch = args.shift();
         let member = message.guild.members.cache.get(memberSearch);
         if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(memberSearch.toLowerCase()));
         if (!member) member = message.guild.members.cache.get(memberSearch.replace(/\D/gi, ''))
         if (!member) { message.reply('User not found. Please try again'); return; }
         if (member.roles.highest.position >= message.member.roles.highest.position) return message.reply(`${member} has a role greater than or equal to you and cannot be muted`);
-        let muted = settings.roles.muted
         if (member.roles.cache.has(muted)) return message.reply(`${member} is already muted`)
         if (args.length == 1) {
             await member.roles.add(muted).catch(er => ErrorLogger.log(er, bot, message.guild))
@@ -60,7 +60,7 @@ module.exports = {
             default: return message.channel.send("Please enter a valid time type __**s**__econd, __**m**__inute, __**h**__our, __**d**__ay, __**w**__eek, __**y**__ear");
         }
         async function muteProcess(overwrite) {
-            const modlogs = message.guild.channels.cache.get(settings.channels.modlogs);
+            const modlogs = message.guild.channels.cache.get(modlogs);
             let embed = new Discord.EmbedBuilder()
                 .setColor('#ff0000')
                 .setTitle('Mute Information')
@@ -73,7 +73,7 @@ module.exports = {
                 (member.user.send({ embeds: [embed] }).catch(() => {}));
             } 
         async function muteProcesslog(overwrite) {
-            const modlogs = message.guild.channels.cache.get(settings.channels.modlogs);
+            const modlogs = message.guild.channels.cache.get(modlogs);
             let embed = new Discord.EmbedBuilder()
                 .setColor('#ff0000')
                 .setTitle('Mute Information')

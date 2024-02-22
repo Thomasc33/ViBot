@@ -2,6 +2,7 @@ const Discord = require('discord.js')
 const { manualVerifyLog } = require('../commands/verification.js')
 const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
 const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js')
+const { settings } = require('../lib/settings');
 
 module.exports = {
     name: 'manualverify',
@@ -25,10 +26,10 @@ module.exports = {
     getSlashCommandData(guild) { return slashCommandJSON(this, guild) },
     async execute(message, args, bot, db) {
         // Add Default roles
-        let settings = bot.settings[message.guild.id]
-        const suspendedRole = message.guild.roles.cache.get(settings.roles.permasuspended)
-        const sbvRole = message.guild.roles.cache.get(settings.roles.tempsuspended)
-        const raiderRole = message.guild.roles.cache.get(settings.roles.raider)
+        const { roles, backend, channels } = settings[message.guild.id];
+        const suspendedRole = message.guild.roles.cache.get(roles.permasuspended)
+        const sbvRole = message.guild.roles.cache.get(roles.tempsuspended)
+        const raiderRole = message.guild.roles.cache.get(roles.raider)
         let image = message.attachments.first() ? message.attachments.first().proxyURL : null
 
         // Member Logic Check
@@ -43,10 +44,10 @@ module.exports = {
         if (!reason) return message.replyUserError("Please enter a valid reason.")
 
         // Add roles
-        if (member.roles.cache.has(settings.roles.eventraider)) await member.roles.remove(settings.roles.eventraider)
+        if (member.roles.cache.has(roles.eventraider)) await member.roles.remove(roles.eventraider)
         await member.roles.add(raiderRole)
-        if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) await member.roles.remove(settings.roles.unverified)
-        if (settings.backend.giveeventroleonverification) await member.roles.add(settings.roles.eventraider)
+        if (backend.useUnverifiedRole && member.roles.cache.has(roles.unverified)) await member.roles.remove(roles.unverified)
+        if (backend.giveeventroleonverification) await member.roles.add(roles.eventraider)
         let tag = member.user.username
         let nick = ''
         if (tag == args[1]) {
@@ -68,7 +69,7 @@ module.exports = {
             .setTimestamp(Date.now())
             .setImage(image);
 
-        await message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });
+        await message.guild.channels.cache.get(channels.modlogs).send({ embeds: [embed] });
         let confirmEmbed = new Discord.EmbedBuilder()
             .setDescription(`${member} has been given ${raiderRole}`)
         await message.reply({ embeds: [confirmEmbed] })

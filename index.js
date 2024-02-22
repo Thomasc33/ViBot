@@ -129,7 +129,7 @@ bot.on('typingStart', (c, u) => {
     }, 7500);
 });
 
-loadSettings().then(() => {
+loadSettings(bot).then(() => {
     bot.login(config.key);
 });;
 

@@ -1,5 +1,6 @@
 const { botOwners } = require('../settings.json');
 const Discord = require('discord.js')
+const { settings: botSettings } = require('../lib/settings');
 
 module.exports = {
     name: 'eval',
@@ -14,7 +15,8 @@ module.exports = {
      */
     async execute(message, args, bot, db) {
         if (!botOwners.includes(message.author.id)) return;
-        let command = message.content.substring(6, message.content.length)
+        const command = message.content.substring(6, message.content.length)
+        const settings = botSettings[message.guild.id] // make settings easier to access in eval
         console.log(`evaling from ${message.member.nickname} -> \n${command}`)
         try {
             console.log(eval(command))

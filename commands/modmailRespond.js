@@ -1,5 +1,6 @@
 const { EmbedBuilder, Colors } = require('discord.js');
 const { Modmail } = require('../lib/modmail.js');
+const { settings } = require('../lib/settings');
 
 module.exports = {
     name: 'modmailrespond',
@@ -14,7 +15,6 @@ module.exports = {
      * @param {import('mysql2').Pool} db
      */
     async execute(message, args, bot, db) {
-        const settings = bot.settings[message.guild.id];
 
         const embed = new EmbedBuilder()
             .setTitle('Modmail Respond')
@@ -22,8 +22,8 @@ module.exports = {
             .setColor(Colors.Red)
             .setTimestamp();
 
-        if (!settings.backend.modmail) return await message.reply({ embeds: [embed.setDescription('Modmail is disabled in this server.')] });
-        if (message.channel.id !== settings.channels.modmail) return await message.reply({ embeds: [embed.setDescription('This is not the modmail channel.')] });
+        if (!settings[message.guild.id].backend.modmail) return await message.reply({ embeds: [embed.setDescription('Modmail is disabled in this server.')] });
+        if (message.channel.id !== settings[message.guild.id].channels.modmail) return await message.reply({ embeds: [embed.setDescription('This is not the modmail channel.')] });
         /** @type {Discord.Message} */
         const modmailMessage = await message.channel.messages.fetch(args[0]);
         if (!modmailMessage) return await message.reply({ embeds: [embed.setDescription(`Could not find message with ID of \`${args[0]}\``)] });
@@ -44,7 +44,7 @@ module.exports = {
             channel: message.channel,
             reply: message.reply.bind(message)
         };
-        await Modmail.send({ settings, interaction: dummyInteraction, embed: modmailEmbed, raider, db, bot });
+        await Modmail.send({ settings: settings[message.guild.id], interaction: dummyInteraction, embed: modmailEmbed, raider, db, bot });
         message.delete();
     }
 };

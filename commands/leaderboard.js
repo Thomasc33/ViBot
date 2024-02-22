@@ -1,6 +1,7 @@
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
 const leaderBoardTypes = require('../data/leaderBoardInfo.json')
+const { settings } = require('../lib/settings');
 
 module.exports = {
     name: 'leaderboard',
@@ -35,9 +36,8 @@ class Leaderboard {
 
         this.args = args
         this.bot = bot
-        this.settings = this.bot.settings[this.guild.id]
 
-        this.leaderboardLimit = this.settings.numerical.leaderboardLimit
+        this.leaderboardLimit = settings[message.guild.id].numerical.leaderboardLimit
         if (!this.leaderboardLimit) { this.leaderboardLimit = 25 } // Defaults leaderboard limit to the standard 25
 
         // What these Lerp v values define (might be a bit confusing, I don't really know what to call them)

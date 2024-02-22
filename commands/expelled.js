@@ -2,6 +2,7 @@ const Discord = require('discord.js');
 const ErrorLogger = require('../lib/logError');
 const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
 const { slashArg, slashCommandJSON } = require('../utils.js');
+const { settings } = require('../lib/settings');
 
 module.exports = {
     name: 'expelled',
@@ -94,7 +95,6 @@ module.exports = {
     },
     async addExpelled(message, bot, db) {
         const id = message.options.getString('id');
-        const settings = bot.settings[message.guild.id];
         const reason = db.escape([message.options.getString('reason'), ...message.options.getVarargs()].join(' ')) || "'No reason provided.'";
 
         const [rows] = await db.promise().query('SELECT reason, modid FROM veriblacklist WHERE id = ?', [id]);
@@ -117,13 +117,12 @@ module.exports = {
                 .setFooter({ text: `${message.guild.name}`, iconURL: message.guild.iconURL() })
                 .setColor('Green')
                 .setTimestamp(Date.now());
-            await message.guild.channels.cache.get(settings.channels.modlogs)?.send({ embeds: [embed] });
+            await message.guild.channels.cache.get(settings[message.guild.id].channels.modlogs)?.send({ embeds: [embed] });
         }
     },
     async removeExpelled(message, bot, db) {
         const id = message.options.getString('id');
         const reason = [message.options.getString('reason'), ...message.options.getVarargs()].join(' ');
-        const settings = bot.settings[message.guild.id];
 
         // Check if user is blacklisted
         db.query('SELECT * FROM veriblacklist WHERE id = ?', [id], (err, rows) => {
@@ -144,7 +143,7 @@ module.exports = {
             .addFields([{ name: 'Reason', value: `\`\`\`${reason ? reason : 'No reason provided.'}\`\`\`` }])
             .setColor('Green')
             .setTimestamp(Date.now());
-        await message.guild.channels.cache.get(settings.channels.modlogs)?.send({ embeds: [embed] });
+        await message.guild.channels.cache.get(settings[message.guild.id].channels.modlogs)?.send({ embeds: [embed] });
     }
 };
 

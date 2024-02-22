@@ -3,6 +3,7 @@ const ErrorLogger = require('../lib/logError')
 const prefix = require('../settings').prefix;
 const ext = require('../lib/extensions');
 const res = require('../lib/realmEyeScrape');
+const { settings } = require('../lib/settings');
 
 module.exports = {
     name: 'changename',
@@ -15,14 +16,13 @@ module.exports = {
     },
     role: 'raider',
     async execute(message, args, bot) {
-        const settings = bot.settings[message.guild.id];
-        const staff = message.member.roles.highest.comparePositionTo(message.guild.roles.cache.get(settings.roles.security)) >= 0;
+        const staff = message.member.roles.highest.comparePositionTo(message.guild.roles.cache.get(settings[message.guild.id].roles.security)) >= 0;
         const arg_list = prefix + 'changename ' + (staff ? this.args : '<new name>');
         try {
             if (!staff && args.length != 1)
                 throw `Invalid arguments: ${arg_list}`;
             if (args.length == 1)
-                await this.change(message, message.member, args.shift(), args, bot, settings, staff);
+                await this.change(message, message.member, args.shift(), args, bot, settings[message.guild.id], staff);
             else {
                 const member_arg = args.shift(),
                     member_id = member_arg.replace(/[^0-9]/gi, '');
@@ -30,7 +30,7 @@ module.exports = {
                 if (!member)
                     throw `Could not find member ${member_arg} (id: ${member_id})`;
 
-                await this.change(message, member, args.shift(), args, bot, settings, staff);
+                await this.change(message, member, args.shift(), args, bot, settings[message.guild.id], staff);
             }
         } catch (err) {
             message.channel.send({ embeds: [new Discord.EmbedBuilder().setDescription(err.toString())] });
@@ -63,7 +63,7 @@ module.exports = {
                 if (names[j].toLowerCase() == altName.toLowerCase()) { //They have a case insensitive name match, request adjust name
                     idx = j;
 
-                    return changeName(message, bot, settings, member, names, idx, altName, userPrefix).catch(err => reject(err));
+                    return changeName(message, bot, member, names, idx, altName, userPrefix).catch(err => reject(err));
                 }
             }
 
@@ -110,7 +110,7 @@ module.exports = {
 
             }
             const { historyName, history } = data;
-            return await changeName(message, bot, settings, member, names, idx, altName, userPrefix, image, historyName, history).catch(err => reject(err));
+            return await changeName(message, bot, member, names, idx, altName, userPrefix, image, historyName, history).catch(err => reject(err));
         });
     }
 }
@@ -133,7 +133,7 @@ const nameHistory = async (altName, names) => {
     } catch (err) { console.log(err) }
 }
 
-const changeName = async (message, bot, settings, member, names, idx, altName, userPrefix, image, historyName, history) => {
+const changeName = async (message, bot, member, names, idx, altName, userPrefix, image, historyName, history) => {
     return new Promise(async (resolve, reject) => {
         const oldName = names[idx];
         names[idx] = altName;
@@ -182,7 +182,7 @@ const changeName = async (message, bot, settings, member, names, idx, altName, u
                     //Show name change history between the old name and the new name
                     embed.addFields({ name: 'Found in Name History', value: `\`\`\`${total.reverse().join(' => ')}\`\`\`` });
                 }
-                message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });
+                message.guild.channels.cache.get(settings[member.guild.id].channels.modlogs).send({ embeds: [embed] });
                 confirm.react('✅')
                 confirmEmbed.setDescription(`Successfully changed name for ${member} from \`${oldName || ' '}\` to \`${names[idx]}\`.`)
                 confirm.edit({ embeds: [confirmEmbed], components: [] });

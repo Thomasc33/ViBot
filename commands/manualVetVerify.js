@@ -2,6 +2,7 @@ const Discord = require('discord.js')
 const { manualVetVerifyLog } = require('../commands/vetVerification.js')
 const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
 const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js')
+const { settings } = require('../lib/settings');
 
 module.exports = {
     name: 'manualvetverify',
@@ -17,18 +18,18 @@ module.exports = {
     ],
     getSlashCommandData(guild) { return slashCommandJSON(this, guild) },
     async execute(message, args, bot, db) {
-        let settings = bot.settings[message.guild.id]
-        const vetBanRole = message.guild.roles.cache.get(settings.roles.vetban)
+        const { roles } = settings[message.guild.id];
+        const vetBanRole = message.guild.roles.cache.get(roles.vetban)
 
         var member = message.mentions.members.first()
         if (!member) member = message.guild.members.cache.get(args[0]);
         if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
         if (!member) return message.replyUserError("User not found")
         if (member.roles.cache.has(vetBanRole.id)) return message.replyUserError("User is vet banned")
-        if ((settings.roles.permasuspended && member.roles.cache.has(settings.roles.permasuspended)) || (settings.roles.tempsuspended && member.roles.cache.has(settings.roles.tempsuspended))) return message.replyUserError("User is suspended")
+        if ((roles.permasuspended && member.roles.cache.has(roles.permasuspended)) || (roles.tempsuspended && member.roles.cache.has(roles.tempsuspended))) return message.replyUserError("User is suspended")
 
         // Get all vet roles that aren't null and that the raider doesn't have already
-        const vetRoles = Object.entries(settings.roles)
+        const vetRoles = Object.entries(roles)
             .filter(([key, value]) => {
                 let split = key.split('vetraider')
                 return key != "" && value && split[0] == "" && (split[1] ? !isNaN(split[1]) : true) && !member.roles.cache.has(value)
@@ -69,9 +70,9 @@ module.exports = {
     async addRole(bot, db, member, message, vetRaiderRole) {
         member.roles.add(vetRaiderRole)
 
-        let settings = bot.settings[message.guild.id]
+        const { backend: { useUnverifiedRole }, roles, channels: { modlogs } } = settings[member.guild.id];
 
-        if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) member.roles.remove(settings.roles.unverified)
+        if (useUnverifiedRole && member.roles.cache.has(roles.unverified)) member.roles.remove(roles.unverified)
         let embed = new Discord.EmbedBuilder()
             .setTitle('Manual Veteran Verify')
             .setDescription(member.toString())
@@ -79,7 +80,7 @@ module.exports = {
             .addFields([{name: 'Verified By', value: `<@!${message.author.id}>`, inline: true}])
             .addFields([{name: 'Role', value: vetRaiderRole.toString(), inline: false}])
             .setTimestamp(Date.now());
-        message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });
+        message.guild.channels.cache.get(modlogs).send({ embeds: [embed] });
         let confirmEmbed = new Discord.EmbedBuilder().setDescription(`${member} has been given ${vetRaiderRole}`)
         message.reply({ embeds: [confirmEmbed] })
         manualVetVerifyLog(message, message.author.id, bot, db)

@@ -3,6 +3,7 @@ const reScrape = require('../lib/realmEyeScrape')
 const { uptimeString } = require('./status.js')
 const { iterServers } = require('../jobs/util.js')
 const { getDB } = require('../dbSetup.js')
+const { settings } = require('../lib/settings');
 
 let StatusData = {
     'color': '#00ff00',
@@ -58,10 +59,9 @@ module.exports = {
     args: 'send/update',
     //requiredArgs: 1,
     async execute(message, args, bot) {
-        const settings = bot.settings[message.guild.id]
-        if (!settings) return;
+        const { channels: { botstatus } } = settings[message.guild.id]
 
-        const botstatusChannel = message.guild.channels.cache.get(settings.channels.botstatus)
+        const botstatusChannel = message.guild.channels.cache.get(botstatus)
         if (!botstatusChannel) return console.log('botstatus not found for ', message.guild.id)
 
         if (args.length == 0) return
@@ -91,7 +91,7 @@ module.exports = {
         }
 
         await iterServers(bot, async (bot, guild) => {
-            const botstatusChannel = guild.channels.cache.get(bot.settings[guild.id].channels.botstatus)
+            const botstatusChannel = guild.channels.cache.get(settings[guild.id].channels.botstatus)
             if (!botstatusChannel) return
             const embed = await generateEmbed(bot, guild, overrides)
             await update(bot, botstatusChannel, embed)

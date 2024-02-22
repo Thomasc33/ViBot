@@ -2,6 +2,7 @@ const Discord = require('discord.js');
 const AfkTemplate = require('./afkTemplate.js');
 const afkCheck = require('./afkCheck');
 const { createEmbed } = require('../lib/extensions.js');
+const { settings } = require('../lib/settings');
 
 module.exports = {
     name: 'headcount',
@@ -11,8 +12,6 @@ module.exports = {
     args: '<run type> (time) (time type s/m)',
     role: 'eventrl',
     async execute(message, args, bot) {
-        //settings
-        const botSettings = bot.settings[message.guild.id]
         let alias = args.shift().toLowerCase()
         let time = 0
         if (args.length >= 2) {
@@ -28,20 +27,22 @@ module.exports = {
             }
         }
 
-        const afkTemplateNames = await AfkTemplate.resolveTemplateAlias(botSettings, message.member, message.guild.id, message.channel.id, alias)
+        const afkTemplateNames = await AfkTemplate.resolveTemplateAlias(settings[message.guild.id], message.member, message.guild.id, message.channel.id, alias)
         if (afkTemplateNames instanceof AfkTemplate.AfkTemplateValidationError) return await message.channel.send(afkTemplateNames.message())
         if (afkTemplateNames.length == 0) return await message.channel.send('This afk template does not exist.')
 
         const afkTemplateName = afkTemplateNames.length == 1 ? afkTemplateNames[0] : await AfkTemplate.templateNamePrompt(message, afkTemplateNames)
-        const afkTemplate = await AfkTemplate.AfkTemplate.tryCreate(bot, bot.settings[message.guild.id], message, afkTemplateName)
+        const afkTemplate = await AfkTemplate.AfkTemplate.tryCreate(bot, settings[message.guild.id], message, afkTemplateName)
         if (afkTemplate instanceof AfkTemplate.AfkTemplateValidationError) {
             await message.channel.send(afkTemplate.message())
             return
         }
 
+        const { strings } = settings[message.guild.id];
+
         if (!afkTemplate.minimumStaffRoles.some(roles => roles.every(role => message.member.roles.cache.has(role.id)))) return await message.channel.send({ embeds: [createEmbed(message, `You do not have a suitable set of roles out of ${afkTemplate.minimumStaffRoles.reduce((a, b) => `${a}, ${b.join(' + ')}`)} to run ${afkTemplate.name}.`, null)] })
         const body = afkTemplate.processBody()
-        const raidStatusEmbed = createEmbed(message, afkTemplate.processBodyHeadcount(null), botSettings.strings[body[1].embed.image] ? botSettings.strings[body[1].embed.image] : body[1].embed.image)
+        const raidStatusEmbed = createEmbed(message, afkTemplate.processBodyHeadcount(null), strings[body[1].embed.image] ? strings[body[1].embed.image] : body[1].embed.image)
         raidStatusEmbed.setColor(body[1].embed.color ? body[1].embed.color : '#ffffff')
         raidStatusEmbed.setAuthor({ name: `Headcount for ${afkTemplate.name} by ${message.member.nickname}`, iconURL: message.member.user.avatarURL() })
         if (time != 0) {
