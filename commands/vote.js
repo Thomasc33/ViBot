@@ -2,6 +2,7 @@ const Discord = require('discord.js');
 const voteConfig = require('../data/voteConfig.json');
 const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
 const { slashArg, slashCommandJSON } = require('../utils.js');
+
 /**
 * @typedef FeedbackType
 * @property {string[]} flags
@@ -30,11 +31,17 @@ module.exports = {
     description: 'Puts up a vote for the person based on your role input',
     args: [
         slashArg(SlashArgType.Role, 'role', {
-            description: 'The role that the vote is for'
+            description: 'The role that the vote is for',
+            required: true
         }),
-        slashArg(SlashArgType.String, 'users', {
-            description: 'The users (space seperated) that will be up for a vote'
+        slashArg(SlashArgType.User, 'user', {
+            description: 'User to put up for vote',
+            required: true
         }),
+        ...Array(14).fill(0).map((_, idx) => slashArg(SlashArgType.User, `user${idx + 2}`, {
+            description: 'User to put up for vote',
+            required: false
+        })),
     ],
     varargs: true,
     getSlashCommandData(guild) { return slashCommandJSON(this, guild); },
@@ -48,9 +55,11 @@ module.exports = {
             channel,
             feedbacks: [],
             role,
+            storedEmojis: bot.storedEmojis,
             settingsRoleName,
             embedStyling,
-            members: message.options.getString('users').split(' ').concat(message.options.getVarargs() || []).map(member => guild.findMember(member)).filter(member => member != undefined)
+            // members: message.options.getString('users').split(' ').concat(message.options.getVarargs() || []).map(member => guild.findMember(member)).filter(member => member != undefined)
+            members: [message.options.getMember('user'), ...Array(7).fill(0).map((_, idx) => message.options.getMember(`user${idx + 2}`))].filter(m => m)
         });
 
         if (voteSetup.members.length == 0) { return await message.reply('No members found.'); }
@@ -58,9 +67,9 @@ module.exports = {
 
         const embed = getSetupEmbed(voteSetup);
         const voteSetupButtons = generateVoteSetupButtons(bot);
-        const voteSetupMessage = await message.channel.send({ embeds: [embed], components: [voteSetupButtons] });
+        const voteSetupMessage = await message.channel.send({ embeds: [embed], components: [voteSetupButtons], fetchReply: true, ephemeral: true });
         if (!message.isInteraction) await message.delete();
-        else { await message.deferReply(); await message.deleteReply(); }
+        else { message.deferReply(); message.deleteReply(); }
 
         const interactionHandler = new Discord.InteractionCollector(
             bot,
@@ -101,6 +110,10 @@ module.exports = {
                 // also make sure first 24 feedbacks show up in the select panel, since last is custom
                 const { includedFeedbacks, unidentifiedFeedbacks, otherFeedbacks } = sortMemberFeedbacks(voteSetup);
                 const addableFeedbacks = unidentifiedFeedbacks.concat(otherFeedbacks).slice(0, 25);
+                if (addableFeedbacks.length == 0) {
+                    interaction.deferUpdate();
+                    break;
+                }
                 let index = includedFeedbacks.length + 1;
                 const addSelectionMenu = new Discord.StringSelectMenuBuilder()
                     .setCustomId('voteAddFeedbacks')
@@ -111,10 +124,8 @@ module.exports = {
                         label: `${index++}. ${feedback.dungeon?.tag || '??'} ${feedback.tier?.tag || '??'}`,
                         value: feedback.messageID
                     })));
-
                 const actionRow = new Discord.ActionRowBuilder()
                     .addComponents(addSelectionMenu);
-
                 const reply = await interaction.reply({ content: 'Select the feedbacks to add, times out after 2 minutes.', components: [actionRow], ephemeral: true, fetchReply: true });
                 try { // what is CollectorOptions.dispose? https://discord.js.org/docs/packages/discord.js/14.14.1/CollectorOptions:Interface#dispose
                     const replyResponse = await reply.awaitMessageComponent({ componentType: Discord.ComponentType.StringSelect, time: 120000, filter: i => i.user.id == interaction.member.id });
@@ -166,7 +177,7 @@ module.exports = {
                     interaction.editReply({ content: 'Timed out', components: [] });
                     break;
                 }
-                await interaction.message.edit({ embeds: [getSetupEmbed(voteSetup)], components: [generateVoteSetupButtons(bot)] });
+                await interaction.update({ embeds: [getSetupEmbed(voteSetup)], components: [generateVoteSetupButtons(bot)] });
                 break;
             }
             default:
@@ -192,11 +203,12 @@ class VoteSetup {
      * @param {string} options.settingsRoleName - The role name associated with the vote.
      * @param {Object} options.embedStyling - The embed styling for the vote.
      */
-    constructor({ channel, feedbacks, members, role, settingsRoleName, embedStyling }) {
+    constructor({ channel, feedbacks, members, role, storedEmojis, settingsRoleName, embedStyling }) {
         this.channel = channel;
         this.feedbacks = feedbacks;
         this.members = members;
         this.role = role;
+        this.storedEmojis = storedEmojis;
         this.settingsRoleName = settingsRoleName;
         this.embedStyling = embedStyling;
         this.currentMemberIndex = 0;
@@ -224,9 +236,9 @@ function getSetupEmbed(voteSetup) {
         `);
     const { includedFeedbacks, unidentifiedFeedbacks, otherFeedbacks } = sortMemberFeedbacks(voteSetup);
     const feedbackFields = [
-        ...generateDisplayFields(includedFeedbacks, 1, 'Included Feedback:', getSetupDisplayString),
-        ...generateDisplayFields(unidentifiedFeedbacks, 1 + includedFeedbacks.length, 'Unidentified Feedback:', getSetupDisplayString),
-        ...generateDisplayFields(otherFeedbacks, 1 + includedFeedbacks.length + unidentifiedFeedbacks.length, 'Other Feedback:', getSetupDisplayString)
+        ...generateDisplayFields(includedFeedbacks, 1, 'Included Feedback:', getSetupDisplayString, voteSetup.storedEmojis),
+        ...generateDisplayFields(unidentifiedFeedbacks, 1 + includedFeedbacks.length, 'Unidentified Feedback:', getSetupDisplayString, voteSetup.storedEmojis),
+        ...generateDisplayFields(otherFeedbacks, 1 + includedFeedbacks.length + unidentifiedFeedbacks.length, 'Other Feedback:', getSetupDisplayString, voteSetup.storedEmojis)
     ];
     embed.addFields(feedbackFields);
     return embed;
@@ -250,17 +262,19 @@ function sortMemberFeedbacks(voteSetup) {
     return { includedFeedbacks, unidentifiedFeedbacks, otherFeedbacks };
 }
 
-function getSetupDisplayString(index, feedback) {
-    const tags = (`${feedback.dungeon?.tag || '??'} ${feedback.tier?.tag || '??'}`).padStart(11);
-    return `\`${index}.\` \`${tags}\` ${feedback.feedbackURL} <t:${feedback.timeStamp}:f>`;
+function getSetupDisplayString(index, feedback, storedEmojis) {
+    const emojiString = storedEmojis[feedback.dungeon?.emoji]?.text || '`??`';
+    const tagString = `${feedback.tier?.tag || '??'}`.padStart(6);
+    return `\`${index}.\` ${emojiString} \`${tagString}\` ${feedback.feedbackURL} <t:${feedback.timeStamp}:f>`;
 }
 
-function getVoteDisplayString(index, feedback) {
-    const tags = (`${feedback.dungeon?.tag || '??'} ${feedback.tier?.tag || '??'}`).padStart(11);
-    return `\`${index}.\` \`${tags}\` ${feedback.feedbackURL} <t:${feedback.timeStamp}:d>`;
+function getVoteDisplayString(index, feedback, storedEmojis) {
+    const emojiString = storedEmojis[feedback.dungeon?.emoji]?.text || '`??`';
+    const tagString = `${feedback.tier?.tag || '??'}`.padStart(6);
+    return `\`${index}.\` ${emojiString} \`${tagString}\` ${feedback.feedbackURL} <t:${feedback.timeStamp}:d>`;
 }
 
-function generateDisplayFields(feedbacks, startIndex, name, getDisplayString) {
+function generateDisplayFields(feedbacks, startIndex, name, getDisplayString, storedEmojis) {
     const feedbackFields = [];
     let currentField = {
         name,
@@ -268,7 +282,7 @@ function generateDisplayFields(feedbacks, startIndex, name, getDisplayString) {
     };
 
     feedbacks.forEach(feedback => {
-        const feedbackString = getDisplayString(startIndex++, feedback);
+        const feedbackString = getDisplayString(startIndex++, feedback, storedEmojis);
         if (currentField.value.length + feedbackString.length > 1024) {
             feedbackFields.push(currentField);
             currentField = {
@@ -293,7 +307,7 @@ async function sendVote(voteSetup) {
         .setDescription(`${member} \`${member.displayName}\``);
     if (voteSetup.embedStyling) { embed.setThumbnail(voteSetup.embedStyling.image); }
     const { includedFeedbacks } = sortMemberFeedbacks(voteSetup);
-    embed.addFields(generateDisplayFields(includedFeedbacks, 1, 'Feedback:', getVoteDisplayString));
+    embed.addFields(generateDisplayFields(includedFeedbacks, 1, 'Feedback:', getVoteDisplayString, voteSetup.storedEmojis));
     const voteMessage = await voteSetup.channel.send({ embeds: [embed] });
     for (const emoji of ['✅', '❌', '👀']) { voteMessage.react(emoji); }
 }

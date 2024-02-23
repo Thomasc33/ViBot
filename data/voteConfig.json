@@ -60,38 +60,44 @@
         {
             "flags": ["void", "halls", "mbc"],
             "tag": "Void",
+            "emoji": "void",
             "roles": ["almostHallsBanner", "hallsBanner", "vetHallsBanner"]
         },
         {
             "flags": ["cult"],
             "tag": "Cult",
+            "emoji": "cultist",
             "roles": ["almostHallsBanner", "hallsBanner", "vetHallsBanner"]
         },
         {
             "flags": ["reading", "mapreading"],
             "tag": "Map",
+            "emoji": "map",
             "roles": ["almostHallsBanner", "hallsBanner", "vetHallsBanner", "fullskipBanner", "vetFullskipBanner"]
         },
         {
             "flags": ["fullskip", "fs", "skip", "fskip"],
             "tag": "Fskip",
+            "emoji": "fullskipIcon",
             "roles": ["fullskipBanner", "vetFullskipBanner"]
         },
         {
             "flags": ["oryx", "o3"],
             "tag": "Oryx",
+            "emoji": "oryx",
             "roles": ["almostOryxBanner", "oryxBanner", "veteranOryxBanner"]
         },
         {
             "flags": ["shatters", "shatts"],
             "tag": "Shatts",
+            "emoji": "forgottenKing",
             "roles": ["almostShattersBanner", "shattersBanner", "vetShattersBanner"]
         }],
         "tier": [
         {
-            "flags": ["trl"],
+            "flags": ["trl", "trial"],
             "tag": "TRL",
-            "roles": ["almostHallsBanner", "almostOryxBanner", "almostShattersBanner"]
+            "roles": ["almostHallsBanner", "almostOryxBanner", "almostShattersBanner", "fullskipBanner"]
         },
         {
             "flags": ["arl"],
@@ -109,14 +115,19 @@
             "roles": ["almostHallsBanner", "almostOryxBanner", "almostShattersBanner", "hallsBanner", "oryxBanner", "shattersBanner", "vetHallsBanner", "veteranOryxBanner", "vetShattersBanner", "fullskipBanner", "vetFullskipBanner"]
         },
         {
-            "flags": ["fullskip", "fs", "skip", "fskip"],
-            "tag": " ",
-            "roles": ["fullskipBanner", "vetFullskipBanner"]
+            "flags": ["vouch"],
+            "tag": "Vouch",
+            "roles": ["fullskipBanner", "vetFullskipBanner", "veteranOryxBanner", "vetShattersBanner", "vetHallsBanner"]
         },
         {
             "flags": ["vtrl", "vrl", "rl"],
             "tag": "VTRL",
             "roles": ["vetHallsBanner", "veteranOryxBanner", "vetShattersBanner"]
+        },
+        {
+            "flags": ["fullskip", "fs", "skip", "fskip"],
+            "tag": " ",
+            "roles": ["fullskipBanner", "vetFullskipBanner"]
         }
     ]
     }
