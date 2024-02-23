@@ -65,22 +65,21 @@ module.exports = {
             return;
         }
 
-        embed.setDescription(`${member} was not suspended by ${bot.user}. Would you still like to unsuspend them? They will receive the <@&${settings.roles.raider}> role back.`);
-        if (!member.nickname) embed.addFields({ name: 'No Nickname Warning', value: `${member} does not have a nickname. Make sure they are supposed to receive <@&${settings.roles.raider}> before continuing.` });
+        const receivedRole = member.nickname || !settings.roles.unverified || !settings.backend.useUnverifiedRole ? settings.roles.raider : settings.roles.unverified;
+        embed.setDescription(`${member} was not suspended by ${bot.user}. Would you still like to unsuspend them?`);
+        if (!member.nickname) embed.addFields({ name: 'No Nickname Warning', value: `${member} does not have a nickname, they will be given the <@&${receivedRole}> role instead of <@&${settings.roles.raider}>.` });
         embed.addFields({ name: 'Reason', value: reason });
         confirmMessage.edit({ embeds: [embed] });
 
         if (await confirmMessage.confirmButton(message.member.id)) {
-            member.roles.remove([settings.roles.tempsuspended, settings.roles.permasuspend])
-                .then(() => member.roles.add(settings.roles.raider))
-                .then(() => settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified) && member.roles.remove(settings.roles.unverified));
-
+            await member.roles.remove([settings.roles.tempsuspended, settings.roles.permasuspended].filter(r => r));
+            await member.roles.add(receivedRole).then(() => settings.backend.useUnverifiedRole && settings.roles.unverified && receivedRole == settings.roles.raider && member.roles.remove(settings.roles.unverified));
             embed.setTitle('Unsuspended')
                 .setDescription(`${member} has been unsuspended.`)
                 .setColor(Discord.Colors.Green)
                 .setFields({ name: 'Member Information', value: `${member} \`${member.displayName}\``, inline: true },
                     { name: 'Mod Information', value: `${message.member} \`${message.member.displayName}\``, inline: true },
-                    { name: 'Roles Received', value: `<@&${settings.roles.raider}>`, inline: true },
+                    { name: 'Roles Received', value: `<@&${receivedRole}>`, inline: true },
                     ...embed.data.fields)
                 .setTimestamp(Date.now())
                 .setFooter({ text: 'Unsuspended at' });
