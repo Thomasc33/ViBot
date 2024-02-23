@@ -1,5 +1,6 @@
 const ErrorLogger = require('../lib/logError')
 const Discord = require('discord.js');
+const { settings } = require('../lib/settings');
 
 //add this to settings eventually:registered:
 const reacts = require('../data/roleAssignment.json')
@@ -10,8 +11,7 @@ module.exports = {
     args: 'send/init',
     role: 'moderator',
     async execute(message, args, bot, db) {
-        let settings = bot.settings[message.guild.id]
-        if (!settings || !settings.backend.roleassignment) return message.channel.send('roleassignment has been turned off in this server');
+        if (!settings[message.guild.id].backend.roleassignment) return message.channel.send('roleassignment has been turned off in this server');
 
         let guildReacts = reacts[message.guild.id]
         if (!guildReacts) return message.channel.send('Reactions not setup for this guild')
@@ -20,8 +20,8 @@ module.exports = {
         let embed = getEmbed(guildReacts)
 
         //get channel
-        let channel = message.guild.channels.cache.get(settings.channels.roleassignment)
-        if (!channel) return message.channel.send('Could not find channel: ' + settings.channels.roleassignment)
+        let channel = message.guild.channels.cache.get(settings[message.guild.id].channels.roleassignment)
+        if (!channel) return message.channel.send('Could not find channel: ' + settings[message.guild.id].channels.roleassignment)
 
         //get arg
         if (args.length == 0) return message.channel.send('Inavlid arguements: ``;roleassignment <send/init>``')
@@ -40,7 +40,7 @@ module.exports = {
 }
 
 async function addInteractionButtons(message, bot) {
-    if (!bot.settings[message.guild.id].backend.roleassignment) return;
+    if (!settings[message.guild.id].backend.roleassignment) return;
     let guildReacts = reacts[message.guild.id]
     if (!guildReacts) return
     
@@ -82,7 +82,7 @@ async function addInteractionButtons(message, bot) {
 }
 
 async function interactionHandler(interaction, bot) {
-    if (!bot.settings[interaction.guild.id].backend.roleassignment) return;
+    if (!settings[interaction.guild.id].backend.roleassignment) return;
     if (!interaction.isButton()) return;
 
     failedEmbed = new Discord.EmbedBuilder()
@@ -90,37 +90,37 @@ async function interactionHandler(interaction, bot) {
         .setDescription(`Something went wrong, please try again or contact any Head Raid Leader+ to fix this`)
         .setFooter({ text: `${interaction.customId}` })
 
-    settings = bot.settings[interaction.guild.id]
+    const { roles } = settings[interaction.guild.id]
     let guildReacts = reacts[interaction.guild.id]
     if (!guildReacts) return await interaction.reply({ embeds: [failedEmbed], ephemeral: true })
 
     if (interaction.customId === "giveAllRoles") {
         for (let i in guildReacts) {
             reaction = guildReacts[i]
-            role = interaction.guild.roles.cache.get(settings.roles[reaction.role])
+            role = interaction.guild.roles.cache.get(roles[reaction.role])
             if (!interaction.member.roles.cache.has(role.id)) {
                 // The user does not have the reactable role, and therefor we will add it
                 interaction.member.roles.add(role)
             }
         }
-        await interaction.reply({ content: `You now have ${guildReacts.map(role => interaction.guild.roles.cache.get(settings.roles[role.role])).join(', ')}\nand will recieve pings for ${guildReacts.map(name => name.name).join(', ')}`, ephemeral: true })
+        await interaction.reply({ content: `You now have ${guildReacts.map(role => interaction.guild.roles.cache.get(roles[role.role])).join(', ')}\nand will recieve pings for ${guildReacts.map(name => name.name).join(', ')}`, ephemeral: true })
     }
     else if (interaction.customId === "takeAllRoles") {
         for (let i in guildReacts) {
             reaction = guildReacts[i]
-            role = interaction.guild.roles.cache.get(settings.roles[reaction.role])
+            role = interaction.guild.roles.cache.get(roles[reaction.role])
             if (interaction.member.roles.cache.has(role.id)) {
                 // The user has the reactable role, and therefor we will remove it
                 interaction.member.roles.remove(role)
             }
         }
-        await interaction.reply({ content: `You no longer have ${guildReacts.map(role => interaction.guild.roles.cache.get(settings.roles[role.role])).join(', ')}\nand will not recieve pings for ${guildReacts.map(name => name.name).join(', ')}`, ephemeral: true })
+        await interaction.reply({ content: `You no longer have ${guildReacts.map(role => interaction.guild.roles.cache.get(roles[role.role])).join(', ')}\nand will not recieve pings for ${guildReacts.map(name => name.name).join(', ')}`, ephemeral: true })
     }
     else {
         for (let i in guildReacts) {
             reaction = guildReacts[i]
             if (interaction.customId === reaction.emojiId) {
-                role = interaction.guild.roles.cache.get(settings.roles[reaction.role])
+                role = interaction.guild.roles.cache.get(roles[reaction.role])
 
                 if (interaction.member.roles.cache.has(role.id)) {
                     // The user has the reactable role, and therefor we will remove it

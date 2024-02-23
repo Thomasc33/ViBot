@@ -1,6 +1,7 @@
 const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
 const { createEmbed } = require('../lib/extensions.js');
 const { slashArg, slashCommandJSON } = require('../utils.js');
+const { settings } = require('../lib/settings');
 
 module.exports = {
     name: 'supporter',
@@ -16,20 +17,20 @@ module.exports = {
     guildSpecific: true,
     getSlashCommandData(guild) { return slashCommandJSON(this, guild); },
     async execute(message, args, bot, db) {
-        const botSettings = bot.settings[message.guild.id];
-        if ((message.member.roles.highest.position < message.guild.roles.cache.get(botSettings.roles.minimumSupporterCheckRole).position) && args.length > 0) return await message.reply({ embeds: [createEmbed(message, `You do not have the required role ${message.guild.roles.cache.get(botSettings.roles.minimumSupporterCheckRole)} to use this command.`, null)], ephemeral: true });
+        const { roles, lists, supporter } = settings[message.guild.id];
+        if ((message.member.roles.highest.position < message.guild.roles.cache.get(roles.minimumSupporterCheckRole).position) && args.length > 0) return await message.reply({ embeds: [createEmbed(message, `You do not have the required role ${message.guild.roles.cache.get(roles.minimumSupporterCheckRole)} to use this command.`, null)], ephemeral: true });
         const member = message.options.getMember('user') || message.member;
-        const supporterRoles = botSettings.lists.perkRoles.map(role => message.guild.roles.cache.get(botSettings.roles[role]));
+        const supporterRoles = lists.perkRoles.map(role => message.guild.roles.cache.get(roles[role]));
         const supporterError = [];
 
         let rolesText = '';
         let cooldownText = '';
         let useText = '';
         for (const role of supporterRoles) {
-            const supporterNumber = role.supporterHierarchy(botSettings);
-            const cooldown = botSettings.supporter[`supporterCooldownSeconds${supporterNumber}`];
-            const uses = botSettings.supporter[`supporterUses${supporterNumber}`];
-            if (supporterNumber == 0 || !botSettings.supporter[`supporterCooldownSeconds${supporterNumber}`] || !botSettings.supporter[`supporterUses${supporterNumber}`]) supporterError.push(role);
+            const supporterNumber = role.supporterHierarchy();
+            const cooldown = supporter[`supporterCooldownSeconds${supporterNumber}`];
+            const uses = supporter[`supporterUses${supporterNumber}`];
+            if (supporterNumber == 0 || !supporter[`supporterCooldownSeconds${supporterNumber}`] || !supporter[`supporterUses${supporterNumber}`]) supporterError.push(role);
             else {
                 rolesText += `${role}\n`;
                 cooldownText += (cooldown < 86400) ? ((cooldown < 3600) ? `\`${(cooldown / 60).toFixed(0)}\` Minutes\n` : `\`${(cooldown / 3600).toFixed(0)}\` Hours\n`) : `\`${(cooldown / 86400).toFixed(0)}\` Days\n`;
@@ -50,10 +51,10 @@ module.exports = {
             return await message.reply({ embeds: [embed], ephemeral: true });
         }
 
-        const supporterNumber = member.supporterHierarchy(botSettings);
-        const supporterRole = message.guild.roles.cache.get(member.supporterRoleHierarchy(botSettings));
-        const cooldown = botSettings.supporter[`supporterCooldownSeconds${supporterNumber}`];
-        const uses = botSettings.supporter[`supporterUses${supporterNumber}`];
+        const supporterNumber = member.supporterHierarchy();
+        const supporterRole = message.guild.roles.cache.get(member.supporterRoleHierarchy());
+        const cooldown = supporter[`supporterCooldownSeconds${supporterNumber}`];
+        const uses = supporter[`supporterUses${supporterNumber}`];
         const lastUseCheck = Date.now() - (cooldown * 1000);
         const [rows,] = await db.promise().query('SELECT * FROM supporterusage WHERE guildid = ? AND userid = ? AND utime > ?', [message.guild.id, member.id, lastUseCheck]);
         embed.setThumbnail(supporterRole?.iconURL({ dynamic: true }));

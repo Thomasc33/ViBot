@@ -1,6 +1,5 @@
-const { botOwners } = require('../settings.json');
 const Discord = require('discord.js')
-const { settings: botSettings } = require('../lib/settings');
+const { settings: botSettings, config: { botOwners } } = require('../lib/settings');
 
 module.exports = {
     name: 'eval',

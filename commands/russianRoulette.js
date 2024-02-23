@@ -1,4 +1,5 @@
 const Discord = require('discord.js')
+const { settings } = require('../lib/settings');
 
 module.exports = {
     name: 'russianroulette',
@@ -6,7 +7,7 @@ module.exports = {
     role: 'security',
     description: 'Begins russian roulette',
     async execute(message, args, bot) {
-        let settings = bot.settings[message.guild.id]
+        const { roles: { muted } } = settings[message.guild.id];
         let embed = new Discord.EmbedBuilder()
             .setColor('#ff0000')
             .setTitle('Russian Roulette')
@@ -42,7 +43,7 @@ module.exports = {
                 let i = Math.floor(Math.random() * reactors.length)
                 let loser = message.guild.members.cache.get(reactors[i].id)
                 if (loser == null) return;
-                if (loser.roles.cache.has(settings.roles.muted)) return getLoser(rolls + 1)
+                if (loser.roles.cache.has(muted)) return getLoser(rolls + 1)
                 else return loser
             }
             if (loser == null) return console.log(`rolled too many times`);
@@ -53,9 +54,9 @@ module.exports = {
 
             let member = message.guild.members.cache.get(loser.id)
 
-            member.roles.add(settings.roles.muted)
+            member.roles.add(muted)
 
-            setTimeout(() => { member.roles.remove(settings.roles.muted) }, 60000)
+            setTimeout(() => { member.roles.remove(muted) }, 60000)
 
         }
     }

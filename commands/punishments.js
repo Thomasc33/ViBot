@@ -3,6 +3,7 @@ const { EmbedBuilder, Colors, ActionRowBuilder, ButtonBuilder, ButtonStyle, Stri
     StringSelectMenuOptionBuilder, InteractionCollector, ComponentType } = require('discord.js');
 const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
 const { slashArg, slashCommandJSON } = require('../utils.js');
+const { settings } = require('../lib/settings');
 
 /** @typedef {{ id: string }} HasID */
 /**
@@ -113,10 +114,10 @@ class PunishmentsUI {
      * @param {import('../data/guildSettings.701483950559985705.cache.json')} settings
      * @param {string[]} memberIds
      */
-    constructor(interaction, guild, settings, memberIds) {
+    constructor(interaction, guild, memberIds) {
         this.#guild = guild;
         this.#moderator = interaction.member;
-        this.#settings = settings;
+        this.#settings = settings[guild.id];
         this.#members = memberIds;
         this.#interaction = interaction;
         this.#bot = guild.client;
@@ -422,7 +423,7 @@ module.exports = {
     async slashCommandExecute(interaction, bot, db) {
         const { options } = interaction;
         const members = [options.getMember('user'), ...Array(7).fill(0).map((_, idx) => options.getMember(`user${idx + 2}`))].filter(m => m).map(m => m.id);
-        const pui = new PunishmentsUI(interaction, interaction.guild, bot.settings[interaction.guild.id], members);
+        const pui = new PunishmentsUI(interaction, interaction.guild, members);
         try {
             pui.initialize(db, options.getBoolean('full', true));
         } catch (e) {
@@ -432,7 +433,6 @@ module.exports = {
     async execute(interaction, args, bot, db) {
         const full = args[args.length - 1].toLowerCase() == 'full' ? true : args[args.length - 1].toLowerCase() == 'paged' ? false : null;
         if (full !== null) args.pop();
-        const settings = bot.settings[interaction.guild.id];
 
         const unfound = [];
         const members = [];
@@ -442,7 +442,7 @@ module.exports = {
             else unfound.push(search);
         }
         if (members.length > 0) {
-            const pui = new PunishmentsUI(interaction, interaction.guild, settings, members.map(m => m.id).slice(0, 21));
+            const pui = new PunishmentsUI(interaction, interaction.guild, members.map(m => m.id).slice(0, 21));
             await pui.initialize(db, full);
         }
         if (unfound.length > 0) {

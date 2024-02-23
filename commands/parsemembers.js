@@ -4,13 +4,12 @@ const afkCheck = require('./afkCheck.js')
 const vision = require('@google-cloud/vision');
 const realmEyeScrape = require('../lib/realmEyeScrape');
 const charStats = require('../data/charStats.json')
-const botSettings = require('../settings.json')
 const ParseCurrentWeek = require('../data/currentweekInfo.json')
 const quota = require('./quota')
 const quotas = require('../data/quotas.json');
 const afkTemplate = require('./afkTemplate.js');
-const client = new vision.ImageAnnotatorClient(botSettings.gcloudOptions);
-const { settings } = require('../lib/settings');
+const { settings, config: { gcloudOptions } } = require('../lib/settings');
+const client = new vision.ImageAnnotatorClient(gcloudOptions);
 
 
 module.exports = {

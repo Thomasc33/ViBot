@@ -1,4 +1,5 @@
 const Discord = require('discord.js')
+const { settings } = require('../lib/settings');
 
 module.exports = {
     name: 'removealt',
@@ -8,7 +9,6 @@ module.exports = {
     role: 'security',
     alias: ['ra'],
     async execute(message, args, bot, db) {
-        let settings = bot.settings[message.guild.id]
         let member = message.mentions.members.first()
         if (!member) member = message.guild.members.cache.get(args[0])
         if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
@@ -63,7 +63,7 @@ module.exports = {
                         embed.addFields([{ name: 'Reason 1', value: reason.substring(0, 1024) }])
                         embed.addFields([{ name: 'Reason Cont', value: reason.substring(1024, reason.length) }])
                     } else embed.addFields([{ name: 'Reason', value: reason }])
-                await message.guild.channels.cache.get(settings.channels.modlogs).send({ embeds: [embed] });
+                await message.guild.channels.cache.get(settings[message.guild.id].channels.modlogs)?.send({ embeds: [embed] });
             }
             confirmMessage.delete();
         })

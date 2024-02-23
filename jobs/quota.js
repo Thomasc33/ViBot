@@ -15,7 +15,7 @@ class MonthlyQuota extends RepeatedJob {
             const quotaList = guildQuotas.quotas.filter(q => q.reset == 'weekly' || (q.reset == 'biweekly' && biweekly));
             if (!quotaList.length) return;
             for (const q of quotaList) {
-                if (q.reset == 'monthly') {quota.newWeek(g, bot, getDB(g.id), bot.settings[g.id], guildQuotas, q);}
+                if (q.reset == 'monthly') {quota.newWeek(g, bot, getDB(g.id), guildQuotas, q);}
             }
         });
     }

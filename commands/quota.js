@@ -5,18 +5,17 @@ const quotas = require('../data/quotas.json');
 require('../lib/extensions');
 const CachedMessages = {}
 const excuses = require('./excuse');
+const { settings } = require('../lib/settings');
 
 module.exports = {
     name: 'quota',
     description: 'Updates the current week stats or force starts the next week',
     role: 'developer',
     requiredArgs: 1,
-    getNotes(guild, member, bot) {
+    getNotes(guild) {
         return `Available Quotas: ${quotas[guild.id] && quotas[guild.id].quotas.length ? quotas[guild.id].quotas.map(q => q.id).join(', ') : 'None'}`;
     },
     async execute(message, args, bot, db) {
-        const settings = bot.settings[message.guild.id];
-        if (!settings) return;
         const guildQuotas = quotas[message.guild.id];
         if (!guildQuotas) return;
         const quotaList = [];
@@ -30,7 +29,7 @@ module.exports = {
         }
         if (!args.length) {
             for (const quota of quotaList)
-                this.sendEmbed(message.channel, db, bot, false, guildQuotas, quota)
+                this.sendEmbed(message.channel, db, false, guildQuotas, quota)
             return;
         }
         const cmd = args.shift().toLowerCase();
@@ -43,48 +42,16 @@ module.exports = {
                         .setColor('#FF0000')
                     await message.channel.send({ embeds: [embed] }).then(async confirmMessage => {
                         if (await confirmMessage.confirmButton(message.member.id)) {
-                            this.newWeek(message.guild, bot, db, settings, guildQuotas, quota);
+                            this.newWeek(message.guild, bot, db, guildQuotas, quota);
                             await message.channel.send(`Successfully reset ${quota.name}`)
                             await confirmMessage.delete()
                         } else { await confirmMessage.delete() }
                     })
                     break;
                 case 'update':
-                    await this.update(message.guild, db, bot, settings, guildQuotas, quota);
+                    await this.update(message.guild, db, bot, guildQuotas, quota);
                     message.channel.send(`Current week updated for ${quota.id}`);
                     break;
-                /*case 'fullreset': //DELETE BEFORE
-                    this.fullReset(message.guild, db, bot, guildQuotas.quotas);
-                    break;
-                case 'test': {
-                    let biweekly = false;
-                    switch (args.shift().toLowerCase()) {
-                        case 'monthly':
-                            bot.guilds.cache.each(g => {
-                                if (!bot.emojiServers.includes(g.id)) {
-                                    const quotaList = guildQuotas.quotas.filter(q => q.reset == "weekly" || (q.reset == "biweekly" && biweekly));
-                                    if (!quotaList.length) return;
-                                    for (const q of quotaList)
-                                        if (q.reset == "monthly")
-                                            this.newWeek(g, bot, bot.dbs[g.id], bot.settings[g.id], guildQuotas, q);
-                                }
-                            })
-                            break;
-                        case 'biweekly':
-                            biweekly = !(moment().diff(moment(1413378000), 'week') % 2);
-                        case 'weekly':
-                            bot.guilds.cache.each(g => {
-                                if (!bot.emojiServers.includes(g.id)) {
-                                    const quotaList = guildQuotas.quotas.filter(q => q.reset == "weekly" || (q.reset == "biweekly" && biweekly));
-                                    if (!quotaList.length) return;
-                    
-                                    this.fullReset(g, bot.dbs[g.id], bot, quotaList);
-                                }
-                            })
-                        break;
-                    }
-                    break;
-                }*/
                 default:
                     return message.channel.send(`Invalid argument: ${cmd}`);
             }
@@ -92,29 +59,30 @@ module.exports = {
     },
     async fullReset(guild, db, bot, quotaList) {
         const ignore = await excuses.getIgnore(guild.id, db);
-        if (bot.settings[guild.id].backend.sendmissedquota) {
+        if (settings[guild.id].backend.sendmissedquota) {
             if (!ignore) {
                 await excuses.calculateMissed(guild, bot, db, null, true);
                 await excuses.resetExcuses(guild, bot, db, true);
             }
         }
         for (const quota of quotaList) {
-            await this.newWeek(guild, bot, db, bot.settings[guild.id], quotas[guild.id], quota);
+            await this.newWeek(guild, bot, db, quotas[guild.id], quota);
         }
         if (ignore)
             await db.promise().query(`DELETE FROM ignoreCurrentWeek WHERE guildId = ${guild.id}`)
     },
-    async newWeek(guild, bot, db, settings, guildQuotas, quota) {
-        const leaderLog = guild.channels.cache.get(settings.channels[quota.pastweeks])
+    async newWeek(guild, bot, db, guildQuotas, quota) {
+        const { roles, channels } = settings[guild.id];
+        const leaderLog = guild.channels.cache.get(channels[quota.pastweeks])
         if (!leaderLog) return console.log('Leader log channel not found');
-        await this.sendEmbed(leaderLog, db, bot, true, guildQuotas, quota)
+        await this.sendEmbed(leaderLog, db, true, guildQuotas, quota)
         const rolling = quota.values.filter(v => v.rolling);
         if (rolling.length) {
             const ignore = await excuses.getIgnore(guild.id, db);
             if (ignore)
                 await db.promise().query(`UPDATE users SET ${rolling[0].column} = 0`);
             else {
-                const rlist = quota.roles.map((role, i) => { return { role: guild.roles.cache.get(settings.roles[role]), req: quota.quota[i], rollmax: quota.rollmax[i] } }).sort((a, b) => b.position - a.position)
+                const rlist = quota.roles.map((role, i) => { return { role: guild.roles.cache.get(roles[role]), req: quota.quota[i], rollmax: quota.rollmax[i] } }).sort((a, b) => b.position - a.position)
                 const members_updated = {};
                 for (const { role, req, rollmax }
                     of rlist) {
@@ -133,20 +101,19 @@ module.exports = {
         }
         let q = `UPDATE users SET ${quota.values.filter(v => !v.rolling).map(v => `${v.column} = 0`).join(', ')}`
         await db.promise().query(q)
-        await this.update(guild, db, bot, settings, guildQuotas, quota)
+        await this.update(guild, db, bot, guildQuotas, quota)
 
     },
     async update(guild, db, bot, guildQuotas, quota) {
         let currentweek = guild.channels.cache.get(settings[guild.id].channels[quota.currentweek])
         if (!currentweek) return;
-        await this.sendEmbed(currentweek, db, bot, false, guildQuotas, quota)
+        await this.sendEmbed(currentweek, db, false, guildQuotas, quota)
     },
 
-    sendEmbed(channel, db, bot, nw, guildQuotas, quota) {
+    sendEmbed(channel, db, nw, guildQuotas, quota) {
         const guild = channel.guild;
         if (!guild) return;
-        const settings = bot.settings[guild.id];
-        if (!settings) return;
+        const { channels, roles: botRoles } = settings[guild.id];
         let csvData = 'Leader ID,Leader Nickname,Currentweek Total,Total\n';
         return new Promise(async (resolve, reject) => {
             let emojiList = quota.values.map(value => value.emoji ? `${value.emoji}: **${value.name}**` : '')
@@ -157,7 +124,7 @@ module.exports = {
                 .setDescription('None!')
                 .setFooter({ text: `##### Total Runs` });
             const embeds = [];
-            if (channel.id != settings.channels[quota.pastweeks]) {
+            if (channel.id != channels[quota.pastweeks]) {
                 const nextReset = getNextReset(quota.reset);
                 if (nextReset) fitStringIntoEmbed(embeds, embed, `Quota reset <t:${nextReset}:R>\n`);
             }
@@ -167,10 +134,10 @@ module.exports = {
             db.query(`SELECT id, ` + quota.values.map(v => v.column).join(', ') + `, ${combine}, ${unrolled} FROM users WHERE ` + quota.values.map(v => `${v.column} != 0`).join(' OR ') + ` order by total desc`, async (err, rows) => {
                 if (err) return reject(err);
                 let runCount = 0;
-                const roles = quota.roles.map(r => channel.guild.roles.cache.get(settings.roles[r])?.id).filter(r => r);
-                if (quota.rolesNoQuota) roles.push(...quota.rolesNoQuota.map(r => channel.guild.roles.cache.get(settings.roles[r])?.id).filter(r => r))
-                let ignore = (guildQuotas.ignoreRolesDisplay || []).map(r => settings.roles[r]).filter(r => r);
-                if (quota.ignoreRolesDisplay) ignore = (quota.ignoreRolesDisplay || []).map(r => settings.roles[r]).filter(r => r);
+                const roles = quota.roles.map(r => channel.guild.roles.cache.get(botRoles[r])?.id).filter(r => r);
+                if (quota.rolesNoQuota) roles.push(...quota.rolesNoQuota.map(r => channel.guild.roles.cache.get(botRoles[r])?.id).filter(r => r))
+                let ignore = (guildQuotas.ignoreRolesDisplay || []).map(r => botRoles[r]).filter(r => r);
+                if (quota.ignoreRolesDisplay) ignore = (quota.ignoreRolesDisplay || []).map(r => botRoles[r]).filter(r => r);
                 let position = 1
                 for (const idx in rows) {
                     const user = rows[idx];
@@ -195,7 +162,7 @@ module.exports = {
                 })
                 embed.setFooter({ text: `${runCount} Total Runs` })
                 embeds.push(new Discord.EmbedBuilder(embed.data))
-                if (channel.id == settings.channels[quota.currentweek]) {
+                if (channel.id == channels[quota.currentweek]) {
                     if (!CachedMessages[guild.id]) CachedMessages[guild.id] = [];
                     try {
                         if (CachedMessages[guild.id][quota.id] && CachedMessages[guild.id][quota.id].length > 0) {
@@ -276,14 +243,5 @@ function getNextReset(reset) {
             return moment().add(2, 'week').startOf('week').unix();
         case "monthly":
             return moment().add(1, 'month').startOf('month').unix();
-    }
-}
-
-function moduleIsAvailable(path) {
-    try {
-        require.resolve(path);
-        return true;
-    } catch (e) {
-        return false;
     }
 }

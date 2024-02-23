@@ -1,6 +1,7 @@
 const fs = module.require('fs');
 const Discord = require('discord.js');
 const ErrorLogger = require('../lib/logError')
+const { settings } = require('../lib/settings');
 
 module.exports = {
     name: 'suspend',
@@ -9,11 +10,12 @@ module.exports = {
     requiredArgs: 4,
     role: 'warden',
     async execute(message, args, bot, db) {
-        let settings = bot.settings[message.guild.id]
-        const suspendedRole = message.guild.roles.cache.get(settings.roles.tempsuspended)
-        const pSuspendRole = message.guild.roles.cache.get(settings.roles.permasuspended)
-        const raiderRole = message.guild.roles.cache.get(settings.roles.raider)
-        const suspensionLog = message.guild.channels.cache.get(settings.channels.suspendlog)
+        const { roles, channels: { suspendlog }, lists, backend: { onlyUpperStaffSuspendStaff } } = settings[message.guild.id];
+
+        const suspendedRole = message.guild.roles.cache.get(roles.tempsuspended)
+        const pSuspendRole = message.guild.roles.cache.get(roles.permasuspended)
+        const raiderRole = message.guild.roles.cache.get(roles.raider)
+        const suspensionLog = message.guild.channels.cache.get(channels.suspendlog)
         let toBan = [];
         if (args.length < 3) {
             message.channel.send("Expected at least 4 arguments, but recieved " + args.length)
@@ -53,13 +55,13 @@ module.exports = {
                 if (!member) member = message.guild.members.cache.get(u.replace(/[<>@!]/gi, ''))
                 if (!member) return message.channel.send(`${u} not found, please try again`);
                 //check if person being suspended is staff
-                if (bot.settings[message.guild.id].backend.onlyUpperStaffSuspendStaff) {
-                    let lowest_staff_role = bot.settings[message.guild.id].roles["lol"];
+                if (onlyUpperStaffSuspendStaff) {
+                    let lowest_staff_role = roles.lol;
                     if (lowest_staff_role) {
                         if (member.roles.highest.comparePositionTo(lowest_staff_role) >= 0) {
                             //the suspend should only happen if message.member is like an admin or something
-                            let suspendingRoles = settings.lists.suspendingRoles.length ? settings.lists.suspendingRoles : ['moderator', 'headrl', 'headeventrl', 'officer', 'developer']
-                            let suspendingIds = suspendingRoles.map(m => settings.roles[m])
+                            let suspendingRoles = lists.suspendingRoles.length ? lists.suspendingRoles : ['moderator', 'headrl', 'headeventrl', 'officer', 'developer']
+                            let suspendingIds = suspendingRoles.map(m => roles[m])
                             if (!message.member.roles.cache.filter(role => suspendingIds.includes(role.id)).size) return message.channel.send("Could not suspend that user as they are staff and your highest role isn't high enough. Ask for a promotion and then try again.");
                         }
                     }
@@ -106,11 +108,11 @@ module.exports = {
                         suspensionLog.send({ embeds: [embed] }).then(member.user.send({ embeds: [embed] }).catch(() => {}))
                     } else {
                         let userRolesString = '', userRoles = []
-                        const roles = [...member.roles.cache.filter(r => !r.managed && (!settings.lists.discordRoles.map(role => settings.roles[role]).includes(r.id))).values()];
-                        embed.data.fields[3].value = roles.join(', ') || 'None!';
+                        const memberRoles = [...member.roles.cache.filter(r => !r.managed && (!lists.discordRoles.map(role => roles[role]).includes(r.id))).values()];
+                        embed.data.fields[3].value = memberRoles.join(', ') || 'None!';
                         member.roles.cache.each(r => {
                             if (r.managed) return
-                            if (settings.lists.discordRoles.map(role => settings.roles[role]).includes(r.id)) return
+                            if (lists.discordRoles.map(role => roles[role]).includes(r.id)) return
                             userRoles.push(r.id)
                             userRolesString = userRolesString.concat(`${r.id} `)
                         })

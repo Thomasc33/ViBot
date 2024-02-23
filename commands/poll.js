@@ -1,8 +1,5 @@
 const Discord = require('discord.js');
-const botSettings = require('../settings.json');
-const ErrorLogger = require('../lib/logError');
 const pollInfo = require('../data/poll.json');
-const { settings } = require('../lib/settings');
 
 module.exports = {
     name: 'poll',

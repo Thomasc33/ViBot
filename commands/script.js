@@ -1,6 +1,7 @@
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
 const moment = require('moment')
+const { settings } = require('../lib/settings');
 
 module.exports = {
     name: 'script',
@@ -8,11 +9,9 @@ module.exports = {
     requiredArgs: 1,
     guildspecific: true,
     role: 'developer',
-    async execute(message, args, bot, db) {
+    async execute(message, args) {
         if (!['258286481167220738', '277636691227836419'].includes(message.author.id)) return message.react('❌')
         if (args[0] == 'ben') {
-            const settings = bot.settings[message.guild.id]
-
             const options = [
                 {
                     "emoji": "🦍",
@@ -70,7 +69,7 @@ module.exports = {
                             .setColor('#FF0000')
                         let statisticMessage = await message.channel.send({ embeds: [embed] })
                         const allUnverifiedUsers = message.guild.members.cache.filter(member => {
-                            if (member.roles.cache.has(settings.roles.raider)) { return false }
+                            if (member.roles.cache.has(settings[message.guild.id].roles.raider)) { return false }
                             if (member.nickname !== null && member.nickname !== '') {
                                 return true
                             }
@@ -79,7 +78,7 @@ module.exports = {
                         for (let index in allUnverifiedUsersID) {
                             let member = allUnverifiedUsersID[index]
                             member = message.guild.members.cache.get(member)
-                            try { await member.roles.add(settings.roles.raider) } catch (e) { console.log(e) }
+                            try { await member.roles.add(settings[message.guild.id].roles.raider) } catch (e) { console.log(e) }
                             await new Promise(resolve => setTimeout(resolve, 250))
                         }
 

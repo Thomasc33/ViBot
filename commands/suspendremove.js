@@ -2,6 +2,8 @@ const Discord = require('discord.js');
 const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
 const { slashArg, slashCommandJSON } = require('../utils.js');
 const { processUnsuspend } = require('./unsuspend.js');
+const { settings } = require('../lib/settings');
+
 module.exports = {
     name: 'suspendremove',
     slashCommandName: 'suspendremove',
@@ -122,7 +124,7 @@ module.exports = {
 
         await db.promise().query('DELETE FROM suspensions WHERE id = ? AND modid = ? AND uTime = ?', [suspension.id, suspension.modid, suspension.uTime]);
 
-        await processUnsuspend(message.member, suspension, bot, db, settings, reason.content.trim() || 'No Reason Provided');
+        await processUnsuspend(message.member, suspension, bot, db, reason.content.trim() || 'No Reason Provided');
 
         embed.setDescription('Removed the following suspension')
             .setColor(Discord.Colors.Green);

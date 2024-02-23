@@ -5,7 +5,7 @@ const keyroles = require('../data/keyRoles.json');
 const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
 const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js');
 const { createReactionRow } = require('../redis.js');
-
+const { settings } = require('../lib/settings');
 module.exports = {
     name: 'pop',
     description: 'Logs key pops',
@@ -160,18 +160,17 @@ module.exports = {
 
 async function checkUser(member, bot, db) {
     const popInfo = keyroles[member.guild.id];
-    const settings = bot.settings[member.guild.id];
-    if (!settings || !popInfo) return;
+    if (!popInfo) return;
     const rows = [...new Set(popInfo.map(ki => ki.types.map(t => t[0])).flat())];
     db.query('SELECT id, ?? FROM users WHERE id = ?', [rows, member.id], async (err, rows) => {
         if (err) ErrorLogger.log(err, bot, member.guild);
         if (!rows || !rows[0]) return db.query('INSERT INTO users (id) VALUES (?)', [member.id]);
-        await checkRow(member.guild, bot, rows[0], member);
+        await checkRow(member.guild, rows[0], member);
     });
 }
 
-async function checkRow(guild, bot, row, member) {
-    const { roles }= settings[guild.id];
+async function checkRow(guild, row, member) {
+    const { roles } = settings[guild.id];
     const popInfo = keyroles[guild.id];
     if (!roles || !popInfo || !member) return;
     member = member || await guild.members.fetch(row.id).catch();

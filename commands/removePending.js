@@ -1,3 +1,5 @@
+const { settings } = require('../lib/settings');
+
 module.exports = {
     name: 'removepending',
     role: 'security',
@@ -19,8 +21,8 @@ module.exports = {
         let mID = args[1]
         if (!mID) return message.channel.send('Please specify a message id')
         let channel
-        if (isVet) channel = message.guild.channels.cache.get(bot.settings[message.guild.id].channels.manualvetverification)
-        else channel = message.guild.channels.cache.get(bot.settings[message.guild.id].channels.manualverification)
+        if (isVet) channel = message.guild.channels.cache.get(settings[message.guild.id].channels.manualvetverification)
+        else channel = message.guild.channels.cache.get(settings[message.guild.id].channels.manualverification)
         if (!channel) return message.channel.send('I could not find the channel')
 
         //delete message
