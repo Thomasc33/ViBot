@@ -172,14 +172,13 @@ Promise.all(botSettings.config?.guildIds.map(guildId => {
 setInterval(() => {
     for (const afkCheckId of Object.keys(bot.afkChecks)) {
         writePoint(new Point('afkchecksmodulesinterval')
-            .stringField('afkCheck', afkCheckId))
+            .stringField('afkCheck', afkCheckId));
     }
     for (const afkModuleId of Object.keys(bot.afkModules)) {
         writePoint(new Point('afkchecksmodulesinterval')
-            .stringField('afkModule', afkModuleId))
+            .stringField('afkModule', afkModuleId));
     }
-}, 60000)
-
+}, 60000);
 
 // ===========================================================================================================
 // Process Event Listening
