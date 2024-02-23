@@ -7,6 +7,8 @@ const extensions = require(`../lib/extensions`)
 const consumablePopTemplates = require(`../data/keypop.json`);
 const popCommand = require('./pop.js');
 const AfkButton = require('../lib/afk/AfkButton');
+const { writePoint } = require('../metrics.js');
+const { Point } = require('@influxdata/influxdb-client');
 
 module.exports = {
     name: 'afk',
@@ -80,6 +82,9 @@ module.exports = {
                 console.log(afkTemplate.message())
                 continue
             }
+            writePoint(new Point('afkchecksmodules')
+                .tag('raidID', currentStoredAfkCheck.raidID)
+                .stringField('module', 'insert'))
             bot.afkModules[currentStoredAfkCheck.raidID] = new afkCheck(afkTemplate, bot, db, message, currentStoredAfkCheck.location)
             await bot.afkModules[currentStoredAfkCheck.raidID].loadBotAfkCheck(currentStoredAfkCheck)
         }
@@ -182,6 +187,9 @@ class afkCheck {
     async start() {
         if (this.phase === 0) this.phase = 1
         this.timer = new Date(Date.now() + (this.#body[this.phase].timeLimit * 1000))
+        writePoint(new Point('afkchecksmodules')
+            .tag('raidID', this.#raidID)
+            .stringField('module', 'insert'))
         this.#bot.afkModules[this.#raidID] = this
         await Promise.all([this.sendStatusMessage(), this.sendCommandsMessage(), this.sendChannelsMessage()])
         this.startTimers()
@@ -194,10 +202,17 @@ class afkCheck {
     
     saveBotAfkCheck(deleteCheck = false) {
         if (deleteCheck) {
+            writePoint(new Point('afkchecksmodules')
+                .tag('raidID', this.#raidID)
+                .stringField('check', 'delete')
+                .stringField('module', 'delete'))
             delete this.#bot.afkChecks[this.#raidID]
             delete this.#bot.afkModules[this.#raidID]
         }
         else {
+            writePoint(new Point('afkchecksmodules')
+                .tag('raidID', this.#raidID)
+                .stringField('check', 'create'))
             this.#bot.afkChecks[this.#raidID] = {
                 afkTemplateName: this.afkTemplateName,
                 message: this.#message,
@@ -229,6 +244,9 @@ class afkCheck {
                 raidChannelsMessage: this.raidChannelsMessage,
             }
         }
+        writePoint(new Point('afkchecksmodules')
+            .tag('raidID', this.#raidID)
+            .booleanField('fileWrite', true))
         fs.writeFileSync('./data/afkChecks.json', JSON.stringify(this.#bot.afkChecks, null, 4), err => { if (err) ErrorLogger.log(err, this.#bot, this.#guild) })
     }
 
