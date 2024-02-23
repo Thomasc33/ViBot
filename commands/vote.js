@@ -2,7 +2,6 @@ const Discord = require('discord.js');
 const voteConfig = require('../data/voteConfig.json');
 const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
 const { slashArg, slashCommandJSON } = require('../utils.js');
-const { createReactionRow } = require('../redis.js');
 /**
 * @typedef FeedbackType
 * @property {string[]} flags
@@ -23,6 +22,7 @@ const { createReactionRow } = require('../redis.js');
 const FeedbackState = { Included: 0, Unidentified: 1, Other: 2 };
 // notes:
 // the filtering goes based of the first line of the message, so if someone is giving feedback to multiple people in the same message (feedback on feedback for fullskips), it may get mistagged
+// fullskip feedbacks are a little bit difficult to identify correctly, since they are not always tagged with the role
 module.exports = {
     name: 'vote',
     role: 'headrl',
@@ -40,11 +40,16 @@ module.exports = {
     getSlashCommandData(guild) { return slashCommandJSON(this, guild); },
     async execute(message, args, bot) {
         const { guild, channel } = message;
+        const role = message.options.getRole('role');
+        const settingsRoleName = Object.keys(bot.settings[guild.id].roles).find(roleName => bot.settings[guild.id].roles[roleName] == role.id) || null;
+        const embedStyling = voteConfig.templates.find(template => template.settingRole === settingsRoleName) || null;
 
         const voteSetup = new VoteSetup({
             channel,
             feedbacks: [],
-            role: message.options.getRole('role'),
+            role,
+            settingsRoleName,
+            embedStyling,
             members: message.options.getString('users').split(' ').concat(message.options.getVarargs() || []).map(member => guild.findMember(member)).filter(member => member != undefined)
         });
 
@@ -53,41 +58,45 @@ module.exports = {
 
         const embed = getSetupEmbed(voteSetup);
         const voteSetupButtons = generateVoteSetupButtons(bot);
-        const voteSetupMessage = await message.reply({ embeds: [embed], components: [voteSetupButtons] });
-        createReactionRow(voteSetupMessage, module.exports.name, 'interactionHandler', voteSetupButtons, message.author, voteSetup.toJSON());
+        const voteSetupMessage = await message.channel.send({ embeds: [embed], components: [voteSetupButtons] });
+        if (!message.isInteraction) await message.delete();
+        else { await message.deferReply(); await message.deleteReply(); }
+
+        const interactionHandler = new Discord.InteractionCollector(
+            bot,
+            {
+                message: voteSetupMessage,
+                interactionType: Discord.InteractionType.MessageComponent,
+                componentType: Discord.ComponentType.Button,
+                filter: i => i.user.id == message.member.id
+            });
+        interactionHandler.on('collect', interaction => this.interactionHandler(bot, interaction, voteSetup));
     },
-    async interactionHandler(bot, message, db, choice, voteSetupJSON, updateState) {
-        const interaction = message.interaction; // eslint-disable-line prefer-destructuring
-        const member = message.member; // eslint-disable-line prefer-destructuring
-        const voteSetup = VoteSetup.fromJSON(interaction.guild, voteSetupJSON);
-        switch (choice) {
+    async interactionHandler(bot, interaction, voteSetup) {
+        switch (interaction.customId) {
             case 'voteSend':
                 interaction.deferUpdate();
-                await sendVote(voteSetup, getRoleSettingsName(bot.settings[interaction.guild.id], voteSetup.role));
-                console.log(typeof voteSetup.currentMemberIndex, voteSetup.currentMemberIndex, voteSetup.members.length);
+                await sendVote(voteSetup);
                 voteSetup.currentMemberIndex++;
-                updateState('currentMemberIndex', voteSetup.currentMemberIndex.toString()); // TODO debug why number is being reset to 0
-                console.log('post', typeof voteSetup.currentMemberIndex, voteSetup.currentMemberIndex, voteSetup.members.length);
-                if (voteSetup.currentMemberIndex > voteSetup.members.length) {
-                    await message.delete();
+                if (voteSetup.currentMemberIndex >= voteSetup.members.length) {
+                    await interaction.message.delete();
                 } else {
-                    await message.edit({ embeds: [getSetupEmbed(voteSetup)], components: [generateVoteSetupButtons(bot)] });
+                    await interaction.message.edit({ embeds: [getSetupEmbed(voteSetup)], components: [generateVoteSetupButtons(bot)] });
                 }
                 break;
             case 'voteSkip':
                 voteSetup.currentMemberIndex++;
-                updateState('currentMemberIndex', voteSetup.currentMemberIndex.toString());
                 if (voteSetup.currentMemberIndex >= voteSetup.members.length) {
-                    await message.delete();
+                    await interaction.message.delete();
                 } else {
-                    await message.edit({ embeds: [getSetupEmbed(voteSetup)], components: [generateVoteSetupButtons(bot)] });
+                    await interaction.message.edit({ embeds: [getSetupEmbed(voteSetup)], components: [generateVoteSetupButtons(bot)] });
                 }
                 break;
             case 'voteAbort':
-                await message.delete(); // TODO does this clean up this interaction?
+                await interaction.message.delete();
                 break;
             case 'voteAddFeedbacks': {
-                // TODO add custom value with modal response
+                // idaa: add custom value with modal response
                 // add function to grab custom feedback by message ID and process it
                 // also make sure first 24 feedbacks show up in the select panel, since last is custom
                 const { includedFeedbacks, unidentifiedFeedbacks, otherFeedbacks } = sortMemberFeedbacks(voteSetup);
@@ -106,31 +115,62 @@ module.exports = {
                 const actionRow = new Discord.ActionRowBuilder()
                     .addComponents(addSelectionMenu);
 
-                const reply = await interaction.reply({ content: 'Test string', components: [actionRow], ephemeral: true, fetchReply: true });
-                let replyResponse;
+                const reply = await interaction.reply({ content: 'Select the feedbacks to add, times out after 2 minutes.', components: [actionRow], ephemeral: true, fetchReply: true });
                 try { // what is CollectorOptions.dispose? https://discord.js.org/docs/packages/discord.js/14.14.1/CollectorOptions:Interface#dispose
-                    replyResponse = await reply.awaitMessageComponent({ componentType: Discord.ComponentType.StringSelect, time: 120000, filter: i => i.user.id == member.id });
+                    const replyResponse = await reply.awaitMessageComponent({ componentType: Discord.ComponentType.StringSelect, time: 120000, filter: i => i.user.id == interaction.member.id });
+                    await replyResponse.deferUpdate();
+                    // array of message IDs
+                    replyResponse.values.forEach(messageID => {
+                        const feedback = voteSetup.feedbacks.find(feedback => feedback.messageID == messageID);
+                        feedback.feedbackState = FeedbackState.Included;
+                    });
+                    await interaction.deleteReply(reply.id);
                 } catch (error) {
-                    await reply.edit({ content: 'Timed out', components: [] });
+                    interaction.editReply({ content: 'Timed out', components: [] });
                     break;
                 }
-                await replyResponse.deferUpdate();
-                // array of message IDs
-                replyResponse.values.forEach(messageID => {
-                    const feedback = voteSetup.feedbacks.find(feedback => feedback.messageID == messageID);
-                    feedback.feedbackState = FeedbackState.Included;
-                });
-                updateState('feedbacks', voteSetup.feedbacks);
-                await interaction.deleteReply(reply.id);
                 await interaction.message.edit({ embeds: [getSetupEmbed(voteSetup)], components: [generateVoteSetupButtons(bot)] });
                 break;
             }
             case 'voteRemoveFeedbacks': {
-                // copy above code and change the filter to show only included feedbacks, no custom option on selectPanel
+                const { includedFeedbacks } = sortMemberFeedbacks(voteSetup);
+                if (includedFeedbacks.length == 0) {
+                    interaction.deferUpdate();
+                    break;
+                }
+                let index = 1;
+                const addSelectionMenu = new Discord.StringSelectMenuBuilder()
+                    .setCustomId('voteRemoveFeedbacks')
+                    .setPlaceholder('Feedbacks to remove')
+                    .setMinValues(1)
+                    .setMaxValues(includedFeedbacks.length)
+                    .addOptions(includedFeedbacks.map(feedback => ({
+                        label: `${index++}. ${feedback.dungeon?.tag || '??'} ${feedback.tier?.tag || '??'}`,
+                        value: feedback.messageID
+                    })));
+
+                const actionRow = new Discord.ActionRowBuilder()
+                    .addComponents(addSelectionMenu);
+
+                const reply = await interaction.reply({ content: 'Select the feedbacks to remove, times out after 2 minutes.', components: [actionRow], ephemeral: true, fetchReply: true });
+                try {
+                    const replyResponse = await reply.awaitMessageComponent({ componentType: Discord.ComponentType.StringSelect, time: 120000, filter: i => i.user.id == interaction.member.id });
+                    await replyResponse.deferUpdate();
+                    // array of message IDs
+                    replyResponse.values.forEach(messageID => {
+                        const feedback = voteSetup.feedbacks.find(feedback => feedback.messageID == messageID);
+                        feedback.feedbackState = FeedbackState.Other;
+                    });
+                    await interaction.deleteReply(reply.id);
+                } catch (error) {
+                    interaction.editReply({ content: 'Timed out', components: [] });
+                    break;
+                }
+                await interaction.message.edit({ embeds: [getSetupEmbed(voteSetup)], components: [generateVoteSetupButtons(bot)] });
                 break;
             }
             default:
-                console.log('Invalid choice', choice);
+                console.log('Invalid choice');
                 break;
         }
     }
@@ -149,33 +189,17 @@ class VoteSetup {
      * @param {FeedbackData[]} options.feedbacks - the feedbacks for the vote.
      * @param {Array<Discord.Member>} options.members - The members to be voted on.
      * @param {Role} options.role - The role associated with the vote.
+     * @param {string} options.settingsRoleName - The role name associated with the vote.
+     * @param {Object} options.embedStyling - The embed styling for the vote.
      */
-    constructor({ channel, feedbacks, members, role }) {
+    constructor({ channel, feedbacks, members, role, settingsRoleName, embedStyling }) {
         this.channel = channel;
         this.feedbacks = feedbacks;
         this.members = members;
         this.role = role;
+        this.settingsRoleName = settingsRoleName;
+        this.embedStyling = embedStyling;
         this.currentMemberIndex = 0;
-    }
-
-    static fromJSON(guild, json) {
-        return new this({
-            ...json,
-            currentMemberIndex: parseInt(json.currentMemberIndex), // TODO check if this is necessary, for some reason it's being reset to 0 but the setup panel is working fine
-            channel: guild.channels.cache.get(json.channel),
-            members: json.members.map(memberId => guild.members.cache.get(memberId)),
-            role: guild.roles.cache.get(json.role)
-        });
-    }
-
-    toJSON() {
-        return {
-            channel: this.channel.id,
-            feedbacks: this.feedbacks,
-            members: this.members.map(m => m.id),
-            role: this.role.id,
-            currentMemberIndex: this.currentMemberIndex
-        };
     }
 }
 
@@ -188,29 +212,23 @@ class VoteSetup {
 function getSetupEmbed(voteSetup) {
     const member = voteSetup.members[voteSetup.currentMemberIndex];
     const embed = new Discord.EmbedBuilder()
-        .setColor(member.roles.highest.hexColor)
+        .setColor(voteSetup.embedStyling ? voteSetup.embedStyling.embedColor : voteSetup.role.hexColor)
         .setAuthor({
             name: `Vote Configuration ${voteSetup.currentMemberIndex + 1}/${voteSetup.members.length}`,
             iconURL: member.user.displayAvatarURL({ dynamic: true })
         })
         .setDescription(`
+            Remaining members: ${voteSetup.members.slice(voteSetup.currentMemberIndex + 1).map(member => `<@${member.id}>`).join(' ') || 'None'}
+
             This vote will be for to <@${member.id}> to ${voteSetup.role}
         `);
     const { includedFeedbacks, unidentifiedFeedbacks, otherFeedbacks } = sortMemberFeedbacks(voteSetup);
-    let index = 1;
-    // TODO add length check for 1024 character limit, add <type> feedback two as name and continue list
-    embed.addFields([{
-        name: 'Included Feedback:',
-        value: includedFeedbacks.map(feedback => getSetupDisplayString(index++, feedback)).join('\n') || 'None'
-    },
-    {
-        name: 'Unknown Tags:',
-        value: unidentifiedFeedbacks.map(feedback => getSetupDisplayString(index++, feedback)).join('\n') || 'None'
-    },
-    {
-        name: 'Other Feedback:',
-        value: otherFeedbacks.map(feedback => getSetupDisplayString(index++, feedback)).join('\n') || 'None'
-    }]);
+    const feedbackFields = [
+        ...generateDisplayFields(includedFeedbacks, 1, 'Included Feedback:', getSetupDisplayString),
+        ...generateDisplayFields(unidentifiedFeedbacks, 1 + includedFeedbacks.length, 'Unidentified Feedback:', getSetupDisplayString),
+        ...generateDisplayFields(otherFeedbacks, 1 + includedFeedbacks.length + unidentifiedFeedbacks.length, 'Other Feedback:', getSetupDisplayString)
+    ];
+    embed.addFields(feedbackFields);
     return embed;
 }
 
@@ -242,33 +260,45 @@ function getVoteDisplayString(index, feedback) {
     return `\`${index}.\` \`${tags}\` ${feedback.feedbackURL} <t:${feedback.timeStamp}:d>`;
 }
 
-function getRoleSettingsName(settings, role) {
-    return Object.keys(settings.roles).find(roleName => settings.roles[roleName] == role.id);
+function generateDisplayFields(feedbacks, startIndex, name, getDisplayString) {
+    const feedbackFields = [];
+    let currentField = {
+        name,
+        value: ''
+    };
+
+    feedbacks.forEach(feedback => {
+        const feedbackString = getDisplayString(startIndex++, feedback);
+        if (currentField.value.length + feedbackString.length > 1024) {
+            feedbackFields.push(currentField);
+            currentField = {
+                name,
+                value: feedbackString
+            };
+        } else {
+            currentField.value += feedbackString + '\n';
+        }
+    });
+
+    if (currentField.value !== '') feedbackFields.push(currentField);
+    else feedbackFields.push({ name, value: 'None' });
+    return feedbackFields;
 }
 
-async function sendVote(voteSetup, roleSettingsName) {
-    if (!roleSettingsName) { return; } // TODO add error message for missing role settings name
-    const embedStyling = voteConfig.templates
-        .find(template => template.settingRole === roleSettingsName);
-    let embedColor = voteSetup.role.hexColor;
-    if (embedStyling != undefined && embedStyling.embedColor) { embedColor = embedStyling.embedColor; }
+async function sendVote(voteSetup) {
     const member = voteSetup.members[voteSetup.currentMemberIndex];
     const embed = new Discord.EmbedBuilder()
-        .setColor(embedColor)
+        .setColor(voteSetup.embedStyling ? voteSetup.embedStyling.embedColor : voteSetup.role.hexColor)
         .setAuthor({ name: `${member.displayName} to ${voteSetup.role.name}`, iconURL: member.user.displayAvatarURL({ dynamic: true }) })
         .setDescription(`${member} \`${member.displayName}\``);
-    if (embedStyling != undefined && embedStyling.image) { embed.setThumbnail(embedStyling.image); }
+    if (voteSetup.embedStyling) { embed.setThumbnail(voteSetup.embedStyling.image); }
     const { includedFeedbacks } = sortMemberFeedbacks(voteSetup);
-    let index = 1;
-    embed.addFields({
-        name: 'Feedback:',
-        value: includedFeedbacks.map(feedback => getVoteDisplayString(index++, feedback)).join('\n') || 'None'
-    });
+    embed.addFields(generateDisplayFields(includedFeedbacks, 1, 'Feedback:', getVoteDisplayString));
     const voteMessage = await voteSetup.channel.send({ embeds: [embed] });
     for (const emoji of ['✅', '❌', '👀']) { voteMessage.react(emoji); }
 }
 
-function generateVoteSetupButtons(bot) { // TODO disable remove button if no feedbacks are included
+function generateVoteSetupButtons(bot) {
     return new Discord.ActionRowBuilder()
         .addComponents([
             new Discord.ButtonBuilder()
@@ -325,11 +355,10 @@ async function getFeedbacks(guild, settings, voteSetup) {
         const firstLine = message.content.split('\n')[0].toLowerCase(); // Convert to lowercase for searching
         const dungeon = voteConfig.feedbackTypes.dungeon.find(dungeon => dungeon.flags.some(flag => firstLine.includes(flag)));
         const tier = voteConfig.feedbackTypes.tier.find(tier => tier.flags.some(flag => firstLine.includes(flag)));
-        const roleSettingsName = getRoleSettingsName(settings, voteSetup.role); // TODO what happens if roleSettingsName is undefined?
         let feedbackState = FeedbackState.Other;
         if (!tier || !dungeon) {
             feedbackState = FeedbackState.Unidentified;
-        } else if (tier.roles.includes(roleSettingsName) && dungeon.roles.includes(roleSettingsName)) {
+        } else if (tier.roles.includes(voteSetup.settingsRoleName) && dungeon.roles.includes(voteSetup.settingsRoleName)) {
             feedbackState = FeedbackState.Included;
         }
         return {

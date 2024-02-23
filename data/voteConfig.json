@@ -109,6 +109,11 @@
             "roles": ["almostHallsBanner", "almostOryxBanner", "almostShattersBanner", "hallsBanner", "oryxBanner", "shattersBanner", "vetHallsBanner", "veteranOryxBanner", "vetShattersBanner", "fullskipBanner", "vetFullskipBanner"]
         },
         {
+            "flags": ["fullskip", "fs", "skip", "fskip"],
+            "tag": " ",
+            "roles": ["fullskipBanner", "vetFullskipBanner"]
+        },
+        {
             "flags": ["vtrl", "vrl", "rl"],
             "tag": "VTRL",
             "roles": ["vetHallsBanner", "veteranOryxBanner", "vetShattersBanner"]
