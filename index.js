@@ -13,7 +13,8 @@ const ErrorLogger = require('./lib/logError');
 const botSetup = require('./botSetup.js');
 const dbSetup = require('./dbSetup.js');
 const memberHandler = require('./memberHandler.js');
-const { logWrapper } = require('./metrics.js');
+const { logWrapper, writePoint } = require('./metrics.js');
+const { Point } = require('@influxdata/influxdb-client');
 const { handleReactionRow } = require('./redis.js');
 const Modmail = require('./lib/modmail.js');
 // Specific Commands
@@ -167,6 +168,18 @@ Promise.all(botSettings.config?.guildIds.map(guildId => {
 }) ?? []).then(() => {
     bot.login(botSettings.key);
 });
+
+setInterval(() => {
+    for (const afkCheckId of Object.keys(bot.afkChecks)) {
+        writePoint(new Point('afkchecksmodulesinterval')
+            .stringField('afkCheck', afkCheckId))
+    }
+    for (const afkModuleId of Object.keys(bot.afkModules)) {
+        writePoint(new Point('afkchecksmodulesinterval')
+            .stringField('afkModule', afkModuleId))
+    }
+}, 60000)
+
 
 // ===========================================================================================================
 // Process Event Listening
