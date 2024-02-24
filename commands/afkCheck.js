@@ -125,6 +125,7 @@ class afkCheck {
         this.#pointlogMid = null
 
         this.members = [] // All members in the afk
+        this.staffEarlyMembers = [] // Staff members who clicked nitro to join the AFK
         this.buttons = afkTemplate.buttons.map(button => new AfkButton(this.#botSettings, this.#bot.storedEmojis, this.#guild, button))
         this.reactRequests = {} // {messageId => AfkButton}
         this.cap = afkTemplate.cap
@@ -668,7 +669,7 @@ class afkCheck {
     }
 
     earlySlotMembers() {
-        return this.buttons.map(button => button.members).flat();
+        return this.buttons.map(button => button.members).flat().concat(this.staffEarlyMembers);
     }
 
     async processPhaseControl(interaction) {
@@ -995,7 +996,7 @@ class afkCheck {
     }
 
     async processReconnect(interaction) {
-        if (this.members.includes(interaction.member.id) || this.earlySlotMembers().includes(interaction.member.id) || this.earlyLocationMembers().includes(interaction.member.id)) {
+        if (this.members.includes(interaction.member.id) || this.earlySlotMembers().includes(interaction.member.id)) {
             if (!interaction.member.voice.channel) return interaction.reply({ embeds: [extensions.createEmbed(interaction, `Join lounge to be moved into the channel. You can dismiss this message.`, null)], ephemeral: true })
             else if (interaction.member.voice.channel.id == this.#channel.id) return interaction.reply({ content: 'It looks like you are already in the channel ඞ. You can dismiss this message.', ephemeral: true })
             else if (interaction.member.voice.channel.name.includes('lounge') || interaction.member.voice.channel.name.includes('Lounge') || interaction.member.voice.channel.name.includes('drag')) {
@@ -1042,6 +1043,7 @@ class afkCheck {
         }
         if (interaction.member.roles.highest.position >= interaction.guild.roles.cache.get(this.#botSettings.roles.trialrl).position) {
             await interaction.reply({ embeds: [extensions.createEmbed(interaction, `The location for this run has been set to \`${this.location}\``, null)], ephemeral: true })
+            if (!this.staffEarlyMembers.includes(interaction.member.id)) this.staffEarlyMembers.push(interaction.member.id);
             return false
         }
         for (let i of this.#botSettings.lists.earlyLocation) { //custom early location roles
