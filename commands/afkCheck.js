@@ -220,6 +220,7 @@ class afkCheck {
                 leader: this.#leader,
                 raidID: this.#raidID,
                 members: this.members,
+                staffEarlyMembers: this.staffEarlyMembers,
                 buttons: this.buttons.map(button => button.toJSON()),
                 reactRequests: Object.fromEntries(Object.entries(this.reactRequests).map(([messageId, button]) => [messageId, {name: button.name, ...button.toJSON()}])),
                 body: this.#body,
@@ -252,6 +253,7 @@ class afkCheck {
         this.#raidID = storedAfkCheck.raidID
 
         this.members = storedAfkCheck.members
+        this.staffEarlyMembers = this.staffEarlyMembers
         this.buttons = storedAfkCheck.buttons.map(button => new AfkButton(this.#botSettings, this.#bot.storedEmojis, this.#guild, {...this.#afkTemplate.getButton(button.name), ...button}))
         this.reactRequests = Object.fromEntries(Object.entries(storedAfkCheck.reactRequests).map(([messageId, button]) => [messageId, new AfkButton(this.#botSettings, this.#bot.storedEmojis, this.#guild, {...this.#afkTemplate.getButton(button.name), ...button})]))
         this.#body = storedAfkCheck.body
@@ -664,7 +666,7 @@ class afkCheck {
     }
 
     earlyLocationMembers() {
-        const locationButtons = this.buttons.filter(button => button.location || this.buttons.some(parent => button.parent === parent.name && parent.location));
+        const locationButtons = this.buttons.filter(button => button.location || this.buttons.some(parent => button.parent?.includes(parent.name) && parent.location));
         return locationButtons.map(button => button.members).flat()
     }
 
