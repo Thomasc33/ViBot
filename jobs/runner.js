@@ -1,6 +1,5 @@
 const { bot } = require('../botMeta.js');
-const botSettings = require('../settings.json')
-const { setupBotDBs } = require('../botSetup.js')
+const { config } = require('../lib/settings');
 const dbSetup = require('../dbSetup.js')
 
 // Jobs
@@ -70,4 +69,4 @@ bot.on('ready', async () => {
     dbSetup.endAll()
 })
 
-bot.login(botSettings.key);
+bot.login(config.key);

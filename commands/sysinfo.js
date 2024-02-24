@@ -1,5 +1,4 @@
-const { botOwners } = require('../settings.json');
-const process = require('process')
+const process = require('process');
 
 module.exports = {
     name: 'sysinfo',

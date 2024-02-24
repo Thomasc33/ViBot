@@ -3,27 +3,28 @@ const ErrorLogger = require('../lib/logError');
 const { RepeatedJob } = require('./RepeatedJob.js');
 const { iterServersWithQuery } = require('./util.js');
 const { getDB } = require('../dbSetup.js');
+const { settings } = require('../lib/settings');
 
 async function tryUnsuspend(bot, g, row, isVetBan) {
     const guildId = row.guildid;
-    const settings = bot.settings[guildId];
+    const { roles, channels, backend: { useUnverifiedRole } } = settings[g.id];
     const proofLogID = row.logmessage;
     const guild = bot.guilds.cache.get(guildId);
     const member = guild.members.cache.get(row.id);
     const db = getDB(g.id);
 
     if (!member) {
-        if (!isVetBan) guild.channels.cache.get(settings.channels.suspendlog).send(`<@!${row.id}> has been unsuspended automatically. However, they are not in the server`);
+        if (!isVetBan) guild.channels.cache.get(channels.suspendlog).send(`<@!${row.id}> has been unsuspended automatically. However, they are not in the server`);
         return await db.promise().query('UPDATE ?? SET suspended = false WHERE id = ?', [isVetBan ? 'vetbans' : 'suspensions', row.id]);
     }
 
     try {
         if (isVetBan) {
-            await member.roles.remove(settings.roles.vetban);
-            setTimeout(() => { member.roles.add(settings.roles.vetraider); }, 1000);
+            await member.roles.remove(roles.vetban);
+            setTimeout(() => { member.roles.add(roles.vetraider); }, 1000);
             setTimeout(() => {
-                if (!member.roles.cache.has(settings.roles.vetraider)) {member.roles.add(settings.roles.vetraider).catch(er => ErrorLogger.log(er, bot, g));}
-                if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) member.roles.remove(settings.roles.unverified);
+                if (!member.roles.cache.has(roles.vetraider)) {member.roles.add(roles.vetraider).catch(er => ErrorLogger.log(er, bot, g));}
+                if (useUnverifiedRole && member.roles.cache.has(roles.unverified)) member.roles.remove(roles.unverified);
             }, 5000);
         } else {
             const roles = [];
@@ -32,18 +33,18 @@ async function tryUnsuspend(bot, g, row, isVetBan) {
 
             await member.roles.add(roles).catch(er => ErrorLogger.log(er, bot, g));
             setTimeout(async () => {
-                if (member.roles.cache.has(settings.roles.tempsuspended)) await member.roles.remove(settings.roles.tempsuspended).catch(er => ErrorLogger.log(er, bot, g));
-                if (member.roles.cache.has(settings.roles.permasuspended)) await member.roles.remove(settings.roles.permasuspended);
-                if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) await member.roles.remove(settings.roles.unverified);
+                if (member.roles.cache.has(roles.tempsuspended)) await member.roles.remove(roles.tempsuspended).catch(er => ErrorLogger.log(er, bot, g));
+                if (member.roles.cache.has(roles.permasuspended)) await member.roles.remove(roles.permasuspended);
+                if (useUnverifiedRole && member.roles.cache.has(roles.unverified)) await member.roles.remove(roles.unverified);
             }, 5000);
         }
 
         const unsuspendPing = `<@!${row.id}> has been ${isVetBan ? 'un-vet-banned' : 'unsuspended'} automatically`;
         try {
-            const messages = await guild.channels.cache.get(settings.channels.suspendlog).messages.fetch({ limit: 100 });
+            const messages = await guild.channels.cache.get(channels.suspendlog).messages.fetch({ limit: 100 });
             const m = messages.get(proofLogID);
             if (!m) {
-                guild.channels.cache.get(settings.channels.suspendlog).send(unsuspendPing);
+                guild.channels.cache.get(channels.suspendlog).send(unsuspendPing);
             } else {
                 const embed = new Discord.EmbedBuilder();
                 embed.data = m.embeds.shift().data;
@@ -54,7 +55,7 @@ async function tryUnsuspend(bot, g, row, isVetBan) {
                 m.edit({ embeds: [embed] });
             }
         } catch (er) {
-            guild.channels.cache.get(settings.channels.suspendlog).send(unsuspendPing);
+            guild.channels.cache.get(channels.suspendlog).send(unsuspendPing);
         } finally {
             await db.promise().query('UPDATE ?? SET suspended = false WHERE id = ?', [isVetBan ? 'vetbans' : 'suspensions', row.id]);
         }

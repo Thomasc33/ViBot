@@ -1,8 +1,8 @@
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
-const fs = require('fs')
 const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
-const { slashArg, slashChoices, slashCommandJSON } = require('../utils.js')
+const { slashArg, slashCommandJSON } = require('../utils.js')
+const { settings } = require('../lib/settings');
 
 module.exports = {
     name: 'unmute',
@@ -19,13 +19,12 @@ module.exports = {
         return slashCommandJSON(this, guild)
     },
     async execute(message, args, bot, db) {
-        let settings = bot.settings[message.guild.id]
         var member = message.mentions.members.first()
         if (!member) member = message.guild.members.cache.get(args[0]);
         if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
         if (!member) { message.reply('User not found. Please try again'); return; }
         if (member.roles.highest.position >= message.member.roles.highest.position) return message.reply(`${member} has a role greater than or equal to you and cannot be unmuted by you`);
-        let muted = settings.roles.muted
+        const { roles: { muted } } = settings[message.guild.id];
         if (!member.roles.cache.has(muted)) {
             message.reply(`${member} is not muted`)
             return;

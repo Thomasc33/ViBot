@@ -1,13 +1,10 @@
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
-const botSettings = require('../settings.json')
 const realmEyeScrape = require('../lib/realmEyeScrape')
-const VerificationCurrentWeek = require('../data/currentweekInfo.json').verificationcurrentweek
+const { verificationcurrentweek } = require('../data/currentweekInfo.json')
 const quota = require('./quota')
 const quotas = require('../data/quotas.json')
-// const VerificationML = require('../ml/verification')
-// const TestAlt = require('./testAlt')
-
+const { config, settings } = require('../lib/settings');
 var verificationChannel
 var verificationMessage
 var watching = []
@@ -20,7 +17,7 @@ module.exports = {
     args: 'create/update',
     role: 'moderator',
     async execute(message, args, bot, db) {
-        if (!bot.settings[message.guild.id].backend.verification) return
+        if (!settings[message.guild.id].backend.verification) return
         switch (args[0].toLowerCase()) {
             case 'create':
                 this.create(message, bot)
@@ -29,8 +26,7 @@ module.exports = {
         }
     },
     async create(message, bot) {
-        let settings = bot.settings[message.guild.id]
-        verificationChannel = message.guild.channels.cache.get(settings.channels.verification)
+        verificationChannel = message.guild.channels.cache.get(settings[message.guild.id].channels.verification)
         verificationChannel.bulkDelete(100)
         let verificationEmbed = new Discord.EmbedBuilder()
             .setColor('#015c21')
@@ -46,9 +42,8 @@ module.exports = {
         verificationMessage.react('✅')
     },
     async init(guild, bot, db) {
-        let settings = bot.settings[guild.id]
         if (!embedMessage) {
-            let veriChannel = guild.channels.cache.get(settings.channels.verification)
+            let veriChannel = guild.channels.cache.get(settings[guild.id].channels.verification)
             if (!veriChannel) return;
             let messages = await veriChannel.messages.fetch({ limit: 1 })
             embedMessage = messages.first()
@@ -61,15 +56,15 @@ module.exports = {
     },
     async verify(u, guild, bot, db) {
         //initial variables
-        let settings = bot.settings[guild.id]
+        const { channels, roles, autoveri, backend } = settings[guild.id];
         let member = guild.members.cache.get(u.id);
         if (!member)
             member = await guild.members.fetch({ user: u.id, force: true });
 
-        let veriactive = guild.channels.cache.get(settings.channels.veriactive)
-        let veripending = guild.channels.cache.get(settings.channels.manualverification)
-        let verilog = guild.channels.cache.get(settings.channels.verificationlog)
-        let veriattempts = guild.channels.cache.get(settings.channels.veriattempts)
+        let veriactive = guild.channels.cache.get(channels.veriactive)
+        let veripending = guild.channels.cache.get(channels.manualverification)
+        let verilog = guild.channels.cache.get(channels.verificationlog)
+        let veriattempts = guild.channels.cache.get(channels.veriattempts)
         if (!veriactive || !veripending || !verilog || !veriattempts) return ErrorLogger.log(new Error(`ID For a verificiation channel is missing`), bot)
 
         //check to see if they are currently under review and veri-blacklist
@@ -78,12 +73,12 @@ module.exports = {
         let blInfo = await checkBlackList(u.id, db);
         if (blInfo) {
             const blGuild = bot.guilds.cache.get(blInfo.guildid);
-            if (!blGuild || !bot.settings[blGuild.id])
+            if (!blGuild || !settings[blGuild.id])
                 return u.send(`You are currently blacklisted from verifying. Please DM me to contact mod-mail and find out why`);
 
             const staff = blGuild.members.cache.get(blInfo.modid);
-            if (!staff || staff.id == bot.user.id || staff.roles.highest.comparePositionTo(bot.settings[blGuild.id].roles.security) < 0) {
-                if (guild.id == botSettings.hallsId) return u.send(`You are currently blacklisted from the __${blGuild.name}__ server and cannot verify. The person who blacklisted you is no longer staff. Please DM any online security to appeal.`);
+            if (!staff || staff.id == bot.user.id || staff.roles.highest.comparePositionTo(settings[blGuild.id].roles.security) < 0) {
+                if (guild.id == config.hallsId) return u.send(`You are currently blacklisted from the __${blGuild.name}__ server and cannot verify. The person who blacklisted you is no longer staff. Please DM any online security to appeal.`);
                 return u.send(`You are currently blacklisted from the __${blGuild.name}__ server and cannot verify. The person who blacklisted you is no longer staff. Please DM me and send mod-mail to that server to appeal.`);
             }
 
@@ -107,7 +102,7 @@ module.exports = {
         //dm user
         let embed = new Discord.EmbedBuilder()
             .setColor('#015c21')
-            .setTitle(`<${botSettings.emote.hallsPortal}> Your verification status! <${botSettings.emote.hallsPortal}>`)
+            .setTitle(`<${config.emote.hallsPortal}> Your verification status! <${config.emote.hallsPortal}>`)
         if (!res) embed.setDescription(`__**You have not been verified yet! Please follow the instructions below**__\n\n**Please enter your in game name** Enter it actually how it is spelled in game (Ex. \`Vi\`).\nCapitalization doesn't matter\n\n*React with ❌ at anytime to cancel*`)
             .setFooter({ text: `There is a 15 minute timer that updates every 30 seconds...` })
         let dms = await u.createDM()
@@ -173,7 +168,7 @@ module.exports = {
                         embed.setDescription(`You are currently blacklisted from verifying. Please DM me to contact mod-mail and find out why`);
                     else {
                         const staff = blGuild.members.cache.get(info.modid);
-                        const blgsettings = bot.settings[blGuild.id];
+                        const blgsettings = settings[blGuild.id];
                         const currently = blgsettings && staff && staff.roles.highest.comparePositionTo(blgsettings.roles.security) >= 0;
                         if (blGuild.id != guild.id)
                             LoggingEmbed.addFields([{ name: `Staff?`, value: currently ? '✅' : '❌', inline: true }]);
@@ -296,30 +291,30 @@ module.exports = {
                 LoggingEmbed.setColor(`#00ff00`)
                 let denyReason = [];
                 //stars
-                if (parseInt(userInfo.rank) < settings.autoveri.stars) denyReason.push({
+                if (parseInt(userInfo.rank) < autoveri.stars) denyReason.push({
                     reason: 'Star Count',
-                    stat: `${userInfo.rank}/${settings.autoveri.stars}`
+                    stat: `${userInfo.rank}/${autoveri.stars}`
                 })
                 //fame
-                if (parseInt(userInfo.fame) < settings.autoveri.fame) denyReason.push({
+                if (parseInt(userInfo.fame) < autoveri.fame) denyReason.push({
                     reason: 'Fame Count',
-                    stat: `${userInfo.fame}/${settings.autoveri.fame}`
+                    stat: `${userInfo.fame}/${autoveri.fame}`
                 })
                 //discord account age
-                if (u.createdTimestamp > Date.now() - (settings.autoveri.discordage * 2592000000)) denyReason.push({
+                if (u.createdTimestamp > Date.now() - (autoveri.discordage * 2592000000)) denyReason.push({
                     reason: 'Discord Account Age'
                 });
                 //realm account age
                 let days = userInfo.created.split(/ +/)
                 let daysValid = false
-                for (let i in days) { if (parseInt(days[i].replace(/[^0-9]/g, '')) >= settings.autoveri.realmage) daysValid = true }
+                for (let i in days) { if (parseInt(days[i].replace(/[^0-9]/g, '')) >= autoveri.realmage) daysValid = true }
                 if (!(userInfo.created.includes('year') || daysValid)) denyReason.push({
                     reason: 'Realm Account Age'
                 })
                 //death count
-                if (parseInt(userInfo.deaths[userInfo.deaths.length - 1]) < settings.autoveri.deathcount) denyReason.push({
+                if (parseInt(userInfo.deaths[userInfo.deaths.length - 1]) < autoveri.deathcount) denyReason.push({
                     reason: 'Death Count',
-                    stat: `${userInfo.deaths[userInfo.deaths.length - 1]}/${settings.autoveri.deathcount}`
+                    stat: `${userInfo.deaths[userInfo.deaths.length - 1]}/${autoveri.deathcount}`
                 })
                 if (denyReason.length == 0) autoVerify()
                 else manualVerify(denyReason, userInfo)
@@ -384,9 +379,9 @@ module.exports = {
             } else nick = ign
             await member.setNickname(nick)
             setTimeout(async () => {
-                await member.roles.add(settings.roles.raider)
-                if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) await member.roles.remove(settings.roles.unverified)
-                if (settings.backend.giveeventroleonverification) member.roles.add(settings.roles.eventraider)
+                await member.roles.add(roles.raider)
+                if (backend.useUnverifiedRole && member.roles.cache.has(roles.unverified)) await member.roles.remove(roles.unverified)
+                if (backend.giveeventroleonverification) member.roles.add(roles.eventraider)
             }, 1000)
             db.query(`INSERT INTO users (id) VALUES ('${u.id}')`, err => {
                 if (err) return
@@ -404,8 +399,7 @@ module.exports = {
         }
     },
     async manualVerifyUpdate(guild, bot, db) {
-        let settings = bot.settings[guild.id]
-        let veriPending = guild.channels.cache.get(settings.channels.manualverification)
+        let veriPending = guild.channels.cache.get(settings[guild.id].channels.manualverification)
         let messages = await veriPending.messages.fetch({ limit: 100 })
         messages.filter(m => m.reactions.cache.has('🔑') && m.author.id == bot.user.id).each(m => {
             this.watchMessage(m, bot, db)
@@ -414,11 +408,9 @@ module.exports = {
     async watchMessage(message, bot, db) {
         const member_id = message.embeds[0].footer.text.split(' ').pop()
         let member = await message.guild.members.fetch(member_id).catch(e => ErrorLogger.log(e, bot));
-        //variables
-
-        let settings = bot.settings[message.guild.id]
+        const { roles, channels, backend } = settings[message.guild.id];
         if (!member) {
-            message.guild.channels.cache.get(settings.channels.verificationlog).send(`<@!${member_id}> Left server while under manual review`)
+            message.guild.channels.cache.get(channels.verificationlog).send(`<@!${member_id}> Left server while under manual review`)
             return message.delete()
         }
         let embed = new Discord.EmbedBuilder()
@@ -432,7 +424,7 @@ module.exports = {
         reactionCollector.on('collect', async (r, u) => {
             //check to make sure member is still in the server
             if (!member) {
-                message.guild.channels.cache.get(settings.channels.verificationlog).send(`<@!${member_id}> Left server while under manual review`)
+                message.guild.channels.cache.get(channels.verificationlog).send(`<@!${member_id}> Left server while under manual review`)
                 reactionCollector.stop()
                 return message.delete()
             }
@@ -471,7 +463,7 @@ module.exports = {
                     let veriEmbed = new Discord.EmbedBuilder()
                         .setColor('#00ff00')
                         .setDescription(`${member} was manually verified by ${reactor}`)
-                    message.guild.channels.cache.get(settings.channels.verificationlog).send({ embeds: [veriEmbed] })
+                    message.guild.channels.cache.get(channels.verificationlog).send({ embeds: [veriEmbed] })
                     //set nickname
                     let tag = member.user.username
                     let nick = ''
@@ -484,12 +476,12 @@ module.exports = {
                     await member.setNickname(nick)
                     //give verified raider role
                     setTimeout(async () => {
-                        await member.roles.add(settings.roles.raider)
-                        if (settings.backend.giveeventroleonverification) member.roles.add(settings.roles.eventraider)
-                        if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) await member.roles.remove(settings.roles.unverified)
+                        await member.roles.add(roles.raider)
+                        if (backend.giveeventroleonverification) member.roles.add(roles.eventraider)
+                        if (backend.useUnverifiedRole && member.roles.cache.has(roles.unverified)) await member.roles.remove(roles.unverified)
                     }, 1000)
                     //dm user
-                    member.user.send(`You have been successfully verified in \`${message.guild.name}\`. Welcome! AFK-Checks work a little big different here, so make sure to read through the FAQ to learn more.${settings.backend.roleassignment ? ` To get pinged for specific afk checks, head over to <#${settings.channels.roleassignment}>` : null}`)
+                    member.user.send(`You have been successfully verified in \`${message.guild.name}\`. Welcome! AFK-Checks work a little big different here, so make sure to read through the FAQ to learn more.${backend.roleassignment ? ` To get pinged for specific afk checks, head over to <#${channels.roleassignment}>` : null}`)
                     //remove from watching embed
                     watching.splice(watching.indexOf(u.id), 1)
                     //remove them from expelled list
@@ -545,13 +537,13 @@ module.exports = {
                             } else nick = ign
 
                             let er_msg = '';
-                            const role = member.guild.roles.cache.get(settings.roles.eventraider);
-                            if (role && settings.backend.giveEventRoleOnDenial2) {
+                            const role = member.guild.roles.cache.get(roles.eventraider);
+                            if (role && backend.giveEventRoleOnDenial2) {
                                 await member.setNickname(nick)
                                 //give user event raider role
                                 setTimeout(async () => {
-                                    await member.roles.add(settings.roles.eventraider)
-                                    if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) await member.roles.remove(settings.roles.unverified)
+                                    await member.roles.add(roles.eventraider)
+                                    if (backend.useUnverifiedRole && member.roles.cache.has(roles.unverified)) await member.roles.remove(roles.unverified)
                                 }, 1000)
                                 er_msg = 'For now, you have been given access to the events section to participate in non-Lost Halls dungeons.';
                             } else {
@@ -589,7 +581,7 @@ module.exports = {
                                 .setColor(`#ff0000`)
                                 .setDescription(`${member} \`${member.displayName }\` was denied by ${reactor} \`${reactor.displayName }\` using ${e}`)
                                 .setTimestamp()
-                            message.guild.channels.cache.get(settings.channels.verificationlog).send({ embeds: [denyEmbed] })
+                            message.guild.channels.cache.get(channels.verificationlog).send({ embeds: [denyEmbed] })
                             //remove from watching embed
                             watching.splice(watching.indexOf(u.id), 1)
                             //log verification for quota on denied
@@ -611,9 +603,8 @@ module.exports = {
                 if (bot.emojiServers.includes(g.id)) return
                 if (bot.devServers.includes(g.id)) return
                 let member = await g.members.cache.get(u.id)
-                let settings = bot.settings[g.id]
-                if (!settings) return
-                if (member && member.nickname && member.roles.cache.has(settings.roles.raider)) {
+ 
+                if (member && member.nickname && member.roles.cache.has(settings[g.id]?.roles.raider)) {
                     let nick = member.nickname.replace(/[^a-z|]/gi, '').split('|')
                     for (let i of nick) {
                         if (guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(i.toLowerCase()))) continue;
@@ -663,10 +654,9 @@ module.exports = {
         })
     },
     async manualVerifyLog(message, authorid, bot, db) {
-        let settings = bot.settings[message.guild.id]
         let currentweekverificationname, verificationtotalname
-        for (let i in VerificationCurrentWeek) {
-            i = VerificationCurrentWeek[i]
+        for (let i in verificationcurrentweek) {
+            i = verificationcurrentweek[i]
             if (message.guild.id == i.id && !i.disabled) {
                 currentweekverificationname = i.verificationcurrentweek
                 verificationtotalname = i.verificationtotal
@@ -677,7 +667,7 @@ module.exports = {
         const guildQuota = quotas[message.guild.id]
         if (!guildQuota) return
         const parseQuota = guildQuota.quotas.filter(q => q.id == "security")[0]
-        if (parseQuota) quota.update(message.guild, db, bot, settings, guildQuota, parseQuota)
+        if (parseQuota) quota.update(message.guild, db, bot, guildQuota, parseQuota)
     },
     checkActive(id) {
         if (active.includes(id)) return true

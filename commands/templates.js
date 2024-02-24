@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 const { createEmbed } = require('../lib/extensions.js');
 const { resolveTemplateList, AfkTemplateValidationError } = require('./afkTemplate.js');
+const { settings } = require('../lib/settings');
 
 module.exports = {
     name: 'templates',
@@ -9,9 +10,7 @@ module.exports = {
     role: 'eventrl',
     args: '[exalts]',
     async execute(message, args, bot) {
-        const botSettings = bot.settings[message.guild.id];
-
-        const templates = await resolveTemplateList(botSettings, message.member, message.guild.id, message.channel.id);
+        const templates = await resolveTemplateList(settings[message.guild.id], message.member, message.guild.id, message.channel.id);
         if (templates instanceof AfkTemplateValidationError) return await message.channel.send(templates.message());
 
         const parentTemplateValue = {};

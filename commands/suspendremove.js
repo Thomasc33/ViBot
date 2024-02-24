@@ -22,9 +22,7 @@ module.exports = {
      * @param {import('mysql2').Connection} db
      */
     async execute(message, args, bot, db) {
-        /** @type {import('../data/guildSettings.701483950559985705.cache.json')} */
-        const settings = bot.settings[message.guild.id];
-        const modlogs = message.guild.channels.cache.get(settings.channels.modlogs);
+        const modlogs = message.guild.channels.cache.get(settings[message.guild.id].channels.modlogs);
         if (!modlogs) return message.channel.send('The modlogs channel is not configured for this server.');
 
         /** @type {Discord.GuildMember} */
@@ -85,7 +83,7 @@ module.exports = {
             .setFields({ name: 'Member', value: `${member} \`${member.displayName}\``, inline: true },
                 { name: 'Issued By', value: mod ? `${mod} \`${mod.displayName}\`` : `<@${suspension.modid}>`, inline: true });
         if (suspension.suspended) {
-            const suspensionRoles = [settings.roles.tempsuspended, settings.roles.permasuspended].filter(r => member.roles.cache.get(r));
+            const suspensionRoles = [settings[message.guild.id].roles.tempsuspended, settings[message.guild.id].roles.permasuspended].filter(r => member.roles.cache.get(r));
             embed.addFields({ name: 'Active Suspension', value: suspensionRoles.join(' ') || 'In database only (no roles)', inline: true });
         } else {
             embed.addFields({ name: '\u200b', value: '\u200b', inline: true });

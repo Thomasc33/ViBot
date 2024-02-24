@@ -1,14 +1,12 @@
 const Discord = require('discord.js')
-const botSettings = require('../settings.json')
 const ErrorLogger = require('../lib/logError')
 const realmEyeScrape = require('../lib/realmEyeScrape')
 const lootInfo = require('../data/lootInfo.json')
-const ext = require('../lib/extensions');
 const dungeons = require('../data/vetVerification.json')
-const VerificationCurrentWeek = require('../data/currentweekInfo.json').verificationcurrentweek
+const { verificationcurrentweek } = require('../data/currentweekInfo.json')
 const quota = require('./quota')
 const quotas = require('../data/quotas.json')
-
+const { settings } = require('../lib/settings');
 var watching = []
 var embedMessage, bot
 
@@ -26,23 +24,22 @@ module.exports = {
         }
     },
     async createMessage(message, bot, db) {
-        let settings = bot.settings[message.guild.id]
+        const { channels: { vetverification }, vetverireqs } = settings[message.guild.id]
         const dungeon = dungeons[message.guild.id];
-        let vetVeriChannel = message.guild.channels.cache.get(settings.channels.vetverification)
+        let vetVeriChannel = message.guild.channels.cache.get(vetverification)
         if (!vetVeriChannel) return message.channel.send(`Vet Verification channel not found`)
         let vetVeriEmbed = new Discord.EmbedBuilder()
             .setTitle(`Veteran Verification for ${message.guild.name}`)
             .addFields([{ name: 'How to', value: 'React with the :white_check_mark: to get the role.\nMake sure to make your graveyard and character list public on realmeye before reacting\nAlso run the command ;stats to see your current run total.' }])
-            .addFields([{ name: 'Requirements', value: `${(settings.vetverireqs.maxed) ? `-${settings.vetverireqs.maxed} 8/8 Characters\n` : ''}${(settings.vetverireqs.meleemaxed) ? `-${settings.vetverireqs.meleemaxed} 8/8 Melee Characters\n` : ''}${(settings.vetverireqs.runs) ? `-${settings.vetverireqs.runs} Completed ${dungeon.boss} Runs \n` : ''}` }])
+            .addFields([{ name: 'Requirements', value: `${(vetverireqs.maxed) ? `-${vetverireqs.maxed} 8/8 Characters\n` : ''}${(vetverireqs.meleemaxed) ? `-${vetverireqs.meleemaxed} 8/8 Melee Characters\n` : ''}${(vetverireqs.runs) ? `-${vetverireqs.runs} Completed ${dungeon.boss} Runs \n` : ''}` }])
         embedMessage = await vetVeriChannel.send({ embeds: [vetVeriEmbed] })
         embedMessage.react('✅')
         this.init(message.guild, bot, db)
     },
     async init(guild, bott, db) {
         bot = bott
-        let settings = bott.settings[guild.id]
         if (!embedMessage) {
-            let vetVeriChannel = guild.channels.cache.get(settings.channels.vetverification)
+            let vetVeriChannel = guild.channels.cache.get(settings[guild.id].channels.vetverification)
             if (vetVeriChannel == null) return;
             let messages = await vetVeriChannel.messages.fetch({ limit: 1 })
             embedMessage = messages.first()
@@ -54,11 +51,11 @@ module.exports = {
         this.restartPending(guild, db)
     },
     async vetVerify(u, guild, db) {
-        let settings = bot.settings[guild.id]
+        const { roles, backend, channels, vetverireqs } = settings[guild.id];
         let member = guild.members.cache.get(u.id)
-        let vetRaider = settings.roles.vetraider
-        let veriLog = guild.channels.cache.get(settings.channels.verificationlog)
-        let veriPending = guild.channels.cache.get(settings.channels.manualvetverification)
+        let vetRaider = roles.vetraider
+        let veriLog = guild.channels.cache.get(channels.verificationlog)
+        let veriPending = guild.channels.cache.get(channels.manualvetverification)
         let ign = member.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|')[0]
         const dungeon = dungeons[guild.id];
         if (!dungeon)
@@ -87,7 +84,7 @@ module.exports = {
         let maxedChars = 0;
         let meleeMaxed = 0;
         let realmEyeRuns = 0;
-        if (settings.backend.realmeyestats) {
+        if (backend.realmeyestats) {
             for (let i in userInfo.characters) {
                 let char = userInfo.characters[i]
                 if (char.stats == '8/8') {
@@ -131,14 +128,14 @@ module.exports = {
             }
         }
         let problems = []
-        if (!(loggedRuns >= settings.vetverireqs.runs || realmEyeRuns >= settings.vetverireqs.runs || exaltCounts >= settings.vetverireqs.runs)) problems.push(1)
-        if (maxedChars < settings.vetverireqs.maxed) problems.push(2)
-        if (meleeMaxed < settings.vetverireqs.meleeMaxed) problems.push(3)
+        if (!(loggedRuns >= vetverireqs.runs || realmEyeRuns >= vetverireqs.runs || exaltCounts >= vetverireqs.runs)) problems.push(1)
+        if (maxedChars < vetverireqs.maxed) problems.push(2)
+        if (meleeMaxed < vetverireqs.meleeMaxed) problems.push(3)
         if (problems.length == 0) {
             //vet verify
             veriLog.send(`${member} (${member} has been given the Veteran Raider role automatically)`)
             await member.roles.add(vetRaider)
-            if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) await member.roles.remove(settings.roles.unverified)
+            if (backend.useUnverifiedRole && member.roles.cache.has(roles.unverified)) await member.roles.remove(roles.unverified)
             // db.query(`UPDATE users SET ${dungeon.dbisvet} = true WHERE id = '${u.id}'`)
         } else {
             //manual verify
@@ -153,11 +150,11 @@ module.exports = {
                 let char = userInfo.characters[i]
                 //weapon
                 if (char.weapon) {
-                    if (settings.vetverireqs.weapon) {
+                    if (vetverireqs.weapon) {
                         const match = char.weapon.match(/(^T(?<t1>\d+)|T(?<t2>\d+)$)/);
                         if (match) {
                             const tier = match.groups.t1 === undefined ? match.groups.t2 : match.groups.t1;
-                            if (tier == settings.vetverireqs.weapon) Weapons++;
+                            if (tier == vetverireqs.weapon) Weapons++;
                         }
                     }
                     else if (lootInfo[dungeon.lootInfo].whites.includes(char.weapon.substring(0, char.weapon.lastIndexOf(' ')))) whites++;
@@ -166,11 +163,11 @@ module.exports = {
                 }
                 //ability
                 if (char.ability) {
-                    if (settings.vetverireqs.ability) {
+                    if (vetverireqs.ability) {
                         const match = char.ability.match(/(^T(?<t1>\d+)|T(?<t2>\d+)$)/);
                         if (match) {
                             const tier = match.groups.t1 === undefined ? match.groups.t2 : match.groups.t1;
-                            if (tier == settings.vetverireqs.ability) Abilities++;
+                            if (tier == vetverireqs.ability) Abilities++;
                         }
                     }
                     if (lootInfo[dungeon.lootInfo].whites.includes(char.ability.substring(0, char.ability.lastIndexOf(' ')))) whites++;
@@ -178,11 +175,11 @@ module.exports = {
                 }
                 //armor
                 if (char.armor) {
-                    if (settings.vetverireqs.armor) {
+                    if (vetverireqs.armor) {
                         const match = char.armor.match(/(^T(?<t1>\d+)|T(?<t2>\d+)$)/);
                         if (match) {
                             const tier = match.groups.t1 === undefined ? match.groups.t2 : match.groups.t1;
-                            if (tier == settings.vetverireqs.armor) Armors++;
+                            if (tier == vetverireqs.armor) Armors++;
                         }
                     }
                     else if (lootInfo[dungeon.lootInfo].whites.includes(char.armor.substring(0, char.armor.lastIndexOf(' ')))) whites++;
@@ -190,11 +187,11 @@ module.exports = {
                 }
                 //ring
                 if (char.ring) {
-                    if (settings.vetverireqs.ring) {
+                    if (vetverireqs.ring) {
                         const match = char.ring.match(/(^T(?<t1>\d+)|T(?<t2>\d+)$)/);
                         if (match) {
                             const tier = match.groups.t1 === undefined ? match.groups.t2 : match.groups.t1;
-                            if (tier == settings.vetverireqs.ring) Rings++;
+                            if (tier == vetverireqs.ring) Rings++;
                         }
                     }
                     if (lootInfo[dungeon.lootInfo].whites.includes(char.ring.substring(0, char.ring.lastIndexOf(' ')))) whites++;
@@ -206,10 +203,10 @@ module.exports = {
                 description += ` - [Web App](https://losthalls.org/profile/${ign})`;
 
             let gearString = [
-                { name: 'Weapons', count: Weapons, tier: settings.vetverireqs.weapon },
-                { name: 'Abilities', count: Abilities, tier: settings.vetverireqs.ability },
-                { name: 'Armors', count: Armors, tier: settings.vetverireqs.armor },
-                { name: 'Rings', count: Rings, tier: settings.vetverireqs.ring }]
+                { name: 'Weapons', count: Weapons, tier: vetverireqs.weapon },
+                { name: 'Abilities', count: Abilities, tier: vetverireqs.ability },
+                { name: 'Armors', count: Armors, tier: vetverireqs.armor },
+                { name: 'Rings', count: Rings, tier: vetverireqs.ring }]
                 .map(g => g.tier ? `T${g.tier} ${g.name}: ${g.count}` : '')
                 .filter(g => g != '');
             gearString.push(`Whites: ${whites}`, `STs: ${STs}`);
@@ -256,8 +253,7 @@ module.exports = {
         }
     },
     async restartPending(guild, db) {
-        let settings = bot.settings[guild.id]
-        let veriPending = guild.channels.cache.get(settings.channels.manualvetverification)
+        let veriPending = guild.channels.cache.get(settings[guild.id].channels.manualvetverification)
         let messages = await veriPending.messages.fetch({ limit: 100 })
         messages.each(m => {
             if (m.reactions.cache.has('🔑')) {
@@ -267,11 +263,11 @@ module.exports = {
     },
     async pendingModule(message, db) {
         let manualVetVerifyLog = this.manualVetVerifyLog
-        let settings = bot.settings[message.guild.id]
+        const { roles, backend, vetverireqs, strings } = settings[message.guild.id];
         if (watching.includes(message.embeds[0].footer.text)) return
         else watching.push(message.embeds[0].footer.text)
         if (!message.reactions.cache.has('🔑')) message.react('🔑')
-        let vetRaider = message.guild.roles.cache.get(settings.roles.vetraider)
+        let vetRaider = message.guild.roles.cache.get(roles.vetraider)
         let keyCollector = new Discord.ReactionCollector(message, { filter: KeyFilter })
         keyCollector.on('collect', async function (r, u) {
             let reactor = message.guild.members.cache.get(u.id)
@@ -292,7 +288,7 @@ module.exports = {
                     guild: message.guild,
                     member: member,
                     staff: reactor,
-                    reqs: settings.vetverireqs,
+                    reqs: vetverireqs,
                     dungeon: dungeons[message.guild.id]
                 };
                 await message.reactions.removeAll();
@@ -304,29 +300,22 @@ module.exports = {
                         embed.setFooter({ text: `Accepted by ${reactor.displayName}` })
                         await message.edit({ embeds: [embed] })
                         await member.roles.add(vetRaider.id)
-                        if (settings.backend.useUnverifiedRole && member.roles.cache.has(settings.roles.unverified)) await member.roles.remove(settings.roles.unverified)
-                        //member.user.send(ext.parse(settings.messages.verifications.acceptvetveri, info))
-                        try {
-                            member.user.send(`You have been verified for the ${info.role.name} role in \`${info.guild.name}\`.`)
-                        } catch (e) {
-                            //user has DMs off
-                        }
-                        //db.query(`UPDATE users SET isVet = true WHERE id = '${u.id}'`)
+                        if (backend.useUnverifiedRole && member.roles.cache.has(roles.unverified)) await member.roles.remove(roles.unverified)
+                        member.user.send(`You have been verified for the ${info.role.name} role in \`${info.guild.name}\`.`).catch(() => {})
                         manualVetVerifyLog(message, u.id, bot, db)
                         ManualVerificationCollector.stop()
                         keyCollector.stop()
                         removeFromArray(member.id)
                         break;
                     case '👋':
-                        //deny
                         await message.react('👋')
                         embed.setColor('#ff0000')
                         embed.setFooter({ text: `Rejected by ${reactor.displayName}` })
                         await message.edit({ embeds: [embed] })
                         manualVetVerifyLog(message, u.id, bot, db)
                         try {
-                            if (settings.strings.vetVerifyDeniedMessage) {
-                                member.user.send(`${settings.strings.vetVerifyDeniedMessage}`)
+                            if (strings.vetVerifyDeniedMessage) {
+                                member.user.send(`${strings.vetVerifyDeniedMessage}`)
                             } else {
                                 member.user.send(`You were denied from verifying for the \`${info.role.name}\` role in \`${info.guild.name}\`. Feel free to contact any Security+ staff member directly with screenshots in game if you have \`${info.reqs.runs}\` confirmable ${info.dungeon.boss} runs in your exaltations **or** between your live characters and graveyard.`)
                             }
@@ -354,10 +343,9 @@ module.exports = {
         })
     },
     async manualVetVerifyLog(message, authorid, bot, db) {
-        let settings = bot.settings[message.guild.id]
         let currentweekverificationname, verificationtotalname
-        for (let i in VerificationCurrentWeek) {
-            i = VerificationCurrentWeek[i]
+        for (let i in verificationcurrentweek) {
+            i = verificationcurrentweek[i]
             if (message.guild.id == i.id && !i.vetdisabled) { 
                 currentweekverificationname = i.vetverificationcurrentweek
                 verificationtotalname = i.vetverificationtotal
@@ -368,7 +356,7 @@ module.exports = {
         const guildQuota = quotas[message.guild.id]
         if (!guildQuota) return
         const parseQuota = guildQuota.quotas.filter(q => q.id == "security")[0]
-        if (parseQuota) quota.update(message.guild, db, bot, settings, guildQuota, parseQuota)
+        if (parseQuota) quota.update(message.guild, db, bot, guildQuota, parseQuota)
     }
 }
 const checkFilter = (r, u) => !u.bot && r.emoji.name === '✅'

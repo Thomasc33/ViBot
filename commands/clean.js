@@ -1,13 +1,12 @@
 const { settings } = require('../lib/settings');
 
-
 module.exports = {
     name: 'clean',
     description: 'Cleans the voice channel you are in or the one specified',
     requiredArgs: 0,
     args: '(channelID)',
     role: 'eventrl',
-    async execute(message, args, bot) {
+    async execute(message, args) {
         const botSettings = settings[message.guild.id];
         let vc = null;
         if (args.length > 0) vc = await message.guild.channels.cache.get(args[0]);

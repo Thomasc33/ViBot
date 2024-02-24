@@ -1,10 +1,8 @@
 const Discord = require('discord.js')
 const fs = require('fs')
-const botSettings = require('../settings.json')
 const ErrorLogger = require('../lib/logError')
-const vibotChannel = require('./vibotChannels.js')
-const modmail = require('../lib/modmail.js')
 const roleassignment = require('./roleAssignment.js')
+const { settings } = require('../lib/settings');
 var watchedMessages = []
 var watchedButtons = {}; //the keys for this are the id of a VC
 //{VC_ID: {hndlr: ACTIVATE_CHANNEL_MESSAGE_HANDLER,
@@ -24,10 +22,10 @@ module.exports = {
         if (args[0].toLowerCase() == 'update') this.update(message.guild, bot, db)
     },
     async update(guild, bot, db) {
-        let settings = bot.settings[guild.id]
-        await updateRoleAssignmentListeners(guild.channels.cache.get(settings.channels.roleassignment), settings, bot, db)
-        async function updateRoleAssignmentListeners(roleassignmentChannel, settings, bot, db) {
-            if (!settings.backend.roleassignment) return;
+        const { channels, backend } = settings[guild.id];
+        await updateRoleAssignmentListeners(guild.channels.cache.get(channels.roleassignment), bot, db)
+        async function updateRoleAssignmentListeners(roleassignmentChannel, bot, db) {
+            if (!backend.roleassignment) return;
             if (!roleassignmentChannel) { return } // If there is no roleassignment channel it will not continue
             let roleassignmentChannelMessages = await roleassignmentChannel.messages.fetch() // This fetches all the messages in the roleassignment channel
             roleassignmentChannelMessages.each(async message => { // This will loop through the roleassignment channel messages

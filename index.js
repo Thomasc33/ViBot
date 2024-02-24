@@ -4,8 +4,6 @@ Error.stackTraceLimit = 16;
 // Imports
 const Discord = require('discord.js');
 const mysql = require('mysql2');
-const EventSource = require('eventsource');
-const fs = require('fs');
 require('./lib/extensions.js');
 
 // Import Internal Libraries
@@ -131,8 +129,8 @@ bot.on('typingStart', (c, u) => {
 });
 
 loadSettings(bot).then(() => {
-    bot.login(config.key);
-});;
+    bot.login(botConfig.key);
+});
 
 setInterval(() => {
     for (const afkCheckId of Object.keys(bot.afkChecks)) {

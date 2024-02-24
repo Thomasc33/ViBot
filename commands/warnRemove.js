@@ -1,7 +1,7 @@
 const Discord = require('discord.js')
 const ErrorLogger = require('../lib/logError')
 const moment = require('moment');
-
+const { settings } = require('../lib/settings');
 module.exports = {
     name: 'warnremove',
     alias: ['removewarn'],
@@ -10,7 +10,6 @@ module.exports = {
     requiredArgs: 1,
     role: 'security',
     async execute(message, args, bot, db) {
-        let settings = bot.settings[message.guild.id]
         let member = message.guild.findMember(args[0])
         if (!member) return message.channel.send('Member not found. Please try again')
         db.query(`SELECT * FROM warns WHERE id = '${member.user.id}' AND guildid = '${message.guild.id}'`, async function (err, rows) {
@@ -51,7 +50,7 @@ module.exports = {
             db.query(`DELETE FROM warns WHERE warn_id = ${removeWarning.warn_id} AND modid = '${removeWarning.modid}'`)
             await message.react('✅')
 
-            const modlogs = message.guild.channels.cache.get(settings.channels.modlogs);
+            const modlogs = message.guild.channels.cache.get(settings[message.guild.id].channels.modlogs);
             let removeembed = new Discord.EmbedBuilder()
                 .setColor('#ff0000')
                 .setTitle('Warn Remove Information')

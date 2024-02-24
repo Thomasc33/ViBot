@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
 const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
 const { slashArg, slashCommandJSON } = require('../utils.js');
-
+const { config, settings } = require('../lib/settings');
 module.exports = {
     name: 'warn',
     role: 'eventrl',
@@ -13,7 +13,7 @@ module.exports = {
         return 'Using swarn will silently warn, not sending the user a message.';
     },
     args: [
-        slashArg(SlashArgType.String, 'user', {
+        slashArg(SlashArgType.User, 'user', {
             description: 'The user to warn'
         }),
         slashArg(SlashArgType.String, 'reason', {
@@ -22,22 +22,17 @@ module.exports = {
     ],
     getSlashCommandData(guild) { return slashCommandJSON(this, guild); },
     async execute(message, args, bot, db) {
-        const settings = bot.settings[message.guild.id];
-        const silent = message.content[1].toLowerCase() == 's';
-        if (args.length < 2) return;
-        let member = message.mentions.members.first();
-        if (!member) member = message.guild.members.cache.get(args[0]);
-        if (!member) member = message.guild.members.cache.filter(user => user.nickname !== null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(args[0].toLowerCase()));
-        if (!member) return await message.replyUserError('Member not found. Please try again');
-
+        const silent = message.content[config.prefix.length].toLowerCase() == 's';
+        const member = message.options.getMember('user');
+        const { backend: { onlyUpperStaffWarnStaff }, lists, roles } = settings[message.guild.id];
         // check if person being warned is staff
-        if (bot.settings[message.guild.id].backend.onlyUpperStaffWarnStaff) {
-            const lowestStaffRole = bot.settings[message.guild.id].roles.lol;
+        if (onlyUpperStaffWarnStaff) {
+            const lowestStaffRole = roles.lol;
             if (lowestStaffRole) {
                 if (member.roles.highest.comparePositionTo(lowestStaffRole) >= 0) {
                     // the warn should only happen if message.member is like an admin or something
-                    const warningRoles = settings.lists.warningRoles.length ? settings.lists.warningRoles : ['moderator', 'headrl', 'headeventrl', 'officer', 'developer'];
-                    const warningIds = warningRoles.map(m => settings.roles[m]);
+                    const warningRoles = lists.warningRoles.length ? lists.warningRoles : ['moderator', 'headrl', 'headeventrl', 'officer', 'developer'];
+                    const warningIds = warningRoles.map(m => roles[m]);
                     if (!message.member.roles.cache.filter(role => warningIds.includes(role.id)).size) return message.replyUserError("Could not warn that user as they are staff and your highest role isn't high enough. Ask for a promotion and then try again.");
                 }
             }
