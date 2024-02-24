@@ -28,9 +28,9 @@ module.exports = {
             }
         }
         try {
-            var timeString =  parseInt(args[0]);
-            var time = parseInt(args[0]);
-            var timeType = args[1];
+            var timeString = parseInt(args.shift());
+            var time = timeString;
+            var timeType = args.shift();
             var timeTypeString;
 
             switch (timeType.toLowerCase()) {
@@ -46,12 +46,7 @@ module.exports = {
             return message.channel.send("Invalid time given. Please try again");
         }
         try {
-            var reason = "";
-            for (i = 2; i < args.length; i++) {
-                reason = reason.concat(args[i]) + ' ';
-            }
-            if (reason == "") reason = "None"
-            reason = reason.replace(`'`, '`')
+            const reason = args.join(' ').substring(0, 255) || 'None'
             toBan.forEach(u => {
                 let member = message.guild.members.cache.get(u)
                 if (!member) member = message.guild.members.cache.filter(user => user.nickname != null).find(nick => nick.nickname.replace(/[^a-z|]/gi, '').toLowerCase().split('|').includes(u.toLowerCase()));
@@ -98,7 +93,7 @@ module.exports = {
                     let embed = new Discord.EmbedBuilder()
                         .setColor('#ff0000')
                         .setTitle('Suspension Information')
-                        .setDescription(`The suspension is for ${parseInt(args[0])} ${timeTypeString} until <t:${((Date.now() + time)/1000).toFixed(0)}:f>`)
+                        .setDescription(`The suspension is for ${timeString} ${timeTypeString} until <t:${((Date.now() + time)/1000).toFixed(0)}:f>`)
                         .addFields([{name: `User Information \`${member.nickname}\``, value: `<@!${member.id}> (Tag: ${member.user.tag})`, inline: true}])
                         .addFields([{name: `Mod Information \`${message.guild.members.cache.get(message.author.id).nickname}\``, value: `<@!${message.author.id}> (Tag: ${message.author.tag})`, inline: true}])
                         .addFields([{name: `Reason:`, value: reason}])
@@ -123,7 +118,7 @@ module.exports = {
                         await member.roles.remove(userRoles)
                         setTimeout(() => { member.roles.add(suspendedRole.id); }, 1000)
                         await member.user.send({ embeds: [embed] }).catch(() => {})
-                        db.query(`INSERT INTO suspensions (id, guildid, suspended, uTime, reason, modid, roles, logmessage, unixTimestamp, length) VALUES ('${member.id}', '${message.guild.id}', true, '${Date.now() + time}', ${db.escape(reason)}, '${message.author.id}', '${userRolesString}', '${messageId.id}', '${Date.now()}', '${`${timeString} ${timeTypeString}`}');`)
+                        db.query('INSERT INTO suspensions (id, guildid, suspended, uTime, reason, modid, roles, logmessage, unixTimestamp, length) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [member.id, message.guild.id, true, Date.now() + time, reason, message.author.id, userRolesString, messageId.id, Date.now(), `${timeString} ${timeTypeString}`])
                     }
                     message.channel.send(`${member} has been suspended`)
                 }
