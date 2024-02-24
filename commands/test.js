@@ -10,7 +10,6 @@ module.exports = {
     guildspecific: true,
     role: 'developer',
     async execute(message, args, bot, db) {
-        const repliedMessage = "Toast!!!!!"
-        await message.reply(repliedMessage)
+        message.reply('This is a test 1 2 3 one two three I II III')
     }
 }

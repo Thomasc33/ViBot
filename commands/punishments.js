@@ -1,8 +1,10 @@
+/* eslint-disable no-bitwise */
 /* eslint-disable no-await-in-loop */
 const { EmbedBuilder, Colors, ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder,
     StringSelectMenuOptionBuilder, InteractionCollector, ComponentType } = require('discord.js');
 const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
 const { slashArg, slashCommandJSON } = require('../utils.js');
+const moment = require('moment');
 
 /** @typedef {{ id: string }} HasID */
 /**
@@ -35,11 +37,13 @@ const { slashArg, slashCommandJSON } = require('../utils.js');
  * @typedef MuteRow
  * @property {string} id
  * @property {string} guildid
- * @property {boolean} muted
- * @property {string} reason
  * @property {string} modid
- * @property {string} uTime
- * @property {boolean} perma
+ * @property {string} reason
+ * @property {number} appliedOn
+ * @property {number} duration
+ * @property {number?} removedOn
+ * @property {string?} removedBy
+ * @property {string?} removeReason
  */
 /**
  * @param {WarnRow[]} rows
@@ -53,16 +57,7 @@ function flattenOnId(rows) {
     }, {});
 }
 
-/**
- * @param {boolean} permanent
- * @param {number} ending unix time
- * @param {number?} ended unix time
- * @returns {string}
- */
-function timeString(permanent, ending, ended) {
-    if (!ended && permanent) return 'Permanently';
-    return `<t:${ended || ending}:R> at <t:${ended || ending}:f>`;
-}
+const timestamp = (time) => `<t:${time}:R> at <t:${time}:f>`;
 
 class PunishmentsUI {
     /** @type {string[]} */
@@ -142,8 +137,11 @@ class PunishmentsUI {
             this.#suspensions = flattenOnId(suspensions);
         }
         if (position >= cache.get(roles[rolePermissions.punishmentsMutes]).position && punishmentsMutes) {
-            const [mutes] = await db.promise().query('SELECT *  FROM mutes WHERE id in (?) AND guildid = ?', [ids, this.#guild.id]);
-            this.#mutes = flattenOnId(mutes);
+            const [mutes] = await db.promise().query('SELECT * FROM mutes WHERE id in (?) AND guildid = ? ORDER BY appliedOn + duration DESC', [ids, this.#guild.id]);
+            const permas = mutes.filter(mute => !mute.removedOn && !mute.duration);
+            const actives = mutes.filter(mute => !permas.includes(mute) && !mute.removedOn);
+            const remaining = mutes.filter(mute => !permas.includes(mute) && !actives.includes(mute));
+            this.#mutes = flattenOnId([...permas, ...actives, ...remaining]); // sort by perma > active > inactive, flattenOnId respects local order
         }
         const joined = [...Object.values(this.#warns), ...Object.values(this.#mutes), ...Object.values(this.#suspensions)].flat();
         if (full !== false && (full || joined.length < 20)) {
@@ -304,8 +302,7 @@ class PunishmentsUI {
         let i = 1;
         for (; i <= rows.length; i++) {
             const row = rows[i - 1];
-            const time = timeString(false, (row.time / 1000).toFixed(0));
-            const text = `\`${(i).toString().padStart(3, ' ')}\`${row.silent ? ' *Silently*' : ''} By <@!${row.modid}> ${time}\`\`\`${row.reason}\`\`\`\n`;
+            const text = `\`${(i).toString().padStart(3, ' ')}\`${row.silent ? ' *Silently*' : ''} By <@!${row.modid}> ${timestamp((row.time / 1000) ^ 0)}\`\`\`${row.reason}\`\`\`\n`;
             if (embed.length + fields.map(f => f.length).reduce((a, c) => a + c, 0) + text.length >= 5600) break;
             if (fields[fields.length - 1].length + text.length >= 800) fields.push('');
             fields[fields.length - 1] += text;
@@ -330,8 +327,7 @@ class PunishmentsUI {
         let i = 1;
         for (; i <= rows.length; i++) {
             const row = rows[i - 1];
-            const time = timeString(row.perma, (parseInt(row.uTime) / 1000).toFixed(0));
-            const text = `\`${(i).toString().padStart(3, ' ')}\`${row.suspended ? ' **Active**' : ''} By <@!${row.modid}> ${time}\`\`\`${row.reason}\`\`\`\n`;
+            const text = `\`${(i).toString().padStart(3, ' ')}\`${row.suspended ? ' **Active**' : ''} By <@!${row.modid}> ${row.perma ? 'Permanently' : timestamp((parseInt(row.uTime) / 1000) ^ 0)}\`\`\`${row.reason}\`\`\`\n`;
             if (embed.length + fields.map(f => f.length).reduce((a, c) => a + c, 0) + text.length >= 5600) break;
             if (fields[fields.length - 1].length + text.length >= 800) fields.push('');
             fields[fields.length - 1] += text;
@@ -356,8 +352,13 @@ class PunishmentsUI {
         let i = 1;
         for (; i <= rows.length; i++) {
             const row = rows[i - 1];
-            const time = timeString(row.perma, (row.uTime / 1000).toFixed(0));
-            const text = `\`${(i).toString().padStart(3, ' ')}\`${row.muted ? ' **Active**' : ''} By <@!${row.modid}> ${time}\`\`\`${row.reason}\`\`\`\n`;
+            let timestr = '';
+            if (!row.duration && !row.removedOn) timestr = 'Permanently';
+            else if (!row.duration) timestr = 'was Permanent';
+            else if (row.duration == -1) timestr = `Unknown duration\nEnded before <t:${row.appliedOn}:f>`;
+            else timestr = `for ${moment.duration(row.duration * 1000).humanize()}\nApplied on <t:${row.appliedOn}:f>`;
+            const reason = row.duration != -1 && row.removedOn ? `\`\`\`\n${row.reason}\`\`\`${row.overwritten ? 'Overwritten' : 'Removed'} <t:${row.removedOn}:R> by <@!${row.removedBy}> \`\`\`\n${row.removeReason}\`\`\`` : `\`\`\`${row.reason}\`\`\``;
+            const text = `\`${(i).toString().padStart(3, ' ')}\`${!row.removedOn ? ' **Active**' : ''} By <@!${row.modid}> ${timestr} ${reason}\n`;
             if (embed.length + fields.map(f => f.length).reduce((a, c) => a + c, 0) + text.length >= 5600) break;
             if (fields[fields.length - 1].length + text.length >= 800) fields.push('');
             fields[fields.length - 1] += text;
