@@ -19,10 +19,10 @@ module.exports = {
         slashArg(SlashArgType.Subcommand, 'members', {
             description: 'regular old parse',
             options: [
-                slashArg(SlashArgType.Attachment, 'players', {
-                    required: true,
-                    description: '/who image'
-                }),
+                // slashArg(SlashArgType.Attachment, 'players', {
+                //     required: true,
+                //     description: '/who image'
+                // }),
                 slashArg(SlashArgType.String, 'raid', {
                     autocomplete: true,
                     required: false,
@@ -115,19 +115,38 @@ module.exports = {
 };
 
 async function parseMembers(message, bot) {
-    const playerImgURL = message.options.getAttachment('players')?.url;
-    if (!playerImgURL) return await message.reply('You must provide a /who image to parse.');
+    // const playerImgURL = message.options.getAttachment('players')?.url;
+    // if (!playerImgURL) return await message.reply('You must provide a /who image to parse.');
     const raid = bot.afkModules[message.options.getString('raid')] || getRaid(message, bot, message.member.voice?.channelID);
     if (!raid) return; // error message already sent in getRaid()
-    const imgPlayers = await parseWhoImage(message, playerImgURL);
-    if (!imgPlayers) return; // error message already sent in parseWhoImage()
+    // const imgPlayers = await parseWhoImage(message, playerImgURL);
+    // if (!imgPlayers) return; // error message already sent in parseWhoImage()
 
+    const imgPlayers = [
+        'Tro',
+        'daire',
+        'su',
+        'sad',
+        'lyfers',
+        'Adri',
+        'zomble',
+        'HeadRaidLeader'
+    ];
     const whoImgPlayers = imgPlayers.map(player => player.toLowerCase());
-    const allowedMembers = raid?.members.map(member => message.guild.findMember(member));
+    const whoNameToOriginalMap = new Map(whoImgPlayers.map((name, idx) => [name, imgPlayers[idx]])); // preserve the original case to make it easier to copy-paste
+    let allowedMembers;
+    if (raid.isVcless()) {
+        allowedMembers = raid.members.map(member => message.guild.findMember(member));
+    } else {
+        allowedMembers = [...new Set([...raid.channel.members.map(member => member), ...raid.members.map(member => message.guild.findMember(member))])];
+    }
 
-    const { potentialAlts, otherChannels, inRaidCrashers, otherCrashers, unidentifiedCrashers, deafenedMembers } = processPlayers(whoImgPlayers, message.guild, allowedMembers, raid);
+    const minimumStaffRolePosition = message.guild.roles.cache.get(bot.settings[message.guild.id].roles.almostrl).position;
 
-    const embed = buildParseMembersEmbed(raid, potentialAlts, otherChannels, inRaidCrashers, otherCrashers, unidentifiedCrashers, deafenedMembers);
+    const { potentialAlts, otherChannels, inRaidCrashers, otherCrashers, unidentifiedCrashers, deafenedMembers, idMatchMap }
+        = await processPlayers(whoImgPlayers, whoNameToOriginalMap, message.guild, allowedMembers, raid, minimumStaffRolePosition);
+
+    const embed = buildParseMembersEmbed({ raid, idMatchMap, potentialAlts, otherChannels, inRaidCrashers, otherCrashers, unidentifiedCrashers, deafenedMembers });
     await message.channel.send({ embeds: [embed] });
 }
 
@@ -142,7 +161,6 @@ async function parseReacts(message, bot) {
         ].includes(button.type) && button.name.toLowerCase() != 'join')
         .map(button => {
             const { name, members: memberIDS, emote } = button;
-            console.log(memberIDS);
             const members = memberIDS.map(member => message.guild.findMember(member));
             return { name, members, emote };
         });
@@ -162,13 +180,15 @@ async function parseReacts(message, bot) {
 // async function parseSimple(message, bot) { }
 
 /**
- *
- * @param {string[]} whoImgPlayers - names of players in the dungeon, from OCR
+ * process the players in the who image one at a time, pushing them to the appropriate array, handling combinations of names, while maintaining the link between originalWhoNames and whoImgPlayers
+ * @param {string[]} whoImgPlayers - names of players in the dungeon lowercased
+ * @param {string[]} originalWhoNames - names of players in the dungeon, from OCR
  * @param {Discord.Guild} guild - discord guild of the raid taking place
  * @param {string[]} allowedRaiders - discord members who are allowed to be in the raid
  * @param {AfkCheck} raid - raid object taken from bot.afkModules
+ * @param {number} minimumStaffRolePosition - minimum staff role to ignore if crashing
  */
-async function processPlayers(whoImgPlayers, guild, allowedMembers, raid) {
+async function processPlayers(whoImgPlayers, whoNameToOriginalMap, guild, allowedMembers, raid, minimumStaffRolePosition) {
     const matchedRaiders = [];
     const comboMatchedRaiders = []; // just contains the id's of the matched raiders and their matched names
     const potentialAlts = [];
@@ -188,87 +208,95 @@ async function processPlayers(whoImgPlayers, guild, allowedMembers, raid) {
     }
 
     for (let i = 0; i < whoImgPlayers.length; i++) {
-        const playerName = whoImgPlayers[i];
+        let playerName = whoImgPlayers[i];
         { // check for names in the allowedRaidersNicknames
-            const member = nicknameToIdMap.find(playerName);
+            let member = nicknameToIdMap.get(playerName);
             if (!member) {
                 const { matchedRaider, nameArray } = searchCombinationNames(whoImgPlayers.slice(i, i + 3), nicknameToIdMap);
+                member = matchedRaider;
                 if (matchedRaider) {
-                    matchedRaiders.push(matchedRaider);
-                    idMatchMap.set(matchedRaider.id, playerName);
+                    playerName = nameArray.join('');
+                    // remove the combination of names from originalWhoNames and replace it with the combined name
+                    originalWhoNames.splice(i, nameArray.length, originalWhoNames.slice(i, i + nameArray.length).join(''));
                     comboMatchedRaiders.push({ id: matchedRaider.id, whoNames: nameArray });
                     i += nameArray.length - 1; // skip forward by the length of combination
                 }
             }
             if (member) {
                 matchedRaiders.push(member);
-                idMatchMap.set(member.id, playerName);
-                if (!raid.vcLess) { // check for other channels
-                    if (member.voice?.channelID != raid.channel.id) otherChannels.push(member);
+                idMatchMap.set(member.id, originalWhoNames[i]);
+                if (member.roles.highest.position >= minimumStaffRolePosition) continue; // skip staff members
+                if (!raid.isVcless()) { // check for other channels
+                    if (member.voice && (member.voice.channelID != raid.channel.id)) otherChannels.push(member);
                     else inRaidCrashers.push(member);
                 }
                 continue;
             }
         }
         { // check for names in the guild
-            const inGuild = guild.findMember(playerName);
+            let inGuild = guild.findMember(playerName);
             if (!inGuild) {
                 const { matchedMember, nameArray } = searchCombinationNamesGuild(whoImgPlayers.slice(i, i + 3), guild);
+                inGuild = matchedMember;
                 if (matchedMember) {
-                    otherCrashers.push(matchedMember);
-                    idMatchMap.set(matchedMember.id, playerName);
+                    playerName = nameArray.join('');
+                    // remove the combination of names from originalWhoNames and replace it with the combined name
+                    originalWhoNames.splice(i, nameArray.length, originalWhoNames.slice(i, i + nameArray.length).join(''));
                     comboMatchedRaiders.push({ id: matchedMember.id, whoNames: nameArray });
                     i += nameArray.length - 1; // skip forward by the length of combination
                 }
             }
             if (inGuild) {
+                if (inGuild.roles.highest.position >= minimumStaffRolePosition) continue; // skip staff members
                 otherCrashers.push(inGuild);
-                idMatchMap.set(inGuild.id, playerName);
+                idMatchMap.set(inGuild.id, originalWhoNames[i]);
                 continue;
             }
         }
         unidentifiedCrashers.push(playerName);
     }
 
-    // check for deafened members
-    if (!raid.vcLess) {
-        for (const member of matchedRaiders) {
-            if (member.voice?.deaf) deafenedMembers.push(member);
+    // check for extra allowedRaiders
+    for (const member of allowedMembers) { // TODO how does this search? is it exact match?
+        if (!matchedRaiders.includes(member)) {
+            potentialAlts.push(member);
         }
     }
 
-    // check for extra allowedRaiders
-    for (const member of allowedMembers) {
-        if (!matchedRaiders.includes(member)) {
-            potentialAlts.push(member);
+    // check for deafened members
+    if (!raid.isVcless()) {
+        for (const member of raid.channel.members) {
+            if (member.voice?.deaf && !potentialAlts.includes(member)) deafenedMembers.push(member);
         }
     }
     return { idMatchMap, potentialAlts, otherChannels, inRaidCrashers, otherCrashers, deafenedMembers, unidentifiedCrashers };
 }
 
-function buildParseMembersEmbed(raid, idMatchMap, potentialAlts, otherChannels, inRaidCrashers, otherCrashers, unidentifiedCrashers, deafenedMembers) {
+function buildParseMembersEmbed({ raid, idMatchMap, potentialAlts, otherChannels, inRaidCrashers, otherCrashers, unidentifiedCrashers, deafenedMembers }) {
     const potentialAltsString = potentialAlts.length > 0 ? potentialAlts.map(member => `<@${member.id}>`).join(', ') : 'None';
-    const deafenedMembersString = deafenedMembers.length > 0 ? deafenedMembers.map(member => `<@${member.id}>\`${idMatchMap.find(member.id)}\``).join(' ') : 'None';
+    const deafenedMembersString = deafenedMembers.length > 0 ? deafenedMembers.map(member => `<@${member.id}>\`${idMatchMap.get(member.id)}\``).join(' ') : 'None';
     const inRaidCrashersString = inRaidCrashers.length > 0 ? inRaidCrashers.map(member => `<@${member.id}>`).join(', ') : 'None';
     const otherCrashersString = otherCrashers.length > 0 ? otherCrashers.map(member => `<@${member.id}>`).join(', ') : 'None';
     const unidentifiedCrashersString = unidentifiedCrashers.length > 0 ? unidentifiedCrashers.join(', ') : 'None';
-    const kickList = '```';
-    if (inRaidCrashers.length > 0) kickList.concat('In Raid: ' + inRaidCrashers.map(member => idMatchMap.find(member.id)).join(' ') + '\n');
-    if (otherCrashers.length > 0) kickList.concat('Other: ' + inRaidCrashers.map(member => idMatchMap.find(member.id)).join(' ') + '\n');
-    if (unidentifiedCrashers.length > 0) kickList.concat('Unidentified: ' + unidentifiedCrashers.join(' ') + '\n');
-    kickList.concat('```');
-    const otherChannelsString = otherChannels.length > 0 ? otherChannels.map(member => `<@${member.id}>\`${idMatchMap.find(member.id)}\``).join(', ') : 'None';
+    let kickList = '```';
+    if (inRaidCrashers.length > 0) kickList += 'In Raid: ' + inRaidCrashers.map(member => idMatchMap.get(member.id)).join(' ') + '\n';
+    if (otherCrashers.length > 0) kickList += 'Other: ' + inRaidCrashers.map(member => idMatchMap.get(member.id)).join(' ') + '\n';
+    if (unidentifiedCrashers.length > 0) kickList += 'Unidentified: ' + unidentifiedCrashers.join(' ') + '\n';
+    kickList += '```';
+    const otherChannelsString = otherChannels.length > 0 ? otherChannels.map(member => `<@${member.id}>\`${idMatchMap.get(member.id)}\``).join(', ') : 'None';
 
     const embed = new Discord.EmbedBuilder()
         .setTitle(`Parse for ${raid.afkTitle()}`)
-        .setColor('#00ff00');
-    embed.addField('Potential Alts', potentialAltsString);
-    embed.addField('Deafened Members', deafenedMembersString);
-    embed.addField('In Raid Crashers', inRaidCrashersString);
-    embed.addField('Other Crashers', otherCrashersString);
-    embed.addField('Unidentified Crashers', unidentifiedCrashersString);
-    embed.addField('Kick List', kickList);
-    embed.addField('Raid members in other channels', otherChannelsString);
+        .setColor('#00ff00')
+        .addFields(
+            { name: 'Potential Alts', value: potentialAltsString },
+            { name: 'Deafened Members', value: deafenedMembersString },
+            { name: 'In Raid Crashers', value: inRaidCrashersString },
+            { name: 'Other Crashers', value: otherCrashersString },
+            { name: 'Unidentified Crashers', value: unidentifiedCrashersString },
+            { name: 'Kick List', value: kickList },
+            { name: 'Raid members in other channels', value: otherChannelsString }
+        );
     return embed;
 }
 
@@ -331,8 +359,8 @@ async function filterRaidIds(interaction, bot) {
 function searchCombinationNames(playerArray, nicknameToIdMap) { // TODO validate this function and add levenstein distance equivalent
     for (let i = playerArray.length; i > 1; i--) { // don't bother ot search for single names, that was already checked before
         const combinedName = playerArray.slice(0, i).join('');
-        const matchedRaider = nicknameToIdMap.find(combinedName);
-        if (matchedRaider) return { matchedRaider, nameArry: playerArray.slice(0, i) };
+        const matchedRaider = nicknameToIdMap.get(combinedName);
+        if (matchedRaider) return { matchedRaider, nameArray: playerArray.slice(0, i) };
     }
     return { matchedRaider: null, num: 0 };
 }
@@ -340,10 +368,10 @@ function searchCombinationNames(playerArray, nicknameToIdMap) { // TODO validate
 function searchCombinationNamesGuild(playerArray, guild) {
     for (let i = playerArray.length; i > 1; i--) { // don't bother ot search for single names, that was already checked before
         const combinedName = playerArray.slice(0, i).join('');
-        const matchedRaider = guild.findMember(combinedName);
-        if (matchedRaider) return { matchedRaider, nameArray: playerArray.slice(0, i) };
+        const matchedMember = guild.findMember(combinedName);
+        if (matchedMember) return { matchedMember, nameArray: playerArray.slice(0, i) };
     }
-    return { matchedRaider: null, num: 0 };
+    return { matchedMember: null, num: 0 };
 }
 
 /**
