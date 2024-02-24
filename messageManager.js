@@ -9,6 +9,8 @@ const restarting = require('./commands/restart')
 const verification = require('./commands/verification')
 const stats = require('./commands/stats')
 const modmail = require('./lib/modmail.js')
+const { commands } = require('./lib/commands');
+
 const { argString } = require('./commands/commands.js');
 const { getDB } = require('./dbSetup.js')
 const { LegacyCommandOptions, LegacyParserError } = require('./utils.js')
@@ -100,7 +102,7 @@ class MessageManager {
     }
 
     async handleAutocomplete(interaction) {
-        const command = this.#bot.commands.get(interaction.commandName) || this.#bot.commands.find(cmd => cmd.alias && cmd.alias.includes(interaction.commandName))
+        const command = commands.get(interaction.commandName) || commands.find(cmd => cmd.alias && cmd.alias.includes(interaction.commandName))
         if (command.autocomplete) command.autocomplete(interaction, this.#bot);
     }
     /**
@@ -129,7 +131,7 @@ class MessageManager {
         }
 
         // Get the command
-        const command = this.#bot.commands.get(commandName) || this.#bot.commands.find(cmd => cmd.alias && cmd.alias.includes(commandName))
+        const command = commands.get(commandName) || commands.find(cmd => cmd.alias && cmd.alias.includes(commandName))
 
         // Handle logging and replying to command errors
         async function commandError(userMsg, logMsg) {
@@ -231,7 +233,7 @@ class MessageManager {
             if (message.content.replace(/[^0-9]/g, '') == message.content) return;
             const args = message.content.split(/ +/)
             const commandName = args.shift().toLowerCase().replace(this.#prefix, '')
-            const command = this.#bot.commands.get(commandName) || this.#bot.commands.find(c => c.alias && c.alias.includes(commandName))
+            const command = commands.get(commandName) || commands.find(c => c.alias && c.alias.includes(commandName))
             if (!command) this.#sendModMail(message)
             else if (command.dms) {
                 let guild

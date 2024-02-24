@@ -2,7 +2,7 @@ const { createClient } = require('redis');
 const { getDB } = require('./dbSetup.js');
 const Discord = require('discord.js');
 const botSettings = require('./settings.json');
-
+const { commands } = require('./lib/commands');
 let client;
 
 /* The MockMessage class is a JavaScript class that represents a message in a webhook interaction and
@@ -46,7 +46,7 @@ module.exports = {
         const data = await client.HGETALL('messagebuttons:' + interaction.message.id);
         if (!data.command || !data.callback) return false;
         if (data.allowedUser && data.allowedUser != interaction.user.id) return false;
-        const command = bot.commands.get(data.command) || bot.commands.find(cmd => cmd.alias && cmd.alias.includes(data.command));
+        const command = commands.get(data.command) || commands.find(cmd => cmd.alias && cmd.alias.includes(data.command));
         const callback = command[data.callback];
         const db = getDB(interaction.guild.id);
         if (data.token) {

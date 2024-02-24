@@ -11,6 +11,7 @@ const redisConnect = require('./redis.js').setup;
 const botSettings = require('./settings.json');
 const ErrorLogger = require('./lib/logError');
 // Commands
+const { commands } = require('./lib/commands');
 const emoji = require('./commands/emoji.js');
 const afkCheck = require('./commands/afkCheck.js');
 const vibotChannels = require('./commands/vibotChannels');
@@ -27,7 +28,7 @@ const dbSetup = require('./dbSetup.js');
 
 async function deployCommands(bot, guild) {
     // Organize commands
-    const slashCommands = bot.commands.filter(c => c.getSlashCommandData).map(c => c.getSlashCommandData(guild)).filter(c => c).flat();
+    const slashCommands = commands.filter(c => c.getSlashCommandData).map(c => c.getSlashCommandData(guild)).filter(c => c).flat();
 
     // Deploy commands
     const rest = new Discord.REST({ version: '10' }).setToken(require('./settings.json').key);
