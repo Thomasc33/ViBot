@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
 const ErrorLogger = require('../lib/logError')
 const SlashArgType = require('discord-api-types/v10').ApplicationCommandOptionType;
-
+const { commands } = require('../lib/commands');
 
 module.exports = {
     name: 'commands',
@@ -21,9 +21,9 @@ module.exports = {
         const override = userOverride(message.author.id, bot);
 
         if (args.length != 0) {
-            bot.commands.get(args[0].toLowerCase())
-            let command = bot.commands.get(args[0].toLowerCase())
-            if (!command) bot.commands.each(c => {
+            commands.get(args[0].toLowerCase())
+            let command = commands.get(args[0].toLowerCase())
+            if (!command) commands.each(c => {
                 if (c.alias) {
                     if (c.alias.includes(args[0].toLowerCase())) {
                         command = c
@@ -76,7 +76,7 @@ module.exports = {
                 if (!role) continue;
                 if (message.member.roles.highest.position < role.position && !override) continue;
                 if (!fields[role.name]) fields[role.name] = { position: role.position, commands: [] };
-                bot.commands.each(command => {
+                commands.each(command => {
                     /*if (c.roleOverride && c.roleOverride[message.guildId] && bot.settings[message.guild.id].commands[c.name]) {
                         if (c.roleOverride[message.guildId] == roleName) fields[role.name].commands.push(';' + c.name);
                     }

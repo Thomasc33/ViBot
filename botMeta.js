@@ -1,37 +1,36 @@
-const Discord = require('discord.js');
-const fs = require('fs');
+const { Client, GatewayIntentBits, Partials } = require('discord.js');
 const { rateLimitLogger } = require('./lib/rateLimitLogger');
-const bot = new Discord.Client({
+
+const bot = new Client({
     intents: [ // Discord moment
-        Discord.GatewayIntentBits.Guilds,
-        Discord.GatewayIntentBits.GuildMembers,
-        Discord.GatewayIntentBits.GuildBans,
-        Discord.GatewayIntentBits.GuildEmojisAndStickers,
-        Discord.GatewayIntentBits.GuildIntegrations,
-        Discord.GatewayIntentBits.GuildWebhooks,
-        Discord.GatewayIntentBits.GuildInvites,
-        Discord.GatewayIntentBits.GuildVoiceStates,
-        Discord.GatewayIntentBits.GuildPresences,
-        Discord.GatewayIntentBits.GuildMessages,
-        Discord.GatewayIntentBits.GuildMessageReactions,
-        Discord.GatewayIntentBits.GuildMessageTyping,
-        Discord.GatewayIntentBits.DirectMessages,
-        Discord.GatewayIntentBits.DirectMessageReactions,
-        Discord.GatewayIntentBits.DirectMessageTyping,
-        Discord.GatewayIntentBits.MessageContent,
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildBans,
+        GatewayIntentBits.GuildEmojisAndStickers,
+        GatewayIntentBits.GuildIntegrations,
+        GatewayIntentBits.GuildWebhooks,
+        GatewayIntentBits.GuildInvites,
+        GatewayIntentBits.GuildVoiceStates,
+        GatewayIntentBits.GuildPresences,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.GuildMessageReactions,
+        GatewayIntentBits.GuildMessageTyping,
+        GatewayIntentBits.DirectMessages,
+        GatewayIntentBits.DirectMessageReactions,
+        GatewayIntentBits.DirectMessageTyping,
+        GatewayIntentBits.MessageContent,
     ],
     partials: [
-        Discord.Partials.User,
-        Discord.Partials.Channel,
-        Discord.Partials.GuildMember,
-        Discord.Partials.Message,
-        Discord.Partials.Reaction
+        Partials.User,
+        Partials.Channel,
+        Partials.GuildMember,
+        Partials.Message,
+        Partials.Reaction
     ]
 });
 
 rateLimitLogger(bot);
 
-bot.commands = new Discord.Collection();
 bot.afkChecks = {};
 bot.afkModules = {};
 bot.settings = moduleIsAvailable('./guildSettings.json') ? require('./guildSettings.json') : {};
@@ -49,14 +48,6 @@ bot.emojiServers = moduleIsAvailable('./data/emojiServers.json') ? require('./da
 bot.devServers = ['739623118833713214'];
 bot.storedEmojis = moduleIsAvailable('./data/emojis.json') ? require('./data/emojis.json') : {};
 
-function loadCommands() {
-    const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
-    for (const file of commandFiles) {
-        const command = require(`./commands/${file}`);
-        bot.commands.set(command.name, command);
-    }
-}
-
 function moduleIsAvailable(path) {
     try {
         require.resolve(path);
@@ -67,4 +58,4 @@ function moduleIsAvailable(path) {
     }
 }
 
-module.exports = { bot, loadCommands };
+module.exports = { bot };

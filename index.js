@@ -22,8 +22,9 @@ const verification = require('./commands/verification');
 
 // Global Variables/Data
 const botSettings = require('./settings.json');
-const { bot, loadCommands } = require('./botMeta.js');
-loadCommands();
+const { bot } = require('./botMeta.js');
+require('./lib/commands').load();
+
 const serverWhiteList = require('./data/serverWhiteList.json');
 const { MessageManager } = require('./messageManager.js');
 
