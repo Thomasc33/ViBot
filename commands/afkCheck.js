@@ -125,8 +125,6 @@ class afkCheck {
         this.#pointlogMid = null
 
         this.members = [] // All members in the afk
-        this.earlyLocationMembers = [] // All members with early location in the afk
-        this.earlySlotMembers = [] // All members with early slots in the afk
         this.buttons = afkTemplate.buttons.map(button => new AfkButton(this.#botSettings, this.#bot.storedEmojis, this.#guild, button))
         this.reactRequests = {} // {messageId => AfkButton}
         this.cap = afkTemplate.cap
@@ -221,8 +219,6 @@ class afkCheck {
                 leader: this.#leader,
                 raidID: this.#raidID,
                 members: this.members,
-                earlyLocationMembers: this.earlyLocationMembers,
-                earlySlotMembers: this.earlySlotMembers,
                 buttons: this.buttons.map(button => button.toJSON()),
                 reactRequests: Object.fromEntries(Object.entries(this.reactRequests).map(([messageId, button]) => [messageId, {name: button.name, ...button.toJSON()}])),
                 body: this.#body,
@@ -255,8 +251,6 @@ class afkCheck {
         this.#raidID = storedAfkCheck.raidID
 
         this.members = storedAfkCheck.members
-        this.earlyLocationMembers = storedAfkCheck.earlyLocationMembers
-        this.earlySlotMembers = storedAfkCheck.earlySlotMembers
         this.buttons = storedAfkCheck.buttons.map(button => new AfkButton(this.#botSettings, this.#bot.storedEmojis, this.#guild, {...this.#afkTemplate.getButton(button.name), ...button}))
         this.reactRequests = Object.fromEntries(Object.entries(storedAfkCheck.reactRequests).map(([messageId, button]) => [messageId, new AfkButton(this.#botSettings, this.#bot.storedEmojis, this.#guild, {...this.#afkTemplate.getButton(button.name), ...button})]))
         this.#body = storedAfkCheck.body
@@ -321,7 +315,7 @@ class afkCheck {
     }
 
     async moveInEarlys() {
-        for (let i of this.earlySlotMembers) {
+        for (let i of this.earlySlotMembers()) {
             let member = this.#guild.members.cache.get(i)
             if (!member.voice.channel) continue
             if (member.voice.channel.name.includes('lounge') || member.voice.channel.name.includes('Lounge') || member.voice.channel.name.includes('drag')) await member.voice.setChannel(this.#channel.id).catch(er => { })
@@ -648,11 +642,8 @@ class afkCheck {
                 for (let i of button.parent) {
                     const parentButton = this.getButton(i);
                     if (!parentButton.members.includes(interaction.member.id)) parentButton.members.push(interaction.member.id)
-                    if (parentButton.location && !this.earlyLocationMembers.includes(interaction.member.id)) this.earlyLocationMembers.push(interaction.member.id)
                 }
             }
-            if (!this.earlySlotMembers.includes(interaction.member.id)) this.earlySlotMembers.push(interaction.member.id)
-            if (button.location && !this.earlyLocationMembers.includes(interaction.member.id)) this.earlyLocationMembers.push(interaction.member.id)
             await Promise.all([
                 this.raidCommandsMessage.edit(this.#genRaidCommands(), this.#bot, this.#guild),
                 this.raidInfoMessage.edit(this.#genRaidInfo())
@@ -669,6 +660,15 @@ class afkCheck {
         } else {
             return await interaction.reply({ embeds: [extensions.createEmbed(interaction, `How did you press something that's unpressable? ඞ.`, null)], ephemeral: true })
         }
+    }
+
+    earlyLocationMembers() {
+        const locationButtons = this.buttons.filter(button => button.location || this.buttons.some(parent => button.parent === parent.name && parent.location));
+        return locationButtons.map(button => button.members).flat()
+    }
+
+    earlySlotMembers() {
+        return this.buttons.map(button => button.members).flat();
     }
 
     async processPhaseControl(interaction) {
@@ -995,7 +995,7 @@ class afkCheck {
     }
 
     async processReconnect(interaction) {
-        if (this.members.includes(interaction.member.id) || this.earlySlotMembers.includes(interaction.member.id) || this.earlyLocationMembers.includes(interaction.member.id)) {
+        if (this.members.includes(interaction.member.id) || this.earlySlotMembers().includes(interaction.member.id) || this.earlyLocationMembers().includes(interaction.member.id)) {
             if (!interaction.member.voice.channel) return interaction.reply({ embeds: [extensions.createEmbed(interaction, `Join lounge to be moved into the channel. You can dismiss this message.`, null)], ephemeral: true })
             else if (interaction.member.voice.channel.id == this.#channel.id) return interaction.reply({ content: 'It looks like you are already in the channel ඞ. You can dismiss this message.', ephemeral: true })
             else if (interaction.member.voice.channel.name.includes('lounge') || interaction.member.voice.channel.name.includes('Lounge') || interaction.member.voice.channel.name.includes('drag')) {
@@ -1036,13 +1036,12 @@ class afkCheck {
     }
 
     async processReactableSupporter(interaction, button) {
-        if (this.earlySlotMembers.includes(interaction.member.id)) {
+        if (this.earlySlotMembers().includes(interaction.member.id)) {
             await interaction.reply({ embeds: [extensions.createEmbed(interaction, `Supporter Perks in \`${interaction.guild.name}\` only gives a guaranteed slot in the raid and you already have this from another react.\nYour Supporter Perks have not been used.${this.#afkTemplate.vcOptions != AfkTemplate.TemplateVCOptions.NO_VC ? ` Join lounge to be moved into the channel.` : ``}`, null)], ephemeral: true })
             return false
         }
         if (interaction.member.roles.highest.position >= interaction.guild.roles.cache.get(this.#botSettings.roles.trialrl).position) {
             await interaction.reply({ embeds: [extensions.createEmbed(interaction, `The location for this run has been set to \`${this.location}\``, null)], ephemeral: true })
-            if (!this.earlySlotMembers.includes(interaction.member.id)) this.earlySlotMembers.push(interaction.member.id)
             return false
         }
         for (let i of this.#botSettings.lists.earlyLocation) { //custom early location roles
@@ -1141,11 +1140,11 @@ class afkCheck {
         ])
 
         if (this.#channel) this.#channel.members.forEach(m => this.members.push(m.id));
-        this.members = [...new Set([...this.members, ...this.earlySlotMembers, this.#leader.id])];
+        this.members = [...new Set([...this.members, ...this.earlySlotMembers(), this.#leader.id])];
 
 
         if (this.#channel && this.#botSettings.backend.giveLocationToEarlyVConStart){
-            const lateLocationMembers = this.earlySlotMembers.filter(u => !this.earlyLocationMembers.includes(u))
+            const lateLocationMembers = this.earlySlotMembers().filter(u => !this.earlyLocationMembers().includes(u))
             const hearingImpairedMembers = this.#botSettings.lists.hearingImpairedMembers
             const dmMembers = [...new Set(lateLocationMembers.concat(hearingImpairedMembers))]
             const earlyLocEmbed = new Discord.EmbedBuilder()
@@ -1194,7 +1193,7 @@ class afkCheck {
     }
 
     async loggingAfk() {
-        let members = this.#channel && this.#channel.members.size != 0 ? this.#channel.members.map(m => m.id) : this.earlySlotMembers
+        let members = this.#channel && this.#channel.members.size != 0 ? this.#channel.members.map(m => m.id) : this.earlySlotMembers()
         members.push(this.#leader.id);
         members = [...new Set(members)];
         if (members.length > 0) {
@@ -1274,7 +1273,7 @@ class afkCheck {
     async updateLocation(location) {
         this.location = location
         await Promise.all([this.sendStatusMessage(), this.sendCommandsMessage(), this.sendChannelsMessage()])
-        for (let i of this.earlyLocationMembers) {
+        for (let i of this.earlyLocationMembers()) {
             let member = this.#guild.members.cache.get(i)
             await member.send(`The location for this run has been changed to \`${this.location}\`, get there ASAP!`)
         }
