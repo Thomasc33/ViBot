@@ -97,7 +97,7 @@ module.exports = {
         await rsPanel.edit({ embeds: [embed], components: [] });
         const reason = await rsPanel.channel.next(null, null, message.author.id).catch(err => {
             embed.setTitle('Suspension Removal Cancelled')
-                .setDescription(`Cancelled suspension removal for the following suspension: ${err}`)
+                .setDescription(`Cancelled suspension removal for the following suspension: ${err.error}`)
                 .setColor(Discord.Colors.Red);
             return false;
         });
