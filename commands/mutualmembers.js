@@ -94,8 +94,8 @@ module.exports = {
         for (let i = 0; i < allRaidsDescriptionsChunks.length; i++) {
             raidsDescriptionFields = raidsDescriptionFields.concat(
                 { name: '\u200B', value: allRaidsTimesChunks[i].join('\n'), inline: true },
-                { name: '\u200B', value: '\u200B', inline: true },
-                { name: '\u200B', value: allRaidsDescriptionsChunks[i].join('\n'), inline: true }
+                { name: '\u200B', value: allRaidsDescriptionsChunks[i].join('\n'), inline: true },
+                { name: '\u200B', value: '\u200B', inline: true }
             );
         }
         raidsDescriptionFields[0].name = 'Raids';
