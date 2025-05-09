@@ -78,7 +78,7 @@ module.exports = {
         );
 
         const reply = await message.reply({ embeds: [confirmEmbed], components: [buttons], ephemeral: true });
-        createReactionRow(reply, module.exports.name, 'handleButtons', buttons, message.author, { memberId: member.id, keyInfo, count });
+        createReactionRow(reply, module.exports.name, 'handleButtons', [buttons], message.author, { memberId: member.id, keyInfo, count });
     },
     async handleButtons(bot, confirmMessage, db, choice, state) {
         const member = confirmMessage.interaction.guild.members.cache.get(state.memberId);

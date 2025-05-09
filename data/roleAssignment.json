@@ -3,328 +3,275 @@
         {
             "role": "cultping",
             "name": "Cults",
-            "emojiId": "701491230332157972",
-            "emoji": "<:malus:701491230332157972>"
+            "emote": "cultist"
         },
         {
             "role": "fameReact",
             "name": "Fame Runs",
-            "emojiId": "1024104144845406248",
-            "emoji": "<:fame:1024104144845406248>"
+            "emote": "fame"
         },
         {
             "role": "voidping",
             "name": "Voids",
-            "emojiId": "701491230210523247",
-            "emoji": "<:void:701491230210523247>"
+            "emote": "void"
         },
         {
             "role": "fskipReact",
             "name": "Full-Skip Voids",
-            "emojiId": "701491230391140453",
-            "emoji": "<:SkipBoi:701491230391140453>"
+            "emote": "fullskip"
         },
         {
             "role": "shattsReact",
             "name": "Shatters",
-            "emojiId": "1008068892071055512",
-            "emoji": "<:forgottenking:1008068892071055512>"
+            "emote": "forgottenking"
         },
         {
             "role": "accursedReact",
             "name": "Accursed",
-            "emojiId": "1142347997670289471",
-            "emoji": "<:accursedKing:1142347997670289471>"
+            "emote": "accursedKing"
         },
         {
             "role": "nestReact",
             "name": "Nests",
-            "emojiId": "723001215407095899",
-            "emoji": "<:nest:723001215407095899>"
+            "emote": "nest"
         },
         {
             "role": "advancedNestPing",
             "name": "Advanced Nests",
-            "emojiId": "1135560355750359050",
-            "emoji": "<:advancedNestPortal:1135560355750359050>"
+            "emote": "advancedNestPortal"
         },
         {
             "role": "steamworksping",
             "name": "Steamworks",
-            "emojiId": "1050156386547413012",
-            "emoji": "<a:steamworksPortal:1050156386547413012>"
+            "emote": "steamworksPortal"
         },
         {
             "role": "advancedSteamworksPing",
             "name": "Advanced Steamworks",
-            "emojiId": "1129901525674758274",
-            "emoji": "<:advancedSteamworks:1129901525674758274>"
+            "emote": "advancedSteamworks"
         },
         {
             "role": "fungalReact",
             "name": "Fungals",
-            "emojiId": "723001215696240660",
-            "emoji": "<:fungal:723001215696240660>"
+            "emote": "fungal"
         },
         {
             "role": "moonlightping",
             "name": "Moonlight",
-            "emojiId": "1090163554872737866",
-            "emoji": "<:mv:1090163554872737866>"
+            "emote": "mv"
         },
         {
             "role": "eventBoiPing",
             "name": "Miscellaneous Dungeons",
-            "emojiId": "723001215184535553",
-            "emoji": "<:pcave:723001215184535553>"
+            "emote": "pcave"
         },
         {
             "role": "o3Ping",
             "name": "Oryx Sanctuary",
-            "emojiId": "831047591096745984",
-            "emoji": "<:oryxThree:831047591096745984>"
+            "emote": "oryxThree"
         }
     ],
     "708026927721480254": [
         {
             "role": "o3Ping",
             "name": "Oryx 3",
-            "emojiId": "831047591096745984",
-            "emoji": "<:oryxThree:831047591096745984>"
+            "emote": "oryxThree"
         },
         {
             "role": "rcPing",
             "name": "Realm Clearing",
-            "emojiId": "1156373714976378971",
-            "emoji": "<:realmClearing:1156373714976378971>"
+            "emote": "realmClearing"
         },
         {
             "role": "cultping",
             "name": "Cults",
-            "emojiId": "701491230332157972",
-            "emoji": "<:malus:701491230332157972>"
+            "emote": "cultist"
         },
         {
             "role": "voidping",
             "name": "Voids",
-            "emojiId": "701491230210523247",
-            "emoji": "<:void:701491230210523247>"
+            "emote": "void"
         },
         {
             "role": "shattsReact",
             "name": "Shatters",
-            "emojiId": "1008068892071055512",
-            "emoji": "<:forgottenking:1008068892071055512>"
+            "emote": "forgottenking"
         },
         {
             "role": "nestReact",
             "name": "Nests",
-            "emojiId": "723001215407095899",
-            "emoji": "<:nest:723001215407095899>"
+            "emote": "nest"
         },
         {
             "role": "advancedNestPing",
             "name": "Advanced Nests",
-            "emojiId": "1135560355750359050",
-            "emoji": "<:advancedNestPortal:1135560355750359050>"
+            "emote": "advancedNestPortal"
         },
         {
             "role": "steamworksping",
             "name": "Steamworks",
-            "emojiId": "1050156386547413012",
-            "emoji": "<a:steamworksPortal:1050156386547413012>"
+            "emote": "steamworksPortal"
         },
         {
             "role": "advancedSteamworksPing",
             "name": "Advanced Steamworks",
-            "emojiId": "1129901525674758274",
-            "emoji": "<:advancedSteamworks:1129901525674758274>"
+            "emote": "advancedSteamworks"
         },
         {
             "role": "fungalReact",
             "name": "Fungals",
-            "emojiId": "723001215696240660",
-            "emoji": "<:fungal:723001215696240660>"
+            "emote": "fungal"
         },
         {
             "role": "moonlightping",
             "name": "Moonlight",
-            "emojiId": "1090163554872737866",
-            "emoji": "<:mv:1090163554872737866>"
+            "emote": "mv"
         },
         {
             "role": "eventBoiPing",
             "name": "Miscellaneous Dungeons",
-            "emojiId": "723001215184535553",
-            "emoji": "<:pcave:723001215184535553>"
+            "emote": "pcave"
         }
     ],
 	"451171819672698920": [
 	{
             "role": "eventraider",
             "name": "All Events",
-            "emojiId": "723009084814524449",
-            "emoji": "<:oryx:723009084814524449>"
+            "emote": "oryx"
         }
 	],
     "934611202787643412": [
         {
             "role": "o3Ping",
             "name": "Oryx 3",
-            "emojiId": "831047591096745984",
-            "emoji": "<:oryxThree:831047591096745984>"
+            "emote": "oryxThree"
         },
         {
             "role": "rcPing",
             "name": "Realm Clearing",
-            "emojiId": "1156373714976378971",
-            "emoji": "<:realmClearing:1156373714976378971>"
+            "emote": "realmClearing"
         },
         {
             "role": "cultping",
             "name": "Cults",
-            "emojiId": "701491230332157972",
-            "emoji": "<:malus:701491230332157972>"
+            "emote": "cultist"
         },
         {
             "role": "voidping",
             "name": "Voids",
-            "emojiId": "701491230210523247",
-            "emoji": "<:void:701491230210523247>"
+            "emote": "void"
         },
         {
             "role": "shattsReact",
             "name": "Shatters",
-            "emojiId": "1008068892071055512",
-            "emoji": "<:forgottenking:1008068892071055512>"
+            "emote": "forgottenking"
         },
         {
             "role": "nestReact",
             "name": "Nests",
-            "emojiId": "723001215407095899",
-            "emoji": "<:nest:723001215407095899>"
+            "emote": "nest"
         },
         {
             "role": "advancedNestPing",
             "name": "Advanced Nests",
-            "emojiId": "1135560355750359050",
-            "emoji": "<:advancedNestPortal:1135560355750359050>"
+            "emote": "advancedNestPortal"
         },
         {
             "role": "steamworksping",
             "name": "Steamworks",
-            "emojiId": "1050156386547413012",
-            "emoji": "<a:steamworksPortal:1050156386547413012>"
+            "emote": "steamworksPortal"
         },
         {
             "role": "advancedSteamworksPing",
             "name": "Advanced Steamworks",
-            "emojiId": "1129901525674758274",
-            "emoji": "<:advancedSteamworks:1129901525674758274>"
+            "emote": "advancedSteamworks"
         },
         {
             "role": "fungalReact",
             "name": "Fungals",
-            "emojiId": "723001215696240660",
-            "emoji": "<:fungal:723001215696240660>"
+            "emote": "fungal"
         },
         {
             "role": "moonlightping",
             "name": "Moonlight",
-            "emojiId": "1090163554872737866",
-            "emoji": "<:mv:1090163554872737866>"
+            "emote": "mv"
         },
         {
             "role": "eventBoiPing",
             "name": "Miscellaneous Dungeons",
-            "emojiId": "723001215184535553",
-            "emoji": "<:pcave:723001215184535553>"
+            "emote": "pcave"
         }
     ],
     "701483950559985705": [
         {
             "role": "cultping",
             "name": "Cults",
-            "emojiId": "701491230332157972",
-            "emoji": "<:malus:701491230332157972>"
+            "emote": "cultist"
         },
         {
             "role": "fameReact",
             "name": "Fame Runs",
-            "emojiId": "1024104144845406248",
-            "emoji": "<:fame:1024104144845406248>"
+            "emote": "fame"
         },
         {
             "role": "voidping",
             "name": "Voids",
-            "emojiId": "701491230210523247",
-            "emoji": "<:void:701491230210523247>"
+            "emote": "void"
         },
         {
             "role": "fskipReact",
             "name": "Full-Skip Voids",
-            "emojiId": "701491230391140453",
-            "emoji": "<:SkipBoi:701491230391140453>"
+            "emote": "fullskip"
         },
         {
             "role": "shattsReact",
             "name": "Shatters",
-            "emojiId": "1008068892071055512",
-            "emoji": "<:forgottenking:1008068892071055512>"
+            "emote": "forgottenking"
         },
         {
             "role": "accursedReact",
             "name": "Accursed",
-            "emojiId": "1142347997670289471",
-            "emoji": "<:accursedKing:1142347997670289471>"
+            "emote": "accursedKing"
         },
         {
             "role": "nestReact",
             "name": "Nests",
-            "emojiId": "723001215407095899",
-            "emoji": "<:nest:723001215407095899>"
+            "emote": "nest"
         },
         {
             "role": "advancedNestPing",
             "name": "Advanced Nests",
-            "emojiId": "1135560355750359050",
-            "emoji": "<:advancedNestPortal:1135560355750359050>"
+            "emote": "advancedNestPortal"
         },
         {
             "role": "steamworksping",
             "name": "Steamworks",
-            "emojiId": "1050156386547413012",
-            "emoji": "<a:steamworksPortal:1050156386547413012>"
+            "emote": "steamworksPortal"
         },
         {
             "role": "advancedSteamworksPing",
             "name": "Advanced Steamworks",
-            "emojiId": "1129901525674758274",
-            "emoji": "<:advancedSteamworks:1129901525674758274>"
+            "emote": "advancedSteamworks"
         },
         {
             "role": "fungalReact",
             "name": "Fungals",
-            "emojiId": "723001215696240660",
-            "emoji": "<:fungal:723001215696240660>"
+            "emote": "fungal"
         },
         {
             "role": "moonlightping",
             "name": "Moonlight",
-            "emojiId": "1090163554872737866",
-            "emoji": "<:mv:1090163554872737866>"
+            "emote": "mv"
         },
         {
             "role": "eventBoiPing",
             "name": "Miscellaneous Dungeons",
-            "emojiId": "723001215184535553",
-            "emoji": "<:pcave:723001215184535553>"
+            "emote": "pcave"
         },
         {
             "role": "o3Ping",
             "name": "Oryx Sanctuary",
-            "emojiId": "831047591096745984",
-            "emoji": "<:oryxThree:831047591096745984>"
+            "emote": "oryxThree"
         }
     ]
 }
