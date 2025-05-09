@@ -50,7 +50,7 @@ module.exports = {
     async checkWasMuted(bot, member) {
         const db = getDB(member.guild.id);
 
-        const [[{ muteCount }]] = await db.promise().query('SELECT COUNT(*) as muteCount FROM mutes WHERE id = ? AND muted = true', [member.id]);
+        const [[{ muteCount }]] = await db.promise().query('SELECT COUNT(*) as muteCount FROM mutes WHERE id = ? AND guildid = ? AND removedOn IS NULL', [member.id, member.guild.id]);
         if (muteCount !== 0) {
             await member.roles.add(bot.settings[member.guild.id].roles.muted);
             const logChannel = modlogChannel(bot, member.guild);
@@ -69,7 +69,7 @@ module.exports = {
         await Promise.all(bot.partneredServers.filter((server) => server.guildId == member.guild.id).map(async (partneredServer) => {
             const partneredSettings = bot.settings[partneredServer.id];
             const otherServer = bot.guilds.cache.find(g => g.id == partneredServer.id);
-            const partneredMember = otherServer.members.cache.get(member.id);
+            const partneredMember = otherServer?.members.cache.get(member.id);
 
             if (!partneredMember) { return; }
 

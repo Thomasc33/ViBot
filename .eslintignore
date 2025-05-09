@@ -22,7 +22,6 @@ commands/manualVerify.js
 commands/manualVetVerify.js
 commands/memes.js
 commands/modmailBlacklist.js
-commands/mute.js
 commands/parsemembers.js
 commands/permaSuspend.js
 commands/poll.js
@@ -44,7 +43,6 @@ commands/suspendremove.js
 commands/sysinfo.js
 commands/test.js
 commands/unlock.js
-commands/unmute.js
 commands/unverify.js
 commands/unvetverify.js
 commands/updateIP.js

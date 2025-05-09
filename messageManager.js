@@ -14,7 +14,7 @@ const { commands } = require('./lib/commands');
 const { argString } = require('./commands/commands.js');
 const { getDB } = require('./dbSetup.js')
 const { LegacyCommandOptions, LegacyParserError } = require('./utils.js')
-
+const { mute } = require('./commands/mute.js');
 class MessageManager {
     #bot;
     #botSettings;
@@ -298,27 +298,9 @@ class MessageManager {
         const settings = this.#bot.settings[message.guild.id]
         if (!settings || !settings.backend.automod) return;
         if (!message.member.roles.highest || message.member.roles.highest.position >= message.guild.roles.cache.get(settings.roles.eventrl).position) return
-        if (message.mentions.roles.size != 0) mute('Pinging Roles', 2);
-
-        function mute(reason, time) {
-            // Time: 1=1 hour, 2=1 day
-            let timeString; let timeValue;
-            if (time == 1) {
-                timeString = '1 Hour';
-                timeValue = 3600000
-            } else if (time == 2) {
-                timeString = '1 Day';
-                timeValue = 86400000
-            }
-
-            message.member.roles.add(settings.roles.muted)
-                .then(() => this.#bot.dbs[message.guild.id].query(`INSERT INTO mutes (id, guildid, muted, reason, modid, uTime) VALUES ('${message.author.id}', '${message.guild.id}', true, '${reason}','${this.#bot.user.id}', '${Date.now() + timeValue}')`))
-                .then(() => message.author.send(`You have been muted in \`${message.guild.name}\` for \`${reason}\`. This will last for \`${timeString}\``))
-                .then(() => {
-                    const modlog = message.guild.channels.cache.get(settings.channels.modlog)
-                    if (!modlog) return ErrorLogger.log(new Error('Mod log not found for automod'), this.#bot, message.guild)
-                    modlog.send(`${message.member} was muted for \`${timeString}\` for \`${reason}\``)
-                })
+        if (message.mentions.roles.size != 0) {
+            const [rows] = await this.#bot.dbs[message.guild.id].promise().query('SELECT * FROM mutes WHERE id = ? AND guildid = ? AND removedOn IS NULL', [message.member.id, message.guild.id]);
+            await mute(settings, this.#bot.dbs[message.guild.id], null, message.member, 86400000, 'Pinging roles', rows[0]);
         }
     }
 
